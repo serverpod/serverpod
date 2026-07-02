@@ -14,28 +14,28 @@ final githubStories = [
         initial: GitHubButtonStyle.black,
       );
 
-      final size = context.knobs.options<GitHubButtonSize>(
+      final size = context.knobs.options<SignInButtonSize>(
         label: 'Size',
-        options: GitHubButtonSize.values.asOptions(),
-        initial: GitHubButtonSize.large,
+        options: SignInButtonSize.values.asOptions(),
+        initial: SignInButtonSize.large,
       );
 
-      final shape = context.knobs.options<GitHubButtonShape>(
+      final shape = context.knobs.options<SignInButtonShape>(
         label: 'Shape',
-        options: GitHubButtonShape.values.asOptions(),
-        initial: GitHubButtonShape.pill,
+        options: SignInButtonShape.values.asOptions(),
+        initial: SignInButtonShape.pill,
       );
 
-      final text = context.knobs.options<GitHubButtonText>(
+      final text = context.knobs.options<SignInButtonTextVariant>(
         label: 'Text',
-        options: GitHubButtonText.values.asOptions(),
-        initial: GitHubButtonText.continueWith,
+        options: SignInButtonTextVariant.values.asOptions(),
+        initial: SignInButtonTextVariant.continueWith,
       );
 
-      final logoAlignment = context.knobs.options<GitHubButtonLogoAlignment>(
+      final logoAlignment = context.knobs.options<SignInButtonLogoAlignment>(
         label: 'Logo alignment',
-        options: GitHubButtonLogoAlignment.values.asOptions(),
-        initial: GitHubButtonLogoAlignment.left,
+        options: SignInButtonLogoAlignment.values.asOptions(),
+        initial: SignInButtonLogoAlignment.left,
       );
 
       final type = context.knobs.options<GitHubButtonType>(

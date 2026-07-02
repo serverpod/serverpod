@@ -69,7 +69,7 @@ void main() {
                 onPressed: null,
                 isLoading: false,
                 isDisabled: false,
-                text: GitHubButtonText.continueWith,
+                text: SignInButtonTextVariant.continueWith,
               ),
             ),
           );
@@ -118,7 +118,7 @@ void main() {
                 onPressed: null,
                 isLoading: false,
                 isDisabled: false,
-                size: GitHubButtonSize.large,
+                size: SignInButtonSize.large,
               ),
             ),
           );

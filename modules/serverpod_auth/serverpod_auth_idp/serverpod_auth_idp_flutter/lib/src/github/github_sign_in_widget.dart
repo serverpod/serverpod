@@ -4,6 +4,7 @@ import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 import 'github_auth_controller.dart';
 import 'github_sign_in_button.dart';
 import 'github_sign_in_style.dart';
+import '../common/sign_in_button_style.dart';
 import '../common/sign_in_flow_coordinator.dart';
 
 export 'github_sign_in_button.dart';
@@ -74,17 +75,17 @@ class GitHubSignInWidget extends StatefulWidget {
   /// [SignInButtonStyle] in scope) the shared common style applies instead.
   final GitHubButtonStyle style;
 
-  /// The button size (large or medium).
-  final GitHubButtonSize size;
+  /// The button size.
+  final SignInButtonSize size;
 
-  /// The button text.
-  final GitHubButtonText text;
+  /// The button label variant.
+  final SignInButtonTextVariant text;
 
-  /// The button shape (rectangular, pill, or rounded).
-  final GitHubButtonShape shape;
+  /// The button shape.
+  final SignInButtonShape shape;
 
   /// The GitHub logo alignment: left or center.
-  final GitHubButtonLogoAlignment logoAlignment;
+  final SignInButtonLogoAlignment logoAlignment;
 
   /// The minimum button width, in pixels.
   ///
@@ -105,10 +106,10 @@ class GitHubSignInWidget extends StatefulWidget {
     this.scopes = GitHubAuthController.defaultScopes,
     this.type = GitHubButtonType.standard,
     this.style = GitHubButtonStyle.black,
-    this.size = GitHubButtonSize.large,
-    this.text = GitHubButtonText.continueWith,
-    this.shape = GitHubButtonShape.pill,
-    this.logoAlignment = GitHubButtonLogoAlignment.center,
+    this.size = SignInButtonSize.large,
+    this.text = SignInButtonTextVariant.continueWith,
+    this.shape = SignInButtonShape.pill,
+    this.logoAlignment = SignInButtonLogoAlignment.center,
     this.minimumWidth = 240,
     this.textStyle,
     super.key,
