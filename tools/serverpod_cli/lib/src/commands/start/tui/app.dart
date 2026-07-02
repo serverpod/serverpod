@@ -128,11 +128,11 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
 
   bool _minSplashElapsed = false;
 
-  /// Auto-closes the launch panel a short while after the last launch, so a
-  /// user launching several apps in a row keeps the panel open until they stop.
+  /// Auto-closes the launch panel a while after the last interaction, so a user
+  /// launching or browsing several apps keeps the panel open until they pause.
   Timer? _launchPanelCloseTimer;
 
-  static const _launchPanelCloseDelay = Duration(milliseconds: 1500);
+  static const _launchPanelCloseDelay = Duration(seconds: 3);
 
   @override
   void initState() {
@@ -177,11 +177,16 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
     setState(() {});
   }
 
-  /// Launches the [index]th app and schedules the launch panel to close after
-  /// a short delay, resetting the delay on each launch so several apps can be
-  /// started in a row before it dismisses.
+  /// Launches the [index]th app and arms the launch-panel auto-close.
   void _launchApp(int index) {
     onLaunchApp?.call(index);
+    _scheduleLaunchPanelClose();
+    _rebuild();
+  }
+
+  /// (Re)starts the launch-panel auto-close countdown, so any interaction while
+  /// the panel is open (launching or navigating) pushes the dismissal back.
+  void _scheduleLaunchPanelClose() {
     _launchPanelCloseTimer?.cancel();
     _launchPanelCloseTimer = Timer(_launchPanelCloseDelay, () {
       final state = component.holder.state;
@@ -190,7 +195,14 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
         _rebuild();
       }
     });
-    _rebuild();
+  }
+
+  /// Pushes the auto-close back only when it is already counting down, so
+  /// navigating a panel that was opened without launching never arms it.
+  void _bumpLaunchPanelCloseTimer() {
+    if (_launchPanelCloseTimer?.isActive ?? false) {
+      _scheduleLaunchPanelClose();
+    }
   }
 
   @override
@@ -314,6 +326,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
               event.logicalKey == LogicalKey.keyK)) {
         state.launchPanelIndex =
             (state.launchPanelIndex - 1 + appCount) % appCount;
+        _bumpLaunchPanelCloseTimer();
         _rebuild();
         return true;
       }
@@ -321,6 +334,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
           (event.logicalKey == LogicalKey.arrowDown ||
               event.logicalKey == LogicalKey.keyJ)) {
         state.launchPanelIndex = (state.launchPanelIndex + 1) % appCount;
+        _bumpLaunchPanelCloseTimer();
         _rebuild();
         return true;
       }

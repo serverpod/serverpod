@@ -408,38 +408,70 @@ void main() {
         expect(state.showLaunchPanel, isTrue);
       },
     );
+  });
 
-    test(
-      'when x is pressed while the active tab is running then that app stops',
-      () async {
-        var stopIndex = -1;
-        holder.onStopApp = (index) => stopIndex = index;
-        final admin = state.getOrCreateAppLogTab(appId: 'a', label: 'Admin');
-        state.tabs.focusTab(admin); // 'a' is running
+  group('Given a tab with a running Flutter app', () {
+    setUp(() {
+      state.canLaunchApps = true;
+      state.launchableApps = const [
+        FlutterAppConfig(
+          id: 'a',
+          name: 'Admin',
+          relativePathParts: ['..', 'admin'],
+          serverPackageDirectoryPathParts: [],
+        ),
+      ];
+      state.isAppRunning = (id) => id == 'a';
+      final tab = state.getOrCreateAppLogTab(appId: 'a', label: 'Admin');
+      state.tabs.focusTab(tab);
+    });
 
-        await _sendKey(tester, LogicalKey.keyX);
+    test('when x is pressed then the app is stopped', () async {
+      var stopIndex = -1;
+      holder.onStopApp = (index) => stopIndex = index;
 
-        expect(stopIndex, 0);
-      },
-    );
+      await _sendKey(tester, LogicalKey.keyX);
 
-    test(
-      'when x is pressed while the active tab is neither running nor stopped '
-      'then onStopApp is not called',
-      () async {
-        var stopCalls = 0;
-        holder.onStopApp = (_) => stopCalls++;
-        final customer = state.getOrCreateAppLogTab(
-          appId: 'b',
-          label: 'Customer',
-        );
-        state.tabs.focusTab(customer); // 'b' is not running
+      expect(stopIndex, 0);
+    });
+  });
 
-        await _sendKey(tester, LogicalKey.keyX);
+  group('Given a tab with a stopped Flutter app', () {
+    late AppLogTab tab;
 
-        expect(stopCalls, 0);
-      },
-    );
+    setUp(() {
+      state.canLaunchApps = true;
+      state.launchableApps = const [
+        FlutterAppConfig(
+          id: 'a',
+          name: 'Admin',
+          relativePathParts: ['..', 'admin'],
+          serverPackageDirectoryPathParts: [],
+        ),
+      ];
+      state.isAppRunning = (_) => false;
+      tab = state.getOrCreateAppLogTab(appId: 'a', label: 'Admin');
+      tab.stopped = true;
+      state.tabs.focusTab(tab);
+    });
+
+    test('when x is pressed then the tab is closed', () async {
+      await _sendKey(tester, LogicalKey.keyX);
+
+      expect(state.tabs.allTabs, isNot(contains(tab)));
+    });
+  });
+
+  group('Given a tab with no Flutter app', () {
+    // The server log tab is focused by default, so no app tab is active.
+    test('when x is pressed then no app is stopped', () async {
+      var stopCalls = 0;
+      holder.onStopApp = (_) => stopCalls++;
+
+      await _sendKey(tester, LogicalKey.keyX);
+
+      expect(stopCalls, 0);
+    });
   });
 
   group('Given a running TUI start app with exactly one launchable app', () {

@@ -482,7 +482,7 @@ class MainScreen extends StatelessComponent {
       statusText = value;
     }
 
-    final xLabel = tab.stopped ? 'Close Tab' : 'Close App';
+    final xLabel = tab.stopped ? 'Close Tab' : 'Stop App';
     final labelPart = tab.label;
     const labelSep = ' │ ';
     final xHintPlain = 'X $xLabel';

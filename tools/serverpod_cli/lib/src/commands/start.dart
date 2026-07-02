@@ -1125,6 +1125,13 @@ Future<void> _runTuiBackend({
         tab.ready = false;
         tab.stopped = false;
         tab.url = null;
+        // Focus the tab only when the launch was initiated from the launch
+        // panel (which is open at that point). Apps auto-started by
+        // `serverpod start` launch with the panel closed, so the Server logs
+        // tab stays active for them.
+        if (holder.state.showLaunchPanel) {
+          holder.state.tabs.focusTab(tab);
+        }
         holder.markDirty();
       },
       onFlutterProgress: (app, stage) {
