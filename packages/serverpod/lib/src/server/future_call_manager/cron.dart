@@ -5,10 +5,10 @@
  * The scope of the below license ("Software") is limited to this file
  * which is a derivative work of the original library. The license does
  * not apply to any other part of the codebase.
- * 
+ *
  * Copyright (c) 2016, Agilord.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *     * Redistributions of source code must retain the above copyright
@@ -19,7 +19,7 @@
  *     * Neither the name of the <organization> nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -241,7 +241,7 @@ class Cron {
       seconds!.isNotEmpty &&
       (seconds!.length != 1 || !seconds!.contains(0));
 
-  /// Returns the next run time.
+  /// Returns the next run time, in UTC.
   DateTime nextTime() {
     var currentDate = DateTime.now().toUtc();
 
@@ -251,7 +251,7 @@ class Cron {
 
     while (true) {
       if (months?.contains(currentDate.month) == false) {
-        currentDate = DateTime(
+        currentDate = DateTime.utc(
           currentDate.year,
           currentDate.month + 1,
           1,
@@ -259,7 +259,7 @@ class Cron {
         continue;
       }
       if (weekdays?.contains(currentDate.weekday) == false) {
-        currentDate = DateTime(
+        currentDate = DateTime.utc(
           currentDate.year,
           currentDate.month,
           currentDate.day + 1,
@@ -267,7 +267,7 @@ class Cron {
         continue;
       }
       if (days?.contains(currentDate.day) == false) {
-        currentDate = DateTime(
+        currentDate = DateTime.utc(
           currentDate.year,
           currentDate.month,
           currentDate.day + 1,
