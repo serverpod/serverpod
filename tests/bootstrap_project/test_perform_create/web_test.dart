@@ -357,7 +357,7 @@ void main() {
       );
 
       test(
-        'then theserver.dart has a fallback middleware for the default route',
+        'then the server.dart has a fallback middleware for the default route',
         () async {
           final serverFile = File(
             p.join(project.serverDir, 'lib', 'server.dart'),
