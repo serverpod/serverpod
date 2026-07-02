@@ -115,7 +115,10 @@ class ClusterStore {
   /// block is appended. Lines outside the block are preserved.
   ///
   /// No-op when the rewrite would produce identical content.
-  void reconcilePostgresConf({required Transport transport}) {
+  void reconcilePostgresConf({
+    required Transport transport,
+    int maxConnections = defaultMaxConnections,
+  }) {
     var conf = File(p.join(dataDir.path, 'postgresql.conf'));
     if (!conf.existsSync()) {
       throw StateError(
@@ -126,6 +129,7 @@ class ClusterStore {
     var body = buildPostgresConfBody(
       transport: transport,
       pgDataDir: dataDir,
+      maxConnections: maxConnections,
     );
     var rewritten = rewriteManagedBlock(original, body);
     if (rewritten != original) {

@@ -1,0 +1,97 @@
+@Tags(['integration'])
+library;
+
+import 'dart:io';
+
+import 'package:postgres/postgres.dart' as pg;
+import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_database/embedded.dart';
+import 'package:serverpod_test/src/test_database_manager.dart';
+import 'package:test/test.dart';
+
+/// Exercises [TestDatabaseManager] against a real embedded postmaster: each
+/// group gets its own empty database, isolated from the others, and dropped
+/// afterwards.
+void main() {
+  late Directory tmpRoot;
+  late ResolvedEmbeddedPostgres resolved;
+  late TestDatabaseManager manager;
+
+  setUp(() async {
+    tmpRoot = Directory.systemTemp.createTempSync('sp_test_db_manager_');
+    var config = PostgresDatabaseConfig.embedded(
+      dataPath: '.serverpod/pgdata',
+      name: 'serverpod_test',
+    );
+    resolved = (await startOrAttachEmbeddedPostgres(
+      config,
+      baseDirectory: tmpRoot,
+    ))!;
+    manager = TestDatabaseManager(resolved.connectivity);
+  });
+
+  tearDown(() async {
+    await resolved.stop?.call();
+    if (tmpRoot.existsSync()) tmpRoot.deleteSync(recursive: true);
+  });
+
+  Future<pg.Connection> connect(String name) => pg.Connection.open(
+    pg.Endpoint(
+      host: resolved.connectivity.host,
+      port: resolved.connectivity.port,
+      database: name,
+      username: resolved.connectivity.user,
+      password: resolved.connectivity.password,
+      isUnixSocket: resolved.connectivity.isUnixSocket,
+    ),
+    settings: const pg.ConnectionSettings(sslMode: pg.SslMode.disable),
+  );
+
+  group('Given a freshly resolved embedded postmaster', () {
+    test(
+      'when createEmptyDatabase runs twice '
+      'then each database is empty and isolated from the other.',
+      () async {
+        var dbA = TestDatabaseManager.generateDatabaseName();
+        var dbB = TestDatabaseManager.generateDatabaseName();
+        await manager.createEmptyDatabase(dbA);
+        await manager.createEmptyDatabase(dbB);
+        expect(dbA, isNot(dbB));
+
+        // Schema/data created in A must not leak into B.
+        var connA = await connect(dbA);
+        await connA.execute('CREATE TABLE widget (id integer primary key);');
+        await connA.execute('INSERT INTO widget (id) VALUES (1);');
+        await connA.close();
+
+        var connB = await connect(dbB);
+        await expectLater(
+          connB.execute('SELECT id FROM widget;'),
+          throwsA(isA<pg.ServerException>()),
+          reason: 'database B must not see table created in A',
+        );
+        await connB.close();
+
+        await manager.dropDatabase(dbA);
+        await manager.dropDatabase(dbB);
+      },
+      timeout: const Timeout(Duration(seconds: 180)),
+    );
+
+    test(
+      'when a database is dropped then it no longer exists.',
+      () async {
+        var db = TestDatabaseManager.generateDatabaseName();
+        await manager.createEmptyDatabase(db);
+        await manager.dropDatabase(db);
+
+        await expectLater(
+          connect(db),
+          throwsA(isA<pg.ServerException>()),
+          reason: 'connecting to a dropped database must fail',
+        );
+      },
+      timeout: const Timeout(Duration(seconds: 180)),
+    );
+  });
+}
