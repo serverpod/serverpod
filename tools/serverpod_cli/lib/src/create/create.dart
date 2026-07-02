@@ -9,6 +9,7 @@ import 'package:cli_tools/cli_tools.dart';
 import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
+import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:serverpod_cli/src/create/database_setup.dart';
 import 'package:serverpod_cli/src/create/generate_files.dart';
 import 'package:serverpod_cli/src/create/ide.dart';
@@ -1174,6 +1175,10 @@ List<String> _copyServerTemplates(
       Replacement(
         slotName: 'projectname',
         replacement: name,
+      ),
+      Replacement(
+        slotName: 'flutter_app_display_name',
+        replacement: formatFlutterAppDisplayName(name),
       ),
       if (customServerpodPath != null)
         Replacement(

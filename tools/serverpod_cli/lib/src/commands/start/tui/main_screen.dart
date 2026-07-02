@@ -437,7 +437,7 @@ class MainScreen extends StatelessComponent {
     };
   }
 
-  /// Breadcrumb for a Flutter app tab: horizontal rules, muted label, and URL
+  /// Breadcrumb for a Flutter app tab: horizontal rules, muted app id, and URL
   /// or startup stage.
   Component? _buildFlutterStatusLine(ServerpodThemeData st, AppLogTab tab) {
     final mutedText = TextStyle(
@@ -482,7 +482,7 @@ class MainScreen extends StatelessComponent {
 
     Component child = Row(
       children: [
-        Text(' ${tab.label}', style: mutedText),
+        Text(' ${tab.appId}', style: mutedText),
         Text(' │ ', style: separatorStyle),
         indicator,
       ],
