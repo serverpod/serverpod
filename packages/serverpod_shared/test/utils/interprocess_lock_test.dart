@@ -20,7 +20,8 @@ void main() {
 
   group('Given an unheld lock path', () {
     test(
-      'when acquired then the lock file is created and release removes it',
+      'when acquired '
+      'then the lock file is created and release removes it',
       () async {
         var lock = await InterProcessLock.acquire(
           lockPath,
@@ -69,25 +70,31 @@ void main() {
   });
 
   group('Given a held lock', () {
-    test('when released twice then the second release is a no-op', () async {
-      var lock = await InterProcessLock.acquire(
+    late InterProcessLock lock;
+
+    setUp(() async {
+      lock = await InterProcessLock.acquire(
         lockPath,
         staleWhen: const StaleLockPolicy.never(),
       );
-      await lock.release();
-      await lock.release();
-      expect(File(lockPath).existsSync(), isFalse);
     });
+
+    tearDown(() => lock.release());
+
+    test(
+      'when released twice '
+      'then the second release is a no-op',
+      () async {
+        await lock.release();
+        await lock.release();
+        expect(File(lockPath).existsSync(), isFalse);
+      },
+    );
 
     test(
       'when a second acquire is attempted '
       'then it times out until the lock is released',
       () async {
-        var first = await InterProcessLock.acquire(
-          lockPath,
-          staleWhen: const StaleLockPolicy.never(),
-        );
-
         await expectLater(
           InterProcessLock.acquire(
             lockPath,
@@ -97,7 +104,7 @@ void main() {
           throwsA(isA<TimeoutException>()),
         );
 
-        await first.release();
+        await lock.release();
 
         var second = await InterProcessLock.acquire(
           lockPath,
@@ -109,41 +116,9 @@ void main() {
     );
 
     test(
-      'when the heartbeat keeps refreshing it '
-      'then a competing acquire past the age cap still times out',
-      () async {
-        // While we wait for the fix to dart-lang/sdk#51937 to land we use >1s staleWhen
-        var lock = await InterProcessLock.acquire(
-          lockPath,
-          staleWhen: const StaleLockPolicy.age(Duration(seconds: 2)),
-          heartbeatInterval: const Duration(milliseconds: 250),
-        );
-
-        // Wait past the age cap.
-        await Future<void>.delayed(const Duration(milliseconds: 2500));
-
-        await expectLater(
-          InterProcessLock.acquire(
-            lockPath,
-            staleWhen: const StaleLockPolicy.age(Duration(seconds: 2)),
-            timeout: const Duration(milliseconds: 800),
-          ),
-          throwsA(isA<TimeoutException>()),
-        );
-
-        await lock.release();
-      },
-    );
-
-    test(
       'when another holder has reclaimed and re-taken it '
       'then release does not delete their lock file',
       () async {
-        var lock = await InterProcessLock.acquire(
-          lockPath,
-          staleWhen: const StaleLockPolicy.never(),
-        );
-
         // Simulate another acquirer reclaiming and re-taking the lock by
         // overwriting it with a different token.
         File(lockPath).writeAsStringSync('999999999:other');
@@ -155,15 +130,51 @@ void main() {
     );
   });
 
-  group('Given a stale lock file', () {
-    test(
-      'when older than the age-policy cap then acquire reclaims it',
-      () async {
-        File(lockPath).writeAsStringSync('held');
-        File(lockPath).setLastModifiedSync(
-          DateTime.now().subtract(const Duration(minutes: 10)),
-        );
+  group('Given a held lock refreshed by its heartbeat', () {
+    late InterProcessLock lock;
 
+    setUp(() async {
+      // While we wait for the fix to dart-lang/sdk#51937 to land we use >1s staleWhen
+      lock = await InterProcessLock.acquire(
+        lockPath,
+        staleWhen: const StaleLockPolicy.age(Duration(seconds: 2)),
+        heartbeatInterval: const Duration(milliseconds: 250),
+      );
+    });
+
+    tearDown(() => lock.release());
+
+    test(
+      'when a competing acquire waits past the age cap '
+      'then it still times out',
+      () async {
+        // Wait past the age cap.
+        await Future<void>.delayed(const Duration(milliseconds: 2500));
+
+        await expectLater(
+          InterProcessLock.acquire(
+            lockPath,
+            staleWhen: const StaleLockPolicy.age(Duration(seconds: 2)),
+            timeout: const Duration(milliseconds: 800),
+          ),
+          throwsA(isA<TimeoutException>()),
+        );
+      },
+    );
+  });
+
+  group('Given a lock file older than the age cap', () {
+    setUp(() {
+      File(lockPath).writeAsStringSync('held');
+      File(lockPath).setLastModifiedSync(
+        DateTime.now().subtract(const Duration(minutes: 10)),
+      );
+    });
+
+    test(
+      'when acquired with the age policy '
+      'then it is reclaimed',
+      () async {
         var lock = await InterProcessLock.acquire(
           lockPath,
           staleWhen: const StaleLockPolicy.age(Duration(minutes: 2)),
@@ -173,15 +184,19 @@ void main() {
         await lock.release();
       },
     );
+  });
+
+  group('Given a lock file whose holder process is gone', () {
+    setUp(() {
+      // A PID far above any real process table entry, so the
+      // holder reads as dead and the lock is reclaimed immediately.
+      File(lockPath).writeAsStringSync('2147483646');
+    });
 
     test(
-      'when its holder process is gone '
-      'then acquire with the processLiveness policy reclaims it',
+      'when acquired with the processLiveness policy '
+      'then it is reclaimed',
       () async {
-        // A PID far above any real process table entry, so the
-        // holder reads as dead and the lock is reclaimed immediately.
-        File(lockPath).writeAsStringSync('2147483646');
-
         var lock = await InterProcessLock.acquire(
           lockPath,
           staleWhen: const StaleLockPolicy.processLiveness(
