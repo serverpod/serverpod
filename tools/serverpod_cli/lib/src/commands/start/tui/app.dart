@@ -128,6 +128,12 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
 
   bool _minSplashElapsed = false;
 
+  /// Auto-closes the launch panel a while after the last interaction, so a user
+  /// launching or browsing several apps keeps the panel open until they pause.
+  Timer? _launchPanelCloseTimer;
+
+  static const _launchPanelCloseDelay = Duration(seconds: 3);
+
   @override
   void initState() {
     super.initState();
@@ -144,6 +150,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
 
   @override
   void dispose() {
+    _launchPanelCloseTimer?.cancel();
     component.holder.detach(this);
     rawScrollController.dispose();
     helpScrollController.dispose();
@@ -168,6 +175,34 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
     if (!mounted) return;
     _tryDismissSplash();
     setState(() {});
+  }
+
+  /// Launches the [index]th app and arms the launch-panel auto-close.
+  void _launchApp(int index) {
+    onLaunchApp?.call(index);
+    _scheduleLaunchPanelClose();
+    _rebuild();
+  }
+
+  /// (Re)starts the launch-panel auto-close countdown, so any interaction while
+  /// the panel is open (launching or navigating) pushes the dismissal back.
+  void _scheduleLaunchPanelClose() {
+    _launchPanelCloseTimer?.cancel();
+    _launchPanelCloseTimer = Timer(_launchPanelCloseDelay, () {
+      final state = component.holder.state;
+      if (state.showLaunchPanel) {
+        state.showLaunchPanel = false;
+        _rebuild();
+      }
+    });
+  }
+
+  /// Pushes the auto-close back only when it is already counting down, so
+  /// navigating a panel that was opened without launching never arms it.
+  void _bumpLaunchPanelCloseTimer() {
+    if (_launchPanelCloseTimer?.isActive ?? false) {
+      _scheduleLaunchPanelClose();
+    }
   }
 
   @override
@@ -208,16 +243,12 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
           onHotReload: onHotReload,
           onHotRestart: onHotRestart,
           onCreateMigration: onCreateMigration,
-          onCreateRepairMigration: onCreateRepairMigration,
           onApplyMigration: onApplyMigration,
           onClearLogs: () {
             state.clearLogs();
             _rebuild();
           },
-          onLaunchApp: (index) {
-            onLaunchApp?.call(index);
-            _rebuild();
-          },
+          onLaunchApp: _launchApp,
           onQuit: onQuit,
         ),
       ),
@@ -243,41 +274,38 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
       return true;
     }
 
-    late final appCount = state.launchableApps.length;
-
-    // 'x' stops the focused app when it is running. The panel stays open so
-    // the row's marker flips to stopped and the app can be relaunched.
-    // Pressing 'x' when the focused app is already stopped closes its tab.
-    if (event.logicalKey == LogicalKey.keyX &&
-        state.launchPanelIndex < appCount) {
-      final app = state.launchableApps[state.launchPanelIndex];
-      final appRunning = state.isAppRunning?.call(app.id) ?? false;
-      if (state.showLaunchPanel && appRunning) {
-        onStopApp?.call(state.launchPanelIndex);
-        _rebuild();
-        return true;
-      }
-
-      // Remove the focused tab if it is in a stopped state.
+    // 'x' acts on the active Flutter app tab: while the app is running (or
+    // launching) it stops the app - the tab stays so its marker flips to
+    // stopped and it can be relaunched - and once stopped it closes the tab.
+    if (event.logicalKey == LogicalKey.keyX) {
       final appsArea = state.appsTabArea;
-      final focusedTab = appsArea?.selected as AppLogTab?;
-      if (focusedTab != null && focusedTab.stopped) {
-        state.removeAppLogTab(focusedTab.appId);
-        final lastTab = appsArea?.tabs.whereType<AppLogTab>().lastOrNull;
+      final activeTab = appsArea?.selected;
+      if (activeTab is AppLogTab) {
+        final appId = activeTab.appId;
+        final running = state.isAppRunning?.call(appId) ?? false;
+        final launching = state.isAppLaunching?.call(appId) ?? false;
 
-        if (lastTab == null) {
-          state.launchPanelIndex = 0;
+        if (running || launching) {
+          final index = state.launchableApps.indexWhere((a) => a.id == appId);
+          if (index >= 0) {
+            onStopApp?.call(index);
+            _rebuild();
+            return true;
+          }
+        } else if (activeTab.stopped) {
+          state.removeAppLogTab(appId);
+          final lastTab = appsArea?.tabs.whereType<AppLogTab>().lastOrNull;
+          if (lastTab == null) {
+            state.launchPanelIndex = 0;
+          } else {
+            state.tabs.focusTab(lastTab);
+            state.launchPanelIndex = state.launchableApps.indexWhere(
+              (a) => a.id == lastTab.appId,
+            );
+          }
           _rebuild();
           return true;
         }
-        state.tabs.focusTab(lastTab);
-
-        final index = state.launchableApps.indexWhere(
-          (app) => app.id == lastTab.appId,
-        );
-        state.launchPanelIndex = index;
-        _rebuild();
-        return true;
       }
     }
 
@@ -286,6 +314,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
 
       if (event.logicalKey == LogicalKey.escape ||
           (event.logicalKey == LogicalKey.keyR && event.isControlPressed)) {
+        _launchPanelCloseTimer?.cancel();
         state.showLaunchPanel = false;
         _rebuild();
         return true;
@@ -296,6 +325,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
               event.logicalKey == LogicalKey.keyK)) {
         state.launchPanelIndex =
             (state.launchPanelIndex - 1 + appCount) % appCount;
+        _bumpLaunchPanelCloseTimer();
         _rebuild();
         return true;
       }
@@ -303,21 +333,20 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
           (event.logicalKey == LogicalKey.arrowDown ||
               event.logicalKey == LogicalKey.keyJ)) {
         state.launchPanelIndex = (state.launchPanelIndex + 1) % appCount;
+        _bumpLaunchPanelCloseTimer();
         _rebuild();
         return true;
       }
       // Enter launches the focused row.
       if (event.logicalKey == LogicalKey.enter &&
           state.launchPanelIndex < appCount) {
-        onLaunchApp?.call(state.launchPanelIndex);
-        _rebuild();
+        _launchApp(state.launchPanelIndex);
         return true;
       }
       // Number keys remain shortcuts for the first nine apps.
       final digitIndex = _digitIndex(event.logicalKey);
       if (digitIndex != null && digitIndex < appCount && digitIndex < 9) {
-        onLaunchApp?.call(digitIndex);
-        _rebuild();
+        _launchApp(digitIndex);
         return true;
       }
     }
@@ -346,6 +375,9 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
     // 0 apps inert; >0 toggle launch panel.
     if (event.logicalKey == LogicalKey.keyR && event.isControlPressed) {
       if (!state.canLaunchApps) return true;
+      // Toggling the panel resets any pending auto-close so a freshly opened
+      // panel is never dismissed by a timer from a previous launch.
+      _launchPanelCloseTimer?.cancel();
       state.showLaunchPanel = !state.showLaunchPanel;
       if (state.showLaunchPanel) {
         state.launchPanelIndex = state.activeLaunchableIndex;
@@ -397,6 +429,18 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
         event.logicalKey == LogicalKey.keyS) {
       state.showRawServerLogs = true;
       _rebuild();
+      return true;
+    }
+
+    // Repair migration (Shift for force). Not shown in the bottom bar; it is
+    // documented on the help screen instead.
+    if (event.logicalKey == LogicalKey.keyP &&
+        !event.isControlPressed &&
+        !event.isAltPressed &&
+        !event.isMetaPressed &&
+        state.serverReady &&
+        !state.actionBusy) {
+      onCreateRepairMigration?.call(force: event.isShiftPressed);
       return true;
     }
 

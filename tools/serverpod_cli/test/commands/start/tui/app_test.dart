@@ -408,36 +408,90 @@ void main() {
         expect(state.showLaunchPanel, isTrue);
       },
     );
+  });
 
-    test(
-      'when x is pressed on a running app then it stops and the panel stays open',
-      () async {
-        var stopIndex = -1;
-        holder.onStopApp = (index) => stopIndex = index;
-        state.showLaunchPanel = true;
-        state.launchPanelIndex = 0; // 'a' is running
+  group('Given a tab with a running Flutter app', () {
+    setUp(() {
+      state.canLaunchApps = true;
+      state.launchableApps = const [
+        FlutterAppConfig(
+          id: 'a',
+          name: 'Admin',
+          relativePathParts: ['..', 'admin'],
+          serverPackageDirectoryPathParts: [],
+        ),
+      ];
+      state.isAppRunning = (id) => id == 'a';
+      final tab = state.getOrCreateAppLogTab(appId: 'a', label: 'Admin');
+      state.tabs.focusTab(tab);
+    });
 
-        await _sendKey(tester, LogicalKey.keyX);
+    test('when x is pressed then the app is stopped', () async {
+      var stopIndex = -1;
+      holder.onStopApp = (index) => stopIndex = index;
 
-        expect(stopIndex, 0);
-        expect(state.showLaunchPanel, isTrue);
-      },
-    );
+      await _sendKey(tester, LogicalKey.keyX);
 
-    test(
-      'when x is pressed on a stopped app then onStopApp is not called',
-      () async {
-        var stopCalls = 0;
-        holder.onStopApp = (_) => stopCalls++;
-        state.showLaunchPanel = true;
-        state.launchPanelIndex = 1; // 'b' is not running
+      expect(stopIndex, 0);
+    });
+  });
 
-        await _sendKey(tester, LogicalKey.keyX);
+  group('Given a tab with a stopped Flutter app', () {
+    late AppLogTab tab;
 
-        expect(stopCalls, 0);
-        expect(state.showLaunchPanel, isTrue);
-      },
-    );
+    setUp(() {
+      state.canLaunchApps = true;
+      state.launchableApps = const [
+        FlutterAppConfig(
+          id: 'a',
+          name: 'Admin',
+          relativePathParts: ['..', 'admin'],
+          serverPackageDirectoryPathParts: [],
+        ),
+      ];
+      state.isAppRunning = (_) => false;
+      tab = state.getOrCreateAppLogTab(appId: 'a', label: 'Admin');
+      tab.stopped = true;
+      state.tabs.focusTab(tab);
+    });
+
+    test('when x is pressed then the tab is closed', () async {
+      await _sendKey(tester, LogicalKey.keyX);
+
+      expect(state.tabs.allTabs, isNot(contains(tab)));
+    });
+  });
+
+  group('Given a tab with no Flutter app', () {
+    // The server log tab is focused by default, so no app tab is active.
+    test('when x is pressed then no app is stopped', () async {
+      var stopCalls = 0;
+      holder.onStopApp = (_) => stopCalls++;
+
+      await _sendKey(tester, LogicalKey.keyX);
+
+      expect(stopCalls, 0);
+    });
+  });
+
+  group('Given a ready TUI start app', () {
+    setUp(() {
+      state.serverReady = true;
+    });
+
+    test('when P is pressed then a repair migration is invoked', () async {
+      var repairCalls = 0;
+      var forced = true;
+      holder.onCreateRepairMigration = ({bool force = false}) {
+        repairCalls++;
+        forced = force;
+      };
+
+      await _sendKey(tester, LogicalKey.keyP);
+
+      expect(repairCalls, 1);
+      expect(forced, isFalse);
+    });
   });
 
   group('Given a running TUI start app with exactly one launchable app', () {
