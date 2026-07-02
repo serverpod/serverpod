@@ -1279,10 +1279,13 @@ void main() async {
 
       group('Given the Flutter web app is built and the pod is restarted', () {
         setUp(() async {
-          final flutterBuildProcess = await startProcess(
-            'serverpod',
+          final flutterBuildProcess = await startServerpodCli(
             ['run', 'flutter_build'],
+            rootPath: rootPath,
             workingDirectory: commandRoot,
+            environment: {
+              'SERVERPOD_HOME': rootPath,
+            },
           );
           expect(await flutterBuildProcess.exitCode, 0);
 
