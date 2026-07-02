@@ -180,24 +180,25 @@ void main() {
   );
 
   group(
-    'Given startOrAttach on a shared dataDir',
+    'Given a postmaster launched by startOrAttach on a shared dataDir',
     () {
+      late EmbeddedPostgresOptions opts;
+      late EmbeddedStartResult first;
+
+      setUp(() async {
+        opts = EmbeddedPostgresOptions(
+          dataDir: Directory(p.join(tmpRoot.path, '.serverpod', 'pgdata')),
+          databaseName: 'projectname',
+          detach: true,
+          repairStaleLocks: true,
+        );
+        first = await EmbeddedPostgres.startOrAttach(opts);
+      });
+
       test(
-        'when called twice on the same dataDir '
-        'then the first launches the postmaster and the second attaches to it.',
+        'when startOrAttach is called again on the same dataDir '
+        'then it attaches to the running postmaster instead of launching.',
         () async {
-          var pgDataDir = Directory(
-            p.join(tmpRoot.path, '.serverpod', 'pgdata'),
-          );
-
-          var opts = EmbeddedPostgresOptions(
-            dataDir: pgDataDir,
-            databaseName: 'projectname',
-            detach: true,
-            repairStaleLocks: true,
-          );
-
-          var first = await EmbeddedPostgres.startOrAttach(opts);
           expect(
             first.launched,
             isTrue,

@@ -55,8 +55,8 @@ void main() {
     );
   });
 
-  group('Given buildPostgresConfBody and max_connections', () {
-    test('when maxConnections is omitted then the default is used.', () {
+  group('Given a Postgres configuration that omits maxConnections', () {
+    test('when building the config then the default is used.', () {
       var tmp = Directory.systemTemp.createTempSync('conf_builder_test_');
       try {
         var pgData = Directory(p.join(tmp.path, 'pgdata'))..createSync();
@@ -72,8 +72,10 @@ void main() {
         tmp.deleteSync(recursive: true);
       }
     });
+  });
 
-    test('when maxConnections is set then it overrides the default.', () {
+  group('Given a Postgres configuration that sets maxConnections', () {
+    test('when building the config then it overrides the default.', () {
       var tmp = Directory.systemTemp.createTempSync('conf_builder_test_');
       try {
         var pgData = Directory(p.join(tmp.path, 'pgdata'))..createSync();

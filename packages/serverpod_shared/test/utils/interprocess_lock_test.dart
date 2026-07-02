@@ -18,157 +18,180 @@ void main() {
     if (tempDir.existsSync()) tempDir.deleteSync(recursive: true);
   });
 
-  test('acquire creates the lock file and release removes it', () async {
-    var lock = await InterProcessLock.acquire(
-      lockPath,
-      staleWhen: const StaleLockPolicy.never(),
-    );
-    expect(File(lockPath).existsSync(), isTrue);
+  group('Given an unheld lock path', () {
+    test(
+      'when acquired then the lock file is created and release removes it',
+      () async {
+        var lock = await InterProcessLock.acquire(
+          lockPath,
+          staleWhen: const StaleLockPolicy.never(),
+        );
+        expect(File(lockPath).existsSync(), isTrue);
 
-    await lock.release();
-    expect(File(lockPath).existsSync(), isFalse);
+        await lock.release();
+        expect(File(lockPath).existsSync(), isFalse);
+      },
+    );
+
+    test(
+      'when used via withLock '
+      'then the lock is held during the action and released after',
+      () async {
+        var ran = false;
+        await InterProcessLock.withLock(
+          lockPath,
+          staleWhen: const StaleLockPolicy.never(),
+          () async {
+            ran = true;
+            expect(File(lockPath).existsSync(), isTrue);
+          },
+        );
+        expect(ran, isTrue);
+        expect(File(lockPath).existsSync(), isFalse);
+      },
+    );
+
+    test(
+      'when used via withLock and the action throws '
+      'then the lock is still released',
+      () async {
+        await expectLater(
+          InterProcessLock.withLock(
+            lockPath,
+            staleWhen: const StaleLockPolicy.never(),
+            () async => throw StateError('boom'),
+          ),
+          throwsStateError,
+        );
+        expect(File(lockPath).existsSync(), isFalse);
+      },
+    );
   });
 
-  test('release is idempotent', () async {
-    var lock = await InterProcessLock.acquire(
-      lockPath,
-      staleWhen: const StaleLockPolicy.never(),
-    );
-    await lock.release();
-    await lock.release();
-    expect(File(lockPath).existsSync(), isFalse);
-  });
-
-  test('a second acquire blocks while the first is held, then succeeds '
-      'once released', () async {
-    var first = await InterProcessLock.acquire(
-      lockPath,
-      staleWhen: const StaleLockPolicy.never(),
-    );
-
-    await expectLater(
-      InterProcessLock.acquire(
+  group('Given a held lock', () {
+    test('when released twice then the second release is a no-op', () async {
+      var lock = await InterProcessLock.acquire(
         lockPath,
         staleWhen: const StaleLockPolicy.never(),
-        timeout: const Duration(milliseconds: 200),
-      ),
-      throwsA(isA<TimeoutException>()),
-    );
-
-    await first.release();
-
-    var second = await InterProcessLock.acquire(
-      lockPath,
-      staleWhen: const StaleLockPolicy.never(),
-    );
-    expect(File(lockPath).existsSync(), isTrue);
-    await second.release();
-  });
-
-  test('age policy reclaims a lock left behind past the age cap', () async {
-    File(lockPath).writeAsStringSync('held');
-    File(lockPath).setLastModifiedSync(
-      DateTime.now().subtract(const Duration(minutes: 10)),
-    );
-
-    var lock = await InterProcessLock.acquire(
-      lockPath,
-      staleWhen: const StaleLockPolicy.age(Duration(minutes: 2)),
-      timeout: const Duration(seconds: 2),
-    );
-    expect(File(lockPath).existsSync(), isTrue);
-    await lock.release();
-  });
-
-  test(
-    'processLiveness policy reclaims a lock whose holder process is gone',
-    () async {
-      // A PID far above any real process table entry is unassigned, so the
-      // holder reads as dead and the lock is reclaimed immediately.
-      File(lockPath).writeAsStringSync('2147483646');
-
-      var lock = await InterProcessLock.acquire(
-        lockPath,
-        staleWhen: const StaleLockPolicy.processLiveness(
-          staleAfter: Duration(minutes: 2),
-        ),
-        timeout: const Duration(seconds: 2),
       );
-      expect(File(lockPath).existsSync(), isTrue);
       await lock.release();
-    },
-  );
+      await lock.release();
+      expect(File(lockPath).existsSync(), isFalse);
+    });
 
-  test('release does not delete a lock reclaimed by another holder', () async {
-    var lock = await InterProcessLock.acquire(
-      lockPath,
-      staleWhen: const StaleLockPolicy.never(),
+    test(
+      'when a second acquire is attempted '
+      'then it times out until the lock is released',
+      () async {
+        var first = await InterProcessLock.acquire(
+          lockPath,
+          staleWhen: const StaleLockPolicy.never(),
+        );
+
+        await expectLater(
+          InterProcessLock.acquire(
+            lockPath,
+            staleWhen: const StaleLockPolicy.never(),
+            timeout: const Duration(milliseconds: 200),
+          ),
+          throwsA(isA<TimeoutException>()),
+        );
+
+        await first.release();
+
+        var second = await InterProcessLock.acquire(
+          lockPath,
+          staleWhen: const StaleLockPolicy.never(),
+        );
+        expect(File(lockPath).existsSync(), isTrue);
+        await second.release();
+      },
     );
 
-    // Simulate another acquirer reclaiming and re-taking the lock by
-    // overwriting it with a different token.
-    File(lockPath).writeAsStringSync('999999999:other');
-
-    await lock.release();
-    expect(File(lockPath).existsSync(), isTrue);
-    expect(File(lockPath).readAsStringSync(), '999999999:other');
-  });
-
-  test(
-    'heartbeat keeps a held lock from being reclaimed past the age cap',
-    () async {
-      // Dart reads mtime back at whole-second resolution (dart-lang/sdk#51937),
-      // so the cap and wait stay above one second to exercise the heartbeat.
-      var lock = await InterProcessLock.acquire(
-        lockPath,
-        staleWhen: const StaleLockPolicy.age(Duration(seconds: 2)),
-        heartbeatInterval: const Duration(milliseconds: 250),
-      );
-
-      // Wait past the age cap. The heartbeat keeps the modified time fresh, so a
-      // competing acquire must still see the lock as live and time out (without
-      // the heartbeat the lock would now be reclaimable).
-      await Future<void>.delayed(const Duration(milliseconds: 2500));
-
-      await expectLater(
-        InterProcessLock.acquire(
+    test(
+      'when the heartbeat keeps refreshing it '
+      'then a competing acquire past the age cap still times out',
+      () async {
+        // While we wait for the fix to dart-lang/sdk#51937 to land we use >1s staleWhen
+        var lock = await InterProcessLock.acquire(
           lockPath,
           staleWhen: const StaleLockPolicy.age(Duration(seconds: 2)),
-          timeout: const Duration(milliseconds: 800),
-        ),
-        throwsA(isA<TimeoutException>()),
-      );
+          heartbeatInterval: const Duration(milliseconds: 250),
+        );
 
-      await lock.release();
-    },
-  );
+        // Wait past the age cap.
+        await Future<void>.delayed(const Duration(milliseconds: 2500));
 
-  test(
-    'withLock runs the action while holding the lock and releases after',
-    () async {
-      var ran = false;
-      await InterProcessLock.withLock(
-        lockPath,
-        staleWhen: const StaleLockPolicy.never(),
-        () async {
-          ran = true;
-          expect(File(lockPath).existsSync(), isTrue);
-        },
-      );
-      expect(ran, isTrue);
-      expect(File(lockPath).existsSync(), isFalse);
-    },
-  );
+        await expectLater(
+          InterProcessLock.acquire(
+            lockPath,
+            staleWhen: const StaleLockPolicy.age(Duration(seconds: 2)),
+            timeout: const Duration(milliseconds: 800),
+          ),
+          throwsA(isA<TimeoutException>()),
+        );
 
-  test('withLock releases the lock even when the action throws', () async {
-    await expectLater(
-      InterProcessLock.withLock(
-        lockPath,
-        staleWhen: const StaleLockPolicy.never(),
-        () async => throw StateError('boom'),
-      ),
-      throwsStateError,
+        await lock.release();
+      },
     );
-    expect(File(lockPath).existsSync(), isFalse);
+
+    test(
+      'when another holder has reclaimed and re-taken it '
+      'then release does not delete their lock file',
+      () async {
+        var lock = await InterProcessLock.acquire(
+          lockPath,
+          staleWhen: const StaleLockPolicy.never(),
+        );
+
+        // Simulate another acquirer reclaiming and re-taking the lock by
+        // overwriting it with a different token.
+        File(lockPath).writeAsStringSync('999999999:other');
+
+        await lock.release();
+        expect(File(lockPath).existsSync(), isTrue);
+        expect(File(lockPath).readAsStringSync(), '999999999:other');
+      },
+    );
+  });
+
+  group('Given a stale lock file', () {
+    test(
+      'when older than the age-policy cap then acquire reclaims it',
+      () async {
+        File(lockPath).writeAsStringSync('held');
+        File(lockPath).setLastModifiedSync(
+          DateTime.now().subtract(const Duration(minutes: 10)),
+        );
+
+        var lock = await InterProcessLock.acquire(
+          lockPath,
+          staleWhen: const StaleLockPolicy.age(Duration(minutes: 2)),
+          timeout: const Duration(seconds: 2),
+        );
+        expect(File(lockPath).existsSync(), isTrue);
+        await lock.release();
+      },
+    );
+
+    test(
+      'when its holder process is gone '
+      'then acquire with the processLiveness policy reclaims it',
+      () async {
+        // A PID far above any real process table entry, so the
+        // holder reads as dead and the lock is reclaimed immediately.
+        File(lockPath).writeAsStringSync('2147483646');
+
+        var lock = await InterProcessLock.acquire(
+          lockPath,
+          staleWhen: const StaleLockPolicy.processLiveness(
+            staleAfter: Duration(minutes: 2),
+          ),
+          timeout: const Duration(seconds: 2),
+        );
+        expect(File(lockPath).existsSync(), isTrue);
+        await lock.release();
+      },
+    );
   });
 }
