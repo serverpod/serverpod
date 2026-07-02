@@ -78,7 +78,9 @@ void main() {
           expect(content, contains('pod.webServer.addRoute(RootRoute()'));
           expect(
             content,
-            contains('pod.webServer.addRoute(StaticRoute.directory(root))'),
+            contains(
+              "pod.webServer.addRoute(StaticRoute.directory(root), '/web')",
+            ),
           );
         },
       );
@@ -219,7 +221,9 @@ void main() {
           );
           expect(
             content,
-            contains('pod.webServer.addRoute(StaticRoute.directory(root));'),
+            contains(
+              "pod.webServer.addRoute(StaticRoute.directory(root), '/web')",
+            ),
           );
           expect(
             content,
@@ -276,7 +280,7 @@ void main() {
           final pubspec = File(p.join(project.serverDir, 'pubspec.yaml'));
           final content = await pubspec.readAsString();
 
-          expect(content, contains('flutter build web --base-href /app/'));
+          expect(content, contains('flutter build web'));
           expect(content, isNot(contains('--wasm')));
         },
       );
@@ -329,11 +333,11 @@ void main() {
 
   group(
     'Given a TemplateContext with webapp enabled and website disabled, '
-    'when performCreate is called with the context and a server template type',
+    'when performCreate is called with the context and a fullstack template type',
     () {
       final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
-          template: ServerpodTemplateType.server,
+          template: ServerpodTemplateType.fullstack,
           webapp: true,
           website: false,
         ),
@@ -351,16 +355,48 @@ void main() {
           expect(content, contains("'/**'"));
         },
       );
+
+      test(
+        'then theserver.dart has a fallback middleware for the default route',
+        () async {
+          final serverFile = File(
+            p.join(project.serverDir, 'lib', 'server.dart'),
+          );
+          final content = await serverFile.readAsString();
+          expect(content, contains('pod.webServer.addMiddleware('));
+          expect(content, contains('FallbackMiddleware('));
+          expect(
+            content,
+            contains('on: (response) => response.statusCode == 404'),
+          );
+        },
+      );
+
+      test(
+        'then the server pubspec contains Flutter build script with base-href /',
+        () async {
+          final pubspec = File(p.join(project.serverDir, 'pubspec.yaml'));
+          final content = await pubspec.readAsString();
+
+          expect(content, contains('flutter build web --base-href /'));
+          expect(
+            content,
+            contains(
+              'flutter build web --base-href / --output ../${project.name}_server/web/app',
+            ),
+          );
+        },
+      );
     },
   );
 
   group(
     'Given a TemplateContext with webapp and website enabled, '
-    'when performCreate is called with the context and a server template type',
+    'when performCreate is called with the context and a fullstack template type',
     () {
       final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
-          template: ServerpodTemplateType.server,
+          template: ServerpodTemplateType.fullstack,
           webapp: true,
           website: true,
         ),
@@ -379,6 +415,38 @@ void main() {
           );
           expect(content, contains("'/app'"));
           expect(content, contains("'/app/**'"));
+        },
+      );
+
+      test(
+        'then the server.dart does not have a fallback middleware for the default route',
+        () async {
+          final serverFile = File(
+            p.join(project.serverDir, 'lib', 'server.dart'),
+          );
+          final content = await serverFile.readAsString();
+          expect(content, isNot(contains('pod.webServer.addMiddleware(')));
+          expect(content, isNot(contains('FallbackMiddleware(')));
+          expect(
+            content,
+            isNot(contains('on: (response) => response.statusCode == 404')),
+          );
+        },
+      );
+
+      test(
+        'then the server pubspec contains Flutter build script with base-href /app',
+        () async {
+          final pubspec = File(p.join(project.serverDir, 'pubspec.yaml'));
+          final content = await pubspec.readAsString();
+
+          expect(content, contains('flutter build web --base-href /app'));
+          expect(
+            content,
+            contains(
+              'flutter build web --base-href /app/ --output ../${project.name}_server/web/app',
+            ),
+          );
         },
       );
     },

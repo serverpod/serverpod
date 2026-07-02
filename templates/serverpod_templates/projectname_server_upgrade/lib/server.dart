@@ -53,10 +53,10 @@ void run(List<String> args) async {
   // {{/website}}
 
   // {{#webserver}}
-  // Serve all files in the web/static relative directory under /.
+  // Serve all files in the web/static relative directory under /web.
   // These are used by the default web page.
   final root = Directory(Uri(path: 'web/static').toFilePath());
-  pod.webServer.addRoute(StaticRoute.directory(root));
+  pod.webServer.addRoute(StaticRoute.directory(root), '/web');
   // {{/webserver}}
 
   // {{#webapp}}
@@ -93,12 +93,24 @@ void run(List<String> args) async {
     );
   } else {
     // If the flutter web app has not been built, serve the build app page.
-    pod.webServer.addRoute(
-      StaticRoute.file(
-        File(
-          Uri(path: 'web/pages/build_flutter_app.html').toFilePath(),
-        ),
+    final defaultRoute = StaticRoute.file(
+      File(
+        Uri(path: 'web/pages/build_flutter_app.html').toFilePath(),
       ),
+    );
+
+    // {{^website}}
+    pod.webServer.addMiddleware(
+      FallbackMiddleware(
+        fallback: defaultRoute,
+        on: (response) => response.statusCode == 404,
+      ).call,
+      '/',
+    );
+    // {{/website}}
+
+    pod.webServer.addRoute(
+      defaultRoute,
       // {{#website}}
       '/app/**',
       // {{/website}}
