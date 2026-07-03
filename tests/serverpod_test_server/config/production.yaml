@@ -22,6 +22,7 @@ database:
   name: serverpod_test
   user: postgres
   dataPath: .serverpod/test/pgdata
+  maxConnectionCount: 25
 
 sessionLogs:
   persistentEnabled: true
