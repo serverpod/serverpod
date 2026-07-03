@@ -27,6 +27,7 @@ class Supervisor implements SupervisedProcess {
   final File _pidFile;
   final LogBuffer _ring;
   final IOSink _logSink;
+  final Future<void> _outputDone;
   final List<StreamSubscription<ProcessSignal>> _signalSubs;
   final Completer<int> _exitCompleter = Completer();
 
@@ -38,11 +39,13 @@ class Supervisor implements SupervisedProcess {
     required File pidFile,
     required LogBuffer ring,
     required IOSink logSink,
+    required Future<void> outputDone,
     required List<StreamSubscription<ProcessSignal>> signalSubs,
   }) : _process = process,
        _pidFile = pidFile,
        _ring = ring,
        _logSink = logSink,
+       _outputDone = outputDone,
        _signalSubs = signalSubs {
     unawaited(_process.exitCode.then(_exitCompleter.complete));
   }
@@ -115,14 +118,18 @@ class Supervisor implements SupervisedProcess {
       if (mirrorLog) stderr.writeln('[pg] $line');
     }
 
-    process.stdout
+    var stdoutSub = process.stdout
         .transform(utf8.decoder)
         .transform(const LineSplitter())
         .listen(handleLine);
-    process.stderr
+    var stderrSub = process.stderr
         .transform(utf8.decoder)
         .transform(const LineSplitter())
         .listen(handleLine);
+    var outputDone = [
+      stdoutSub.asFuture<void>().catchError((_) {}),
+      stderrSub.asFuture<void>().catchError((_) {}),
+    ].wait;
 
     var identity = ProcessIdentity.capture(
       process: process,
@@ -138,6 +145,7 @@ class Supervisor implements SupervisedProcess {
       pidFile: pidFile,
       ring: ring,
       logSink: logSink,
+      outputDone: outputDone,
       signalSubs: signalSubs,
     );
 
@@ -215,6 +223,7 @@ class Supervisor implements SupervisedProcess {
         // user's problem (they got the orphan-detection mismatch already).
       }
     }
+    await _waitWithDeadline(_outputDone, const Duration(seconds: 2));
     await _logSink.flush();
     await _logSink.close();
   }
