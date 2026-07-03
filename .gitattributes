@@ -7,3 +7,9 @@
 **/lib/src/**/migrations/** linguist-generated=false
 **/test/**/migrations/** linguist-generated=false
 tools/serverpod_cli/test/generator/dart/**/protocol/** linguist-generated=false
+
+# The embedded-postgres recipe hash (hashFiles in CI) must be identical across
+# platforms; windows runners default core.autocrlf=true, which would CRLF-convert
+# these on checkout and break the released-bundle hash comparison.
+packages/serverpod_embedded_postgres/tool/build_postgres/** text eol=lf
+packages/serverpod_embedded_postgres/lib/src/options.dart text eol=lf
