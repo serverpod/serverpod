@@ -337,10 +337,12 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
             ),
         ];
 
-        // NOTE: Since we transform batch inserts into multiple single-row
-        // inserts, to achieve the same effect as a batch upsert, we need to
-        // throw if the input had duplicate rows - as happen with Postgres.
-        if (results.map((r) => r.id).toSet().length != rows.length) {
+        // NOTE: Since we transform batch upserts into multiple single-row
+        // upserts, to achieve the same effect as a batch upsert, we need to
+        // throw if the same row was affected twice - as happens with Postgres.
+        // Rows filtered out by [updateWhere] return nothing and must not be
+        // counted, so duplicates are detected among the returned ids only.
+        if (results.map((r) => r.id).toSet().length != results.length) {
           throw _SqliteDatabaseQueryException(
             'ON CONFLICT DO UPDATE command cannot affect row a second time',
             code: SqliteErrorCode.integrityConstraintViolation,
