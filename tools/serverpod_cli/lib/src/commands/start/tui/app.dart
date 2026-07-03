@@ -250,6 +250,8 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
           },
           onLaunchApp: _launchApp,
           onQuit: onQuit,
+          onCopyAlert: copyAlert,
+          onDismissAlert: dismissAlert,
         ),
       ),
     );

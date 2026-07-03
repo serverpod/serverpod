@@ -28,6 +28,8 @@ class MainScreen extends StatelessComponent {
     this.onLaunchApp,
     this.onTabSelected,
     this.onQuit,
+    required this.onCopyAlert,
+    required this.onDismissAlert,
   });
 
   final ServerWatchState state;
@@ -46,6 +48,12 @@ class MainScreen extends StatelessComponent {
   /// Invoked after a tab is selected via mouse click so the screen redraws.
   final VoidCallback? onTabSelected;
   final VoidCallback? onQuit;
+
+  /// Copies the pinned alert's segment (also bound to the `C` key).
+  final VoidCallback onCopyAlert;
+
+  /// Dismisses the pinned alert (also bound to `Esc`).
+  final VoidCallback onDismissAlert;
 
   List<(String, List<(String, String)>)> get _helpBindings => [
     (
@@ -122,6 +130,9 @@ class MainScreen extends StatelessComponent {
                                       child: AlertLine(
                                         alert: alert,
                                         time: state.alertTime,
+                                        copied: state.alertCopied,
+                                        onCopy: onCopyAlert,
+                                        onDismiss: onDismissAlert,
                                       ),
                                     ),
                                   ],
