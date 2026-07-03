@@ -469,6 +469,15 @@ jobs:
             shard-index: 2
             total-shards: 3
             run: bash util/run_tests_integration_embedded modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server -x email
+          # The test server's withServerpod suites: the only schema with
+          # vector/halfvec columns + hnsw indexes. The ubuntu-only
+          # integration_test_server jobs left that DDL unexecuted on
+          # windows/macos (the mingw halfvec miscompile shipped through this
+          # gap); the harness applies the project migrations per group, so it
+          # runs here on every OS.
+          - name: test_server (tagged)
+            scope: serverpod_test_server
+            run: bash util/run_tests_integration_embedded tests/serverpod_test_server test_integration -x timing
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
