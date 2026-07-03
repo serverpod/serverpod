@@ -1,3 +1,14 @@
+## 4.0.0-beta.0
+
+- feat: Shows inline "Copied" confirmation in `serverpod start` TUI alerts.
+- feat: Makes alert copy/dismiss clickable in `serverpod start` TUI.
+- feat: Adds the `displayName` for Flutter app configs for a pretty tab title.
+- feat: Adds support for creating server only projects.
+- fix: Adds missing export of `DeepCollectionEquality` for shared models. Backported to 3.4.11.
+- fix: Prevents the creation of orphaned images on subsequent IDP logins. Backported to 3.4.11.
+- refactor: Refines the serverpod start TUI app status, stop/close, and launcher.
+- chore: Changes the template to serve the Flutter web app under root if website is not enabled.
+
 ## 3.5.0-beta.12
 
 - feat: Adds `ServerpodCloudEmailIdpConfig` as default email IDP using Serverpod Cloud.
