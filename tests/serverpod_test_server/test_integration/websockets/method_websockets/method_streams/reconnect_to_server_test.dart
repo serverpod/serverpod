@@ -14,7 +14,7 @@ void main() {
     // The client reconnects to the same address after the restart, so the API
     // port must be stable: a fixed port below the OS ephemeral range, so it
     // does not collide with the concurrent port-0 suites.
-    server = IntegrationTestServer.create(apiPort: 8099);
+    server = IntegrationTestServer.create(apiPort: stableTestPort());
     await server.startWithDatabase();
 
     client = c.Client(

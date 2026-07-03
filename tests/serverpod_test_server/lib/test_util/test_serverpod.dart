@@ -322,6 +322,15 @@ ServerConfig _boundTo(ServerConfig config, {int port = 0}) => ServerConfig(
   publicPort: config.publicPort,
 );
 
+/// A port that stays stable across server restarts within this test run yet
+/// is unique per run, so concurrent runs don't collide.
+///
+/// Hashed from the [pid] into 20000-29999 (below every platform's OS
+/// ephemeral range that the port-0 suites draw from).
+///
+/// Suites needing more than one stable port pass distinct [offset]s
+int stableTestPort([int offset = 0]) => 20000 + (pid + offset * 101) % 10000;
+
 /// The PostgreSQL database backing this isolate's integration tests.
 ///
 /// `dart test` runs each test suite (file) in its own isolate, and statics are
