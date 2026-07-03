@@ -8,7 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import '../protocol.dart' as _i1;
@@ -752,13 +751,6 @@ class ChildWithInheritedIdAttachRowRepository {
     _i3.ChildWithInheritedId parent, {
     _i2.Transaction? transaction,
   }) async {
-    if (childWithInheritedId.id == null) {
-      throw ArgumentError.notNull('childWithInheritedId.id');
-    }
-    if (parent.id == null) {
-      throw ArgumentError.notNull('parent.id');
-    }
-
     var $childWithInheritedId = childWithInheritedId.copyWith(
       parentId: parent.id,
     );
@@ -783,10 +775,6 @@ class ChildWithInheritedIdDetachRowRepository {
     ChildWithInheritedId childWithInheritedId, {
     _i2.Transaction? transaction,
   }) async {
-    if (childWithInheritedId.id == null) {
-      throw ArgumentError.notNull('childWithInheritedId.id');
-    }
-
     var $childWithInheritedId = childWithInheritedId.copyWith(parentId: null);
     await session.db.updateRow<ChildWithInheritedId>(
       $childWithInheritedId,
