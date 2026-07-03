@@ -80,31 +80,46 @@ Future<String> _compileServerpodCli() async {
     () async {
       if (File(exePath).existsSync()) return;
 
-      var result = await Process.run(
-        'dart',
-        ['pub', 'get', '--directory', _cliRoot],
-      );
-      if (result.exitCode != 0) {
-        throw StateError('Failed to resolve dependencies:\n${result.stderr}');
-      }
+      // Guard multiple runs from touching tools/serverpod_cli/.dart_tool concurrently
+      await InterProcessLock.withLock(
+        _treeBuildLockPath(_cliRoot),
+        staleWhen: const StaleLockPolicy.processLiveness(
+          staleAfter: Duration(minutes: 2),
+        ),
+        timeout: const Duration(minutes: 10),
+        heartbeatInterval: const Duration(seconds: 30),
+        () async {
+          var result = await Process.run(
+            'dart',
+            ['pub', 'get', '--directory', _cliRoot],
+          );
+          if (result.exitCode != 0) {
+            throw StateError(
+              'Failed to resolve dependencies:\n${result.stderr}',
+            );
+          }
 
-      // `dart compile exe` rejects packages with native-asset build hooks, and
-      // serverpod_cli pulls in sqlite3 (which uses them). `dart build cli`
-      // bundles the executable together with those native libraries.
-      result = await Process.run(
-        'dart',
-        ['build', 'cli', '-t', _cliPath, '-o', bundleDir],
-        workingDirectory: _cliRoot,
+          result = await Process.run(
+            'dart',
+            ['build', 'cli', '-t', _cliPath, '-o', bundleDir],
+            workingDirectory: _cliRoot,
+          );
+          if (result.exitCode != 0) {
+            throw StateError(
+              'Failed to build serverpod_cli:\n${result.stdout}\n${result.stderr}',
+            );
+          }
+        },
       );
-      if (result.exitCode != 0) {
-        throw StateError(
-          'Failed to build serverpod_cli:\n${result.stdout}\n${result.stderr}',
-        );
-      }
     },
   );
 
   return exePath;
+}
+
+String _treeBuildLockPath(String cliRoot) {
+  final key = cliRoot.replaceAll(RegExp('[^a-zA-Z0-9]'), '_');
+  return p.join(Directory.systemTemp.path, 'serverpod_cli_build_$key.lock');
 }
 
 /// Runs the serverpod CLI with [args] in [workingDirectory] (defaults to the

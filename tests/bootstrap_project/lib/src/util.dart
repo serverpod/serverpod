@@ -198,30 +198,49 @@ Future<String> _compileServerpodCli(String rootPath) async {
     () async {
       if (File(exePath).existsSync()) return;
 
-      var result = await runProcess(
-        'dart',
-        ['pub', 'get'],
-        workingDirectory: cliRoot,
-      );
-      assert(result.exitCode == 0, 'pub get in tools/serverpod_cli failed');
+      // Guard multiple runs from touching tools/serverpod_cli/.dart_tool concurrently
+      await InterProcessLock.withLock(
+        treeBuildLockPath(cliRoot),
+        staleWhen: const StaleLockPolicy.processLiveness(
+          staleAfter: Duration(minutes: 2),
+        ),
+        timeout: const Duration(minutes: 10),
+        heartbeatInterval: const Duration(seconds: 30),
+        () async {
+          var result = await runProcess(
+            'dart',
+            ['pub', 'get'],
+            workingDirectory: cliRoot,
+          );
+          assert(
+            result.exitCode == 0,
+            'pub get in tools/serverpod_cli failed',
+          );
 
-      result = await runProcess(
-        'dart',
-        [
-          'build',
-          'cli',
-          '-t',
-          getServerpodCliEntrypointPath(rootPath: rootPath),
-          '-o',
-          buildRoot,
-        ],
-        workingDirectory: cliRoot,
+          result = await runProcess(
+            'dart',
+            [
+              'build',
+              'cli',
+              '-t',
+              getServerpodCliEntrypointPath(rootPath: rootPath),
+              '-o',
+              buildRoot,
+            ],
+            workingDirectory: cliRoot,
+          );
+          assert(result.exitCode == 0, 'dart build cli failed');
+        },
       );
-      assert(result.exitCode == 0, 'dart build cli failed');
     },
   );
 
   return exePath;
+}
+
+String treeBuildLockPath(String cliRoot) {
+  final key = cliRoot.replaceAll(RegExp('[^a-zA-Z0-9]'), '_');
+  return path.join(Directory.systemTemp.path, 'serverpod_cli_build_$key.lock');
 }
 
 /// Deletes CLI build dirs left behind by previous runs (older than a day).
