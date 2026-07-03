@@ -15,6 +15,8 @@ class SasAuthKeyProvider implements ClientAuthKeyProvider {
   Future<String?> get authHeaderValue async {
     final currentAuth = await getAuthInfo();
     if (currentAuth == null) return null;
+    // A cookie-mode sign-in persists an empty token. Don't wrap!
+    if (currentAuth.token.isEmpty) return null;
     return wrapAsBearerAuthHeaderValue(currentAuth.token);
   }
 }

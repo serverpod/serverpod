@@ -12,7 +12,7 @@ Future<dynamic> _getWebsocketMessage(
   WebSocket websocket,
 ) async {
   try {
-    return await websocket.textEvents
+    final messageFuture = websocket.textEvents
         .timeout(
           Duration(seconds: 5),
           onTimeout: (sink) => throw TimeoutException(
@@ -22,6 +22,17 @@ Future<dynamic> _getWebsocketMessage(
         .firstWhere(
           (event) => event.contains('serverOnlyScopedFieldModel'),
         );
+
+    // The endpoint websocket opens its streams on the 'auth' handshake,
+    // which a client must send as its first frame.
+    websocket.sendText(
+      jsonEncode({
+        'command': 'auth',
+        'args': {'key': null},
+      }),
+    );
+
+    return await messageFuture;
   } catch (e) {
     return e;
   }

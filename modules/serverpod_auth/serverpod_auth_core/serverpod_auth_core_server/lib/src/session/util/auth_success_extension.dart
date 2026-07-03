@@ -7,6 +7,13 @@ import '../session.dart';
 extension AuthSuccessServerSideSessionId on AuthSuccess {
   /// Returns the server side session token ID from the [AuthSuccess.token].
   UuidValue get serverSideSessionId {
+    if (token.isEmpty) {
+      throw const FormatException(
+        'AuthSuccess.token is empty! '
+        'A cookie-mode sign-in carries the session token in an HttpOnly cookie, '
+        'so the server side session id cannot be read from AuthSuccess.token.',
+      );
+    }
     final parsedToken = tryParseServerSideSessionToken(null, token);
     if (parsedToken == null) {
       throw const FormatException(

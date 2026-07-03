@@ -9,7 +9,8 @@ import 'package:test/scaffolding.dart';
 
 void main() {
   group(
-    'Given a simulated legacy client with old authorization conventions, ',
+    'Given a simulated legacy client sending the auth key via the removed '
+    'URL/query convention, ',
     () {
       late Client client;
       late String authKey;
@@ -41,8 +42,12 @@ void main() {
         client.close();
       });
 
-      test('when calling an authorized endpoint method with old style auth key '
-          'then it should succeed', () async {
+      test('when calling an authorized endpoint method with the old style '
+          'auth key then it is no longer authenticated', () async {
+        // The `auth` request parameter (formerly read from the URL / query
+        // string) is no longer accepted, so even a valid key supplied this way
+        // does not authenticate the request: the login-required endpoint
+        // rejects it like any unauthenticated call.
         var response = await http.post(
           Uri.parse('${serverUrl}echoRequest'),
           body: jsonEncode({
@@ -51,11 +56,11 @@ void main() {
           }),
         );
 
-        expect(response.statusCode, 200);
-        expect(response.body, '"$authKey"');
+        expect(response.statusCode, 401);
+        expect(response.body, '');
       });
 
-      test('when calling an authorizaed endpoint method without auth key '
+      test('when calling an authorized endpoint method without auth key '
           'then it should fail', () async {
         var response = await http.post(
           Uri.parse('${serverUrl}echoRequest'),

@@ -1,4 +1,6 @@
 import 'package:relic/relic.dart';
+import 'package:serverpod_shared/log.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Extends [Request] with useful methods.
 extension RequestExtension on Request {
@@ -48,5 +50,44 @@ extension RequestExtension on Request {
       // Returns first value if multiple Authorization headers exist (rare)
       return headers['authorization']?.firstOrNull;
     }
+  }
+
+  /// Returns the value of the cookie named [cookieName] from the request's
+  /// `Cookie` header, or null if it is absent, ambiguous, or the header has no
+  /// valid cookie at all (all treated as absent rather than failing the
+  /// request).
+  ///
+  /// relic's `Cookie` parser skips individual malformed cookies, so an
+  /// unrelated bad cookie does not hide a well-formed one. It only throws when
+  /// no cookie in the header is usable; that is caught here and treated as
+  /// absent.
+  ///
+  /// If the `Cookie` header carries more than one cookie with [cookieName] this
+  /// returns null (fail closed) instead of trusting whichever the browser
+  /// ordered first: a sibling subdomain can plant a `Domain`-scoped duplicate
+  /// that shadows a host-only cookie, so picking the first match would let an
+  /// attacker fixate the session for a security-sensitive cookie.
+  String? getCookieValue(String cookieName) {
+    try {
+      var matching = headers.cookie?.getCookies(cookieName).toList();
+      if (matching == null || matching.isEmpty) return null;
+      if (matching.length != 1) {
+        log.warning(
+          'Received ${matching.length} cookies named "$cookieName". '
+          'Treating it as absent!',
+        );
+        return null;
+      }
+      return matching.first.value;
+    } on Exception {
+      return null;
+    }
+  }
+
+  /// Returns the web auth token carried by the configured [authCookie], or null
+  /// when cookie auth is not configured or the cookie is absent.
+  String? getAuthCookieValue(WebAuthCookieConfig? authCookie) {
+    if (authCookie == null) return null;
+    return getCookieValue(authCookie.name);
   }
 }
