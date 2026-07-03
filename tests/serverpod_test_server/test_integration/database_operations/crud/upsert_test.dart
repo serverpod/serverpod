@@ -250,6 +250,35 @@ void main() async {
     );
 
     test(
+      'when batch upserting with an updateWhere clause that filters out a conflicting row '
+      'then only the remaining rows are returned.',
+      () async {
+        var data = <UniqueData>[
+          UniqueData(number: 17, email: 'existing@serverpod.dev'),
+          UniqueData(number: 3, email: 'new@serverpod.dev'),
+        ];
+
+        var result = await UniqueData.db.upsert(
+          session,
+          data,
+          conflictColumns: (t) => [t.email],
+          updateWhere: (t) => t.number.equals(99),
+        );
+
+        expect(result, hasLength(1));
+        expect(result.first.email, 'new@serverpod.dev');
+        expect(result.first.number, 3);
+
+        var stored = await UniqueData.db.findFirstRow(
+          session,
+          where: (t) => t.email.equals('existing@serverpod.dev'),
+        );
+        expect(stored, isNotNull);
+        expect(stored!.number, 1);
+      },
+    );
+
+    test(
       'when batch upserting a mix of new and conflicting rows then both inserts and updates happen.',
       () async {
         var data = <UniqueData>[
