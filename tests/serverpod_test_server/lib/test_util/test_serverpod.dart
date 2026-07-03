@@ -240,9 +240,9 @@ class TestServerpod {
 /// The embedded PostgreSQL data path the run points at, from
 /// `ServerpodEnv.databaseDataPath` (set by the integration run script). Empty
 /// or unset means a non-embedded run (e.g. an external server).
-final String? _embeddedDataPath = () {
+final String _embeddedDataPath = () {
   final path = Platform.environment['SERVERPOD_DATABASE_DATA_PATH']?.trim();
-  return (path == null || path.isEmpty) ? null : path;
+  return (path == null || path.isEmpty) ? '.serverpod/test/pgdata' : path;
 }();
 
 /// Returns [database] targeting this isolate's per-suite database on the shared
@@ -257,8 +257,7 @@ final String? _embeddedDataPath = () {
 /// its connection still fails as intended.
 PostgresDatabaseConfig _embeddedDatabase(PostgresDatabaseConfig database) {
   final named = database.withName(_IsolateTestDatabase.name);
-  final dataPath = _embeddedDataPath;
-  if (dataPath == null || named.dataPath != null || named.host != 'postgres') {
+  if (named.dataPath != null || named.host != 'postgres') {
     return named;
   }
   return PostgresDatabaseConfig(
@@ -271,7 +270,7 @@ PostgresDatabaseConfig _embeddedDatabase(PostgresDatabaseConfig database) {
     isUnixSocket: named.isUnixSocket,
     searchPaths: named.searchPaths,
     maxConnectionCount: named.maxConnectionCount,
-    dataPath: dataPath,
+    dataPath: _embeddedDataPath,
   );
 }
 

@@ -23,6 +23,7 @@ database:
   port: 5432
   name: serverpod_test
   user: postgres
+  dataPath: .serverpod/test/pgdata
 
 sessionLogs:
   persistentEnabled: true
