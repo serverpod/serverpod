@@ -49,12 +49,34 @@ Darwin)
   for f in "$STAGE"/lib/postgresql/*.dylib; do [ -L "$f" ] || relocate "$f" "@loader_path/.."; done
   ;;
 MINGW*|MSYS*|CYGWIN*)
-  # Windows (UNVALIDATED - pending CI): shared libs are .dll, installed by
-  # CMake into bin/. postgres.exe's dir (bin/) is on the default DLL search
-  # path, so the geo DLLs that postgis-3.dll depends on resolve there - no
-  # rpath/install_name surgery. NOTE: if postgres's own DLLs (libpq etc.) land
-  # in lib/ rather than bin/, they may need moving to bin/ too.
+  # Windows: shared libs are .dll, installed by CMake into bin/. postgres.exe's
+  # dir (bin/) is on the default DLL search path, so DLLs that postgis-3.dll
+  # depends on resolve there - no rpath/install_name surgery.
   cp "$DEPS"/bin/libgeos_c*.dll "$DEPS"/bin/libgeos*.dll "$DEPS"/bin/libproj*.dll "$STAGE/bin/" 2>/dev/null || true
+  # Bundle every non-system DLL the binaries import, transitively - the mingw
+  # runtime above all (libstdc++/libgcc/winpthread, needed by the C++ GEOS and
+  # PROJ).
+  mingw_bin="$(dirname "$(command -v gcc)")"
+  system_dlls='^(advapi32|api-ms-|bcrypt|comctl32|comdlg32|crypt32|dbghelp|dnsapi|gdi32|gdiplus|imm32|iphlpapi|kernel32|msvcrt|ncrypt|netapi32|ntdll|ole32|oleaut32|psapi|rpcrt4|secur32|setupapi|shell32|shlwapi|ucrtbase|user32|userenv|version|winmm|wldap32|ws2_32|wsock32)'
+  changed=1
+  while [ "$changed" -eq 1 ]; do
+    changed=0
+    for f in "$STAGE"/bin/*.exe "$STAGE"/bin/*.dll "$STAGE"/lib/*.dll "$STAGE"/lib/postgresql/*.dll; do
+      if [ ! -f "$f" ]; then continue; fi
+      for dep in $(objdump -p "$f" | awk '/DLL Name:/ {print $3}'); do
+        lower="$(echo "$dep" | tr '[:upper:]' '[:lower:]')"
+        if echo "$lower" | grep -qE "$system_dlls"; then continue; fi
+        if [ -f "$STAGE/bin/$dep" ]; then continue; fi
+        if [ -f "$mingw_bin/$dep" ]; then
+          cp "$mingw_bin/$dep" "$STAGE/bin/"
+          changed=1
+        else
+          echo "unresolved import $dep (needed by $(basename "$f"))" >&2
+          exit 1
+        fi
+      done
+    done
+  done
   ;;
 *)
   # Linux: shared geo deps live in lib/ next to postgres's own libs. Rewrite ELF
