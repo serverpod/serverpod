@@ -12,3 +12,5 @@ library;
 export 'src/utils/interprocess_lock.dart';
 export 'src/utils/process_alive.dart';
 export 'src/utils/sdk_path.dart';
+export 'src/utils/serverpod_cli_build.dart';
+export 'src/utils/shared_test_dir.dart';
