@@ -291,7 +291,7 @@ void main() async {
 
       group('when start is called', () {
         setUp(() async {
-          futureCallManager.start();
+          await futureCallManager.start();
           // Wait briefly to allow processing to occur (or not occur)
           await Future.delayed(Duration(milliseconds: 10));
         });
@@ -330,7 +330,7 @@ void main() async {
       testCall = CompleterTestCall();
       futureCallManager.registerFutureCall(testCall, testCallName);
 
-      futureCallManager.start();
+      await futureCallManager.start();
     });
 
     tearDown(() async {
@@ -394,7 +394,7 @@ void main() async {
           identifier,
         );
 
-        futureCallManager.start();
+        await futureCallManager.start();
 
         // Wait for the canary call to be processed
         await canaryCall.completer.future;
@@ -646,7 +646,7 @@ void main() async {
 
         setUp(() async {
           // Start the manager with no registered calls
-          futureCallManager.start();
+          await futureCallManager.start();
 
           // Schedule a future call that is already due
           await futureCallManager.scheduleFutureCall(
@@ -706,7 +706,7 @@ void main() async {
 
       group('when start is called without registering any future calls', () {
         setUp(() async {
-          futureCallManager.start();
+          await futureCallManager.start();
           // Wait briefly to allow any potential scanning to occur
           await Future.delayed(Duration(milliseconds: 50));
         });
