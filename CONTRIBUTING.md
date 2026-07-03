@@ -186,53 +186,11 @@ $ util/run_tests_unit
 
 #### Running single tests
 
-All unit tests can be run with the `test` command. But for some tests, you may need to perform additional steps to set up a test environment. Listed below are the tests that require additional setup.
-
-##### Running integration tests
-
-The tests in `tests/serverpod_test_server/test_integration` run against an embedded PostgreSQL in `.serverpod/test/pgdata`. The `withServerpod`-based tests (tagged `integration`) provision their own database and need no setup. The remaining tests share one pre-migrated database, so apply migrations once before running them:
-
-1. Apply migrations to the embedded database.
-
-    ```bash
-    $ cd tests/serverpod_test_server
-    $ export SERVERPOD_DATABASE_DATA_PATH=.serverpod/test/pgdata
-    $ dart run bin/main.dart -m production -r maintenance --apply-migrations
-    ```
-
-2. Run an individual test.
-
-    ```bash
-    $ dart test test_integration/database/database_test.dart
-    ```
-
-##### Running the test project's end to end tests
-
-The e2e tests in `tests/serverpod_test_server/test_e2e` expect a running server (the `serverpod_test_server` `/etc/hosts` alias from above points the client at it):
-
-1. Start the test server on the embedded database and apply migrations.
-
-    ```bash
-    $ cd tests/serverpod_test_server
-    $ export SERVERPOD_DATABASE_DATA_PATH=.serverpod/test/pgdata
-    $ export SERVERPOD_REDIS_ENABLED=false
-    $ dart run bin/main.dart --apply-migrations
-    ```
-
-2. Run an individual test (in a second terminal).
-
-    ```bash
-    $ cd tests/serverpod_test_server
-    $ dart test test_e2e/connection_test.dart
-    ```
-
-##### Running the test project's migration tests
-
-The migration tests in `tests/serverpod_test_server/test_e2e_migrations` are run through `util/run_tests_migrations_e2e`, which resets the embedded database and builds the server bundle itself. To reset the embedded database manually, delete its data directory:
-
-```bash
-$ rm -rf tests/serverpod_test_server/.serverpod/test/pgdata
-```
+Every suite runs directly with `dart test` from its package directory - most
+with no setup at all (the database-backed suites provision embedded
+PostgreSQL themselves). See [TESTING.md](TESTING.md) for how each suite runs,
+the variants (loaded machines, redis, parallel runs, external databases), and
+the contracts of the e2e suites.
 
 ### Introducing new dependencies
 
