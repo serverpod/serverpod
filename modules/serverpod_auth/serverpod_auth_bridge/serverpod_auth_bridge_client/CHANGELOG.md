@@ -1,3 +1,8 @@
+## 3.4.11
+
+- fix: Adds missing export of `DeepCollectionEquality` for shared models.
+- fix: Prevents the creation of orphaned images on subsequent IDP logins.
+
 ## 3.4.10
 
 - fix: Fixes malformed query when negating many-relation filters.
