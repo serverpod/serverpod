@@ -86,9 +86,8 @@ jobs:
             ${{ runner.temp }}/pgbuild/dist/*.tar.xz
             ${{ runner.temp }}/pgbuild/dist/*.tar.xz.sha256
 
-      # Real run: initdb + load pgvector/PostGIS + write/read. A failure fails
-      # the job and so blocks this platform's publish. Unix only - the script
-      # uses unix sockets; Windows bundles are exercised by the CI test suite.
+      # Real run: initdb + load pgvector/halfvec/PostGIS + write/read. A
+      # failure fails the job and so blocks this platform's publish.
       - name: Smoke-test the bundle (Unix)
         if: matrix.os != 'windows'
         env:
@@ -97,6 +96,17 @@ jobs:
           d="$(mktemp -d)"
           tar -C "$d" -xf "$PGBUILD"/dist/serverpod-postgres-*.tar.xz
           bash packages/serverpod_embedded_postgres/tool/smoke_bundle.sh "$d"
+
+      # Same battery over TCP localhost - no CI test suite executes the bundle
+      # on windows, so without this gate a windows-only miscompile (e.g. the
+      # mingw halfvec backend crash) ships silently.
+      - name: Smoke-test the bundle (Windows / MSYS2)
+        if: matrix.os == 'windows'
+        shell: msys2 {0}
+        run: |
+          d="$(mktemp -d)"
+          tar -C "$d" -xf "$(cygpath -u "$RUNNER_TEMP")/pgbuild/dist"/serverpod-postgres-*.tar.xz
+          bash packages/serverpod_embedded_postgres/tool/smoke_bundle_windows.sh "$d"
 
       # Publish-eligible copy, only reached if the smoke gate above passed (a
       # failed gate fails the job, skipping this). The publish job consumes
