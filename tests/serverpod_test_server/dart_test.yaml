@@ -5,3 +5,14 @@ tags:
   customTag: {} # Used to test that tag overrides work
   redis: {} # Tests needing a running Redis; hosted in CI, skipped locally if absent
   timing: {} # Tests measuring the machine, not just the code
+
+presets:
+  # The e2e suite drives one shared server + database, so its log-count and
+  # fixture assertions are only valid serially - and the standard e2e server
+  # (util/run_tests_e2e_host) runs with redis disabled. The suite also expects
+  # a FRESH database (runtime settings persist across runs; the launcher wipes
+  # pgdata before booting). With a freshly booted server up:
+  # `dart test test_e2e -P e2e`.
+  e2e:
+    concurrency: 1
+    exclude_tags: redis
