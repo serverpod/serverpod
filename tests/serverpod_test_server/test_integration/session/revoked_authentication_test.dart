@@ -16,7 +16,7 @@ void main() async {
     late Session session;
     late Serverpod server;
     setUp(() async {
-      server = IntegrationTestServer.create();
+      server = IntegrationTestServer.create(withRedis: true);
       await server.startWithDatabase();
       session = await server.createSession();
     });

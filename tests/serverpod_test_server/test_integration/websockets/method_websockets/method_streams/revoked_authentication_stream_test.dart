@@ -34,6 +34,7 @@ void main() async {
     // a user with Admin scope.
     var tokenCounter = 0;
     server = IntegrationTestServer.create(
+      withRedis: true,
       authenticationHandler: (session, token) async => AuthenticationInfo(
         authenticatedUserId,
         {Scope.admin},

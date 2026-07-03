@@ -19,7 +19,7 @@ void main() async {
     return;
   }
 
-  var session = await IntegrationTestServer().session();
+  var session = await IntegrationTestServer(withRedis: true).session();
 
   late RedisCache cache;
   setUpAll(() async {

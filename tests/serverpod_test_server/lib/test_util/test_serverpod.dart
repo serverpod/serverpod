@@ -12,6 +12,7 @@ import 'package:serverpod_shared/serverpod_shared.dart' show PasswordManager;
 import 'package:serverpod_test/serverpod_test.dart' show TestDatabaseManager;
 import 'package:serverpod_test_server/src/generated/endpoints.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
+import 'package:serverpod_test_server/test_util/redis_probe.dart';
 import 'package:test/test.dart';
 
 var _integrationTestMode =
@@ -23,12 +24,14 @@ class IntegrationTestServer extends TestServerpod {
   IntegrationTestServer({
     ServerpodConfig? config,
     RuntimeParametersListBuilder? runtimeParametersBuilder,
+    bool withRedis = false,
   }) : super(
          _integrationTestFlags,
          Protocol(),
          Endpoints(),
          config: config,
          runtimeParametersBuilder: runtimeParametersBuilder,
+         withRedis: withRedis,
        );
 
   /// The database owned by this suite's runner isolate. Pass it to a child
@@ -52,6 +55,7 @@ class IntegrationTestServer extends TestServerpod {
     ExperimentalFeatures? experimentalFeatures,
     RuntimeParametersListBuilder? runtimeParametersBuilder,
     int? apiPort,
+    bool withRedis = false,
   }) {
     final server = Serverpod(
       _integrationTestFlags,
@@ -63,7 +67,11 @@ class IntegrationTestServer extends TestServerpod {
       securityContextConfig: securityContextConfig,
       experimentalFeatures: experimentalFeatures,
       runtimeParametersBuilder: runtimeParametersBuilder,
-      configOverride: (config) => _isolatedTestConfig(config, apiPort: apiPort),
+      configOverride: (config) => _isolatedTestConfig(
+        config,
+        apiPort: apiPort,
+        withRedis: withRedis,
+      ),
     );
 
     // Runtime settings persist in the serverpod_runtime_settings table
@@ -179,6 +187,7 @@ class TestServerpod {
     EndpointDispatch endpoints, {
     ServerpodConfig? config,
     RuntimeParametersListBuilder? runtimeParametersBuilder,
+    bool withRedis = false,
   }) {
     _serverpod = Serverpod(
       args,
@@ -187,7 +196,9 @@ class TestServerpod {
       config: config,
       authenticationHandler: auth.authenticationHandler,
       runtimeParametersBuilder: runtimeParametersBuilder,
-      configOverride: _useIsolateDatabase,
+      configOverride: (config) => withRedis
+          ? _useIsolateDatabase(config).copyWith(redis: redisTestConfig())
+          : _useIsolateDatabase(config),
     );
   }
 
@@ -280,7 +291,11 @@ ServerpodConfig _useIsolateDatabase(ServerpodConfig config) {
 /// user-facing server to an ephemeral port (0), so servers that bind sockets do
 /// not collide on a fixed port. Tests read the bound port via
 /// [IntegrationTestServerExtension.apiUrl] etc.
-ServerpodConfig _isolatedTestConfig(ServerpodConfig config, {int? apiPort}) {
+ServerpodConfig _isolatedTestConfig(
+  ServerpodConfig config, {
+  int? apiPort,
+  bool withRedis = false,
+}) {
   final database = config.database;
   final insightsServer = config.insightsServer;
   final webServer = config.webServer;
@@ -294,6 +309,7 @@ ServerpodConfig _isolatedTestConfig(ServerpodConfig config, {int? apiPort}) {
     database: database is PostgresDatabaseConfig
         ? _embeddedDatabase(database)
         : database,
+    redis: withRedis ? redisTestConfig() : null,
   );
 }
 

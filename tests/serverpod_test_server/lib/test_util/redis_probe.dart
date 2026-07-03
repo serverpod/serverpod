@@ -1,15 +1,28 @@
 import 'dart:io';
 
+import 'package:serverpod_shared/serverpod_shared.dart' show RedisConfig;
+
+const redisTestHost = 'redis';
+const redisTestPort = 6379;
+
+/// Redis config for suites that test redis-backed behavior.
+RedisConfig redisTestConfig() => RedisConfig(
+  enabled: true,
+  host: redisTestHost,
+  port: redisTestPort,
+  // Matches config/passwords.yaml and CI's `redis-server --requirepass`.
+  password: 'password',
+);
+
 bool? _reachable;
 
 /// Whether the Redis the integration configs point is reachable.
-/// Probed once per isolate.
 Future<bool> isRedisAvailable() async {
   if (_reachable != null) return _reachable!;
   try {
     final socket = await Socket.connect(
-      'redis',
-      6379,
+      redisTestHost,
+      redisTestPort,
       timeout: const Duration(seconds: 2),
     );
     socket.destroy();
@@ -23,5 +36,5 @@ Future<bool> isRedisAvailable() async {
 /// Skip reason for redis-dependent tests, or null when Redis is reachable.
 Future<String?> redisSkipReason() async => await isRedisAvailable()
     ? null
-    : 'Redis is not reachable (host `redis`, port 6379). CI hosts one; '
-          'locally run Redis and map `redis` in /etc/hosts to include this.';
+    : 'Redis is not reachable (host `$redisTestHost`, port $redisTestPort). '
+          'Run Redis and map `$redisTestHost` in /etc/hosts to include this.';

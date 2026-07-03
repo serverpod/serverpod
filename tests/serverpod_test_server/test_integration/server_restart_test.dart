@@ -2,13 +2,10 @@ import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/test_util/mock_stdout.dart';
-import 'package:serverpod_test_server/test_util/redis_probe.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
-void main() async {
-  final redisSkip = await redisSkipReason();
-
+void main() {
   late Serverpod serverpod;
 
   setUp(() {
@@ -46,9 +43,6 @@ void main() async {
 
   test(
     'Given a running Serverpod server when it is shutdown and started then no error is written to stderr.',
-    // The empty-stderr assertion needs the configured redis reachable - the
-    // server logs connect failures to stderr otherwise.
-    skip: redisSkip,
     () async {
       var record = MockStdout();
       await IOOverrides.runZoned(() async {
