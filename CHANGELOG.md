@@ -192,6 +192,11 @@
 - refactor: Removes database-specific default values from the definition files to allow supporting extra database dialects.
 - refactor: Reduces the time taken to run incremental generation steps with the `--watch` flag by x15 and regular `generate` command by 20%.
 
+## 3.4.11
+
+- fix: Adds missing export of `DeepCollectionEquality` for shared models.
+- fix: Prevents the creation of orphaned images on subsequent IDP logins.
+
 ## 3.4.10
 
 - fix: Fixes malformed query when negating many-relation filters. ([@realmeylisdev](https://github.com/realmeylisdev))
