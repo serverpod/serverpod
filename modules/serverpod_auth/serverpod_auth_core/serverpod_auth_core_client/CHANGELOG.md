@@ -1,3 +1,15 @@
+## 4.0.0-beta.0
+
+- feat: Shows inline "Copied" confirmation in `serverpod start` TUI alerts.
+- feat: Makes alert copy/dismiss clickable in `serverpod start` TUI.
+- feat: Adds the `displayName` for Flutter app configs for a pretty tab title.
+- feat: Adds support for creating server only projects.
+- fix: Fixes `upsert` with `updateWhere` throwing on SQLite when conflicts are filtered out.
+- fix: Adds missing export of `DeepCollectionEquality` for shared models. Backported to 3.4.11.
+- fix: Prevents the creation of orphaned images on subsequent IDP logins. Backported to 3.4.11.
+- refactor: Refines the serverpod start TUI app status, stop/close, and launcher.
+- chore: Changes the template to serve the Flutter web app under root if website is not enabled.
+
 ## 3.5.0-beta.12
 
 - feat: Adds `ServerpodCloudEmailIdpConfig` as default email IDP using Serverpod Cloud.
@@ -191,6 +203,11 @@
 - refactor: Decouples all database-related code from `serverpod` into the new `serverpod_database` package to allow supporting client-side databases in the future.
 - refactor: Removes database-specific default values from the definition files to allow supporting extra database dialects.
 - refactor: Reduces the time taken to run incremental generation steps with the `--watch` flag by x15 and regular `generate` command by 20%.
+
+## 3.4.11
+
+- fix: Adds missing export of `DeepCollectionEquality` for shared models.
+- fix: Prevents the creation of orphaned images on subsequent IDP logins.
 
 ## 3.4.10
 
