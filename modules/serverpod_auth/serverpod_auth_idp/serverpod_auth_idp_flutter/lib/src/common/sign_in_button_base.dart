@@ -113,9 +113,6 @@ class SignInButtonBase extends StatelessWidget {
   /// Whether the button is disabled.
   final bool isDisabled;
 
-  /// Whether to render only the logo, without a label.
-  final bool iconOnly;
-
   /// The button size.
   final SignInButtonSize size;
 
@@ -140,7 +137,6 @@ class SignInButtonBase extends StatelessWidget {
     required this.onPressed,
     required this.isLoading,
     required this.isDisabled,
-    this.iconOnly = false,
     this.size = SignInButtonSize.large,
     this.shape = SignInButtonShape.pill,
     this.text = SignInButtonTextVariant.continueWith,
@@ -244,8 +240,6 @@ class SignInButtonBase extends StatelessWidget {
       foregroundColor: foreground,
       isDisabled: isDisabled,
     );
-
-    if (iconOnly) return logo;
 
     final baseTextStyle = TextStyle(
       fontSize: metrics.labelFontSize,

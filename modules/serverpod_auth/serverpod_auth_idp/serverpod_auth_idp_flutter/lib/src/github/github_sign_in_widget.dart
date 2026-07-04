@@ -66,9 +66,6 @@ class GitHubSignInWidget extends StatefulWidget {
   /// retrieving the user's profile data and user's emails automatically.
   final List<String> scopes;
 
-  /// The button type: icon or standard button.
-  final GitHubButtonType type;
-
   /// The brand color preset (black or white).
   ///
   /// Applies when the button is used on its own. Inside a [SignInWidget] (or any
@@ -104,7 +101,6 @@ class GitHubSignInWidget extends StatefulWidget {
     this.onAuthenticated,
     this.onError,
     this.scopes = GitHubAuthController.defaultScopes,
-    this.type = GitHubButtonType.standard,
     this.style = GitHubButtonStyle.black,
     this.size = SignInButtonSize.large,
     this.text = SignInButtonTextVariant.continueWith,
@@ -162,7 +158,6 @@ class _GitHubSignInWidgetState extends State<GitHubSignInWidget> {
       onPressed: _signIn,
       isLoading: _controller.isLoading,
       isDisabled: _controller.isLoading,
-      type: widget.type,
       style: widget.style,
       size: widget.size,
       text: widget.text,

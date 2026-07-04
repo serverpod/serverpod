@@ -4,6 +4,7 @@ import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 import 'microsoft_auth_controller.dart';
 import 'microsoft_sign_in_button.dart';
 import 'microsoft_sign_in_style.dart';
+import '../common/sign_in_button_style.dart';
 import '../common/sign_in_flow_coordinator.dart';
 
 export 'microsoft_sign_in_button.dart';
@@ -65,26 +66,23 @@ class MicrosoftSignInWidget extends StatefulWidget {
   /// retrieving the user's profile data and user's emails automatically.
   final List<String> scopes;
 
-  /// The button type: icon or standard button.
-  final MicrosoftButtonType type;
-
   /// The brand color preset (light or dark).
   ///
   /// Applies when the button is used on its own. Inside a [SignInWidget] (or any
   /// [SignInButtonStyle] in scope) the shared common style applies instead.
   final MicrosoftButtonStyle style;
 
-  /// The button size (large or medium).
-  final MicrosoftButtonSize size;
+  /// The button size.
+  final SignInButtonSize size;
 
-  /// The button text.
-  final MicrosoftButtonText text;
+  /// The button label variant.
+  final SignInButtonTextVariant text;
 
-  /// The button shape (rectangular, pill, or rounded).
-  final MicrosoftButtonShape shape;
+  /// The button shape.
+  final SignInButtonShape shape;
 
   /// The Microsoft logo alignment: left or center.
-  final MicrosoftButtonLogoAlignment logoAlignment;
+  final SignInButtonLogoAlignment logoAlignment;
 
   /// The minimum button width, in pixels.
   ///
@@ -103,12 +101,11 @@ class MicrosoftSignInWidget extends StatefulWidget {
     this.onAuthenticated,
     this.onError,
     this.scopes = MicrosoftAuthController.defaultScopes,
-    this.type = MicrosoftButtonType.standard,
     this.style = MicrosoftButtonStyle.light,
-    this.size = MicrosoftButtonSize.large,
-    this.text = MicrosoftButtonText.continueWith,
-    this.shape = MicrosoftButtonShape.pill,
-    this.logoAlignment = MicrosoftButtonLogoAlignment.center,
+    this.size = SignInButtonSize.large,
+    this.text = SignInButtonTextVariant.continueWith,
+    this.shape = SignInButtonShape.pill,
+    this.logoAlignment = SignInButtonLogoAlignment.center,
     this.minimumWidth = 240,
     this.textStyle,
     super.key,
@@ -160,7 +157,6 @@ class _MicrosoftSignInWidgetState extends State<MicrosoftSignInWidget> {
       onPressed: _signIn,
       isLoading: _controller.isLoading,
       isDisabled: _controller.isAuthenticated,
-      type: widget.type,
       style: widget.style,
       size: widget.size,
       text: widget.text,

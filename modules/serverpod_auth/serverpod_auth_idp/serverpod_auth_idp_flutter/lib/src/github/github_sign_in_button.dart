@@ -22,9 +22,6 @@ class GitHubSignInButton extends StatelessWidget {
   /// Whether the button is disabled.
   final bool isDisabled;
 
-  /// The button type: icon-only or standard.
-  final GitHubButtonType type;
-
   /// The brand color preset (black or white).
   ///
   /// Applies when the button is used on its own. Inside a [SignInWidget] (or any
@@ -56,7 +53,6 @@ class GitHubSignInButton extends StatelessWidget {
     required this.onPressed,
     required this.isLoading,
     required this.isDisabled,
-    this.type = GitHubButtonType.standard,
     this.style = GitHubButtonStyle.black,
     this.size = SignInButtonSize.large,
     this.text = SignInButtonTextVariant.continueWith,
@@ -82,7 +78,6 @@ class GitHubSignInButton extends StatelessWidget {
       onPressed: onPressed,
       isLoading: isLoading,
       isDisabled: isDisabled,
-      iconOnly: type == GitHubButtonType.icon,
       size: size,
       shape: shape,
       text: text,

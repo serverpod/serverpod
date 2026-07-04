@@ -38,12 +38,6 @@ final githubStories = [
         initial: SignInButtonLogoAlignment.left,
       );
 
-      final type = context.knobs.options<GitHubButtonType>(
-        label: 'Type',
-        options: GitHubButtonType.values.asOptions(),
-        initial: GitHubButtonType.standard,
-      );
-
       return buildIsolatedElementsForStory(context, {
         'Default': [
           GitHubSignInButton(
@@ -51,7 +45,6 @@ final githubStories = [
             isLoading: false,
             isDisabled: false,
             style: style,
-            type: type,
             size: size,
             text: text,
             shape: shape,

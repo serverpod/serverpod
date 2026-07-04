@@ -29,7 +29,7 @@ void main() {
             onPressed: null,
             isLoading: false,
             isDisabled: false,
-            size: MicrosoftButtonSize.medium,
+            size: SignInButtonSize.medium,
           ),
         ),
       );
@@ -54,7 +54,7 @@ void main() {
                 onPressed: null,
                 isLoading: false,
                 isDisabled: false,
-                size: MicrosoftButtonSize.medium,
+                size: SignInButtonSize.medium,
               ),
             ),
           );
@@ -74,8 +74,8 @@ void main() {
                 onPressed: null,
                 isLoading: false,
                 isDisabled: false,
-                size: MicrosoftButtonSize.medium,
-                text: MicrosoftButtonText.continueWith,
+                size: SignInButtonSize.medium,
+                text: SignInButtonTextVariant.continueWith,
               ),
             ),
           );
@@ -101,7 +101,7 @@ void main() {
             onPressed: null,
             isLoading: false,
             isDisabled: false,
-            size: MicrosoftButtonSize.medium,
+            size: SignInButtonSize.medium,
           ),
         ),
       );
