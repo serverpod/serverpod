@@ -42,8 +42,19 @@ cd "$B/src/pgvector-0.8.3"; make clean >/dev/null 2>&1 || true
 # (-mevex512) that break on arm64. Disabling it builds one baseline that runs on
 # any CPU (still auto-vectorized via pgvector's -ftree-vectorize) - the right
 # tradeoff for a redistributable bundle.
-make CC="$WCC" PG_CONFIG="$PREFIX/bin/pg_config" OPTFLAGS="" COPT="-DDISABLE_DISPATCH"
-make install CC="$WCC" PG_CONFIG="$PREFIX/bin/pg_config" OPTFLAGS="" COPT="-DDISABLE_DISPATCH"
+# mingw gcc plants ud2 traps on halfvec's soft-_Float16 conversion paths it
+# mis-proves as erroneous - backend crash 0xC000001D on the first halfvec
+# INSERT, caught by the windows smoke gate. Disable the isolation passes there.
+case "$(uname -s)" in
+  MINGW*|MSYS*|CYGWIN*)
+    PGVECTOR_COPT="-DDISABLE_DISPATCH -fno-isolate-erroneous-paths-dereference -fno-delete-null-pointer-checks"
+    ;;
+  *)
+    PGVECTOR_COPT="-DDISABLE_DISPATCH"
+    ;;
+esac
+make CC="$WCC" PG_CONFIG="$PREFIX/bin/pg_config" OPTFLAGS="" COPT="$PGVECTOR_COPT"
+make install CC="$WCC" PG_CONFIG="$PREFIX/bin/pg_config" OPTFLAGS="" COPT="$PGVECTOR_COPT"
 
 echo "### build-postgis"; "$HERE/build-postgis.sh"
 echo "### package";       "$HERE/package.sh"
