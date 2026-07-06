@@ -53,7 +53,8 @@ class SignInButtonMetrics {
 /// providers can build on the same base by supplying their own config.
 @immutable
 class SignInButtonConfig {
-  /// Builds the provider logo sized to [logoSize].
+  /// Builds the provider logo sized to [logoSize], or `null` for a text-only
+  /// button (e.g. the anonymous button) whose label is simply centered.
   ///
   /// [foregroundColor] is the resolved label color: tint a monochrome logo with
   /// it (as GitHub and Apple do) and ignore it for a multicolor logo (as Google,
@@ -63,7 +64,7 @@ class SignInButtonConfig {
     required double logoSize,
     required Color foregroundColor,
     required bool isDisabled,
-  })
+  })?
   logoBuilder;
 
   /// The colors used when the button stands on its own, with no shared
@@ -84,10 +85,10 @@ class SignInButtonConfig {
 
   /// Creates a provider button config.
   const SignInButtonConfig({
-    required this.logoBuilder,
     required this.brandColors,
     required this.brandShowBorder,
     required this.label,
+    this.logoBuilder,
     this.localizedLabel,
   });
 }
@@ -235,7 +236,7 @@ class SignInButtonBase extends StatelessWidget {
       );
     }
 
-    final logo = config.logoBuilder(
+    final logo = config.logoBuilder?.call(
       logoSize: metrics.logoSize,
       foregroundColor: foreground,
       isDisabled: isDisabled,
@@ -252,6 +253,11 @@ class SignInButtonBase extends StatelessWidget {
       overflow: TextOverflow.ellipsis,
       textAlign: TextAlign.center,
     );
+
+    // Text-only button (no logo): simply center the label.
+    if (logo == null) {
+      return Center(child: textWidget);
+    }
 
     // Center: center the [logo + label] group, matching the native Apple
     // button's centered layout.

@@ -57,7 +57,7 @@ void main() {
   group('Google sign-in button localization', () {
     testWidgets(
       'Given default SignInLocalizationProvider with no override, '
-      'when building the GoogleSignInNativeButton with sign-in variant while loading, '
+      'when building the GoogleSignInNativeButton with sign-in variant, '
       'then the enum-based English fallback is used.',
       (tester) async {
         await tester.pumpWidget(
@@ -65,9 +65,9 @@ void main() {
             child: SignInLocalizationProvider(
               child: GoogleSignInNativeButton(
                 onPressed: null,
-                isLoading: true,
+                isLoading: false,
                 isDisabled: false,
-                text: GSIButtonText.signinWith,
+                text: SignInButtonTextVariant.signInWith,
               ),
             ),
           ),
@@ -79,7 +79,7 @@ void main() {
 
     testWidgets(
       'Given SignInLocalizationProvider with Google sign-in button label override, '
-      'when building the GoogleSignInNativeButton with sign-up variant while loading, '
+      'when building the GoogleSignInNativeButton with sign-up variant, '
       'then the override label is shown instead of the enum fallback.',
       (tester) async {
         await tester.pumpWidget(
@@ -88,9 +88,9 @@ void main() {
               google: GoogleSignInTexts(signInButton: 'Use Google account'),
               child: GoogleSignInNativeButton(
                 onPressed: null,
-                isLoading: true,
+                isLoading: false,
                 isDisabled: false,
-                text: GSIButtonText.signupWith,
+                text: SignInButtonTextVariant.signUpWith,
               ),
             ),
           ),
