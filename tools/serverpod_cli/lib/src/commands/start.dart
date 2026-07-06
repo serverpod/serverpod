@@ -112,8 +112,9 @@ class StartCommand extends ServerpodCommand<StartOption> {
 
   @override
   final description =
-      'Generate code and start the server. '
-      'Use --watch to watch for changes and hot reload.';
+      'Start the full development stack with hot reload: generates code, '
+      'runs the server, and launches the companion Flutter apps in an '
+      'interactive terminal UI.';
 
   @override
   String get invocation => 'serverpod start [-- <server-args>]';
