@@ -449,9 +449,18 @@ class SerializableModelFieldDefinition {
     return scope == ModelFieldScopeDefinition.all;
   }
 
-  /// Fields with !persist or scope [ModelFieldScopeDefinition.none] are hidden
-  /// from the wire protocol but stored in the database. On the client, implicit
-  /// one-to-many child keys are hidden.
+  /// Whether this field is persisted in the database but hidden from the
+  /// protocol (`toJsonForProtocol`) output.
+  ///
+  /// This is only about persisted [ModelFieldScopeDefinition.none] fields, such
+  /// as the implicit relation FKs generated for object relations. Those are
+  /// stored in the database and kept in [SerializableModel.toJson], but must be
+  /// omitted from protocol serialization.
+  ///
+  /// Note this is unrelated to `!persist` (`shouldPersist == false`): a
+  /// `!persist` field with `scope: all` is *not* stored in the database but
+  /// *is* sent over the wire. On the client, only implicit one-to-many child
+  /// keys qualify as hidden.
   bool hiddenSerializableField(bool serverCode) {
     if (serverCode) {
       return shouldPersist && scope == ModelFieldScopeDefinition.none;

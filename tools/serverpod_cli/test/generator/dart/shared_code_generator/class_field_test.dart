@@ -94,14 +94,14 @@ void main() {
         );
       });
 
-      test('does not implement ProtocolSerialization.', () {
+      test('implements ProtocolSerialization.', () {
         expect(
           CompilationUnitHelpers.hasImplementsClause(
             maybeClassNamedExample!,
             name: 'ProtocolSerialization',
           ),
-          isFalse,
-          reason: 'Should not implement ProtocolSerialization',
+          isTrue,
+          reason: 'Every model implements ProtocolSerialization.',
         );
       });
 
@@ -127,14 +127,14 @@ void main() {
         );
       });
 
-      test('does not have a toJsonForProtocol method.', () {
+      test('has a toJsonForProtocol method.', () {
         expect(
           CompilationUnitHelpers.hasMethodDeclaration(
             maybeClassNamedExample!,
             name: 'toJsonForProtocol',
           ),
-          isFalse,
-          reason: 'Class should not have a toJsonForProtocol method.',
+          isTrue,
+          reason: 'Every model has a toJsonForProtocol method.',
         );
       });
     });

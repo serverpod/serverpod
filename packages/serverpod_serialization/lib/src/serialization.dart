@@ -33,7 +33,15 @@ abstract interface class SerializableModel {
 }
 
 /// The [ProtocolSerialization] defines a toJsonForProtocol method which makes it
-/// possible to limit what fields are serialized
+/// possible to limit what fields are serialized when communicating over the
+/// protocol.
+///
+/// Implement this whenever protocol serialization must produce a different
+/// result than [SerializableModel.toJson] — for example to strip `serverOnly`
+/// fields, or to omit hidden persisted `scope: none` fields (such as implicit
+/// relation FKs) that belong in the database but not on the wire. If
+/// `toJsonForProtocol` would be identical to `toJson`, implementing this is not
+/// required.
 abstract interface class ProtocolSerialization {
   /// Returns a JSON structure of the model, optimized for Protocol communication.
   dynamic toJsonForProtocol();

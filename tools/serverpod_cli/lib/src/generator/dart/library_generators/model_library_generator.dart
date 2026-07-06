@@ -39,13 +39,6 @@ class SerializableModelLibraryGenerator {
     return classDefinition.shouldGenerateTableCode(serverCode);
   }
 
-  bool _shouldImplementProtocolSerialization(
-    ModelClassDefinition classDefinition,
-    String? tableName,
-  ) {
-    return serverCode || (tableName != null && classDefinition.isSharedModel);
-  }
-
   /// Generate the file for a model.
   Library generateModelLibrary(
     SerializableModelDefinition modelDefinition,
@@ -300,11 +293,9 @@ class SerializableModelLibraryGenerator {
         refer('SerializableModel', serverpodUrl(serverCode)),
       );
 
-      if (serverCode) {
-        classBuilder.implements.add(
-          refer('ProtocolSerialization', serverpodUrl(serverCode)),
-        );
-      }
+      classBuilder.implements.add(
+        refer('ProtocolSerialization', serverpodUrl(serverCode)),
+      );
 
       classBuilder.fields.addAll(
         _buildModelClassFields(
@@ -393,18 +384,16 @@ class SerializableModelLibraryGenerator {
       }
 
       // Serialization for database and everything
-      if (serverCode) {
-        if (!classDefinition.isSealed) {
-          classBuilder.methods.add(
-            _buildModelClassToJsonForProtocolMethod(
-              fields,
-              classDefinition.serverOnly,
-              className,
-              classDefinition.sharedPackageName,
-              null,
-            ),
-          );
-        }
+      if (!classDefinition.isSealed) {
+        classBuilder.methods.add(
+          _buildModelClassToJsonForProtocolMethod(
+            fields,
+            classDefinition.serverOnly,
+            className,
+            classDefinition.sharedPackageName,
+            null,
+          ),
+        );
       }
       if (!classDefinition.isSealed) {
         classBuilder.methods.add(
@@ -498,11 +487,13 @@ class SerializableModelLibraryGenerator {
         );
       }
 
-      if (_shouldImplementProtocolSerialization(classDefinition, tableName)) {
-        classBuilder.implements.add(
-          refer('ProtocolSerialization', serverpodUrl(serverCode)),
-        );
-      }
+      // Every model implements ProtocolSerialization on every side so that
+      // protocol encoding can recurse through `toJsonForProtocol` at any nesting
+      // level, stripping hidden fields even when a table model is nested inside
+      // a model that has none of its own.
+      classBuilder.implements.add(
+        refer('ProtocolSerialization', serverpodUrl(serverCode)),
+      );
 
       classBuilder.fields.addAll(
         _buildModelClassFields(
@@ -603,18 +594,16 @@ class SerializableModelLibraryGenerator {
       }
 
       // Serialization for database and everything
-      if (_shouldImplementProtocolSerialization(classDefinition, tableName)) {
-        if (!classDefinition.isSealed) {
-          classBuilder.methods.add(
-            _buildModelClassToJsonForProtocolMethod(
-              fields,
-              classDefinition.serverOnly,
-              className,
-              classDefinition.sharedPackageName,
-              tableName,
-            ),
-          );
-        }
+      if (!classDefinition.isSealed) {
+        classBuilder.methods.add(
+          _buildModelClassToJsonForProtocolMethod(
+            fields,
+            classDefinition.serverOnly,
+            className,
+            classDefinition.sharedPackageName,
+            tableName,
+          ),
+        );
       }
       if (classDefinition.isTableOwner(serverCode)) {
         if (_shouldGenerateTableCode(classDefinition)) {
@@ -1754,14 +1743,14 @@ class SerializableModelLibraryGenerator {
       return fieldExpression;
     }
 
-    // Shared models implement SerializableModel but not ProtocolSerialization
-    // because they can not have `serverOnly` fields.
-    var isSharedClass =
-        fieldType.projectModelDefinition?.isSharedModel ?? false;
+    // Every generated model and exception implements ProtocolSerialization on
+    // every side, so a nested model/exception field mirrors the parent's
+    // serialization method (e.g. `toJsonForProtocol`). Enums have no protocol
+    // form and are always serialized with `toJson`.
     var toJson =
         fieldType.isSerializedByExtension ||
             fieldType.isEnumType ||
-            isSharedClass
+            fieldType.projectModelDefinition is! ClassDefinition
         ? _toJsonMethodName
         : methodName;
 
