@@ -5,12 +5,10 @@ import 'facebook_sign_in_style.dart';
 
 /// A styled button for Facebook Sign-In.
 ///
-/// This widget creates a custom Facebook Sign-In button following Facebook's
-/// brand guidelines and adds loading and disabled states.
-///
-/// The [type], [size], [shape], [logoAlignment], [minimumWidth], and
-/// [textStyle] arguments fall back to the shared [SignInButtonStyle] in scope
-/// when left null, then to Facebook's own defaults.
+/// Renders a Facebook-branded button on the shared [SignInButtonBase], with
+/// loading and disabled states. The [size], [text], [shape], [logoAlignment],
+/// [minimumWidth], and [textStyle] arguments fall back to the shared
+/// [SignInButtonStyle] in scope when a [SignInWidget] provides one.
 class FacebookSignInButton extends StatelessWidget {
   /// Callback when the button is pressed.
   final VoidCallback? onPressed;
@@ -21,9 +19,6 @@ class FacebookSignInButton extends StatelessWidget {
   /// Whether the button is disabled.
   final bool isDisabled;
 
-  /// The button text type.
-  final FacebookButtonText type;
-
   /// The brand color preset (blue or white).
   ///
   /// Applies when the button is used on its own. Inside a [SignInWidget] (or any
@@ -31,13 +26,16 @@ class FacebookSignInButton extends StatelessWidget {
   final FacebookButtonStyle style;
 
   /// The button size.
-  final FacebookButtonSize size;
+  final SignInButtonSize size;
+
+  /// The button label variant.
+  final SignInButtonTextVariant text;
 
   /// The button shape.
-  final FacebookButtonShape shape;
+  final SignInButtonShape shape;
 
   /// The Facebook logo alignment: left or center.
-  final FacebookButtonLogoAlignment logoAlignment;
+  final SignInButtonLogoAlignment logoAlignment;
 
   /// The minimum button width, in pixels.
   ///
@@ -45,8 +43,6 @@ class FacebookSignInButton extends StatelessWidget {
   final double minimumWidth;
 
   /// The text style applied to the button label.
-  ///
-  /// Falls back to the shared [SignInButtonStyle] when null.
   final TextStyle? textStyle;
 
   /// Creates a Facebook Sign-In button.
@@ -54,11 +50,11 @@ class FacebookSignInButton extends StatelessWidget {
     required this.onPressed,
     required this.isLoading,
     required this.isDisabled,
-    this.type = FacebookButtonText.continueWith,
     this.style = FacebookButtonStyle.blue,
-    this.size = FacebookButtonSize.large,
-    this.shape = FacebookButtonShape.pill,
-    this.logoAlignment = FacebookButtonLogoAlignment.center,
+    this.size = SignInButtonSize.large,
+    this.text = SignInButtonTextVariant.continueWith,
+    this.shape = SignInButtonShape.pill,
+    this.logoAlignment = SignInButtonLogoAlignment.center,
     this.minimumWidth = 240,
     this.textStyle,
     super.key,
@@ -70,97 +66,50 @@ class FacebookSignInButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = context.facebookSignInTexts;
-    final shared = SignInButtonStyleProvider.maybeOf(context);
+    final (background, foreground) = switch (style) {
+      FacebookButtonStyle.blue => (const Color(0xFF1877F2), Colors.white),
+      FacebookButtonStyle.white => (Colors.white, const Color(0xFF1877F2)),
+    };
 
-    final type = shared?.text?.toFacebook() ?? this.type;
-    final size = shared?.size?.toFacebook() ?? this.size;
-    final shape = shared?.shape?.toFacebook() ?? this.shape;
-    final logoAlignment =
-        shared?.logoAlignment?.toFacebook() ?? this.logoAlignment;
-    final minimumWidth = shared?.minimumWidth ?? this.minimumWidth;
-    final textStyle = this.textStyle ?? shared?.textStyle;
-
-    final buttonStyle = FacebookSignInStyle.fromConfiguration(
-      shape: shape,
+    return SignInButtonBase(
+      onPressed: onPressed,
+      isLoading: isLoading,
+      isDisabled: isDisabled,
       size: size,
-      style: style,
-      width: minimumWidth,
-    );
-
-    // A shared style (e.g. inside SignInWidget) applies the common, theme-aware
-    // colors; on its own the button uses its Facebook brand colors.
-    final Color backgroundColor;
-    final Color foregroundColor;
-    final Color borderColor;
-    final bool showBorder;
-    if (shared != null) {
-      final colors = shared.resolveColors(context);
-      backgroundColor = colors.background;
-      foregroundColor = colors.foreground;
-      borderColor = colors.border;
-      showBorder = true;
-    } else {
-      backgroundColor = buttonStyle.backgroundColor;
-      foregroundColor = buttonStyle.textColor;
-      borderColor = const Color(0xFFE0E0E0);
-      showBorder = style == FacebookButtonStyle.white;
-    }
-
-    return ConstrainedBox(
-      constraints: BoxConstraints(
-        minWidth: minimumWidth,
-        maxWidth: 400,
-        minHeight: buttonStyle.size.height,
-        maxHeight: buttonStyle.size.height,
-      ),
-      child: ElevatedButton(
-        onPressed: isLoading || isDisabled ? null : onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: backgroundColor,
-          foregroundColor: foregroundColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: buttonStyle.borderRadius,
-            side: showBorder ? BorderSide(color: borderColor) : BorderSide.none,
-          ),
-          elevation: 0,
-          padding: EdgeInsets.zero,
-          disabledBackgroundColor: backgroundColor.withValues(alpha: .6),
-          disabledForegroundColor: foregroundColor.withValues(alpha: 0.6),
+      shape: shape,
+      text: text,
+      logoAlignment: logoAlignment,
+      minimumWidth: minimumWidth,
+      textStyle: textStyle,
+      config: SignInButtonConfig(
+        brandColors: SignInButtonColors(
+          background: background,
+          foreground: foreground,
+          border: const Color(0xFFE0E0E0),
         ),
-        child: _buildButtonContent(
-          localizations,
-          type: type,
-          buttonStyle: buttonStyle,
-          logoAlignment: logoAlignment,
-          textStyle: textStyle,
-          foregroundColor: foregroundColor,
-        ),
+        brandShowBorder: style == FacebookButtonStyle.white,
+        localizedLabel: localizations.signInButton,
+        label: _label,
+        logoBuilder: _buildLogo,
       ),
     );
   }
 
-  Widget _buildButtonContent(
-    FacebookSignInTexts localizations, {
-    required FacebookButtonText type,
-    required FacebookSignInStyle buttonStyle,
-    required FacebookButtonLogoAlignment logoAlignment,
-    required TextStyle? textStyle,
+  // Facebook supports the bare "Sign in" without its name, unlike GitHub and
+  // Microsoft which always append the provider.
+  static String _label(SignInButtonTextVariant variant) => switch (variant) {
+    SignInButtonTextVariant.signInWith => 'Sign in with Facebook',
+    SignInButtonTextVariant.signUpWith => 'Sign up with Facebook',
+    SignInButtonTextVariant.continueWith => 'Continue with Facebook',
+    SignInButtonTextVariant.signIn => 'Sign in',
+  };
+
+  static Widget _buildLogo({
+    required double logoSize,
     required Color foregroundColor,
+    required bool isDisabled,
   }) {
-    if (isLoading) {
-      return SizedBox(
-        height: 20,
-        width: 20,
-        child: CircularProgressIndicator(
-          strokeWidth: 2,
-          valueColor: AlwaysStoppedAnimation<Color>(foregroundColor),
-        ),
-      );
-    }
-
-    final logoSize = buttonStyle.logoSize;
-
-    final logo = SizedBox.square(
+    return SizedBox.square(
       dimension: logoSize,
       child: Icon(
         Icons.facebook,
@@ -168,83 +117,5 @@ class FacebookSignInButton extends StatelessWidget {
         color: foregroundColor,
       ),
     );
-
-    final baseTextStyle = TextStyle(
-      fontSize: buttonStyle.labelFontSize,
-      color: foregroundColor,
-    );
-    final textWidget = Text(
-      localizations.signInButton ?? _getButtonText(type),
-      style: textStyle != null ? baseTextStyle.merge(textStyle) : baseTextStyle,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      textAlign: TextAlign.center,
-    );
-
-    // Center: center the [logo + label] group, matching the native Apple
-    // button's centered layout.
-    if (logoAlignment == FacebookButtonLogoAlignment.center) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          logo,
-          const SizedBox(width: signInCenteredLogoGap),
-          Flexible(child: textWidget),
-        ],
-      );
-    }
-
-    // Left: logo pinned to the left column with the label centered in the
-    // button, matching the native Apple button's left layout. The trailing
-    // gap balances the leading logo so the label stays centered.
-    return Row(
-      children: [
-        const SizedBox(width: signInLeftLogoIndent),
-        logo,
-        Expanded(child: textWidget),
-        SizedBox(width: signInLeftLogoIndent + logoSize),
-      ],
-    );
   }
-
-  String _getButtonText(FacebookButtonText type) {
-    return switch (type) {
-      FacebookButtonText.signinWith => 'Sign in with Facebook',
-      FacebookButtonText.continueWith => 'Continue with Facebook',
-      FacebookButtonText.signupWith => 'Sign up with Facebook',
-      FacebookButtonText.signIn => 'Sign in',
-    };
-  }
-}
-
-extension on SignInButtonSize {
-  FacebookButtonSize toFacebook() => switch (this) {
-    SignInButtonSize.large => FacebookButtonSize.large,
-    SignInButtonSize.medium => FacebookButtonSize.medium,
-    SignInButtonSize.small => FacebookButtonSize.small,
-  };
-}
-
-extension on SignInButtonShape {
-  FacebookButtonShape toFacebook() => switch (this) {
-    SignInButtonShape.rectangular => FacebookButtonShape.rectangular,
-    SignInButtonShape.rounded => FacebookButtonShape.rounded,
-    SignInButtonShape.pill => FacebookButtonShape.pill,
-  };
-}
-
-extension on SignInButtonLogoAlignment {
-  FacebookButtonLogoAlignment toFacebook() => switch (this) {
-    SignInButtonLogoAlignment.left => FacebookButtonLogoAlignment.left,
-    SignInButtonLogoAlignment.center => FacebookButtonLogoAlignment.center,
-  };
-}
-
-extension on SignInButtonTextVariant {
-  FacebookButtonText toFacebook() => switch (this) {
-    SignInButtonTextVariant.signInWith => FacebookButtonText.signinWith,
-    SignInButtonTextVariant.signUpWith => FacebookButtonText.signupWith,
-    SignInButtonTextVariant.continueWith => FacebookButtonText.continueWith,
-    SignInButtonTextVariant.signIn => FacebookButtonText.signIn,
-  };
 }

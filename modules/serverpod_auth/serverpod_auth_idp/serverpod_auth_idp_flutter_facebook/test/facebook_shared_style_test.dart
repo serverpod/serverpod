@@ -70,7 +70,7 @@ void main() {
                 onPressed: null,
                 isLoading: false,
                 isDisabled: false,
-                type: FacebookButtonText.continueWith,
+                text: SignInButtonTextVariant.continueWith,
               ),
             ),
           );

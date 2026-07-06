@@ -66,8 +66,8 @@ class FacebookSignInWidget extends StatefulWidget {
   /// access to retrieving the user's email, name, and profile picture.
   final List<String> permissions;
 
-  /// The button text type.
-  final FacebookButtonText type;
+  /// The button label variant.
+  final SignInButtonTextVariant text;
 
   /// The brand color preset (blue or white).
   ///
@@ -76,13 +76,13 @@ class FacebookSignInWidget extends StatefulWidget {
   final FacebookButtonStyle style;
 
   /// The button size.
-  final FacebookButtonSize size;
+  final SignInButtonSize size;
 
   /// The button shape.
-  final FacebookButtonShape shape;
+  final SignInButtonShape shape;
 
   /// The Facebook logo alignment: left or center.
-  final FacebookButtonLogoAlignment logoAlignment;
+  final SignInButtonLogoAlignment logoAlignment;
 
   /// The minimum button width, in pixels.
   ///
@@ -101,11 +101,11 @@ class FacebookSignInWidget extends StatefulWidget {
     this.onAuthenticated,
     this.onError,
     this.permissions = FacebookAuthController.defaultPermissions,
-    this.type = FacebookButtonText.continueWith,
+    this.text = SignInButtonTextVariant.continueWith,
     this.style = FacebookButtonStyle.blue,
-    this.size = FacebookButtonSize.large,
-    this.shape = FacebookButtonShape.pill,
-    this.logoAlignment = FacebookButtonLogoAlignment.center,
+    this.size = SignInButtonSize.large,
+    this.shape = SignInButtonShape.pill,
+    this.logoAlignment = SignInButtonLogoAlignment.center,
     this.minimumWidth = 240,
     this.textStyle,
     super.key,
@@ -158,7 +158,7 @@ class _FacebookSignInWidgetState extends State<FacebookSignInWidget> {
       onPressed: _signIn,
       isLoading: _controller.isLoading,
       isDisabled: _controller.isLoading,
-      type: widget.type,
+      text: widget.text,
       style: widget.style,
       size: widget.size,
       shape: widget.shape,
