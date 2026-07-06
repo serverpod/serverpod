@@ -30,6 +30,7 @@ class MainScreen extends StatelessComponent {
     this.onQuit,
     required this.onCopyAlert,
     required this.onDismissAlert,
+    required this.onStopOrCloseAppTab,
   });
 
   final ServerWatchState state;
@@ -54,6 +55,9 @@ class MainScreen extends StatelessComponent {
 
   /// Dismisses the pinned alert (also bound to `Esc`).
   final VoidCallback onDismissAlert;
+
+  /// Stops the app or closes the tab for the given app tab (also bound to `X`).
+  final void Function(AppLogTab tab) onStopOrCloseAppTab;
 
   List<(String, List<(String, String)>)> get _helpBindings => [
     (
@@ -523,21 +527,24 @@ class MainScreen extends StatelessComponent {
                   Text(labelSep, style: separatorStyle),
                   status,
                   Expanded(child: const SizedBox.shrink()),
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: 'X',
-                          style: TextStyle(
-                            color: st.activationKey,
-                            fontWeight: FontWeight.bold,
+                  GestureDetector(
+                    onTap: () => onStopOrCloseAppTab(tab),
+                    child: RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'X',
+                            style: TextStyle(
+                              color: st.activationKey,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        TextSpan(
-                          text: ' $xLabel',
-                          style: TextStyle(color: st.brightText),
-                        ),
-                      ],
+                          TextSpan(
+                            text: ' $xLabel',
+                            style: TextStyle(color: st.brightText),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
