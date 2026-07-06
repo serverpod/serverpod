@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import 'test_utils.dart';
 
 void main() {
-  // Resolves the rendered native Apple button.
-  SignInWithAppleButton appleButtonOf(WidgetTester tester) {
-    return tester.widget<SignInWithAppleButton>(
-      find.byType(SignInWithAppleButton),
-    );
+  // Resolves the button's corner radius from its rendered shape.
+  BorderRadius? borderRadiusOf(WidgetTester tester) {
+    final button = tester.widget<ElevatedButton>(find.byType(ElevatedButton));
+    final shape = button.style?.shape?.resolve({}) as RoundedRectangleBorder?;
+    return shape?.borderRadius as BorderRadius?;
   }
 
   testWidgets(
@@ -28,7 +27,7 @@ void main() {
         ),
       );
 
-      expect(appleButtonOf(tester).text, 'Continue with Apple');
+      expect(find.text('Continue with Apple'), findsOneWidget);
     },
   );
 
@@ -52,7 +51,7 @@ void main() {
             ),
           );
 
-          expect(appleButtonOf(tester).text, 'Sign up with Apple');
+          expect(find.text('Sign up with Apple'), findsOneWidget);
         },
       );
 
@@ -67,12 +66,13 @@ void main() {
                 onPressed: null,
                 isLoading: false,
                 isDisabled: false,
-                type: AppleButtonText.continueWith,
+                text: SignInButtonTextVariant.continueWith,
               ),
             ),
           );
 
-          expect(appleButtonOf(tester).text, 'Sign up with Apple');
+          expect(find.text('Sign up with Apple'), findsOneWidget);
+          expect(find.text('Continue with Apple'), findsNothing);
         },
       );
     },
@@ -90,16 +90,13 @@ void main() {
             onPressed: null,
             isLoading: false,
             isDisabled: false,
-            size: AppleButtonSize.large,
+            size: SignInButtonSize.large,
           ),
         ),
       );
 
       // Rectangular resolves to a 4px radius (vs the pill default).
-      expect(
-        appleButtonOf(tester).borderRadius,
-        BorderRadius.circular(4),
-      );
+      expect(borderRadiusOf(tester), BorderRadius.circular(4));
     },
   );
 
@@ -115,15 +112,12 @@ void main() {
             onPressed: null,
             isLoading: false,
             isDisabled: false,
-            size: AppleButtonSize.large,
+            size: SignInButtonSize.large,
           ),
         ),
       );
 
-      expect(
-        appleButtonOf(tester).borderRadius,
-        BorderRadius.circular(8),
-      );
+      expect(borderRadiusOf(tester), BorderRadius.circular(8));
     },
   );
 }

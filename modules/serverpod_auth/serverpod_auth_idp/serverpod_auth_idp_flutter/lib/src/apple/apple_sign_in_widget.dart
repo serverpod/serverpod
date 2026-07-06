@@ -5,6 +5,7 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'apple_auth_controller.dart';
 import 'apple_sign_in_button.dart';
 import 'apple_sign_in_style.dart';
+import '../common/sign_in_button_style.dart';
 import '../common/sign_in_flow_coordinator.dart';
 
 /// A widget that provides Apple Sign-In functionality for all platforms.
@@ -68,29 +69,31 @@ class AppleSignInWidget extends StatefulWidget {
   /// retrieving the user's email and full name.
   final List<AppleIDAuthorizationScopes> scopes;
 
-  /// The button text variant.
-  final AppleButtonText type;
+  /// The button label variant.
+  final SignInButtonTextVariant text;
 
   /// The brand color preset (black, white, or white-outlined).
   ///
   /// Applies when the button is used on its own. Inside a [SignInWidget] (or any
-  /// [SignInButtonStyle] in scope) the shared common style applies instead,
-  /// approximated with Apple's nearest preset.
+  /// [SignInButtonStyle] in scope) the shared common style applies instead.
   final AppleButtonStyle style;
 
   /// The button size.
-  final AppleButtonSize size;
+  final SignInButtonSize size;
 
   /// The button shape.
-  final AppleButtonShape shape;
+  final SignInButtonShape shape;
 
   /// The Apple logo alignment: left or center.
-  final AppleButtonLogoAlignment logoAlignment;
+  final SignInButtonLogoAlignment logoAlignment;
 
   /// The minimum button width, in pixels.
   ///
   /// The maximum width is 400 pixels.
   final double minimumWidth;
+
+  /// The text style applied to the button label.
+  final TextStyle? textStyle;
 
   /// Creates an Apple Sign-In widget.
   const AppleSignInWidget({
@@ -99,12 +102,13 @@ class AppleSignInWidget extends StatefulWidget {
     this.onAuthenticated,
     this.onError,
     this.scopes = AppleAuthController.defaultScopes,
-    this.type = AppleButtonText.continueWith,
+    this.text = SignInButtonTextVariant.continueWith,
     this.style = AppleButtonStyle.black,
-    this.size = AppleButtonSize.large,
-    this.shape = AppleButtonShape.pill,
-    this.logoAlignment = AppleButtonLogoAlignment.center,
+    this.size = SignInButtonSize.large,
+    this.shape = SignInButtonShape.pill,
+    this.logoAlignment = SignInButtonLogoAlignment.center,
     this.minimumWidth = 240,
+    this.textStyle,
     super.key,
   }) : assert(
          (controller == null) != (client == null),
@@ -160,12 +164,13 @@ class _AppleSignInWidgetState extends State<AppleSignInWidget> {
       onPressed: _signIn,
       isLoading: _controller.isLoading,
       isDisabled: _controller.isLoading,
-      type: widget.type,
+      text: widget.text,
       style: widget.style,
       size: widget.size,
       shape: widget.shape,
       minimumWidth: widget.minimumWidth,
       logoAlignment: widget.logoAlignment,
+      textStyle: widget.textStyle,
     );
   }
 

@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 void main() {
   group('Apple sign-in button localization', () {
@@ -21,16 +20,13 @@ void main() {
                 onPressed: null,
                 isLoading: false,
                 isDisabled: false,
-                type: AppleButtonText.signupWith,
+                text: SignInButtonTextVariant.signUpWith,
               ),
             ),
           ),
         );
 
-        final button = tester.widget<SignInWithAppleButton>(
-          find.byType(SignInWithAppleButton),
-        );
-        expect(button.text, 'Sign up with Apple');
+        expect(find.text('Sign up with Apple'), findsOneWidget);
       },
     );
 
@@ -47,16 +43,13 @@ void main() {
                 onPressed: null,
                 isLoading: false,
                 isDisabled: false,
-                type: AppleButtonText.signinWith,
+                text: SignInButtonTextVariant.signInWith,
               ),
             ),
           ),
         );
 
-        final button = tester.widget<SignInWithAppleButton>(
-          find.byType(SignInWithAppleButton),
-        );
-        expect(button.text, 'Use Apple account');
+        expect(find.text('Use Apple account'), findsOneWidget);
       },
     );
   });

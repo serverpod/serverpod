@@ -91,10 +91,6 @@ class SignInButtonColors {
 /// set [backgroundColor]/[foregroundColor]/[borderColor] to recolor them all,
 /// or set a provider widget's own brand `style` to opt that one back into its
 /// brand colors.
-///
-/// Apple is drawn by its native button and only approximates these colors with
-/// its nearest black/white/outlined preset, and it ignores [textStyle] (it
-/// always uses the system font).
 @immutable
 class SignInButtonStyle {
   /// Button size.
@@ -112,8 +108,7 @@ class SignInButtonStyle {
   /// Minimum width in pixels, up to 400.
   final double? minimumWidth;
 
-  /// Label text style. Apple ignores this — its native button always uses the
-  /// system font.
+  /// Label text style.
   final TextStyle? textStyle;
 
   /// Button background color. Defaults to a theme-based neutral.
