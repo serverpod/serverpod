@@ -26,7 +26,7 @@
 - feat: Exposes the Redis connection to allow users to build custom extensions.
 - feat: Adds the `tail` keyword on models to configure the order of inherited fields.
 - feat: Automatically reloads the server when dependencies change.
-- feat: Adds a `withSession` method on `Serverpod` for manual session usage with automatic teardown.
+- feat: Adds a `withSession` method on `Serverpod` for manual session usage with automatic teardown. ([@nicowalter256](https://github.com/nicowalter256))
 - feat: Adds a `noReturn` parameter to all ORM methods to allow skipping the returning the data.
 - feat: Allows using the `unique(per=...)` shorthand for composite unique indexes.
 - feat: Adds a `databaseInterceptor` parameter to `Serverpod` for intercepting database operations.
