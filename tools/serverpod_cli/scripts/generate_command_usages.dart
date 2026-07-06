@@ -96,6 +96,12 @@ void main(final List<String> args) {
       .toSet();
   _deleteRemovedCommandsFolders(currentCommands, commandsPath);
   _deleteRemovedCommandsFiles(currentCommands, generatedPath);
+
+  // Building the framework command runner leaves a non-daemon entry on the
+  // event loop (unlike the Cloud CLI), so the VM never exits on its own once
+  // main returns. All docs are written synchronously above, so terminate
+  // explicitly instead of hanging until the CI step times out.
+  exit(0);
 }
 
 void _generateDocPage(
