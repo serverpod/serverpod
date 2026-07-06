@@ -12,12 +12,13 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
-import '../../models_with_relations/many_to_many/student.dart' as _i2;
-import '../../models_with_relations/many_to_many/course.dart' as _i3;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
-import 'package:serverpod_client/serverpod_client.dart' as _i5;
+import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import '../../models_with_relations/many_to_many/student.dart' as _i3;
+import '../../models_with_relations/many_to_many/course.dart' as _i4;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i5;
 
-abstract class Enrollment implements _i1.TableRow<int?> {
+abstract class Enrollment
+    implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   Enrollment._({
     this.id,
     required this.studentId,
@@ -29,9 +30,9 @@ abstract class Enrollment implements _i1.TableRow<int?> {
   factory Enrollment({
     int? id,
     required int studentId,
-    _i2.Student? student,
+    _i3.Student? student,
     required int courseId,
-    _i3.Course? course,
+    _i4.Course? course,
   }) = _EnrollmentImpl;
 
   factory Enrollment.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -40,13 +41,13 @@ abstract class Enrollment implements _i1.TableRow<int?> {
       studentId: jsonSerialization['studentId'] as int,
       student: jsonSerialization['student'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.Student>(
+          : _i5.Protocol().deserialize<_i3.Student>(
               jsonSerialization['student'],
             ),
       courseId: jsonSerialization['courseId'] as int,
       course: jsonSerialization['course'] == null
           ? null
-          : _i4.Protocol().deserialize<_i3.Course>(jsonSerialization['course']),
+          : _i5.Protocol().deserialize<_i4.Course>(jsonSerialization['course']),
     );
   }
 
@@ -59,24 +60,24 @@ abstract class Enrollment implements _i1.TableRow<int?> {
 
   int studentId;
 
-  _i2.Student? student;
+  _i3.Student? student;
 
   int courseId;
 
-  _i3.Course? course;
+  _i4.Course? course;
 
   @override
   _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Enrollment]
   /// with some or all fields replaced by the given arguments.
-  @_i5.useResult
+  @_i2.useResult
   Enrollment copyWith({
     int? id,
     int? studentId,
-    _i2.Student? student,
+    _i3.Student? student,
     int? courseId,
-    _i3.Course? course,
+    _i4.Course? course,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -90,9 +91,21 @@ abstract class Enrollment implements _i1.TableRow<int?> {
     };
   }
 
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Enrollment',
+      if (id != null) 'id': id,
+      'studentId': studentId,
+      if (student != null) 'student': student?.toJsonForProtocol(),
+      'courseId': courseId,
+      if (course != null) 'course': course?.toJsonForProtocol(),
+    };
+  }
+
   static EnrollmentInclude include({
-    _i2.StudentInclude? student,
-    _i3.CourseInclude? course,
+    _i3.StudentInclude? student,
+    _i4.CourseInclude? course,
   }) {
     return EnrollmentInclude._(
       student: student,
@@ -124,7 +137,7 @@ abstract class Enrollment implements _i1.TableRow<int?> {
 
   @override
   String toString() {
-    return _i5.SerializationManager.encode(this);
+    return _i2.SerializationManager.encode(this);
   }
 }
 
@@ -134,9 +147,9 @@ class _EnrollmentImpl extends Enrollment {
   _EnrollmentImpl({
     int? id,
     required int studentId,
-    _i2.Student? student,
+    _i3.Student? student,
     required int courseId,
-    _i3.Course? course,
+    _i4.Course? course,
   }) : super._(
          id: id,
          studentId: studentId,
@@ -147,7 +160,7 @@ class _EnrollmentImpl extends Enrollment {
 
   /// Returns a shallow copy of this [Enrollment]
   /// with some or all fields replaced by the given arguments.
-  @_i5.useResult
+  @_i2.useResult
   @override
   Enrollment copyWith({
     Object? id = _Undefined,
@@ -159,9 +172,9 @@ class _EnrollmentImpl extends Enrollment {
     return Enrollment(
       id: id is int? ? id : this.id,
       studentId: studentId ?? this.studentId,
-      student: student is _i2.Student? ? student : this.student?.copyWith(),
+      student: student is _i3.Student? ? student : this.student?.copyWith(),
       courseId: courseId ?? this.courseId,
-      course: course is _i3.Course? ? course : this.course?.copyWith(),
+      course: course is _i4.Course? ? course : this.course?.copyWith(),
     );
   }
 }
@@ -197,34 +210,34 @@ class EnrollmentTable extends _i1.Table<int?> {
 
   late final _i1.ColumnInt studentId;
 
-  _i2.StudentTable? _student;
+  _i3.StudentTable? _student;
 
   late final _i1.ColumnInt courseId;
 
-  _i3.CourseTable? _course;
+  _i4.CourseTable? _course;
 
-  _i2.StudentTable get student {
+  _i3.StudentTable get student {
     if (_student != null) return _student!;
     _student = _i1.createRelationTable(
       relationFieldName: 'student',
       field: Enrollment.t.studentId,
-      foreignField: _i2.Student.t.id,
+      foreignField: _i3.Student.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.StudentTable(tableRelation: foreignTableRelation),
+          _i3.StudentTable(tableRelation: foreignTableRelation),
     );
     return _student!;
   }
 
-  _i3.CourseTable get course {
+  _i4.CourseTable get course {
     if (_course != null) return _course!;
     _course = _i1.createRelationTable(
       relationFieldName: 'course',
       field: Enrollment.t.courseId,
-      foreignField: _i3.Course.t.id,
+      foreignField: _i4.Course.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.CourseTable(tableRelation: foreignTableRelation),
+          _i4.CourseTable(tableRelation: foreignTableRelation),
     );
     return _course!;
   }
@@ -250,16 +263,16 @@ class EnrollmentTable extends _i1.Table<int?> {
 
 class EnrollmentInclude extends _i1.IncludeObject {
   EnrollmentInclude._({
-    _i2.StudentInclude? student,
-    _i3.CourseInclude? course,
+    _i3.StudentInclude? student,
+    _i4.CourseInclude? course,
   }) {
     _student = student;
     _course = course;
   }
 
-  _i2.StudentInclude? _student;
+  _i3.StudentInclude? _student;
 
-  _i3.CourseInclude? _course;
+  _i4.CourseInclude? _course;
 
   @override
   Map<String, _i1.Include?> get includes => {
@@ -723,7 +736,7 @@ class EnrollmentAttachRowRepository {
   Future<void> student(
     _i1.DatabaseSession session,
     Enrollment enrollment,
-    _i2.Student student, {
+    _i3.Student student, {
     _i1.Transaction? transaction,
   }) async {
     if (enrollment.id == null) {
@@ -746,7 +759,7 @@ class EnrollmentAttachRowRepository {
   Future<void> course(
     _i1.DatabaseSession session,
     Enrollment enrollment,
-    _i3.Course course, {
+    _i4.Course course, {
     _i1.Transaction? transaction,
   }) async {
     if (enrollment.id == null) {

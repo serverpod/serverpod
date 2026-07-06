@@ -16,7 +16,8 @@ import 'server_health_connection_info.dart' as _i3;
 import 'package:serverpod_service_client/src/protocol/protocol.dart' as _i4;
 
 /// Information about health and connection metrics.
-abstract class ServerHealthResult implements _i1.SerializableModel {
+abstract class ServerHealthResult
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ServerHealthResult._({
     required this.metrics,
     required this.connectionInfos,
@@ -58,6 +59,17 @@ abstract class ServerHealthResult implements _i1.SerializableModel {
       '__className__': 'serverpod.ServerHealthResult',
       'metrics': metrics.toJson(valueToJson: (v) => v.toJson()),
       'connectionInfos': connectionInfos.toJson(valueToJson: (v) => v.toJson()),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod.ServerHealthResult',
+      'metrics': metrics.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'connectionInfos': connectionInfos.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
     };
   }
 

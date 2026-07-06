@@ -14,7 +14,8 @@ import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import 'package:serverpod_client/serverpod_client.dart' as _i2;
 
 /// Just some simple data.
-abstract class SimpleDateTime implements _i1.TableRow<int?> {
+abstract class SimpleDateTime
+    implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   SimpleDateTime._({
     this.id,
     required this.dateTime,
@@ -56,6 +57,15 @@ abstract class SimpleDateTime implements _i1.TableRow<int?> {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'SimpleDateTime',
+      if (id != null) 'id': id,
+      'dateTime': dateTime.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'SimpleDateTime',
       if (id != null) 'id': id,

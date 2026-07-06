@@ -12,7 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 
-class SharedModel implements _i1.SerializableModel {
+class SharedModel implements _i1.SerializableModel, _i1.ProtocolSerialization {
   SharedModel({
     _i1.UuidValue? id,
     required this.name,
@@ -61,6 +61,17 @@ class SharedModel implements _i1.SerializableModel {
 
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'SharedModel',
+      'id': id.toJson(),
+      'name': name,
+      if (data != null) 'data': data,
+      'createdAt': createdAt.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'SharedModel',
       'id': id.toJson(),

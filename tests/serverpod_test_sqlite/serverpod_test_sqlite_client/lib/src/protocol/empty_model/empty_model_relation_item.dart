@@ -13,7 +13,8 @@
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import 'package:serverpod_client/serverpod_client.dart' as _i2;
 
-abstract class EmptyModelRelationItem implements _i1.TableRow<int?> {
+abstract class EmptyModelRelationItem
+    implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   EmptyModelRelationItem._({
     this.id,
     required this.name,
@@ -66,6 +67,15 @@ abstract class EmptyModelRelationItem implements _i1.TableRow<int?> {
       if (_relationEmptyModelItemsRelationEmptyModelId != null)
         '_relationEmptyModelItemsRelationEmptyModelId':
             _relationEmptyModelItemsRelationEmptyModelId,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'EmptyModelRelationItem',
+      if (id != null) 'id': id,
+      'name': name,
     };
   }
 

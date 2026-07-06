@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// A log entry for a message sent in a streaming session.
-abstract class MessageLogEntry implements _i1.SerializableModel {
+abstract class MessageLogEntry
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   MessageLogEntry._({
     this.id,
     required this.sessionLogId,
@@ -113,6 +114,24 @@ abstract class MessageLogEntry implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod.MessageLogEntry',
+      if (id != null) 'id': id,
+      'sessionLogId': sessionLogId,
+      'serverId': serverId,
+      'messageId': messageId,
+      'endpoint': endpoint,
+      'messageName': messageName,
+      'duration': duration,
+      if (error != null) 'error': error,
+      if (stackTrace != null) 'stackTrace': stackTrace,
+      'slow': slow,
+      'order': order,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod.MessageLogEntry',
       if (id != null) 'id': id,

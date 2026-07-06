@@ -15,7 +15,8 @@ import '../../models_with_relations/nested_one_to_many/arena.dart' as _i2;
 import '../../models_with_relations/nested_one_to_many/player.dart' as _i3;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i4;
 
-abstract class Team implements _i1.SerializableModel {
+abstract class Team
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   Team._({
     this.id,
     required this.name,
@@ -81,6 +82,19 @@ abstract class Team implements _i1.SerializableModel {
       if (arena != null) 'arena': arena?.toJson(),
       if (players != null)
         'players': players?.toJson(valueToJson: (v) => v.toJson()),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Team',
+      if (id != null) 'id': id,
+      'name': name,
+      if (arenaId != null) 'arenaId': arenaId,
+      if (arena != null) 'arena': arena?.toJsonForProtocol(),
+      if (players != null)
+        'players': players?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
   }
 

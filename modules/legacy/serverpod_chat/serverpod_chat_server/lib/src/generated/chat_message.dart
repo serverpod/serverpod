@@ -148,7 +148,7 @@ abstract class ChatMessage
       'message': message,
       'time': time.toJson(),
       'sender': sender,
-      if (senderInfo != null) 'senderInfo': senderInfo?.toJsonForProtocol(),
+      if (senderInfo != null) 'senderInfo': senderInfo?.toJson(),
       'removed': removed,
       if (clientMessageId != null) 'clientMessageId': clientMessageId,
       if (sent != null) 'sent': sent,

@@ -17,7 +17,8 @@ import '../../long_identifiers/deep_includes/city_with_long_table_name.dart'
     as _i3;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i4;
 
-abstract class OrganizationWithLongTableName implements _i1.SerializableModel {
+abstract class OrganizationWithLongTableName
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   OrganizationWithLongTableName._({
     this.id,
     required this.name,
@@ -87,6 +88,19 @@ abstract class OrganizationWithLongTableName implements _i1.SerializableModel {
         'people': people?.toJson(valueToJson: (v) => v.toJson()),
       if (cityId != null) 'cityId': cityId,
       if (city != null) 'city': city?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'OrganizationWithLongTableName',
+      if (id != null) 'id': id,
+      'name': name,
+      if (people != null)
+        'people': people?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      if (cityId != null) 'cityId': cityId,
+      if (city != null) 'city': city?.toJsonForProtocol(),
     };
   }
 

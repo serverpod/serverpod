@@ -12,7 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 
-abstract class BulkQueryColumnDescription implements _i1.SerializableModel {
+abstract class BulkQueryColumnDescription
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   BulkQueryColumnDescription._({required this.name});
 
   factory BulkQueryColumnDescription({required String name}) =
@@ -34,6 +35,14 @@ abstract class BulkQueryColumnDescription implements _i1.SerializableModel {
   BulkQueryColumnDescription copyWith({String? name});
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod.BulkQueryColumnDescription',
+      'name': name,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod.BulkQueryColumnDescription',
       'name': name,

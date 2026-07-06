@@ -16,7 +16,7 @@ import '../protocol.dart' as _i2;
 @_i1.immutable
 abstract class ImmutableChildObjectWithNoAdditionalFields
     extends _i2.ImmutableObject
-    implements _i1.SerializableModel {
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   const ImmutableChildObjectWithNoAdditionalFields._({required super.variable});
 
   const factory ImmutableChildObjectWithNoAdditionalFields({
@@ -61,6 +61,14 @@ abstract class ImmutableChildObjectWithNoAdditionalFields
 
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'ImmutableChildObjectWithNoAdditionalFields',
+      'variable': variable,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ImmutableChildObjectWithNoAdditionalFields',
       'variable': variable,

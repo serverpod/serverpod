@@ -18,7 +18,10 @@ import '../../../../providers/anonymous/models/exceptions/anonymous_account_bloc
 ///
 /// Inspect the [reason] field to understand this exception.
 abstract class AnonymousAccountBlockedException
-    implements _i1.SerializableException, _i1.SerializableModel {
+    implements
+        _i1.SerializableException,
+        _i1.SerializableModel,
+        _i1.ProtocolSerialization {
   AnonymousAccountBlockedException._({required this.reason});
 
   factory AnonymousAccountBlockedException({
@@ -45,6 +48,14 @@ abstract class AnonymousAccountBlockedException
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_auth_idp.AnonymousAccountBlockedException',
+      'reason': reason.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_auth_idp.AnonymousAccountBlockedException',
       'reason': reason.toJson(),

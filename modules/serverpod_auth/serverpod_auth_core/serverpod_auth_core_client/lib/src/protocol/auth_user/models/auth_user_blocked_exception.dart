@@ -14,7 +14,10 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Exception thrown when a user attempts to authenticate but their account is blocked.
 abstract class AuthUserBlockedException
-    implements _i1.SerializableException, _i1.SerializableModel {
+    implements
+        _i1.SerializableException,
+        _i1.SerializableModel,
+        _i1.ProtocolSerialization {
   AuthUserBlockedException._();
 
   factory AuthUserBlockedException() = _AuthUserBlockedExceptionImpl;
@@ -31,6 +34,11 @@ abstract class AuthUserBlockedException
   AuthUserBlockedException copyWith();
   @override
   Map<String, dynamic> toJson() {
+    return {'__className__': 'serverpod_auth_core.AuthUserBlockedException'};
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {'__className__': 'serverpod_auth_core.AuthUserBlockedException'};
   }
 

@@ -14,7 +14,8 @@ import '../protocol.dart' as _i1;
 import 'package:serverpod_client/serverpod_client.dart' as _i2;
 part 'sealed_child_required_only.dart';
 
-sealed class SealedParentNullableField implements _i2.SerializableModel {
+sealed class SealedParentNullableField
+    implements _i2.SerializableModel, _i2.ProtocolSerialization {
   SealedParentNullableField({this.nullableField});
 
   String? nullableField;

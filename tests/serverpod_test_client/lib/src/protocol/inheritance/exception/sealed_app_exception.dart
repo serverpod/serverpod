@@ -16,7 +16,10 @@ part 'not_found_exception.dart';
 part 'validation_exception.dart';
 
 sealed class SealedAppException
-    implements _i2.SerializableException, _i2.SerializableModel {
+    implements
+        _i2.SerializableException,
+        _i2.SerializableModel,
+        _i2.ProtocolSerialization {
   SealedAppException({required this.message});
 
   String message;

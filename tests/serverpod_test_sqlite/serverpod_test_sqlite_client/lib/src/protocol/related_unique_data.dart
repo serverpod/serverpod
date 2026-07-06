@@ -12,11 +12,12 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
-import 'unique_data.dart' as _i2;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
-import 'package:serverpod_client/serverpod_client.dart' as _i4;
+import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import 'unique_data.dart' as _i3;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
 
-abstract class RelatedUniqueData implements _i1.TableRow<int?> {
+abstract class RelatedUniqueData
+    implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   RelatedUniqueData._({
     this.id,
     required this.uniqueDataId,
@@ -27,7 +28,7 @@ abstract class RelatedUniqueData implements _i1.TableRow<int?> {
   factory RelatedUniqueData({
     int? id,
     required int uniqueDataId,
-    _i2.UniqueData? uniqueData,
+    _i3.UniqueData? uniqueData,
     required int number,
   }) = _RelatedUniqueDataImpl;
 
@@ -37,7 +38,7 @@ abstract class RelatedUniqueData implements _i1.TableRow<int?> {
       uniqueDataId: jsonSerialization['uniqueDataId'] as int,
       uniqueData: jsonSerialization['uniqueData'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.UniqueData>(
+          : _i4.Protocol().deserialize<_i3.UniqueData>(
               jsonSerialization['uniqueData'],
             ),
       number: jsonSerialization['number'] as int,
@@ -53,7 +54,7 @@ abstract class RelatedUniqueData implements _i1.TableRow<int?> {
 
   int uniqueDataId;
 
-  _i2.UniqueData? uniqueData;
+  _i3.UniqueData? uniqueData;
 
   int number;
 
@@ -62,11 +63,11 @@ abstract class RelatedUniqueData implements _i1.TableRow<int?> {
 
   /// Returns a shallow copy of this [RelatedUniqueData]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   RelatedUniqueData copyWith({
     int? id,
     int? uniqueDataId,
-    _i2.UniqueData? uniqueData,
+    _i3.UniqueData? uniqueData,
     int? number,
   });
   @override
@@ -80,7 +81,18 @@ abstract class RelatedUniqueData implements _i1.TableRow<int?> {
     };
   }
 
-  static RelatedUniqueDataInclude include({_i2.UniqueDataInclude? uniqueData}) {
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'RelatedUniqueData',
+      if (id != null) 'id': id,
+      'uniqueDataId': uniqueDataId,
+      if (uniqueData != null) 'uniqueData': uniqueData?.toJsonForProtocol(),
+      'number': number,
+    };
+  }
+
+  static RelatedUniqueDataInclude include({_i3.UniqueDataInclude? uniqueData}) {
     return RelatedUniqueDataInclude._(uniqueData: uniqueData);
   }
 
@@ -108,7 +120,7 @@ abstract class RelatedUniqueData implements _i1.TableRow<int?> {
 
   @override
   String toString() {
-    return _i4.SerializationManager.encode(this);
+    return _i2.SerializationManager.encode(this);
   }
 }
 
@@ -118,7 +130,7 @@ class _RelatedUniqueDataImpl extends RelatedUniqueData {
   _RelatedUniqueDataImpl({
     int? id,
     required int uniqueDataId,
-    _i2.UniqueData? uniqueData,
+    _i3.UniqueData? uniqueData,
     required int number,
   }) : super._(
          id: id,
@@ -129,7 +141,7 @@ class _RelatedUniqueDataImpl extends RelatedUniqueData {
 
   /// Returns a shallow copy of this [RelatedUniqueData]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   @override
   RelatedUniqueData copyWith({
     Object? id = _Undefined,
@@ -140,7 +152,7 @@ class _RelatedUniqueDataImpl extends RelatedUniqueData {
     return RelatedUniqueData(
       id: id is int? ? id : this.id,
       uniqueDataId: uniqueDataId ?? this.uniqueDataId,
-      uniqueData: uniqueData is _i2.UniqueData?
+      uniqueData: uniqueData is _i3.UniqueData?
           ? uniqueData
           : this.uniqueData?.copyWith(),
       number: number ?? this.number,
@@ -181,19 +193,19 @@ class RelatedUniqueDataTable extends _i1.Table<int?> {
 
   late final _i1.ColumnInt uniqueDataId;
 
-  _i2.UniqueDataTable? _uniqueData;
+  _i3.UniqueDataTable? _uniqueData;
 
   late final _i1.ColumnInt number;
 
-  _i2.UniqueDataTable get uniqueData {
+  _i3.UniqueDataTable get uniqueData {
     if (_uniqueData != null) return _uniqueData!;
     _uniqueData = _i1.createRelationTable(
       relationFieldName: 'uniqueData',
       field: RelatedUniqueData.t.uniqueDataId,
-      foreignField: _i2.UniqueData.t.id,
+      foreignField: _i3.UniqueData.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.UniqueDataTable(tableRelation: foreignTableRelation),
+          _i3.UniqueDataTable(tableRelation: foreignTableRelation),
     );
     return _uniqueData!;
   }
@@ -215,11 +227,11 @@ class RelatedUniqueDataTable extends _i1.Table<int?> {
 }
 
 class RelatedUniqueDataInclude extends _i1.IncludeObject {
-  RelatedUniqueDataInclude._({_i2.UniqueDataInclude? uniqueData}) {
+  RelatedUniqueDataInclude._({_i3.UniqueDataInclude? uniqueData}) {
     _uniqueData = uniqueData;
   }
 
-  _i2.UniqueDataInclude? _uniqueData;
+  _i3.UniqueDataInclude? _uniqueData;
 
   @override
   Map<String, _i1.Include?> get includes => {'uniqueData': _uniqueData};
@@ -682,7 +694,7 @@ class RelatedUniqueDataAttachRowRepository {
   Future<void> uniqueData(
     _i1.DatabaseSession session,
     RelatedUniqueData relatedUniqueData,
-    _i2.UniqueData uniqueData, {
+    _i3.UniqueData uniqueData, {
     _i1.Transaction? transaction,
   }) async {
     if (relatedUniqueData.id == null) {

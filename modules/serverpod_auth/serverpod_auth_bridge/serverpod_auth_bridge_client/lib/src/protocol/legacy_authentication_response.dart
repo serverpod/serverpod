@@ -16,7 +16,8 @@ import 'legacy_authentication_fail_reason.dart' as _i3;
 import 'package:serverpod_auth_bridge_client/src/protocol/protocol.dart' as _i4;
 
 /// Response payload for legacy authentication methods.
-abstract class LegacyAuthenticationResponse implements _i1.SerializableModel {
+abstract class LegacyAuthenticationResponse
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   LegacyAuthenticationResponse._({
     required this.success,
     this.key,
@@ -86,6 +87,18 @@ abstract class LegacyAuthenticationResponse implements _i1.SerializableModel {
       if (key != null) 'key': key,
       if (keyId != null) 'keyId': keyId,
       if (userInfo != null) 'userInfo': userInfo?.toJson(),
+      if (failReason != null) 'failReason': failReason?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod_auth_bridge.LegacyAuthenticationResponse',
+      'success': success,
+      if (key != null) 'key': key,
+      if (keyId != null) 'keyId': keyId,
+      if (userInfo != null) 'userInfo': userInfo?.toJsonForProtocol(),
       if (failReason != null) 'failReason': failReason?.toJson(),
     };
   }

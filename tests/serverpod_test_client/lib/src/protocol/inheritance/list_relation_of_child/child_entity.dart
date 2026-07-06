@@ -14,7 +14,7 @@ import '../../protocol.dart' as _i1;
 import 'package:serverpod_client/serverpod_client.dart' as _i2;
 
 abstract class ChildEntity extends _i1.BaseEntity
-    implements _i2.SerializableModel {
+    implements _i2.SerializableModel, _i2.ProtocolSerialization {
   ChildEntity._({
     this.id,
     required super.sharedField,
@@ -53,6 +53,16 @@ abstract class ChildEntity extends _i1.BaseEntity
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'ChildEntity',
+      if (id != null) 'id': id,
+      'sharedField': sharedField,
+      'localField': localField,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ChildEntity',
       if (id != null) 'id': id,

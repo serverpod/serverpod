@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Information about a user that can safely be publicly accessible.
-abstract class UserInfoPublic implements _i1.SerializableModel {
+abstract class UserInfoPublic
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   UserInfoPublic._({
     this.id,
     this.userName,
@@ -67,6 +68,18 @@ abstract class UserInfoPublic implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_auth.UserInfoPublic',
+      if (id != null) 'id': id,
+      if (userName != null) 'userName': userName,
+      if (fullName != null) 'fullName': fullName,
+      'created': created.toJson(),
+      if (imageUrl != null) 'imageUrl': imageUrl,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_auth.UserInfoPublic',
       if (id != null) 'id': id,

@@ -15,7 +15,8 @@ import 'package:serverpod_database/serverpod_database.dart' as _i2;
 
 /// Defines the current state of the database, including information about
 /// installed modules and migrations.
-abstract class DatabaseDefinitions implements _i1.SerializableModel {
+abstract class DatabaseDefinitions
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   DatabaseDefinitions._({
     required this.target,
     required this.live,
@@ -81,6 +82,21 @@ abstract class DatabaseDefinitions implements _i1.SerializableModel {
       ),
       'latestAvailableMigrations': latestAvailableMigrations.toJson(
         valueToJson: (v) => v.toJson(),
+      ),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod.DatabaseDefinitions',
+      'target': target.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'live': live.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'installedMigrations': installedMigrations.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
+      'latestAvailableMigrations': latestAvailableMigrations.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
       ),
     };
   }

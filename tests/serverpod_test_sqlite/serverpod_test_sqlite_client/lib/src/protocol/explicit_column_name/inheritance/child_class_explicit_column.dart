@@ -14,7 +14,7 @@ import '../../protocol.dart' as _i1;
 import 'package:serverpod_client/serverpod_client.dart' as _i2;
 
 abstract class ChildClassExplicitColumn extends _i1.NonTableParentClass
-    implements _i2.SerializableModel {
+    implements _i2.SerializableModel, _i2.ProtocolSerialization {
   ChildClassExplicitColumn._({
     this.id,
     required super.nonTableParentField,
@@ -55,6 +55,16 @@ abstract class ChildClassExplicitColumn extends _i1.NonTableParentClass
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'ChildClassExplicitColumn',
+      if (id != null) 'id': id,
+      'nonTableParentField': nonTableParentField,
+      'childField': childField,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ChildClassExplicitColumn',
       if (id != null) 'id': id,

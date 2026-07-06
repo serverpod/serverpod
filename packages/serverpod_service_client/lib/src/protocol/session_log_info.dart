@@ -18,7 +18,8 @@ import 'message_log_entry.dart' as _i5;
 import 'package:serverpod_service_client/src/protocol/protocol.dart' as _i6;
 
 /// Compounded information about a session log.
-abstract class SessionLogInfo implements _i1.SerializableModel {
+abstract class SessionLogInfo
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   SessionLogInfo._({
     required this.sessionLogEntry,
     required this.queries,
@@ -79,6 +80,17 @@ abstract class SessionLogInfo implements _i1.SerializableModel {
       'queries': queries.toJson(valueToJson: (v) => v.toJson()),
       'logs': logs.toJson(valueToJson: (v) => v.toJson()),
       'messages': messages.toJson(valueToJson: (v) => v.toJson()),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod.SessionLogInfo',
+      'sessionLogEntry': sessionLogEntry.toJsonForProtocol(),
+      'queries': queries.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'logs': logs.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'messages': messages.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
   }
 

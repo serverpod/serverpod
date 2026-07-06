@@ -14,7 +14,8 @@ import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 import 'package:serverpod_database/serverpod_database.dart' as _i2;
 
 /// The definition of a (desired) column in the database.
-abstract class ColumnDefinition implements _i1.SerializableModel {
+abstract class ColumnDefinition
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ColumnDefinition._({
     required this.name,
     this.fieldName,
@@ -91,6 +92,20 @@ abstract class ColumnDefinition implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod.ColumnDefinition',
+      'name': name,
+      if (fieldName != null) 'fieldName': fieldName,
+      'columnType': columnType.toJson(),
+      'isNullable': isNullable,
+      if (columnDefault != null) 'columnDefault': columnDefault,
+      if (dartType != null) 'dartType': dartType,
+      if (vectorDimension != null) 'vectorDimension': vectorDimension,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod.ColumnDefinition',
       'name': name,
