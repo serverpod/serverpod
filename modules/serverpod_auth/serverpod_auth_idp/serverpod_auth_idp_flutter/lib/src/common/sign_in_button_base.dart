@@ -159,7 +159,7 @@ class SignInButtonBase extends StatelessWidget {
     final text = shared?.text ?? this.text;
     final logoAlignment = shared?.logoAlignment ?? this.logoAlignment;
     final minimumWidth = shared?.minimumWidth ?? this.minimumWidth;
-    final textStyle = this.textStyle ?? shared?.textStyle;
+    final textStyle = shared?.textStyle ?? this.textStyle;
 
     final metrics = SignInButtonMetrics.of(size);
     final borderRadius = switch (shape) {
@@ -242,10 +242,10 @@ class SignInButtonBase extends StatelessWidget {
       isDisabled: isDisabled,
     );
 
-    final baseTextStyle = TextStyle(
-      fontSize: metrics.labelFontSize,
-      color: foreground,
-    );
+    // No explicit color: the label inherits the button's foreground, so it dims
+    // to the disabled foreground (60%) when the button is disabled, matching the
+    // faded background and greyed logo.
+    final baseTextStyle = TextStyle(fontSize: metrics.labelFontSize);
     final textWidget = Text(
       config.localizedLabel ?? config.label(text),
       style: textStyle != null ? baseTextStyle.merge(textStyle) : baseTextStyle,

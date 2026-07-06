@@ -114,7 +114,7 @@ class FacebookSignInButton extends StatelessWidget {
       child: Icon(
         Icons.facebook,
         size: logoSize,
-        color: foregroundColor,
+        color: isDisabled ? const Color(0xff9c9c9c) : foregroundColor,
       ),
     );
   }
