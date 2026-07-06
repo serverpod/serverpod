@@ -111,11 +111,8 @@ class StartCommand extends ServerpodCommand<StartOption> {
   final name = 'start';
 
   @override
-  bool get hidden => true;
-
-  @override
   final description =
-      'EXPERIMENTAL! Generate code and start the server. '
+      'Generate code and start the server. '
       'Use --watch to watch for changes and hot reload.';
 
   @override
