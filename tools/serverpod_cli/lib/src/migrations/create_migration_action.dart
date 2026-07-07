@@ -106,7 +106,8 @@ Future<CreateMigrationOutcome> createMigrationAction({
     return CreateMigrationFailed('$e');
   }
 
-  final hasClientMigrations = generationContext.hasClientDatabaseTables;
+  final hasClientMigrations =
+      generationContext.modelDefinitions.hasHostClientDatabaseTables;
   final serverGenerator = MigrationGenerator(
     directory: serverDirectory,
     projectName: projectName,

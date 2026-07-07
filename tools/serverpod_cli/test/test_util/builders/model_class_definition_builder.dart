@@ -28,6 +28,7 @@ class ModelClassDefinitionBuilder {
   List<InheritanceDefinition> _childClasses;
   InheritanceDefinition? _extendsClass;
   String? _sharedPackageName;
+  String? _moduleAlias;
 
   ModelClassDefinitionBuilder()
     : _fileName = 'example',
@@ -80,7 +81,7 @@ class ModelClassDefinitionBuilder {
       sharedPackageName: _sharedPackageName,
       type: TypeDefinitionBuilder()
           .withClassName(_className)
-          .withUrl(_sharedPackageName)
+          .withUrl(_sharedPackageName ?? _moduleAlias)
           .build(),
     );
   }
@@ -455,6 +456,11 @@ class ModelClassDefinitionBuilder {
 
   ModelClassDefinitionBuilder withSharedPackageName(String? sharedPackageName) {
     _sharedPackageName = sharedPackageName;
+    return this;
+  }
+
+  ModelClassDefinitionBuilder withModuleAlias(String moduleAlias) {
+    _moduleAlias = moduleAlias;
     return this;
   }
 }

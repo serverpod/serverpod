@@ -106,9 +106,15 @@ class LibraryGenerator {
     var nonModelStreamTypes = protocolDefinition
         .getNonModelOrPrimitiveStreamTypes(modules: config.modules);
 
+    final protocolDatabaseSerializationManager =
+        serverCode ||
+        (sharedPackage
+            ? hasDatabaseTablesForCurrentSide
+            : protocolDefinition.models.hasHostClientDatabaseTables);
+
     protocol
       ..name = 'Protocol'
-      ..extend = (serverCode || hasDatabaseTablesForCurrentSide)
+      ..extend = protocolDatabaseSerializationManager
           ? refer(
               'DatabaseSerializationManager',
               serverpodDatabaseRuntimeUrl(serverCode),
@@ -140,7 +146,7 @@ class LibraryGenerator {
               ? const Code('Protocol._().._registerHostProtocols()')
               : const Code('Protocol._()'),
       ),
-      if (serverCode || hasDatabaseTablesForCurrentSide)
+      if (protocolDatabaseSerializationManager)
         Field(
           (f) => f
             ..name = 'targetTableDefinitions'
@@ -540,7 +546,7 @@ class LibraryGenerator {
       ),
       if (_supportsHostProtocols) ..._buildDynamicFieldHostMethods(),
       if (_shouldRegisterHostProtocols) _buildRegisterHostProtocolsMethod(),
-      if (serverCode || hasDatabaseTablesForCurrentSide)
+      if (protocolDatabaseSerializationManager)
         Method(
           (m) => m
             ..name = 'getTableForType'
@@ -597,7 +603,7 @@ class LibraryGenerator {
               const Code('return null;'),
             ]),
         ),
-      if (serverCode || hasDatabaseTablesForCurrentSide)
+      if (protocolDatabaseSerializationManager)
         Method(
           (m) => m
             ..name = 'getTargetTableDefinitions'
@@ -982,13 +988,8 @@ return deserializeByClassName(value);
 
     var library = LibraryBuilder();
 
-    var clientModels = protocolDefinition.models
-        .where((model) => !model.serverOnly)
-        .where((model) => !model.isSharedModel)
-        .toList();
-    var hasClientDatabaseTables = clientModels.any(
-      (m) => m is ModelClassDefinition && m.shouldGenerateTableCode(false),
-    );
+    var hasClientDatabaseTables =
+        protocolDefinition.models.hasHostClientDatabaseTables;
 
     if (hasClientDatabaseTables && config.type != PackageType.module) {
       library.directives.addAll([
