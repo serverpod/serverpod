@@ -123,6 +123,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
     Directory? serverDirectory,
     ExperimentalFeatures? experimentalFeatures,
     RuntimeParametersListBuilder? runtimeParametersBuilder,
+    DatabaseInterceptor? databaseInterceptor,
     ServerpodConfig Function(ServerpodConfig)? configOverride,
   }) : testServerOutputMode =
            testServerOutputMode ?? TestServerOutputMode.normal {
@@ -143,6 +144,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
           configOverride: configOverride,
           experimentalFeatures: experimentalFeatures,
           runtimeParametersBuilder: runtimeParametersBuilder,
+          databaseInterceptor: databaseInterceptor,
         );
         endpoints.initializeEndpoints(serverpod.server);
         return serverpod;
