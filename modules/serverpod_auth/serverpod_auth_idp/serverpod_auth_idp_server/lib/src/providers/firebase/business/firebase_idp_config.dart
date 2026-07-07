@@ -39,11 +39,18 @@ class FirebaseIdpConfig extends IdentityProviderBuilder<FirebaseIdp> {
   ///
   /// This function should throw an exception if the account details do not
   /// match the requirements. If the function returns normally, the account
-  /// is considered valid.
+  /// is considered valid. Thrown exceptions that implement
+  /// [SerializableException] are passed through to the client, while any
+  /// other exception surfaces as a generic
+  /// [FirebaseIdTokenVerificationException].
   ///
   /// It can be used to enforce additional requirements on the Firebase account
   /// details before allowing the user to sign in, such as requiring a verified
   /// email or specific email domains.
+  ///
+  /// By default all account details are accepted, including unverified
+  /// emails — see [validateFirebaseAccountDetails]. To reject accounts whose
+  /// email has not been verified, pass [requireVerifiedEmail].
   final FirebaseAccountDetailsValidation firebaseAccountDetailsValidation;
 
   /// Callback to be invoked after a new Firebase account has been created
@@ -66,15 +73,30 @@ class FirebaseIdpConfig extends IdentityProviderBuilder<FirebaseIdp> {
 
   /// Default validation function for extracted Firebase account details.
   ///
-  /// By default, this validates that the email is verified. Override this
-  /// to implement custom validation logic.
+  /// Accepts all account details, including unverified emails. Firebase
+  /// Email/Password accounts start out with an unverified email and users are
+  /// typically signed in right after signup, before they have clicked the
+  /// verification link — rejecting unverified emails would block that flow.
+  ///
+  /// To require a verified email, use [requireVerifiedEmail] instead.
   static void validateFirebaseAccountDetails(
     final FirebaseAccountDetails accountDetails,
+  ) {}
+
+  /// Validation function that requires the email to be verified when present.
+  ///
+  /// Throws a [FirebaseEmailNotVerifiedException] if an email is present but
+  /// has not been verified. Accounts without an email (e.g. phone
+  /// authentication) are accepted.
+  ///
+  /// Note that with Firebase Email/Password sign-in this blocks users from
+  /// signing in between signup and clicking the verification link Firebase
+  /// emails them.
+  static void requireVerifiedEmail(
+    final FirebaseAccountDetails accountDetails,
   ) {
-    // Firebase accounts may not have email if using phone auth
-    // Only validate verifiedEmail if email is present
     if (accountDetails.email != null && accountDetails.verifiedEmail != true) {
-      throw FirebaseUserInfoMissingDataException();
+      throw FirebaseEmailNotVerifiedException();
     }
   }
 
