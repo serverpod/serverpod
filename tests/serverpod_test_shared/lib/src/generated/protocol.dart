@@ -11,19 +11,21 @@
 // ignore_for_file: dead_code, unnecessary_type_check
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
-import 'shared/container.dart' as _i2;
-import 'shared/dynamic_on_shared.dart' as _i3;
-import 'shared/enum.dart' as _i4;
-import 'shared/exception.dart' as _i5;
-import 'shared/exception/shared_extended_app_exception.dart' as _i6;
-import 'shared/exception/shared_base_app_exception.dart' as _i7;
-import 'shared/subclass.dart' as _i8;
-import 'shared/model.dart' as _i9;
-import 'shared/sealed/parent.dart' as _i10;
-import 'shared/sealed/exception/shared_sealed_app_exception.dart' as _i11;
-import 'shared/shared_object_with_sealed_exception.dart' as _i12;
-import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i13;
+import 'package:serverpod_database/serverpod_database.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _i2;
+import 'shared/container.dart' as _i3;
+import 'shared/dynamic_on_shared.dart' as _i4;
+import 'shared/enum.dart' as _i5;
+import 'shared/exception.dart' as _i6;
+import 'shared/exception/shared_extended_app_exception.dart' as _i7;
+import 'shared/exception/shared_base_app_exception.dart' as _i8;
+import 'shared/subclass.dart' as _i9;
+import 'shared/model.dart' as _i10;
+import 'shared/sealed/parent.dart' as _i11;
+import 'shared/sealed/exception/shared_sealed_app_exception.dart' as _i12;
+import 'shared/shared_object_with_sealed_exception.dart' as _i13;
+import 'shared/shared_table_record.dart' as _i14;
+import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i15;
 export 'shared/container.dart';
 export 'shared/dynamic_on_shared.dart';
 export 'shared/enum.dart';
@@ -35,19 +37,66 @@ export 'shared/model.dart';
 export 'shared/sealed/exception/shared_sealed_app_exception.dart';
 export 'shared/sealed/parent.dart';
 export 'shared/shared_object_with_sealed_exception.dart';
+export 'shared/shared_table_record.dart';
 
-class Protocol extends _i1.SerializationManager {
+class Protocol extends _i1.DatabaseSerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;
 
   static final Protocol _instance = Protocol._();
 
-  final Set<_i1.SerializationManager> _hostProtocols = {};
+  static final List<_i1.TableDefinition> targetTableDefinitions = [
+    _i1.TableDefinition(
+      name: 'shared_table_record',
+      dartName: 'SharedTableRecord',
+      schema: 'public',
+      module: 'serverpod_test',
+      columns: [
+        _i1.ColumnDefinition(
+          name: 'id',
+          columnType: _i1.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'serial',
+        ),
+        _i1.ColumnDefinition(
+          name: 'name',
+          columnType: _i1.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i1.ColumnDefinition(
+          name: 'sharedEnum',
+          columnType: _i1.ColumnType.text,
+          isNullable: false,
+          dartType: 'SharedEnum',
+        ),
+        _i1.ColumnDefinition(
+          name: 'sharedSubclass',
+          columnType: _i1.ColumnType.json,
+          isNullable: true,
+          dartType: 'SharedSubclass?',
+        ),
+        _i1.ColumnDefinition(
+          name: 'itemCount',
+          columnType: _i1.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '0',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [],
+      managed: true,
+    ),
+  ];
+
+  final Set<_i2.SerializationManager> _hostProtocols = {};
 
   void registerHostProtocol(
     String projectName,
-    _i1.SerializationManager protocol,
+    _i2.SerializationManager protocol,
   ) {
     _hostProtocols.add(protocol);
   }
@@ -79,95 +128,101 @@ class Protocol extends _i1.SerializationManager {
       }
     }
 
-    if (t == _i2.SharedContainer) {
-      return _i2.SharedContainer.fromJson(data) as T;
+    if (t == _i3.SharedContainer) {
+      return _i3.SharedContainer.fromJson(data) as T;
     }
-    if (t == _i3.DynamicOnShared) {
-      return _i3.DynamicOnShared.fromJson(data) as T;
+    if (t == _i4.DynamicOnShared) {
+      return _i4.DynamicOnShared.fromJson(data) as T;
     }
-    if (t == _i4.SharedEnum) {
-      return _i4.SharedEnum.fromJson(data) as T;
+    if (t == _i5.SharedEnum) {
+      return _i5.SharedEnum.fromJson(data) as T;
     }
-    if (t == _i5.SharedException) {
-      return _i5.SharedException.fromJson(data) as T;
+    if (t == _i6.SharedException) {
+      return _i6.SharedException.fromJson(data) as T;
     }
-    if (t == _i6.SharedExtendedAppException) {
-      return _i6.SharedExtendedAppException.fromJson(data) as T;
+    if (t == _i7.SharedExtendedAppException) {
+      return _i7.SharedExtendedAppException.fromJson(data) as T;
     }
-    if (t == _i7.SharedBaseAppException) {
-      return _i7.SharedBaseAppException.fromJson(data) as T;
+    if (t == _i8.SharedBaseAppException) {
+      return _i8.SharedBaseAppException.fromJson(data) as T;
     }
-    if (t == _i8.SharedSubclass) {
-      return _i8.SharedSubclass.fromJson(data) as T;
+    if (t == _i9.SharedSubclass) {
+      return _i9.SharedSubclass.fromJson(data) as T;
     }
-    if (t == _i9.SharedModel) {
-      return _i9.SharedModel.fromJson(data) as T;
+    if (t == _i10.SharedModel) {
+      return _i10.SharedModel.fromJson(data) as T;
     }
-    if (t == _i10.SharedSealedChild) {
-      return _i10.SharedSealedChild.fromJson(data) as T;
+    if (t == _i11.SharedSealedChild) {
+      return _i11.SharedSealedChild.fromJson(data) as T;
     }
-    if (t == _i11.SharedNotFoundException) {
-      return _i11.SharedNotFoundException.fromJson(data) as T;
+    if (t == _i12.SharedNotFoundException) {
+      return _i12.SharedNotFoundException.fromJson(data) as T;
     }
-    if (t == _i11.SharedValidationException) {
-      return _i11.SharedValidationException.fromJson(data) as T;
+    if (t == _i12.SharedValidationException) {
+      return _i12.SharedValidationException.fromJson(data) as T;
     }
-    if (t == _i12.SharedObjectWithSealedException) {
-      return _i12.SharedObjectWithSealedException.fromJson(data) as T;
+    if (t == _i13.SharedObjectWithSealedException) {
+      return _i13.SharedObjectWithSealedException.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i2.SharedContainer?>()) {
-      return (data != null ? _i2.SharedContainer.fromJson(data) : null) as T;
+    if (t == _i14.SharedTableRecord) {
+      return _i14.SharedTableRecord.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i3.DynamicOnShared?>()) {
-      return (data != null ? _i3.DynamicOnShared.fromJson(data) : null) as T;
+    if (t == _i2.getType<_i3.SharedContainer?>()) {
+      return (data != null ? _i3.SharedContainer.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i4.SharedEnum?>()) {
-      return (data != null ? _i4.SharedEnum.fromJson(data) : null) as T;
+    if (t == _i2.getType<_i4.DynamicOnShared?>()) {
+      return (data != null ? _i4.DynamicOnShared.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i5.SharedException?>()) {
-      return (data != null ? _i5.SharedException.fromJson(data) : null) as T;
+    if (t == _i2.getType<_i5.SharedEnum?>()) {
+      return (data != null ? _i5.SharedEnum.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i6.SharedExtendedAppException?>()) {
+    if (t == _i2.getType<_i6.SharedException?>()) {
+      return (data != null ? _i6.SharedException.fromJson(data) : null) as T;
+    }
+    if (t == _i2.getType<_i7.SharedExtendedAppException?>()) {
       return (data != null
-              ? _i6.SharedExtendedAppException.fromJson(data)
+              ? _i7.SharedExtendedAppException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i7.SharedBaseAppException?>()) {
-      return (data != null ? _i7.SharedBaseAppException.fromJson(data) : null)
+    if (t == _i2.getType<_i8.SharedBaseAppException?>()) {
+      return (data != null ? _i8.SharedBaseAppException.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i8.SharedSubclass?>()) {
-      return (data != null ? _i8.SharedSubclass.fromJson(data) : null) as T;
+    if (t == _i2.getType<_i9.SharedSubclass?>()) {
+      return (data != null ? _i9.SharedSubclass.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i9.SharedModel?>()) {
-      return (data != null ? _i9.SharedModel.fromJson(data) : null) as T;
+    if (t == _i2.getType<_i10.SharedModel?>()) {
+      return (data != null ? _i10.SharedModel.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i10.SharedSealedChild?>()) {
-      return (data != null ? _i10.SharedSealedChild.fromJson(data) : null) as T;
+    if (t == _i2.getType<_i11.SharedSealedChild?>()) {
+      return (data != null ? _i11.SharedSealedChild.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i11.SharedNotFoundException?>()) {
-      return (data != null ? _i11.SharedNotFoundException.fromJson(data) : null)
+    if (t == _i2.getType<_i12.SharedNotFoundException?>()) {
+      return (data != null ? _i12.SharedNotFoundException.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i11.SharedValidationException?>()) {
+    if (t == _i2.getType<_i12.SharedValidationException?>()) {
       return (data != null
-              ? _i11.SharedValidationException.fromJson(data)
+              ? _i12.SharedValidationException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i12.SharedObjectWithSealedException?>()) {
+    if (t == _i2.getType<_i13.SharedObjectWithSealedException?>()) {
       return (data != null
-              ? _i12.SharedObjectWithSealedException.fromJson(data)
+              ? _i13.SharedObjectWithSealedException.fromJson(data)
               : null)
           as T;
+    }
+    if (t == _i2.getType<_i14.SharedTableRecord?>()) {
+      return (data != null ? _i14.SharedTableRecord.fromJson(data) : null) as T;
     }
     if (t == dynamic) {
       return deserializeDynamicFieldValue(data) as T;
     }
-    if (t == List<_i13.SharedSealedAppException>) {
+    if (t == List<_i15.SharedSealedAppException>) {
       return (data as List)
-              .map((e) => deserialize<_i13.SharedSealedAppException>(e))
+              .map((e) => deserialize<_i15.SharedSealedAppException>(e))
               .toList()
           as T;
     }
@@ -176,18 +231,19 @@ class Protocol extends _i1.SerializationManager {
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _i2.SharedContainer => 'SharedContainer',
-      _i3.DynamicOnShared => 'DynamicOnShared',
-      _i4.SharedEnum => 'SharedEnum',
-      _i5.SharedException => 'SharedException',
-      _i6.SharedExtendedAppException => 'SharedExtendedAppException',
-      _i7.SharedBaseAppException => 'SharedBaseAppException',
-      _i8.SharedSubclass => 'SharedSubclass',
-      _i9.SharedModel => 'SharedModel',
-      _i10.SharedSealedChild => 'SharedSealedChild',
-      _i11.SharedNotFoundException => 'SharedNotFoundException',
-      _i11.SharedValidationException => 'SharedValidationException',
-      _i12.SharedObjectWithSealedException => 'SharedObjectWithSealedException',
+      _i3.SharedContainer => 'SharedContainer',
+      _i4.DynamicOnShared => 'DynamicOnShared',
+      _i5.SharedEnum => 'SharedEnum',
+      _i6.SharedException => 'SharedException',
+      _i7.SharedExtendedAppException => 'SharedExtendedAppException',
+      _i8.SharedBaseAppException => 'SharedBaseAppException',
+      _i9.SharedSubclass => 'SharedSubclass',
+      _i10.SharedModel => 'SharedModel',
+      _i11.SharedSealedChild => 'SharedSealedChild',
+      _i12.SharedNotFoundException => 'SharedNotFoundException',
+      _i12.SharedValidationException => 'SharedValidationException',
+      _i13.SharedObjectWithSealedException => 'SharedObjectWithSealedException',
+      _i14.SharedTableRecord => 'SharedTableRecord',
       _ => null,
     };
   }
@@ -205,30 +261,32 @@ class Protocol extends _i1.SerializationManager {
     }
 
     switch (data) {
-      case _i2.SharedContainer():
+      case _i3.SharedContainer():
         return 'SharedContainer';
-      case _i3.DynamicOnShared():
+      case _i4.DynamicOnShared():
         return 'DynamicOnShared';
-      case _i4.SharedEnum():
+      case _i5.SharedEnum():
         return 'SharedEnum';
-      case _i5.SharedException():
+      case _i6.SharedException():
         return 'SharedException';
-      case _i6.SharedExtendedAppException():
+      case _i7.SharedExtendedAppException():
         return 'SharedExtendedAppException';
-      case _i7.SharedBaseAppException():
+      case _i8.SharedBaseAppException():
         return 'SharedBaseAppException';
-      case _i8.SharedSubclass():
+      case _i9.SharedSubclass():
         return 'SharedSubclass';
-      case _i9.SharedModel():
+      case _i10.SharedModel():
         return 'SharedModel';
-      case _i10.SharedSealedChild():
+      case _i11.SharedSealedChild():
         return 'SharedSealedChild';
-      case _i11.SharedNotFoundException():
+      case _i12.SharedNotFoundException():
         return 'SharedNotFoundException';
-      case _i11.SharedValidationException():
+      case _i12.SharedValidationException():
         return 'SharedValidationException';
-      case _i12.SharedObjectWithSealedException():
+      case _i13.SharedObjectWithSealedException():
         return 'SharedObjectWithSealedException';
+      case _i14.SharedTableRecord():
+        return 'SharedTableRecord';
     }
     return null;
   }
@@ -240,40 +298,43 @@ class Protocol extends _i1.SerializationManager {
       return super.deserializeByClassName(data);
     }
     if (dataClassName == 'SharedContainer') {
-      return deserialize<_i2.SharedContainer>(data['data']);
+      return deserialize<_i3.SharedContainer>(data['data']);
     }
     if (dataClassName == 'DynamicOnShared') {
-      return deserialize<_i3.DynamicOnShared>(data['data']);
+      return deserialize<_i4.DynamicOnShared>(data['data']);
     }
     if (dataClassName == 'SharedEnum') {
-      return deserialize<_i4.SharedEnum>(data['data']);
+      return deserialize<_i5.SharedEnum>(data['data']);
     }
     if (dataClassName == 'SharedException') {
-      return deserialize<_i5.SharedException>(data['data']);
+      return deserialize<_i6.SharedException>(data['data']);
     }
     if (dataClassName == 'SharedExtendedAppException') {
-      return deserialize<_i6.SharedExtendedAppException>(data['data']);
+      return deserialize<_i7.SharedExtendedAppException>(data['data']);
     }
     if (dataClassName == 'SharedBaseAppException') {
-      return deserialize<_i7.SharedBaseAppException>(data['data']);
+      return deserialize<_i8.SharedBaseAppException>(data['data']);
     }
     if (dataClassName == 'SharedSubclass') {
-      return deserialize<_i8.SharedSubclass>(data['data']);
+      return deserialize<_i9.SharedSubclass>(data['data']);
     }
     if (dataClassName == 'SharedModel') {
-      return deserialize<_i9.SharedModel>(data['data']);
+      return deserialize<_i10.SharedModel>(data['data']);
     }
     if (dataClassName == 'SharedSealedChild') {
-      return deserialize<_i10.SharedSealedChild>(data['data']);
+      return deserialize<_i11.SharedSealedChild>(data['data']);
     }
     if (dataClassName == 'SharedNotFoundException') {
-      return deserialize<_i11.SharedNotFoundException>(data['data']);
+      return deserialize<_i12.SharedNotFoundException>(data['data']);
     }
     if (dataClassName == 'SharedValidationException') {
-      return deserialize<_i11.SharedValidationException>(data['data']);
+      return deserialize<_i12.SharedValidationException>(data['data']);
     }
     if (dataClassName == 'SharedObjectWithSealedException') {
-      return deserialize<_i12.SharedObjectWithSealedException>(data['data']);
+      return deserialize<_i13.SharedObjectWithSealedException>(data['data']);
+    }
+    if (dataClassName == 'SharedTableRecord') {
+      return deserialize<_i14.SharedTableRecord>(data['data']);
     }
     return super.deserializeByClassName(data);
   }
@@ -296,8 +357,8 @@ class Protocol extends _i1.SerializationManager {
         'data': object,
       };
       return forProtocol
-          ? _i1.SerializationManager.toEncodableForProtocol(wrapped)
-          : _i1.SerializationManager.toEncodable(wrapped);
+          ? _i2.SerializationManager.toEncodableForProtocol(wrapped)
+          : _i2.SerializationManager.toEncodable(wrapped);
     }
     return super.dynamicFieldToJson(object, forProtocol: forProtocol);
   }
@@ -336,6 +397,19 @@ class Protocol extends _i1.SerializationManager {
     }
     return deserializeByClassName(value);
   }
+
+  @override
+  _i1.Table? getTableForType(Type t) {
+    switch (t) {
+      case _i14.SharedTableRecord:
+        return _i14.SharedTableRecord.t;
+    }
+    return null;
+  }
+
+  @override
+  List<_i1.TableDefinition> getTargetTableDefinitions() =>
+      targetTableDefinitions;
 
   @override
   String getModuleName() => 'serverpod_test';
