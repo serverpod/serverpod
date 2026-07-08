@@ -6,7 +6,9 @@ import 'package:http/http.dart' as http;
 // Test widget classes
 class TestHtmlWidget extends WebWidget {
   @override
-  String toString() => '<html><body>Test HTML</body></html>';
+  String render({String? Function(String)? onMissingVariable}) {
+    return '<html><body>Test HTML</body></html>';
+  }
 }
 
 class TestJsonWidget extends JsonWidget {

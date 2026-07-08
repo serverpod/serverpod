@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:mustache_template/mustache.dart';
 import 'package:path/path.dart';
+import 'package:whiskers/whiskers.dart';
 
 /// Global access to all templates loaded when starting the webserver.
 final Templates templates = Templates();
@@ -37,6 +37,8 @@ class Templates {
         _templates[templateKey] = Template(
           data,
           name: templateKey,
+          lenient: true,
+          htmlEscapeValues: false,
         );
       } else if (entity is Directory) {
         var subDirName = basename(entity.path);
