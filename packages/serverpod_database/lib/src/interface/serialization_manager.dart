@@ -19,7 +19,3 @@ abstract class DatabaseSerializationManager extends SerializationManager {
   /// [DatabaseAnalyzerExtensions.getTargetTableDefinitions].
   List<TableDefinition> getTargetTableDefinitions();
 }
-
-/// Backwards-compatible alias for [DatabaseSerializationManager].
-@Deprecated('Use DatabaseSerializationManager instead.')
-typedef SerializationManagerServer = DatabaseSerializationManager;

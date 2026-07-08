@@ -3004,8 +3004,8 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i55.SimpleData?>(),
-              nullable: true,
+              type: _i1.getType<_i55.SimpleData>(),
+              nullable: false,
             ),
           },
           call:
@@ -3024,8 +3024,8 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i55.SimpleData?>(),
-              nullable: true,
+              type: _i1.getType<_i55.SimpleData>(),
+              nullable: false,
             ),
           },
           call:

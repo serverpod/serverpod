@@ -59,9 +59,9 @@ import 'package:serverpod_test_server/src/generated/object_with_dynamic.dart'
     as _i31;
 import 'package:serverpod_test_server/src/generated/my_feature/models/my_feature_model.dart'
     as _i32;
+import 'package:serverpod_test_server/src/generated/future_calls.dart' as _i33;
 import 'package:serverpod_test_server/src/generated/future_calls_generated_models/test_generated_call_hello_model.dart'
-    as _i33;
-import 'package:serverpod_test_server/src/generated/future_calls.dart' as _i34;
+    as _i34;
 import 'package:serverpod_test_server/src/generated/future_calls_generated_models/test_generated_call_bye_model.dart'
     as _i35;
 import 'package:serverpod_test_server/src/generated/my_trigger_type.dart'
@@ -621,6 +621,10 @@ class _InternalTestEndpoints extends TestEndpoints
 }
 
 class _FutureCalls {
+  late final testCall = _TestCallFutureCall();
+
+  late final testExceptionCall = _TestExceptionCallFutureCall();
+
   late final testGeneratedCall = _TestGeneratedCallFutureCall();
 }
 
@@ -5047,7 +5051,7 @@ class _TestFutureCallsEndpoint {
 
   _i4.Future<void> makeFutureCall(
     _i1.TestSessionBuilder sessionBuilder,
-    _i11.SimpleData? data,
+    _i11.SimpleData data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -5078,7 +5082,7 @@ class _TestFutureCallsEndpoint {
 
   _i4.Future<void> makeFutureCallThatThrows(
     _i1.TestSessionBuilder sessionBuilder,
-    _i11.SimpleData? data,
+    _i11.SimpleData data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -15656,16 +15660,52 @@ class _MyFeatureEndpoint {
   }
 }
 
+class _TestCallFutureCall {
+  Future<void> run(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i11.SimpleData data,
+  ) async {
+    var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
+        .internalBuild();
+    try {
+      await _i33.TestCallRunFutureCall().invoke(
+        _localUniqueSession,
+        data,
+      );
+    } finally {
+      await _localUniqueSession.close();
+    }
+  }
+}
+
+class _TestExceptionCallFutureCall {
+  Future<void> run(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i11.SimpleData data,
+  ) async {
+    var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
+        .internalBuild();
+    try {
+      await _i33.TestExceptionCallRunFutureCall().invoke(
+        _localUniqueSession,
+        data,
+      );
+    } finally {
+      await _localUniqueSession.close();
+    }
+  }
+}
+
 class _TestGeneratedCallFutureCall {
   Future<void> hello(
     _i1.TestSessionBuilder sessionBuilder,
     String name,
   ) async {
-    var object = _i33.TestGeneratedCallHelloModel(name: name);
+    var object = _i34.TestGeneratedCallHelloModel(name: name);
     var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
         .internalBuild();
     try {
-      await _i34.TestGeneratedCallHelloFutureCall().invoke(
+      await _i33.TestGeneratedCallHelloFutureCall().invoke(
         _localUniqueSession,
         object,
       );
@@ -15686,7 +15726,7 @@ class _TestGeneratedCallFutureCall {
     var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
         .internalBuild();
     try {
-      await _i34.TestGeneratedCallByeFutureCall().invoke(
+      await _i33.TestGeneratedCallByeFutureCall().invoke(
         _localUniqueSession,
         object,
       );
@@ -15702,7 +15742,7 @@ class _TestGeneratedCallFutureCall {
     var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
         .internalBuild();
     try {
-      await _i34.TestGeneratedCallLogDataFutureCall().invoke(
+      await _i33.TestGeneratedCallLogDataFutureCall().invoke(
         _localUniqueSession,
         data,
       );
@@ -15715,7 +15755,7 @@ class _TestGeneratedCallFutureCall {
     var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
         .internalBuild();
     try {
-      await _i34.TestGeneratedCallDoTaskFutureCall().invoke(
+      await _i33.TestGeneratedCallDoTaskFutureCall().invoke(
         _localUniqueSession,
         null,
       );
@@ -15736,7 +15776,7 @@ class _TestGeneratedCallFutureCall {
     var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
         .internalBuild();
     try {
-      await _i34.TestGeneratedCallExecuteWithTriggerFutureCall().invoke(
+      await _i33.TestGeneratedCallExecuteWithTriggerFutureCall().invoke(
         _localUniqueSession,
         object,
       );
