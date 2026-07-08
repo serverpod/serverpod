@@ -5079,37 +5079,6 @@ class _TestFutureCallsEndpoint {
       }
     });
   }
-
-  _i4.Future<void> makeFutureCallThatThrows(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i11.SimpleData data,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'testFutureCalls',
-            method: 'makeFutureCallThatThrows',
-          );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'testFutureCalls',
-          methodName: 'makeFutureCallThatThrows',
-          parameters: _i1.testObjectToJson({'data': data}),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue =
-            await (_localCallContext.method.call(
-                  _localUniqueSession,
-                  _localCallContext.arguments,
-                )
-                as _i4.Future<void>);
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
 }
 
 class _ListParametersEndpoint {
