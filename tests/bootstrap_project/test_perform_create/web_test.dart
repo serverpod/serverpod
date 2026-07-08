@@ -81,7 +81,7 @@ void main() {
           expect(
             content,
             contains(
-              "pod.webServer.addRoute(StaticRoute.directory(root), '/web')",
+              "StaticRoute.withCacheBusting(root, mountPrefix: '/web')",
             ),
           );
         },
@@ -224,7 +224,7 @@ void main() {
           expect(
             content,
             contains(
-              "pod.webServer.addRoute(StaticRoute.directory(root), '/web')",
+              "StaticRoute.withCacheBusting(root, mountPrefix: '/web')",
             ),
           );
           expect(
@@ -478,6 +478,16 @@ void main() {
           await expectLater(templatesDir.exists(), completion(false));
         },
       );
+
+      test('then the server does not have a src/cache_busting.dart file', () {
+        expect(
+          File(
+            p.join(project.serverDir, 'lib', 'src', 'cache_busting.dart'),
+          ).existsSync(),
+          isFalse,
+          reason: 'Server cache_busting.dart file exists but should not.',
+        );
+      });
 
       test(
         'then the server server.dart does not contain web imports',

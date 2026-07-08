@@ -220,7 +220,7 @@ class TemplateRenderer {
 
   String _renderTemplate(String content, TemplateContext context) {
     try {
-      var template = Template(content, lenient: true);
+      var template = Template(content, lenient: true, htmlEscapeValues: false);
       return template.renderString(
         context.toMustacheMap(),
         onMissingVariable: (name, context) => '{{$name}}',
