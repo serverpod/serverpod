@@ -83,19 +83,6 @@ abstract class CustomClassMethodAnalyzer {
       );
     }
 
-    var copyWith =
-        element.lookUpMethod(name: 'copyWith', library: library) ??
-        element.lookUpGetter(name: 'copyWith', library: library);
-    if (copyWith == null) {
-      errors.add(
-        SourceSpanSeverityException(
-          'Custom class "${extraClass.className}" is missing a "copyWith" method.',
-          element.span,
-          severity: SourceSpanSeverity.error,
-        ),
-      );
-    }
-
     return errors;
   }
 }

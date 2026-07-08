@@ -244,9 +244,9 @@ class CustomClassAnalyzer {
     TypeDefinition extraClass,
     LibraryElement library,
   ) {
-    var element = library.getClass(extraClass.className);
+    var element = library.exportNamespace.get2(extraClass.className);
 
-    if (element == null) {
+    if (element == null || element is! ClassElement) {
       return [
         SourceSpanSeverityException(
           'Custom class "${extraClass.className}" was not found in the library "${extraClass.sourcePath}".',

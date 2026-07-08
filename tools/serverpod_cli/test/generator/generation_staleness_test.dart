@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:serverpod_cli/src/config/config.dart';
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:test/fake.dart';
@@ -57,6 +57,9 @@ class _FakeConfig extends Fake implements GeneratorConfig {
     for (final pathParts in _sharedModels.values)
       p.joinAll([serverDir, ...pathParts, 'lib', 'src', 'generated']),
   ];
+
+  @override
+  List<TypeDefinition> get extraClasses => [];
 }
 
 void main() {
