@@ -1216,11 +1216,19 @@ void main() async {
         final cloudEmailConfig = RegExp(
           r'ServerpodCloudEmailIdpConfig\([^)]*\)',
         );
+        // TODO: Remove once StaticRoute.withCacheBusting is published.
+        const staticRouteCacheBusting =
+            "StaticRoute.withCacheBusting(root, mountPrefix: '/web')";
+
         serverFile.writeAsStringSync(
           serverSource
               .replaceAll(wasmHeaders, '')
               .replaceAll(sessionAlert, 'session.log(')
-              .replaceAll(cloudEmailConfig, 'EmailIdpConfigFromPasswords()'),
+              .replaceAll(cloudEmailConfig, 'EmailIdpConfigFromPasswords()')
+              .replaceAll(
+                staticRouteCacheBusting,
+                'StaticRoute.directory(root)',
+              ),
         );
 
         final dockerBuildProcess = await startProcess(
