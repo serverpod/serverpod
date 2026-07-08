@@ -13,19 +13,17 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:clock/clock.dart' as _i2;
-import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i3;
 import 'future_calls_generated_models/test_generated_call_hello_model.dart'
-    as _i4;
+    as _i3;
 import 'future_calls_generated_models/test_generated_call_bye_model.dart'
-    as _i5;
+    as _i4;
+import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i5;
 import 'package:serverpod_test_server/src/generated/my_trigger_type.dart'
     as _i6;
 import 'future_calls_generated_models/test_generated_call_execute_with_trigger_model.dart'
     as _i7;
 import 'dart:async' as _i8;
-import '../futureCalls/test_call.dart' as _i9;
-import '../futureCalls/test_exception_call.dart' as _i10;
-import '../futureCalls/test_generated_call.dart' as _i11;
+import '../futureCalls/test_generated_call.dart' as _i9;
 
 /// Invokes a future call.
 typedef _InvokeFutureCall =
@@ -69,8 +67,6 @@ class FutureCalls extends _i1.FutureCallDispatch<_FutureCallRef> {
     String serverId,
   ) {
     var registeredFutureCalls = <String, _i1.FutureCall>{
-      'TestCallRunFutureCall': TestCallRunFutureCall(),
-      'TestExceptionCallRunFutureCall': TestExceptionCallRunFutureCall(),
       'TestGeneratedCallHelloFutureCall': TestGeneratedCallHelloFutureCall(),
       'TestGeneratedCallByeFutureCall': TestGeneratedCallByeFutureCall(),
       'TestGeneratedCallLogDataFutureCall':
@@ -198,41 +194,9 @@ class _FutureCallRef {
 
   final _InvokeFutureCall _invokeFutureCall;
 
-  late final testCall = _TestCallFutureCallDispatcher(_invokeFutureCall);
-
-  late final testExceptionCall = _TestExceptionCallFutureCallDispatcher(
-    _invokeFutureCall,
-  );
-
   late final testGeneratedCall = _TestGeneratedCallFutureCallDispatcher(
     _invokeFutureCall,
   );
-}
-
-class _TestCallFutureCallDispatcher {
-  _TestCallFutureCallDispatcher(this._invokeFutureCall);
-
-  final _InvokeFutureCall _invokeFutureCall;
-
-  Future<void> run(_i3.SimpleData data) {
-    return _invokeFutureCall(
-      'TestCallRunFutureCall',
-      data,
-    );
-  }
-}
-
-class _TestExceptionCallFutureCallDispatcher {
-  _TestExceptionCallFutureCallDispatcher(this._invokeFutureCall);
-
-  final _InvokeFutureCall _invokeFutureCall;
-
-  Future<void> run(_i3.SimpleData data) {
-    return _invokeFutureCall(
-      'TestExceptionCallRunFutureCall',
-      data,
-    );
-  }
 }
 
 class _TestGeneratedCallFutureCallDispatcher {
@@ -241,7 +205,7 @@ class _TestGeneratedCallFutureCallDispatcher {
   final _InvokeFutureCall _invokeFutureCall;
 
   Future<void> hello(String name) {
-    var object = _i4.TestGeneratedCallHelloModel(name: name);
+    var object = _i3.TestGeneratedCallHelloModel(name: name);
     return _invokeFutureCall(
       'TestGeneratedCallHelloFutureCall',
       object,
@@ -252,7 +216,7 @@ class _TestGeneratedCallFutureCallDispatcher {
     String name, {
     int code = 0,
   }) {
-    var object = _i5.TestGeneratedCallByeModel(
+    var object = _i4.TestGeneratedCallByeModel(
       name: name,
       code: code,
     );
@@ -262,7 +226,7 @@ class _TestGeneratedCallFutureCallDispatcher {
     );
   }
 
-  Future<void> logData(_i3.SimpleData data) {
+  Future<void> logData(_i5.SimpleData data) {
     return _invokeFutureCall(
       'TestGeneratedCallLogDataFutureCall',
       data,
@@ -291,41 +255,15 @@ class _TestGeneratedCallFutureCallDispatcher {
   }
 }
 
-class TestCallRunFutureCall extends _i1.FutureCall<_i3.SimpleData> {
-  @override
-  _i8.Future<void> invoke(
-    _i1.Session session,
-    _i3.SimpleData? data,
-  ) async {
-    await _i9.TestCall().run(
-      session,
-      data!,
-    );
-  }
-}
-
-class TestExceptionCallRunFutureCall extends _i1.FutureCall<_i3.SimpleData> {
-  @override
-  _i8.Future<void> invoke(
-    _i1.Session session,
-    _i3.SimpleData? data,
-  ) async {
-    await _i10.TestExceptionCall().run(
-      session,
-      data!,
-    );
-  }
-}
-
 class TestGeneratedCallHelloFutureCall
-    extends _i1.FutureCall<_i4.TestGeneratedCallHelloModel> {
+    extends _i1.FutureCall<_i3.TestGeneratedCallHelloModel> {
   @override
   _i8.Future<void> invoke(
     _i1.Session session,
-    _i4.TestGeneratedCallHelloModel? object,
+    _i3.TestGeneratedCallHelloModel? object,
   ) async {
     if (object != null) {
-      await _i11.TestGeneratedCall().hello(
+      await _i9.TestGeneratedCall().hello(
         session,
         object.name,
       );
@@ -334,14 +272,14 @@ class TestGeneratedCallHelloFutureCall
 }
 
 class TestGeneratedCallByeFutureCall
-    extends _i1.FutureCall<_i5.TestGeneratedCallByeModel> {
+    extends _i1.FutureCall<_i4.TestGeneratedCallByeModel> {
   @override
   _i8.Future<void> invoke(
     _i1.Session session,
-    _i5.TestGeneratedCallByeModel? object,
+    _i4.TestGeneratedCallByeModel? object,
   ) async {
     if (object != null) {
-      await _i11.TestGeneratedCall().bye(
+      await _i9.TestGeneratedCall().bye(
         session,
         object.name,
         code: object.code,
@@ -352,13 +290,13 @@ class TestGeneratedCallByeFutureCall
 
 /// A sample future call that logs data.
 class TestGeneratedCallLogDataFutureCall
-    extends _i1.FutureCall<_i3.SimpleData> {
+    extends _i1.FutureCall<_i5.SimpleData> {
   @override
   _i8.Future<void> invoke(
     _i1.Session session,
-    _i3.SimpleData? data,
+    _i5.SimpleData? data,
   ) async {
-    await _i11.TestGeneratedCall().logData(
+    await _i9.TestGeneratedCall().logData(
       session,
       data!,
     );
@@ -371,7 +309,7 @@ class TestGeneratedCallDoTaskFutureCall extends _i1.FutureCall {
     _i1.Session session,
     _i1.SerializableModel? object,
   ) async {
-    await _i11.TestGeneratedCall().doTask(session);
+    await _i9.TestGeneratedCall().doTask(session);
   }
 }
 
@@ -384,7 +322,7 @@ class TestGeneratedCallExecuteWithTriggerFutureCall
     _i7.TestGeneratedCallExecuteWithTriggerModel? object,
   ) async {
     if (object != null) {
-      await _i11.TestGeneratedCall().executeWithTrigger(
+      await _i9.TestGeneratedCall().executeWithTrigger(
         session,
         object.entityId,
         triggerType: object.triggerType,

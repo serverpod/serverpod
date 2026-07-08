@@ -4,6 +4,7 @@ import 'package:serverpod_cloud_storage_s3/serverpod_cloud_storage_s3.dart'
     as s3;
 import 'package:serverpod_test_server/src/web/routes/root.dart';
 
+import 'src/futureCalls/test_call.dart';
 import 'src/generated/endpoints.dart';
 import 'src/generated/protocol.dart';
 
@@ -15,6 +16,9 @@ void run(List<String> args) async {
     Endpoints(),
     authenticationHandler: auth.authenticationHandler,
   );
+
+  // Add future calls
+  pod.registerFutureCall(TestCall(), 'testCall');
 
   // Add S3 storage
   pod.addCloudStorage(

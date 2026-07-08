@@ -3004,8 +3004,8 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i55.SimpleData>(),
-              nullable: false,
+              type: _i1.getType<_i55.SimpleData?>(),
+              nullable: true,
             ),
           },
           call:
@@ -3015,6 +3015,26 @@ class Endpoints extends _i1.EndpointDispatch {
               ) async =>
                   (endpoints['testFutureCalls'] as _i22.TestFutureCallsEndpoint)
                       .makeFutureCall(
+                        session,
+                        params['data'],
+                      ),
+        ),
+        'makeFutureCallThatThrows': _i1.MethodConnector(
+          name: 'makeFutureCallThatThrows',
+          params: {
+            'data': _i1.ParameterDescription(
+              name: 'data',
+              type: _i1.getType<_i55.SimpleData?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['testFutureCalls'] as _i22.TestFutureCallsEndpoint)
+                      .makeFutureCallThatThrows(
                         session,
                         params['data'],
                       ),

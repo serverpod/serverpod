@@ -6,10 +6,10 @@ import 'package:serverpod/serverpod.dart';
 // the database, so they will persist even if the server is restarted.
 //
 //  To add a future call to your server, you need to register it in the
-//  `server.dart` file. Schedule the call using the generated
-//  `session.serverpod.futureCalls.callWithDelay` or
-//  `session.serverpod.futureCalls.callAtTime` methods. You can optionally pass
-//  a serializable object together with the call.
+//  `server.dart` file. Schedule the call using the
+//  `session.serverpod.futureCallWithDelay` or `session.serverpod.futureCallAtTime`
+//  methods. You can optionally pass a serializable object together with the
+//  call.
 
 class ExampleFutureCall extends FutureCall {
   @override
