@@ -8,6 +8,7 @@ import 'package:serverpod_cli/src/util/analysis_helpers.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
+import '../analyzer/dart/custom_class_analyzer.dart';
 import '../commands/generate.dart';
 import 'code_generation_collector.dart';
 import 'dart/temp_protocol_generator.dart';
@@ -23,14 +24,17 @@ class Analyzers {
   final EndpointsAnalyzer _endpoints;
   final StatefulAnalyzer _models;
   final FutureCallsAnalyzer _futureCalls;
+  final CustomClassAnalyzer _customClassAnalyzer;
 
   Analyzers({
     required EndpointsAnalyzer endpoints,
     required StatefulAnalyzer models,
     required FutureCallsAnalyzer futureCalls,
+    required CustomClassAnalyzer customClassAnalyzer,
   }) : _endpoints = endpoints,
        _models = models,
-       _futureCalls = futureCalls;
+       _futureCalls = futureCalls,
+       _customClassAnalyzer = customClassAnalyzer;
 
   /// Release resources. No-op for local analyzers; overridden by
   /// `IsolatedAnalyzers` to shut down the worker isolate.
@@ -39,7 +43,24 @@ class Analyzers {
   /// Creates the analyzers needed for code generation from [config].
   static Future<Analyzers> create(GeneratorConfig config) async {
     final libDirectory = Directory(p.joinAll(config.libSourcePathParts));
-    final collection = createAnalysisContextCollection(libDirectory);
+
+    final customClassPackageRoots = config.extraClasses
+        .map((e) => e.packageRoot)
+        .whereType<String>()
+        .toSet()
+        .toList();
+
+    final collection = createAnalysisContextCollection(
+      libDirectory,
+      additionalPaths: customClassPackageRoots,
+    );
+
+    final customClassAnalyzer = CustomClassAnalyzer(
+      libDirectory,
+      customClassPackageRoots,
+      collection: collection,
+    );
+
     final endpointsAnalyzer = EndpointsAnalyzer(
       libDirectory,
       collection: collection,
@@ -60,6 +81,7 @@ class Analyzers {
       endpoints: endpointsAnalyzer,
       models: modelAnalyzer,
       futureCalls: futureCallsAnalyzer,
+      customClassAnalyzer: customClassAnalyzer,
     );
   }
 
@@ -103,6 +125,11 @@ class Analyzers {
     }
 
     if (requirements.generateModels) {
+      shouldGenerate |= await _customClassAnalyzer.updateFileContexts(
+        affectedPaths,
+        config.extraClasses,
+      );
+
       for (final path in affectedPaths) {
         if (ModelHelper.isModelFile(path, loadConfig: config)) {
           shouldGenerate = true;
@@ -146,6 +173,18 @@ class Analyzers {
 
     try {
       log.debug('Analyzing serializable models in the protocol directory.');
+
+      final customClassAnalyzerCollector = CodeGenerationCollector();
+      final serializationTypes = await _customClassAnalyzer.analyze(
+        collector: customClassAnalyzerCollector,
+        extraClasses: config.extraClasses,
+      );
+
+      //Explicitly apply the results to the config state
+      CustomClassAnalyzer.applyResults(config.extraClasses, serializationTypes);
+
+      success &= !customClassAnalyzerCollector.hasSevereErrors;
+      customClassAnalyzerCollector.printErrors();
 
       final models = _models.validateAll(
         reportIssuesForPaths: affectedPaths,

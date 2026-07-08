@@ -321,6 +321,10 @@ Future<bool> _performGenerateWatch({
     watchPaths: {
       path.absolute(path.joinAll(config.libSourcePathParts)),
       ...config.sharedModelsLibSourcePaths.map(path.absolute),
+      ...config.extraClasses
+          .map((e) => e.sourcePath)
+          .whereType<String>()
+          .map((filePath) => path.absolute(path.dirname(filePath))),
     },
   );
 

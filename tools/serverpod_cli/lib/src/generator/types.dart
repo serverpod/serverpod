@@ -38,6 +38,12 @@ class TypeDefinition {
 
   final String? url;
 
+  /// For custom classes, this stores the source path of the type.
+  final String? sourcePath;
+
+  /// The absolute path to the root of the package containing this type.
+  final String? packageRoot;
+
   /// The name of the field when used as a named record field.
   ///
   /// Only set for [TypeDefinition]s used inside [generics].
@@ -61,6 +67,10 @@ class TypeDefinition {
 
   /// If set, the data type of the database JSON column this type definition should use for serialization.
   SerializationDataType? serializationDataType;
+
+  /// For custom classes, this stores the analyzed type
+  /// that the [toJson] method returns.
+  TypeDefinition? customClassSerializationType;
 
   EnumDefinition? enumDefinition;
 
@@ -119,9 +129,12 @@ class TypeDefinition {
     this.generics = const [],
     required this.nullable,
     this.url,
+    this.sourcePath,
+    this.packageRoot,
     this.dartType,
     this.customClass = false,
     this.serializationDataType,
+    this.customClassSerializationType,
     this.enumDefinition,
     this.projectModelDefinition,
     this.recordFieldName,
@@ -250,6 +263,9 @@ class TypeDefinition {
     dartType: dartType,
     generics: generics,
     serializationDataType: serializationDataType,
+    customClassSerializationType: customClassSerializationType,
+    sourcePath: sourcePath,
+    packageRoot: packageRoot,
     enumDefinition: enumDefinition,
     projectModelDefinition: projectModelDefinition,
     recordFieldName: recordFieldName,
@@ -265,6 +281,9 @@ class TypeDefinition {
     dartType: dartType,
     generics: generics,
     serializationDataType: serializationDataType,
+    customClassSerializationType: customClassSerializationType,
+    sourcePath: sourcePath,
+    packageRoot: packageRoot,
     enumDefinition: enumDefinition,
     projectModelDefinition: projectModelDefinition,
     recordFieldName: recordFieldName,
@@ -280,11 +299,37 @@ class TypeDefinition {
     dartType: dartType,
     generics: generics,
     serializationDataType: serializationDataType,
+    customClassSerializationType: customClassSerializationType,
+    sourcePath: sourcePath,
+    packageRoot: packageRoot,
     enumDefinition: enumDefinition,
     projectModelDefinition: projectModelDefinition,
     recordFieldName: recordFieldName,
     vectorDimension: vectorDimension,
   );
+
+  /// Returns a new [TypeDefinition] with the updated [sourcePath] and [packageRoot].
+  TypeDefinition withSourcePathAndPackageRoot({
+    String? sourcePath,
+    String? packageRoot,
+  }) {
+    return TypeDefinition(
+      className: className,
+      generics: generics,
+      nullable: nullable,
+      url: url,
+      sourcePath: sourcePath ?? this.sourcePath,
+      packageRoot: packageRoot ?? this.packageRoot,
+      dartType: dartType,
+      customClass: customClass,
+      serializationDataType: serializationDataType,
+      customClassSerializationType: customClassSerializationType,
+      enumDefinition: enumDefinition,
+      projectModelDefinition: projectModelDefinition,
+      recordFieldName: recordFieldName,
+      vectorDimension: vectorDimension,
+    );
+  }
 
   static String getRef(SerializableModelDefinition model) {
     if (model is ClassDefinition) {
@@ -467,6 +512,11 @@ class TypeDefinition {
 
   /// Get the pgsql type that represents this [TypeDefinition] in the database.
   String get databaseType {
+
+    if (customClass && customClassSerializationType != null) {
+      return customClassSerializationType!.databaseType;
+    }
+
     var enumSerialization = enumDefinition?.serialized;
     if (enumSerialization != null && isEnumType) {
       switch (enumSerialization) {
@@ -817,6 +867,9 @@ class TypeDefinition {
           .map((e) => e.applyProtocolReferences(classDefinitions))
           .toList(),
       serializationDataType: serializationDataType,
+      customClassSerializationType: customClassSerializationType,
+      sourcePath: sourcePath,
+      packageRoot: packageRoot,
       enumDefinition: enumDefinition,
       url: isProjectModel ? defaultModuleAlias : url,
       recordFieldName: recordFieldName,
