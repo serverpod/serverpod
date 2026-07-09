@@ -136,6 +136,13 @@ void main() async {
 
                   expect(
                     content,
+                    contains("import 'src/cache_busting.dart';"),
+                    reason:
+                        'server.dart does not contain webapp configurations.',
+                  );
+
+                  expect(
+                    content,
                     contains("import 'src/web/routes/app_config_route.dart';"),
                     reason:
                         'server.dart does not contain webapp configurations.',
@@ -144,16 +151,7 @@ void main() async {
                   expect(
                     content,
                     contains(
-                      "final root = Directory(Uri(path: 'web/static').toFilePath())",
-                    ),
-                    reason:
-                        'server.dart does not contain webapp configurations.',
-                  );
-
-                  expect(
-                    content,
-                    contains(
-                      "StaticRoute.withCacheBusting(root, mountPrefix: '/web')",
+                      'StaticRoute.withCacheBusting(cacheBustingConfig)',
                     ),
                     reason:
                         'server.dart does not contain webapp configurations.',

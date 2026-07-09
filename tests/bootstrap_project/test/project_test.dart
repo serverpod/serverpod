@@ -313,17 +313,13 @@ void main() async {
 
             expect(
               content,
-              contains(
-                "final root = Directory(Uri(path: 'web/static').toFilePath())",
-              ),
+              contains("import 'src/cache_busting.dart';"),
               reason: 'server.dart does not contain webapp configurations.',
             );
 
             expect(
               content,
-              contains(
-                "StaticRoute.withCacheBusting(root, mountPrefix: '/web')",
-              ),
+              contains('StaticRoute.withCacheBusting(cacheBustingConfig)'),
               reason: 'server.dart does not contain webapp configurations.',
             );
 
@@ -1218,7 +1214,7 @@ void main() async {
         );
         // TODO: Remove once StaticRoute.withCacheBusting is published.
         const staticRouteCacheBusting =
-            "StaticRoute.withCacheBusting(root, mountPrefix: '/web')";
+            "StaticRoute.withCacheBusting(cacheBustingConfig)";
 
         serverFile.writeAsStringSync(
           serverSource
@@ -1227,7 +1223,7 @@ void main() async {
               .replaceAll(cloudEmailConfig, 'EmailIdpConfigFromPasswords()')
               .replaceAll(
                 staticRouteCacheBusting,
-                'StaticRoute.directory(root)',
+                "StaticRoute.directory(Directory(Uri(path: 'web/static').toFilePath()))",
               ),
         );
 

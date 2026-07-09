@@ -67,6 +67,7 @@ void main() {
           final content = await serverFile.readAsString();
           expect(content, contains('dart:io'));
           expect(content, contains('src/web/routes/root.dart'));
+          expect(content, contains('src/cache_busting.dart'));
         },
       );
 
@@ -205,6 +206,7 @@ void main() {
           final content = await serverFile.readAsString();
           expect(content, contains('dart:io'));
           expect(content, contains('src/web/routes/app_config_route.dart'));
+          expect(content, contains('src/cache_busting.dart'));
         },
       );
 
@@ -217,15 +219,7 @@ void main() {
           final content = await serverFile.readAsString();
           expect(
             content,
-            contains(
-              "final root = Directory(Uri(path: 'web/static').toFilePath());",
-            ),
-          );
-          expect(
-            content,
-            contains(
-              "StaticRoute.withCacheBusting(root, mountPrefix: '/web')",
-            ),
+            contains('StaticRoute.withCacheBusting(cacheBustingConfig)'),
           );
           expect(
             content,
@@ -501,6 +495,7 @@ void main() {
             isNot(contains('src/web/routes/app_config_route.dart')),
           );
           expect(content, isNot(contains('src/web/routes/root.dart')));
+          expect(content, isNot(contains('src/cache_busting.dart')));
         },
       );
 

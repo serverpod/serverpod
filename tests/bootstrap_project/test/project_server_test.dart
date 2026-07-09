@@ -378,6 +378,12 @@ void main() async {
 
               expect(
                 content,
+                contains("import 'src/cache_busting.dart';"),
+                reason: 'server.dart does not contain website configurations.',
+              );
+
+              expect(
+                content,
                 contains("import 'src/web/routes/root.dart';"),
                 reason: 'server.dart does not contain website configurations.',
               );
@@ -396,17 +402,7 @@ void main() async {
 
               expect(
                 content,
-                contains(
-                  "final root = Directory(Uri(path: 'web/static').toFilePath())",
-                ),
-                reason: 'server.dart does not contain website configurations.',
-              );
-
-              expect(
-                content,
-                contains(
-                  "StaticRoute.withCacheBusting(root, mountPrefix: '/web')",
-                ),
+                contains('StaticRoute.withCacheBusting(cacheBustingConfig)'),
                 reason: 'server.dart does not contain website configurations.',
               );
             },

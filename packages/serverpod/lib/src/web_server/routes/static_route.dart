@@ -61,10 +61,8 @@ class StaticRoute extends Route {
   }
 
   /// Use [StaticRoute.withCacheBusting] to serve everything below
-  /// a given [root] with cache-busting support.
-  ///
-  /// The [mountPrefix] parameter specifies the URL prefix under which
-  /// static assets are served.
+  /// a given root with cache-busting support. The root is configured by
+  /// [CacheBustingConfig.fileSystemRoot]
   ///
   /// Use [cacheControlFactory] to customize what [CacheControlHeader] to
   /// return for a given asset. Defaults to a factory that produces a
@@ -73,22 +71,14 @@ class StaticRoute extends Route {
   /// The [host] parameter restricts this route to a specific virtual host
   /// (defaults to `null`, matching any host).
   factory StaticRoute.withCacheBusting(
-    Directory root, {
-    required String mountPrefix,
-    String separator = '@',
+    CacheBustingConfig config, {
     CacheControlFactory? cacheControlFactory,
     String? host,
   }) {
-    final cacheBustingConfig = CacheBustingConfig(
-      mountPrefix: mountPrefix,
-      fileSystemRoot: root,
-      separator: separator,
-    );
-
     return StaticRoute._(
       StaticHandler.directory(
-        root,
-        cacheBustingConfig: cacheBustingConfig,
+        config.fileSystemRoot,
+        cacheBustingConfig: config,
         cacheControl:
             cacheControlFactory ??
             StaticRoute.publicImmutable(maxAge: const Duration(days: 365)),

@@ -48,8 +48,7 @@ void main() {
       () async {
         pod.webServer.addRoute(
           StaticRoute.withCacheBusting(
-            tempDir,
-            mountPrefix: '/static',
+            CacheBustingConfig(mountPrefix: '/static', fileSystemRoot: tempDir),
           ),
           '/static',
         );
@@ -72,8 +71,7 @@ void main() {
       () async {
         pod.webServer.addRoute(
           StaticRoute.withCacheBusting(
-            tempDir,
-            mountPrefix: '/static',
+            CacheBustingConfig(mountPrefix: '/static', fileSystemRoot: tempDir),
           ),
           '/static',
         );
@@ -100,8 +98,7 @@ void main() {
       () async {
         pod.webServer.addRoute(
           StaticRoute.withCacheBusting(
-            tempDir,
-            mountPrefix: '/static',
+            CacheBustingConfig(mountPrefix: '/static', fileSystemRoot: tempDir),
             cacheControlFactory: StaticRoute.noStore(),
           ),
           '/static',
@@ -127,8 +124,7 @@ void main() {
       () async {
         pod.webServer.addRoute(
           StaticRoute.withCacheBusting(
-            tempDir,
-            mountPrefix: '/static',
+            CacheBustingConfig(mountPrefix: '/static', fileSystemRoot: tempDir),
             host: 'assets.example.com',
           ),
           '/static',
