@@ -65,7 +65,6 @@ void main() {
             p.join(project.serverDir, 'lib', 'server.dart'),
           );
           final content = await serverFile.readAsString();
-          expect(content, contains('dart:io'));
           expect(content, contains('src/web/routes/root.dart'));
           expect(content, contains('src/cache_busting.dart'));
         },
