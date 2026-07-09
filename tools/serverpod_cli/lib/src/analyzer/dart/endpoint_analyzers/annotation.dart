@@ -27,10 +27,6 @@ extension AnnotationExtensions on Element {
               methodCallAnalyzerIgnoreRule:
                   'deprecated_member_use_from_same_package',
             ),
-        // @ignoreEndpoint is deprecated in favor of @doNotGenerate
-        'ignoreEndpoint': (_, _) =>
-            const AnnotationDefinition(name: 'doNotGenerate'),
-
         'doNotGenerate': (_, annotationName) =>
             AnnotationDefinition(name: annotationName),
 
