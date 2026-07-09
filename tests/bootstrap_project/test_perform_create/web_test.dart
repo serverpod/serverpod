@@ -80,9 +80,7 @@ void main() {
           expect(content, contains('pod.webServer.addRoute(RootRoute()'));
           expect(
             content,
-            contains(
-              "StaticRoute.withCacheBusting(root, mountPrefix: '/web')",
-            ),
+            contains('StaticRoute.withCacheBusting(cacheBustingConfig)'),
           );
         },
       );
