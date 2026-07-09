@@ -9,7 +9,7 @@ import 'package:serverpod_auth_idp_server/providers/email.dart';
 // {{/auth}}
 
 // {{#webserver}}
-import '/src/cache_busting.dart';
+import 'src/cache_busting.dart';
 // {{/webserver}}
 import 'src/generated/endpoints.dart';
 import 'src/generated/protocol.dart';
