@@ -1038,22 +1038,32 @@ Future<int> _runWithTui({
   // process exits. Restores the stdout logger and replays any captured crash
   // so it survives in the user's scrollback - mirrors how `serverpod create`
   // flushes its errors to the terminal on exit.
-  Future<void> preExit() async {
+  Future<void> preExit(int exitCode) async {
     final crash = fatalCrash;
-    if (crash == null) return;
-    // Swap the TUI-backed logger (whose output went to the now-gone alternate
-    // screen) for a fresh stdout-backed one, so the replayed crash actually
-    // reaches the terminal.
-    await closeLogger();
-    initializeLogger();
-    printInternalError(crash.error, crash.stackTrace);
-    await log.flush();
+    if (crash != null || exitCode != 0) {
+      if (crash != null) {
+        _serverProcessErrorBuffer.writeln(crash.error);
+      }
+
+      if (_serverProcessErrorBuffer.isEmpty) return;
+
+      printInternalError(
+        _serverProcessErrorBuffer,
+        crash?.stackTrace ?? StackTrace.empty,
+      );
+      await log.flush();
+    }
   }
 
   // Wait for the backend's dispose to finish before calling shutdownTuiApp
   unawaited(
     shutdown.future.then((code) async {
       await backendFuture;
+      // Swap the TUI-backed logger (whose output went to the now-gone alternate
+      // screen) for a fresh stdout-backed one, so the replayed errors actually
+      // reaches the terminal.
+      await closeLogger();
+      initializeLogger();
       shutdownTuiApp(code);
     }),
   );
@@ -1068,6 +1078,11 @@ Future<int> _runWithTui({
   // so shutdown.future is completed.
   return shutdown.future;
 }
+
+/// Buffer for errors from [ServerProcess] stderr
+/// which will be flushed to the terminal if the TUI
+/// exits with a non-zero exit code.
+final _serverProcessErrorBuffer = StringBuffer();
 
 /// Backend logic that runs after the TUI is mounted and ready.
 Future<void> _runTuiBackend({
@@ -1092,7 +1107,13 @@ Future<void> _runTuiBackend({
     final argsRef = ServerArgsRef(serverArgs);
 
     final stdoutSink = TuiLogSink(holder, addLine: holder.state.rawLines.add);
-    final stderrSink = TuiLogSink(holder, addLine: holder.state.rawLines.add);
+    final stderrSink = TuiLogSink(
+      holder,
+      addLine: (line) {
+        _serverProcessErrorBuffer.writeln(line);
+        holder.state.rawLines.add(line);
+      },
+    );
 
     final result = await _setupWatchLoop(
       config: config,
