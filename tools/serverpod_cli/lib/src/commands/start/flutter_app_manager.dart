@@ -248,13 +248,10 @@ class FlutterAppManager {
         onProgress(runtime.app, stage);
         log.info('  ${runtime.app.name}: $stage');
       },
-      // Only non-web devices ready on `app.started`; web-server devices ready
-      // on URL publication, which `app.started` must never preempt.
-      onStarted:
-          device == flutterDeviceWebServer ||
-              device == flutterDeviceWebServerWithBrowser
-          ? null
-          : () => _signalReady(runtime, process.flutterAppUrl),
+      // The ready signal for non-web devices, which never publish a URL. Web
+      // devices publish their URL before `app.started`, so it is carried
+      // along here when the URL path has not signaled first.
+      onStarted: () => _signalReady(runtime, process.flutterAppUrl),
     );
 
     try {
