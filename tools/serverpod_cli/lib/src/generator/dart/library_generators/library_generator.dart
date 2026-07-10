@@ -106,7 +106,7 @@ class LibraryGenerator {
     var nonModelStreamTypes = protocolDefinition
         .getNonModelOrPrimitiveStreamTypes(modules: config.modules);
 
-    final protocolDatabaseSerializationManager =
+    final shouldExtendDatabaseSerializationManager =
         serverCode ||
         (sharedPackage
             ? hasDatabaseTablesForCurrentSide
@@ -114,7 +114,7 @@ class LibraryGenerator {
 
     protocol
       ..name = 'Protocol'
-      ..extend = protocolDatabaseSerializationManager
+      ..extend = shouldExtendDatabaseSerializationManager
           ? refer(
               'DatabaseSerializationManager',
               serverpodDatabaseRuntimeUrl(serverCode),
@@ -146,7 +146,7 @@ class LibraryGenerator {
               ? const Code('Protocol._().._registerHostProtocols()')
               : const Code('Protocol._()'),
       ),
-      if (protocolDatabaseSerializationManager)
+      if (shouldExtendDatabaseSerializationManager)
         Field(
           (f) => f
             ..name = 'targetTableDefinitions'
@@ -546,7 +546,7 @@ class LibraryGenerator {
       ),
       if (_supportsHostProtocols) ..._buildDynamicFieldHostMethods(),
       if (_shouldRegisterHostProtocols) _buildRegisterHostProtocolsMethod(),
-      if (protocolDatabaseSerializationManager)
+      if (shouldExtendDatabaseSerializationManager)
         Method(
           (m) => m
             ..name = 'getTableForType'
@@ -603,7 +603,7 @@ class LibraryGenerator {
               const Code('return null;'),
             ]),
         ),
-      if (protocolDatabaseSerializationManager)
+      if (shouldExtendDatabaseSerializationManager)
         Method(
           (m) => m
             ..name = 'getTargetTableDefinitions'
