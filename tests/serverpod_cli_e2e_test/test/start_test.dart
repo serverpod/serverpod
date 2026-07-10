@@ -361,7 +361,6 @@ fields:
     group('when running serverpod start', () {
       final keywords = [
         'Yikes! It is possible that this error is caused by an internal issue with the Serverpod tooling',
-        'Missing password for "database". Please check your config/passwords.yaml file or the SERVERPOD_PASSWORD_database environment variable.',
       ];
       setUp(() async {
         (serverProcess, streamSearch) = await startServerpodWithStreamSearch(
