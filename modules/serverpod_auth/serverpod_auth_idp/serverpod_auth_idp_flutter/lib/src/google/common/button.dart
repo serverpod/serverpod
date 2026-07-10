@@ -230,7 +230,7 @@ abstract class GoogleSignInBaseButton extends StatelessWidget {
     required Widget child,
     List<BoxShadow>? boxShadow,
   }) {
-    final bleed = _gisClipBleed;
+    const bleed = _gisClipBleed;
     final width = style.size.width;
     final height = style.size.height;
     final borderWidth = style.borderSide.width;
