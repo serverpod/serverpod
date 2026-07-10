@@ -53,8 +53,7 @@ class FlutterProcess {
   final VmServiceProxy? _flutterProxy;
 
   /// Fires `'launching'` on spawn, `'connecting'` before VM-service
-  /// connect, `'ready'` on `app.started`, plus verbatim `app.progress`
-  /// messages in between.
+  /// connect, plus verbatim `app.progress` messages in between.
   final void Function(String stage)? _onProgress;
 
   /// Fires on the daemon's `app.started` event, i.e. the app is fully up
@@ -556,7 +555,6 @@ class FlutterProcess {
             _onProgress?.call(message);
           }
         case 'app.started':
-          _onProgress?.call('ready');
           _onStarted?.call();
         case 'app.stop':
           log.debug('Flutter daemon emitted app.stop; tearing down.');

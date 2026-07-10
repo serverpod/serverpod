@@ -248,9 +248,13 @@ class FlutterAppManager {
         onProgress(runtime.app, stage);
         log.info('  ${runtime.app.name}: $stage');
       },
-      // Non-web devices never publish an `app.webLaunchUrl`, so `app.started`
-      // is their only launch-complete signal.
-      onStarted: () => _signalReady(runtime, process.flutterAppUrl),
+      // Only non-web devices ready on `app.started`; web-server devices ready
+      // on URL publication, which `app.started` must never preempt.
+      onStarted:
+          device == flutterDeviceWebServer ||
+              device == flutterDeviceWebServerWithBrowser
+          ? null
+          : () => _signalReady(runtime, process.flutterAppUrl),
     );
 
     try {
@@ -427,12 +431,16 @@ class FlutterAppManager {
   }
 
   /// Invokes [onReady] at most once per launch. Ready has two sources - the
-  /// published web URL (web devices, fires first when present) and the
-  /// daemon's `app.started` event (all devices) - so the second one is
-  /// swallowed here.
+  /// published web URL (web devices) and the daemon's `app.started` event
+  /// (non-web devices) - so a second signal is swallowed here.
   void _signalReady(_AppRuntime runtime, String? url) {
     if (runtime.readySignaled) return;
     runtime.readySignaled = true;
+    log.info(
+      url == null
+          ? '${runtime.app.name} is running.'
+          : '${runtime.app.name} running at $url',
+    );
     onReady(runtime.app, url);
   }
 
@@ -467,7 +475,6 @@ class FlutterAppManager {
 
     final url = process.flutterAppUrl;
     if (url != null) {
-      log.info('${runtime.app.name} running at $url');
       _signalReady(runtime, url);
     }
 

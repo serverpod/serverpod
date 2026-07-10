@@ -162,12 +162,12 @@ void main() {
       late FlutterProcess fp;
       late ({HttpServer server, String wsUri}) fake;
       late List<String> progressMessages;
-      late Completer<void> ready;
+      late Completer<void> started;
 
       setUp(() async {
         fake = await _startFakeVmService();
         progressMessages = <String>[];
-        ready = Completer<void>();
+        started = Completer<void>();
 
         fp = FlutterProcess(
           flutterPackageDir: Directory.current.path,
@@ -178,9 +178,9 @@ void main() {
             '--ws=${fake.wsUri}',
             '--web-url=http://localhost:54321',
           ],
-          onProgress: (message) {
-            progressMessages.add(message);
-            if (message == 'ready' && !ready.isCompleted) ready.complete();
+          onProgress: progressMessages.add,
+          onStarted: () {
+            if (!started.isCompleted) started.complete();
           },
         );
 
@@ -197,9 +197,9 @@ void main() {
 
       test(
         'when the shim emits app.progress, app.webLaunchUrl, app.debugPort, app.dtd, app.started '
-        'then onProgress fires, flutterAppUrl is captured, dtdUri is captured, and vmServiceUri is the http form of the daemon\'s wsUri',
+        'then onProgress and onStarted fire, flutterAppUrl is captured, dtdUri is captured, and vmServiceUri is the http form of the daemon\'s wsUri',
         () async {
-          await ready.future.timeout(const Duration(seconds: 20));
+          await started.future.timeout(const Duration(seconds: 20));
 
           expect(
             fp.vmServiceUri,
@@ -209,7 +209,6 @@ void main() {
           expect(fp.dtdUri, equals('ws://127.0.0.1:9100/ws'));
           expect(progressMessages, contains(flutterAppLaunching));
           expect(progressMessages, contains('Launching ...'));
-          expect(progressMessages, contains('ready'));
 
           await fp.stop(timeout: const Duration(seconds: 1));
         },
@@ -415,7 +414,7 @@ void main() {
           ]),
         );
         expect(fp.flutterAppUrl, 'http://localhost:8080');
-        expect(progressMessages, containsAllInOrder(['Compiling', 'ready']));
+        expect(progressMessages, contains('Compiling'));
       },
     );
 
@@ -440,9 +439,10 @@ void main() {
         );
 
         // Desktop devices never publish an app.webLaunchUrl, so this
-        // callback is their only launch-complete signal.
+        // callback is their only launch-complete signal. It replaces the
+        // progress stream for this event - no stage string is emitted.
         expect(startedCalls, 1);
-        expect(progressMessages, ['ready']);
+        expect(progressMessages, isEmpty);
         expect(fp.flutterAppUrl, isNull);
       },
     );

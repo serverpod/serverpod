@@ -1142,9 +1142,9 @@ Future<void> _runTuiBackend({
       onFlutterReady: (app, url) {
         final tab = holder.state.appLogTabFor(app.id);
         if (tab != null) {
-          // Non-web devices publish no URL; the status line then falls back
-          // to its generic running label.
-          tab.url = url ?? tab.url;
+          // Null on non-web devices, which publish no URL; the status line
+          // then falls back to its generic running label.
+          tab.url = url;
           tab.ready = true;
           tab.stopped = false;
           holder.markDirty();
