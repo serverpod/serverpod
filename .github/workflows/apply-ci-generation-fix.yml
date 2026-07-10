@@ -1,0 +1,176 @@
+name: Apply Serverpod CI generation fix
+
+on:
+  push:
+    branches:
+      - agent/avoid-duplicate-generation
+    paths:
+      - .github/workflows/apply-ci-generation-fix.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply-fix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out contribution branch
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+          ref: agent/avoid-duplicate-generation
+
+      - name: Apply focused CI optimization
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python3 - <<'PY'
+          from pathlib import Path
+
+          workflow_path = Path('.github/workflows/dart-tests.yaml')
+          workflow = workflow_path.read_text(encoding='utf-8')
+          duplicate_step = '''      - name: Verify generate from scratch
+                  shell: bash
+                  run: |
+                    rm -rf tests/serverpod_test_server/lib/src/generated
+                    export SERVERPOD_HOME=$(pwd)
+                    cd tests/serverpod_test_server
+                    dart run "$SERVERPOD_HOME/tools/serverpod_cli/bin/serverpod_cli.dart" generate --no-analytics
+          '''
+          if workflow.count(duplicate_step) != 1:
+              raise SystemExit('Expected exactly one duplicate generation step')
+          workflow_path.write_text(
+              workflow.replace(duplicate_step, ''),
+              encoding='utf-8',
+          )
+
+          script_path = Path('util/run_tests_serverpod_generate')
+          original_script = script_path.read_text(encoding='utf-8')
+          expected_script = '''#!/bin/bash
+
+          # Makes script exit on first non-zero error code
+          set -e
+
+          echo "### Run serverpod generate test"
+          echo "### If this test fails, make sure that you have run serverpod generate"
+          echo "### on all packages with util/run_tests_serverpod_generate"
+
+          # Install the serverpod command
+          echo "### Installing CLI tools"
+
+          export PATH="$PATH":"$HOME/.pub-cache/bin"
+
+          export SERVERPOD_HOME=$(pwd)
+          echo "### Serverpod home: $SERVERPOD_HOME"
+
+          # Verify that template directory exists
+          TEMPLATE_DIR="$SERVERPOD_HOME/templates/serverpod_templates"
+          echo "### Templates at: $TEMPLATE_DIR"
+          test -d $TEMPLATE_DIR
+
+          cd tools/serverpod_cli
+          dart pub global activate -s path .
+
+          cd $SERVERPOD_HOME
+
+          util/generate_all
+
+          util/ensure_no_changes
+          '''
+          if original_script != expected_script:
+              raise SystemExit('run_tests_serverpod_generate changed upstream; refusing blind rewrite')
+
+          improved_script = '''#!/bin/bash
+
+          if [ ! -f util/.serverpod_util_root ]; then
+              echo "Run this script from the root of the Serverpod repository"
+              echo "I.e. util/run_tests_serverpod_generate"
+              exit 1
+          fi
+
+          # Exit on errors, unset variables, and failed pipeline commands.
+          set -euo pipefail
+
+          echo "### Run serverpod generate test"
+          echo "### If this test fails, make sure that you have run serverpod generate"
+          echo "### on all packages with util/run_tests_serverpod_generate"
+
+          # Install the serverpod command
+          echo "### Installing CLI tools"
+
+          export PATH="$PATH":"$HOME/.pub-cache/bin"
+
+          export SERVERPOD_HOME="$(pwd)"
+          echo "### Serverpod home: $SERVERPOD_HOME"
+
+          # Verify that template directory exists
+          TEMPLATE_DIR="$SERVERPOD_HOME/templates/serverpod_templates"
+          echo "### Templates at: $TEMPLATE_DIR"
+          test -d "$TEMPLATE_DIR"
+
+          cd "$SERVERPOD_HOME/tools/serverpod_cli"
+          dart pub global activate -s path .
+
+          cd "$SERVERPOD_HOME"
+
+          # Generate the test project from a clean state as part of the existing
+          # full generation pass, instead of invoking the generator a second time.
+          GENERATED_DIR="$SERVERPOD_HOME/tests/serverpod_test_server/lib/src/generated"
+          echo "### Removing generated test project code: $GENERATED_DIR"
+          rm -rf "$GENERATED_DIR"
+
+          util/generate_all
+
+          # Make the clean-generation guarantee explicit before checking that all
+          # generated output matches the committed repository state.
+          test -d "$GENERATED_DIR"
+          util/ensure_no_changes
+          '''
+          script_path.write_text(improved_script, encoding='utf-8')
+          PY
+
+          rm .github/workflows/apply-ci-generation-fix.yml
+
+          bash -n util/run_tests_serverpod_generate
+          git diff --check
+
+          changed_files=$(git diff --name-only | sort)
+          expected_files=$(printf '%s\n' \
+            '.github/workflows/apply-ci-generation-fix.yml' \
+            '.github/workflows/dart-tests.yaml' \
+            'util/run_tests_serverpod_generate')
+
+          if [ "$changed_files" != "$expected_files" ]; then
+            echo "Unexpected working tree scope"
+            printf 'Expected:\n%s\nActual:\n%s\n' "$expected_files" "$changed_files"
+            exit 1
+          fi
+
+      - name: Replace bootstrap commit with one clean contribution commit
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name "eukalpia"
+          git config user.email "120781817+eukalpia@users.noreply.github.com"
+
+          git add -A
+          git reset --soft origin/main
+
+          staged_files=$(git diff --cached --name-only | sort)
+          expected_files=$(printf '%s\n' \
+            '.github/workflows/dart-tests.yaml' \
+            'util/run_tests_serverpod_generate')
+
+          if [ "$staged_files" != "$expected_files" ]; then
+            echo "Unexpected final commit scope"
+            printf 'Expected:\n%s\nActual:\n%s\n' "$expected_files" "$staged_files"
+            exit 1
+          fi
+
+          git diff --cached --check
+          git commit -m "ci: avoid duplicate clean code generation"
+          git push --force-with-lease origin HEAD:agent/avoid-duplicate-generation
