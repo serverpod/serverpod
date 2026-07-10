@@ -420,6 +420,34 @@ void main() {
     );
 
     test(
+      'when app.started arrives then onStarted fires',
+      () {
+        var startedCalls = 0;
+        fp = FlutterProcess(
+          flutterPackageDir: Directory.systemTemp.path,
+          device: 'linux',
+          onProgress: progressMessages.add,
+          onStarted: () => startedCalls++,
+        );
+
+        fp.handleMachineLine(
+          jsonEncode([
+            {
+              'event': 'app.started',
+              'params': <String, Object?>{},
+            },
+          ]),
+        );
+
+        // Desktop devices never publish an app.webLaunchUrl, so this
+        // callback is their only launch-complete signal.
+        expect(startedCalls, 1);
+        expect(progressMessages, ['ready']);
+        expect(fp.flutterAppUrl, isNull);
+      },
+    );
+
+    test(
       'when given app.dtd then dtdUri is captured',
       () {
         fp.handleMachineLine(
