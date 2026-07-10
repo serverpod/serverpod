@@ -249,7 +249,9 @@ class _GoogleSignInWidgetState extends State<GoogleSignInWidget> {
             logoAlignment: widget.logoAlignment,
             minimumWidth: widget.minimumWidth,
             locale: widget.locale,
-            buttonWrapper: widget.buttonWrapper,
+            buttonWrapper: GoogleSignInBaseButton.resolveWebButtonWrapper(
+              widget.buttonWrapper,
+            ),
           ),
       ],
     );

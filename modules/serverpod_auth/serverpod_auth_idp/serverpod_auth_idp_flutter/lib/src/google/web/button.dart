@@ -24,7 +24,7 @@ class GoogleSignInWebButton extends GoogleSignInBaseButton {
     super.logoAlignment,
     super.minimumWidth,
     this.locale,
-    super.buttonWrapper,
+    super.buttonWrapper = GoogleSignInBaseButton.wrapAsOutlineWeb,
     super.key,
   });
 
@@ -47,7 +47,7 @@ class GoogleSignInWebButton extends GoogleSignInBaseButton {
     shape: shape,
     logoAlignment: logoAlignment,
     minimumWidth: minimumWidth,
-    buttonWrapper: GoogleSignInBaseButton.wrapAsFilled,
+    buttonWrapper: GoogleSignInBaseButton.wrapAsFilledWeb,
   );
 
   /// Builds Google Sign-In button compatible with Material's outline button.
@@ -64,7 +64,7 @@ class GoogleSignInWebButton extends GoogleSignInBaseButton {
     shape: shape,
     logoAlignment: logoAlignment,
     minimumWidth: minimumWidth,
-    buttonWrapper: GoogleSignInBaseButton.wrapAsOutline,
+    buttonWrapper: GoogleSignInBaseButton.wrapAsOutlineWeb,
   );
 
   /// Builds Google Sign-In button compatible with Material's elevated button.
@@ -82,7 +82,7 @@ class GoogleSignInWebButton extends GoogleSignInBaseButton {
     shape: shape,
     logoAlignment: logoAlignment,
     minimumWidth: minimumWidth,
-    buttonWrapper: GoogleSignInBaseButton.wrapAsElevated,
+    buttonWrapper: GoogleSignInBaseButton.wrapAsElevatedWeb,
   );
 
   /// Render the button with the actual width.
@@ -117,12 +117,21 @@ class GoogleSignInWebButton extends GoogleSignInBaseButton {
         );
 
         final button = _renderButton(width: width);
-        return SizedBox(
-          height: buttonStyle.size.height,
+        final wrapper = GoogleSignInBaseButton.resolveWebButtonWrapper(
+          buttonWrapper,
+        );
+
+        return ConstrainedBox(
+          constraints: BoxConstraints(
+            minWidth: width,
+            maxWidth: width,
+            minHeight: buttonStyle.size.height,
+            maxHeight: buttonStyle.size.height,
+          ),
           child:
-              buttonWrapper?.call(
+              wrapper?.call(
                 style: buttonStyle,
-                onPressed: () {},
+                onPressed: null,
                 child: button,
               ) ??
               button,

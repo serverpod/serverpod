@@ -135,4 +135,146 @@ abstract class GoogleSignInBaseButton extends StatelessWidget {
       child: child,
     );
   }
+
+  /// Maps a native [buttonWrapper] to a non-interactive web equivalent.
+  ///
+  /// Material buttons add focus and pressed overlays that clash with the
+  /// Google-hosted iframe button on web. Custom wrappers are passed through.
+  static Widget Function({
+    required GoogleSignInStyle style,
+    required Widget child,
+    required VoidCallback? onPressed,
+  })?
+  resolveWebButtonWrapper(
+    Widget Function({
+      required GoogleSignInStyle style,
+      required Widget child,
+      required VoidCallback? onPressed,
+    })?
+    wrapper,
+  ) {
+    if (wrapper == null || wrapper == wrapAsOutline) {
+      return wrapAsOutlineWeb;
+    }
+    if (wrapper == wrapAsFilled) return wrapAsFilledWeb;
+    if (wrapper == wrapAsElevated) return wrapAsElevatedWeb;
+    return wrapper;
+  }
+
+  /// Non-interactive shell for the GIS iframe button on web.
+  ///
+  /// Draws a single Flutter border and clips the iframe slightly so the GIS
+  /// button's own border/focus ring does not stack on top and cause artifacts.
+  static Widget wrapAsOutlineWeb({
+    required GoogleSignInStyle style,
+    required Widget child,
+    required VoidCallback? onPressed,
+  }) {
+    return _wrapAsClippedWeb(style: style, child: child);
+  }
+
+  /// Non-interactive shell for the GIS iframe button on web.
+  static Widget wrapAsFilledWeb({
+    required GoogleSignInStyle style,
+    required Widget child,
+    required VoidCallback? onPressed,
+  }) {
+    return _wrapAsClippedWeb(style: style, child: child);
+  }
+
+  /// Non-interactive shell for the GIS iframe button on web.
+  static Widget wrapAsElevatedWeb({
+    required GoogleSignInStyle style,
+    required Widget child,
+    required VoidCallback? onPressed,
+  }) {
+    return _wrapAsClippedWeb(
+      style: style,
+      child: child,
+      boxShadow: const [
+        BoxShadow(
+          color: Color(0x1F000000),
+          blurRadius: 2,
+          offset: Offset(0, 1),
+        ),
+      ],
+    );
+  }
+
+  /// Pads the GIS iframe so its outer edge is clipped, leaving only the
+  /// Flutter-drawn border visible.
+  static const double _gisClipBleed = 4;
+
+  /// Insets the clip radius so the outer Flutter border sits outside the clip.
+  static const double _gisClipRadiusInset = 1;
+
+  /// Insets a [radius] by [inset] for the inner GIS clip.
+  static BorderRadius _insetClipRadius(
+    BorderRadius radius, {
+    double inset = _gisClipRadiusInset,
+  }) {
+    Radius insetRadius(Radius r) => Radius.circular(
+      (r.x - inset).clamp(0.0, double.infinity),
+    );
+
+    return BorderRadius.only(
+      topLeft: insetRadius(radius.topLeft),
+      topRight: insetRadius(radius.topRight),
+      bottomLeft: insetRadius(radius.bottomLeft),
+      bottomRight: insetRadius(radius.bottomRight),
+    );
+  }
+
+  static Widget _wrapAsClippedWeb({
+    required GoogleSignInStyle style,
+    required Widget child,
+    List<BoxShadow>? boxShadow,
+  }) {
+    final bleed = _gisClipBleed;
+    final width = style.size.width;
+    final height = style.size.height;
+    final borderWidth = style.borderSide.width;
+    final innerWidth = width - (borderWidth * 2);
+    final innerHeight = height - (borderWidth * 2);
+    final clipRadius = _insetClipRadius(
+      style.borderRadius,
+      inset: borderWidth + _gisClipRadiusInset,
+    );
+
+    // Flutter draws the only visible border. The GIS iframe sits inside a padded
+    // gutter so Google's own border/outline is clipped away.
+    return DecoratedBox(
+      decoration: ShapeDecoration(
+        color: style.backgroundColor,
+        shadows: boxShadow,
+        shape: RoundedRectangleBorder(
+          borderRadius: style.borderRadius,
+          side: style.borderSide,
+        ),
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(borderWidth),
+        child: ClipRRect(
+          borderRadius: clipRadius,
+          clipBehavior: Clip.hardEdge,
+          child: SizedBox(
+            width: innerWidth,
+            height: innerHeight,
+            child: OverflowBox(
+              alignment: Alignment.center,
+              minWidth: innerWidth,
+              maxWidth: innerWidth,
+              minHeight: innerHeight,
+              maxHeight: innerHeight,
+              child: SizedBox(
+                width: innerWidth + bleed,
+                height: innerHeight + bleed,
+                child: child,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
