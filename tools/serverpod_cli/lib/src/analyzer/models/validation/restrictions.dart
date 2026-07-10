@@ -2717,6 +2717,10 @@ class Restrictions {
       );
     }
 
+    errors.addAll(
+      _validateDefaultOnRelationField(field, Keyword.defaultKey, span),
+    );
+
     if ((definition is ModelClassDefinition) &&
         (definition.tableName != null) &&
         (parentNodeName == defaultPrimaryKeyName)) {
@@ -2782,6 +2786,13 @@ class Restrictions {
       );
     }
 
+    var relationErrors = _validateDefaultOnRelationField(
+      field,
+      Keyword.defaultPersistKey,
+      span,
+    );
+    errors.addAll(relationErrors);
+
     if (field.hasOnlyDatabaseDefaults && !field.type.nullable) {
       errors.add(
         SourceSpanSeverityException(
@@ -2794,7 +2805,7 @@ class Restrictions {
     /// We perform this check here instead of using [mutuallyExclusiveKeys] because our
     /// concern is specifically whether the field should be persisted in the database.
     /// Using "persist" is allowed, while using "!persist" is not allowed.
-    if (!field.shouldPersist) {
+    if (relationErrors.isEmpty && !field.shouldPersist) {
       errors.add(
         SourceSpanSeverityException(
           'The "defaultPersist" property is mutually exclusive with the "!persist" property.',
@@ -2804,6 +2815,23 @@ class Restrictions {
     }
 
     return errors;
+  }
+
+  List<SourceSpanSeverityException> _validateDefaultOnRelationField(
+    SerializableModelFieldDefinition field,
+    String key,
+    SourceSpan? span,
+  ) {
+    var relation = field.relation;
+    if (relation == null || relation is ForeignRelationDefinition) return [];
+
+    return [
+      SourceSpanSeverityException(
+        'The "$key" property can only be used on persisted fields or on id '
+        'fields that define the foreign key relation.',
+        span,
+      ),
+    ];
   }
 
   Map<dynamic, int> _duplicatesCount(List<dynamic> list) {

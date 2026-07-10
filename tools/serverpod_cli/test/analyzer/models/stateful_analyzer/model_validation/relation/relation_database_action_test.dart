@@ -254,6 +254,70 @@ fields:
         expect(collector.errors, isEmpty);
       });
 
+      test('then defaultPersist on a direct id relation is accepted.', () {
+        var collector = analyzeSingleModel(
+          '''
+class: Example
+table: example
+fields:
+  exampleId: int?, defaultPersist=1, relation(parent=example, $actionKey=SetDefault)
+''',
+        );
+
+        expect(collector.errors, isEmpty);
+      });
+
+      test('then a shared default on a direct id relation is accepted.', () {
+        var collector = analyzeSingleModel(
+          '''
+class: Example
+table: example
+fields:
+  exampleId: int, default=1, relation(parent=example, $actionKey=SetDefault)
+''',
+        );
+
+        expect(collector.errors, isEmpty);
+      });
+
+      test('then a default on an object relation field is rejected.', () {
+        var collector = analyzeSingleModel(
+          '''
+class: Example
+table: example
+fields:
+  example: Example?, default=1, relation($actionKey=SetDefault, optional)
+''',
+        );
+
+        expect(
+          collector.errors.map((error) => error.message),
+          contains(
+            'The "default" property can only be used on persisted fields or on '
+            'id fields that define the foreign key relation.',
+          ),
+        );
+      });
+
+      test('then defaultPersist on an object relation field is rejected.', () {
+        var collector = analyzeSingleModel(
+          '''
+class: Example
+table: example
+fields:
+  example: Example?, defaultPersist=1, relation($actionKey=SetDefault, optional)
+''',
+        );
+
+        expect(
+          collector.errors.map((error) => error.message),
+          contains(
+            'The "defaultPersist" property can only be used on persisted fields '
+            'or on id fields that define the foreign key relation.',
+          ),
+        );
+      });
+
       test('then an implicit foreign key is rejected.', () {
         var collector = analyzeSingleModel(
           '''
