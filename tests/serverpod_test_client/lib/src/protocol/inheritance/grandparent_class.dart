@@ -12,7 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class GrandparentClass implements _i1.SerializableModel {
+class GrandparentClass
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   GrandparentClass({required this.grandParentField});
 
   factory GrandparentClass.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -34,6 +35,14 @@ class GrandparentClass implements _i1.SerializableModel {
 
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'GrandparentClass',
+      'grandParentField': grandParentField,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'GrandparentClass',
       'grandParentField': grandParentField,

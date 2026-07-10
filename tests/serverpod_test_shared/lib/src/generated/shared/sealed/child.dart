@@ -12,7 +12,7 @@
 part of 'parent.dart';
 
 abstract class SharedSealedChild extends _i1.SharedSealedParent
-    implements _i2.SerializableModel {
+    implements _i2.SerializableModel, _i2.ProtocolSerialization {
   SharedSealedChild._({
     required super.sharedSealedField,
     required this.sharedSealedChildField,
@@ -43,6 +43,15 @@ abstract class SharedSealedChild extends _i1.SharedSealedParent
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'SharedSealedChild',
+      'sharedSealedField': sharedSealedField,
+      'sharedSealedChildField': sharedSealedChildField,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'SharedSealedChild',
       'sharedSealedField': sharedSealedField,

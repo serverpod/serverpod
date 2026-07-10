@@ -12,11 +12,12 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
-import '../../models_with_relations/one_to_one/town.dart' as _i2;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
-import 'package:serverpod_client/serverpod_client.dart' as _i4;
+import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import '../../models_with_relations/one_to_one/town.dart' as _i3;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
 
-abstract class Company implements _i1.TableRow<int?> {
+abstract class Company
+    implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   Company._({
     this.id,
     required this.name,
@@ -28,7 +29,7 @@ abstract class Company implements _i1.TableRow<int?> {
     int? id,
     required String name,
     required int townId,
-    _i2.Town? town,
+    _i3.Town? town,
   }) = _CompanyImpl;
 
   factory Company.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -38,7 +39,7 @@ abstract class Company implements _i1.TableRow<int?> {
       townId: jsonSerialization['townId'] as int,
       town: jsonSerialization['town'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.Town>(jsonSerialization['town']),
+          : _i4.Protocol().deserialize<_i3.Town>(jsonSerialization['town']),
     );
   }
 
@@ -53,19 +54,19 @@ abstract class Company implements _i1.TableRow<int?> {
 
   int townId;
 
-  _i2.Town? town;
+  _i3.Town? town;
 
   @override
   _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Company]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   Company copyWith({
     int? id,
     String? name,
     int? townId,
-    _i2.Town? town,
+    _i3.Town? town,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -78,7 +79,18 @@ abstract class Company implements _i1.TableRow<int?> {
     };
   }
 
-  static CompanyInclude include({_i2.TownInclude? town}) {
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Company',
+      if (id != null) 'id': id,
+      'name': name,
+      'townId': townId,
+      if (town != null) 'town': town?.toJsonForProtocol(),
+    };
+  }
+
+  static CompanyInclude include({_i3.TownInclude? town}) {
     return CompanyInclude._(town: town);
   }
 
@@ -106,7 +118,7 @@ abstract class Company implements _i1.TableRow<int?> {
 
   @override
   String toString() {
-    return _i4.SerializationManager.encode(this);
+    return _i2.SerializationManager.encode(this);
   }
 }
 
@@ -117,7 +129,7 @@ class _CompanyImpl extends Company {
     int? id,
     required String name,
     required int townId,
-    _i2.Town? town,
+    _i3.Town? town,
   }) : super._(
          id: id,
          name: name,
@@ -127,7 +139,7 @@ class _CompanyImpl extends Company {
 
   /// Returns a shallow copy of this [Company]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   @override
   Company copyWith({
     Object? id = _Undefined,
@@ -139,7 +151,7 @@ class _CompanyImpl extends Company {
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       townId: townId ?? this.townId,
-      town: town is _i2.Town? ? town : this.town?.copyWith(),
+      town: town is _i3.Town? ? town : this.town?.copyWith(),
     );
   }
 }
@@ -177,17 +189,17 @@ class CompanyTable extends _i1.Table<int?> {
 
   late final _i1.ColumnInt townId;
 
-  _i2.TownTable? _town;
+  _i3.TownTable? _town;
 
-  _i2.TownTable get town {
+  _i3.TownTable get town {
     if (_town != null) return _town!;
     _town = _i1.createRelationTable(
       relationFieldName: 'town',
       field: Company.t.townId,
-      foreignField: _i2.Town.t.id,
+      foreignField: _i3.Town.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.TownTable(tableRelation: foreignTableRelation),
+          _i3.TownTable(tableRelation: foreignTableRelation),
     );
     return _town!;
   }
@@ -209,11 +221,11 @@ class CompanyTable extends _i1.Table<int?> {
 }
 
 class CompanyInclude extends _i1.IncludeObject {
-  CompanyInclude._({_i2.TownInclude? town}) {
+  CompanyInclude._({_i3.TownInclude? town}) {
     _town = town;
   }
 
-  _i2.TownInclude? _town;
+  _i3.TownInclude? _town;
 
   @override
   Map<String, _i1.Include?> get includes => {'town': _town};
@@ -674,7 +686,7 @@ class CompanyAttachRowRepository {
   Future<void> town(
     _i1.DatabaseSession session,
     Company company,
-    _i2.Town town, {
+    _i3.Town town, {
     _i1.Transaction? transaction,
   }) async {
     if (company.id == null) {

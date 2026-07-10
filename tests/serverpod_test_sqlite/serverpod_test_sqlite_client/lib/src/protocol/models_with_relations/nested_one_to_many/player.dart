@@ -12,11 +12,11 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
-import '../../models_with_relations/nested_one_to_many/team.dart' as _i2;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
-import 'package:serverpod_client/serverpod_client.dart' as _i4;
+import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import '../../models_with_relations/nested_one_to_many/team.dart' as _i3;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
 
-abstract class Player implements _i1.TableRow<int?> {
+abstract class Player implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   Player._({
     this.id,
     required this.name,
@@ -28,7 +28,7 @@ abstract class Player implements _i1.TableRow<int?> {
     int? id,
     required String name,
     int? teamId,
-    _i2.Team? team,
+    _i3.Team? team,
   }) = _PlayerImpl;
 
   factory Player.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -38,7 +38,7 @@ abstract class Player implements _i1.TableRow<int?> {
       teamId: jsonSerialization['teamId'] as int?,
       team: jsonSerialization['team'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.Team>(jsonSerialization['team']),
+          : _i4.Protocol().deserialize<_i3.Team>(jsonSerialization['team']),
     );
   }
 
@@ -53,19 +53,19 @@ abstract class Player implements _i1.TableRow<int?> {
 
   int? teamId;
 
-  _i2.Team? team;
+  _i3.Team? team;
 
   @override
   _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Player]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   Player copyWith({
     int? id,
     String? name,
     int? teamId,
-    _i2.Team? team,
+    _i3.Team? team,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -78,7 +78,18 @@ abstract class Player implements _i1.TableRow<int?> {
     };
   }
 
-  static PlayerInclude include({_i2.TeamInclude? team}) {
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Player',
+      if (id != null) 'id': id,
+      'name': name,
+      if (teamId != null) 'teamId': teamId,
+      if (team != null) 'team': team?.toJsonForProtocol(),
+    };
+  }
+
+  static PlayerInclude include({_i3.TeamInclude? team}) {
     return PlayerInclude._(team: team);
   }
 
@@ -106,7 +117,7 @@ abstract class Player implements _i1.TableRow<int?> {
 
   @override
   String toString() {
-    return _i4.SerializationManager.encode(this);
+    return _i2.SerializationManager.encode(this);
   }
 }
 
@@ -117,7 +128,7 @@ class _PlayerImpl extends Player {
     int? id,
     required String name,
     int? teamId,
-    _i2.Team? team,
+    _i3.Team? team,
   }) : super._(
          id: id,
          name: name,
@@ -127,7 +138,7 @@ class _PlayerImpl extends Player {
 
   /// Returns a shallow copy of this [Player]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   @override
   Player copyWith({
     Object? id = _Undefined,
@@ -139,7 +150,7 @@ class _PlayerImpl extends Player {
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       teamId: teamId is int? ? teamId : this.teamId,
-      team: team is _i2.Team? ? team : this.team?.copyWith(),
+      team: team is _i3.Team? ? team : this.team?.copyWith(),
     );
   }
 }
@@ -177,17 +188,17 @@ class PlayerTable extends _i1.Table<int?> {
 
   late final _i1.ColumnInt teamId;
 
-  _i2.TeamTable? _team;
+  _i3.TeamTable? _team;
 
-  _i2.TeamTable get team {
+  _i3.TeamTable get team {
     if (_team != null) return _team!;
     _team = _i1.createRelationTable(
       relationFieldName: 'team',
       field: Player.t.teamId,
-      foreignField: _i2.Team.t.id,
+      foreignField: _i3.Team.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.TeamTable(tableRelation: foreignTableRelation),
+          _i3.TeamTable(tableRelation: foreignTableRelation),
     );
     return _team!;
   }
@@ -209,11 +220,11 @@ class PlayerTable extends _i1.Table<int?> {
 }
 
 class PlayerInclude extends _i1.IncludeObject {
-  PlayerInclude._({_i2.TeamInclude? team}) {
+  PlayerInclude._({_i3.TeamInclude? team}) {
     _team = team;
   }
 
-  _i2.TeamInclude? _team;
+  _i3.TeamInclude? _team;
 
   @override
   Map<String, _i1.Include?> get includes => {'team': _team};
@@ -676,7 +687,7 @@ class PlayerAttachRowRepository {
   Future<void> team(
     _i1.DatabaseSession session,
     Player player,
-    _i2.Team team, {
+    _i3.Team team, {
     _i1.Transaction? transaction,
   }) async {
     if (player.id == null) {

@@ -12,6 +12,7 @@ environment:
 dependencies:
   freezed_annotation: ^2.2.0
   json_annotation: ^4.8.0
+  serverpod_database: SERVERPOD_VERSION
   serverpod_serialization: SERVERPOD_VERSION
 
 dev_dependencies:
@@ -22,5 +23,7 @@ dev_dependencies:
   test: ^1.25.5
 
 dependency_overrides:
+  serverpod_database:
+    path: ../../packages/serverpod_database
   serverpod_serialization:
     path: ../../packages/serverpod_serialization

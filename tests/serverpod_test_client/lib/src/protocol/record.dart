@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i2;
 
-abstract class Record implements _i1.SerializableModel {
+abstract class Record
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   Record._({this.aBoolRecord});
 
   factory Record({(bool,)? aBoolRecord}) = _RecordImpl;
@@ -36,6 +37,15 @@ abstract class Record implements _i1.SerializableModel {
   Record copyWith({(bool,)? aBoolRecord});
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'Record',
+      if (aBoolRecord != null)
+        'aBoolRecord': _i2.Protocol().mapRecordToJson(aBoolRecord),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'Record',
       if (aBoolRecord != null)

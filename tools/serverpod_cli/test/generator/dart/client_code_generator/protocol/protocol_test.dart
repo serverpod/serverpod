@@ -233,6 +233,203 @@ void main() {
   );
 
   group(
+    'Given a client database table and shared database tables from a shared package, '
+    'when generating protocol files,',
+    () {
+      const sharedPackageName = 'example_shared';
+      var sharedAwareConfig = GeneratorConfigBuilder()
+          .withName(projectName)
+          .withSharedModelsSourcePathsParts({
+            sharedPackageName: ['..', sharedPackageName],
+          })
+          .build();
+
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName('Example')
+            .withFileName('example')
+            .withTableName('example')
+            .withDatabase(ModelDatabaseDefinition.client)
+            .build(),
+        ModelClassDefinitionBuilder()
+            .withClassName('SharedTableRecord')
+            .withFileName('shared_table_record')
+            .withTableName('shared_table_record')
+            .withDatabase(ModelDatabaseDefinition.all)
+            .withSharedPackageName(sharedPackageName)
+            .build(),
+      ];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [],
+        models: models,
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: sharedAwareConfig,
+      );
+
+      test(
+        'then targetTableDefinitions merges table definitions from the shared package protocol through DatabaseSerializationManager.',
+        () {
+          var protocol = codeMap[expectedFileName]!;
+          expect(
+            protocol,
+            matches(
+              RegExp(
+                r'\.\.\._i(\d+)\.Protocol\(\) is _i(\d+)\.DatabaseSerializationManager\n'
+                r'        \? \(_i\1\.Protocol\(\) as _i\2\.DatabaseSerializationManager\)\n'
+                r'              \.getTargetTableDefinitions\(\)\n'
+                r'        : \[\],',
+              ),
+            ),
+          );
+        },
+      );
+
+      test(
+        'then protocol.dart imports the shared package for shared table metadata.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            contains("import 'package:example_shared/example_shared.dart'"),
+          );
+        },
+      );
+
+      test(
+        'then getTableForType resolves tables from the shared package protocol through DatabaseSerializationManager.',
+        () {
+          var protocol = codeMap[expectedFileName]!;
+          expect(
+            protocol,
+            matches(
+              RegExp(
+                r'var protocol = _i(\d+)\.Protocol\(\);\n'
+                r'      var table = protocol is _i(\d+)\.DatabaseSerializationManager\n'
+                r'          \? \(protocol as _i\2\.DatabaseSerializationManager\)\.getTableForType\(t\)\n'
+                r'          : null;',
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given only a shared-package client database table, '
+    'when generating protocol files,',
+    () {
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName('SharedTableRecord')
+            .withFileName('shared_table_record')
+            .withTableName('shared_table_record')
+            .withDatabase(ModelDatabaseDefinition.all)
+            .withSharedPackageName('example_shared')
+            .build(),
+      ];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [],
+        models: models,
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test(
+        'then the protocol.dart does not extend the database serialization manager.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            isNot(contains('DatabaseSerializationManager')),
+          );
+          expect(codeMap[expectedFileName], contains('SerializationManager'));
+        },
+      );
+
+      test(
+        'then the client.dart does not expose createSession.',
+        () {
+          expect(
+            codeMap[expectedClientFileName],
+            isNot(contains('createSession')),
+          );
+        },
+      );
+
+      test(
+        'then the migration registry placeholder file is not created.',
+        () {
+          expect(codeMap[expectedMigrationRegistryFileName], isNull);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given only a module client database table, '
+    'when generating protocol files,',
+    () {
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName('UserInfo')
+            .withFileName('user_info')
+            .withTableName('serverpod_user_info')
+            .withDatabase(ModelDatabaseDefinition.client)
+            .withModuleAlias('auth')
+            .build(),
+      ];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [],
+        models: models,
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test(
+        'then the protocol.dart does not extend the database serialization manager.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            isNot(contains('DatabaseSerializationManager')),
+          );
+          expect(codeMap[expectedFileName], contains('SerializationManager'));
+        },
+      );
+
+      test(
+        'then the client.dart does not expose createSession.',
+        () {
+          expect(
+            codeMap[expectedClientFileName],
+            isNot(contains('createSession')),
+          );
+        },
+      );
+
+      test(
+        'then the migration registry placeholder file is not created.',
+        () {
+          expect(codeMap[expectedMigrationRegistryFileName], isNull);
+        },
+      );
+    },
+  );
+
+  group(
     'Given a client database table and module dependencies, '
     'when generating protocol files,',
     () {

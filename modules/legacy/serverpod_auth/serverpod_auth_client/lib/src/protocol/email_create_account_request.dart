@@ -14,7 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// A request for creating an email signin. Created during the sign up process
 /// to keep track of the user's details and verification code.
-abstract class EmailCreateAccountRequest implements _i1.SerializableModel {
+abstract class EmailCreateAccountRequest
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   EmailCreateAccountRequest._({
     this.id,
     required this.userName,
@@ -72,6 +73,18 @@ abstract class EmailCreateAccountRequest implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_auth.EmailCreateAccountRequest',
+      if (id != null) 'id': id,
+      'userName': userName,
+      'email': email,
+      'hash': hash,
+      'verificationCode': verificationCode,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_auth.EmailCreateAccountRequest',
       if (id != null) 'id': id,

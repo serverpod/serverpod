@@ -87,7 +87,7 @@ abstract class ObjectUser
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       'userInfoId': userInfoId,
-      if (userInfo != null) 'userInfo': userInfo?.toJsonForProtocol(),
+      if (userInfo != null) 'userInfo': userInfo?.toJson(),
     };
   }
 

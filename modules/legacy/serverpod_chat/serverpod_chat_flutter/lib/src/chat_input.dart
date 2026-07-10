@@ -199,31 +199,18 @@ class ChatInputState extends State<ChatInput> {
 
     // ChatMessageAttachment attachment;
     try {
-      var result = await FilePicker.platform.pickFiles(withReadStream: true);
-      if (result == null) {
+      var file = await FilePicker.pickFile();
+      if (file == null) {
         _uploadCancelled();
         return;
       }
 
-      var fileName = result.files.first.name;
+      var fileName = file.name;
 
       if (mounted) {
         setState(() {
           _uploadingAttachementFileName = fileName;
         });
-      }
-
-      var stream = result.files.first.readStream;
-      // var stream = result.openRead();
-      Uint8List? bytes;
-      if (stream == null) {
-        bytes = result.files.first.bytes;
-        // bytes = await result.readAsBytes();
-      }
-
-      if (stream == null && bytes == null) {
-        _uploadCancelled();
-        return;
       }
 
       var uploadDescription = await widget.controller.module.chat
@@ -234,14 +221,7 @@ class ChatInputState extends State<ChatInput> {
       }
 
       var uploader = FileUploader(uploadDescription.uploadDescription);
-      if (stream != null) {
-        await uploader.upload(stream, result.files.first.size);
-      } else if (bytes != null) {
-        await uploader.uploadByteData(ByteData.view(bytes.buffer));
-      } else {
-        _uploadCancelled();
-        return;
-      }
+      await uploader.upload(file.readAsByteStream(), file.size);
 
       var attachment = await widget.controller.module.chat
           .verifyAttachmentUpload(fileName, uploadDescription.filePath);

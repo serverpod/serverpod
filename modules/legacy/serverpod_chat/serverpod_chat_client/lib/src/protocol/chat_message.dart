@@ -16,7 +16,8 @@ import 'chat_message_attachment.dart' as _i3;
 import 'package:serverpod_chat_client/src/protocol/protocol.dart' as _i4;
 
 /// A chat message.
-abstract class ChatMessage implements _i1.SerializableModel {
+abstract class ChatMessage
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ChatMessage._({
     this.id,
     required this.channel,
@@ -130,6 +131,26 @@ abstract class ChatMessage implements _i1.SerializableModel {
       if (sent != null) 'sent': sent,
       if (attachments != null)
         'attachments': attachments?.toJson(valueToJson: (v) => v.toJson()),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod_chat.ChatMessage',
+      if (id != null) 'id': id,
+      'channel': channel,
+      'message': message,
+      'time': time.toJson(),
+      'sender': sender,
+      if (senderInfo != null) 'senderInfo': senderInfo?.toJson(),
+      'removed': removed,
+      if (clientMessageId != null) 'clientMessageId': clientMessageId,
+      if (sent != null) 'sent': sent,
+      if (attachments != null)
+        'attachments': attachments?.toJson(
+          valueToJson: (v) => v.toJsonForProtocol(),
+        ),
     };
   }
 

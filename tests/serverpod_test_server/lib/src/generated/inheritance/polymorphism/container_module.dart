@@ -81,13 +81,11 @@ abstract class ModulePolymorphicChildContainer
   Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ModulePolymorphicChildContainer',
-      'moduleObject': moduleObject.toJsonForProtocol(),
+      'moduleObject': moduleObject.toJson(),
       'moduleObjectList': moduleObjectList.toJson(
-        valueToJson: (v) => v.toJsonForProtocol(),
+        valueToJson: (v) => v.toJson(),
       ),
-      'moduleObjectMap': moduleObjectMap.toJson(
-        valueToJson: (v) => v.toJsonForProtocol(),
-      ),
+      'moduleObjectMap': moduleObjectMap.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 

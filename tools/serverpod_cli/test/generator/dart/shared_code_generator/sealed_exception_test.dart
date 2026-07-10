@@ -209,14 +209,14 @@ void main() {
           expect(toJsonMethod, isNotNull);
         });
 
-        test('does NOT have a toJsonForProtocol method', () {
+        test('does have a toJsonForProtocol method', () {
           var toJsonForProtocolMethod =
               CompilationUnitHelpers.tryFindMethodDeclaration(
                 childClass!,
                 name: 'toJsonForProtocol',
               );
 
-          expect(toJsonForProtocolMethod, isNull);
+          expect(toJsonForProtocolMethod, isNotNull);
         });
 
         test('does have a toString method', () {

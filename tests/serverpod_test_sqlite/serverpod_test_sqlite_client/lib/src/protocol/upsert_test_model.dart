@@ -12,7 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class UpsertTestModel implements _i1.SerializableModel {
+abstract class UpsertTestModel
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   UpsertTestModel._({
     this.id,
     required this.code,
@@ -58,6 +59,17 @@ abstract class UpsertTestModel implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'UpsertTestModel',
+      if (id != null) 'id': id,
+      'code': code,
+      'category': category,
+      'value': value,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'UpsertTestModel',
       if (id != null) 'id': id,

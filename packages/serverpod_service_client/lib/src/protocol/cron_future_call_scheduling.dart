@@ -12,7 +12,7 @@
 part of 'future_call_scheduling.dart';
 
 abstract class CronFutureCallScheduling extends _i1.FutureCallScheduling
-    implements _i2.SerializableModel {
+    implements _i2.SerializableModel, _i2.ProtocolSerialization {
   CronFutureCallScheduling._({required this.cron});
 
   factory CronFutureCallScheduling({required String cron}) =
@@ -34,6 +34,14 @@ abstract class CronFutureCallScheduling extends _i1.FutureCallScheduling
   CronFutureCallScheduling copyWith({String? cron});
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod.CronFutureCallScheduling',
+      'cron': cron,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod.CronFutureCallScheduling',
       'cron': cron,

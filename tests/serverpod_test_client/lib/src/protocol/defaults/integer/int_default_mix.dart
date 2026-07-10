@@ -12,7 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class IntDefaultMix implements _i1.SerializableModel {
+abstract class IntDefaultMix
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   IntDefaultMix._({
     this.id,
     int? intDefaultAndDefaultModel,
@@ -64,6 +65,17 @@ abstract class IntDefaultMix implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'IntDefaultMix',
+      if (id != null) 'id': id,
+      'intDefaultAndDefaultModel': intDefaultAndDefaultModel,
+      'intDefaultAndDefaultPersist': intDefaultAndDefaultPersist,
+      'intDefaultModelAndDefaultPersist': intDefaultModelAndDefaultPersist,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'IntDefaultMix',
       if (id != null) 'id': id,

@@ -14,7 +14,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 @_i1.immutable
 abstract class ImmutableObjectWithTwentyFields
-    implements _i1.SerializableModel {
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   const ImmutableObjectWithTwentyFields._({
     this.variable1,
     this.variable2,
@@ -292,6 +292,33 @@ abstract class ImmutableObjectWithTwentyFields
 
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'ImmutableObjectWithTwentyFields',
+      if (variable1 != null) 'variable1': variable1,
+      if (variable2 != null) 'variable2': variable2,
+      if (variable3 != null) 'variable3': variable3,
+      if (variable4 != null) 'variable4': variable4,
+      if (variable5 != null) 'variable5': variable5,
+      if (variable6 != null) 'variable6': variable6,
+      if (variable7 != null) 'variable7': variable7,
+      if (variable8 != null) 'variable8': variable8,
+      if (variable9 != null) 'variable9': variable9,
+      if (variable10 != null) 'variable10': variable10,
+      if (variable11 != null) 'variable11': variable11,
+      if (variable12 != null) 'variable12': variable12,
+      if (variable13 != null) 'variable13': variable13,
+      if (variable14 != null) 'variable14': variable14,
+      if (variable15 != null) 'variable15': variable15,
+      if (variable16 != null) 'variable16': variable16,
+      if (variable17 != null) 'variable17': variable17,
+      if (variable18 != null) 'variable18': variable18,
+      if (variable19 != null) 'variable19': variable19,
+      if (variable20 != null) 'variable20': variable20,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ImmutableObjectWithTwentyFields',
       if (variable1 != null) 'variable1': variable1,

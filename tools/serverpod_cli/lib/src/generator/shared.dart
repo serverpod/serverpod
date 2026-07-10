@@ -26,6 +26,13 @@ String serverpodDatabaseRuntimeUrl(bool serverCode) {
       : 'package:serverpod_database/serverpod_database.dart';
 }
 
+/// The import url of the serverpod service client package.
+String serverpodServiceClientUrl(bool serverCode) {
+  return serverCode
+      ? serverpodProtocolUrl(serverCode)
+      : 'package:serverpod_service_client/serverpod_service_client.dart';
+}
+
 /// The import url of the serverpod serialization package.
 const String serverpodSerializationUrl =
     'package:serverpod_serialization/serverpod_serialization.dart';

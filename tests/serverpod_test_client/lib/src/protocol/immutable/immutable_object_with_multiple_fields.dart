@@ -14,7 +14,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 @_i1.immutable
 abstract class ImmutableObjectWithMultipleFields
-    implements _i1.SerializableModel {
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   const ImmutableObjectWithMultipleFields._({
     this.anInt,
     this.aBool,
@@ -116,6 +116,18 @@ abstract class ImmutableObjectWithMultipleFields
 
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'ImmutableObjectWithMultipleFields',
+      if (anInt != null) 'anInt': anInt,
+      if (aBool != null) 'aBool': aBool,
+      if (aDouble != null) 'aDouble': aDouble,
+      if (aDateTime != null) 'aDateTime': aDateTime?.toJson(),
+      if (aString != null) 'aString': aString,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ImmutableObjectWithMultipleFields',
       if (anInt != null) 'anInt': anInt,

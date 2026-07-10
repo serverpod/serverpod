@@ -11,11 +11,12 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
-import 'simple_data.dart' as _i2;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
-import 'package:serverpod_client/serverpod_client.dart' as _i4;
+import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import 'simple_data.dart' as _i3;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
 
-abstract class ObjectFieldPersist implements _i1.TableRow<int?> {
+abstract class ObjectFieldPersist
+    implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   ObjectFieldPersist._({
     this.id,
     required this.normal,
@@ -27,7 +28,7 @@ abstract class ObjectFieldPersist implements _i1.TableRow<int?> {
     int? id,
     required String normal,
     String? api,
-    _i2.SimpleData? data,
+    _i3.SimpleData? data,
   }) = _ObjectFieldPersistImpl;
 
   factory ObjectFieldPersist.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -37,7 +38,7 @@ abstract class ObjectFieldPersist implements _i1.TableRow<int?> {
       api: jsonSerialization['api'] as String?,
       data: jsonSerialization['data'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.SimpleData>(
+          : _i4.Protocol().deserialize<_i3.SimpleData>(
               jsonSerialization['data'],
             ),
     );
@@ -54,19 +55,19 @@ abstract class ObjectFieldPersist implements _i1.TableRow<int?> {
 
   String? api;
 
-  _i2.SimpleData? data;
+  _i3.SimpleData? data;
 
   @override
   _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ObjectFieldPersist]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   ObjectFieldPersist copyWith({
     int? id,
     String? normal,
     String? api,
-    _i2.SimpleData? data,
+    _i3.SimpleData? data,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -76,6 +77,17 @@ abstract class ObjectFieldPersist implements _i1.TableRow<int?> {
       'normal': normal,
       if (api != null) 'api': api,
       if (data != null) 'data': data?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'ObjectFieldPersist',
+      if (id != null) 'id': id,
+      'normal': normal,
+      if (api != null) 'api': api,
+      if (data != null) 'data': data?.toJsonForProtocol(),
     };
   }
 
@@ -107,7 +119,7 @@ abstract class ObjectFieldPersist implements _i1.TableRow<int?> {
 
   @override
   String toString() {
-    return _i4.SerializationManager.encode(this);
+    return _i2.SerializationManager.encode(this);
   }
 }
 
@@ -118,7 +130,7 @@ class _ObjectFieldPersistImpl extends ObjectFieldPersist {
     int? id,
     required String normal,
     String? api,
-    _i2.SimpleData? data,
+    _i3.SimpleData? data,
   }) : super._(
          id: id,
          normal: normal,
@@ -128,7 +140,7 @@ class _ObjectFieldPersistImpl extends ObjectFieldPersist {
 
   /// Returns a shallow copy of this [ObjectFieldPersist]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   @override
   ObjectFieldPersist copyWith({
     Object? id = _Undefined,
@@ -140,7 +152,7 @@ class _ObjectFieldPersistImpl extends ObjectFieldPersist {
       id: id is int? ? id : this.id,
       normal: normal ?? this.normal,
       api: api is String? ? api : this.api,
-      data: data is _i2.SimpleData? ? data : this.data?.copyWith(),
+      data: data is _i3.SimpleData? ? data : this.data?.copyWith(),
     );
   }
 }

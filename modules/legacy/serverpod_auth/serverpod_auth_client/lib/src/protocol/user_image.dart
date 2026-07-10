@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Database bindings for a user image.
-abstract class UserImage implements _i1.SerializableModel {
+abstract class UserImage
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   UserImage._({
     this.id,
     required this.userId,
@@ -62,6 +63,17 @@ abstract class UserImage implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_auth.UserImage',
+      if (id != null) 'id': id,
+      'userId': userId,
+      'version': version,
+      'url': url,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_auth.UserImage',
       if (id != null) 'id': id,

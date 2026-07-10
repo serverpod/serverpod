@@ -1,5 +1,6 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:path/path.dart' as path;
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:test/test.dart';
 
@@ -1035,4 +1036,55 @@ void main() {
       });
     }, skip: repositoryClass == null);
   });
+
+  test(
+    'Given a class with table name declared on the project '
+    'when generating code '
+    'then the DatabaseSession is imported from the serverpod package.',
+    () {
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withFileName(testClassFileName)
+            .withTableName('example_table')
+            .withDatabase(ModelDatabaseDefinition.all)
+            .build(),
+      ];
+
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
+
+      var compilationUnit = parseString(
+        content: codeMap[expectedFilePath]!,
+      ).unit;
+
+      var repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        compilationUnit,
+        name: repositoryClassName,
+      );
+
+      expect(
+        repositoryClass,
+        isNotNull,
+        reason: 'Missing class named $repositoryClassName.',
+      );
+
+      expect(
+        CompilationUnitHelpers.hasImportDirective(
+          compilationUnit,
+          uri: 'package:serverpod/serverpod.dart',
+        ),
+        isTrue,
+      );
+
+      expect(
+        CompilationUnitHelpers.hasImportDirective(
+          compilationUnit,
+          uri: 'package:serverpod_database/serverpod_database.dart',
+        ),
+        isFalse,
+      );
+    },
+  );
 }
