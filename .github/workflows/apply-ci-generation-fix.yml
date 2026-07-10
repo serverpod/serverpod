@@ -30,106 +30,92 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
 
+          def replace_once(text: str, old: str, new: str, label: str) -> str:
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'{label}: expected one match, found {count}')
+              return text.replace(old, new, 1)
+
           workflow_path = Path('.github/workflows/dart-tests.yaml')
           workflow = workflow_path.read_text(encoding='utf-8')
-          duplicate_step = '''      - name: Verify generate from scratch
-                  shell: bash
-                  run: |
-                    rm -rf tests/serverpod_test_server/lib/src/generated
-                    export SERVERPOD_HOME=$(pwd)
-                    cd tests/serverpod_test_server
-                    dart run "$SERVERPOD_HOME/tools/serverpod_cli/bin/serverpod_cli.dart" generate --no-analytics
-          '''
-          if workflow.count(duplicate_step) != 1:
-              raise SystemExit('Expected exactly one duplicate generation step')
-          workflow_path.write_text(
-              workflow.replace(duplicate_step, ''),
-              encoding='utf-8',
+          duplicate_step = "\n".join([
+              '      - name: Verify generate from scratch',
+              '        shell: bash',
+              '        run: |',
+              '          rm -rf tests/serverpod_test_server/lib/src/generated',
+              '          export SERVERPOD_HOME=$(pwd)',
+              '          cd tests/serverpod_test_server',
+              '          dart run "$SERVERPOD_HOME/tools/serverpod_cli/bin/serverpod_cli.dart" generate --no-analytics',
+              '',
+          ])
+          workflow = replace_once(
+              workflow,
+              duplicate_step,
+              '',
+              'duplicate workflow generation step',
           )
+          workflow_path.write_text(workflow, encoding='utf-8')
 
           script_path = Path('util/run_tests_serverpod_generate')
-          original_script = script_path.read_text(encoding='utf-8')
-          expected_script = '''#!/bin/bash
+          script = script_path.read_text(encoding='utf-8')
 
-          # Makes script exit on first non-zero error code
-          set -e
+          script = replace_once(
+              script,
+              '#!/bin/bash\n\n# Makes script exit on first non-zero error code\nset -e',
+              '''#!/bin/bash
 
-          echo "### Run serverpod generate test"
-          echo "### If this test fails, make sure that you have run serverpod generate"
-          echo "### on all packages with util/run_tests_serverpod_generate"
+if [ ! -f util/.serverpod_util_root ]; then
+    echo "Run this script from the root of the Serverpod repository"
+    echo "I.e. util/run_tests_serverpod_generate"
+    exit 1
+fi
 
-          # Install the serverpod command
-          echo "### Installing CLI tools"
+# Exit on errors, unset variables, and failed pipeline commands.
+set -euo pipefail''',
+              'script prologue',
+          )
+          script = replace_once(
+              script,
+              'export SERVERPOD_HOME=$(pwd)',
+              'export SERVERPOD_HOME="$(pwd)"',
+              'SERVERPOD_HOME assignment',
+          )
+          script = replace_once(
+              script,
+              'test -d $TEMPLATE_DIR',
+              'test -d "$TEMPLATE_DIR"',
+              'template directory check',
+          )
+          script = replace_once(
+              script,
+              'cd tools/serverpod_cli',
+              'cd "$SERVERPOD_HOME/tools/serverpod_cli"',
+              'CLI directory change',
+          )
+          script = replace_once(
+              script,
+              '''cd $SERVERPOD_HOME
 
-          export PATH="$PATH":"$HOME/.pub-cache/bin"
+util/generate_all
 
-          export SERVERPOD_HOME=$(pwd)
-          echo "### Serverpod home: $SERVERPOD_HOME"
+util/ensure_no_changes''',
+              '''cd "$SERVERPOD_HOME"
 
-          # Verify that template directory exists
-          TEMPLATE_DIR="$SERVERPOD_HOME/templates/serverpod_templates"
-          echo "### Templates at: $TEMPLATE_DIR"
-          test -d $TEMPLATE_DIR
+# Generate the test project from a clean state as part of the existing full
+# generation pass, instead of invoking the generator a second time.
+GENERATED_DIR="$SERVERPOD_HOME/tests/serverpod_test_server/lib/src/generated"
+echo "### Removing generated test project code: $GENERATED_DIR"
+rm -rf "$GENERATED_DIR"
 
-          cd tools/serverpod_cli
-          dart pub global activate -s path .
+util/generate_all
 
-          cd $SERVERPOD_HOME
-
-          util/generate_all
-
-          util/ensure_no_changes
-          '''
-          if original_script != expected_script:
-              raise SystemExit('run_tests_serverpod_generate changed upstream; refusing blind rewrite')
-
-          improved_script = '''#!/bin/bash
-
-          if [ ! -f util/.serverpod_util_root ]; then
-              echo "Run this script from the root of the Serverpod repository"
-              echo "I.e. util/run_tests_serverpod_generate"
-              exit 1
-          fi
-
-          # Exit on errors, unset variables, and failed pipeline commands.
-          set -euo pipefail
-
-          echo "### Run serverpod generate test"
-          echo "### If this test fails, make sure that you have run serverpod generate"
-          echo "### on all packages with util/run_tests_serverpod_generate"
-
-          # Install the serverpod command
-          echo "### Installing CLI tools"
-
-          export PATH="$PATH":"$HOME/.pub-cache/bin"
-
-          export SERVERPOD_HOME="$(pwd)"
-          echo "### Serverpod home: $SERVERPOD_HOME"
-
-          # Verify that template directory exists
-          TEMPLATE_DIR="$SERVERPOD_HOME/templates/serverpod_templates"
-          echo "### Templates at: $TEMPLATE_DIR"
-          test -d "$TEMPLATE_DIR"
-
-          cd "$SERVERPOD_HOME/tools/serverpod_cli"
-          dart pub global activate -s path .
-
-          cd "$SERVERPOD_HOME"
-
-          # Generate the test project from a clean state as part of the existing
-          # full generation pass, instead of invoking the generator a second time.
-          GENERATED_DIR="$SERVERPOD_HOME/tests/serverpod_test_server/lib/src/generated"
-          echo "### Removing generated test project code: $GENERATED_DIR"
-          rm -rf "$GENERATED_DIR"
-
-          util/generate_all
-
-          # Make the clean-generation guarantee explicit before checking that all
-          # generated output matches the committed repository state.
-          test -d "$GENERATED_DIR"
-          util/ensure_no_changes
-          '''
-          script_path.write_text(improved_script, encoding='utf-8')
+# Make the clean-generation guarantee explicit before checking that all
+# generated output matches the committed repository state.
+test -d "$GENERATED_DIR"
+util/ensure_no_changes''',
+              'generation block',
+          )
+          script_path.write_text(script, encoding='utf-8')
           PY
 
           rm .github/workflows/apply-ci-generation-fix.yml
@@ -149,7 +135,7 @@ jobs:
             exit 1
           fi
 
-      - name: Replace bootstrap commit with one clean contribution commit
+      - name: Replace bootstrap history with one clean contribution commit
         shell: bash
         run: |
           set -euo pipefail
@@ -173,4 +159,4 @@ jobs:
 
           git diff --cached --check
           git commit -m "ci: avoid duplicate clean code generation"
-          git push --force-with-lease origin HEAD:agent/avoid-duplicate-generation
+          git push --force origin HEAD:agent/avoid-duplicate-generation
