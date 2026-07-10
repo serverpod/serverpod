@@ -6,9 +6,13 @@ void main() {
     late FirebaseAccountDetails accountDetails;
 
     setUp(() {
-      accountDetails = _createAccountDetails(
+      accountDetails = (
+        userIdentifier: 'firebase-uid',
         email: 'test@example.com',
+        fullName: null,
+        image: null,
         verifiedEmail: false,
+        phone: null,
       );
     });
 
@@ -25,8 +29,8 @@ void main() {
     );
 
     test(
-      'when applying the requireVerifiedEmail validation then it throws a '
-      'FirebaseEmailNotVerifiedException',
+      'when applying the requireVerifiedEmail validation '
+      'then it throws a FirebaseEmailNotVerifiedException',
       () {
         expect(
           () => FirebaseIdpConfig.requireVerifiedEmail(accountDetails),
@@ -36,48 +40,58 @@ void main() {
     );
   });
 
-  group('Given account details with an email whose verification status is '
-      'unknown', () {
-    late FirebaseAccountDetails accountDetails;
+  group(
+    'Given account details with an email whose verification status is unknown',
+    () {
+      late FirebaseAccountDetails accountDetails;
 
-    setUp(() {
-      accountDetails = _createAccountDetails(
-        email: 'test@example.com',
-        verifiedEmail: null,
+      setUp(() {
+        accountDetails = (
+          userIdentifier: 'firebase-uid',
+          email: 'test@example.com',
+          fullName: null,
+          image: null,
+          verifiedEmail: null,
+          phone: null,
+        );
+      });
+
+      test(
+        'when applying the default validation then the details are accepted',
+        () {
+          expect(
+            () => FirebaseIdpConfig.validateFirebaseAccountDetails(
+              accountDetails,
+            ),
+            returnsNormally,
+          );
+        },
       );
-    });
 
-    test(
-      'when applying the default validation then the details are accepted',
-      () {
-        expect(
-          () => FirebaseIdpConfig.validateFirebaseAccountDetails(
-            accountDetails,
-          ),
-          returnsNormally,
-        );
-      },
-    );
-
-    test(
-      'when applying the requireVerifiedEmail validation then it throws a '
-      'FirebaseEmailNotVerifiedException',
-      () {
-        expect(
-          () => FirebaseIdpConfig.requireVerifiedEmail(accountDetails),
-          throwsA(isA<FirebaseEmailNotVerifiedException>()),
-        );
-      },
-    );
-  });
+      test(
+        'when applying the requireVerifiedEmail validation '
+        'then it throws a FirebaseEmailNotVerifiedException',
+        () {
+          expect(
+            () => FirebaseIdpConfig.requireVerifiedEmail(accountDetails),
+            throwsA(isA<FirebaseEmailNotVerifiedException>()),
+          );
+        },
+      );
+    },
+  );
 
   group('Given account details with a verified email', () {
     late FirebaseAccountDetails accountDetails;
 
     setUp(() {
-      accountDetails = _createAccountDetails(
+      accountDetails = (
+        userIdentifier: 'firebase-uid',
         email: 'test@example.com',
+        fullName: null,
+        image: null,
         verifiedEmail: true,
+        phone: null,
       );
     });
 
@@ -94,8 +108,8 @@ void main() {
     );
 
     test(
-      'when applying the requireVerifiedEmail validation then the details '
-      'are accepted',
+      'when applying the requireVerifiedEmail validation '
+      'then the details are accepted',
       () {
         expect(
           () => FirebaseIdpConfig.requireVerifiedEmail(accountDetails),
@@ -109,7 +123,14 @@ void main() {
     late FirebaseAccountDetails accountDetails;
 
     setUp(() {
-      accountDetails = _createAccountDetails(phone: '+1234567890');
+      accountDetails = (
+        userIdentifier: 'firebase-uid',
+        email: null,
+        fullName: null,
+        image: null,
+        verifiedEmail: null,
+        phone: '+1234567890',
+      );
     });
 
     test(
@@ -125,8 +146,8 @@ void main() {
     );
 
     test(
-      'when applying the requireVerifiedEmail validation then the details '
-      'are accepted',
+      'when applying the requireVerifiedEmail validation '
+      'then the details are accepted',
       () {
         expect(
           () => FirebaseIdpConfig.requireVerifiedEmail(accountDetails),
@@ -135,19 +156,4 @@ void main() {
       },
     );
   });
-}
-
-FirebaseAccountDetails _createAccountDetails({
-  final String? email,
-  final bool? verifiedEmail,
-  final String? phone,
-}) {
-  return (
-    userIdentifier: 'firebase-uid',
-    email: email,
-    fullName: null,
-    image: null,
-    verifiedEmail: verifiedEmail,
-    phone: phone,
-  );
 }
