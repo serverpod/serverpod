@@ -274,9 +274,10 @@ void main() {
           CompilationUnitHelpers.hasMethodDeclaration(
             maybeClassNamedExample!,
             name: 'table',
+            isGetter: true,
           ),
           isTrue,
-          reason: 'Missing declaration for table method.',
+          reason: 'Missing declaration for table getter.',
         );
       });
 
