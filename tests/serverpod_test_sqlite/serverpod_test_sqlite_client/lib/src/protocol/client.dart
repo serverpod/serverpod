@@ -18,9 +18,11 @@ import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i4;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     as _i5;
-import 'package:http/http.dart' as _i6;
-import 'protocol.dart' as _i7;
-import 'package:serverpod_database/serverpod_database.dart' as _i8;
+import 'package:serverpod_test_shared_module_client/serverpod_test_shared_module_client.dart'
+    as _i6;
+import 'package:http/http.dart' as _i7;
+import 'protocol.dart' as _i8;
+import 'package:serverpod_database/serverpod_database.dart' as _i9;
 import 'package:serverpod_test_sqlite_client/migrations/migration_registry.dart';
 
 /// {@category Endpoint}
@@ -70,11 +72,14 @@ class Modules {
   Modules(Client client) {
     auth = _i4.Caller(client);
     auth_idp = _i5.Caller(client);
+    shared_module = _i6.Caller(client);
   }
 
   late final _i4.Caller auth;
 
   late final _i5.Caller auth_idp;
+
+  late final _i6.Caller shared_module;
 }
 
 class Client extends _i1.ServerpodClientShared {
@@ -95,10 +100,10 @@ class Client extends _i1.ServerpodClientShared {
     onFailedCall,
     Function(_i1.MethodCallContext)? onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
-    _i6.Client? httpClientOverride,
+    _i7.Client? httpClientOverride,
   }) : super(
          host,
-         _i7.Protocol(),
+         _i8.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -125,6 +130,7 @@ class Client extends _i1.ServerpodClientShared {
   Map<String, _i1.ModuleEndpointCaller> get moduleLookup => {
     'auth': modules.auth,
     'auth_idp': modules.auth_idp,
+    'shared_module': modules.shared_module,
   };
 
   /// Creates a new client-side database session for the given path.
@@ -140,14 +146,14 @@ class Client extends _i1.ServerpodClientShared {
   /// If [isDebugMode] is true, the database integrity will be verified after
   /// the migrations are applied to provide feedback of possible issues. On a
   /// Flutter application, this should be set to [kDebugMode].
-  _i2.Future<_i8.ClientDatabaseSession> createSession(
+  _i2.Future<_i9.ClientDatabaseSession> createSession(
     String path, {
     bool runMigrations = true,
     bool isDebugMode = false,
   }) async {
-    return await _i8.ClientDatabaseSession.open(
+    return await _i9.ClientDatabaseSession.open(
       path,
-      _i7.Protocol(),
+      _i8.Protocol(),
       clientMigrations: MigrationRegistry.migrations,
       runMigrations: runMigrations,
       isDebugMode: isDebugMode,
