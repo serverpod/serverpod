@@ -16,7 +16,8 @@ part 'cron_future_call_scheduling.dart';
 part 'interval_future_call_scheduling.dart';
 
 /// Generic interface that specifies how recurring calls should be scheduled.
-sealed class FutureCallScheduling implements _i2.SerializableModel {
+sealed class FutureCallScheduling
+    implements _i2.SerializableModel, _i2.ProtocolSerialization {
   FutureCallScheduling();
 
   /// Returns a shallow copy of this [FutureCallScheduling]

@@ -12,11 +12,11 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
-import '../../models_with_relations/nested_one_to_many/team.dart' as _i2;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
-import 'package:serverpod_client/serverpod_client.dart' as _i4;
+import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import '../../models_with_relations/nested_one_to_many/team.dart' as _i3;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
 
-abstract class Arena implements _i1.TableRow<int?> {
+abstract class Arena implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   Arena._({
     this.id,
     required this.name,
@@ -26,7 +26,7 @@ abstract class Arena implements _i1.TableRow<int?> {
   factory Arena({
     int? id,
     required String name,
-    _i2.Team? team,
+    _i3.Team? team,
   }) = _ArenaImpl;
 
   factory Arena.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -35,7 +35,7 @@ abstract class Arena implements _i1.TableRow<int?> {
       name: jsonSerialization['name'] as String,
       team: jsonSerialization['team'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.Team>(jsonSerialization['team']),
+          : _i4.Protocol().deserialize<_i3.Team>(jsonSerialization['team']),
     );
   }
 
@@ -48,18 +48,18 @@ abstract class Arena implements _i1.TableRow<int?> {
 
   String name;
 
-  _i2.Team? team;
+  _i3.Team? team;
 
   @override
   _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Arena]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   Arena copyWith({
     int? id,
     String? name,
-    _i2.Team? team,
+    _i3.Team? team,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -71,7 +71,17 @@ abstract class Arena implements _i1.TableRow<int?> {
     };
   }
 
-  static ArenaInclude include({_i2.TeamInclude? team}) {
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Arena',
+      if (id != null) 'id': id,
+      'name': name,
+      if (team != null) 'team': team?.toJsonForProtocol(),
+    };
+  }
+
+  static ArenaInclude include({_i3.TeamInclude? team}) {
     return ArenaInclude._(team: team);
   }
 
@@ -99,7 +109,7 @@ abstract class Arena implements _i1.TableRow<int?> {
 
   @override
   String toString() {
-    return _i4.SerializationManager.encode(this);
+    return _i2.SerializationManager.encode(this);
   }
 }
 
@@ -109,7 +119,7 @@ class _ArenaImpl extends Arena {
   _ArenaImpl({
     int? id,
     required String name,
-    _i2.Team? team,
+    _i3.Team? team,
   }) : super._(
          id: id,
          name: name,
@@ -118,7 +128,7 @@ class _ArenaImpl extends Arena {
 
   /// Returns a shallow copy of this [Arena]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   @override
   Arena copyWith({
     Object? id = _Undefined,
@@ -128,7 +138,7 @@ class _ArenaImpl extends Arena {
     return Arena(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      team: team is _i2.Team? ? team : this.team?.copyWith(),
+      team: team is _i3.Team? ? team : this.team?.copyWith(),
     );
   }
 }
@@ -155,17 +165,17 @@ class ArenaTable extends _i1.Table<int?> {
 
   late final _i1.ColumnString name;
 
-  _i2.TeamTable? _team;
+  _i3.TeamTable? _team;
 
-  _i2.TeamTable get team {
+  _i3.TeamTable get team {
     if (_team != null) return _team!;
     _team = _i1.createRelationTable(
       relationFieldName: 'team',
       field: Arena.t.id,
-      foreignField: _i2.Team.t.arenaId,
+      foreignField: _i3.Team.t.arenaId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.TeamTable(tableRelation: foreignTableRelation),
+          _i3.TeamTable(tableRelation: foreignTableRelation),
     );
     return _team!;
   }
@@ -186,11 +196,11 @@ class ArenaTable extends _i1.Table<int?> {
 }
 
 class ArenaInclude extends _i1.IncludeObject {
-  ArenaInclude._({_i2.TeamInclude? team}) {
+  ArenaInclude._({_i3.TeamInclude? team}) {
     _team = team;
   }
 
-  _i2.TeamInclude? _team;
+  _i3.TeamInclude? _team;
 
   @override
   Map<String, _i1.Include?> get includes => {'team': _team};
@@ -653,7 +663,7 @@ class ArenaAttachRowRepository {
   Future<void> team(
     _i1.DatabaseSession session,
     Arena arena,
-    _i2.Team team, {
+    _i3.Team team, {
     _i1.Transaction? transaction,
   }) async {
     if (team.id == null) {
@@ -664,9 +674,9 @@ class ArenaAttachRowRepository {
     }
 
     var $team = team.copyWith(arenaId: arena.id);
-    await session.db.updateRow<_i2.Team>(
+    await session.db.updateRow<_i3.Team>(
       $team,
-      columns: [_i2.Team.t.arenaId],
+      columns: [_i3.Team.t.arenaId],
       transaction: transaction,
     );
   }
@@ -698,9 +708,9 @@ class ArenaDetachRowRepository {
     }
 
     var $$team = $team.copyWith(arenaId: null);
-    await session.db.updateRow<_i2.Team>(
+    await session.db.updateRow<_i3.Team>(
       $$team,
-      columns: [_i2.Team.t.arenaId],
+      columns: [_i3.Team.t.arenaId],
       transaction: transaction,
     );
   }

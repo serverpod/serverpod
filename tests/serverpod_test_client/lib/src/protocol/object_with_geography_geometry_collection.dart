@@ -13,7 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 abstract class ObjectWithGeographyGeometryCollection
-    implements _i1.SerializableModel {
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ObjectWithGeographyGeometryCollection._({
     this.id,
     required this.geometryCollection,
@@ -69,6 +69,18 @@ abstract class ObjectWithGeographyGeometryCollection
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'ObjectWithGeographyGeometryCollection',
+      if (id != null) 'id': id,
+      'geometryCollection': geometryCollection.toJson(),
+      'geometryCollectionIndexedGist': geometryCollectionIndexedGist.toJson(),
+      'geometryCollectionIndexedSpgist': geometryCollectionIndexedSpgist
+          .toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ObjectWithGeographyGeometryCollection',
       if (id != null) 'id': id,

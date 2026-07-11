@@ -15,7 +15,8 @@ import 'cluster_server_info.dart' as _i2;
 import 'package:serverpod_service_client/src/protocol/protocol.dart' as _i3;
 
 /// Information about a cluster of servers.
-abstract class ClusterInfo implements _i1.SerializableModel {
+abstract class ClusterInfo
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ClusterInfo._({required this.servers});
 
   factory ClusterInfo({required List<_i2.ClusterServerInfo> servers}) =
@@ -41,6 +42,14 @@ abstract class ClusterInfo implements _i1.SerializableModel {
     return {
       '__className__': 'serverpod.ClusterInfo',
       'servers': servers.toJson(valueToJson: (v) => v.toJson()),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod.ClusterInfo',
+      'servers': servers.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
   }
 

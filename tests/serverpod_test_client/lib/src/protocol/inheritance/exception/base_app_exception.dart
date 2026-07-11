@@ -13,7 +13,10 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 class BaseAppException
-    implements _i1.SerializableException, _i1.SerializableModel {
+    implements
+        _i1.SerializableException,
+        _i1.SerializableModel,
+        _i1.ProtocolSerialization {
   BaseAppException({required this.message});
 
   factory BaseAppException.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -31,6 +34,14 @@ class BaseAppException
 
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'BaseAppException',
+      'message': message,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'BaseAppException',
       'message': message,

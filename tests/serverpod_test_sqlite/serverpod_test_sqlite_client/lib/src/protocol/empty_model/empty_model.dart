@@ -12,7 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class EmptyModel implements _i1.SerializableModel {
+abstract class EmptyModel
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   EmptyModel._();
 
   factory EmptyModel() = _EmptyModelImpl;
@@ -27,6 +28,11 @@ abstract class EmptyModel implements _i1.SerializableModel {
   EmptyModel copyWith();
   @override
   Map<String, dynamic> toJson() {
+    return {'__className__': 'EmptyModel'};
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {'__className__': 'EmptyModel'};
   }
 

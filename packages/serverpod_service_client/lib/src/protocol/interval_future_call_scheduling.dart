@@ -12,7 +12,7 @@
 part of 'future_call_scheduling.dart';
 
 abstract class IntervalFutureCallScheduling extends _i1.FutureCallScheduling
-    implements _i2.SerializableModel {
+    implements _i2.SerializableModel, _i2.ProtocolSerialization {
   IntervalFutureCallScheduling._({
     required this.interval,
     this.start,
@@ -52,6 +52,15 @@ abstract class IntervalFutureCallScheduling extends _i1.FutureCallScheduling
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod.IntervalFutureCallScheduling',
+      'interval': interval.toJson(),
+      if (start != null) 'start': start?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod.IntervalFutureCallScheduling',
       'interval': interval.toJson(),

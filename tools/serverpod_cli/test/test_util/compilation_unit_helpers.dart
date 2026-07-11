@@ -275,12 +275,14 @@ abstract class CompilationUnitHelpers {
     ClassDeclaration classDeclaration, {
     required String name,
     bool? isStatic,
+    bool? isGetter,
     String? functionExpression,
   }) {
     var member = classDeclaration.body.childEntities
         .whereType<MethodDeclaration>()
         .where((member) => member.name.toString() == name)
         .where((member) => member._hasMatchingStatic(isStatic))
+        .where((member) => member._hasMatchingGetter(isGetter))
         .where(
           (member) => member._hasMatchingFunctionExpression(functionExpression),
         );
@@ -291,18 +293,21 @@ abstract class CompilationUnitHelpers {
   /// Returns `true` if the class has a method with the given [name].
   ///
   /// If [isStatic] is provided, the method must have the given static-ness.
+  /// If [isGetter] is provided, the method must have the given getter-ness.
   /// If [functionExpression] is provided, the method must have the given
   /// function expression.
   static bool hasMethodDeclaration(
     ClassDeclaration classDeclaration, {
     required String name,
     bool? isStatic,
+    bool? isGetter,
     String? functionExpression,
   }) {
     var maybeDeclaration = tryFindMethodDeclaration(
       classDeclaration,
       name: name,
       isStatic: isStatic,
+      isGetter: isGetter,
       functionExpression: functionExpression,
     );
 
@@ -456,6 +461,14 @@ extension _MethodDeclarationExtensions on MethodDeclaration {
     }
 
     return this.isStatic == isStatic;
+  }
+
+  bool _hasMatchingGetter(bool? isGetter) {
+    if (isGetter == null) {
+      return true;
+    }
+
+    return this.isGetter == isGetter;
   }
 
   bool _hasMatchingFunctionExpression(String? functionExpression) {

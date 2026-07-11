@@ -14,7 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../long_identifiers/multiple_max_field_name.dart' as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
 
-abstract class RelationToMultipleMaxFieldName implements _i1.SerializableModel {
+abstract class RelationToMultipleMaxFieldName
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   RelationToMultipleMaxFieldName._({
     this.id,
     required this.name,
@@ -67,6 +68,19 @@ abstract class RelationToMultipleMaxFieldName implements _i1.SerializableModel {
       if (multipleMaxFieldNames != null)
         'multipleMaxFieldNames': multipleMaxFieldNames?.toJson(
           valueToJson: (v) => v.toJson(),
+        ),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'RelationToMultipleMaxFieldName',
+      if (id != null) 'id': id,
+      'name': name,
+      if (multipleMaxFieldNames != null)
+        'multipleMaxFieldNames': multipleMaxFieldNames?.toJson(
+          valueToJson: (v) => v.toJsonForProtocol(),
         ),
     };
   }

@@ -18,14 +18,14 @@ class ImageUploader {
     int imageSize = 256,
   }) async {
     if (kIsWeb) {
-      var result = await FilePicker.platform.pickFiles(
+      var file = await FilePicker.pickFile(
         type: FileType.custom,
         allowedExtensions: ['jpg', 'png'],
       );
-      if (result == null) return;
-      if (result.files.first.bytes == null) return;
+      if (file == null) return;
 
-      var image = img.decodeImage(result.files.first.bytes!);
+      var fileBytes = await file.readAsBytes();
+      var image = img.decodeImage(fileBytes);
       if (image == null) return;
 
       if (image.width > image.height) {

@@ -376,7 +376,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   IOSink Function(FlutterAppConfig app)? flutterStderrSinkFor,
   void Function(FlutterAppConfig app)? onEnsureFlutterAppTab,
   void Function(FlutterAppConfig app, String stage)? onFlutterProgress,
-  void Function(FlutterAppConfig app, String url)? onFlutterReady,
+  void Function(FlutterAppConfig app, String? url)? onFlutterReady,
   void Function(FlutterAppConfig app)? onFlutterLaunchFailed,
   void Function(FlutterAppConfig app)? onFlutterStop,
   Future<void> Function(ServerProcess server)? onServerStart,
@@ -1142,6 +1142,8 @@ Future<void> _runTuiBackend({
       onFlutterReady: (app, url) {
         final tab = holder.state.appLogTabFor(app.id);
         if (tab != null) {
+          // Null on non-web devices, which publish no URL; the status line
+          // then falls back to its generic running label.
           tab.url = url;
           tab.ready = true;
           tab.stopped = false;

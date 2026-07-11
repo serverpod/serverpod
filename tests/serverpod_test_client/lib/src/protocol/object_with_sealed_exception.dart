@@ -14,7 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'inheritance/exception/sealed_app_exception.dart' as _i2;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
-abstract class ObjectWithSealedException implements _i1.SerializableModel {
+abstract class ObjectWithSealedException
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ObjectWithSealedException._({
     required this.sealedField,
     this.nullableSealedField,
@@ -67,6 +68,19 @@ abstract class ObjectWithSealedException implements _i1.SerializableModel {
       if (nullableSealedField != null)
         'nullableSealedField': nullableSealedField?.toJson(),
       'sealedList': sealedList.toJson(valueToJson: (v) => v.toJson()),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'ObjectWithSealedException',
+      'sealedField': sealedField.toJsonForProtocol(),
+      if (nullableSealedField != null)
+        'nullableSealedField': nullableSealedField?.toJsonForProtocol(),
+      'sealedList': sealedList.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
     };
   }
 

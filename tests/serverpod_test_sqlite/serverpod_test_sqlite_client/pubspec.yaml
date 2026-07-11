@@ -16,6 +16,8 @@ dependencies:
   serverpod_auth_idp_client: 4.0.0-beta.0
   serverpod_client: 4.0.0-beta.0
   serverpod_service_client: 4.0.0-beta.0
+  serverpod_test_sqlite_shared:
+    path: ../serverpod_test_sqlite_shared
 
 dev_dependencies:
   serverpod_database: 4.0.0-beta.0

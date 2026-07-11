@@ -12,7 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class ObjectWithGeographyPoint implements _i1.SerializableModel {
+abstract class ObjectWithGeographyPoint
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ObjectWithGeographyPoint._({
     this.id,
     required this.point,
@@ -66,6 +67,17 @@ abstract class ObjectWithGeographyPoint implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'ObjectWithGeographyPoint',
+      if (id != null) 'id': id,
+      'point': point.toJson(),
+      'pointIndexedGist': pointIndexedGist.toJson(),
+      'pointIndexedSpgist': pointIndexedSpgist.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ObjectWithGeographyPoint',
       if (id != null) 'id': id,

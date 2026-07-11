@@ -1,0 +1,17 @@
+enum: SharedEnum
+serialized: byName
+properties:
+  shortName: String
+  description: String
+  priority: int, default=0
+values:
+  - one:
+      shortName: '1'
+      description: 'The first value'
+      priority: 10
+  - two:
+      shortName: '2'
+      description: 'The second value'
+  - three:
+      shortName: '3'
+      description: 'The third value'

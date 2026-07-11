@@ -14,7 +14,10 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Exception thrown when a refresh token string is malformed or cannot be parsed.
 abstract class RefreshTokenMalformedException
-    implements _i1.SerializableException, _i1.SerializableModel {
+    implements
+        _i1.SerializableException,
+        _i1.SerializableModel,
+        _i1.ProtocolSerialization {
   RefreshTokenMalformedException._();
 
   factory RefreshTokenMalformedException() =
@@ -32,6 +35,13 @@ abstract class RefreshTokenMalformedException
   RefreshTokenMalformedException copyWith();
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_auth_core.RefreshTokenMalformedException',
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_auth_core.RefreshTokenMalformedException',
     };

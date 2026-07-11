@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 @_i1.immutable
-abstract class ImmutableObjectWithNoFields implements _i1.SerializableModel {
+abstract class ImmutableObjectWithNoFields
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   const ImmutableObjectWithNoFields._();
 
   const factory ImmutableObjectWithNoFields() =
@@ -46,6 +47,11 @@ abstract class ImmutableObjectWithNoFields implements _i1.SerializableModel {
 
   @override
   Map<String, dynamic> toJson() {
+    return {'__className__': 'ImmutableObjectWithNoFields'};
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {'__className__': 'ImmutableObjectWithNoFields'};
   }
 

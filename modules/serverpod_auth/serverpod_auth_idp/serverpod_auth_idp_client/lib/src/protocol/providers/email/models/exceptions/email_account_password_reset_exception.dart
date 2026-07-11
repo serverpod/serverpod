@@ -19,7 +19,10 @@ import '../../../../providers/email/models/exceptions/email_account_password_res
 /// Inspect the [reason] to determine whether this was due to invalid or unknown
 /// credentials, or whether the client has been blocked outright.
 abstract class EmailAccountPasswordResetException
-    implements _i1.SerializableException, _i1.SerializableModel {
+    implements
+        _i1.SerializableException,
+        _i1.SerializableModel,
+        _i1.ProtocolSerialization {
   EmailAccountPasswordResetException._({required this.reason});
 
   factory EmailAccountPasswordResetException({
@@ -46,6 +49,14 @@ abstract class EmailAccountPasswordResetException
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_auth_idp.EmailAccountPasswordResetException',
+      'reason': reason.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_auth_idp.EmailAccountPasswordResetException',
       'reason': reason.toJson(),

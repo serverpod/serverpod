@@ -12,7 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class StringDefaultPersist implements _i1.SerializableModel {
+abstract class StringDefaultPersist
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   StringDefaultPersist._({
     this.id,
     this.stringDefaultPersist,
@@ -113,6 +114,40 @@ abstract class StringDefaultPersist implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'StringDefaultPersist',
+      if (id != null) 'id': id,
+      if (stringDefaultPersist != null)
+        'stringDefaultPersist': stringDefaultPersist,
+      if (stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote != null)
+        'stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote':
+            stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote,
+      if (stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote != null)
+        'stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote':
+            stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote,
+      if (stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote != null)
+        'stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote':
+            stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote,
+      if (stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote != null)
+        'stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote':
+            stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote,
+      if (stringDefaultPersistSingleQuoteWithOneDoubleQuote != null)
+        'stringDefaultPersistSingleQuoteWithOneDoubleQuote':
+            stringDefaultPersistSingleQuoteWithOneDoubleQuote,
+      if (stringDefaultPersistSingleQuoteWithTwoDoubleQuote != null)
+        'stringDefaultPersistSingleQuoteWithTwoDoubleQuote':
+            stringDefaultPersistSingleQuoteWithTwoDoubleQuote,
+      if (stringDefaultPersistDoubleQuoteWithOneSingleQuote != null)
+        'stringDefaultPersistDoubleQuoteWithOneSingleQuote':
+            stringDefaultPersistDoubleQuoteWithOneSingleQuote,
+      if (stringDefaultPersistDoubleQuoteWithTwoSingleQuote != null)
+        'stringDefaultPersistDoubleQuoteWithTwoSingleQuote':
+            stringDefaultPersistDoubleQuoteWithTwoSingleQuote,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'StringDefaultPersist',
       if (id != null) 'id': id,

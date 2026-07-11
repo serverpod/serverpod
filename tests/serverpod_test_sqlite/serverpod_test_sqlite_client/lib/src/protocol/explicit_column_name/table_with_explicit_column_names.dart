@@ -12,7 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class TableWithExplicitColumnName implements _i1.SerializableModel {
+abstract class TableWithExplicitColumnName
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   TableWithExplicitColumnName._({
     this.id,
     required this.userName,
@@ -54,6 +55,16 @@ abstract class TableWithExplicitColumnName implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'TableWithExplicitColumnName',
+      if (id != null) 'id': id,
+      'userName': userName,
+      if (description != null) 'description': description,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'TableWithExplicitColumnName',
       if (id != null) 'id': id,

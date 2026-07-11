@@ -14,7 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i2;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
-abstract class ObjectUser implements _i1.SerializableModel {
+abstract class ObjectUser
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ObjectUser._({
     this.id,
     this.name,
@@ -64,6 +65,17 @@ abstract class ObjectUser implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'ObjectUser',
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      'userInfoId': userInfoId,
+      if (userInfo != null) 'userInfo': userInfo?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ObjectUser',
       if (id != null) 'id': id,

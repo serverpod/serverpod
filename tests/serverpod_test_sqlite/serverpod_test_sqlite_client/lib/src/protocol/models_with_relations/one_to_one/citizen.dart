@@ -12,12 +12,13 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
-import '../../models_with_relations/one_to_one/address.dart' as _i2;
-import '../../models_with_relations/one_to_one/company.dart' as _i3;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
-import 'package:serverpod_client/serverpod_client.dart' as _i5;
+import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import '../../models_with_relations/one_to_one/address.dart' as _i3;
+import '../../models_with_relations/one_to_one/company.dart' as _i4;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i5;
 
-abstract class Citizen implements _i1.TableRow<int?> {
+abstract class Citizen
+    implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   Citizen._({
     this.id,
     required this.name,
@@ -31,11 +32,11 @@ abstract class Citizen implements _i1.TableRow<int?> {
   factory Citizen({
     int? id,
     required String name,
-    _i2.Address? address,
+    _i3.Address? address,
     required int companyId,
-    _i3.Company? company,
+    _i4.Company? company,
     int? oldCompanyId,
-    _i3.Company? oldCompany,
+    _i4.Company? oldCompany,
   }) = _CitizenImpl;
 
   factory Citizen.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -44,19 +45,19 @@ abstract class Citizen implements _i1.TableRow<int?> {
       name: jsonSerialization['name'] as String,
       address: jsonSerialization['address'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.Address>(
+          : _i5.Protocol().deserialize<_i3.Address>(
               jsonSerialization['address'],
             ),
       companyId: jsonSerialization['companyId'] as int,
       company: jsonSerialization['company'] == null
           ? null
-          : _i4.Protocol().deserialize<_i3.Company>(
+          : _i5.Protocol().deserialize<_i4.Company>(
               jsonSerialization['company'],
             ),
       oldCompanyId: jsonSerialization['oldCompanyId'] as int?,
       oldCompany: jsonSerialization['oldCompany'] == null
           ? null
-          : _i4.Protocol().deserialize<_i3.Company>(
+          : _i5.Protocol().deserialize<_i4.Company>(
               jsonSerialization['oldCompany'],
             ),
     );
@@ -71,30 +72,30 @@ abstract class Citizen implements _i1.TableRow<int?> {
 
   String name;
 
-  _i2.Address? address;
+  _i3.Address? address;
 
   int companyId;
 
-  _i3.Company? company;
+  _i4.Company? company;
 
   int? oldCompanyId;
 
-  _i3.Company? oldCompany;
+  _i4.Company? oldCompany;
 
   @override
   _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Citizen]
   /// with some or all fields replaced by the given arguments.
-  @_i5.useResult
+  @_i2.useResult
   Citizen copyWith({
     int? id,
     String? name,
-    _i2.Address? address,
+    _i3.Address? address,
     int? companyId,
-    _i3.Company? company,
+    _i4.Company? company,
     int? oldCompanyId,
-    _i3.Company? oldCompany,
+    _i4.Company? oldCompany,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -110,10 +111,24 @@ abstract class Citizen implements _i1.TableRow<int?> {
     };
   }
 
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Citizen',
+      if (id != null) 'id': id,
+      'name': name,
+      if (address != null) 'address': address?.toJsonForProtocol(),
+      'companyId': companyId,
+      if (company != null) 'company': company?.toJsonForProtocol(),
+      if (oldCompanyId != null) 'oldCompanyId': oldCompanyId,
+      if (oldCompany != null) 'oldCompany': oldCompany?.toJsonForProtocol(),
+    };
+  }
+
   static CitizenInclude include({
-    _i2.AddressInclude? address,
-    _i3.CompanyInclude? company,
-    _i3.CompanyInclude? oldCompany,
+    _i3.AddressInclude? address,
+    _i4.CompanyInclude? company,
+    _i4.CompanyInclude? oldCompany,
   }) {
     return CitizenInclude._(
       address: address,
@@ -146,7 +161,7 @@ abstract class Citizen implements _i1.TableRow<int?> {
 
   @override
   String toString() {
-    return _i5.SerializationManager.encode(this);
+    return _i2.SerializationManager.encode(this);
   }
 }
 
@@ -156,11 +171,11 @@ class _CitizenImpl extends Citizen {
   _CitizenImpl({
     int? id,
     required String name,
-    _i2.Address? address,
+    _i3.Address? address,
     required int companyId,
-    _i3.Company? company,
+    _i4.Company? company,
     int? oldCompanyId,
-    _i3.Company? oldCompany,
+    _i4.Company? oldCompany,
   }) : super._(
          id: id,
          name: name,
@@ -173,7 +188,7 @@ class _CitizenImpl extends Citizen {
 
   /// Returns a shallow copy of this [Citizen]
   /// with some or all fields replaced by the given arguments.
-  @_i5.useResult
+  @_i2.useResult
   @override
   Citizen copyWith({
     Object? id = _Undefined,
@@ -187,11 +202,11 @@ class _CitizenImpl extends Citizen {
     return Citizen(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      address: address is _i2.Address? ? address : this.address?.copyWith(),
+      address: address is _i3.Address? ? address : this.address?.copyWith(),
       companyId: companyId ?? this.companyId,
-      company: company is _i3.Company? ? company : this.company?.copyWith(),
+      company: company is _i4.Company? ? company : this.company?.copyWith(),
       oldCompanyId: oldCompanyId is int? ? oldCompanyId : this.oldCompanyId,
-      oldCompany: oldCompany is _i3.Company?
+      oldCompany: oldCompany is _i4.Company?
           ? oldCompany
           : this.oldCompany?.copyWith(),
     );
@@ -238,51 +253,51 @@ class CitizenTable extends _i1.Table<int?> {
 
   late final _i1.ColumnString name;
 
-  _i2.AddressTable? _address;
+  _i3.AddressTable? _address;
 
   late final _i1.ColumnInt companyId;
 
-  _i3.CompanyTable? _company;
+  _i4.CompanyTable? _company;
 
   late final _i1.ColumnInt oldCompanyId;
 
-  _i3.CompanyTable? _oldCompany;
+  _i4.CompanyTable? _oldCompany;
 
-  _i2.AddressTable get address {
+  _i3.AddressTable get address {
     if (_address != null) return _address!;
     _address = _i1.createRelationTable(
       relationFieldName: 'address',
       field: Citizen.t.id,
-      foreignField: _i2.Address.t.inhabitantId,
+      foreignField: _i3.Address.t.inhabitantId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.AddressTable(tableRelation: foreignTableRelation),
+          _i3.AddressTable(tableRelation: foreignTableRelation),
     );
     return _address!;
   }
 
-  _i3.CompanyTable get company {
+  _i4.CompanyTable get company {
     if (_company != null) return _company!;
     _company = _i1.createRelationTable(
       relationFieldName: 'company',
       field: Citizen.t.companyId,
-      foreignField: _i3.Company.t.id,
+      foreignField: _i4.Company.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.CompanyTable(tableRelation: foreignTableRelation),
+          _i4.CompanyTable(tableRelation: foreignTableRelation),
     );
     return _company!;
   }
 
-  _i3.CompanyTable get oldCompany {
+  _i4.CompanyTable get oldCompany {
     if (_oldCompany != null) return _oldCompany!;
     _oldCompany = _i1.createRelationTable(
       relationFieldName: 'oldCompany',
       field: Citizen.t.oldCompanyId,
-      foreignField: _i3.Company.t.id,
+      foreignField: _i4.Company.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.CompanyTable(tableRelation: foreignTableRelation),
+          _i4.CompanyTable(tableRelation: foreignTableRelation),
     );
     return _oldCompany!;
   }
@@ -312,20 +327,20 @@ class CitizenTable extends _i1.Table<int?> {
 
 class CitizenInclude extends _i1.IncludeObject {
   CitizenInclude._({
-    _i2.AddressInclude? address,
-    _i3.CompanyInclude? company,
-    _i3.CompanyInclude? oldCompany,
+    _i3.AddressInclude? address,
+    _i4.CompanyInclude? company,
+    _i4.CompanyInclude? oldCompany,
   }) {
     _address = address;
     _company = company;
     _oldCompany = oldCompany;
   }
 
-  _i2.AddressInclude? _address;
+  _i3.AddressInclude? _address;
 
-  _i3.CompanyInclude? _company;
+  _i4.CompanyInclude? _company;
 
-  _i3.CompanyInclude? _oldCompany;
+  _i4.CompanyInclude? _oldCompany;
 
   @override
   Map<String, _i1.Include?> get includes => {
@@ -792,7 +807,7 @@ class CitizenAttachRowRepository {
   Future<void> address(
     _i1.DatabaseSession session,
     Citizen citizen,
-    _i2.Address address, {
+    _i3.Address address, {
     _i1.Transaction? transaction,
   }) async {
     if (address.id == null) {
@@ -803,9 +818,9 @@ class CitizenAttachRowRepository {
     }
 
     var $address = address.copyWith(inhabitantId: citizen.id);
-    await session.db.updateRow<_i2.Address>(
+    await session.db.updateRow<_i3.Address>(
       $address,
-      columns: [_i2.Address.t.inhabitantId],
+      columns: [_i3.Address.t.inhabitantId],
       transaction: transaction,
     );
   }
@@ -815,7 +830,7 @@ class CitizenAttachRowRepository {
   Future<void> company(
     _i1.DatabaseSession session,
     Citizen citizen,
-    _i3.Company company, {
+    _i4.Company company, {
     _i1.Transaction? transaction,
   }) async {
     if (citizen.id == null) {
@@ -838,7 +853,7 @@ class CitizenAttachRowRepository {
   Future<void> oldCompany(
     _i1.DatabaseSession session,
     Citizen citizen,
-    _i3.Company oldCompany, {
+    _i4.Company oldCompany, {
     _i1.Transaction? transaction,
   }) async {
     if (citizen.id == null) {
@@ -883,9 +898,9 @@ class CitizenDetachRowRepository {
     }
 
     var $$address = $address.copyWith(inhabitantId: null);
-    await session.db.updateRow<_i2.Address>(
+    await session.db.updateRow<_i3.Address>(
       $$address,
-      columns: [_i2.Address.t.inhabitantId],
+      columns: [_i3.Address.t.inhabitantId],
       transaction: transaction,
     );
   }

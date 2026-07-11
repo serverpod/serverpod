@@ -8,12 +8,6 @@ class MigrationGenerationContext {
 
   final List<SerializableModelDefinition> modelDefinitions;
 
-  bool get hasClientDatabaseTables => modelDefinitions.any(
-    (definition) =>
-        definition is ModelClassDefinition &&
-        definition.shouldGenerateTableCode(false),
-  );
-
   static Future<MigrationGenerationContext> load(GeneratorConfig config) async {
     var models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
     var modelDefinitions = StatefulAnalyzer(config, models, (uri, collector) {

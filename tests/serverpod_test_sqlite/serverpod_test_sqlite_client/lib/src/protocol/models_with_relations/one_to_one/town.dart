@@ -12,11 +12,11 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
-import '../../models_with_relations/one_to_one/citizen.dart' as _i2;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
-import 'package:serverpod_client/serverpod_client.dart' as _i4;
+import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import '../../models_with_relations/one_to_one/citizen.dart' as _i3;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
 
-abstract class Town implements _i1.TableRow<int?> {
+abstract class Town implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   Town._({
     this.id,
     required this.name,
@@ -28,7 +28,7 @@ abstract class Town implements _i1.TableRow<int?> {
     int? id,
     required String name,
     int? mayorId,
-    _i2.Citizen? mayor,
+    _i3.Citizen? mayor,
   }) = _TownImpl;
 
   factory Town.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -38,7 +38,7 @@ abstract class Town implements _i1.TableRow<int?> {
       mayorId: jsonSerialization['mayorId'] as int?,
       mayor: jsonSerialization['mayor'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.Citizen>(jsonSerialization['mayor']),
+          : _i4.Protocol().deserialize<_i3.Citizen>(jsonSerialization['mayor']),
     );
   }
 
@@ -53,19 +53,19 @@ abstract class Town implements _i1.TableRow<int?> {
 
   int? mayorId;
 
-  _i2.Citizen? mayor;
+  _i3.Citizen? mayor;
 
   @override
   _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Town]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   Town copyWith({
     int? id,
     String? name,
     int? mayorId,
-    _i2.Citizen? mayor,
+    _i3.Citizen? mayor,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -78,7 +78,18 @@ abstract class Town implements _i1.TableRow<int?> {
     };
   }
 
-  static TownInclude include({_i2.CitizenInclude? mayor}) {
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Town',
+      if (id != null) 'id': id,
+      'name': name,
+      if (mayorId != null) 'mayorId': mayorId,
+      if (mayor != null) 'mayor': mayor?.toJsonForProtocol(),
+    };
+  }
+
+  static TownInclude include({_i3.CitizenInclude? mayor}) {
     return TownInclude._(mayor: mayor);
   }
 
@@ -106,7 +117,7 @@ abstract class Town implements _i1.TableRow<int?> {
 
   @override
   String toString() {
-    return _i4.SerializationManager.encode(this);
+    return _i2.SerializationManager.encode(this);
   }
 }
 
@@ -117,7 +128,7 @@ class _TownImpl extends Town {
     int? id,
     required String name,
     int? mayorId,
-    _i2.Citizen? mayor,
+    _i3.Citizen? mayor,
   }) : super._(
          id: id,
          name: name,
@@ -127,7 +138,7 @@ class _TownImpl extends Town {
 
   /// Returns a shallow copy of this [Town]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   @override
   Town copyWith({
     Object? id = _Undefined,
@@ -139,7 +150,7 @@ class _TownImpl extends Town {
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       mayorId: mayorId is int? ? mayorId : this.mayorId,
-      mayor: mayor is _i2.Citizen? ? mayor : this.mayor?.copyWith(),
+      mayor: mayor is _i3.Citizen? ? mayor : this.mayor?.copyWith(),
     );
   }
 }
@@ -177,17 +188,17 @@ class TownTable extends _i1.Table<int?> {
 
   late final _i1.ColumnInt mayorId;
 
-  _i2.CitizenTable? _mayor;
+  _i3.CitizenTable? _mayor;
 
-  _i2.CitizenTable get mayor {
+  _i3.CitizenTable get mayor {
     if (_mayor != null) return _mayor!;
     _mayor = _i1.createRelationTable(
       relationFieldName: 'mayor',
       field: Town.t.mayorId,
-      foreignField: _i2.Citizen.t.id,
+      foreignField: _i3.Citizen.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.CitizenTable(tableRelation: foreignTableRelation),
+          _i3.CitizenTable(tableRelation: foreignTableRelation),
     );
     return _mayor!;
   }
@@ -209,11 +220,11 @@ class TownTable extends _i1.Table<int?> {
 }
 
 class TownInclude extends _i1.IncludeObject {
-  TownInclude._({_i2.CitizenInclude? mayor}) {
+  TownInclude._({_i3.CitizenInclude? mayor}) {
     _mayor = mayor;
   }
 
-  _i2.CitizenInclude? _mayor;
+  _i3.CitizenInclude? _mayor;
 
   @override
   Map<String, _i1.Include?> get includes => {'mayor': _mayor};
@@ -676,7 +687,7 @@ class TownAttachRowRepository {
   Future<void> mayor(
     _i1.DatabaseSession session,
     Town town,
-    _i2.Citizen mayor, {
+    _i3.Citizen mayor, {
     _i1.Transaction? transaction,
   }) async {
     if (town.id == null) {

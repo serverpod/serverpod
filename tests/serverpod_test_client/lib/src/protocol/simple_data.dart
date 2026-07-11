@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Just some simple data.
-abstract class SimpleData implements _i1.SerializableModel {
+abstract class SimpleData
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   SimpleData._({
     this.id,
     required this.num,
@@ -50,6 +51,15 @@ abstract class SimpleData implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'SimpleData',
+      if (id != null) 'id': id,
+      'num': num,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'SimpleData',
       if (id != null) 'id': id,

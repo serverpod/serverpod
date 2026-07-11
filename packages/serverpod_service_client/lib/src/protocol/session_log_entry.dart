@@ -17,7 +17,8 @@ import 'message_log_entry.dart' as _i4;
 import 'package:serverpod_service_client/src/protocol/protocol.dart' as _i5;
 
 /// Log entry for a session.
-abstract class SessionLogEntry implements _i1.SerializableModel {
+abstract class SessionLogEntry
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   SessionLogEntry._({
     this.id,
     required this.serverId,
@@ -198,6 +199,33 @@ abstract class SessionLogEntry implements _i1.SerializableModel {
         'queries': queries?.toJson(valueToJson: (v) => v.toJson()),
       if (messages != null)
         'messages': messages?.toJson(valueToJson: (v) => v.toJson()),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod.SessionLogEntry',
+      if (id != null) 'id': id,
+      'serverId': serverId,
+      'time': time.toJson(),
+      if (module != null) 'module': module,
+      if (endpoint != null) 'endpoint': endpoint,
+      if (method != null) 'method': method,
+      if (duration != null) 'duration': duration,
+      if (numQueries != null) 'numQueries': numQueries,
+      if (slow != null) 'slow': slow,
+      if (error != null) 'error': error,
+      if (stackTrace != null) 'stackTrace': stackTrace,
+      if (userId != null) 'userId': userId,
+      if (isOpen != null) 'isOpen': isOpen,
+      'touched': touched.toJson(),
+      if (logs != null)
+        'logs': logs?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      if (queries != null)
+        'queries': queries?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      if (messages != null)
+        'messages': messages?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
   }
 

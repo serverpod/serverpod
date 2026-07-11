@@ -15,7 +15,8 @@ import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart' as _i3;
 
 @_i1.immutable
-abstract class ImmutableObjectWithList implements _i1.SerializableModel {
+abstract class ImmutableObjectWithList
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   const ImmutableObjectWithList._({required this.listVariable});
 
   const factory ImmutableObjectWithList({required List<String> listVariable}) =
@@ -61,6 +62,14 @@ abstract class ImmutableObjectWithList implements _i1.SerializableModel {
 
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'ImmutableObjectWithList',
+      'listVariable': listVariable.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ImmutableObjectWithList',
       'listVariable': listVariable.toJson(),

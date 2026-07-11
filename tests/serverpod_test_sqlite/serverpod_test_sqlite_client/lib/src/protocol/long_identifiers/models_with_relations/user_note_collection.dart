@@ -14,7 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../long_identifiers/models_with_relations/user_note.dart' as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
 
-abstract class UserNoteCollection implements _i1.SerializableModel {
+abstract class UserNoteCollection
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   UserNoteCollection._({
     this.id,
     required this.name,
@@ -65,6 +66,19 @@ abstract class UserNoteCollection implements _i1.SerializableModel {
       if (userNotesPropertyName != null)
         'userNotesPropertyName': userNotesPropertyName?.toJson(
           valueToJson: (v) => v.toJson(),
+        ),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'UserNoteCollection',
+      if (id != null) 'id': id,
+      'name': name,
+      if (userNotesPropertyName != null)
+        'userNotesPropertyName': userNotesPropertyName?.toJson(
+          valueToJson: (v) => v.toJsonForProtocol(),
         ),
     };
   }
