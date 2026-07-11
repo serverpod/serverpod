@@ -64,7 +64,7 @@ void main() {
             body: GoogleSignInBaseButton.wrapAsOutlineWeb(
               style: style,
               onPressed: null,
-              child: const SizedBox.expand(),
+              child: const SizedBox(key: Key('gis-iframe')),
             ),
           ),
         ),
@@ -73,10 +73,30 @@ void main() {
       expect(find.byType(OutlinedButton), findsNothing);
       expect(find.byType(FilledButton), findsNothing);
       expect(find.byType(ElevatedButton), findsNothing);
-      expect(find.byType(DecoratedBox), findsOneWidget);
-      expect(find.byType(ClipRRect), findsOneWidget);
+
+      final decoratedBox = tester.widget<DecoratedBox>(
+        find.ancestor(
+          of: find.byKey(const Key('gis-iframe')),
+          matching: find.byType(DecoratedBox),
+        ),
+      );
+      expect(
+        decoratedBox.decoration,
+        isA<ShapeDecoration>().having(
+          (decoration) => decoration.shape,
+          'shape',
+          isA<RoundedRectangleBorder>(),
+        ),
+      );
+
+      final clipRRect = tester.widget<ClipRRect>(
+        find.ancestor(
+          of: find.byKey(const Key('gis-iframe')),
+          matching: find.byType(ClipRRect),
+        ),
+      );
+      expect(clipRRect.clipBehavior, Clip.hardEdge);
       expect(find.byType(OverflowBox), findsOneWidget);
-      expect(find.byType(Padding), findsOneWidget);
     });
   });
 }
