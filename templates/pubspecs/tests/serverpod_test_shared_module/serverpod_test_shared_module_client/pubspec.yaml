@@ -1,0 +1,25 @@
+# TEMPLATE
+
+publish_to: none
+
+name: serverpod_test_shared_module_client
+version: 1.0.0
+description: Client for the Serverpod module fixture that owns a shared table package.
+repository: https://github.com/serverpod/serverpod
+
+environment:
+  sdk: DART_VERSION
+
+dependencies:
+  serverpod_client: SERVERPOD_VERSION
+  serverpod_test_shared_module_shared:
+    path: ../serverpod_test_shared_module_shared
+
+dev_dependencies:
+  lints: '>=3.0.0 <7.0.0'
+
+dependency_overrides:
+  serverpod_client:
+    path: ../../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization
