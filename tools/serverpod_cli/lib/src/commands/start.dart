@@ -1035,24 +1035,24 @@ Future<int> _runWithTui({
   }
 
   // Runs after the TUI tears down (alternate screen restored) but before the
-  // process exits. Restores the stdout logger and replays any captured crash
-  // so it survives in the user's scrollback - mirrors how `serverpod create`
+  // process exits. Replays any captured crash and server process errors
+  // so they survive in the user's scrollback - mirrors how `serverpod create`
   // flushes its errors to the terminal on exit.
   Future<void> preExit(int exitCode) async {
+    var shouldFlushLogs = false;
+
     final crash = fatalCrash;
-    if (crash != null || exitCode != 0) {
-      if (crash != null) {
-        _serverProcessErrorBuffer.writeln(crash.error);
-      }
-
-      if (_serverProcessErrorBuffer.isEmpty) return;
-
-      printInternalError(
-        _serverProcessErrorBuffer,
-        crash?.stackTrace ?? StackTrace.empty,
-      );
-      await log.flush();
+    if (crash != null) {
+      printInternalError(crash.error, crash.stackTrace);
+      shouldFlushLogs = true;
     }
+
+    if (exitCode != 0 && _serverProcessErrorBuffer.isNotEmpty) {
+      log.error(_serverProcessErrorBuffer.toString());
+      shouldFlushLogs = true;
+    }
+
+    if (shouldFlushLogs) await log.flush();
   }
 
   // Wait for the backend's dispose to finish before calling shutdownTuiApp
@@ -1061,7 +1061,7 @@ Future<int> _runWithTui({
       await backendFuture;
       // Swap the TUI-backed logger (whose output went to the now-gone alternate
       // screen) for a fresh stdout-backed one, so the replayed errors actually
-      // reaches the terminal.
+      // reach the terminal.
       await closeLogger();
       initializeLogger();
       shutdownTuiApp(code);
