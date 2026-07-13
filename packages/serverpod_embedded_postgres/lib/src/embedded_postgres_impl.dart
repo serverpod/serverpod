@@ -328,9 +328,9 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
 /// Resolves the user-supplied [transport] into a concrete one ready to
 /// pass to ClusterStore + Supervisor:
 ///
-///   - For fresh clusters, always generates and persists a superuser
-///     password (written to [pwFile]) so a later switch to [TcpTransport]
-///     works without re-init. Unix connections still use trust auth.
+///   - For fresh clusters, always seeds a superuser password (written to
+///     [pwFile]) so a later switch to [TcpTransport] works without re-init.
+///     Unix connections still use trust auth.
 ///   - For [TcpTransport] with `port == 0`, allocates an ephemeral port
 ///     by binding `127.0.0.1:0` and reading the kernel-assigned port.
 ///   - For warm TCP restarts, reads the persisted password sidecar so
@@ -342,10 +342,12 @@ Future<(Transport, String?)> _resolveTransport(
 }) async {
   String? initPassword;
   if (!hadCluster) {
-    initPassword = switch (requested) {
-      TcpTransport(:final password) => password ?? _generatePassword(),
-      UnixTransport() => _generatePassword(),
-    };
+    initPassword =
+        switch (requested) {
+          TcpTransport(:final password) => password,
+          UnixTransport(:final initialPassword) => initialPassword,
+        } ??
+        _generatePassword();
     pwFile.parent.createSync(recursive: true);
     pwFile.writeAsStringSync(initPassword);
   }

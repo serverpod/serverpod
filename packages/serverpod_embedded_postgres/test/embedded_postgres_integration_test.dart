@@ -82,34 +82,37 @@ void main() {
 
     test(
       'when a cluster is started with TcpTransport '
-      'then TCP auth succeeds using the persisted postgres.password.',
+      'then TCP auth succeeds using the passwords.yaml-aligned credential.',
       () async {
         var pgDataDir = Directory(p.join(tmpRoot.path, '.serverpod', 'pgdata'));
         var pwFile = File(
           p.join(tmpRoot.path, '.serverpod', 'postgres.password'),
         );
+        const passwordsYamlDatabase = 'dev-db-password';
 
         var unix = await EmbeddedPostgres.start(
           EmbeddedPostgresOptions(
             dataDir: pgDataDir,
             databaseName: 'projectname',
+            transport: const UnixTransport(
+              initialPassword: passwordsYamlDatabase,
+            ),
             detach: true,
           ),
         );
         expect(pwFile.existsSync(), isTrue);
-        var persistedPw = pwFile.readAsStringSync();
-        expect(persistedPw.length, greaterThan(8));
+        expect(pwFile.readAsStringSync(), passwordsYamlDatabase);
         await unix.stop();
 
         var tcp = await EmbeddedPostgres.start(
           EmbeddedPostgresOptions(
             dataDir: pgDataDir,
             databaseName: 'projectname',
-            transport: const TcpTransport(),
+            transport: const TcpTransport(password: passwordsYamlDatabase),
             detach: true,
           ),
         );
-        expect(tcp.endpoint.password, persistedPw);
+        expect(tcp.endpoint.password, passwordsYamlDatabase);
 
         var conn = await pg.Connection.open(
           tcp.endpoint,

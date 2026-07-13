@@ -49,10 +49,11 @@ directory already gates filesystem access to the socket. PG `chdir`s to
 cap regardless of how deep your project lives.
 
 **TCP loopback (`TcpTransport`).** scram-sha-256 against `127.0.0.1`,
-random 32-char password persisted to `<.serverpod>/postgres.password`
-for warm-restart consistency. `TcpTransport(port: 0)` (the default) gets
-an ephemeral port; explicit ports are honored. Port-race collision is
-retried up to 3 times before bubbling up.
+password via [TcpTransport.password] (Serverpod passes `config/passwords.yaml`
+`database` here) or a random dev credential when omitted. Persisted to
+`<.serverpod>/postgres.password` for warm-restart consistency. The default
+`TcpTransport(port: 0)` gets an ephemeral port; explicit ports are honored.
+Port-race collision is retried up to 3 times before bubbling up.
 
 ```dart
 // TCP variant:
@@ -139,7 +140,10 @@ The `Transport` sealed class has two variants:
 
 ```dart
 sealed class Transport { const Transport(); }
-final class UnixTransport extends Transport { const UnixTransport(); }
+final class UnixTransport extends Transport {
+  final String? password;
+  const UnixTransport({this.password});
+}
 final class TcpTransport extends Transport {
   final int port;          // 0 = ephemeral
   final String? password;  // null = generate random
