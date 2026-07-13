@@ -8,6 +8,7 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
+import 'package:serverpod_cli/src/commands/watcher.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/generator/analyzers.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
@@ -324,12 +325,20 @@ Future<bool> _performGenerateWatch({
     },
   );
 
+  // The generated dirs live inside the watched lib/ dirs, so generation
+  // output shows up as watcher events. Feeding those back into generation
+  // would make every run trigger the next one.
+  final generatedDirPaths = config.generatedDirPaths;
+  bool isGenerated(String filePath) => generatedDirPaths.any(
+    (dir) => path.isWithin(dir, path.absolute(filePath)),
+  );
+
   // Process file change events.
   await for (final event in watcher.onFilesChanged) {
     final affectedPaths = {
       ...event.dartFiles,
       ...event.modelFiles,
-    };
+    }.where((f) => !isGenerated(f)).toSet();
 
     if (affectedPaths.isEmpty) continue;
 
