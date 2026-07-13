@@ -328,31 +328,49 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
 /// Resolves the user-supplied [transport] into a concrete one ready to
 /// pass to ClusterStore + Supervisor:
 ///
+///   - For fresh clusters, always generates and persists a superuser
+///     password (written to [pwFile]) so a later switch to [TcpTransport]
+///     works without re-init. Unix connections still use trust auth.
 ///   - For [TcpTransport] with `port == 0`, allocates an ephemeral port
 ///     by binding `127.0.0.1:0` and reading the kernel-assigned port.
-///   - For TCP overall, persists / reads the password sidecar so warm
-///     restarts use the same credential the cluster was init'd with.
-///   - For [UnixTransport], no resolution is needed (returns identity).
+///   - For warm TCP restarts, reads the persisted password sidecar so
+///     the endpoint matches whatever `initdb --pwfile` seeded.
 Future<(Transport, String?)> _resolveTransport(
   Transport requested, {
   required File pwFile,
   required bool hadCluster,
 }) async {
+  String? initPassword;
+  if (!hadCluster) {
+    initPassword = switch (requested) {
+      TcpTransport(:final password) => password ?? _generatePassword(),
+      UnixTransport() => _generatePassword(),
+    };
+    pwFile.parent.createSync(recursive: true);
+    pwFile.writeAsStringSync(initPassword);
+  }
+
   switch (requested) {
     case UnixTransport():
-      return (requested, null);
+      // Password is passed to initdb on fresh clusters only; trust auth
+      // does not use it for Unix connections.
+      return (requested, initPassword);
     case TcpTransport(:final port, :final password):
-      String resolvedPw;
+      final String resolvedPw;
       if (hadCluster && pwFile.existsSync()) {
         // Warm restart: the cluster's stored hash matches whatever was
         // initdb'd. Trust the persisted password unless the caller
         // explicitly provides one (in which case we assume they know
         // they aligned both sides).
         resolvedPw = password ?? pwFile.readAsStringSync();
-      } else {
+      } else if (hadCluster) {
+        // Legacy cluster without a password sidecar. Out of scope to
+        // backfill the role; generate a file for the endpoint only.
         resolvedPw = password ?? _generatePassword();
         pwFile.parent.createSync(recursive: true);
         pwFile.writeAsStringSync(resolvedPw);
+      } else {
+        resolvedPw = initPassword!;
       }
 
       var resolvedPort = port == 0 ? await _allocateEphemeralPort() : port;

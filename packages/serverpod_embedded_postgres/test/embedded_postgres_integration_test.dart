@@ -68,8 +68,60 @@ void main() {
           isFalse,
           reason: 'pidfile should be removed after stop()',
         );
+
+        expect(
+          File(
+            p.join(tmpRoot.path, '.serverpod', 'postgres.password'),
+          ).existsSync(),
+          isTrue,
+          reason: 'fresh Unix clusters seed a password for a later TCP switch',
+        );
       },
       timeout: const Timeout(Duration(seconds: 120)),
+    );
+
+    test(
+      'when a cluster is started with TcpTransport '
+      'then TCP auth succeeds using the persisted postgres.password.',
+      () async {
+        var pgDataDir = Directory(p.join(tmpRoot.path, '.serverpod', 'pgdata'));
+        var pwFile = File(
+          p.join(tmpRoot.path, '.serverpod', 'postgres.password'),
+        );
+
+        var unix = await EmbeddedPostgres.start(
+          EmbeddedPostgresOptions(
+            dataDir: pgDataDir,
+            databaseName: 'projectname',
+            detach: true,
+          ),
+        );
+        expect(pwFile.existsSync(), isTrue);
+        var persistedPw = pwFile.readAsStringSync();
+        expect(persistedPw.length, greaterThan(8));
+        await unix.stop();
+
+        var tcp = await EmbeddedPostgres.start(
+          EmbeddedPostgresOptions(
+            dataDir: pgDataDir,
+            databaseName: 'projectname',
+            transport: const TcpTransport(),
+            detach: true,
+          ),
+        );
+        expect(tcp.endpoint.password, persistedPw);
+
+        var conn = await pg.Connection.open(
+          tcp.endpoint,
+          settings: const pg.ConnectionSettings(sslMode: pg.SslMode.disable),
+        );
+        var rs = await conn.execute('SELECT 1');
+        expect(rs.first.first, 1);
+        await conn.close();
+
+        await tcp.stop();
+      },
+      timeout: const Timeout(Duration(seconds: 180)),
     );
 
     test(
