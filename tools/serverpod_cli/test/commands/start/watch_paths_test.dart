@@ -11,7 +11,7 @@ void main() {
 
     test(
       'when there is no Flutter dependency tracker (server-only project), '
-      'then the server resolution .dart_tool is still watched',
+      'then the server resolution package_config.json is still watched',
       () {
         final serverDartTool = p.absolute('some_server', '.dart_tool');
 
@@ -22,13 +22,31 @@ void main() {
 
         // Without this, package_config.json changes are never observed and the
         // server can't pick up a new dependency without a full restart.
-        expect(paths, contains(serverDartTool));
+        expect(paths, contains(p.join(serverDartTool, 'package_config.json')));
+      },
+    );
+
+    test(
+      'when a resolution .dart_tool is provided, '
+      'then only its pub artifacts are watched, not the whole directory',
+      () {
+        final serverDartTool = p.absolute('some_server', '.dart_tool');
+
+        final paths = buildWatchPaths(
+          config: config,
+          serverDartToolDir: serverDartTool,
+        );
+
+        // Watching the directory itself would also watch large, churning
+        // build state (e.g. flutter_build intermediates, the server's dill),
+        // causing heavy disk I/O whenever a build runs.
+        expect(paths, isNot(contains(serverDartTool)));
       },
     );
 
     test(
       'when the server and Flutter resolutions differ (non-workspace layout), '
-      'then both .dart_tool directories are watched',
+      'then both resolutions\' pub artifacts are watched',
       () {
         final serverDartTool = p.absolute('server_pkg', '.dart_tool');
         final flutterDartTool = p.absolute('flutter_pkg', '.dart_tool');
@@ -44,13 +62,21 @@ void main() {
           flutterDependencyTrackers: [tracker],
         );
 
-        expect(paths, containsAll([serverDartTool, flutterDartTool]));
+        expect(
+          paths,
+          containsAll([
+            p.join(serverDartTool, 'package_config.json'),
+            p.join(flutterDartTool, 'package_graph.json'),
+          ]),
+        );
+        expect(paths, isNot(contains(serverDartTool)));
+        expect(paths, isNot(contains(flutterDartTool)));
       },
     );
 
     test(
       'when the server and Flutter share a resolution (workspace layout), '
-      'then the shared .dart_tool is watched exactly once',
+      'then the shared .dart_tool contributes exactly its two pub artifacts',
       () {
         final sharedDartTool = p.absolute('workspace_root', '.dart_tool');
         final tracker = FlutterDependencyTracker(
@@ -65,7 +91,13 @@ void main() {
           flutterDependencyTrackers: [tracker],
         );
 
-        expect(paths.where((path) => path == sharedDartTool), hasLength(1));
+        expect(
+          paths.where((path) => p.isWithin(sharedDartTool, path)),
+          unorderedEquals([
+            p.join(sharedDartTool, 'package_config.json'),
+            p.join(sharedDartTool, 'package_graph.json'),
+          ]),
+        );
       },
     );
   });

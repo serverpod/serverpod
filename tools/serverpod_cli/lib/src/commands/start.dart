@@ -786,15 +786,21 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   );
 }
 
-/// The directories the watch-mode [FileWatcher] observes: server/shared/client
+/// The paths the watch-mode [FileWatcher] observes: server/shared/client
 /// source, the server's web dir, each Flutter app's lib and pubspec.yaml, and
-/// the resolution `.dart_tool`(s) carrying `package_config.json` /
-/// `package_graph.json`.
+/// the exact `package_config.json` / `package_graph.json` files of the
+/// resolution `.dart_tool`(s).
 ///
 /// [serverDartToolDir] is the server's resolution `.dart_tool` (workspace root
-/// or the package itself); watching it is what makes a dependency change reload
-/// the server in place. In a workspace it equals each Flutter app's
-/// [FlutterDependencyTracker.dartToolDir] and dedupes to a single watch.
+/// or the package itself); watching its `package_config.json` is what makes a
+/// dependency change reload the server in place. In a workspace it equals each
+/// Flutter app's [FlutterDependencyTracker.dartToolDir].
+///
+/// The pub artifacts are watched as exact files rather than their `.dart_tool`
+/// directories: those directories also hold large, churning build state (e.g.
+/// `flutter_build` intermediates when a Flutter app builds, or the server's
+/// dill), and a recursive directory watch has to scan and re-list that tree on
+/// every build - heavy disk I/O for events that would all be discarded anyway.
 @visibleForTesting
 Set<String> buildWatchPaths({
   required GeneratorConfig config,
@@ -818,16 +824,17 @@ Set<String> buildWatchPaths({
       // full Flutter relaunch.
       p.absolute(p.joinAll([...app.pathParts, 'pubspec.yaml'])),
     ],
-    // The server's resolution .dart_tool, watched for package_config.json
-    // (reloaded into the FES in place) and, in a workspace, the shared
-    // package_graph.json. Dedupes against the Flutter trackers' dirs in a
-    // workspace layout.
-    if (serverDartToolDir != null) p.absolute(serverDartToolDir),
-    // Each Flutter resolution's .dart_tool holds package_graph.json, watched to
-    // detect Flutter dependency changes (workspace root or, in a non-workspace
-    // project, the Flutter package's own .dart_tool).
+    // The server resolution's package_config.json, reloaded into the FES in
+    // place on dependency changes. Watched as an exact file (see above); note
+    // that the single-file watcher stops if the file is deleted (e.g. by a
+    // clean), so dependency tracking then rests until the watcher is rebuilt.
+    if (serverDartToolDir != null)
+      p.absolute(p.join(serverDartToolDir, 'package_config.json')),
+    // Each Flutter resolution's package_graph.json, watched to detect Flutter
+    // dependency changes (workspace root or, in a non-workspace project, the
+    // Flutter package's own .dart_tool).
     for (final tracker in flutterDependencyTrackers)
-      p.absolute(tracker.dartToolDir),
+      p.absolute(p.join(tracker.dartToolDir, 'package_graph.json')),
   };
 }
 
