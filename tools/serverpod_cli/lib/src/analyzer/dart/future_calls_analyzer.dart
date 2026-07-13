@@ -56,6 +56,12 @@ class FutureCallsAnalyzer {
   /// iteration order when collecting definitions across runs.
   final _fileCache = SplayTreeMap<String, _CachedFutureCallFileResult>();
 
+  /// The future call files currently cached with errors.
+  Set<String> get _erroredFiles => {
+    for (final entry in _fileCache.entries)
+      if (entry.value.hadErrors) entry.key,
+  };
+
   /// Inform the analyzer that the provided [filePaths] have been updated.
   ///
   /// Refreshes the Dart analysis context for the changed files and returns
@@ -67,7 +73,7 @@ class FutureCallsAnalyzer {
         .where((f) => p.isWithin(absoluteIncludedPaths, p.absolute(f)))
         .toSet();
 
-    final errorsBefore = _fileCache.values.any((r) => r.hadErrors);
+    final erroredBefore = _erroredFiles;
     final keysBefore = _fileCache.keys.toSet();
 
     await analyze(
@@ -75,13 +81,20 @@ class FutureCallsAnalyzer {
       changedFiles: relevantPaths,
     );
 
-    final errorsAfter = _fileCache.values.any((r) => r.hadErrors);
+    final erroredAfter = _erroredFiles;
     final keysAfter = _fileCache.keys.toSet();
 
-    if (errorsBefore ||
-        errorsAfter ||
-        keysBefore.length != keysAfter.length ||
-        keysAfter.difference(keysBefore).isNotEmpty) {
+    // Regenerate when the set of future call files changed, or when any
+    // file's error state flipped (an error appearing or clearing changes the
+    // parsed definitions). A persistently broken - or not yet fully analyzed
+    // (see `hadErrors: !hasModels`) - file, by contrast, must not turn every
+    // unrelated change - such as watcher echoes of freshly generated files -
+    // into another generation, or generation loops forever while an error
+    // exists anywhere in the project.
+    if (keysBefore.length != keysAfter.length ||
+        keysAfter.difference(keysBefore).isNotEmpty ||
+        erroredBefore.length != erroredAfter.length ||
+        erroredAfter.difference(erroredBefore).isNotEmpty) {
       return true;
     }
 
