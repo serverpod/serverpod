@@ -15,7 +15,7 @@ import '../../../models_with_relations/self_relation/one_to_many/cat.dart'
     as _i2;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
-abstract class Cat implements _i1.SerializableModel {
+abstract class Cat implements _i1.SerializableModel, _i1.ProtocolSerialization {
   Cat._({
     this.id,
     required this.name,
@@ -81,6 +81,19 @@ abstract class Cat implements _i1.SerializableModel {
       if (mother != null) 'mother': mother?.toJson(),
       if (kittens != null)
         'kittens': kittens?.toJson(valueToJson: (v) => v.toJson()),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Cat',
+      if (id != null) 'id': id,
+      'name': name,
+      if (motherId != null) 'motherId': motherId,
+      if (mother != null) 'mother': mother?.toJsonForProtocol(),
+      if (kittens != null)
+        'kittens': kittens?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
   }
 

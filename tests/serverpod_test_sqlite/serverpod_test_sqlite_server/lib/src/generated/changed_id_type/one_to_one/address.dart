@@ -391,16 +391,22 @@ class AddressUuidRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<AddressUuid>> insert(
     _i1.DatabaseSession session,
     List<AddressUuid> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<AddressUuid>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -434,6 +440,10 @@ class AddressUuidRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<AddressUuid>> upsert(
     _i1.DatabaseSession session,
     List<AddressUuid> rows, {
@@ -441,6 +451,7 @@ class AddressUuidRepository {
     _i1.ColumnSelections<AddressUuidTable>? updateColumns,
     _i1.WhereExpressionBuilder<AddressUuidTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<AddressUuid>(
       rows,
@@ -448,6 +459,7 @@ class AddressUuidRepository {
       updateColumns: updateColumns?.call(AddressUuid.t),
       updateWhere: updateWhere?.call(AddressUuid.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -486,16 +498,22 @@ class AddressUuidRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<AddressUuid>> update(
     _i1.DatabaseSession session,
     List<AddressUuid> rows, {
     _i1.ColumnSelections<AddressUuidTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<AddressUuid>(
       rows,
       columns: columns?.call(AddressUuid.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -532,6 +550,10 @@ class AddressUuidRepository {
 
   /// Updates all [AddressUuid]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<AddressUuid>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<AddressUuidUpdateTable> columnValues,
@@ -543,6 +565,7 @@ class AddressUuidRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<AddressUuid>(
       columnValues: columnValues(AddressUuid.t.updateTable),
@@ -554,6 +577,7 @@ class AddressUuidRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -564,6 +588,10 @@ class AddressUuidRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<AddressUuid>> delete(
     _i1.DatabaseSession session,
     List<AddressUuid> rows, {
@@ -572,6 +600,7 @@ class AddressUuidRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<AddressUuidTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<AddressUuid>(
       rows,
@@ -580,6 +609,7 @@ class AddressUuidRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -599,6 +629,10 @@ class AddressUuidRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<AddressUuid>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<AddressUuidTable> where,
@@ -607,6 +641,7 @@ class AddressUuidRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<AddressUuidTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<AddressUuid>(
       where: where(AddressUuid.t),
@@ -615,6 +650,7 @@ class AddressUuidRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

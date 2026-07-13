@@ -1,0 +1,132 @@
+name: Sync CLI Docs to Serverpod Docs
+
+# After framework CLI changes land on main, regenerate the serverpod command
+# reference docs and open (or refresh) a single rolling PR in the serverpod_docs
+# repository.
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "tools/serverpod_cli/lib/src/commands/**"
+      - "tools/serverpod_cli/lib/src/runner/**"
+      - "tools/serverpod_cli/bin/**"
+      - "tools/serverpod_cli/scripts/generate_command_usages.dart"
+      - ".github/workflows/sync-cli-docs.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Only one sync at a time so the rolling branch is never updated concurrently.
+concurrency:
+  group: sync-cli-docs
+  cancel-in-progress: false
+
+env:
+  DOCS_REPOSITORY: serverpod/serverpod_docs
+  # Distinct from the Cloud bot's `auto/cli-docs-sync` branch on the same repo.
+  SYNC_BRANCH: auto/framework-cli-docs-sync
+  CLI_DOCS_PATH: docs/06-concepts/cli
+
+jobs:
+  sync:
+    name: Sync CLI Docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ secrets.DOCS_SYNC_APP_CLIENT_ID }}
+          private-key: ${{ secrets.DOCS_SYNC_APP_PRIVATE_KEY }}
+          owner: serverpod
+          repositories: serverpod_docs
+
+      - name: Checkout Serverpod Repo
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          path: src
+
+      # serverpod_cli is a pure Dart package, so the Dart SDK is all we need.
+      # (Most monorepo workflows pull Flutter only because their packages need
+      # it.)
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
+        with:
+          sdk: stable
+
+      - name: Resolve serverpod_cli dependencies
+        working-directory: src/tools/serverpod_cli
+        run: dart pub get
+
+      - name: Checkout Serverpod Docs Repo
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          path: target
+          ref: main
+          repository: ${{ env.DOCS_REPOSITORY }}
+          # persist-credentials (default true) embeds the app token so
+          # `git push` to the docs repo authenticates.
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Generate CLI docs
+        working-directory: src/tools/serverpod_cli
+        run: >
+          dart run scripts/generate_command_usages.dart
+          "${{ github.workspace }}/target/${{ env.CLI_DOCS_PATH }}"
+
+      - name: Detect changes in Serverpod Docs
+        id: check_changes
+        working-directory: target
+        run: |
+          git add -- "$CLI_DOCS_PATH"
+          git diff --cached --quiet || CHANGED=true
+          if [ "$CHANGED" == true ]; then
+            echo "changes_detected=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Push changes to Serverpod Docs
+        if: steps.check_changes.outputs.changes_detected == 'true'
+        working-directory: target
+        run: |
+          git config --global user.email "serverpod@serverpod.dev"
+          git config --global user.name "serverpod"
+          git checkout -B "$SYNC_BRANCH"
+          git commit -m "docs: Update framework CLI command reference (serverpod@${GITHUB_SHA::7})"
+          git push --force origin "$SYNC_BRANCH"
+
+      - name: Create PR in Serverpod Docs
+        if: steps.check_changes.outputs.changes_detected == 'true'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          EXISTING_PR=$(gh pr list --repo "$DOCS_REPOSITORY" --head "$SYNC_BRANCH" --state open --json number --jq '.[0].number')
+          if [ -n "$EXISTING_PR" ]; then
+            echo "PR #$EXISTING_PR already open; branch \"$SYNC_BRANCH\" was force-updated."
+          else
+            gh pr create \
+              --repo "$DOCS_REPOSITORY" \
+              --base main \
+              --head "$SYNC_BRANCH" \
+              --title "docs: Update framework CLI command reference" \
+              --body "$(cat << EOF
+          Auto-generated update of the framework CLI command reference docs from the
+          command definitions in \`serverpod\`.
+
+          Triggered by: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
+
+          > This branch (\`$SYNC_BRANCH\`) is force-updated on every relevant push to
+          > \`main\`, so always review the latest diff. Do not push manual commits to it —
+          > they will be overwritten. Curated command intros (\`_<command>.md\`) are
+          > maintained directly on \`main\` and are preserved by the generator.
+          EOF
+          )"
+          fi
+          # Merge automatically once all required checks and reviews on the
+          # docs repo have passed. (A force-push disables a previously enabled
+          # auto-merge, so this is re-enabled on every sync.)
+          gh pr merge "$SYNC_BRANCH" \
+            --repo "$DOCS_REPOSITORY" \
+            --auto \
+            --squash

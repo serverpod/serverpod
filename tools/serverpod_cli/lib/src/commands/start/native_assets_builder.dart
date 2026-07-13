@@ -10,7 +10,6 @@ import 'package:hooks/hooks.dart';
 // the serverpod CLI [log]; there are no log calls of our own against it.
 import 'package:hooks_runner/hooks_runner.dart' as hr;
 import 'package:logging/logging.dart' show Level, Logger, LogRecord;
-import 'package:meta/meta.dart' show visibleForTesting;
 import 'package:package_config/package_config.dart' as pc;
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
@@ -74,6 +73,56 @@ class NativeAssetsApplyFailure extends NativeAssetsApplyOutcome {
   const NativeAssetsApplyFailure(this.message);
 }
 
+/// Walks up from [fromDir] to the first pubspec that is *not* a workspace
+/// member (i.e. `resolution != 'workspace'`). The directory containing that
+/// pubspec is either the workspace root (when a workspace is in use) or the
+/// package itself (when it isn't); pub places `.dart_tool/` only there, so its
+/// `package_config.json` is the one the Frontend Server resolves for the
+/// server package.
+///
+/// Validates that `package_config.json` and `package_graph.json` exist
+/// alongside the pubspec, so callers can trust the returned root without
+/// re-checking.
+Future<String> discoverProjectRootFrom(String fromDir) async {
+  var dir = p.canonicalize(fromDir);
+  while (true) {
+    final pubspec = await tryParsePubspecAt(dir);
+    if (pubspec != null && pubspec.resolution != 'workspace') {
+      final cfg = p.join(dir, '.dart_tool', 'package_config.json');
+      final graph = p.join(dir, '.dart_tool', 'package_graph.json');
+      if (!await File(cfg).exists() || !await File(graph).exists()) {
+        throw StateError(
+          'Found project root at $dir but its .dart_tool is missing '
+          'package_config.json / package_graph.json. Run `dart pub get`.',
+        );
+      }
+      return dir;
+    }
+    final parent = p.dirname(dir);
+    if (parent == dir) {
+      throw StateError(
+        'No project root pubspec found walking up from $fromDir. '
+        'Server packages with `resolution: workspace` need a workspace '
+        'root pubspec above them.',
+      );
+    }
+    dir = parent;
+  }
+}
+
+/// The subset of [NativeAssetsBuilder] that [WatchSession] drives, factored out
+/// so the session can be exercised with a fake in tests. [NativeAssetsBuilder]
+/// is the only production implementation.
+abstract interface class NativeAssetsApplier {
+  /// Runs build hooks and applies the result to [compiler]. See
+  /// [NativeAssetsBuilder.applyTo].
+  Future<NativeAssetsApplyOutcome> applyTo(KernelCompiler compiler);
+
+  /// Drops cached package-discovery state so the next apply re-reads
+  /// `package_config.json`. See [NativeAssetsBuilder.reset].
+  void reset();
+}
+
 /// Orchestrates `package:hooks_runner` on behalf of `serverpod start`.
 ///
 /// `dart compile` refuses to run build hooks, and `frontend_server` does not
@@ -85,20 +134,25 @@ class NativeAssetsApplyFailure extends NativeAssetsApplyOutcome {
 /// Hook execution is internally cached by `hooks_runner` keyed on hook
 /// inputs/dependencies/environment, so re-invoking each watch cycle is cheap
 /// when nothing changed.
-class NativeAssetsBuilder {
+class NativeAssetsBuilder implements NativeAssetsApplier {
   /// Path to the dart executable (used to compile and run individual hooks).
   final String dartExecutable;
 
-  /// The server package directory. The package_config.json lives either here
-  /// (standalone) or in the workspace root above it; [discoverProjectRoot]
-  /// walks up to find it.
+  /// The server package directory. Its own `pubspec.yaml` is read to name the
+  /// root package; [projectRoot] (not necessarily this directory) holds the
+  /// `package_config.json`.
   final String serverDir;
+
+  /// The resolution root whose `.dart_tool/` holds the `package_config.json` /
+  /// `package_graph.json` (the workspace root, or [serverDir] when standalone).
+  /// Resolved once by the caller via [discoverProjectRootFrom] and passed in,
+  /// so the walk is not repeated here. Stable for the builder's lifetime.
+  final String projectRoot;
 
   /// Output directory for the assets and the manifest yaml (typically
   /// `<serverDir>/.dart_tool/serverpod/native_assets/`).
   final String outputDir;
 
-  Future<String>? _projectRootFuture;
   Future<hr.PackageLayout>? _packageLayoutFuture;
   Future<hr.NativeAssetsBuildRunner>? _runnerFuture;
   String? _lastManifestContent;
@@ -112,6 +166,7 @@ class NativeAssetsBuilder {
   NativeAssetsBuilder({
     required this.dartExecutable,
     required this.serverDir,
+    required this.projectRoot,
     required this.outputDir,
   });
 
@@ -119,58 +174,24 @@ class NativeAssetsBuilder {
   /// been written yet).
   String get manifestPath => p.join(outputDir, 'native_assets.yaml');
 
-  /// Drops every cache so the next [build] re-discovers the workspace,
-  /// reloads `package_config.json`, and treats the next manifest as freshly
-  /// generated. Call after a `pub get` or other change that adds or removes
-  /// packages with build hooks.
+  /// Drops the cached package layout and build runner so the next [build]
+  /// re-reads `package_config.json` and re-discovers build-hook packages. Call
+  /// after a `pub get` or other change that adds or removes packages with build
+  /// hooks. ([projectRoot] is stable and not re-resolved.)
+  ///
+  /// The manifest/encoded-asset caches are deliberately kept: the next [build]
+  /// re-runs the hooks and compares its result to them, so a dependency change
+  /// that leaves the native assets unchanged still reports
+  /// `manifestChanged: false` and avoids a needless FES restart.
+  @override
   void reset() {
-    _projectRootFuture = null;
     _packageLayoutFuture = null;
     _runnerFuture = null;
-    _lastManifestContent = null;
-    _lastEncodedAssets = null;
-  }
-
-  /// Walks up from [serverDir] to the first pubspec that is *not* a workspace
-  /// member (i.e. `resolution != 'workspace'`). The directory containing that
-  /// pubspec is either the workspace root (when a workspace is in use) or the
-  /// package itself (when it isn't); pub places `.dart_tool/` only there.
-  ///
-  /// Validates that `package_config.json` and `package_graph.json` exist
-  /// alongside the pubspec, so callers can trust the returned root without
-  /// re-checking.
-  @visibleForTesting
-  Future<String> discoverProjectRoot() async {
-    var dir = p.canonicalize(serverDir);
-    while (true) {
-      final pubspec = await tryParsePubspecAt(dir);
-      if (pubspec != null && pubspec.resolution != 'workspace') {
-        final cfg = p.join(dir, '.dart_tool', 'package_config.json');
-        final graph = p.join(dir, '.dart_tool', 'package_graph.json');
-        if (!await File(cfg).exists() || !await File(graph).exists()) {
-          throw StateError(
-            'Found project root at $dir but its .dart_tool is missing '
-            'package_config.json / package_graph.json. Run `dart pub get`.',
-          );
-        }
-        return dir;
-      }
-      final parent = p.dirname(dir);
-      if (parent == dir) {
-        throw StateError(
-          'No project root pubspec found walking up from $serverDir. '
-          'Server packages with `resolution: workspace` need a workspace '
-          'root pubspec above them.',
-        );
-      }
-      dir = parent;
-    }
   }
 
   Future<hr.PackageLayout> _loadPackageLayout() async {
-    final root = await (_projectRootFuture ??= discoverProjectRoot());
     final pkgConfigUri = Uri.file(
-      p.join(root, '.dart_tool', 'package_config.json'),
+      p.join(projectRoot, '.dart_tool', 'package_config.json'),
     );
 
     // Run the package_config load and the server pubspec read in parallel.
@@ -193,14 +214,13 @@ class NativeAssetsBuilder {
 
   Future<hr.NativeAssetsBuildRunner> _createRunner() async {
     final layout = await (_packageLayoutFuture ??= _loadPackageLayout());
-    final root = await (_projectRootFuture ??= discoverProjectRoot());
     return hr.NativeAssetsBuildRunner(
       dartExecutable: Uri.file(dartExecutable),
       logger: _logger,
       fileSystem: _fileSystem,
       packageLayout: layout,
       userDefines: hr.UserDefines(
-        workspacePubspec: Uri.file(p.join(root, 'pubspec.yaml')),
+        workspacePubspec: Uri.file(p.join(projectRoot, 'pubspec.yaml')),
       ),
     );
   }
@@ -211,7 +231,13 @@ class NativeAssetsBuilder {
 
     final hookPackages = await runner.packagesWithBuildHooks();
     if (hookPackages.isEmpty) {
-      return const NativeAssetsBuildSkipped();
+      // No build-hook packages in the closure. If a manifest was produced
+      // earlier this session - i.e. the last native dependency was just removed
+      // - tear it down and report the change so the FES restarts without
+      // `--native-assets`; otherwise the running pod keeps loading the removed
+      // package's stale assets. With no prior manifest there is nothing to do.
+      if (_lastManifestContent == null) return const NativeAssetsBuildSkipped();
+      return _dropManifest();
     }
 
     final target = hr.Target.current;
@@ -239,23 +265,10 @@ class NativeAssetsBuilder {
 
     final encodedAssets = result.success.encodedAssets;
 
-    // No bundleable assets -> no manifest needed. Tell the caller to ensure
-    // FES is running without a --native-assets argument.
+    // Hooks ran but produced no bundleable assets -> no manifest needed. Tell
+    // the caller to ensure the FES is running without a --native-assets arg.
     if (encodedAssets.isEmpty) {
-      final changed = _lastManifestContent != null;
-      _lastManifestContent = null;
-      _lastEncodedAssets = const [];
-      // Best-effort cleanup of a stale manifest from a prior run. Avoid
-      // exists() + delete() (TOCTOU); just delete and ignore "not found".
-      try {
-        await File(manifestPath).delete();
-      } on PathNotFoundException {
-        // Already gone.
-      }
-      return NativeAssetsBuildSuccess(
-        manifestPath: null,
-        manifestChanged: changed,
-      );
+      return _dropManifest();
     }
 
     // hooks_runner caches build results internally, so the encoded asset list
@@ -298,6 +311,29 @@ class NativeAssetsBuilder {
     );
   }
 
+  /// Tears down any previously built manifest: clears the cached state and
+  /// deletes the on-disk yaml, returning a success that tells the caller to drop
+  /// the FES `--native-assets` argument. [NativeAssetsBuildSuccess.manifestChanged]
+  /// reflects whether a manifest existed before, so the caller restarts the FES
+  /// only when something actually went away. Shared by the "no build-hook
+  /// packages left" and "hooks emitted nothing" paths.
+  Future<NativeAssetsBuildSuccess> _dropManifest() async {
+    final changed = _lastManifestContent != null;
+    _lastManifestContent = null;
+    _lastEncodedAssets = const [];
+    // Best-effort cleanup of a stale manifest from a prior run. Avoid
+    // exists() + delete() (TOCTOU); just delete and ignore "not found".
+    try {
+      await File(manifestPath).delete();
+    } on PathNotFoundException {
+      // Already gone.
+    }
+    return NativeAssetsBuildSuccess(
+      manifestPath: null,
+      manifestChanged: changed,
+    );
+  }
+
   /// Runs build hooks and applies the result to [compiler]:
   ///  - `nativeAssetsPath` is updated to the freshly built manifest (if any)
   ///  - if the manifest content changed AND [compiler] has already started,
@@ -305,6 +341,7 @@ class NativeAssetsBuilder {
   ///
   /// Centralises the "did we restart?" bookkeeping that callers in the watch
   /// loop and migration path need to avoid double-restarting.
+  @override
   Future<NativeAssetsApplyOutcome> applyTo(KernelCompiler compiler) async {
     final outcome = await build();
     switch (outcome) {

@@ -894,16 +894,22 @@ class SessionLogEntryRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<SessionLogEntry>> insert(
     _i1.DatabaseSession session,
     List<SessionLogEntry> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<SessionLogEntry>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -937,6 +943,10 @@ class SessionLogEntryRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<SessionLogEntry>> upsert(
     _i1.DatabaseSession session,
     List<SessionLogEntry> rows, {
@@ -944,6 +954,7 @@ class SessionLogEntryRepository {
     _i1.ColumnSelections<SessionLogEntryTable>? updateColumns,
     _i1.WhereExpressionBuilder<SessionLogEntryTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<SessionLogEntry>(
       rows,
@@ -951,6 +962,7 @@ class SessionLogEntryRepository {
       updateColumns: updateColumns?.call(SessionLogEntry.t),
       updateWhere: updateWhere?.call(SessionLogEntry.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -989,16 +1001,22 @@ class SessionLogEntryRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<SessionLogEntry>> update(
     _i1.DatabaseSession session,
     List<SessionLogEntry> rows, {
     _i1.ColumnSelections<SessionLogEntryTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<SessionLogEntry>(
       rows,
       columns: columns?.call(SessionLogEntry.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -1036,6 +1054,10 @@ class SessionLogEntryRepository {
 
   /// Updates all [SessionLogEntry]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<SessionLogEntry>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<SessionLogEntryUpdateTable>
@@ -1048,6 +1070,7 @@ class SessionLogEntryRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<SessionLogEntry>(
       columnValues: columnValues(SessionLogEntry.t.updateTable),
@@ -1059,6 +1082,7 @@ class SessionLogEntryRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -1069,6 +1093,10 @@ class SessionLogEntryRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<SessionLogEntry>> delete(
     _i1.DatabaseSession session,
     List<SessionLogEntry> rows, {
@@ -1077,6 +1105,7 @@ class SessionLogEntryRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<SessionLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<SessionLogEntry>(
       rows,
@@ -1085,6 +1114,7 @@ class SessionLogEntryRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -1104,6 +1134,10 @@ class SessionLogEntryRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<SessionLogEntry>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<SessionLogEntryTable> where,
@@ -1112,6 +1146,7 @@ class SessionLogEntryRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<SessionLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<SessionLogEntry>(
       where: where(SessionLogEntry.t),
@@ -1120,6 +1155,7 @@ class SessionLogEntryRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

@@ -391,16 +391,22 @@ class CustomerIntRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<CustomerInt>> insert(
     _i1.DatabaseSession session,
     List<CustomerInt> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<CustomerInt>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -434,6 +440,10 @@ class CustomerIntRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<CustomerInt>> upsert(
     _i1.DatabaseSession session,
     List<CustomerInt> rows, {
@@ -441,6 +451,7 @@ class CustomerIntRepository {
     _i1.ColumnSelections<CustomerIntTable>? updateColumns,
     _i1.WhereExpressionBuilder<CustomerIntTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<CustomerInt>(
       rows,
@@ -448,6 +459,7 @@ class CustomerIntRepository {
       updateColumns: updateColumns?.call(CustomerInt.t),
       updateWhere: updateWhere?.call(CustomerInt.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -486,16 +498,22 @@ class CustomerIntRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<CustomerInt>> update(
     _i1.DatabaseSession session,
     List<CustomerInt> rows, {
     _i1.ColumnSelections<CustomerIntTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<CustomerInt>(
       rows,
       columns: columns?.call(CustomerInt.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -532,6 +550,10 @@ class CustomerIntRepository {
 
   /// Updates all [CustomerInt]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<CustomerInt>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<CustomerIntUpdateTable> columnValues,
@@ -543,6 +565,7 @@ class CustomerIntRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<CustomerInt>(
       columnValues: columnValues(CustomerInt.t.updateTable),
@@ -554,6 +577,7 @@ class CustomerIntRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -564,6 +588,10 @@ class CustomerIntRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<CustomerInt>> delete(
     _i1.DatabaseSession session,
     List<CustomerInt> rows, {
@@ -572,6 +600,7 @@ class CustomerIntRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<CustomerIntTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<CustomerInt>(
       rows,
@@ -580,6 +609,7 @@ class CustomerIntRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -599,6 +629,10 @@ class CustomerIntRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<CustomerInt>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CustomerIntTable> where,
@@ -607,6 +641,7 @@ class CustomerIntRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<CustomerIntTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<CustomerInt>(
       where: where(CustomerInt.t),
@@ -615,6 +650,7 @@ class CustomerIntRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

@@ -21,6 +21,7 @@ export 'src/server/server.dart' hide ServerInternalMethods;
 export 'src/server/serverpod.dart' hide ServerpodInternalMethods;
 export 'src/server/session.dart' hide SessionInternalMethods;
 export 'src/config/security_context_config.dart' show SecurityContextConfig;
+export 'src/redis/controller.dart';
 
 export 'package:serverpod_shared/serverpod_shared.dart'
     show ServerpodLoggingMode;

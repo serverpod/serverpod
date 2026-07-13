@@ -14,7 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'simple_data.dart' as _i2;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
-abstract class ObjectFieldPersist implements _i1.SerializableModel {
+abstract class ObjectFieldPersist
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ObjectFieldPersist._({
     this.id,
     required this.normal,
@@ -70,6 +71,17 @@ abstract class ObjectFieldPersist implements _i1.SerializableModel {
       'normal': normal,
       if (api != null) 'api': api,
       if (data != null) 'data': data?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'ObjectFieldPersist',
+      if (id != null) 'id': id,
+      'normal': normal,
+      if (api != null) 'api': api,
+      if (data != null) 'data': data?.toJsonForProtocol(),
     };
   }
 

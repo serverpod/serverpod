@@ -340,16 +340,22 @@ class ImmutableObjectWithTableRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ImmutableObjectWithTable>> insert(
     _i1.DatabaseSession session,
     List<ImmutableObjectWithTable> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<ImmutableObjectWithTable>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -383,6 +389,10 @@ class ImmutableObjectWithTableRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ImmutableObjectWithTable>> upsert(
     _i1.DatabaseSession session,
     List<ImmutableObjectWithTable> rows, {
@@ -391,6 +401,7 @@ class ImmutableObjectWithTableRepository {
     _i1.ColumnSelections<ImmutableObjectWithTableTable>? updateColumns,
     _i1.WhereExpressionBuilder<ImmutableObjectWithTableTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<ImmutableObjectWithTable>(
       rows,
@@ -398,6 +409,7 @@ class ImmutableObjectWithTableRepository {
       updateColumns: updateColumns?.call(ImmutableObjectWithTable.t),
       updateWhere: updateWhere?.call(ImmutableObjectWithTable.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -437,16 +449,22 @@ class ImmutableObjectWithTableRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ImmutableObjectWithTable>> update(
     _i1.DatabaseSession session,
     List<ImmutableObjectWithTable> rows, {
     _i1.ColumnSelections<ImmutableObjectWithTableTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<ImmutableObjectWithTable>(
       rows,
       columns: columns?.call(ImmutableObjectWithTable.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -484,6 +502,10 @@ class ImmutableObjectWithTableRepository {
 
   /// Updates all [ImmutableObjectWithTable]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ImmutableObjectWithTable>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<ImmutableObjectWithTableUpdateTable>
@@ -496,6 +518,7 @@ class ImmutableObjectWithTableRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<ImmutableObjectWithTable>(
       columnValues: columnValues(ImmutableObjectWithTable.t.updateTable),
@@ -507,6 +530,7 @@ class ImmutableObjectWithTableRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -517,6 +541,10 @@ class ImmutableObjectWithTableRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ImmutableObjectWithTable>> delete(
     _i1.DatabaseSession session,
     List<ImmutableObjectWithTable> rows, {
@@ -525,6 +553,7 @@ class ImmutableObjectWithTableRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ImmutableObjectWithTableTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<ImmutableObjectWithTable>(
       rows,
@@ -533,6 +562,7 @@ class ImmutableObjectWithTableRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -552,6 +582,10 @@ class ImmutableObjectWithTableRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ImmutableObjectWithTable>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ImmutableObjectWithTableTable> where,
@@ -560,6 +594,7 @@ class ImmutableObjectWithTableRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ImmutableObjectWithTableTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ImmutableObjectWithTable>(
       where: where(ImmutableObjectWithTable.t),
@@ -568,6 +603,7 @@ class ImmutableObjectWithTableRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

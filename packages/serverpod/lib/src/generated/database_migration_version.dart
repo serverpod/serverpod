@@ -362,16 +362,22 @@ class DatabaseMigrationVersionRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DatabaseMigrationVersion>> insert(
     _i2.DatabaseSession session,
     List<DatabaseMigrationVersion> rows, {
     _i2.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<DatabaseMigrationVersion>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -405,6 +411,10 @@ class DatabaseMigrationVersionRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DatabaseMigrationVersion>> upsert(
     _i2.DatabaseSession session,
     List<DatabaseMigrationVersion> rows, {
@@ -413,6 +423,7 @@ class DatabaseMigrationVersionRepository {
     _i2.ColumnSelections<DatabaseMigrationVersionTable>? updateColumns,
     _i2.WhereExpressionBuilder<DatabaseMigrationVersionTable>? updateWhere,
     _i2.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<DatabaseMigrationVersion>(
       rows,
@@ -420,6 +431,7 @@ class DatabaseMigrationVersionRepository {
       updateColumns: updateColumns?.call(DatabaseMigrationVersion.t),
       updateWhere: updateWhere?.call(DatabaseMigrationVersion.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -459,16 +471,22 @@ class DatabaseMigrationVersionRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DatabaseMigrationVersion>> update(
     _i2.DatabaseSession session,
     List<DatabaseMigrationVersion> rows, {
     _i2.ColumnSelections<DatabaseMigrationVersionTable>? columns,
     _i2.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<DatabaseMigrationVersion>(
       rows,
       columns: columns?.call(DatabaseMigrationVersion.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -506,6 +524,10 @@ class DatabaseMigrationVersionRepository {
 
   /// Updates all [DatabaseMigrationVersion]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DatabaseMigrationVersion>> updateWhere(
     _i2.DatabaseSession session, {
     required _i2.ColumnValueListBuilder<DatabaseMigrationVersionUpdateTable>
@@ -518,6 +540,7 @@ class DatabaseMigrationVersionRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<DatabaseMigrationVersion>(
       columnValues: columnValues(DatabaseMigrationVersion.t.updateTable),
@@ -529,6 +552,7 @@ class DatabaseMigrationVersionRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -539,6 +563,10 @@ class DatabaseMigrationVersionRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DatabaseMigrationVersion>> delete(
     _i2.DatabaseSession session,
     List<DatabaseMigrationVersion> rows, {
@@ -547,6 +575,7 @@ class DatabaseMigrationVersionRepository {
     bool orderDescending = false,
     _i2.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
     _i2.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<DatabaseMigrationVersion>(
       rows,
@@ -555,6 +584,7 @@ class DatabaseMigrationVersionRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -574,6 +604,10 @@ class DatabaseMigrationVersionRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DatabaseMigrationVersion>> deleteWhere(
     _i2.DatabaseSession session, {
     required _i2.WhereExpressionBuilder<DatabaseMigrationVersionTable> where,
@@ -582,6 +616,7 @@ class DatabaseMigrationVersionRepository {
     bool orderDescending = false,
     _i2.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
     _i2.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<DatabaseMigrationVersion>(
       where: where(DatabaseMigrationVersion.t),
@@ -590,6 +625,7 @@ class DatabaseMigrationVersionRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

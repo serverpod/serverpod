@@ -15,7 +15,8 @@ import '../../../models_with_relations/one_to_many/implicit/chapter.dart'
     as _i2;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
-abstract class Book implements _i1.SerializableModel {
+abstract class Book
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   Book._({
     this.id,
     required this.title,
@@ -65,6 +66,17 @@ abstract class Book implements _i1.SerializableModel {
       'title': title,
       if (chapters != null)
         'chapters': chapters?.toJson(valueToJson: (v) => v.toJson()),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Book',
+      if (id != null) 'id': id,
+      'title': title,
+      if (chapters != null)
+        'chapters': chapters?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
   }
 

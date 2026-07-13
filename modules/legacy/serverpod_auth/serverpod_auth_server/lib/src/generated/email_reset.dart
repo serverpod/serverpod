@@ -366,16 +366,22 @@ class EmailResetRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailReset>> insert(
     _i1.DatabaseSession session,
     List<EmailReset> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<EmailReset>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -409,6 +415,10 @@ class EmailResetRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailReset>> upsert(
     _i1.DatabaseSession session,
     List<EmailReset> rows, {
@@ -416,6 +426,7 @@ class EmailResetRepository {
     _i1.ColumnSelections<EmailResetTable>? updateColumns,
     _i1.WhereExpressionBuilder<EmailResetTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<EmailReset>(
       rows,
@@ -423,6 +434,7 @@ class EmailResetRepository {
       updateColumns: updateColumns?.call(EmailReset.t),
       updateWhere: updateWhere?.call(EmailReset.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -461,16 +473,22 @@ class EmailResetRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailReset>> update(
     _i1.DatabaseSession session,
     List<EmailReset> rows, {
     _i1.ColumnSelections<EmailResetTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<EmailReset>(
       rows,
       columns: columns?.call(EmailReset.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -507,6 +525,10 @@ class EmailResetRepository {
 
   /// Updates all [EmailReset]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailReset>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<EmailResetUpdateTable> columnValues,
@@ -518,6 +540,7 @@ class EmailResetRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<EmailReset>(
       columnValues: columnValues(EmailReset.t.updateTable),
@@ -529,6 +552,7 @@ class EmailResetRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -539,6 +563,10 @@ class EmailResetRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailReset>> delete(
     _i1.DatabaseSession session,
     List<EmailReset> rows, {
@@ -547,6 +575,7 @@ class EmailResetRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailResetTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<EmailReset>(
       rows,
@@ -555,6 +584,7 @@ class EmailResetRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -574,6 +604,10 @@ class EmailResetRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailReset>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EmailResetTable> where,
@@ -582,6 +616,7 @@ class EmailResetRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailResetTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<EmailReset>(
       where: where(EmailReset.t),
@@ -590,6 +625,7 @@ class EmailResetRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

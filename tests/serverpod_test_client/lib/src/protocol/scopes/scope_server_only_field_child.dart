@@ -17,7 +17,7 @@ import '../scopes/scope_server_only_field.dart' as _i4;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i5;
 
 abstract class ScopeServerOnlyFieldChild extends _i1.ScopeServerOnlyField
-    implements _i2.SerializableModel {
+    implements _i2.SerializableModel, _i2.ProtocolSerialization {
   ScopeServerOnlyFieldChild._({
     super.allScope,
     super.nested,
@@ -65,6 +65,16 @@ abstract class ScopeServerOnlyFieldChild extends _i1.ScopeServerOnlyField
       '__className__': 'ScopeServerOnlyFieldChild',
       if (allScope != null) 'allScope': allScope?.toJson(),
       if (nested != null) 'nested': nested?.toJson(),
+      'childFoo': childFoo,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'ScopeServerOnlyFieldChild',
+      if (allScope != null) 'allScope': allScope?.toJsonForProtocol(),
+      if (nested != null) 'nested': nested?.toJsonForProtocol(),
       'childFoo': childFoo,
     };
   }

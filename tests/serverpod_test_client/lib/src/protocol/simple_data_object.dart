@@ -14,7 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'simple_data.dart' as _i2;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
-abstract class SimpleDataObject implements _i1.SerializableModel {
+abstract class SimpleDataObject
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   SimpleDataObject._({required this.object});
 
   factory SimpleDataObject({required _i2.SimpleData object}) =
@@ -39,6 +40,14 @@ abstract class SimpleDataObject implements _i1.SerializableModel {
     return {
       '__className__': 'SimpleDataObject',
       'object': object.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'SimpleDataObject',
+      'object': object.toJsonForProtocol(),
     };
   }
 

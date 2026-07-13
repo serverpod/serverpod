@@ -1,3 +1,60 @@
+## 4.0.0-beta.0
+
+- feat: Shows inline "Copied" confirmation in `serverpod start` TUI alerts.
+- feat: Makes alert copy/dismiss clickable in `serverpod start` TUI.
+- feat: Adds the `displayName` for Flutter app configs for a pretty tab title.
+- feat: Adds support for creating server only projects.
+- fix: Fixes `upsert` with `updateWhere` throwing on SQLite when conflicts are filtered out.
+- fix: Adds missing export of `DeepCollectionEquality` for shared models. Backported to 3.4.11.
+- fix: Prevents the creation of orphaned images on subsequent IDP logins. Backported to 3.4.11.
+- refactor: Refines the serverpod start TUI app status, stop/close, and launcher.
+- chore: Changes the template to serve the Flutter web app under root if website is not enabled.
+
+## 3.5.0-beta.12
+
+- feat: Adds `ServerpodCloudEmailIdpConfig` as default email IDP using Serverpod Cloud.
+- fix: Improves the "Flutter web app not built" page on the template.
+- fix: Fixes missing `web` directory for projects created with only the Flutter app.
+
+## 3.5.0-beta.11
+
+- feat: Adds PostGIS geography types support with GiST and SP-GiST indexes. ([@charlesarchibong](https://github.com/charlesarchibong))
+- feat: Relaunches Flutter apps from `serverpod start` when assets and fonts change.
+- feat: Allows running multiple Flutter apps from `serverpod start`.
+- feat: Moves Flutter app configs from the command line to the server pubspec. The `serverpod start` no longer accepts `--flutter-*` flags.
+- feat: Adds a `spawn_flutter_app` MCP tool for agents to spawn configured Flutter apps.
+- feat: Exposes the Redis connection to allow users to build custom extensions.
+- feat: Adds the `tail` keyword on models to configure the order of inherited fields.
+- feat: Automatically reloads the server when dependencies change.
+- feat: Adds a `withSession` method on `Serverpod` for manual session usage with automatic teardown.
+- feat: Adds a `noReturn` parameter to all ORM methods to allow skipping the returning the data.
+- feat: Allows using the `unique(per=...)` shorthand for composite unique indexes.
+- feat: Adds a `databaseInterceptor` parameter to `Serverpod` for intercepting database operations.
+- feat: Implements `Iterable` and `operator[]` on vector types.
+- feat: Disables the sign-in UI while authentication is in progres. ([@abdulawalarif](https://github.com/abdulawalarif))
+- feat: Shows alert logs as a special pinned alert message on the `serverpod start` TUI.
+- feat: Allows `extends` and `sealed` properties on `Exception` models.
+- fix: Prevents `serverpod start` from closing when the project fails to build.
+- fix: Makes Flutter app heartbeat more resilient to failures before tearing down.
+- fix: Fixes IDPs silently skipping `UserProfile` creation during first login if an exception occur.
+- fix: Adds an error when unregistered custom classes are used in endpoints.
+- fix: Throws `StateError` instead of `Exception` for not configured features. ([@realmeylisdev](https://github.com/realmeylisdev))
+- fix: Fixes client-side protocol with client database and modules.
+- fix: Fixes wrong column values encoding in `upsert` queries for SQLite.
+- fix: Fixes analysis errors on projects due to `clock` transitive import on generated code.
+- fix: Allows using the `id` as conflict target on `upsert` and `upsertRow`.
+- fix: Excludes static methods from endpoint code generation. ([@realmeylisdev](https://github.com/realmeylisdev))
+- fix: Changes `testObjectToJson` return type from `dynamic` to `Map<String, dynamic>`. ([@realmeylisdev](https://github.com/realmeylisdev))
+- fix: Preserves `ORDER BY` in nested `includeList` queries with `LIMIT`.
+- fix: Recovers orphaned embedded Postgres on Windows after unclean exit.
+- fix: Fixes malformed query when negating many-relation filters. Backported to 3.4.10. ([@realmeylisdev](https://github.com/realmeylisdev))
+- fix: Fixes trying to complete the web socket listener twice on concurrent connections. Backported to 3.4.10.
+- refactor: Improves the `serverpod start` TUI experience.
+- refactor: Improves the `serverpod create` TUI experience with a paginated experience.
+- chore: Adds a checkmark to browser refresh log. ([@mackings](https://github.com/mackings))
+- chore: Fixes Antigravity MCP configuration not being loaded.
+- chore: Fixes auth dependencies being included in projects created without auth.
+
 ## 3.5.0-beta.10
 
 - feat: Hides the "Hot restart" action in the `start` TUI when on watch mode (default).
@@ -66,14 +123,14 @@
 - fix: Makes the `serverpod start` MCP tied to the current project server.
 - fix: Fixes `copyWith` method on `dynamic` fields overriding unchanged fields.
 - fix: Fixes `dynamic` fields being serialized as an encoded `String` instead of the `Map` (breaking change since last beta version).
-- fix: Allows OWASP special characters in password field ([@realmeylisdev](https://github.com/realmeylisdev))
+- fix: Allows OWASP special characters in password field. ([@realmeylisdev](https://github.com/realmeylisdev))
 - chore: Replaces `SQLite` by `PostgreSQL` as the default database on `quickstart` command.
 - chore: Improves the skills to better guide agents on the new `serverpod start` experience.
 
 ## 3.5.0-beta.7
 
 - feat: Allows replacing the Google Sign-In for web with OAuth2 PKCE flow for a better UX.
-- feat: Introduces new `upsert` and `upsertRow` methods on the ORM ([@sedobrengocce](https://github.com/sedobrengocce))
+- feat: Introduces new `upsert` and `upsertRow` methods on the ORM. ([@sedobrengocce](https://github.com/sedobrengocce))
 - fix: Exposes the `runMigrations` parameter on the client-side `createSession`.
 - fix: Changes the default cache policy for Flutter web assets to `private, no-cache` for all files.
 - chore: Improves the UX of create and start TUIs.
@@ -146,6 +203,16 @@
 - refactor: Decouples all database-related code from `serverpod` into the new `serverpod_database` package to allow supporting client-side databases in the future.
 - refactor: Removes database-specific default values from the definition files to allow supporting extra database dialects.
 - refactor: Reduces the time taken to run incremental generation steps with the `--watch` flag by x15 and regular `generate` command by 20%.
+
+## 3.4.11
+
+- fix: Adds missing export of `DeepCollectionEquality` for shared models.
+- fix: Prevents the creation of orphaned images on subsequent IDP logins.
+
+## 3.4.10
+
+- fix: Fixes malformed query when negating many-relation filters. ([@realmeylisdev](https://github.com/realmeylisdev))
+- fix: Fixes trying to complete the web socket listener twice on concurrent connections.
 
 ## 3.4.9
 

@@ -485,16 +485,22 @@ class CityWithLongTableNameRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<CityWithLongTableName>> insert(
     _i1.DatabaseSession session,
     List<CityWithLongTableName> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<CityWithLongTableName>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -528,6 +534,10 @@ class CityWithLongTableNameRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<CityWithLongTableName>> upsert(
     _i1.DatabaseSession session,
     List<CityWithLongTableName> rows, {
@@ -535,6 +545,7 @@ class CityWithLongTableNameRepository {
     _i1.ColumnSelections<CityWithLongTableNameTable>? updateColumns,
     _i1.WhereExpressionBuilder<CityWithLongTableNameTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<CityWithLongTableName>(
       rows,
@@ -542,6 +553,7 @@ class CityWithLongTableNameRepository {
       updateColumns: updateColumns?.call(CityWithLongTableName.t),
       updateWhere: updateWhere?.call(CityWithLongTableName.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -580,16 +592,22 @@ class CityWithLongTableNameRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<CityWithLongTableName>> update(
     _i1.DatabaseSession session,
     List<CityWithLongTableName> rows, {
     _i1.ColumnSelections<CityWithLongTableNameTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<CityWithLongTableName>(
       rows,
       columns: columns?.call(CityWithLongTableName.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -627,6 +645,10 @@ class CityWithLongTableNameRepository {
 
   /// Updates all [CityWithLongTableName]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<CityWithLongTableName>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<CityWithLongTableNameUpdateTable>
@@ -639,6 +661,7 @@ class CityWithLongTableNameRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<CityWithLongTableName>(
       columnValues: columnValues(CityWithLongTableName.t.updateTable),
@@ -650,6 +673,7 @@ class CityWithLongTableNameRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -660,6 +684,10 @@ class CityWithLongTableNameRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<CityWithLongTableName>> delete(
     _i1.DatabaseSession session,
     List<CityWithLongTableName> rows, {
@@ -668,6 +696,7 @@ class CityWithLongTableNameRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<CityWithLongTableNameTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<CityWithLongTableName>(
       rows,
@@ -676,6 +705,7 @@ class CityWithLongTableNameRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -695,6 +725,10 @@ class CityWithLongTableNameRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<CityWithLongTableName>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CityWithLongTableNameTable> where,
@@ -703,6 +737,7 @@ class CityWithLongTableNameRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<CityWithLongTableNameTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<CityWithLongTableName>(
       where: where(CityWithLongTableName.t),
@@ -711,6 +746,7 @@ class CityWithLongTableNameRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

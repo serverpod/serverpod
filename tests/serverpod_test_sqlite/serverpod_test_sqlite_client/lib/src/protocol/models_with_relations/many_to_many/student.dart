@@ -12,11 +12,12 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
-import '../../models_with_relations/many_to_many/enrollment.dart' as _i2;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
-import 'package:serverpod_client/serverpod_client.dart' as _i4;
+import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import '../../models_with_relations/many_to_many/enrollment.dart' as _i3;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
 
-abstract class Student implements _i1.TableRow<int?> {
+abstract class Student
+    implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   Student._({
     this.id,
     required this.name,
@@ -26,7 +27,7 @@ abstract class Student implements _i1.TableRow<int?> {
   factory Student({
     int? id,
     required String name,
-    List<_i2.Enrollment>? enrollments,
+    List<_i3.Enrollment>? enrollments,
   }) = _StudentImpl;
 
   factory Student.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -35,7 +36,7 @@ abstract class Student implements _i1.TableRow<int?> {
       name: jsonSerialization['name'] as String,
       enrollments: jsonSerialization['enrollments'] == null
           ? null
-          : _i3.Protocol().deserialize<List<_i2.Enrollment>>(
+          : _i4.Protocol().deserialize<List<_i3.Enrollment>>(
               jsonSerialization['enrollments'],
             ),
     );
@@ -50,18 +51,18 @@ abstract class Student implements _i1.TableRow<int?> {
 
   String name;
 
-  List<_i2.Enrollment>? enrollments;
+  List<_i3.Enrollment>? enrollments;
 
   @override
   _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Student]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   Student copyWith({
     int? id,
     String? name,
-    List<_i2.Enrollment>? enrollments,
+    List<_i3.Enrollment>? enrollments,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -74,7 +75,20 @@ abstract class Student implements _i1.TableRow<int?> {
     };
   }
 
-  static StudentInclude include({_i2.EnrollmentIncludeList? enrollments}) {
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Student',
+      if (id != null) 'id': id,
+      'name': name,
+      if (enrollments != null)
+        'enrollments': enrollments?.toJson(
+          valueToJson: (v) => v.toJsonForProtocol(),
+        ),
+    };
+  }
+
+  static StudentInclude include({_i3.EnrollmentIncludeList? enrollments}) {
     return StudentInclude._(enrollments: enrollments);
   }
 
@@ -102,7 +116,7 @@ abstract class Student implements _i1.TableRow<int?> {
 
   @override
   String toString() {
-    return _i4.SerializationManager.encode(this);
+    return _i2.SerializationManager.encode(this);
   }
 }
 
@@ -112,7 +126,7 @@ class _StudentImpl extends Student {
   _StudentImpl({
     int? id,
     required String name,
-    List<_i2.Enrollment>? enrollments,
+    List<_i3.Enrollment>? enrollments,
   }) : super._(
          id: id,
          name: name,
@@ -121,7 +135,7 @@ class _StudentImpl extends Student {
 
   /// Returns a shallow copy of this [Student]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   @override
   Student copyWith({
     Object? id = _Undefined,
@@ -131,7 +145,7 @@ class _StudentImpl extends Student {
     return Student(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      enrollments: enrollments is List<_i2.Enrollment>?
+      enrollments: enrollments is List<_i3.Enrollment>?
           ? enrollments
           : this.enrollments?.map((e0) => e0.copyWith()).toList(),
     );
@@ -160,36 +174,36 @@ class StudentTable extends _i1.Table<int?> {
 
   late final _i1.ColumnString name;
 
-  _i2.EnrollmentTable? ___enrollments;
+  _i3.EnrollmentTable? ___enrollments;
 
-  _i1.ManyRelation<_i2.EnrollmentTable>? _enrollments;
+  _i1.ManyRelation<_i3.EnrollmentTable>? _enrollments;
 
-  _i2.EnrollmentTable get __enrollments {
+  _i3.EnrollmentTable get __enrollments {
     if (___enrollments != null) return ___enrollments!;
     ___enrollments = _i1.createRelationTable(
       relationFieldName: '__enrollments',
       field: Student.t.id,
-      foreignField: _i2.Enrollment.t.studentId,
+      foreignField: _i3.Enrollment.t.studentId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.EnrollmentTable(tableRelation: foreignTableRelation),
+          _i3.EnrollmentTable(tableRelation: foreignTableRelation),
     );
     return ___enrollments!;
   }
 
-  _i1.ManyRelation<_i2.EnrollmentTable> get enrollments {
+  _i1.ManyRelation<_i3.EnrollmentTable> get enrollments {
     if (_enrollments != null) return _enrollments!;
     var relationTable = _i1.createRelationTable(
       relationFieldName: 'enrollments',
       field: Student.t.id,
-      foreignField: _i2.Enrollment.t.studentId,
+      foreignField: _i3.Enrollment.t.studentId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.EnrollmentTable(tableRelation: foreignTableRelation),
+          _i3.EnrollmentTable(tableRelation: foreignTableRelation),
     );
-    _enrollments = _i1.ManyRelation<_i2.EnrollmentTable>(
+    _enrollments = _i1.ManyRelation<_i3.EnrollmentTable>(
       tableWithRelations: relationTable,
-      table: _i2.EnrollmentTable(
+      table: _i3.EnrollmentTable(
         tableRelation: relationTable.tableRelation!.lastRelation,
       ),
     );
@@ -212,11 +226,11 @@ class StudentTable extends _i1.Table<int?> {
 }
 
 class StudentInclude extends _i1.IncludeObject {
-  StudentInclude._({_i2.EnrollmentIncludeList? enrollments}) {
+  StudentInclude._({_i3.EnrollmentIncludeList? enrollments}) {
     _enrollments = enrollments;
   }
 
-  _i2.EnrollmentIncludeList? _enrollments;
+  _i3.EnrollmentIncludeList? _enrollments;
 
   @override
   Map<String, _i1.Include?> get includes => {'enrollments': _enrollments};
@@ -376,16 +390,22 @@ class StudentRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Student>> insert(
     _i1.DatabaseSession session,
     List<Student> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<Student>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -419,6 +439,10 @@ class StudentRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Student>> upsert(
     _i1.DatabaseSession session,
     List<Student> rows, {
@@ -426,6 +450,7 @@ class StudentRepository {
     _i1.ColumnSelections<StudentTable>? updateColumns,
     _i1.WhereExpressionBuilder<StudentTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<Student>(
       rows,
@@ -433,6 +458,7 @@ class StudentRepository {
       updateColumns: updateColumns?.call(Student.t),
       updateWhere: updateWhere?.call(Student.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -471,16 +497,22 @@ class StudentRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Student>> update(
     _i1.DatabaseSession session,
     List<Student> rows, {
     _i1.ColumnSelections<StudentTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<Student>(
       rows,
       columns: columns?.call(Student.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -517,6 +549,10 @@ class StudentRepository {
 
   /// Updates all [Student]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Student>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<StudentUpdateTable> columnValues,
@@ -528,6 +564,7 @@ class StudentRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<Student>(
       columnValues: columnValues(Student.t.updateTable),
@@ -539,6 +576,7 @@ class StudentRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -549,6 +587,10 @@ class StudentRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Student>> delete(
     _i1.DatabaseSession session,
     List<Student> rows, {
@@ -557,6 +599,7 @@ class StudentRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<StudentTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<Student>(
       rows,
@@ -565,6 +608,7 @@ class StudentRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -584,6 +628,10 @@ class StudentRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Student>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<StudentTable> where,
@@ -592,6 +640,7 @@ class StudentRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<StudentTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Student>(
       where: where(Student.t),
@@ -600,6 +649,7 @@ class StudentRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -643,7 +693,7 @@ class StudentAttachRepository {
   Future<void> enrollments(
     _i1.DatabaseSession session,
     Student student,
-    List<_i2.Enrollment> enrollment, {
+    List<_i3.Enrollment> enrollment, {
     _i1.Transaction? transaction,
   }) async {
     if (enrollment.any((e) => e.id == null)) {
@@ -656,9 +706,9 @@ class StudentAttachRepository {
     var $enrollment = enrollment
         .map((e) => e.copyWith(studentId: student.id))
         .toList();
-    await session.db.update<_i2.Enrollment>(
+    await session.db.update<_i3.Enrollment>(
       $enrollment,
-      columns: [_i2.Enrollment.t.studentId],
+      columns: [_i3.Enrollment.t.studentId],
       transaction: transaction,
     );
   }
@@ -672,7 +722,7 @@ class StudentAttachRowRepository {
   Future<void> enrollments(
     _i1.DatabaseSession session,
     Student student,
-    _i2.Enrollment enrollment, {
+    _i3.Enrollment enrollment, {
     _i1.Transaction? transaction,
   }) async {
     if (enrollment.id == null) {
@@ -683,9 +733,9 @@ class StudentAttachRowRepository {
     }
 
     var $enrollment = enrollment.copyWith(studentId: student.id);
-    await session.db.updateRow<_i2.Enrollment>(
+    await session.db.updateRow<_i3.Enrollment>(
       $enrollment,
-      columns: [_i2.Enrollment.t.studentId],
+      columns: [_i3.Enrollment.t.studentId],
       transaction: transaction,
     );
   }

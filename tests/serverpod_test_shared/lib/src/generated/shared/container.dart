@@ -13,7 +13,8 @@
 import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i2;
 
-abstract class SharedContainer implements _i1.SerializableModel {
+abstract class SharedContainer
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   SharedContainer._({
     required this.sharedModel,
     required this.sharedModelWithModuleAlias,
@@ -211,6 +212,43 @@ abstract class SharedContainer implements _i1.SerializableModel {
       if (sharedExtendedAppExceptionNullable != null)
         'sharedExtendedAppExceptionNullable': sharedExtendedAppExceptionNullable
             ?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'SharedContainer',
+      'sharedModel': sharedModel.toJsonForProtocol(),
+      'sharedModelWithModuleAlias': sharedModelWithModuleAlias
+          .toJsonForProtocol(),
+      'sharedSubclass': sharedSubclass.toJsonForProtocol(),
+      if (sharedSubclassNullable != null)
+        'sharedSubclassNullable': sharedSubclassNullable?.toJsonForProtocol(),
+      'sharedEnum': sharedEnum.toJson(),
+      if (sharedEnumNullable != null)
+        'sharedEnumNullable': sharedEnumNullable?.toJson(),
+      'sharedSealedParent': sharedSealedParent.toJsonForProtocol(),
+      if (sharedSealedParentNullable != null)
+        'sharedSealedParentNullable': sharedSealedParentNullable
+            ?.toJsonForProtocol(),
+      'sharedSealedChild': sharedSealedChild.toJsonForProtocol(),
+      if (sharedSealedChildNullable != null)
+        'sharedSealedChildNullable': sharedSealedChildNullable
+            ?.toJsonForProtocol(),
+      'sharedSealedAppException': sharedSealedAppException.toJsonForProtocol(),
+      if (sharedSealedAppExceptionNullable != null)
+        'sharedSealedAppExceptionNullable': sharedSealedAppExceptionNullable
+            ?.toJsonForProtocol(),
+      'sharedNotFoundException': sharedNotFoundException.toJsonForProtocol(),
+      if (sharedNotFoundExceptionNullable != null)
+        'sharedNotFoundExceptionNullable': sharedNotFoundExceptionNullable
+            ?.toJsonForProtocol(),
+      'sharedExtendedAppException': sharedExtendedAppException
+          .toJsonForProtocol(),
+      if (sharedExtendedAppExceptionNullable != null)
+        'sharedExtendedAppExceptionNullable': sharedExtendedAppExceptionNullable
+            ?.toJsonForProtocol(),
     };
   }
 

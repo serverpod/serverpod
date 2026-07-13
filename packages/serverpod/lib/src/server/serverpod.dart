@@ -10,7 +10,6 @@ import 'package:serverpod/src/server/log_manager/session_log.dart';
 import 'package:serverpod/src/server/log_manager/serverpod_logging.dart';
 import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
 import 'package:serverpod/src/config/version.dart';
-import 'package:serverpod/src/redis/controller.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/features.dart';
@@ -31,6 +30,16 @@ typedef HealthCheckHandler =
     Future<List<internal.ServerHealthMetric>> Function(
       Serverpod pod,
       DateTime timestamp,
+    );
+
+/// Replaces the default [Database] for a [Session].
+///
+/// The [inner] database is the framework-provided instance. Return a custom
+/// [Database] implementation to layer behavior on top of it.
+typedef DatabaseInterceptor =
+    Database Function(
+      Session session,
+      Database inner,
     );
 
 /// The [Serverpod] handles all setup and manages the main [Server]. In addition
@@ -76,7 +85,7 @@ class Serverpod {
   /// program it's not recommended.
   static Serverpod get instance {
     if (_instance == null) {
-      throw Exception(
+      throw StateError(
         'Serverpod has not been initialized. You need to create '
         'the Serverpod object before calling this method.',
       );
@@ -420,6 +429,17 @@ class Serverpod {
   /// ```
   final RuntimeParametersListBuilder? runtimeParametersBuilder;
 
+  /// Optional interceptor that replaces the default [Database] for each session.
+  ///
+  /// Called once per session with the framework-provided [Database] as [inner].
+  /// The returned [Database] becomes [Session.db] for that session. Useful for
+  /// injecting cross-cutting behavior such as logging, tracing, metrics, tenant
+  /// scoping, policy enforcement, retries, or safety guards.
+  ///
+  /// Be aware that the [Database] class is part of the `serverpod_database`
+  /// internal package and may face breaking changes in minor version bumps.
+  final DatabaseInterceptor? databaseInterceptor;
+
   /// Creates a new Serverpod.
   ///
   /// ## Experimental features
@@ -441,6 +461,7 @@ class Serverpod {
     SecurityContextConfig? securityContextConfig,
     ExperimentalFeatures? experimentalFeatures,
     this.runtimeParametersBuilder,
+    this.databaseInterceptor,
   }) : serverDirectory = Directory(
          p.normalize(p.absolute((serverDirectory ?? Directory.current).path)),
        ),
@@ -1202,6 +1223,29 @@ class Serverpod {
       enableLogging: enableLogging,
     );
     return session;
+  }
+
+  /// Creates a new [InternalSession], runs [callback] with it, and closes
+  /// the session afterwards. Used to access the database and do logging
+  /// outside of sessions triggered by external events, without having to
+  /// manage the session lifecycle manually.
+  ///
+  /// If [callback] throws, the session is closed with the error and
+  /// [StackTrace] attached (so they are written to the logs) before the
+  /// error is rethrown.
+  Future<T> withSession<T>(
+    Future<T> Function(Session session) callback, {
+    bool enableLogging = true,
+  }) async {
+    var session = await createSession(enableLogging: enableLogging);
+    try {
+      var result = await callback(session);
+      await session.close();
+      return result;
+    } catch (e, stackTrace) {
+      await session.close(error: e, stackTrace: stackTrace);
+      rethrow;
+    }
   }
 
   /// Stops accepting new requests on the user-facing servers (the API

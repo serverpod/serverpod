@@ -454,16 +454,22 @@ class EmailAccountRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailAccount>> insert(
     _i1.DatabaseSession session,
     List<EmailAccount> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<EmailAccount>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -497,6 +503,10 @@ class EmailAccountRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailAccount>> upsert(
     _i1.DatabaseSession session,
     List<EmailAccount> rows, {
@@ -504,6 +514,7 @@ class EmailAccountRepository {
     _i1.ColumnSelections<EmailAccountTable>? updateColumns,
     _i1.WhereExpressionBuilder<EmailAccountTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<EmailAccount>(
       rows,
@@ -511,6 +522,7 @@ class EmailAccountRepository {
       updateColumns: updateColumns?.call(EmailAccount.t),
       updateWhere: updateWhere?.call(EmailAccount.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -549,16 +561,22 @@ class EmailAccountRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailAccount>> update(
     _i1.DatabaseSession session,
     List<EmailAccount> rows, {
     _i1.ColumnSelections<EmailAccountTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<EmailAccount>(
       rows,
       columns: columns?.call(EmailAccount.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -595,6 +613,10 @@ class EmailAccountRepository {
 
   /// Updates all [EmailAccount]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailAccount>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<EmailAccountUpdateTable> columnValues,
@@ -606,6 +628,7 @@ class EmailAccountRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<EmailAccount>(
       columnValues: columnValues(EmailAccount.t.updateTable),
@@ -617,6 +640,7 @@ class EmailAccountRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -627,6 +651,10 @@ class EmailAccountRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailAccount>> delete(
     _i1.DatabaseSession session,
     List<EmailAccount> rows, {
@@ -635,6 +663,7 @@ class EmailAccountRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailAccountTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<EmailAccount>(
       rows,
@@ -643,6 +672,7 @@ class EmailAccountRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -662,6 +692,10 @@ class EmailAccountRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailAccount>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EmailAccountTable> where,
@@ -670,6 +704,7 @@ class EmailAccountRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailAccountTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<EmailAccount>(
       where: where(EmailAccount.t),
@@ -678,6 +713,7 @@ class EmailAccountRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

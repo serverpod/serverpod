@@ -21,14 +21,12 @@ insightsServer:
   publicPort: 0
   publicScheme: http
 
-# {{#web}}
 # Configuration for the web test server.
 webServer:
   port: 0
   publicHost: localhost
   publicPort: 0
   publicScheme: http
-# {{/web}}
 
 # {{#database}}
 # This is the database setup for your test server.

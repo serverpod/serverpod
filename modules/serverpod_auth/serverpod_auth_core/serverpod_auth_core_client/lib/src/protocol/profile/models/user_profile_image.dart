@@ -15,7 +15,8 @@ import '../../profile/models/user_profile.dart' as _i2;
 import 'package:serverpod_auth_core_client/src/protocol/protocol.dart' as _i3;
 
 /// Database entity for storing user profile image information.
-abstract class UserProfileImage implements _i1.SerializableModel {
+abstract class UserProfileImage
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   UserProfileImage._({
     this.id,
     required this.userProfileId,
@@ -99,6 +100,20 @@ abstract class UserProfileImage implements _i1.SerializableModel {
       if (id != null) 'id': id?.toJson(),
       'userProfileId': userProfileId.toJson(),
       if (userProfile != null) 'userProfile': userProfile?.toJson(),
+      'createdAt': createdAt.toJson(),
+      'storageId': storageId,
+      'path': path,
+      'url': url.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod_auth_core.UserProfileImage',
+      if (id != null) 'id': id?.toJson(),
+      'userProfileId': userProfileId.toJson(),
+      if (userProfile != null) 'userProfile': userProfile?.toJsonForProtocol(),
       'createdAt': createdAt.toJson(),
       'storageId': storageId,
       'path': path,

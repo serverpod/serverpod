@@ -12,12 +12,13 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _i2;
 import '../../../models_with_relations/self_relation/many_to_many/member.dart'
-    as _i2;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
-import 'package:serverpod_client/serverpod_client.dart' as _i4;
+    as _i3;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
 
-abstract class Blocking implements _i1.TableRow<int?> {
+abstract class Blocking
+    implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   Blocking._({
     this.id,
     required this.blockedId,
@@ -29,9 +30,9 @@ abstract class Blocking implements _i1.TableRow<int?> {
   factory Blocking({
     int? id,
     required int blockedId,
-    _i2.Member? blocked,
+    _i3.Member? blocked,
     required int blockedById,
-    _i2.Member? blockedBy,
+    _i3.Member? blockedBy,
   }) = _BlockingImpl;
 
   factory Blocking.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -40,13 +41,13 @@ abstract class Blocking implements _i1.TableRow<int?> {
       blockedId: jsonSerialization['blockedId'] as int,
       blocked: jsonSerialization['blocked'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.Member>(
+          : _i4.Protocol().deserialize<_i3.Member>(
               jsonSerialization['blocked'],
             ),
       blockedById: jsonSerialization['blockedById'] as int,
       blockedBy: jsonSerialization['blockedBy'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.Member>(
+          : _i4.Protocol().deserialize<_i3.Member>(
               jsonSerialization['blockedBy'],
             ),
     );
@@ -61,24 +62,24 @@ abstract class Blocking implements _i1.TableRow<int?> {
 
   int blockedId;
 
-  _i2.Member? blocked;
+  _i3.Member? blocked;
 
   int blockedById;
 
-  _i2.Member? blockedBy;
+  _i3.Member? blockedBy;
 
   @override
   _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Blocking]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   Blocking copyWith({
     int? id,
     int? blockedId,
-    _i2.Member? blocked,
+    _i3.Member? blocked,
     int? blockedById,
-    _i2.Member? blockedBy,
+    _i3.Member? blockedBy,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -92,9 +93,21 @@ abstract class Blocking implements _i1.TableRow<int?> {
     };
   }
 
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Blocking',
+      if (id != null) 'id': id,
+      'blockedId': blockedId,
+      if (blocked != null) 'blocked': blocked?.toJsonForProtocol(),
+      'blockedById': blockedById,
+      if (blockedBy != null) 'blockedBy': blockedBy?.toJsonForProtocol(),
+    };
+  }
+
   static BlockingInclude include({
-    _i2.MemberInclude? blocked,
-    _i2.MemberInclude? blockedBy,
+    _i3.MemberInclude? blocked,
+    _i3.MemberInclude? blockedBy,
   }) {
     return BlockingInclude._(
       blocked: blocked,
@@ -126,7 +139,7 @@ abstract class Blocking implements _i1.TableRow<int?> {
 
   @override
   String toString() {
-    return _i4.SerializationManager.encode(this);
+    return _i2.SerializationManager.encode(this);
   }
 }
 
@@ -136,9 +149,9 @@ class _BlockingImpl extends Blocking {
   _BlockingImpl({
     int? id,
     required int blockedId,
-    _i2.Member? blocked,
+    _i3.Member? blocked,
     required int blockedById,
-    _i2.Member? blockedBy,
+    _i3.Member? blockedBy,
   }) : super._(
          id: id,
          blockedId: blockedId,
@@ -149,7 +162,7 @@ class _BlockingImpl extends Blocking {
 
   /// Returns a shallow copy of this [Blocking]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   @override
   Blocking copyWith({
     Object? id = _Undefined,
@@ -161,9 +174,9 @@ class _BlockingImpl extends Blocking {
     return Blocking(
       id: id is int? ? id : this.id,
       blockedId: blockedId ?? this.blockedId,
-      blocked: blocked is _i2.Member? ? blocked : this.blocked?.copyWith(),
+      blocked: blocked is _i3.Member? ? blocked : this.blocked?.copyWith(),
       blockedById: blockedById ?? this.blockedById,
-      blockedBy: blockedBy is _i2.Member?
+      blockedBy: blockedBy is _i3.Member?
           ? blockedBy
           : this.blockedBy?.copyWith(),
     );
@@ -201,34 +214,34 @@ class BlockingTable extends _i1.Table<int?> {
 
   late final _i1.ColumnInt blockedId;
 
-  _i2.MemberTable? _blocked;
+  _i3.MemberTable? _blocked;
 
   late final _i1.ColumnInt blockedById;
 
-  _i2.MemberTable? _blockedBy;
+  _i3.MemberTable? _blockedBy;
 
-  _i2.MemberTable get blocked {
+  _i3.MemberTable get blocked {
     if (_blocked != null) return _blocked!;
     _blocked = _i1.createRelationTable(
       relationFieldName: 'blocked',
       field: Blocking.t.blockedId,
-      foreignField: _i2.Member.t.id,
+      foreignField: _i3.Member.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.MemberTable(tableRelation: foreignTableRelation),
+          _i3.MemberTable(tableRelation: foreignTableRelation),
     );
     return _blocked!;
   }
 
-  _i2.MemberTable get blockedBy {
+  _i3.MemberTable get blockedBy {
     if (_blockedBy != null) return _blockedBy!;
     _blockedBy = _i1.createRelationTable(
       relationFieldName: 'blockedBy',
       field: Blocking.t.blockedById,
-      foreignField: _i2.Member.t.id,
+      foreignField: _i3.Member.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.MemberTable(tableRelation: foreignTableRelation),
+          _i3.MemberTable(tableRelation: foreignTableRelation),
     );
     return _blockedBy!;
   }
@@ -254,16 +267,16 @@ class BlockingTable extends _i1.Table<int?> {
 
 class BlockingInclude extends _i1.IncludeObject {
   BlockingInclude._({
-    _i2.MemberInclude? blocked,
-    _i2.MemberInclude? blockedBy,
+    _i3.MemberInclude? blocked,
+    _i3.MemberInclude? blockedBy,
   }) {
     _blocked = blocked;
     _blockedBy = blockedBy;
   }
 
-  _i2.MemberInclude? _blocked;
+  _i3.MemberInclude? _blocked;
 
-  _i2.MemberInclude? _blockedBy;
+  _i3.MemberInclude? _blockedBy;
 
   @override
   Map<String, _i1.Include?> get includes => {
@@ -424,16 +437,22 @@ class BlockingRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Blocking>> insert(
     _i1.DatabaseSession session,
     List<Blocking> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<Blocking>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -467,6 +486,10 @@ class BlockingRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Blocking>> upsert(
     _i1.DatabaseSession session,
     List<Blocking> rows, {
@@ -474,6 +497,7 @@ class BlockingRepository {
     _i1.ColumnSelections<BlockingTable>? updateColumns,
     _i1.WhereExpressionBuilder<BlockingTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<Blocking>(
       rows,
@@ -481,6 +505,7 @@ class BlockingRepository {
       updateColumns: updateColumns?.call(Blocking.t),
       updateWhere: updateWhere?.call(Blocking.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -519,16 +544,22 @@ class BlockingRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Blocking>> update(
     _i1.DatabaseSession session,
     List<Blocking> rows, {
     _i1.ColumnSelections<BlockingTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<Blocking>(
       rows,
       columns: columns?.call(Blocking.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -565,6 +596,10 @@ class BlockingRepository {
 
   /// Updates all [Blocking]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Blocking>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<BlockingUpdateTable> columnValues,
@@ -576,6 +611,7 @@ class BlockingRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<Blocking>(
       columnValues: columnValues(Blocking.t.updateTable),
@@ -587,6 +623,7 @@ class BlockingRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -597,6 +634,10 @@ class BlockingRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Blocking>> delete(
     _i1.DatabaseSession session,
     List<Blocking> rows, {
@@ -605,6 +646,7 @@ class BlockingRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<BlockingTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<Blocking>(
       rows,
@@ -613,6 +655,7 @@ class BlockingRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -632,6 +675,10 @@ class BlockingRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Blocking>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<BlockingTable> where,
@@ -640,6 +687,7 @@ class BlockingRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<BlockingTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Blocking>(
       where: where(Blocking.t),
@@ -648,6 +696,7 @@ class BlockingRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -691,7 +740,7 @@ class BlockingAttachRowRepository {
   Future<void> blocked(
     _i1.DatabaseSession session,
     Blocking blocking,
-    _i2.Member blocked, {
+    _i3.Member blocked, {
     _i1.Transaction? transaction,
   }) async {
     if (blocking.id == null) {
@@ -714,7 +763,7 @@ class BlockingAttachRowRepository {
   Future<void> blockedBy(
     _i1.DatabaseSession session,
     Blocking blocking,
-    _i2.Member blockedBy, {
+    _i3.Member blockedBy, {
     _i1.Transaction? transaction,
   }) async {
     if (blocking.id == null) {

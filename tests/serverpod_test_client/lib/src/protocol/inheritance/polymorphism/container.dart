@@ -15,7 +15,8 @@ import '../../inheritance/polymorphism/child.dart' as _i2;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
 /// A class that holds child objects.
-abstract class PolymorphicChildContainer implements _i1.SerializableModel {
+abstract class PolymorphicChildContainer
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   PolymorphicChildContainer._({
     required this.child,
     this.nullableChild,
@@ -106,6 +107,28 @@ abstract class PolymorphicChildContainer implements _i1.SerializableModel {
       'childrenMap': childrenMap.toJson(valueToJson: (v) => v.toJson()),
       'nullableChildrenMap': nullableChildrenMap.toJson(
         valueToJson: (v) => v?.toJson(),
+      ),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'PolymorphicChildContainer',
+      'child': child.toJsonForProtocol(),
+      if (nullableChild != null)
+        'nullableChild': nullableChild?.toJsonForProtocol(),
+      'childrenList': childrenList.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
+      'nullableChildrenList': nullableChildrenList.toJson(
+        valueToJson: (v) => v?.toJsonForProtocol(),
+      ),
+      'childrenMap': childrenMap.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
+      'nullableChildrenMap': nullableChildrenMap.toJson(
+        valueToJson: (v) => v?.toJsonForProtocol(),
       ),
     };
   }

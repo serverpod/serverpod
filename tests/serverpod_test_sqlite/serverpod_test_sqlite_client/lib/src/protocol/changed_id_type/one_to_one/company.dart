@@ -14,7 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../changed_id_type/one_to_one/town.dart' as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
 
-abstract class CompanyUuid implements _i1.SerializableModel {
+abstract class CompanyUuid
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   CompanyUuid._({
     this.id,
     required this.name,
@@ -70,6 +71,17 @@ abstract class CompanyUuid implements _i1.SerializableModel {
       'name': name,
       'townId': townId,
       if (town != null) 'town': town?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'CompanyUuid',
+      if (id != null) 'id': id?.toJson(),
+      'name': name,
+      'townId': townId,
+      if (town != null) 'town': town?.toJsonForProtocol(),
     };
   }
 

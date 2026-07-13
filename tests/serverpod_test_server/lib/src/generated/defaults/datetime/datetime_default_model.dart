@@ -389,16 +389,22 @@ class DateTimeDefaultModelRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefaultModel>> insert(
     _i1.DatabaseSession session,
     List<DateTimeDefaultModel> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<DateTimeDefaultModel>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -432,6 +438,10 @@ class DateTimeDefaultModelRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefaultModel>> upsert(
     _i1.DatabaseSession session,
     List<DateTimeDefaultModel> rows, {
@@ -439,6 +449,7 @@ class DateTimeDefaultModelRepository {
     _i1.ColumnSelections<DateTimeDefaultModelTable>? updateColumns,
     _i1.WhereExpressionBuilder<DateTimeDefaultModelTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<DateTimeDefaultModel>(
       rows,
@@ -446,6 +457,7 @@ class DateTimeDefaultModelRepository {
       updateColumns: updateColumns?.call(DateTimeDefaultModel.t),
       updateWhere: updateWhere?.call(DateTimeDefaultModel.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -484,16 +496,22 @@ class DateTimeDefaultModelRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefaultModel>> update(
     _i1.DatabaseSession session,
     List<DateTimeDefaultModel> rows, {
     _i1.ColumnSelections<DateTimeDefaultModelTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<DateTimeDefaultModel>(
       rows,
       columns: columns?.call(DateTimeDefaultModel.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -531,6 +549,10 @@ class DateTimeDefaultModelRepository {
 
   /// Updates all [DateTimeDefaultModel]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefaultModel>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<DateTimeDefaultModelUpdateTable>
@@ -543,6 +565,7 @@ class DateTimeDefaultModelRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<DateTimeDefaultModel>(
       columnValues: columnValues(DateTimeDefaultModel.t.updateTable),
@@ -554,6 +577,7 @@ class DateTimeDefaultModelRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -564,6 +588,10 @@ class DateTimeDefaultModelRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefaultModel>> delete(
     _i1.DatabaseSession session,
     List<DateTimeDefaultModel> rows, {
@@ -572,6 +600,7 @@ class DateTimeDefaultModelRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<DateTimeDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<DateTimeDefaultModel>(
       rows,
@@ -580,6 +609,7 @@ class DateTimeDefaultModelRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -599,6 +629,10 @@ class DateTimeDefaultModelRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefaultModel>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<DateTimeDefaultModelTable> where,
@@ -607,6 +641,7 @@ class DateTimeDefaultModelRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<DateTimeDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<DateTimeDefaultModel>(
       where: where(DateTimeDefaultModel.t),
@@ -615,6 +650,7 @@ class DateTimeDefaultModelRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

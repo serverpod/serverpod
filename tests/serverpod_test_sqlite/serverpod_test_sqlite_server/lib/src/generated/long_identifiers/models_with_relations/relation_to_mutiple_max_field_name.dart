@@ -416,16 +416,22 @@ class RelationToMultipleMaxFieldNameRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<RelationToMultipleMaxFieldName>> insert(
     _i1.DatabaseSession session,
     List<RelationToMultipleMaxFieldName> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<RelationToMultipleMaxFieldName>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -459,6 +465,10 @@ class RelationToMultipleMaxFieldNameRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<RelationToMultipleMaxFieldName>> upsert(
     _i1.DatabaseSession session,
     List<RelationToMultipleMaxFieldName> rows, {
@@ -468,6 +478,7 @@ class RelationToMultipleMaxFieldNameRepository {
     _i1.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>?
     updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<RelationToMultipleMaxFieldName>(
       rows,
@@ -475,6 +486,7 @@ class RelationToMultipleMaxFieldNameRepository {
       updateColumns: updateColumns?.call(RelationToMultipleMaxFieldName.t),
       updateWhere: updateWhere?.call(RelationToMultipleMaxFieldName.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -515,16 +527,22 @@ class RelationToMultipleMaxFieldNameRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<RelationToMultipleMaxFieldName>> update(
     _i1.DatabaseSession session,
     List<RelationToMultipleMaxFieldName> rows, {
     _i1.ColumnSelections<RelationToMultipleMaxFieldNameTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<RelationToMultipleMaxFieldName>(
       rows,
       columns: columns?.call(RelationToMultipleMaxFieldName.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -564,6 +582,10 @@ class RelationToMultipleMaxFieldNameRepository {
 
   /// Updates all [RelationToMultipleMaxFieldName]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<RelationToMultipleMaxFieldName>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<
@@ -579,6 +601,7 @@ class RelationToMultipleMaxFieldNameRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<RelationToMultipleMaxFieldName>(
       columnValues: columnValues(RelationToMultipleMaxFieldName.t.updateTable),
@@ -590,6 +613,7 @@ class RelationToMultipleMaxFieldNameRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -600,6 +624,10 @@ class RelationToMultipleMaxFieldNameRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<RelationToMultipleMaxFieldName>> delete(
     _i1.DatabaseSession session,
     List<RelationToMultipleMaxFieldName> rows, {
@@ -608,6 +636,7 @@ class RelationToMultipleMaxFieldNameRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<RelationToMultipleMaxFieldNameTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<RelationToMultipleMaxFieldName>(
       rows,
@@ -616,6 +645,7 @@ class RelationToMultipleMaxFieldNameRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -635,6 +665,10 @@ class RelationToMultipleMaxFieldNameRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<RelationToMultipleMaxFieldName>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>
@@ -644,6 +678,7 @@ class RelationToMultipleMaxFieldNameRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<RelationToMultipleMaxFieldNameTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<RelationToMultipleMaxFieldName>(
       where: where(RelationToMultipleMaxFieldName.t),
@@ -652,6 +687,7 @@ class RelationToMultipleMaxFieldNameRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

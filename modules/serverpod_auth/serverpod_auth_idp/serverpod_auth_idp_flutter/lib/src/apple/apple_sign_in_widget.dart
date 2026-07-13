@@ -5,6 +5,7 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'apple_auth_controller.dart';
 import 'apple_sign_in_button.dart';
 import 'apple_sign_in_style.dart';
+import '../common/sign_in_flow_coordinator.dart';
 
 /// A widget that provides Apple Sign-In functionality for all platforms.
 ///
@@ -158,7 +159,7 @@ class _AppleSignInWidgetState extends State<AppleSignInWidget> {
   @override
   Widget build(BuildContext context) {
     return AppleSignInButton(
-      onPressed: _controller.signIn,
+      onPressed: _signIn,
       isLoading: _controller.isLoading,
       isDisabled: _controller.isLoading,
       type: widget.type,
@@ -168,5 +169,19 @@ class _AppleSignInWidgetState extends State<AppleSignInWidget> {
       minimumWidth: widget.minimumWidth,
       logoAlignment: widget.logoAlignment,
     );
+  }
+
+  Future<void> _signIn() async {
+    final coordinator = SignInFlowCoordinatorWidget.of(context);
+    if (coordinator?.isAuthenticating == true) return;
+
+    coordinator?.lockUI();
+    try {
+      await _controller.signIn();
+    } finally {
+      if (mounted) {
+        coordinator?.unlockUI();
+      }
+    }
   }
 }

@@ -412,16 +412,22 @@ class ObjectWithSparseVectorRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithSparseVector>> insert(
     _i1.DatabaseSession session,
     List<ObjectWithSparseVector> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<ObjectWithSparseVector>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -455,6 +461,10 @@ class ObjectWithSparseVectorRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithSparseVector>> upsert(
     _i1.DatabaseSession session,
     List<ObjectWithSparseVector> rows, {
@@ -462,6 +472,7 @@ class ObjectWithSparseVectorRepository {
     _i1.ColumnSelections<ObjectWithSparseVectorTable>? updateColumns,
     _i1.WhereExpressionBuilder<ObjectWithSparseVectorTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<ObjectWithSparseVector>(
       rows,
@@ -469,6 +480,7 @@ class ObjectWithSparseVectorRepository {
       updateColumns: updateColumns?.call(ObjectWithSparseVector.t),
       updateWhere: updateWhere?.call(ObjectWithSparseVector.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -507,16 +519,22 @@ class ObjectWithSparseVectorRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithSparseVector>> update(
     _i1.DatabaseSession session,
     List<ObjectWithSparseVector> rows, {
     _i1.ColumnSelections<ObjectWithSparseVectorTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<ObjectWithSparseVector>(
       rows,
       columns: columns?.call(ObjectWithSparseVector.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -554,6 +572,10 @@ class ObjectWithSparseVectorRepository {
 
   /// Updates all [ObjectWithSparseVector]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithSparseVector>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<ObjectWithSparseVectorUpdateTable>
@@ -566,6 +588,7 @@ class ObjectWithSparseVectorRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithSparseVector>(
       columnValues: columnValues(ObjectWithSparseVector.t.updateTable),
@@ -577,6 +600,7 @@ class ObjectWithSparseVectorRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -587,6 +611,10 @@ class ObjectWithSparseVectorRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithSparseVector>> delete(
     _i1.DatabaseSession session,
     List<ObjectWithSparseVector> rows, {
@@ -595,6 +623,7 @@ class ObjectWithSparseVectorRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithSparseVectorTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<ObjectWithSparseVector>(
       rows,
@@ -603,6 +632,7 @@ class ObjectWithSparseVectorRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -622,6 +652,10 @@ class ObjectWithSparseVectorRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithSparseVector>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ObjectWithSparseVectorTable> where,
@@ -630,6 +664,7 @@ class ObjectWithSparseVectorRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithSparseVectorTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithSparseVector>(
       where: where(ObjectWithSparseVector.t),
@@ -638,6 +673,7 @@ class ObjectWithSparseVectorRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

@@ -321,16 +321,22 @@ class DurationDefaultPersistRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DurationDefaultPersist>> insert(
     _i1.DatabaseSession session,
     List<DurationDefaultPersist> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<DurationDefaultPersist>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -364,6 +370,10 @@ class DurationDefaultPersistRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DurationDefaultPersist>> upsert(
     _i1.DatabaseSession session,
     List<DurationDefaultPersist> rows, {
@@ -371,6 +381,7 @@ class DurationDefaultPersistRepository {
     _i1.ColumnSelections<DurationDefaultPersistTable>? updateColumns,
     _i1.WhereExpressionBuilder<DurationDefaultPersistTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<DurationDefaultPersist>(
       rows,
@@ -378,6 +389,7 @@ class DurationDefaultPersistRepository {
       updateColumns: updateColumns?.call(DurationDefaultPersist.t),
       updateWhere: updateWhere?.call(DurationDefaultPersist.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -416,16 +428,22 @@ class DurationDefaultPersistRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DurationDefaultPersist>> update(
     _i1.DatabaseSession session,
     List<DurationDefaultPersist> rows, {
     _i1.ColumnSelections<DurationDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<DurationDefaultPersist>(
       rows,
       columns: columns?.call(DurationDefaultPersist.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -463,6 +481,10 @@ class DurationDefaultPersistRepository {
 
   /// Updates all [DurationDefaultPersist]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DurationDefaultPersist>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<DurationDefaultPersistUpdateTable>
@@ -475,6 +497,7 @@ class DurationDefaultPersistRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<DurationDefaultPersist>(
       columnValues: columnValues(DurationDefaultPersist.t.updateTable),
@@ -486,6 +509,7 @@ class DurationDefaultPersistRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -496,6 +520,10 @@ class DurationDefaultPersistRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DurationDefaultPersist>> delete(
     _i1.DatabaseSession session,
     List<DurationDefaultPersist> rows, {
@@ -504,6 +532,7 @@ class DurationDefaultPersistRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<DurationDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<DurationDefaultPersist>(
       rows,
@@ -512,6 +541,7 @@ class DurationDefaultPersistRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -531,6 +561,10 @@ class DurationDefaultPersistRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DurationDefaultPersist>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<DurationDefaultPersistTable> where,
@@ -539,6 +573,7 @@ class DurationDefaultPersistRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<DurationDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<DurationDefaultPersist>(
       where: where(DurationDefaultPersist.t),
@@ -547,6 +582,7 @@ class DurationDefaultPersistRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

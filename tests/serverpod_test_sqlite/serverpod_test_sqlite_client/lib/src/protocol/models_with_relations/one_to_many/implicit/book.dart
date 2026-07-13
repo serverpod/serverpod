@@ -12,12 +12,12 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _i2;
 import '../../../models_with_relations/one_to_many/implicit/chapter.dart'
-    as _i2;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
-import 'package:serverpod_client/serverpod_client.dart' as _i4;
+    as _i3;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
 
-abstract class Book implements _i1.TableRow<int?> {
+abstract class Book implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   Book._({
     this.id,
     required this.title,
@@ -27,7 +27,7 @@ abstract class Book implements _i1.TableRow<int?> {
   factory Book({
     int? id,
     required String title,
-    List<_i2.Chapter>? chapters,
+    List<_i3.Chapter>? chapters,
   }) = _BookImpl;
 
   factory Book.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -36,7 +36,7 @@ abstract class Book implements _i1.TableRow<int?> {
       title: jsonSerialization['title'] as String,
       chapters: jsonSerialization['chapters'] == null
           ? null
-          : _i3.Protocol().deserialize<List<_i2.Chapter>>(
+          : _i4.Protocol().deserialize<List<_i3.Chapter>>(
               jsonSerialization['chapters'],
             ),
     );
@@ -51,18 +51,18 @@ abstract class Book implements _i1.TableRow<int?> {
 
   String title;
 
-  List<_i2.Chapter>? chapters;
+  List<_i3.Chapter>? chapters;
 
   @override
   _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Book]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   Book copyWith({
     int? id,
     String? title,
-    List<_i2.Chapter>? chapters,
+    List<_i3.Chapter>? chapters,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -75,7 +75,18 @@ abstract class Book implements _i1.TableRow<int?> {
     };
   }
 
-  static BookInclude include({_i2.ChapterIncludeList? chapters}) {
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Book',
+      if (id != null) 'id': id,
+      'title': title,
+      if (chapters != null)
+        'chapters': chapters?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+    };
+  }
+
+  static BookInclude include({_i3.ChapterIncludeList? chapters}) {
     return BookInclude._(chapters: chapters);
   }
 
@@ -103,7 +114,7 @@ abstract class Book implements _i1.TableRow<int?> {
 
   @override
   String toString() {
-    return _i4.SerializationManager.encode(this);
+    return _i2.SerializationManager.encode(this);
   }
 }
 
@@ -113,7 +124,7 @@ class _BookImpl extends Book {
   _BookImpl({
     int? id,
     required String title,
-    List<_i2.Chapter>? chapters,
+    List<_i3.Chapter>? chapters,
   }) : super._(
          id: id,
          title: title,
@@ -122,7 +133,7 @@ class _BookImpl extends Book {
 
   /// Returns a shallow copy of this [Book]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   @override
   Book copyWith({
     Object? id = _Undefined,
@@ -132,7 +143,7 @@ class _BookImpl extends Book {
     return Book(
       id: id is int? ? id : this.id,
       title: title ?? this.title,
-      chapters: chapters is List<_i2.Chapter>?
+      chapters: chapters is List<_i3.Chapter>?
           ? chapters
           : this.chapters?.map((e0) => e0.copyWith()).toList(),
     );
@@ -161,36 +172,36 @@ class BookTable extends _i1.Table<int?> {
 
   late final _i1.ColumnString title;
 
-  _i2.ChapterTable? ___chapters;
+  _i3.ChapterTable? ___chapters;
 
-  _i1.ManyRelation<_i2.ChapterTable>? _chapters;
+  _i1.ManyRelation<_i3.ChapterTable>? _chapters;
 
-  _i2.ChapterTable get __chapters {
+  _i3.ChapterTable get __chapters {
     if (___chapters != null) return ___chapters!;
     ___chapters = _i1.createRelationTable(
       relationFieldName: '__chapters',
       field: Book.t.id,
-      foreignField: _i2.Chapter.t.$_bookChaptersBookId,
+      foreignField: _i3.Chapter.t.$_bookChaptersBookId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.ChapterTable(tableRelation: foreignTableRelation),
+          _i3.ChapterTable(tableRelation: foreignTableRelation),
     );
     return ___chapters!;
   }
 
-  _i1.ManyRelation<_i2.ChapterTable> get chapters {
+  _i1.ManyRelation<_i3.ChapterTable> get chapters {
     if (_chapters != null) return _chapters!;
     var relationTable = _i1.createRelationTable(
       relationFieldName: 'chapters',
       field: Book.t.id,
-      foreignField: _i2.Chapter.t.$_bookChaptersBookId,
+      foreignField: _i3.Chapter.t.$_bookChaptersBookId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.ChapterTable(tableRelation: foreignTableRelation),
+          _i3.ChapterTable(tableRelation: foreignTableRelation),
     );
-    _chapters = _i1.ManyRelation<_i2.ChapterTable>(
+    _chapters = _i1.ManyRelation<_i3.ChapterTable>(
       tableWithRelations: relationTable,
-      table: _i2.ChapterTable(
+      table: _i3.ChapterTable(
         tableRelation: relationTable.tableRelation!.lastRelation,
       ),
     );
@@ -213,11 +224,11 @@ class BookTable extends _i1.Table<int?> {
 }
 
 class BookInclude extends _i1.IncludeObject {
-  BookInclude._({_i2.ChapterIncludeList? chapters}) {
+  BookInclude._({_i3.ChapterIncludeList? chapters}) {
     _chapters = chapters;
   }
 
-  _i2.ChapterIncludeList? _chapters;
+  _i3.ChapterIncludeList? _chapters;
 
   @override
   Map<String, _i1.Include?> get includes => {'chapters': _chapters};
@@ -381,16 +392,22 @@ class BookRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Book>> insert(
     _i1.DatabaseSession session,
     List<Book> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<Book>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -424,6 +441,10 @@ class BookRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Book>> upsert(
     _i1.DatabaseSession session,
     List<Book> rows, {
@@ -431,6 +452,7 @@ class BookRepository {
     _i1.ColumnSelections<BookTable>? updateColumns,
     _i1.WhereExpressionBuilder<BookTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<Book>(
       rows,
@@ -438,6 +460,7 @@ class BookRepository {
       updateColumns: updateColumns?.call(Book.t),
       updateWhere: updateWhere?.call(Book.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -476,16 +499,22 @@ class BookRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Book>> update(
     _i1.DatabaseSession session,
     List<Book> rows, {
     _i1.ColumnSelections<BookTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<Book>(
       rows,
       columns: columns?.call(Book.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -522,6 +551,10 @@ class BookRepository {
 
   /// Updates all [Book]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Book>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<BookUpdateTable> columnValues,
@@ -533,6 +566,7 @@ class BookRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<Book>(
       columnValues: columnValues(Book.t.updateTable),
@@ -544,6 +578,7 @@ class BookRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -554,6 +589,10 @@ class BookRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Book>> delete(
     _i1.DatabaseSession session,
     List<Book> rows, {
@@ -562,6 +601,7 @@ class BookRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<BookTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<Book>(
       rows,
@@ -570,6 +610,7 @@ class BookRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -589,6 +630,10 @@ class BookRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Book>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<BookTable> where,
@@ -597,6 +642,7 @@ class BookRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<BookTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Book>(
       where: where(Book.t),
@@ -605,6 +651,7 @@ class BookRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -648,7 +695,7 @@ class BookAttachRepository {
   Future<void> chapters(
     _i1.DatabaseSession session,
     Book book,
-    List<_i2.Chapter> chapter, {
+    List<_i3.Chapter> chapter, {
     _i1.Transaction? transaction,
   }) async {
     if (chapter.any((e) => e.id == null)) {
@@ -660,15 +707,15 @@ class BookAttachRepository {
 
     var $chapter = chapter
         .map(
-          (e) => _i2.ChapterImplicit(
+          (e) => _i3.ChapterImplicit(
             e,
             $_bookChaptersBookId: book.id,
           ),
         )
         .toList();
-    await session.db.update<_i2.Chapter>(
+    await session.db.update<_i3.Chapter>(
       $chapter,
-      columns: [_i2.Chapter.t.$_bookChaptersBookId],
+      columns: [_i3.Chapter.t.$_bookChaptersBookId],
       transaction: transaction,
     );
   }
@@ -682,7 +729,7 @@ class BookAttachRowRepository {
   Future<void> chapters(
     _i1.DatabaseSession session,
     Book book,
-    _i2.Chapter chapter, {
+    _i3.Chapter chapter, {
     _i1.Transaction? transaction,
   }) async {
     if (chapter.id == null) {
@@ -692,13 +739,13 @@ class BookAttachRowRepository {
       throw ArgumentError.notNull('book.id');
     }
 
-    var $chapter = _i2.ChapterImplicit(
+    var $chapter = _i3.ChapterImplicit(
       chapter,
       $_bookChaptersBookId: book.id,
     );
-    await session.db.updateRow<_i2.Chapter>(
+    await session.db.updateRow<_i3.Chapter>(
       $chapter,
-      columns: [_i2.Chapter.t.$_bookChaptersBookId],
+      columns: [_i3.Chapter.t.$_bookChaptersBookId],
       transaction: transaction,
     );
   }
@@ -714,7 +761,7 @@ class BookDetachRepository {
   /// the related record.
   Future<void> chapters(
     _i1.DatabaseSession session,
-    List<_i2.Chapter> chapter, {
+    List<_i3.Chapter> chapter, {
     _i1.Transaction? transaction,
   }) async {
     if (chapter.any((e) => e.id == null)) {
@@ -723,15 +770,15 @@ class BookDetachRepository {
 
     var $chapter = chapter
         .map(
-          (e) => _i2.ChapterImplicit(
+          (e) => _i3.ChapterImplicit(
             e,
             $_bookChaptersBookId: null,
           ),
         )
         .toList();
-    await session.db.update<_i2.Chapter>(
+    await session.db.update<_i3.Chapter>(
       $chapter,
-      columns: [_i2.Chapter.t.$_bookChaptersBookId],
+      columns: [_i3.Chapter.t.$_bookChaptersBookId],
       transaction: transaction,
     );
   }
@@ -747,20 +794,20 @@ class BookDetachRowRepository {
   /// the related record.
   Future<void> chapters(
     _i1.DatabaseSession session,
-    _i2.Chapter chapter, {
+    _i3.Chapter chapter, {
     _i1.Transaction? transaction,
   }) async {
     if (chapter.id == null) {
       throw ArgumentError.notNull('chapter.id');
     }
 
-    var $chapter = _i2.ChapterImplicit(
+    var $chapter = _i3.ChapterImplicit(
       chapter,
       $_bookChaptersBookId: null,
     );
-    await session.db.updateRow<_i2.Chapter>(
+    await session.db.updateRow<_i3.Chapter>(
       $chapter,
-      columns: [_i2.Chapter.t.$_bookChaptersBookId],
+      columns: [_i3.Chapter.t.$_bookChaptersBookId],
       transaction: transaction,
     );
   }

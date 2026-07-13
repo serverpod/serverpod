@@ -12,11 +12,12 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
-import '../../models_with_relations/one_to_one/citizen.dart' as _i2;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
-import 'package:serverpod_client/serverpod_client.dart' as _i4;
+import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import '../../models_with_relations/one_to_one/citizen.dart' as _i3;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
 
-abstract class Address implements _i1.TableRow<int?> {
+abstract class Address
+    implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   Address._({
     this.id,
     required this.street,
@@ -28,7 +29,7 @@ abstract class Address implements _i1.TableRow<int?> {
     int? id,
     required String street,
     int? inhabitantId,
-    _i2.Citizen? inhabitant,
+    _i3.Citizen? inhabitant,
   }) = _AddressImpl;
 
   factory Address.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -38,7 +39,7 @@ abstract class Address implements _i1.TableRow<int?> {
       inhabitantId: jsonSerialization['inhabitantId'] as int?,
       inhabitant: jsonSerialization['inhabitant'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.Citizen>(
+          : _i4.Protocol().deserialize<_i3.Citizen>(
               jsonSerialization['inhabitant'],
             ),
     );
@@ -55,19 +56,19 @@ abstract class Address implements _i1.TableRow<int?> {
 
   int? inhabitantId;
 
-  _i2.Citizen? inhabitant;
+  _i3.Citizen? inhabitant;
 
   @override
   _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Address]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   Address copyWith({
     int? id,
     String? street,
     int? inhabitantId,
-    _i2.Citizen? inhabitant,
+    _i3.Citizen? inhabitant,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -80,7 +81,18 @@ abstract class Address implements _i1.TableRow<int?> {
     };
   }
 
-  static AddressInclude include({_i2.CitizenInclude? inhabitant}) {
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Address',
+      if (id != null) 'id': id,
+      'street': street,
+      if (inhabitantId != null) 'inhabitantId': inhabitantId,
+      if (inhabitant != null) 'inhabitant': inhabitant?.toJsonForProtocol(),
+    };
+  }
+
+  static AddressInclude include({_i3.CitizenInclude? inhabitant}) {
     return AddressInclude._(inhabitant: inhabitant);
   }
 
@@ -108,7 +120,7 @@ abstract class Address implements _i1.TableRow<int?> {
 
   @override
   String toString() {
-    return _i4.SerializationManager.encode(this);
+    return _i2.SerializationManager.encode(this);
   }
 }
 
@@ -119,7 +131,7 @@ class _AddressImpl extends Address {
     int? id,
     required String street,
     int? inhabitantId,
-    _i2.Citizen? inhabitant,
+    _i3.Citizen? inhabitant,
   }) : super._(
          id: id,
          street: street,
@@ -129,7 +141,7 @@ class _AddressImpl extends Address {
 
   /// Returns a shallow copy of this [Address]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   @override
   Address copyWith({
     Object? id = _Undefined,
@@ -141,7 +153,7 @@ class _AddressImpl extends Address {
       id: id is int? ? id : this.id,
       street: street ?? this.street,
       inhabitantId: inhabitantId is int? ? inhabitantId : this.inhabitantId,
-      inhabitant: inhabitant is _i2.Citizen?
+      inhabitant: inhabitant is _i3.Citizen?
           ? inhabitant
           : this.inhabitant?.copyWith(),
     );
@@ -181,17 +193,17 @@ class AddressTable extends _i1.Table<int?> {
 
   late final _i1.ColumnInt inhabitantId;
 
-  _i2.CitizenTable? _inhabitant;
+  _i3.CitizenTable? _inhabitant;
 
-  _i2.CitizenTable get inhabitant {
+  _i3.CitizenTable get inhabitant {
     if (_inhabitant != null) return _inhabitant!;
     _inhabitant = _i1.createRelationTable(
       relationFieldName: 'inhabitant',
       field: Address.t.inhabitantId,
-      foreignField: _i2.Citizen.t.id,
+      foreignField: _i3.Citizen.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.CitizenTable(tableRelation: foreignTableRelation),
+          _i3.CitizenTable(tableRelation: foreignTableRelation),
     );
     return _inhabitant!;
   }
@@ -213,11 +225,11 @@ class AddressTable extends _i1.Table<int?> {
 }
 
 class AddressInclude extends _i1.IncludeObject {
-  AddressInclude._({_i2.CitizenInclude? inhabitant}) {
+  AddressInclude._({_i3.CitizenInclude? inhabitant}) {
     _inhabitant = inhabitant;
   }
 
-  _i2.CitizenInclude? _inhabitant;
+  _i3.CitizenInclude? _inhabitant;
 
   @override
   Map<String, _i1.Include?> get includes => {'inhabitant': _inhabitant};
@@ -377,16 +389,22 @@ class AddressRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Address>> insert(
     _i1.DatabaseSession session,
     List<Address> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<Address>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -420,6 +438,10 @@ class AddressRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Address>> upsert(
     _i1.DatabaseSession session,
     List<Address> rows, {
@@ -427,6 +449,7 @@ class AddressRepository {
     _i1.ColumnSelections<AddressTable>? updateColumns,
     _i1.WhereExpressionBuilder<AddressTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<Address>(
       rows,
@@ -434,6 +457,7 @@ class AddressRepository {
       updateColumns: updateColumns?.call(Address.t),
       updateWhere: updateWhere?.call(Address.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -472,16 +496,22 @@ class AddressRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Address>> update(
     _i1.DatabaseSession session,
     List<Address> rows, {
     _i1.ColumnSelections<AddressTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<Address>(
       rows,
       columns: columns?.call(Address.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -518,6 +548,10 @@ class AddressRepository {
 
   /// Updates all [Address]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Address>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<AddressUpdateTable> columnValues,
@@ -529,6 +563,7 @@ class AddressRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<Address>(
       columnValues: columnValues(Address.t.updateTable),
@@ -540,6 +575,7 @@ class AddressRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -550,6 +586,10 @@ class AddressRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Address>> delete(
     _i1.DatabaseSession session,
     List<Address> rows, {
@@ -558,6 +598,7 @@ class AddressRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<AddressTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<Address>(
       rows,
@@ -566,6 +607,7 @@ class AddressRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -585,6 +627,10 @@ class AddressRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Address>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<AddressTable> where,
@@ -593,6 +639,7 @@ class AddressRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<AddressTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Address>(
       where: where(Address.t),
@@ -601,6 +648,7 @@ class AddressRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -644,7 +692,7 @@ class AddressAttachRowRepository {
   Future<void> inhabitant(
     _i1.DatabaseSession session,
     Address address,
-    _i2.Citizen inhabitant, {
+    _i3.Citizen inhabitant, {
     _i1.Transaction? transaction,
   }) async {
     if (address.id == null) {

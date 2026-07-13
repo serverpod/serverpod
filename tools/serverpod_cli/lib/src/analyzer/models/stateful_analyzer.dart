@@ -52,7 +52,7 @@ class StatefulAnalyzer {
       .toList();
 
   /// Returns all models in the state.
-  List<SerializableModelDefinition> get _models => _modelStates.values
+  List<SerializableModelDefinition> get models => _modelStates.values
       .map((state) => state.model)
       .whereType<SerializableModelDefinition>()
       .toList();
@@ -112,7 +112,7 @@ class StatefulAnalyzer {
     state.model = doc;
 
     // Can be optimized to only resolve the model we know has changed.
-    SerializableModelAnalyzer.resolveModelDependencies(_models);
+    SerializableModelAnalyzer.resolveModelDependencies(models);
 
     // This can be optimized to only validate the files we know have related errors.
     _validateAllModels(reportIssuesForPaths: null);
@@ -128,7 +128,7 @@ class StatefulAnalyzer {
       state.model = model;
     }
 
-    SerializableModelAnalyzer.resolveModelDependencies(_models);
+    SerializableModelAnalyzer.resolveModelDependencies(models);
   }
 
   void _validateAllModels({Set<String>? reportIssuesForPaths}) {

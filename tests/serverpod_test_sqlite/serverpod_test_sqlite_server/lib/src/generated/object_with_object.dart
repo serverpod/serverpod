@@ -672,16 +672,22 @@ class ObjectWithObjectRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithObject>> insert(
     _i1.DatabaseSession session,
     List<ObjectWithObject> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<ObjectWithObject>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -715,6 +721,10 @@ class ObjectWithObjectRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithObject>> upsert(
     _i1.DatabaseSession session,
     List<ObjectWithObject> rows, {
@@ -722,6 +732,7 @@ class ObjectWithObjectRepository {
     _i1.ColumnSelections<ObjectWithObjectTable>? updateColumns,
     _i1.WhereExpressionBuilder<ObjectWithObjectTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<ObjectWithObject>(
       rows,
@@ -729,6 +740,7 @@ class ObjectWithObjectRepository {
       updateColumns: updateColumns?.call(ObjectWithObject.t),
       updateWhere: updateWhere?.call(ObjectWithObject.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -767,16 +779,22 @@ class ObjectWithObjectRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithObject>> update(
     _i1.DatabaseSession session,
     List<ObjectWithObject> rows, {
     _i1.ColumnSelections<ObjectWithObjectTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<ObjectWithObject>(
       rows,
       columns: columns?.call(ObjectWithObject.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -814,6 +832,10 @@ class ObjectWithObjectRepository {
 
   /// Updates all [ObjectWithObject]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithObject>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<ObjectWithObjectUpdateTable>
@@ -826,6 +848,7 @@ class ObjectWithObjectRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithObject>(
       columnValues: columnValues(ObjectWithObject.t.updateTable),
@@ -837,6 +860,7 @@ class ObjectWithObjectRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -847,6 +871,10 @@ class ObjectWithObjectRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithObject>> delete(
     _i1.DatabaseSession session,
     List<ObjectWithObject> rows, {
@@ -855,6 +883,7 @@ class ObjectWithObjectRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithObjectTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<ObjectWithObject>(
       rows,
@@ -863,6 +892,7 @@ class ObjectWithObjectRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -882,6 +912,10 @@ class ObjectWithObjectRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithObject>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ObjectWithObjectTable> where,
@@ -890,6 +924,7 @@ class ObjectWithObjectRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithObjectTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithObject>(
       where: where(ObjectWithObject.t),
@@ -898,6 +933,7 @@ class ObjectWithObjectRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

@@ -25,7 +25,6 @@ class GeneratorConfigBuilder {
   DatabaseDialect _databaseDialect;
   List<ExperimentalFeature> _enabledExperimentalFeatures;
   List<String>? _relativeServerTestToolsPathParts;
-  List<String> _relativeFlutterPackagePathParts;
 
   GeneratorConfigBuilder()
     : _name = _defaultName,
@@ -36,7 +35,6 @@ class GeneratorConfigBuilder {
       _serverPackageDirectoryPathParts = [],
       _sharedModelsSourcePathsParts = {},
       _relativeDartClientPackagePathParts = ['..', 'example_client'],
-      _relativeFlutterPackagePathParts = ['..', 'example_flutter'],
       _modules = [
         ModuleConfig(
           type: PackageType.internal,
@@ -162,13 +160,6 @@ class GeneratorConfigBuilder {
     return this;
   }
 
-  GeneratorConfigBuilder withRelativeFlutterPackagePathParts(
-    List<String> relativeFlutterPackagePathParts,
-  ) {
-    _relativeFlutterPackagePathParts = relativeFlutterPackagePathParts;
-    return this;
-  }
-
   GeneratorConfig build() {
     return GeneratorConfig(
       name: _name,
@@ -179,7 +170,6 @@ class GeneratorConfigBuilder {
       serverPackageDirectoryPathParts: _serverPackageDirectoryPathParts,
       sharedModelsSourcePathsParts: _sharedModelsSourcePathsParts,
       relativeDartClientPackagePathParts: _relativeDartClientPackagePathParts,
-      relativeFlutterPackagePathParts: _relativeFlutterPackagePathParts,
       modules: _modules,
       extraClasses: _extraClasses,
       serializeAsJsonbByDefault: _serializeAsJsonbByDefault,

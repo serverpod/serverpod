@@ -2,7 +2,6 @@ import 'package:ci/ci.dart' as ci;
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:serverpod_cli/src/commands/create/tui/runner.dart';
-import 'package:serverpod_cli/src/commands/create/tui/state.dart';
 import 'package:serverpod_cli/src/create/create.dart';
 import 'package:serverpod_cli/src/create/ide.dart';
 import 'package:serverpod_cli/src/create/template_context.dart';
@@ -37,11 +36,13 @@ enum CreateOption<V> implements OptionDefinition<V> {
       enumParser: EnumParser(ServerpodTemplateType.values),
       argName: 'template',
       argAbbrev: 't',
-      defaultsTo: ServerpodTemplateType.server,
+      defaultsTo: ServerpodTemplateType.fullstack,
       helpText: 'Template to use when creating a new project',
       allowedValues: ServerpodTemplateType.values,
       allowedHelp: {
         'mini': 'Mini project with minimal features and no database',
+        'fullstack':
+            'Fullstack project including a server and a companion Flutter app',
         'server': 'Server project with standard features including database',
         'module': 'Serverpod Module project',
       },
@@ -136,7 +137,8 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
       auth: true,
       redis: true,
       postgres: true,
-      web: true,
+      website: template == ServerpodTemplateType.server,
+      webapp: template != ServerpodTemplateType.server,
       ides: [TemplateIde.claude, TemplateIde.cursor, TemplateIde.vscode],
     );
 
@@ -146,20 +148,20 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
       await performCreateWithTui(
         name,
         force,
-        state: CreateConfigState(template),
+        template: template,
         interactive: true,
       );
       return;
     }
 
-    final projectPath = await performCreate(
+    final result = await performCreate(
       name,
       force,
       interactive: interactive,
       context: context,
     );
 
-    if (projectPath == null) {
+    if (result is! CreateSuccess) {
       throw ExitException.error();
     }
   }

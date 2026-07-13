@@ -49,3 +49,4 @@ dependency_overrides:
 
 false_secrets:
   - test/config/from_passwords_config_test.dart
+  - test/test_utils/profile_image_idp_test_utils.dart

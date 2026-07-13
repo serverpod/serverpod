@@ -53,9 +53,13 @@ class FlutterProcess {
   final VmServiceProxy? _flutterProxy;
 
   /// Fires `'launching'` on spawn, `'connecting'` before VM-service
-  /// connect, `'ready'` on `app.started`, plus verbatim `app.progress`
-  /// messages in between.
+  /// connect, plus verbatim `app.progress` messages in between.
   final void Function(String stage)? _onProgress;
+
+  /// Fires on the daemon's `app.started` event, i.e. the app is fully up
+  /// on its device. This is the only launch-complete signal on non-web
+  /// devices, which never publish an `app.webLaunchUrl`.
+  final void Function()? _onStarted;
 
   /// When true, open [flutterAppUrl] in the default browser once it is
   /// published by the daemon (`app.webLaunchUrl`).
@@ -64,6 +68,9 @@ class FlutterProcess {
   /// Test-only spawn args override; replaces the default `flutter run`
   /// arg list when non-null.
   final List<String>? _argsOverrideForTesting;
+
+  /// Production override for `flutter run --machine` arguments.
+  final List<String>? _machineArgsOverride;
 
   /// Test-only override for [BrowserLauncher.openUrl].
   final Future<bool> Function(Uri url)? _openBrowserForTesting;
@@ -100,8 +107,10 @@ class FlutterProcess {
     List<String> extraArgs = const [],
     VmServiceProxy? flutterProxy,
     void Function(String stage)? onProgress,
+    void Function()? onStarted,
     IOSink? stdoutSink,
     IOSink? stderrSink,
+    List<String>? machineArgsOverride,
     @visibleForTesting List<String>? argsOverrideForTesting,
     @visibleForTesting Future<bool> Function(Uri url)? openBrowserForTesting,
   }) : _flutterPackageDir = flutterPackageDir,
@@ -110,9 +119,11 @@ class FlutterProcess {
        _extraArgs = extraArgs,
        _flutterProxy = flutterProxy,
        _onProgress = onProgress,
+       _onStarted = onStarted,
        _stdout = stdoutSink ?? stdout,
        _stderr = stderrSink ?? stderr,
        _launchBrowser = device == flutterDeviceWebServerWithBrowser,
+       _machineArgsOverride = machineArgsOverride,
        _argsOverrideForTesting = argsOverrideForTesting,
        _openBrowserForTesting = openBrowserForTesting;
 
@@ -151,6 +162,7 @@ class FlutterProcess {
     final device = _launchBrowser ? flutterDeviceWebServer : _device;
     final args =
         _argsOverrideForTesting ??
+        _machineArgsOverride ??
         <String>['run', '--machine', '-d', device, ..._extraArgs];
 
     final invocation = await _resolveFlutterInvocation(_flutterExecutable);
@@ -286,10 +298,12 @@ class FlutterProcess {
     // detaches (its keep-alive is hardcoded to ~3000 days). 2s
     // interval + 1s timeout lets us notice within ~3s.
     //
-    // Hot restart briefly empties the isolate list - require two
-    // consecutive empty reads (~4s window at 2s interval) so we
-    // don't race-kill a healthy restart.
+    // Both paths need two consecutive bad reads before tearing down
+    // (~4s at 2s interval): a hot restart briefly empties the isolate
+    // list, and a one-off getVM() failure - blip, GC pause - shouldn't
+    // race-kill a live app.
     var emptyReads = 0;
+    var failedReads = 0;
     _vmServiceHeartbeat = Timer.periodic(const Duration(seconds: 2), (
       timer,
     ) async {
@@ -299,6 +313,8 @@ class FlutterProcess {
       }
       try {
         final vmInfo = await vm.getVM().timeout(const Duration(seconds: 1));
+        // A successful read means the connection is alive; clear failures.
+        failedReads = 0;
         if (vmInfo.isolates?.isEmpty ?? true) {
           emptyReads++;
           if (emptyReads >= 2) {
@@ -310,9 +326,14 @@ class FlutterProcess {
           emptyReads = 0;
         }
       } catch (e) {
-        timer.cancel();
-        log.info('Flutter heartbeat failed ($e); tearing down.');
-        await _onAppStop();
+        // A failure breaks any empty-isolate streak; keep them consecutive.
+        emptyReads = 0;
+        failedReads++;
+        if (failedReads >= 2) {
+          timer.cancel();
+          log.info('Flutter heartbeat failed ($e); tearing down.');
+          await _onAppStop();
+        }
       }
     });
   }
@@ -534,7 +555,7 @@ class FlutterProcess {
             _onProgress?.call(message);
           }
         case 'app.started':
-          _onProgress?.call('ready');
+          _onStarted?.call();
         case 'app.stop':
           log.debug('Flutter daemon emitted app.stop; tearing down.');
           unawaited(_onAppStop());

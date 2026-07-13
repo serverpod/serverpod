@@ -45,7 +45,7 @@ void main() {
       late Directory dir;
 
       setUp(() async {
-        dir = Directory(p.join(testDir.path, '{{#web}}web{{!web}}'));
+        dir = Directory(p.join(testDir.path, '{{#webapp}}web{{!webapp}}'));
         await dir.create();
         await addSentinel(dir);
       });
@@ -54,10 +54,12 @@ void main() {
         'when rendering the template with a true context value, '
         'then the directory name is formatted to remove the template directives',
         () async {
-          await renderTestDir(TemplateContext(web: true));
+          await renderTestDir(TemplateContext(webapp: true));
 
           await expectLater(
-            Directory(p.join(testDir.path, '{{#web}}web{{!web}}')).exists(),
+            Directory(
+              p.join(testDir.path, '{{#webapp}}web{{!webapp}}'),
+            ).exists(),
             completion(false),
           );
           await expectLater(
@@ -71,10 +73,12 @@ void main() {
         'when rendering the template with a false context value, '
         'then the directory is deleted',
         () async {
-          await renderTestDir(TemplateContext(web: false));
+          await renderTestDir(TemplateContext(webapp: false));
 
           await expectLater(
-            Directory(p.join(testDir.path, '{{#web}}web{{!web}}')).exists(),
+            Directory(
+              p.join(testDir.path, '{{#webapp}}web{{!webapp}}'),
+            ).exists(),
             completion(false),
           );
           await expectLater(
@@ -91,7 +95,9 @@ void main() {
           await renderTestDir(TemplateContext());
 
           await expectLater(
-            Directory(p.join(testDir.path, '{{#web}}web{{!web}}')).exists(),
+            Directory(
+              p.join(testDir.path, '{{#webapp}}web{{!webapp}}'),
+            ).exists(),
             completion(false),
           );
           await expectLater(
@@ -109,7 +115,7 @@ void main() {
       late Directory dir;
 
       setUp(() async {
-        dir = Directory(p.join(testDir.path, '{{#web}}web{{+web}}'));
+        dir = Directory(p.join(testDir.path, '{{#webapp}}web{{+webapp}}'));
         await dir.create();
         await addSentinel(dir);
       });
@@ -118,10 +124,12 @@ void main() {
         'when rendering the template with a true context value, '
         'then the directory name is not formatted to remove the template directive',
         () async {
-          await renderTestDir(TemplateContext(web: true));
+          await renderTestDir(TemplateContext(webapp: true));
 
           await expectLater(
-            Directory(p.join(testDir.path, '{{#web}}web{{+web}}')).exists(),
+            Directory(
+              p.join(testDir.path, '{{#webapp}}web{{+webapp}}'),
+            ).exists(),
             completion(true),
           );
           await expectLater(
@@ -135,10 +143,12 @@ void main() {
         'when rendering the template with a false context value, '
         'then the directory name is not formatted to remove the template directive',
         () async {
-          await renderTestDir(TemplateContext(web: false));
+          await renderTestDir(TemplateContext(webapp: false));
 
           await expectLater(
-            Directory(p.join(testDir.path, '{{#web}}web{{+web}}')).exists(),
+            Directory(
+              p.join(testDir.path, '{{#webapp}}web{{+webapp}}'),
+            ).exists(),
             completion(true),
           );
           await expectLater(
@@ -152,10 +162,12 @@ void main() {
         'when rendering the template with empty context, '
         'then the directory name is not formatted to remove the template directive',
         () async {
-          await renderTestDir(TemplateContext(web: true));
+          await renderTestDir(TemplateContext(webapp: true));
 
           await expectLater(
-            Directory(p.join(testDir.path, '{{#web}}web{{+web}}')).exists(),
+            Directory(
+              p.join(testDir.path, '{{#webapp}}web{{+webapp}}'),
+            ).exists(),
             completion(true),
           );
           await expectLater(
@@ -172,7 +184,9 @@ void main() {
     'when rendering templates with a mix of true and false context values, '
     'then the directory with false conditional directive is deleted',
     () async {
-      final webDir = Directory(p.join(testDir.path, '{{#web}}web{{!web}}'));
+      final webDir = Directory(
+        p.join(testDir.path, '{{#webapp}}web{{!webapp}}'),
+      );
       await webDir.create();
       await addSentinel(webDir);
 
@@ -182,7 +196,7 @@ void main() {
       await redisDir.create();
       await addSentinel(redisDir);
 
-      await renderTestDir(TemplateContext(redis: false, web: true));
+      await renderTestDir(TemplateContext(redis: false, webapp: true));
 
       await expectLater(
         Directory(p.join(testDir.path, 'web')).exists(),
@@ -205,7 +219,7 @@ void main() {
         nestedDir = Directory(
           p.join(
             testDir.path,
-            '{{#web}}web{{!web}}',
+            '{{#webapp}}web{{!webapp}}',
             '{{#postgres}}postgres{{!postgres}}',
             '{{#redis}}redis{{!redis}}',
           ),
@@ -219,7 +233,7 @@ void main() {
         'then the nested directories are not deleted',
         () async {
           await renderTestDir(
-            TemplateContext(postgres: true, web: true, redis: true),
+            TemplateContext(postgres: true, webapp: true, redis: true),
           );
 
           await expectLater(
@@ -236,7 +250,7 @@ void main() {
         'then the nested directories are deleted',
         () async {
           await renderTestDir(
-            TemplateContext(web: false, redis: true, postgres: true),
+            TemplateContext(webapp: false, redis: true, postgres: true),
           );
 
           await expectLater(
@@ -253,7 +267,7 @@ void main() {
         'then only the nested directory is deleted',
         () async {
           await renderTestDir(
-            TemplateContext(redis: false, postgres: true, web: true),
+            TemplateContext(redis: false, postgres: true, webapp: true),
           );
 
           await expectLater(

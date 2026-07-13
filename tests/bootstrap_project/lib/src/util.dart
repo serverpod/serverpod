@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -24,6 +25,14 @@ createProjectFolderPaths(String projectName) {
 
 String createServerFolderPath(String projectName) {
   return path.join(projectName, '${projectName}_server');
+}
+
+String createFlutterFolderPath(String projectName) {
+  return path.join(projectName, '${projectName}_flutter');
+}
+
+String createClientFolderPath(String projectName) {
+  return path.join(projectName, '${projectName}_client');
 }
 
 Future<bool> isNetworkPortAvailable(int port) async {
@@ -78,6 +87,50 @@ Future<Process> startProcess(
       .listen((e) => print('COMMAND "$command" stdout: $e'));
 
   return process;
+}
+
+Future<Process> startProcessAndWaitForKeywords(
+  String command,
+  List<String> arguments, {
+  String? workingDirectory,
+  Map<String, String>? environment,
+  bool ignorePlatform = false,
+  required List<String> keywords,
+}) async {
+  final completer = Completer<Process>();
+
+  var process = await Process.start(
+    _getCommandToRun(command, ignorePlatform),
+    arguments,
+    workingDirectory: workingDirectory,
+    environment: environment,
+  );
+
+  void checkForKeywords(String data) {
+    if (keywords.isEmpty) return;
+    for (var keyword in keywords) {
+      if (data.contains(keyword)) {
+        if (!completer.isCompleted) {
+          completer.complete(process);
+        }
+      }
+    }
+  }
+
+  process.stderr.transform(utf8.decoder).listen((e) {
+    print('COMMAND "$command" stderr: $e');
+    checkForKeywords(e);
+  });
+  process.stdout.transform(utf8.decoder).listen((e) {
+    print('COMMAND "$command" stdout: $e');
+    checkForKeywords(e);
+  });
+
+  if (keywords.isEmpty && !completer.isCompleted) {
+    completer.complete(process);
+  }
+
+  return completer.future;
 }
 
 Future<Process> startServerpodCli(

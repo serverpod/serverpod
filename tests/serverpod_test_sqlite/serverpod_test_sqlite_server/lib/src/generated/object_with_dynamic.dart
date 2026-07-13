@@ -512,16 +512,22 @@ class ObjectWithDynamicRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithDynamic>> insert(
     _i1.DatabaseSession session,
     List<ObjectWithDynamic> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<ObjectWithDynamic>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -555,6 +561,10 @@ class ObjectWithDynamicRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithDynamic>> upsert(
     _i1.DatabaseSession session,
     List<ObjectWithDynamic> rows, {
@@ -562,6 +572,7 @@ class ObjectWithDynamicRepository {
     _i1.ColumnSelections<ObjectWithDynamicTable>? updateColumns,
     _i1.WhereExpressionBuilder<ObjectWithDynamicTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<ObjectWithDynamic>(
       rows,
@@ -569,6 +580,7 @@ class ObjectWithDynamicRepository {
       updateColumns: updateColumns?.call(ObjectWithDynamic.t),
       updateWhere: updateWhere?.call(ObjectWithDynamic.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -607,16 +619,22 @@ class ObjectWithDynamicRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithDynamic>> update(
     _i1.DatabaseSession session,
     List<ObjectWithDynamic> rows, {
     _i1.ColumnSelections<ObjectWithDynamicTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<ObjectWithDynamic>(
       rows,
       columns: columns?.call(ObjectWithDynamic.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -654,6 +672,10 @@ class ObjectWithDynamicRepository {
 
   /// Updates all [ObjectWithDynamic]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithDynamic>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<ObjectWithDynamicUpdateTable>
@@ -666,6 +688,7 @@ class ObjectWithDynamicRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithDynamic>(
       columnValues: columnValues(ObjectWithDynamic.t.updateTable),
@@ -677,6 +700,7 @@ class ObjectWithDynamicRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -687,6 +711,10 @@ class ObjectWithDynamicRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithDynamic>> delete(
     _i1.DatabaseSession session,
     List<ObjectWithDynamic> rows, {
@@ -695,6 +723,7 @@ class ObjectWithDynamicRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithDynamicTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<ObjectWithDynamic>(
       rows,
@@ -703,6 +732,7 @@ class ObjectWithDynamicRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -722,6 +752,10 @@ class ObjectWithDynamicRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithDynamic>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ObjectWithDynamicTable> where,
@@ -730,6 +764,7 @@ class ObjectWithDynamicRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithDynamicTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithDynamic>(
       where: where(ObjectWithDynamic.t),
@@ -738,6 +773,7 @@ class ObjectWithDynamicRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

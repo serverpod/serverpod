@@ -1,0 +1,1033 @@
+import 'package:analyzer/dart/analysis/utilities.dart';
+import 'package:path/path.dart' as path;
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/generator/dart/shared_code_generator.dart';
+import 'package:test/test.dart';
+
+import '../../../test_util/builders/generator_config_builder.dart';
+import '../../../test_util/builders/model_class_definition_builder.dart';
+import '../../../test_util/compilation_unit_helpers.dart';
+
+const sharedPackageName = 'shared_pkg';
+const projectName = 'example_project';
+const serverPathParts = ['server_root'];
+final config = GeneratorConfigBuilder()
+    .withServerPackageDirectoryPathParts(serverPathParts)
+    .withSharedModelsSourcePathsParts({
+      sharedPackageName: ['packages', 'shared'],
+    })
+    .withModules([])
+    .build();
+const generator = DartSharedCodeGenerator();
+
+void main() {
+  var testClassName = 'Example';
+  var repositoryClassName = '${testClassName}Repository';
+  var testClassFileName = 'example';
+  var expectedFilePath = path.joinAll([
+    ...serverPathParts,
+    'packages',
+    'shared',
+    'lib',
+    'src',
+    'generated',
+    '$testClassFileName.dart',
+  ]);
+
+  group('Given a class with table name when generating code', () {
+    var tableName = 'example_table';
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withFileName(testClassFileName)
+          .withTableName(tableName)
+          .withDatabase(ModelDatabaseDefinition.all)
+          .withSharedPackageName(sharedPackageName)
+          .build(),
+    ];
+
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+
+    var baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: testClassName,
+    );
+
+    test('then a static db field is generated on the base class.', () {
+      var dbField = CompilationUnitHelpers.tryFindFieldDeclaration(
+        baseClass!,
+        name: 'db',
+      );
+
+      expect(
+        dbField?.fields.toSource(),
+        'const db = $repositoryClassName._()',
+      );
+    });
+
+    var repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: repositoryClassName,
+    );
+
+    test('then the class name $repositoryClassName is generated', () {
+      expect(
+        repositoryClass,
+        isNotNull,
+        reason: 'Missing class named $repositoryClassName.',
+      );
+    });
+
+    group('then the $repositoryClassName class', () {
+      group('has a find method', () {
+        var findMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          repositoryClass!,
+          name: 'find',
+        );
+        test('defined', () {
+          expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              repositoryClass,
+              name: 'find',
+            ),
+            isTrue,
+          );
+        });
+
+        test('that returns a future with a list of the base class', () {
+          expect(
+            findMethod?.returnType?.toSource(),
+            contains('Future'),
+          );
+
+          expect(
+            findMethod?.returnType?.toSource(),
+            contains('List<$testClassName>'),
+          );
+        });
+
+        test('that takes the session as a required param', () {
+          expect(
+            findMethod?.parameters?.toSource(),
+            contains('DatabaseSession session'),
+          );
+        });
+
+        test('that takes the where callback as a named optional param', () {
+          var params = findMethod?.parameters?.toSource();
+          expect(
+            params,
+            contains('WhereExpressionBuilder<${testClassName}Table>? where'),
+          );
+        });
+
+        test('that takes the limit int as an optional param', () {
+          expect(
+            findMethod?.parameters?.toSource(),
+            contains('int? limit'),
+          );
+        });
+
+        test('that takes the offset int as an optional param', () {
+          expect(
+            findMethod?.parameters?.toSource(),
+            contains('int? offset'),
+          );
+        });
+
+        test('that takes the orderBy column as an optional param', () {
+          expect(
+            findMethod?.parameters?.toSource(),
+            contains('OrderByBuilder<ExampleTable>? orderBy'),
+          );
+        });
+
+        test('that takes the orderDescending bool as an optional param', () {
+          expect(
+            findMethod?.parameters?.toSource(),
+            contains('bool orderDescending'),
+          );
+        });
+
+        test('that takes the orderByList as an optional param', () {
+          expect(
+            findMethod?.parameters?.toSource(),
+            contains('OrderByListBuilder<ExampleTable>? orderByList'),
+          );
+        });
+
+        test('that takes the transaction object as an optional param', () {
+          expect(
+            findMethod?.parameters?.toSource(),
+            contains('Transaction? transaction'),
+          );
+        });
+
+        test('that takes the lockMode as an optional param', () {
+          expect(
+            findMethod?.parameters?.toSource(),
+            contains('LockMode? lockMode'),
+          );
+        });
+
+        test('that takes the lockBehavior as an optional param', () {
+          expect(
+            findMethod?.parameters?.toSource(),
+            contains('LockBehavior? lockBehavior'),
+          );
+        });
+      });
+
+      group('has a findFirstRow method', () {
+        var findRowMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          repositoryClass!,
+          name: 'findFirstRow',
+        );
+        test('defined', () {
+          expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              repositoryClass,
+              name: 'findFirstRow',
+            ),
+            isTrue,
+          );
+        });
+
+        test('that returns a future with a nullable base class', () {
+          expect(
+            findRowMethod?.returnType?.toSource(),
+            contains('Future'),
+          );
+
+          expect(
+            findRowMethod?.returnType?.toSource(),
+            contains('$testClassName?'),
+          );
+        });
+
+        test('that takes the session as a required param', () {
+          expect(
+            findRowMethod?.parameters?.toSource(),
+            contains('DatabaseSession session'),
+          );
+        });
+
+        test('that takes the where callback as a named optional param', () {
+          var params = findRowMethod?.parameters?.toSource();
+          expect(
+            params,
+            contains('WhereExpressionBuilder<${testClassName}Table>? where'),
+          );
+        });
+
+        test('that takes the offset as a named optional param', () {
+          var params = findRowMethod?.parameters?.toSource();
+          expect(
+            params,
+            contains('int? offset'),
+          );
+        });
+
+        test('that takes the orderBy as a named optional param', () {
+          var params = findRowMethod?.parameters?.toSource();
+          expect(
+            params,
+            contains('OrderByBuilder<ExampleTable>? orderBy'),
+          );
+        });
+
+        test('that takes the orderBy as a named optional param', () {
+          var params = findRowMethod?.parameters?.toSource();
+          expect(
+            params,
+            contains('OrderByListBuilder<ExampleTable>? orderByList'),
+          );
+        });
+
+        test(
+          'that takes the orderDescending as a named param with the default value false',
+          () {
+            var params = findRowMethod?.parameters?.toSource();
+            expect(
+              params,
+              contains('bool orderDescending = false'),
+            );
+          },
+        );
+
+        test('that takes the transaction object as an optional param', () {
+          expect(
+            findRowMethod?.parameters?.toSource(),
+            contains('Transaction? transaction'),
+          );
+        });
+
+        test('that takes the lockMode as an optional param', () {
+          expect(
+            findRowMethod?.parameters?.toSource(),
+            contains('LockMode? lockMode'),
+          );
+        });
+
+        test('that takes the lockBehavior as an optional param', () {
+          expect(
+            findRowMethod?.parameters?.toSource(),
+            contains('LockBehavior? lockBehavior'),
+          );
+        });
+      });
+
+      group('has a findById method', () {
+        var findByIdMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          repositoryClass!,
+          name: 'findById',
+        );
+        test('defined', () {
+          expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              repositoryClass,
+              name: 'findById',
+            ),
+            isTrue,
+          );
+        });
+
+        test('that returns a future with a nullable base class', () {
+          expect(
+            findByIdMethod?.returnType?.toSource(),
+            contains('Future'),
+          );
+
+          expect(
+            findByIdMethod?.returnType?.toSource(),
+            contains('$testClassName?'),
+          );
+        });
+
+        test('that takes the session as a required param', () {
+          expect(
+            findByIdMethod?.parameters?.toSource(),
+            contains('DatabaseSession session'),
+          );
+        });
+
+        test('that takes an int as a required param', () {
+          expect(
+            findByIdMethod?.parameters?.toSource(),
+            contains('int id'),
+          );
+        });
+
+        test('that takes the transaction object as an optional param', () {
+          expect(
+            findByIdMethod?.parameters?.toSource(),
+            contains('Transaction? transaction'),
+          );
+        });
+
+        test('that takes the lockMode as an optional param', () {
+          expect(
+            findByIdMethod?.parameters?.toSource(),
+            contains('LockMode? lockMode'),
+          );
+        });
+
+        test('that takes the lockBehavior as an optional param', () {
+          expect(
+            findByIdMethod?.parameters?.toSource(),
+            contains('LockBehavior? lockBehavior'),
+          );
+        });
+      });
+
+      group('has a lockRows method', () {
+        var lockRowsMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          repositoryClass!,
+          name: 'lockRows',
+        );
+
+        test('defined', () {
+          expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              repositoryClass,
+              name: 'lockRows',
+            ),
+            isTrue,
+          );
+        });
+
+        test('that returns a Future<void>', () {
+          expect(
+            lockRowsMethod?.returnType?.toSource(),
+            contains('Future<void>'),
+          );
+        });
+
+        test('that takes the session as a required param', () {
+          expect(
+            lockRowsMethod?.parameters?.toSource(),
+            contains('DatabaseSession session'),
+          );
+        });
+
+        test('that takes the where callback as a named required param', () {
+          expect(
+            lockRowsMethod?.parameters?.toSource(),
+            contains(
+              'required _i1.WhereExpressionBuilder<${testClassName}Table> where',
+            ),
+          );
+        });
+
+        test('that takes the lockMode as a named required param', () {
+          expect(
+            lockRowsMethod?.parameters?.toSource(),
+            matches(r'required _i\d+\.LockMode lockMode'),
+          );
+        });
+
+        test('that takes the transaction as a named required param', () {
+          expect(
+            lockRowsMethod?.parameters?.toSource(),
+            matches(r'required _i\d+\.Transaction transaction'),
+          );
+        });
+
+        test(
+          'that takes the lockBehavior with a default value of wait',
+          () {
+            expect(
+              lockRowsMethod?.parameters?.toSource(),
+              matches(
+                r'_i\d+\.LockBehavior lockBehavior = _i\d+\.LockBehavior\.wait',
+              ),
+            );
+          },
+        );
+      });
+
+      group('has an insert method', () {
+        var insertMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          repositoryClass!,
+          name: 'insert',
+        );
+        test('defined', () {
+          expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              repositoryClass,
+              name: 'insert',
+            ),
+            isTrue,
+          );
+        });
+
+        test('that returns a future with the base class', () {
+          expect(
+            insertMethod?.returnType?.toSource(),
+            contains('Future<List<$testClassName>>'),
+          );
+        });
+
+        test('that takes the session as a required param', () {
+          expect(
+            insertMethod?.parameters?.toSource(),
+            contains('DatabaseSession session'),
+          );
+        });
+
+        test('that takes the row as a required param', () {
+          expect(
+            insertMethod?.parameters?.toSource(),
+            contains('List<$testClassName> rows'),
+          );
+        });
+
+        test('that takes the transaction object as an optional param', () {
+          expect(
+            insertMethod?.parameters?.toSource(),
+            contains('Transaction? transaction'),
+          );
+        });
+
+        test('that takes the ignoreConflicts bool as an optional param', () {
+          expect(
+            insertMethod?.parameters?.toSource(),
+            contains('bool ignoreConflicts = false'),
+          );
+        });
+      });
+
+      group('has an insert row method', () {
+        var insertRowMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          repositoryClass!,
+          name: 'insertRow',
+        );
+        test('defined', () {
+          expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              repositoryClass,
+              name: 'insertRow',
+            ),
+            isTrue,
+          );
+        });
+
+        test('that returns a future with the base class', () {
+          expect(
+            insertRowMethod?.returnType?.toSource(),
+            contains('Future'),
+          );
+
+          expect(
+            insertRowMethod?.returnType?.toSource(),
+            contains(testClassName),
+          );
+        });
+
+        test('that takes the session as a required param', () {
+          expect(
+            insertRowMethod?.parameters?.toSource(),
+            contains('DatabaseSession session'),
+          );
+        });
+
+        test('that takes the row as a required param', () {
+          expect(
+            insertRowMethod?.parameters?.toSource(),
+            contains('$testClassName row'),
+          );
+        });
+
+        test('that takes the transaction object as an optional param', () {
+          expect(
+            insertRowMethod?.parameters?.toSource(),
+            contains('Transaction? transaction'),
+          );
+        });
+
+        test('that does not have the ignoreConflicts param', () {
+          expect(
+            insertRowMethod?.parameters?.toSource(),
+            isNot(contains('ignoreConflicts')),
+          );
+        });
+      });
+
+      group('has an update method', () {
+        var updateMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          repositoryClass!,
+          name: 'update',
+        );
+        test('defined', () {
+          expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              repositoryClass,
+              name: 'update',
+            ),
+            isTrue,
+          );
+        });
+
+        test('that returns a future with the base class', () {
+          expect(
+            updateMethod?.returnType?.toSource(),
+            contains('Future<List<$testClassName>>'),
+          );
+        });
+
+        test('that takes the session as a required param', () {
+          expect(
+            updateMethod?.parameters?.toSource(),
+            contains('DatabaseSession session'),
+          );
+        });
+
+        test('that takes the row as a required param', () {
+          expect(
+            updateMethod?.parameters?.toSource(),
+            contains('List<$testClassName> rows'),
+          );
+        });
+
+        test('that takes the transaction object as an optional param', () {
+          expect(
+            updateMethod?.parameters?.toSource(),
+            contains('Transaction? transaction'),
+          );
+        });
+      });
+
+      group('has an update row method', () {
+        var updateRowMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          repositoryClass!,
+          name: 'updateRow',
+        );
+        test('defined', () {
+          expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              repositoryClass,
+              name: 'updateRow',
+            ),
+            isTrue,
+          );
+        });
+
+        test('that returns a future with the base class', () {
+          expect(
+            updateRowMethod?.returnType?.toSource(),
+            contains('Future'),
+          );
+
+          expect(
+            updateRowMethod?.returnType?.toSource(),
+            contains(testClassName),
+          );
+        });
+
+        test('that takes the session as a required param', () {
+          expect(
+            updateRowMethod?.parameters?.toSource(),
+            contains('DatabaseSession session'),
+          );
+        });
+
+        test('that takes the row as a required param', () {
+          expect(
+            updateRowMethod?.parameters?.toSource(),
+            contains('$testClassName row'),
+          );
+        });
+
+        test('that takes the transaction object as an optional param', () {
+          expect(
+            updateRowMethod?.parameters?.toSource(),
+            contains('Transaction? transaction'),
+          );
+        });
+      });
+
+      group('has an delete method', () {
+        var deleteMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          repositoryClass!,
+          name: 'delete',
+        );
+        test('defined', () {
+          expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              repositoryClass,
+              name: 'delete',
+            ),
+            isTrue,
+          );
+        });
+
+        test('that returns a future with the base class', () {
+          expect(
+            deleteMethod?.returnType?.toSource(),
+            contains('Future<List<$testClassName>>'),
+          );
+        });
+
+        test('that takes the session as a required param', () {
+          expect(
+            deleteMethod?.parameters?.toSource(),
+            contains('DatabaseSession session'),
+          );
+        });
+
+        test('that takes the row as a required param', () {
+          expect(
+            deleteMethod?.parameters?.toSource(),
+            contains('List<$testClassName> rows'),
+          );
+        });
+
+        test('that takes the transaction object as an optional param', () {
+          expect(
+            deleteMethod?.parameters?.toSource(),
+            contains('Transaction? transaction'),
+          );
+        });
+      });
+
+      group('has an delete row method', () {
+        var deleteRowMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          repositoryClass!,
+          name: 'deleteRow',
+        );
+        test('defined', () {
+          expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              repositoryClass,
+              name: 'deleteRow',
+            ),
+            isTrue,
+          );
+        });
+
+        test('that returns a future with the base class', () {
+          expect(
+            deleteRowMethod?.returnType?.toSource(),
+            contains('Future'),
+          );
+
+          expect(
+            deleteRowMethod?.returnType?.toSource(),
+            contains(testClassName),
+          );
+        });
+
+        test('that takes the session as a required param', () {
+          expect(
+            deleteRowMethod?.parameters?.toSource(),
+            contains('DatabaseSession session'),
+          );
+        });
+
+        test('that takes the row as a required param', () {
+          expect(
+            deleteRowMethod?.parameters?.toSource(),
+            contains('$testClassName row'),
+          );
+        });
+
+        test('that takes the transaction object as an optional param', () {
+          expect(
+            deleteRowMethod?.parameters?.toSource(),
+            contains('Transaction? transaction'),
+          );
+        });
+      });
+
+      group('has an delete where method', () {
+        var deleteWhereMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          repositoryClass!,
+          name: 'deleteWhere',
+        );
+        test('defined', () {
+          expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              repositoryClass,
+              name: 'deleteWhere',
+            ),
+            isTrue,
+          );
+        });
+
+        test('that returns a future with a list of int', () {
+          expect(
+            deleteWhereMethod?.returnType?.toSource(),
+            contains('Future'),
+          );
+
+          expect(
+            deleteWhereMethod?.returnType?.toSource(),
+            contains('List<$testClassName>'),
+          );
+        });
+
+        test('that takes the session as a required param', () {
+          expect(
+            deleteWhereMethod?.parameters?.toSource(),
+            contains('DatabaseSession session'),
+          );
+        });
+
+        test('that takes the where callback as a named required param', () {
+          var params = deleteWhereMethod?.parameters?.toSource();
+          expect(
+            params,
+            contains('WhereExpressionBuilder<${testClassName}Table> where'),
+          );
+        });
+
+        test('that takes the transaction object as an optional param', () {
+          expect(
+            deleteWhereMethod?.parameters?.toSource(),
+            contains('Transaction? transaction'),
+          );
+        });
+      });
+
+      group('has an count method', () {
+        var countMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          repositoryClass!,
+          name: 'count',
+        );
+        test('defined', () {
+          expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              repositoryClass,
+              name: 'count',
+            ),
+            isTrue,
+          );
+        });
+
+        test('that returns a future with a list of int', () {
+          expect(
+            countMethod?.returnType?.toSource(),
+            contains('Future'),
+          );
+
+          expect(
+            countMethod?.returnType?.toSource(),
+            contains('int'),
+          );
+        });
+
+        test('that takes the session as a required param', () {
+          expect(
+            countMethod?.parameters?.toSource(),
+            contains('DatabaseSession session'),
+          );
+        });
+
+        test('that takes the where callback as a named optional param', () {
+          var params = countMethod?.parameters?.toSource();
+          expect(
+            params,
+            contains('WhereExpressionBuilder<${testClassName}Table>? where'),
+          );
+        });
+
+        test('that takes the limit int as an optional param', () {
+          expect(
+            countMethod?.parameters?.toSource(),
+            contains('int? limit'),
+          );
+        });
+
+        test('that takes the transaction object as an optional param', () {
+          expect(
+            countMethod?.parameters?.toSource(),
+            contains('Transaction? transaction'),
+          );
+        });
+      });
+
+      group('has an updateById method', () {
+        var updateByIdMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          repositoryClass!,
+          name: 'updateById',
+        );
+        test('defined', () {
+          expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              repositoryClass,
+              name: 'updateById',
+            ),
+            isTrue,
+          );
+        });
+
+        test(
+          'that returns a future with an optional instance of the base class',
+          () {
+            expect(
+              updateByIdMethod?.returnType?.toSource(),
+              contains('Future'),
+            );
+
+            expect(
+              updateByIdMethod?.returnType?.toSource(),
+              contains('$testClassName?'),
+            );
+          },
+        );
+
+        test('that takes the session as a required param', () {
+          expect(
+            updateByIdMethod?.parameters?.toSource(),
+            contains('DatabaseSession session'),
+          );
+        });
+
+        test('that takes the id as a required param', () {
+          expect(
+            updateByIdMethod?.parameters?.toSource(),
+            contains('int id'),
+          );
+        });
+
+        test('that takes the columnValues callback as a required param', () {
+          var params = updateByIdMethod?.parameters?.toSource();
+          expect(
+            params,
+            matches(
+              r'required _i\d+\.ColumnValueListBuilder<'
+              '$testClassName'
+              r'UpdateTable> columnValues',
+            ),
+          );
+        });
+
+        test('that takes the transaction object as an optional param', () {
+          expect(
+            updateByIdMethod?.parameters?.toSource(),
+            contains('Transaction? transaction'),
+          );
+        });
+      });
+
+      group('has an updateWhere method', () {
+        var updateWhereMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          repositoryClass!,
+          name: 'updateWhere',
+        );
+        test('defined', () {
+          expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              repositoryClass,
+              name: 'updateWhere',
+            ),
+            isTrue,
+          );
+        });
+
+        test('that returns a future with a list of the base class', () {
+          expect(
+            updateWhereMethod?.returnType?.toSource(),
+            contains('Future'),
+          );
+
+          expect(
+            updateWhereMethod?.returnType?.toSource(),
+            contains('List<$testClassName>'),
+          );
+        });
+
+        test('that takes the session as a required param', () {
+          expect(
+            updateWhereMethod?.parameters?.toSource(),
+            contains('DatabaseSession session'),
+          );
+        });
+
+        test('that takes the columnValues callback as a required param', () {
+          var params = updateWhereMethod?.parameters?.toSource();
+          expect(
+            params,
+            matches(
+              r'required _i\d+\.ColumnValueListBuilder<'
+              '$testClassName'
+              r'UpdateTable> columnValues',
+            ),
+          );
+        });
+
+        test('that takes the where callback as a required param', () {
+          var params = updateWhereMethod?.parameters?.toSource();
+          expect(
+            params,
+            matches(
+              r'required _i\d+\.WhereExpressionBuilder<'
+              '$testClassName'
+              r'Table> where',
+            ),
+          );
+        });
+
+        test('that takes the limit int as an optional param', () {
+          expect(
+            updateWhereMethod?.parameters?.toSource(),
+            contains('int? limit'),
+          );
+        });
+
+        test('that takes the offset int as an optional param', () {
+          expect(
+            updateWhereMethod?.parameters?.toSource(),
+            contains('int? offset'),
+          );
+        });
+
+        test('that takes the orderBy column as an optional param', () {
+          expect(
+            updateWhereMethod?.parameters?.toSource(),
+            contains('OrderByBuilder<${testClassName}Table>? orderBy'),
+          );
+        });
+
+        test('that takes the orderByList as an optional param', () {
+          expect(
+            updateWhereMethod?.parameters?.toSource(),
+            contains(
+              'OrderByListBuilder<${testClassName}Table>? orderByList',
+            ),
+          );
+        });
+
+        test('that takes the orderDescending bool as an optional param', () {
+          expect(
+            updateWhereMethod?.parameters?.toSource(),
+            contains('bool orderDescending'),
+          );
+        });
+
+        test('that takes the transaction object as an optional param', () {
+          expect(
+            updateWhereMethod?.parameters?.toSource(),
+            contains('Transaction? transaction'),
+          );
+        });
+      });
+    }, skip: repositoryClass == null);
+  });
+
+  test(
+    'Given a class with table name declared on a shared package '
+    'when generating code '
+    'then the DatabaseSession is imported from the serverpod_database package.',
+    () {
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withFileName(testClassFileName)
+            .withTableName('example_table')
+            .withDatabase(ModelDatabaseDefinition.all)
+            .withSharedPackageName(sharedPackageName)
+            .build(),
+      ];
+
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
+
+      var compilationUnit = parseString(
+        content: codeMap[expectedFilePath]!,
+      ).unit;
+
+      var repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        compilationUnit,
+        name: repositoryClassName,
+      );
+
+      expect(
+        repositoryClass,
+        isNotNull,
+        reason: 'Missing class named $repositoryClassName.',
+      );
+
+      expect(
+        CompilationUnitHelpers.hasImportDirective(
+          compilationUnit,
+          uri: 'package:serverpod/serverpod.dart',
+        ),
+        isFalse,
+      );
+
+      expect(
+        CompilationUnitHelpers.hasImportDirective(
+          compilationUnit,
+          uri: 'package:serverpod_database/serverpod_database.dart',
+        ),
+        isTrue,
+      );
+    },
+  );
+}

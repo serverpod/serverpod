@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// An attachment to a chat message. Typically an image or a file.
-abstract class ChatMessageAttachment implements _i1.SerializableModel {
+abstract class ChatMessageAttachment
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ChatMessageAttachment._({
     required this.fileName,
     required this.url,
@@ -76,6 +77,19 @@ abstract class ChatMessageAttachment implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_chat.ChatMessageAttachment',
+      'fileName': fileName,
+      'url': url,
+      'contentType': contentType,
+      if (previewImage != null) 'previewImage': previewImage,
+      if (previewWidth != null) 'previewWidth': previewWidth,
+      if (previewHeight != null) 'previewHeight': previewHeight,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_chat.ChatMessageAttachment',
       'fileName': fileName,

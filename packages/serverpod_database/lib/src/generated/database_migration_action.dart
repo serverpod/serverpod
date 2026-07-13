@@ -13,7 +13,8 @@
 import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 import 'package:serverpod_database/serverpod_database.dart' as _i2;
 
-abstract class DatabaseMigrationAction implements _i1.SerializableModel {
+abstract class DatabaseMigrationAction
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   DatabaseMigrationAction._({
     required this.type,
     this.deleteTable,
@@ -74,6 +75,17 @@ abstract class DatabaseMigrationAction implements _i1.SerializableModel {
       if (deleteTable != null) 'deleteTable': deleteTable,
       if (alterTable != null) 'alterTable': alterTable?.toJson(),
       if (createTable != null) 'createTable': createTable?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod.DatabaseMigrationAction',
+      'type': type.toJson(),
+      if (deleteTable != null) 'deleteTable': deleteTable,
+      if (alterTable != null) 'alterTable': alterTable?.toJsonForProtocol(),
+      if (createTable != null) 'createTable': createTable?.toJsonForProtocol(),
     };
   }
 

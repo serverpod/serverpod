@@ -15,7 +15,8 @@ import '../../changed_id_type/one_to_many/customer.dart' as _i2;
 import '../../changed_id_type/one_to_many/comment.dart' as _i3;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i4;
 
-abstract class OrderUuid implements _i1.SerializableModel {
+abstract class OrderUuid
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   OrderUuid._({
     _i1.UuidValue? id,
     required this.description,
@@ -83,6 +84,19 @@ abstract class OrderUuid implements _i1.SerializableModel {
       if (customer != null) 'customer': customer?.toJson(),
       if (comments != null)
         'comments': comments?.toJson(valueToJson: (v) => v.toJson()),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'OrderUuid',
+      'id': id.toJson(),
+      'description': description,
+      'customerId': customerId,
+      if (customer != null) 'customer': customer?.toJsonForProtocol(),
+      if (comments != null)
+        'comments': comments?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
   }
 

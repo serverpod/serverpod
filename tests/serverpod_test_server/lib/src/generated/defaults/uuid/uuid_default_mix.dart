@@ -392,16 +392,22 @@ class UuidDefaultMixRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UuidDefaultMix>> insert(
     _i1.DatabaseSession session,
     List<UuidDefaultMix> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<UuidDefaultMix>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -435,6 +441,10 @@ class UuidDefaultMixRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UuidDefaultMix>> upsert(
     _i1.DatabaseSession session,
     List<UuidDefaultMix> rows, {
@@ -442,6 +452,7 @@ class UuidDefaultMixRepository {
     _i1.ColumnSelections<UuidDefaultMixTable>? updateColumns,
     _i1.WhereExpressionBuilder<UuidDefaultMixTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<UuidDefaultMix>(
       rows,
@@ -449,6 +460,7 @@ class UuidDefaultMixRepository {
       updateColumns: updateColumns?.call(UuidDefaultMix.t),
       updateWhere: updateWhere?.call(UuidDefaultMix.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -487,16 +499,22 @@ class UuidDefaultMixRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UuidDefaultMix>> update(
     _i1.DatabaseSession session,
     List<UuidDefaultMix> rows, {
     _i1.ColumnSelections<UuidDefaultMixTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<UuidDefaultMix>(
       rows,
       columns: columns?.call(UuidDefaultMix.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -533,6 +551,10 @@ class UuidDefaultMixRepository {
 
   /// Updates all [UuidDefaultMix]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UuidDefaultMix>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<UuidDefaultMixUpdateTable> columnValues,
@@ -544,6 +566,7 @@ class UuidDefaultMixRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<UuidDefaultMix>(
       columnValues: columnValues(UuidDefaultMix.t.updateTable),
@@ -555,6 +578,7 @@ class UuidDefaultMixRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -565,6 +589,10 @@ class UuidDefaultMixRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UuidDefaultMix>> delete(
     _i1.DatabaseSession session,
     List<UuidDefaultMix> rows, {
@@ -573,6 +601,7 @@ class UuidDefaultMixRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<UuidDefaultMix>(
       rows,
@@ -581,6 +610,7 @@ class UuidDefaultMixRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -600,6 +630,10 @@ class UuidDefaultMixRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UuidDefaultMix>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UuidDefaultMixTable> where,
@@ -608,6 +642,7 @@ class UuidDefaultMixRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UuidDefaultMix>(
       where: where(UuidDefaultMix.t),
@@ -616,6 +651,7 @@ class UuidDefaultMixRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

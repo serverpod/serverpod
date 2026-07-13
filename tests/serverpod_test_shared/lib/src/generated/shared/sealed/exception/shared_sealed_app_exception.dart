@@ -16,7 +16,10 @@ part 'shared_not_found_exception.dart';
 part 'shared_validation_exception.dart';
 
 sealed class SharedSealedAppException
-    implements _i2.SerializableException, _i2.SerializableModel {
+    implements
+        _i2.SerializableException,
+        _i2.SerializableModel,
+        _i2.ProtocolSerialization {
   SharedSealedAppException({required this.message});
 
   String message;

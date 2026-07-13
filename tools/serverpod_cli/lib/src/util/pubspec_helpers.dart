@@ -118,7 +118,7 @@ String addDependencyToPubspec(
       orElse: () => _EmptyNode(),
     );
 
-    if (currentKey is _EmptyNode) {
+    if (currentKey is _EmptyNode || currentKey is YamlScalar) {
       editor.update([type.keyword], {name: source.value});
     } else {
       editor.update([type.keyword, name], source.value);

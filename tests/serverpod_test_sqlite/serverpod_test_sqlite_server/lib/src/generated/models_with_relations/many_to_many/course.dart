@@ -393,16 +393,22 @@ class CourseRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Course>> insert(
     _i1.DatabaseSession session,
     List<Course> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<Course>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -436,6 +442,10 @@ class CourseRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Course>> upsert(
     _i1.DatabaseSession session,
     List<Course> rows, {
@@ -443,6 +453,7 @@ class CourseRepository {
     _i1.ColumnSelections<CourseTable>? updateColumns,
     _i1.WhereExpressionBuilder<CourseTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<Course>(
       rows,
@@ -450,6 +461,7 @@ class CourseRepository {
       updateColumns: updateColumns?.call(Course.t),
       updateWhere: updateWhere?.call(Course.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -488,16 +500,22 @@ class CourseRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Course>> update(
     _i1.DatabaseSession session,
     List<Course> rows, {
     _i1.ColumnSelections<CourseTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<Course>(
       rows,
       columns: columns?.call(Course.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -534,6 +552,10 @@ class CourseRepository {
 
   /// Updates all [Course]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Course>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<CourseUpdateTable> columnValues,
@@ -545,6 +567,7 @@ class CourseRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<Course>(
       columnValues: columnValues(Course.t.updateTable),
@@ -556,6 +579,7 @@ class CourseRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -566,6 +590,10 @@ class CourseRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Course>> delete(
     _i1.DatabaseSession session,
     List<Course> rows, {
@@ -574,6 +602,7 @@ class CourseRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<CourseTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<Course>(
       rows,
@@ -582,6 +611,7 @@ class CourseRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -601,6 +631,10 @@ class CourseRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Course>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CourseTable> where,
@@ -609,6 +643,7 @@ class CourseRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<CourseTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Course>(
       where: where(Course.t),
@@ -617,6 +652,7 @@ class CourseRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

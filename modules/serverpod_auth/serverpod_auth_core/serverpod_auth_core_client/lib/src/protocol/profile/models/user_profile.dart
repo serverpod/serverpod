@@ -19,7 +19,8 @@ import 'package:serverpod_auth_core_client/src/protocol/protocol.dart' as _i4;
 ///
 /// This class is meant to be used only to interact with the database. To transfer
 /// user profile data, use the [UserProfileModel] DTO.
-abstract class UserProfile implements _i1.SerializableModel {
+abstract class UserProfile
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   UserProfile._({
     this.id,
     required this.authUserId,
@@ -133,6 +134,22 @@ abstract class UserProfile implements _i1.SerializableModel {
       'createdAt': createdAt.toJson(),
       if (imageId != null) 'imageId': imageId?.toJson(),
       if (image != null) 'image': image?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod_auth_core.UserProfile',
+      if (id != null) 'id': id?.toJson(),
+      'authUserId': authUserId.toJson(),
+      if (authUser != null) 'authUser': authUser?.toJsonForProtocol(),
+      if (userName != null) 'userName': userName,
+      if (fullName != null) 'fullName': fullName,
+      if (email != null) 'email': email,
+      'createdAt': createdAt.toJson(),
+      if (imageId != null) 'imageId': imageId?.toJson(),
+      if (image != null) 'image': image?.toJsonForProtocol(),
     };
   }
 

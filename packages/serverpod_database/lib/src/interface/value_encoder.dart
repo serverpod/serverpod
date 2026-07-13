@@ -1,3 +1,5 @@
+import '../concepts/columns.dart';
+
 /// Interface for value encoders.
 ///
 /// Can be accessed through the [instance] property if a database has been
@@ -29,4 +31,11 @@ abstract interface class ValueEncoder {
   /// Tries to convert an object to a string.
   /// Returns `null` if the conversion fails.
   String? tryConvert(Object? input, {bool escapeStrings = false});
+
+  /// Converts a column value to a string, applying column-specific coercion.
+  String encodeColumnValue(
+    Column column,
+    dynamic value, {
+    bool hasDefaults = false,
+  });
 }

@@ -152,7 +152,7 @@ class _FacebookSignInWidgetState extends State<FacebookSignInWidget> {
   @override
   Widget build(BuildContext context) {
     return FacebookSignInButton(
-      onPressed: _controller.signIn,
+      onPressed: _signIn,
       isLoading: _controller.isLoading,
       isDisabled: _controller.isLoading,
       type: widget.type,
@@ -162,5 +162,19 @@ class _FacebookSignInWidgetState extends State<FacebookSignInWidget> {
       minimumWidth: widget.minimumWidth,
       logoAlignment: widget.logoAlignment,
     );
+  }
+
+  Future<void> _signIn() async {
+    final coordinator = SignInFlowCoordinatorWidget.of(context);
+    if (coordinator?.isAuthenticating == true) return;
+
+    coordinator?.lockUI();
+    try {
+      await _controller.signIn();
+    } finally {
+      if (mounted) {
+        coordinator?.unlockUI();
+      }
+    }
   }
 }

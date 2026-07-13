@@ -74,6 +74,7 @@ void main() {
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  bool\? applyMigrations,\n'
               r'  _i\d\.ServerpodConfig Function\(_i\d\.ServerpodConfig\)\? configOverride,\n'
+              r'  _i\d\.DatabaseInterceptor\? databaseInterceptor,\n'
               r'  bool\? enableSessionLogging,\n'
               r'  _i\d\.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
@@ -118,6 +119,10 @@ void main() {
           expect(
             testToolsFile,
             contains('\n///\n/// [enableSessionLogging] '),
+          );
+          expect(
+            testToolsFile,
+            contains('\n///\n/// [databaseInterceptor] '),
           );
           expect(
             testToolsFile,
@@ -241,7 +246,7 @@ void main() {
       late var testToolsFile = codeMap[expectedFileName];
 
       test(
-        'then test tools file has `withServerpod` function without `rollbackDatabase` and `applyMigrations` parameters',
+        'then test tools file has `withServerpod` function without database configuration parameters',
         () {
           expect(
             testToolsFile,
@@ -322,11 +327,15 @@ void main() {
       );
 
       test(
-        'then doc comments for `applyMigrations` and `rollbackDatabase` are not present',
+        'then doc comments for database configuration parameters are not present',
         () async {
           expect(
             testToolsFile,
             isNot(contains('/// [applyMigrations]')),
+          );
+          expect(
+            testToolsFile,
+            isNot(contains('/// [databaseInterceptor]')),
           );
           expect(
             testToolsFile,
@@ -375,6 +384,7 @@ void main() {
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  bool\? applyMigrations,\n'
               r'  _i\d\.ServerpodConfig Function\(_i\d\.ServerpodConfig\)\? configOverride,\n'
+              r'  _i\d\.DatabaseInterceptor\? databaseInterceptor,\n'
               r'  bool\? enableSessionLogging,\n'
               r'  _i\d\.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
@@ -419,6 +429,10 @@ void main() {
           expect(
             testToolsFile,
             contains('\n///\n/// [enableSessionLogging] '),
+          );
+          expect(
+            testToolsFile,
+            contains('\n///\n/// [databaseInterceptor] '),
           );
           expect(
             testToolsFile,
@@ -523,6 +537,7 @@ void main() {
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  bool\? applyMigrations,\n'
               r'  _i\d\.ServerpodConfig Function\(_i\d\.ServerpodConfig\)\? configOverride,\n'
+              r'  _i\d\.DatabaseInterceptor\? databaseInterceptor,\n'
               r'  bool\? enableSessionLogging,\n'
               r'  _i\d\.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
@@ -567,6 +582,10 @@ void main() {
           expect(
             testToolsFile,
             contains('\n///\n/// [enableSessionLogging] '),
+          );
+          expect(
+            testToolsFile,
+            contains('\n///\n/// [databaseInterceptor] '),
           );
           expect(
             testToolsFile,
@@ -1890,6 +1909,7 @@ void main() {
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  bool\? applyMigrations,\n'
               r'  _i\d\.ServerpodConfig Function\(_i\d\.ServerpodConfig\)\? configOverride,\n'
+              r'  _i\d\.DatabaseInterceptor\? databaseInterceptor,\n'
               r'  bool\? enableSessionLogging,\n'
               r'  _i\d\.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
@@ -1973,6 +1993,7 @@ void main() {
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  bool\? applyMigrations,\n'
               r'  _i\d\.ServerpodConfig Function\(_i\d\.ServerpodConfig\)\? configOverride,\n'
+              r'  _i\d\.DatabaseInterceptor\? databaseInterceptor,\n'
               r'  bool\? enableSessionLogging,\n'
               r'  _i\d\.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'

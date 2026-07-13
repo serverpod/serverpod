@@ -89,7 +89,7 @@ abstract class Session implements DatabaseSession {
   Database get db {
     var database = _db;
     if (database == null) {
-      throw Exception('Database is not available in this session.');
+      throw StateError('Database is not available in this session.');
     }
     return database;
   }

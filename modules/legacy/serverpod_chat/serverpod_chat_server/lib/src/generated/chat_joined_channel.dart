@@ -84,7 +84,7 @@ abstract class ChatJoinedChannel
       'channel': channel,
       'initialMessageChunk': initialMessageChunk.toJsonForProtocol(),
       'lastReadMessageId': lastReadMessageId,
-      'userInfo': userInfo.toJsonForProtocol(),
+      'userInfo': userInfo.toJson(),
     };
   }
 

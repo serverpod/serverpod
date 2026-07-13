@@ -289,7 +289,8 @@ void main() {
         var error = collector.errors.first;
         expect(
           error.message,
-          'The "table" property is not allowed for exception type. Valid keys are {exception, sealed, extends, serverOnly, fields}.',
+          'The "table" property is not allowed for exception type. Valid keys '
+          'are: exception, sealed, extends, serverOnly, fields.',
         );
       },
     );
@@ -426,7 +427,7 @@ void main() {
             fields:
               name: String
             indexes:
-              example_exception_idx: 
+              example_exception_idx:
                 fields: name
                 unique: true
             ''',
@@ -449,7 +450,8 @@ void main() {
         var error = collector.errors.first;
         expect(
           error.message,
-          'The "indexes" property is not allowed for exception type. Valid keys are {exception, sealed, extends, serverOnly, fields}.',
+          'The "indexes" property is not allowed for exception type. Valid '
+          'keys are: exception, sealed, extends, serverOnly, fields.',
         );
       },
     );
@@ -485,7 +487,8 @@ void main() {
         var error = collector.errors.first;
         expect(
           error.message,
-          'The "table" property is not allowed for enum type. Valid keys are {enum, serialized, default, serverOnly, properties, values}.',
+          'The "table" property is not allowed for enum type. Valid keys are: '
+          'enum, serialized, default, serverOnly, properties, values.',
         );
       },
     );

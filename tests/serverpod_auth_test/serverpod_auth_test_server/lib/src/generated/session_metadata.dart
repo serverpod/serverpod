@@ -470,16 +470,22 @@ class SessionMetadataRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<SessionMetadata>> insert(
     _i1.DatabaseSession session,
     List<SessionMetadata> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<SessionMetadata>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -513,6 +519,10 @@ class SessionMetadataRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<SessionMetadata>> upsert(
     _i1.DatabaseSession session,
     List<SessionMetadata> rows, {
@@ -520,6 +530,7 @@ class SessionMetadataRepository {
     _i1.ColumnSelections<SessionMetadataTable>? updateColumns,
     _i1.WhereExpressionBuilder<SessionMetadataTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<SessionMetadata>(
       rows,
@@ -527,6 +538,7 @@ class SessionMetadataRepository {
       updateColumns: updateColumns?.call(SessionMetadata.t),
       updateWhere: updateWhere?.call(SessionMetadata.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -565,16 +577,22 @@ class SessionMetadataRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<SessionMetadata>> update(
     _i1.DatabaseSession session,
     List<SessionMetadata> rows, {
     _i1.ColumnSelections<SessionMetadataTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<SessionMetadata>(
       rows,
       columns: columns?.call(SessionMetadata.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -612,6 +630,10 @@ class SessionMetadataRepository {
 
   /// Updates all [SessionMetadata]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<SessionMetadata>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<SessionMetadataUpdateTable>
@@ -624,6 +646,7 @@ class SessionMetadataRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<SessionMetadata>(
       columnValues: columnValues(SessionMetadata.t.updateTable),
@@ -635,6 +658,7 @@ class SessionMetadataRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -645,6 +669,10 @@ class SessionMetadataRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<SessionMetadata>> delete(
     _i1.DatabaseSession session,
     List<SessionMetadata> rows, {
@@ -653,6 +681,7 @@ class SessionMetadataRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<SessionMetadataTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<SessionMetadata>(
       rows,
@@ -661,6 +690,7 @@ class SessionMetadataRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -680,6 +710,10 @@ class SessionMetadataRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<SessionMetadata>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<SessionMetadataTable> where,
@@ -688,6 +722,7 @@ class SessionMetadataRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<SessionMetadataTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<SessionMetadata>(
       where: where(SessionMetadata.t),
@@ -696,6 +731,7 @@ class SessionMetadataRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

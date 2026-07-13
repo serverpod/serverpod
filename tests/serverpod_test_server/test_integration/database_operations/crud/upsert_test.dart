@@ -131,6 +131,22 @@ void main() async {
     );
 
     test(
+      'when batch upserting with noReturn set to true '
+      'then an empty list is returned but the rows are persisted.',
+      () async {
+        var result = await UniqueData.db.upsert(
+          session,
+          [UniqueData(number: 1, email: 'a@serverpod.dev')],
+          conflictColumns: (t) => [t.email],
+          noReturn: true,
+        );
+
+        expect(result, isEmpty);
+        expect(await UniqueData.db.find(session), hasLength(1));
+      },
+    );
+
+    test(
       'when upserting a single row with upsertRow then the row is inserted.',
       () async {
         var result = (await UniqueData.db.upsertRow(
@@ -230,6 +246,35 @@ void main() async {
         expect(stored, isNotNull);
         expect(stored!.email, 'existing@serverpod.dev');
         expect(stored.number, 1);
+      },
+    );
+
+    test(
+      'when batch upserting with an updateWhere clause that filters out a conflicting row '
+      'then only the remaining rows are returned.',
+      () async {
+        var data = <UniqueData>[
+          UniqueData(number: 17, email: 'existing@serverpod.dev'),
+          UniqueData(number: 3, email: 'new@serverpod.dev'),
+        ];
+
+        var result = await UniqueData.db.upsert(
+          session,
+          data,
+          conflictColumns: (t) => [t.email],
+          updateWhere: (t) => t.number.equals(99),
+        );
+
+        expect(result, hasLength(1));
+        expect(result.first.email, 'new@serverpod.dev');
+        expect(result.first.number, 3);
+
+        var stored = await UniqueData.db.findFirstRow(
+          session,
+          where: (t) => t.email.equals('existing@serverpod.dev'),
+        );
+        expect(stored, isNotNull);
+        expect(stored!.number, 1);
       },
     );
 
@@ -464,21 +509,64 @@ void main() async {
     },
   );
 
-  test(
-    'Given an upsert operation with id as conflictColumn '
-    'when executing it '
-    'then it throws an ArgumentError.',
-    () async {
-      await expectLater(
-        UpsertTestModel.db.upsert(
-          session,
-          [UpsertTestModel(code: 'A', category: 'c1', value: 1)],
-          conflictColumns: (t) => [t.id],
-        ),
-        throwsA(isA<ArgumentError>()),
+  group('Given an existing row', () {
+    late SimpleData existingRow;
+
+    setUp(() async {
+      existingRow = await SimpleData.db.insertRow(
+        session,
+        SimpleData(num: 1),
       );
-    },
-  );
+    });
+
+    tearDown(() async {
+      await SimpleData.db.deleteWhere(
+        session,
+        where: (t) => Constant.bool(true),
+      );
+    });
+
+    test(
+      'when upserting with id as conflictColumn then the existing row is updated.',
+      () async {
+        var updated = (await SimpleData.db.upsertRow(
+          session,
+          SimpleData(id: existingRow.id, num: 2),
+          conflictColumns: (t) => [t.id],
+        ))!;
+
+        expect(updated.id, existingRow.id);
+        expect(updated.num, 2);
+      },
+    );
+
+    test(
+      'when batch upserting a mix of existing and new rows by id '
+      'then existing rows are updated and new rows are inserted.',
+      () async {
+        var result = await SimpleData.db.upsert(
+          session,
+          [
+            SimpleData(id: existingRow.id, num: 10),
+            SimpleData(num: 20),
+          ],
+          conflictColumns: (t) => [t.id],
+        );
+
+        expect(result, hasLength(2));
+
+        var updated = result.firstWhere((r) => r.id == existingRow.id);
+        expect(updated.num, 10);
+
+        var inserted = result.firstWhere((r) => r.id != existingRow.id);
+        expect(inserted.id, isNotNull);
+        expect(inserted.num, 20);
+
+        var allRows = await SimpleData.db.find(session);
+        expect(allRows, hasLength(2));
+      },
+    );
+  });
 
   test(
     'Given an upsert operation with column from different table '

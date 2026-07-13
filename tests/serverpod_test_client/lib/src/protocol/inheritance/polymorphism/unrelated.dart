@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// A class that is not related to the polymorphism.
-abstract class UnrelatedToPolymorphism implements _i1.SerializableModel {
+abstract class UnrelatedToPolymorphism
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   UnrelatedToPolymorphism._({required this.unrelated});
 
   factory UnrelatedToPolymorphism({required String unrelated}) =
@@ -36,6 +37,14 @@ abstract class UnrelatedToPolymorphism implements _i1.SerializableModel {
   UnrelatedToPolymorphism copyWith({String? unrelated});
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'UnrelatedToPolymorphism',
+      'unrelated': unrelated,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'UnrelatedToPolymorphism',
       'unrelated': unrelated,

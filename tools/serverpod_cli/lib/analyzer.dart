@@ -18,6 +18,7 @@ export 'src/analyzer/models/definitions.dart'
         SerializableModelIndexDefinition,
         EnumDefinition;
 export 'src/analyzer/models/model_analyzer.dart' show SerializableModelAnalyzer;
+export 'src/analyzer/models/utils/model_database_utils.dart';
 export 'src/analyzer/protocol_definition.dart' show ProtocolDefinition;
 export 'src/config/config.dart' show GeneratorConfig, PackageType;
 export 'src/database/extensions.dart';

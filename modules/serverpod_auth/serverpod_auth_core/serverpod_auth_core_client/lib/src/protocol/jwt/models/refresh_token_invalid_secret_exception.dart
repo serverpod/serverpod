@@ -14,7 +14,10 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Exception thrown when a refresh token rotation request has an invalid secret.
 abstract class RefreshTokenInvalidSecretException
-    implements _i1.SerializableException, _i1.SerializableModel {
+    implements
+        _i1.SerializableException,
+        _i1.SerializableModel,
+        _i1.ProtocolSerialization {
   RefreshTokenInvalidSecretException._();
 
   factory RefreshTokenInvalidSecretException() =
@@ -32,6 +35,13 @@ abstract class RefreshTokenInvalidSecretException
   RefreshTokenInvalidSecretException copyWith();
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_auth_core.RefreshTokenInvalidSecretException',
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_auth_core.RefreshTokenInvalidSecretException',
     };

@@ -15,7 +15,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i2;
 
 /// A child class.
 class ModulePolymorphicChild extends _i1.ModulePolymorphicParent
-    implements _i2.SerializableModel {
+    implements _i2.SerializableModel, _i2.ProtocolSerialization {
   ModulePolymorphicChild({
     required super.parent,
     required this.child,
@@ -48,6 +48,15 @@ class ModulePolymorphicChild extends _i1.ModulePolymorphicParent
 
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_test_module.ModulePolymorphicChild',
+      'parent': parent,
+      'child': child,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_test_module.ModulePolymorphicChild',
       'parent': parent,

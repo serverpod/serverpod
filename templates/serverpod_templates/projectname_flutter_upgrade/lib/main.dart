@@ -1,7 +1,9 @@
 import 'package:projectname_client/projectname_client.dart';
 import 'package:flutter/material.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
+// {{#auth}}
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
+// {{/auth}}
 
 import 'screens/greetings_screen.dart';
 
@@ -32,9 +34,14 @@ void main() async {
 
   client = Client(serverUrl)
     ..connectivityMonitor = FlutterConnectivityMonitor()
-    ..authSessionManager = FlutterAuthSessionManager();
+    // {{#auth}}
+    ..authSessionManager = FlutterAuthSessionManager()
+  // {{/auth}}
+  ;
 
+  // {{#auth}}
   client.auth.initialize();
+  // {{/auth}}
 
   runApp(const MyApp());
 }
@@ -62,6 +69,7 @@ class MyHomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(title)),
       body: const GreetingsScreen(),
+      // {{#auth}}
       // To test authentication in this example app, uncomment the line below
       // and comment out the line above. This wraps the GreetingsScreen with a
       // SignInScreen, which automatically shows a sign-in UI when the user is
@@ -74,6 +82,7 @@ class MyHomePage extends StatelessWidget {
       //     },
       //   ),
       // ),
+      // {{/auth}}
     );
   }
 }

@@ -37,10 +37,13 @@ base class BridgeMcpServer extends MCPServer
     : super.fromStreamChannel(
         implementation: _bridgeImplementation,
         instructions:
-            'Bridge to the server running with `serverpod start` for this '
-            'project. Tools and resources auto-connect to the runner on '
-            'demand. If the runner is not currently available, ask the '
-            'user to start it with `serverpod start`.',
+            'Manage a Serverpod server and its Flutter app running under '
+            '`serverpod start`. Use these tools to read Serverpod and Flutter '
+            'logs, create and apply database migrations, hot reload or restart '
+            "the server and Flutter app, and get the Flutter app's Dart "
+            'Tooling Daemon (DTD) URI. If a tool reports the server is not '
+            'running, ask the user to start it with `serverpod start` in the '
+            'project directory.',
       ) {
     for (final tool in runnerStaticTools) {
       registerTool(tool, _makeToolForwarder(tool.name));

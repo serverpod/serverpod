@@ -153,7 +153,8 @@ void main() {
             matches(
               RegExp(
                 r'    \.\.\._i(\d+)\.Protocol\(\) is _i\d+\.DatabaseSerializationManager\n'
-                r'        \? _i\1\.Protocol\.targetTableDefinitions\n'
+                r'        \? \(_i\1\.Protocol\(\) as _i\d+\.DatabaseSerializationManager\)\n'
+                r'              \.getTargetTableDefinitions\(\)\n'
                 r'        : \[\],\n'
                 r'  \];',
               ),
@@ -173,8 +174,9 @@ void main() {
                 r'  @override\n'
                 r'  _i(\d+)\.Table\? getTableForType\(Type t\) \{\n'
                 r'    \{\n'
-                r'      var table = _i(\d+)\.Protocol\(\) is _i\1\.DatabaseSerializationManager\n'
-                r'          \? _i\2\.Protocol\(\).getTableForType\(t\)\n'
+                r'      var protocol = _i(\d+)\.Protocol\(\);\n'
+                r'      var table = protocol is _i\1\.DatabaseSerializationManager\n'
+                r'          \? \(protocol as _i\1\.DatabaseSerializationManager\)\.getTableForType\(t\)\n'
                 r'          : null;\n'
                 r'      if \(table != null\) \{\n'
                 r'        return table;\n'
@@ -199,6 +201,335 @@ void main() {
             codeMap[expectedFileName],
             contains(
               "import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i",
+            ),
+          );
+        },
+      );
+
+      test(
+        'then protocol.dart does not access module Protocol.targetTableDefinitions statically.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            isNot(
+              contains(RegExp(r'_i\d+\.Protocol\.targetTableDefinitions')),
+            ),
+          );
+        },
+      );
+
+      test(
+        'then protocol.dart does not call getTableForType on module Protocol without casting to DatabaseSerializationManager.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            isNot(
+              contains(RegExp(r'_i\d+\.Protocol\(\)\.getTableForType')),
+            ),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a client database table and shared database tables from a shared package, '
+    'when generating protocol files,',
+    () {
+      const sharedPackageName = 'example_shared';
+      var sharedAwareConfig = GeneratorConfigBuilder()
+          .withName(projectName)
+          .withSharedModelsSourcePathsParts({
+            sharedPackageName: ['..', sharedPackageName],
+          })
+          .build();
+
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName('Example')
+            .withFileName('example')
+            .withTableName('example')
+            .withDatabase(ModelDatabaseDefinition.client)
+            .build(),
+        ModelClassDefinitionBuilder()
+            .withClassName('SharedTableRecord')
+            .withFileName('shared_table_record')
+            .withTableName('shared_table_record')
+            .withDatabase(ModelDatabaseDefinition.all)
+            .withSharedPackageName(sharedPackageName)
+            .build(),
+      ];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [],
+        models: models,
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: sharedAwareConfig,
+      );
+
+      test(
+        'then targetTableDefinitions merges table definitions from the shared package protocol through DatabaseSerializationManager.',
+        () {
+          var protocol = codeMap[expectedFileName]!;
+          expect(
+            protocol,
+            matches(
+              RegExp(
+                r'\.\.\._i(\d+)\.Protocol\(\) is _i(\d+)\.DatabaseSerializationManager\n'
+                r'        \? \(_i\1\.Protocol\(\) as _i\2\.DatabaseSerializationManager\)\n'
+                r'              \.getTargetTableDefinitions\(\)\n'
+                r'        : \[\],',
+              ),
+            ),
+          );
+        },
+      );
+
+      test(
+        'then protocol.dart imports the shared package for shared table metadata.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            contains("import 'package:example_shared/example_shared.dart'"),
+          );
+        },
+      );
+
+      test(
+        'then getTableForType resolves tables from the shared package protocol through DatabaseSerializationManager.',
+        () {
+          var protocol = codeMap[expectedFileName]!;
+          expect(
+            protocol,
+            matches(
+              RegExp(
+                r'var protocol = _i(\d+)\.Protocol\(\);\n'
+                r'      var table = protocol is _i(\d+)\.DatabaseSerializationManager\n'
+                r'          \? \(protocol as _i\2\.DatabaseSerializationManager\)\.getTableForType\(t\)\n'
+                r'          : null;',
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given only a shared-package client database table, '
+    'when generating protocol files,',
+    () {
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName('SharedTableRecord')
+            .withFileName('shared_table_record')
+            .withTableName('shared_table_record')
+            .withDatabase(ModelDatabaseDefinition.all)
+            .withSharedPackageName('example_shared')
+            .build(),
+      ];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [],
+        models: models,
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test(
+        'then the protocol.dart does not extend the database serialization manager.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            isNot(contains('DatabaseSerializationManager')),
+          );
+          expect(codeMap[expectedFileName], contains('SerializationManager'));
+        },
+      );
+
+      test(
+        'then the client.dart does not expose createSession.',
+        () {
+          expect(
+            codeMap[expectedClientFileName],
+            isNot(contains('createSession')),
+          );
+        },
+      );
+
+      test(
+        'then the migration registry placeholder file is not created.',
+        () {
+          expect(codeMap[expectedMigrationRegistryFileName], isNull);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given only a module client database table, '
+    'when generating protocol files,',
+    () {
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName('UserInfo')
+            .withFileName('user_info')
+            .withTableName('serverpod_user_info')
+            .withDatabase(ModelDatabaseDefinition.client)
+            .withModuleAlias('auth')
+            .build(),
+      ];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [],
+        models: models,
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test(
+        'then the protocol.dart does not extend the database serialization manager.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            isNot(contains('DatabaseSerializationManager')),
+          );
+          expect(codeMap[expectedFileName], contains('SerializationManager'));
+        },
+      );
+
+      test(
+        'then the client.dart does not expose createSession.',
+        () {
+          expect(
+            codeMap[expectedClientFileName],
+            isNot(contains('createSession')),
+          );
+        },
+      );
+
+      test(
+        'then the migration registry placeholder file is not created.',
+        () {
+          expect(codeMap[expectedMigrationRegistryFileName], isNull);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a client database table and module dependencies, '
+    'when generating protocol files,',
+    () {
+      var authModulesConfig = GeneratorConfigBuilder()
+          .withName(projectName)
+          .withAuthModule()
+          .build();
+
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName('Example')
+            .withFileName('example')
+            .withTableName('example')
+            .withDatabase(ModelDatabaseDefinition.client)
+            .build(),
+      ];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [],
+        models: models,
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: authModulesConfig,
+      );
+
+      test(
+        'then protocol.dart imports auth core and auth idp client packages for module table metadata.',
+        () {
+          var protocol = codeMap[expectedFileName]!;
+          expect(
+            protocol,
+            contains(
+              "import 'package:serverpod_auth_client/serverpod_auth_client.dart'",
+            ),
+          );
+        },
+      );
+
+      test(
+        'then targetTableDefinitions merges table definitions from each auth module protocol through DatabaseSerializationManager.',
+        () {
+          var protocol = codeMap[expectedFileName]!;
+          expect(
+            protocol,
+            allOf(
+              matches(
+                RegExp(
+                  r'\.\.\._i2\.Protocol\(\) is _i1\.DatabaseSerializationManager\n'
+                  r'        \? \(_i2\.Protocol\(\) as _i1\.DatabaseSerializationManager\)\n'
+                  r'              \.getTargetTableDefinitions\(\)\n'
+                  r'        : \[\],',
+                ),
+              ),
+            ),
+          );
+        },
+      );
+
+      test(
+        'then getTableForType resolves tables from each auth module protocol through DatabaseSerializationManager.',
+        () {
+          var protocol = codeMap[expectedFileName]!;
+          expect(
+            protocol,
+            allOf(
+              matches(
+                RegExp(
+                  r'var protocol = _i2\.Protocol\(\);\n'
+                  r'      var table = protocol is _i1\.DatabaseSerializationManager\n'
+                  r'          \? \(protocol as _i1\.DatabaseSerializationManager\)\.getTableForType\(t\)\n'
+                  r'          : null;',
+                ),
+              ),
+            ),
+          );
+        },
+      );
+
+      test(
+        'then protocol.dart does not access module Protocol.targetTableDefinitions statically.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            isNot(
+              contains(RegExp(r'_i\d+\.Protocol\.targetTableDefinitions')),
+            ),
+          );
+        },
+      );
+
+      test(
+        'then protocol.dart does not call getTableForType on module Protocol without casting to DatabaseSerializationManager.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            isNot(
+              contains(RegExp(r'_i\d+\.Protocol\(\)\.getTableForType')),
             ),
           );
         },

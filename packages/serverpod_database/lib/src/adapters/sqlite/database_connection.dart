@@ -188,6 +188,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     List<T> rows, {
     Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     if (rows.isEmpty) return [];
     if (rows.length > 1) {
@@ -201,6 +202,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
               [row],
               transaction: tx,
               ignoreConflicts: ignoreConflicts,
+              noReturn: noReturn,
             ).then((results) => results.firstOrNull),
         ].whereType<T>().toList(),
       );
@@ -214,6 +216,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
           ignoreConflicts,
           withIdNull,
           transaction,
+          noReturn,
         ),
     ];
 
@@ -227,6 +230,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     bool ignoreConflicts,
     bool withIdNull,
     Transaction? transaction,
+    bool noReturn,
   ) async {
     var filteredRows = rows
         .where((r) => withIdNull ? r.id == null : r.id != null)
@@ -278,6 +282,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
             columns: p.columns,
             encodedValues: p.values,
             ignoreConflicts: ignoreConflicts,
+            noReturn: noReturn,
           ),
           transaction: transaction,
           table: table,
@@ -310,12 +315,16 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     List<Column>? updateColumns,
     Expression? updateWhere,
     Transaction? transaction,
+    bool noReturn = false,
   }) async {
     if (rows.isEmpty) return [];
     if (rows.length > 1) {
       return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
         tx,
       ) async {
+        // The per-row upserts always read back their rows (even when [noReturn]
+        // is set), because the returned ids are needed to detect duplicate
+        // conflict rows below.
         final results = [
           for (var row in rows)
             ...await upsert<T>(
@@ -328,10 +337,12 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
             ),
         ];
 
-        // NOTE: Since we transform batch inserts into multiple single-row
-        // inserts, to achieve the same effect as a batch upsert, we need to
-        // throw if the input had duplicate rows - as happen with Postgres.
-        if (results.map((r) => r.id).toSet().length != rows.length) {
+        // NOTE: Since we transform batch upserts into multiple single-row
+        // upserts, to achieve the same effect as a batch upsert, we need to
+        // throw if the same row was affected twice - as happens with Postgres.
+        // Rows filtered out by [updateWhere] return nothing and must not be
+        // counted, so duplicates are detected among the returned ids only.
+        if (results.map((r) => r.id).toSet().length != results.length) {
           throw _SqliteDatabaseQueryException(
             'ON CONFLICT DO UPDATE command cannot affect row a second time',
             code: SqliteErrorCode.integrityConstraintViolation,
@@ -341,7 +352,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
           );
         }
 
-        return results;
+        return noReturn ? <T>[] : results;
       });
     }
 
@@ -352,6 +363,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       conflictColumns: conflictColumns,
       updateColumns: updateColumns,
       updateWhere: updateWhere,
+      noReturn: noReturn,
     ).build();
 
     var results = await _mappedResultsQuery(
@@ -403,6 +415,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     List<T> rows, {
     List<Column>? columns,
     Transaction? transaction,
+    bool noReturn = false,
   }) async {
     if (rows.isEmpty) return [];
     if (rows.any((r) => r.id == null)) {
@@ -420,6 +433,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
               [row],
               columns: columns,
               transaction: tx,
+              noReturn: noReturn,
             ).then((r) => r.firstOrNull),
         ].whereType<T>().toList(),
       );
@@ -460,6 +474,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
             table: table,
             setClause: setParts.join(', '),
             idSqlValue: idValue,
+            noReturn: noReturn,
           ),
           transaction: transaction,
           table: table,
@@ -542,6 +557,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
+    bool noReturn = false,
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'updateWhere');
 
@@ -604,6 +620,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
         table: table,
         setClause: _buildSetClause(columnValues),
         idListSql: idList,
+        noReturn: noReturn,
       ),
       transaction: transaction,
       table: table,
@@ -624,6 +641,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
+    bool noReturn = false,
   }) async {
     if (rows.isEmpty) return [];
     if (rows.any((r) => r.id == null)) {
@@ -639,6 +657,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       // ignore: deprecated_member_use_from_same_package
       orderDescending: orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -668,9 +687,14 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
+    bool noReturn = false,
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'deleteWhere');
-    var orderByCols = _resolveOrderBy(orderByList, orderBy, orderDescending);
+    // Ordering applies to the returned deleted rows, so it is irrelevant when
+    // nothing is returned.
+    var orderByCols = noReturn
+        ? null
+        : _resolveOrderBy(orderByList, orderBy, orderDescending);
 
     // SQLite does not support DELETE ... USING. Use subquery to get ids first.
     var selectIdsQuery = SelectQueryBuilder(table: table)
@@ -712,6 +736,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       selectIdsQuery,
       where,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -722,11 +747,12 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     Expression where, {
     List<Object>? orderedIds,
     Transaction? transaction,
+    bool noReturn = false,
   }) async {
     var deleteQuery =
         'DELETE FROM "${table.tableName}" '
-        'WHERE "${table.id.columnName}" IN ($selectIdsQuery) '
-        'RETURNING *';
+        'WHERE "${table.id.columnName}" IN ($selectIdsQuery)'
+        '${noReturn ? '' : ' RETURNING *'}';
 
     var result = await _mappedResultsQuery(
       session,
@@ -1441,36 +1467,42 @@ String _buildSqlSingleRowInsert({
   required List<Column> columns,
   required List<String> encodedValues,
   bool ignoreConflicts = false,
+  bool noReturn = false,
 }) {
   final onConflict = ignoreConflicts ? ' ON CONFLICT DO NOTHING' : '';
+  final returning = noReturn ? '' : ' RETURNING *';
   if (columns.isEmpty) {
     return 'INSERT INTO "${table.tableName}" DEFAULT VALUES'
-        '$onConflict RETURNING *';
+        '$onConflict$returning';
   }
   final columnNames = columns.map((c) => '"${c.columnName}"').join(', ');
   final values = encodedValues.join(', ');
   return 'INSERT INTO "${table.tableName}" ($columnNames) VALUES ($values)'
-      '$onConflict RETURNING *';
+      '$onConflict$returning';
 }
 
 String _buildSqlUpdateWhereId({
   required Table table,
   required String setClause,
   required String idSqlValue,
+  bool noReturn = false,
 }) {
+  final returning = noReturn ? '' : ' RETURNING *';
   return 'UPDATE "${table.tableName}" SET $setClause '
-      'WHERE "${table.id.columnName}" = $idSqlValue '
-      'RETURNING *';
+      'WHERE "${table.id.columnName}" = $idSqlValue'
+      '$returning';
 }
 
 String _buildSqlUpdateWhereIdIn({
   required Table table,
   required String setClause,
   required String idListSql,
+  bool noReturn = false,
 }) {
+  final returning = noReturn ? '' : ' RETURNING *';
   return 'UPDATE "${table.tableName}" SET $setClause '
-      'WHERE "${table.id.columnName}" IN ($idListSql) '
-      'RETURNING *';
+      'WHERE "${table.id.columnName}" IN ($idListSql)'
+      '$returning';
 }
 
 Table _getTableOrAssert<T>(

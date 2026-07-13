@@ -71,6 +71,7 @@ void main() {
         'then the created project',
         () {
           final serverDirRelative = '${project.name}_server';
+          const antigravityPluginDir = '.agents/plugins/serverpod-local';
           final genericConfig =
               '''
 {
@@ -93,13 +94,33 @@ void main() {
               final config = File(
                 p.join(
                   project.projectRoot,
-                  '.gemini/antigravity/mcp_config.json',
+                  '$antigravityPluginDir/mcp_config.json',
                 ),
               );
               expect(config.existsSync(), isTrue);
               expect(
                 config.readAsStringSync(),
                 genericConfig.replaceAll('"dart":', '"dart-mcp-server":'),
+              );
+            },
+          );
+
+          test(
+            'has an Antigravity plugin manifest registering the local plugin',
+            () {
+              final manifest = File(
+                p.join(
+                  project.projectRoot,
+                  '$antigravityPluginDir/plugin.json',
+                ),
+              );
+              expect(manifest.existsSync(), isTrue);
+              expect(
+                manifest.readAsStringSync(),
+                '''{
+  "name": "serverpod-local"
+}
+''',
               );
             },
           );

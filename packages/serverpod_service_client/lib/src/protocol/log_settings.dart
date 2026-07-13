@@ -14,7 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'log_level.dart' as _i2;
 
 /// Log settings for the server.
-abstract class LogSettings implements _i1.SerializableModel {
+abstract class LogSettings
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   LogSettings._({
     required this.logLevel,
     required this.logAllSessions,
@@ -120,6 +121,23 @@ abstract class LogSettings implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod.LogSettings',
+      'logLevel': logLevel.toJson(),
+      'logAllSessions': logAllSessions,
+      'logAllQueries': logAllQueries,
+      'logSlowSessions': logSlowSessions,
+      'logStreamingSessionsContinuously': logStreamingSessionsContinuously,
+      'logSlowQueries': logSlowQueries,
+      'logFailedSessions': logFailedSessions,
+      'logFailedQueries': logFailedQueries,
+      'slowSessionDuration': slowSessionDuration,
+      'slowQueryDuration': slowQueryDuration,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod.LogSettings',
       'logLevel': logLevel.toJson(),

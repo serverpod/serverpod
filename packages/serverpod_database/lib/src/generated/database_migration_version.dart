@@ -13,7 +13,8 @@
 import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 
 /// Represents a version of a database migration.
-class DatabaseMigrationVersionModel implements _i1.SerializableModel {
+class DatabaseMigrationVersionModel
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   DatabaseMigrationVersionModel({
     required this.module,
     required this.version,
@@ -58,6 +59,16 @@ class DatabaseMigrationVersionModel implements _i1.SerializableModel {
 
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod.DatabaseMigrationVersionModel',
+      'module': module,
+      'version': version,
+      if (timestamp != null) 'timestamp': timestamp?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod.DatabaseMigrationVersionModel',
       'module': module,

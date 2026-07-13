@@ -411,13 +411,51 @@ void main() async {
           );
         });
 
-        test('has a pubspec file', () {
-          expect(
-            File(path.join(tempPath, flutterDir, 'pubspec.yaml')).existsSync(),
-            isTrue,
-            reason: 'Flutter pubspec file does not exist.',
-          );
-        });
+        test(
+          'has a pubspec file with serverpod_auth_idp_flutter dependency',
+          () {
+            final pubspec = File(
+              path.join(tempPath, flutterDir, 'pubspec.yaml'),
+            );
+
+            expect(
+              pubspec.existsSync(),
+              isTrue,
+              reason: 'Flutter pubspec file does not exist.',
+            );
+
+            expect(
+              pubspec.readAsStringSync(),
+              contains('serverpod_auth_idp_flutter:'),
+              reason:
+                  'Flutter pubspec file does not have serverpod_auth_idp_flutter dependency.',
+            );
+          },
+        );
+
+        test(
+          'has a pubspec file with flutter_secure_storage dependency override',
+          () {
+            final pubspec = File(
+              path.join(tempPath, flutterDir, 'pubspec.yaml'),
+            );
+            final content = pubspec.readAsStringSync();
+
+            expect(
+              content,
+              contains('dependency_overrides:'),
+              reason:
+                  'Flutter pubspec file does not have dependency overrides.',
+            );
+
+            expect(
+              content,
+              contains('flutter_secure_storage: ^10.0.0'),
+              reason:
+                  'Flutter pubspec file does not have flutter_secure_storage override.',
+            );
+          },
+        );
 
         test(
           'macOS DebugProfile entitlements has network client tag and true',
@@ -525,11 +563,20 @@ void main() async {
           );
         });
 
-        test('has a pubspec file', () {
+        test('has a pubspec file with serverpod_auth_idp_client dependency', () {
+          final pubspec = File(
+            path.join(tempPath, clientDir, 'pubspec.yaml'),
+          );
           expect(
-            File(path.join(tempPath, clientDir, 'pubspec.yaml')).existsSync(),
+            pubspec.existsSync(),
             isTrue,
             reason: 'Client pubspec file does not exist.',
+          );
+          expect(
+            pubspec.readAsStringSync(),
+            contains('serverpod_auth_idp_client:'),
+            reason:
+                'Client pubspec file does not have serverpod_auth_idp_client dependency.',
           );
         });
 
@@ -1064,10 +1111,18 @@ void main() async {
         const wasmHeaders = 'enableWasmHeaders: false,';
         // TODO: Remove once Session.alert is published.
         const sessionAlert = 'session.alert(';
+        // TODO: Remove once ServerpodCloudEmailIdpConfig is published. The
+        // published serverpod_auth_idp_server does not have it yet, so swap it
+        // for the published-compatible EmailIdpConfigFromPasswords (its send
+        // callbacks are optional, so the no-argument form compiles).
+        final cloudEmailConfig = RegExp(
+          r'ServerpodCloudEmailIdpConfig\([^)]*\)',
+        );
         serverFile.writeAsStringSync(
           serverSource
               .replaceAll(wasmHeaders, '')
-              .replaceAll(sessionAlert, 'session.log('),
+              .replaceAll(sessionAlert, 'session.log(')
+              .replaceAll(cloudEmailConfig, 'EmailIdpConfigFromPasswords()'),
         );
 
         final dockerBuildProcess = await startProcess(
@@ -1162,4 +1217,109 @@ void main() async {
           : null,
     );
   });
+
+  group(
+    'Given a created project and a running pod',
+    () {
+      final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+
+      late Process createProcess;
+      late Process startProjectProcess;
+
+      setUpAll(() async {
+        createProcess = await startServerpodCli(
+          [
+            'create',
+            projectName,
+            '-v',
+            '--no-analytics',
+            '--no-interactive',
+          ],
+          rootPath: rootPath,
+          workingDirectory: tempPath,
+          environment: {
+            'SERVERPOD_HOME': rootPath,
+          },
+        );
+        assert((await createProcess.exitCode) == 0);
+
+        startProjectProcess = await startProcessAndWaitForKeywords(
+          'dart',
+          ['bin/main.dart', '--apply-migrations'],
+          workingDirectory: commandRoot,
+          keywords: ['Webserver listening on'],
+        );
+      });
+
+      tearDownAll(() async {
+        createProcess.kill();
+        startProjectProcess.kill();
+      });
+
+      test(
+        'when requesting the Flutter web app under / before it is built, '
+        'then the "Flutter web app not built" page is served',
+        () async {
+          final response = await http.get(Uri.parse('http://localhost:8082'));
+          expect(response.statusCode, equals(200));
+          expect(
+            response.body,
+            contains('<title>Flutter web app not built</title>'),
+          );
+          expect(
+            response.body,
+            isNot(
+              contains(
+                '<meta name="description" content="A new Flutter project.">',
+              ),
+            ),
+          );
+        },
+      );
+
+      group('Given the Flutter web app is built and the pod is restarted', () {
+        setUp(() async {
+          final flutterBuildProcess = await startServerpodCli(
+            ['run', 'flutter_build'],
+            rootPath: rootPath,
+            workingDirectory: commandRoot,
+            environment: {
+              'SERVERPOD_HOME': rootPath,
+            },
+          );
+          expect(await flutterBuildProcess.exitCode, 0);
+
+          startProjectProcess.kill();
+          startProjectProcess = await startProcessAndWaitForKeywords(
+            'dart',
+            ['bin/main.dart', '--apply-migrations'],
+            workingDirectory: commandRoot,
+            keywords: ['Webserver listening on'],
+          );
+        });
+
+        test(
+          'when requesting the Flutter web app under /, '
+          'then the web app is served successfully',
+          () async {
+            final response = await http.get(Uri.parse('http://localhost:8082'));
+            expect(response.statusCode, equals(200));
+            expect(
+              response.body,
+              isNot(contains('<title>Flutter web app not built</title>')),
+            );
+            expect(
+              response.body,
+              contains(
+                '<meta name="description" content="A new Flutter project.">',
+              ),
+            );
+          },
+        );
+      });
+    },
+    skip: Platform.isWindows
+        ? 'Windows does not support postgres in github actions'
+        : null,
+  );
 }

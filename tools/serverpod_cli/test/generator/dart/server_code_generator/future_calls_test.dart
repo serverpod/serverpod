@@ -184,6 +184,18 @@ void main() {
           });
 
           test(
+            'contains "ignore_for_file: depend_on_referenced_packages" directive.',
+            () {
+              expect(
+                futureCallsFile,
+                contains(
+                  '// ignore_for_file: depend_on_referenced_packages',
+                ),
+              );
+            },
+          );
+
+          test(
             'has the future call instance for the method with a Future return type whose first argument is a Session.',
             () {
               expect(

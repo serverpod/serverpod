@@ -19,7 +19,10 @@ import '../../../../providers/email/models/exceptions/email_account_request_exce
 /// Inspect the [reason] to determine whether this was due to invalid or unknown
 /// credentials, or whether the client has been blocked outright.
 abstract class EmailAccountRequestException
-    implements _i1.SerializableException, _i1.SerializableModel {
+    implements
+        _i1.SerializableException,
+        _i1.SerializableModel,
+        _i1.ProtocolSerialization {
   EmailAccountRequestException._({required this.reason});
 
   factory EmailAccountRequestException({
@@ -46,6 +49,14 @@ abstract class EmailAccountRequestException
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_auth_idp.EmailAccountRequestException',
+      'reason': reason.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_auth_idp.EmailAccountRequestException',
       'reason': reason.toJson(),

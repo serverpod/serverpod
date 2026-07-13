@@ -14,7 +14,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i2;
 
 abstract class SharedObjectWithSealedException
-    implements _i1.SerializableModel {
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   SharedObjectWithSealedException._({
     required this.sealedField,
     this.nullableSealedField,
@@ -68,6 +68,19 @@ abstract class SharedObjectWithSealedException
       if (nullableSealedField != null)
         'nullableSealedField': nullableSealedField?.toJson(),
       'sealedList': sealedList.toJson(valueToJson: (v) => v.toJson()),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'SharedObjectWithSealedException',
+      'sealedField': sealedField.toJsonForProtocol(),
+      if (nullableSealedField != null)
+        'nullableSealedField': nullableSealedField?.toJsonForProtocol(),
+      'sealedList': sealedList.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
     };
   }
 

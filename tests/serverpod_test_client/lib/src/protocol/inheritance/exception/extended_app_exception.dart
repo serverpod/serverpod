@@ -14,7 +14,10 @@ import '../../protocol.dart' as _i1;
 import 'package:serverpod_client/serverpod_client.dart' as _i2;
 
 abstract class ExtendedAppException extends _i1.BaseAppException
-    implements _i2.SerializableException, _i2.SerializableModel {
+    implements
+        _i2.SerializableException,
+        _i2.SerializableModel,
+        _i2.ProtocolSerialization {
   ExtendedAppException._({
     required super.message,
     required this.detail,
@@ -46,6 +49,15 @@ abstract class ExtendedAppException extends _i1.BaseAppException
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'ExtendedAppException',
+      'message': message,
+      'detail': detail,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ExtendedAppException',
       'message': message,

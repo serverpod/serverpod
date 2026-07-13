@@ -14,7 +14,8 @@ import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 import 'package:serverpod_database/serverpod_database.dart' as _i2;
 
 /// The definition of a (desired) index in the database.
-abstract class IndexDefinition implements _i1.SerializableModel {
+abstract class IndexDefinition
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   IndexDefinition._({
     required this.indexName,
     this.tableSpace,
@@ -135,6 +136,27 @@ abstract class IndexDefinition implements _i1.SerializableModel {
       'indexName': indexName,
       if (tableSpace != null) 'tableSpace': tableSpace,
       'elements': elements.toJson(valueToJson: (v) => v.toJson()),
+      'type': type,
+      'isUnique': isUnique,
+      'isPrimary': isPrimary,
+      if (predicate != null) 'predicate': predicate,
+      if (ginOperatorClass != null)
+        'ginOperatorClass': ginOperatorClass?.toJson(),
+      if (vectorDistanceFunction != null)
+        'vectorDistanceFunction': vectorDistanceFunction?.toJson(),
+      if (vectorColumnType != null)
+        'vectorColumnType': vectorColumnType?.toJson(),
+      if (parameters != null) 'parameters': parameters?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod.IndexDefinition',
+      'indexName': indexName,
+      if (tableSpace != null) 'tableSpace': tableSpace,
+      'elements': elements.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       'type': type,
       'isUnique': isUnique,
       'isPrimary': isPrimary,

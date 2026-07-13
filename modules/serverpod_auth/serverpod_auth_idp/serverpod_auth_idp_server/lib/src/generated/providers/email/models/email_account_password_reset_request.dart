@@ -566,16 +566,22 @@ class EmailAccountPasswordResetRequestRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailAccountPasswordResetRequest>> insert(
     _i1.DatabaseSession session,
     List<EmailAccountPasswordResetRequest> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<EmailAccountPasswordResetRequest>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -609,6 +615,10 @@ class EmailAccountPasswordResetRequestRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailAccountPasswordResetRequest>> upsert(
     _i1.DatabaseSession session,
     List<EmailAccountPasswordResetRequest> rows, {
@@ -618,6 +628,7 @@ class EmailAccountPasswordResetRequestRepository {
     _i1.WhereExpressionBuilder<EmailAccountPasswordResetRequestTable>?
     updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<EmailAccountPasswordResetRequest>(
       rows,
@@ -625,6 +636,7 @@ class EmailAccountPasswordResetRequestRepository {
       updateColumns: updateColumns?.call(EmailAccountPasswordResetRequest.t),
       updateWhere: updateWhere?.call(EmailAccountPasswordResetRequest.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -665,16 +677,22 @@ class EmailAccountPasswordResetRequestRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailAccountPasswordResetRequest>> update(
     _i1.DatabaseSession session,
     List<EmailAccountPasswordResetRequest> rows, {
     _i1.ColumnSelections<EmailAccountPasswordResetRequestTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<EmailAccountPasswordResetRequest>(
       rows,
       columns: columns?.call(EmailAccountPasswordResetRequest.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -716,6 +734,10 @@ class EmailAccountPasswordResetRequestRepository {
 
   /// Updates all [EmailAccountPasswordResetRequest]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailAccountPasswordResetRequest>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<
@@ -731,6 +753,7 @@ class EmailAccountPasswordResetRequestRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<EmailAccountPasswordResetRequest>(
       columnValues: columnValues(
@@ -744,6 +767,7 @@ class EmailAccountPasswordResetRequestRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -754,6 +778,10 @@ class EmailAccountPasswordResetRequestRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailAccountPasswordResetRequest>> delete(
     _i1.DatabaseSession session,
     List<EmailAccountPasswordResetRequest> rows, {
@@ -762,6 +790,7 @@ class EmailAccountPasswordResetRequestRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailAccountPasswordResetRequestTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<EmailAccountPasswordResetRequest>(
       rows,
@@ -770,6 +799,7 @@ class EmailAccountPasswordResetRequestRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -789,6 +819,10 @@ class EmailAccountPasswordResetRequestRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailAccountPasswordResetRequest>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EmailAccountPasswordResetRequestTable>
@@ -798,6 +832,7 @@ class EmailAccountPasswordResetRequestRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailAccountPasswordResetRequestTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<EmailAccountPasswordResetRequest>(
       where: where(EmailAccountPasswordResetRequest.t),
@@ -806,6 +841,7 @@ class EmailAccountPasswordResetRequestRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

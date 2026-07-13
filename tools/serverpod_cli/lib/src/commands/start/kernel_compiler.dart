@@ -107,7 +107,7 @@ class KernelCompiler {
 
     final result = await compileWithProgress('Compiling server', this);
     if (result == null) return false;
-    accept();
+    await accept();
     return true;
   }
 
@@ -116,7 +116,15 @@ class KernelCompiler {
   /// If a full compile is needed (after [start], [reset], or [restart]),
   /// [changedPaths] is ignored and a complete kernel is produced.
   /// Otherwise, performs an incremental recompile for [changedPaths].
-  Future<CompileResult> compile({Set<String> changedPaths = const {}}) async {
+  ///
+  /// When [invalidatePackageConfig] is `true`, the package-config file is
+  /// added to the invalidated set. The Frontend Server's incremental compiler
+  /// re-reads it and rebuilds its package map in place, so a `package_config`
+  /// change is picked up without restarting the process.
+  Future<CompileResult> compile({
+    Set<String> changedPaths = const {},
+    bool invalidatePackageConfig = false,
+  }) async {
     final client = await _client;
 
     if (_needsFullCompile) {
@@ -126,13 +134,29 @@ class KernelCompiler {
       return result;
     }
 
-    log.debug('compile: $changedPaths');
-    final invalidatedUris = changedPaths.map(Uri.file).toList();
+    // Invalidate the exact URI the FES was started with (see
+    // [FrontendServerClient.packageConfigUri]) so the resident compiler
+    // reloads its package map in place instead of the reload silently no-op'ing
+    // on a mismatched URI.
+    final packageConfigUri = invalidatePackageConfig
+        ? client.packageConfigUri
+        : null;
+    log.debug(
+      'compile: $changedPaths'
+      '${packageConfigUri != null ? ' (+package_config.json)' : ''}',
+    );
+    final invalidatedUris = [
+      ...changedPaths.map(Uri.file),
+      ?packageConfigUri,
+    ];
     return client.compile(invalidatedUris);
   }
 
   /// Accept the last compile result.
-  void accept() => _client.then((c) => c.accept());
+  ///
+  /// Awaitable so callers can order it before disposing or reloading; the
+  /// underlying FES `accept` is a fire-and-forget stdin write.
+  Future<void> accept() => _client.then((c) => c.accept());
 
   /// Reject the last compile result.
   Future<void> reject() => _client.then((c) => c.reject());
@@ -150,8 +174,12 @@ class KernelCompiler {
 
   /// Restart the Frontend Server process.
   ///
-  /// Required when package_config.json changes, since the FES reads it
-  /// only at startup. Kills the existing process and starts a fresh one.
+  /// Required when the native-assets manifest (`--native-assets`) changes,
+  /// since the FES reads that argument only at startup. Kills the existing
+  /// process and starts a fresh one.
+  ///
+  /// A `package_config.json` change does *not* need a restart - pass
+  /// `invalidatePackageConfig: true` to [compile] instead.
   Future<void> restart() async {
     await dispose();
     await start();
@@ -209,11 +237,15 @@ Future<CompileResult?> compileWithProgress(
   String message,
   KernelCompiler compiler, {
   Set<String> changedPaths = const {},
+  bool invalidatePackageConfig = false,
   bool rejectOnFailure = false,
 }) async {
   late CompileResult result;
   final success = await log.progress(message, () async {
-    result = await compiler.compile(changedPaths: changedPaths);
+    result = await compiler.compile(
+      changedPaths: changedPaths,
+      invalidatePackageConfig: invalidatePackageConfig,
+    );
     return result.errorCount == 0;
   });
 

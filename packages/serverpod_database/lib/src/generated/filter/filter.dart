@@ -13,7 +13,8 @@
 import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 import 'package:serverpod_database/serverpod_database.dart' as _i2;
 
-abstract class Filter implements _i1.SerializableModel {
+abstract class Filter
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   Filter._({
     required this.name,
     required this.table,
@@ -57,6 +58,18 @@ abstract class Filter implements _i1.SerializableModel {
       'name': name,
       'table': table,
       'constraints': constraints.toJson(valueToJson: (v) => v.toJson()),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod.Filter',
+      'name': name,
+      'table': table,
+      'constraints': constraints.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
     };
   }
 

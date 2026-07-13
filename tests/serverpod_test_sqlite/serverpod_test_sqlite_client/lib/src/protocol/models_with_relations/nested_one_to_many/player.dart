@@ -12,11 +12,11 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
-import '../../models_with_relations/nested_one_to_many/team.dart' as _i2;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
-import 'package:serverpod_client/serverpod_client.dart' as _i4;
+import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import '../../models_with_relations/nested_one_to_many/team.dart' as _i3;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
 
-abstract class Player implements _i1.TableRow<int?> {
+abstract class Player implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   Player._({
     this.id,
     required this.name,
@@ -28,7 +28,7 @@ abstract class Player implements _i1.TableRow<int?> {
     int? id,
     required String name,
     int? teamId,
-    _i2.Team? team,
+    _i3.Team? team,
   }) = _PlayerImpl;
 
   factory Player.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -38,7 +38,7 @@ abstract class Player implements _i1.TableRow<int?> {
       teamId: jsonSerialization['teamId'] as int?,
       team: jsonSerialization['team'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.Team>(jsonSerialization['team']),
+          : _i4.Protocol().deserialize<_i3.Team>(jsonSerialization['team']),
     );
   }
 
@@ -53,19 +53,19 @@ abstract class Player implements _i1.TableRow<int?> {
 
   int? teamId;
 
-  _i2.Team? team;
+  _i3.Team? team;
 
   @override
   _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Player]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   Player copyWith({
     int? id,
     String? name,
     int? teamId,
-    _i2.Team? team,
+    _i3.Team? team,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -78,7 +78,18 @@ abstract class Player implements _i1.TableRow<int?> {
     };
   }
 
-  static PlayerInclude include({_i2.TeamInclude? team}) {
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Player',
+      if (id != null) 'id': id,
+      'name': name,
+      if (teamId != null) 'teamId': teamId,
+      if (team != null) 'team': team?.toJsonForProtocol(),
+    };
+  }
+
+  static PlayerInclude include({_i3.TeamInclude? team}) {
     return PlayerInclude._(team: team);
   }
 
@@ -106,7 +117,7 @@ abstract class Player implements _i1.TableRow<int?> {
 
   @override
   String toString() {
-    return _i4.SerializationManager.encode(this);
+    return _i2.SerializationManager.encode(this);
   }
 }
 
@@ -117,7 +128,7 @@ class _PlayerImpl extends Player {
     int? id,
     required String name,
     int? teamId,
-    _i2.Team? team,
+    _i3.Team? team,
   }) : super._(
          id: id,
          name: name,
@@ -127,7 +138,7 @@ class _PlayerImpl extends Player {
 
   /// Returns a shallow copy of this [Player]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   @override
   Player copyWith({
     Object? id = _Undefined,
@@ -139,7 +150,7 @@ class _PlayerImpl extends Player {
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       teamId: teamId is int? ? teamId : this.teamId,
-      team: team is _i2.Team? ? team : this.team?.copyWith(),
+      team: team is _i3.Team? ? team : this.team?.copyWith(),
     );
   }
 }
@@ -177,17 +188,17 @@ class PlayerTable extends _i1.Table<int?> {
 
   late final _i1.ColumnInt teamId;
 
-  _i2.TeamTable? _team;
+  _i3.TeamTable? _team;
 
-  _i2.TeamTable get team {
+  _i3.TeamTable get team {
     if (_team != null) return _team!;
     _team = _i1.createRelationTable(
       relationFieldName: 'team',
       field: Player.t.teamId,
-      foreignField: _i2.Team.t.id,
+      foreignField: _i3.Team.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.TeamTable(tableRelation: foreignTableRelation),
+          _i3.TeamTable(tableRelation: foreignTableRelation),
     );
     return _team!;
   }
@@ -209,11 +220,11 @@ class PlayerTable extends _i1.Table<int?> {
 }
 
 class PlayerInclude extends _i1.IncludeObject {
-  PlayerInclude._({_i2.TeamInclude? team}) {
+  PlayerInclude._({_i3.TeamInclude? team}) {
     _team = team;
   }
 
-  _i2.TeamInclude? _team;
+  _i3.TeamInclude? _team;
 
   @override
   Map<String, _i1.Include?> get includes => {'team': _team};
@@ -373,16 +384,22 @@ class PlayerRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Player>> insert(
     _i1.DatabaseSession session,
     List<Player> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<Player>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -416,6 +433,10 @@ class PlayerRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Player>> upsert(
     _i1.DatabaseSession session,
     List<Player> rows, {
@@ -423,6 +444,7 @@ class PlayerRepository {
     _i1.ColumnSelections<PlayerTable>? updateColumns,
     _i1.WhereExpressionBuilder<PlayerTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<Player>(
       rows,
@@ -430,6 +452,7 @@ class PlayerRepository {
       updateColumns: updateColumns?.call(Player.t),
       updateWhere: updateWhere?.call(Player.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -468,16 +491,22 @@ class PlayerRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Player>> update(
     _i1.DatabaseSession session,
     List<Player> rows, {
     _i1.ColumnSelections<PlayerTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<Player>(
       rows,
       columns: columns?.call(Player.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -514,6 +543,10 @@ class PlayerRepository {
 
   /// Updates all [Player]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Player>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<PlayerUpdateTable> columnValues,
@@ -525,6 +558,7 @@ class PlayerRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<Player>(
       columnValues: columnValues(Player.t.updateTable),
@@ -536,6 +570,7 @@ class PlayerRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -546,6 +581,10 @@ class PlayerRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Player>> delete(
     _i1.DatabaseSession session,
     List<Player> rows, {
@@ -554,6 +593,7 @@ class PlayerRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<PlayerTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<Player>(
       rows,
@@ -562,6 +602,7 @@ class PlayerRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -581,6 +622,10 @@ class PlayerRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Player>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<PlayerTable> where,
@@ -589,6 +634,7 @@ class PlayerRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<PlayerTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Player>(
       where: where(Player.t),
@@ -597,6 +643,7 @@ class PlayerRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -640,7 +687,7 @@ class PlayerAttachRowRepository {
   Future<void> team(
     _i1.DatabaseSession session,
     Player player,
-    _i2.Team team, {
+    _i3.Team team, {
     _i1.Transaction? transaction,
   }) async {
     if (player.id == null) {

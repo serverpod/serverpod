@@ -13,6 +13,7 @@ class FieldDefinitionBuilder {
   dynamic _defaultModelValue;
   dynamic _defaultPersistValue;
   bool _isRequired;
+  bool _isTail;
   String? _columnNameOverride;
   String? _jsonKeyOverride;
 
@@ -27,6 +28,7 @@ class FieldDefinitionBuilder {
       _defaultModelValue = null,
       _defaultPersistValue = null,
       _isRequired = false,
+      _isTail = false,
       _columnNameOverride = null,
       _jsonKeyOverride = null;
 
@@ -142,6 +144,11 @@ class FieldDefinitionBuilder {
     return this;
   }
 
+  FieldDefinitionBuilder withIsTail(bool isTail) {
+    _isTail = isTail;
+    return this;
+  }
+
   FieldDefinitionBuilder withColumnNameOverride(String column) {
     _columnNameOverride = column;
     return this;
@@ -163,6 +170,7 @@ class FieldDefinitionBuilder {
       defaultModelValue: _defaultModelValue,
       defaultPersistValue: _defaultPersistValue,
       isRequired: _isRequired,
+      isTail: _isTail,
       columnNameOverride: _columnNameOverride,
       jsonKeyOverride: _jsonKeyOverride,
     );

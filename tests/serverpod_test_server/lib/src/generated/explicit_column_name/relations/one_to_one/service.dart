@@ -330,16 +330,22 @@ class ServiceRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Service>> insert(
     _i1.DatabaseSession session,
     List<Service> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<Service>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -373,6 +379,10 @@ class ServiceRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Service>> upsert(
     _i1.DatabaseSession session,
     List<Service> rows, {
@@ -380,6 +390,7 @@ class ServiceRepository {
     _i1.ColumnSelections<ServiceTable>? updateColumns,
     _i1.WhereExpressionBuilder<ServiceTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<Service>(
       rows,
@@ -387,6 +398,7 @@ class ServiceRepository {
       updateColumns: updateColumns?.call(Service.t),
       updateWhere: updateWhere?.call(Service.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -425,16 +437,22 @@ class ServiceRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Service>> update(
     _i1.DatabaseSession session,
     List<Service> rows, {
     _i1.ColumnSelections<ServiceTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<Service>(
       rows,
       columns: columns?.call(Service.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -471,6 +489,10 @@ class ServiceRepository {
 
   /// Updates all [Service]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Service>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<ServiceUpdateTable> columnValues,
@@ -482,6 +504,7 @@ class ServiceRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<Service>(
       columnValues: columnValues(Service.t.updateTable),
@@ -493,6 +516,7 @@ class ServiceRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -503,6 +527,10 @@ class ServiceRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Service>> delete(
     _i1.DatabaseSession session,
     List<Service> rows, {
@@ -511,6 +539,7 @@ class ServiceRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ServiceTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<Service>(
       rows,
@@ -519,6 +548,7 @@ class ServiceRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -538,6 +568,10 @@ class ServiceRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Service>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ServiceTable> where,
@@ -546,6 +580,7 @@ class ServiceRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ServiceTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Service>(
       where: where(Service.t),
@@ -554,6 +589,7 @@ class ServiceRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

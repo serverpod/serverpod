@@ -357,16 +357,22 @@ class ChildClassWithoutIdRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChildClassWithoutId>> insert(
     _i2.DatabaseSession session,
     List<ChildClassWithoutId> rows, {
     _i2.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<ChildClassWithoutId>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -400,6 +406,10 @@ class ChildClassWithoutIdRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChildClassWithoutId>> upsert(
     _i2.DatabaseSession session,
     List<ChildClassWithoutId> rows, {
@@ -407,6 +417,7 @@ class ChildClassWithoutIdRepository {
     _i2.ColumnSelections<ChildClassWithoutIdTable>? updateColumns,
     _i2.WhereExpressionBuilder<ChildClassWithoutIdTable>? updateWhere,
     _i2.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<ChildClassWithoutId>(
       rows,
@@ -414,6 +425,7 @@ class ChildClassWithoutIdRepository {
       updateColumns: updateColumns?.call(ChildClassWithoutId.t),
       updateWhere: updateWhere?.call(ChildClassWithoutId.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -452,16 +464,22 @@ class ChildClassWithoutIdRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChildClassWithoutId>> update(
     _i2.DatabaseSession session,
     List<ChildClassWithoutId> rows, {
     _i2.ColumnSelections<ChildClassWithoutIdTable>? columns,
     _i2.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<ChildClassWithoutId>(
       rows,
       columns: columns?.call(ChildClassWithoutId.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -499,6 +517,10 @@ class ChildClassWithoutIdRepository {
 
   /// Updates all [ChildClassWithoutId]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChildClassWithoutId>> updateWhere(
     _i2.DatabaseSession session, {
     required _i2.ColumnValueListBuilder<ChildClassWithoutIdUpdateTable>
@@ -511,6 +533,7 @@ class ChildClassWithoutIdRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<ChildClassWithoutId>(
       columnValues: columnValues(ChildClassWithoutId.t.updateTable),
@@ -522,6 +545,7 @@ class ChildClassWithoutIdRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -532,6 +556,10 @@ class ChildClassWithoutIdRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChildClassWithoutId>> delete(
     _i2.DatabaseSession session,
     List<ChildClassWithoutId> rows, {
@@ -540,6 +568,7 @@ class ChildClassWithoutIdRepository {
     bool orderDescending = false,
     _i2.OrderByListBuilder<ChildClassWithoutIdTable>? orderByList,
     _i2.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<ChildClassWithoutId>(
       rows,
@@ -548,6 +577,7 @@ class ChildClassWithoutIdRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -567,6 +597,10 @@ class ChildClassWithoutIdRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChildClassWithoutId>> deleteWhere(
     _i2.DatabaseSession session, {
     required _i2.WhereExpressionBuilder<ChildClassWithoutIdTable> where,
@@ -575,6 +609,7 @@ class ChildClassWithoutIdRepository {
     bool orderDescending = false,
     _i2.OrderByListBuilder<ChildClassWithoutIdTable>? orderByList,
     _i2.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ChildClassWithoutId>(
       where: where(ChildClassWithoutId.t),
@@ -583,6 +618,7 @@ class ChildClassWithoutIdRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

@@ -186,7 +186,7 @@ void main() {
           'Failed to compile kernel: ${result.compilerOutputLines.join('\n')}',
         );
       }
-      compiler.accept();
+      await compiler.accept();
       await compiler.dispose();
 
       serverProcess = ServerProcess(
@@ -292,7 +292,7 @@ void main() {
             'Failed to compile kernel: ${result.compilerOutputLines.join('\n')}',
           );
         }
-        compiler.accept();
+        await compiler.accept();
         await compiler.dispose();
 
         expect(dillPath.contains(' '), isTrue);

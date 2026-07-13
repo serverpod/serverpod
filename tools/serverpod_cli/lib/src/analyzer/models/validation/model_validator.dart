@@ -196,7 +196,8 @@ void _collectInvalidKeyErrors(
     if (!(validKeys.contains(Keyword.any) || validKeys.contains(parsedKey))) {
       collector.addError(
         SourceSpanSeverityException(
-          'The "$key" property is not allowed for $documentType type. Valid keys are $validKeys.',
+          'The "$key" property is not allowed for $documentType type. '
+          'Valid keys are: ${validKeys.join(', ')}.',
           keyNode.span,
         ),
       );

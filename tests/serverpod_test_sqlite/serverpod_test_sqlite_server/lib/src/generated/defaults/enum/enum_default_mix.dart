@@ -402,16 +402,22 @@ class EnumDefaultMixRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EnumDefaultMix>> insert(
     _i1.DatabaseSession session,
     List<EnumDefaultMix> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<EnumDefaultMix>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -445,6 +451,10 @@ class EnumDefaultMixRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EnumDefaultMix>> upsert(
     _i1.DatabaseSession session,
     List<EnumDefaultMix> rows, {
@@ -452,6 +462,7 @@ class EnumDefaultMixRepository {
     _i1.ColumnSelections<EnumDefaultMixTable>? updateColumns,
     _i1.WhereExpressionBuilder<EnumDefaultMixTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<EnumDefaultMix>(
       rows,
@@ -459,6 +470,7 @@ class EnumDefaultMixRepository {
       updateColumns: updateColumns?.call(EnumDefaultMix.t),
       updateWhere: updateWhere?.call(EnumDefaultMix.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -497,16 +509,22 @@ class EnumDefaultMixRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EnumDefaultMix>> update(
     _i1.DatabaseSession session,
     List<EnumDefaultMix> rows, {
     _i1.ColumnSelections<EnumDefaultMixTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<EnumDefaultMix>(
       rows,
       columns: columns?.call(EnumDefaultMix.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -543,6 +561,10 @@ class EnumDefaultMixRepository {
 
   /// Updates all [EnumDefaultMix]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EnumDefaultMix>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<EnumDefaultMixUpdateTable> columnValues,
@@ -554,6 +576,7 @@ class EnumDefaultMixRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<EnumDefaultMix>(
       columnValues: columnValues(EnumDefaultMix.t.updateTable),
@@ -565,6 +588,7 @@ class EnumDefaultMixRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -575,6 +599,10 @@ class EnumDefaultMixRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EnumDefaultMix>> delete(
     _i1.DatabaseSession session,
     List<EnumDefaultMix> rows, {
@@ -583,6 +611,7 @@ class EnumDefaultMixRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<EnumDefaultMix>(
       rows,
@@ -591,6 +620,7 @@ class EnumDefaultMixRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -610,6 +640,10 @@ class EnumDefaultMixRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EnumDefaultMix>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EnumDefaultMixTable> where,
@@ -618,6 +652,7 @@ class EnumDefaultMixRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<EnumDefaultMix>(
       where: where(EnumDefaultMix.t),
@@ -626,6 +661,7 @@ class EnumDefaultMixRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

@@ -457,7 +457,7 @@ abstract class WidgetRoute extends Route {
 
   /// Override this method to build your web widget from the current [session]
   /// and [request].
-  Future<WebWidget> build(Session session, Request request);
+  Future<WebWidget?> build(Session session, Request request);
 
   @override
   FutureOr<Result> handleCall(
@@ -465,6 +465,10 @@ abstract class WidgetRoute extends Route {
     Request req,
   ) async {
     var widget = await build(session, req);
+
+    if (widget == null) {
+      return Response.notFound(body: Body.fromString('Not found'));
+    }
 
     if (widget is RedirectWidget) {
       var uri = Uri.parse(widget.url);

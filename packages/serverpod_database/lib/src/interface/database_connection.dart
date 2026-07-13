@@ -83,6 +83,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     List<T> rows, {
     Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   });
 
   /// For most cases use the corresponding method in [Database] instead.
@@ -100,6 +101,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     List<Column>? updateColumns,
     Expression? updateWhere,
     Transaction? transaction,
+    bool noReturn = false,
   });
 
   /// For most cases use the corresponding method in [Database] instead.
@@ -118,6 +120,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     List<T> rows, {
     List<Column>? columns,
     Transaction? transaction,
+    bool noReturn = false,
   });
 
   /// For most cases use the corresponding method in [Database] instead.
@@ -161,6 +164,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
+    bool noReturn = false,
   });
 
   /// For most cases use the corresponding method in [Database] instead.
@@ -172,6 +176,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
+    bool noReturn = false,
   });
 
   /// For most cases use the corresponding method in [Database] instead.
@@ -190,6 +195,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
+    bool noReturn = false,
   });
 
   /// For most cases use the corresponding method in [Database] instead.

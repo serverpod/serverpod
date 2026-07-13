@@ -15,7 +15,8 @@ import 'session_log_info.dart' as _i2;
 import 'package:serverpod_service_client/src/protocol/protocol.dart' as _i3;
 
 /// A list of SessionLogInfo.
-abstract class SessionLogResult implements _i1.SerializableModel {
+abstract class SessionLogResult
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   SessionLogResult._({required this.sessionLog});
 
   factory SessionLogResult({required List<_i2.SessionLogInfo> sessionLog}) =
@@ -41,6 +42,16 @@ abstract class SessionLogResult implements _i1.SerializableModel {
     return {
       '__className__': 'serverpod.SessionLogResult',
       'sessionLog': sessionLog.toJson(valueToJson: (v) => v.toJson()),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod.SessionLogResult',
+      'sessionLog': sessionLog.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
     };
   }
 

@@ -465,16 +465,22 @@ class OrderUuidRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<OrderUuid>> insert(
     _i1.DatabaseSession session,
     List<OrderUuid> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<OrderUuid>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -508,6 +514,10 @@ class OrderUuidRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<OrderUuid>> upsert(
     _i1.DatabaseSession session,
     List<OrderUuid> rows, {
@@ -515,6 +525,7 @@ class OrderUuidRepository {
     _i1.ColumnSelections<OrderUuidTable>? updateColumns,
     _i1.WhereExpressionBuilder<OrderUuidTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<OrderUuid>(
       rows,
@@ -522,6 +533,7 @@ class OrderUuidRepository {
       updateColumns: updateColumns?.call(OrderUuid.t),
       updateWhere: updateWhere?.call(OrderUuid.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -560,16 +572,22 @@ class OrderUuidRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<OrderUuid>> update(
     _i1.DatabaseSession session,
     List<OrderUuid> rows, {
     _i1.ColumnSelections<OrderUuidTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<OrderUuid>(
       rows,
       columns: columns?.call(OrderUuid.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -606,6 +624,10 @@ class OrderUuidRepository {
 
   /// Updates all [OrderUuid]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<OrderUuid>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<OrderUuidUpdateTable> columnValues,
@@ -617,6 +639,7 @@ class OrderUuidRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<OrderUuid>(
       columnValues: columnValues(OrderUuid.t.updateTable),
@@ -628,6 +651,7 @@ class OrderUuidRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -638,6 +662,10 @@ class OrderUuidRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<OrderUuid>> delete(
     _i1.DatabaseSession session,
     List<OrderUuid> rows, {
@@ -646,6 +674,7 @@ class OrderUuidRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<OrderUuidTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<OrderUuid>(
       rows,
@@ -654,6 +683,7 @@ class OrderUuidRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -673,6 +703,10 @@ class OrderUuidRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<OrderUuid>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<OrderUuidTable> where,
@@ -681,6 +715,7 @@ class OrderUuidRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<OrderUuidTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<OrderUuid>(
       where: where(OrderUuid.t),
@@ -689,6 +724,7 @@ class OrderUuidRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

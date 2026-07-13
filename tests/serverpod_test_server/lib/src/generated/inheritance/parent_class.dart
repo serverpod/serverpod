@@ -304,16 +304,22 @@ class ParentClassRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ParentClass>> insert(
     _i2.DatabaseSession session,
     List<ParentClass> rows, {
     _i2.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<ParentClass>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -347,6 +353,10 @@ class ParentClassRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ParentClass>> upsert(
     _i2.DatabaseSession session,
     List<ParentClass> rows, {
@@ -354,6 +364,7 @@ class ParentClassRepository {
     _i2.ColumnSelections<ParentClassTable>? updateColumns,
     _i2.WhereExpressionBuilder<ParentClassTable>? updateWhere,
     _i2.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<ParentClass>(
       rows,
@@ -361,6 +372,7 @@ class ParentClassRepository {
       updateColumns: updateColumns?.call(ParentClass.t),
       updateWhere: updateWhere?.call(ParentClass.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -399,16 +411,22 @@ class ParentClassRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ParentClass>> update(
     _i2.DatabaseSession session,
     List<ParentClass> rows, {
     _i2.ColumnSelections<ParentClassTable>? columns,
     _i2.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<ParentClass>(
       rows,
       columns: columns?.call(ParentClass.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -445,6 +463,10 @@ class ParentClassRepository {
 
   /// Updates all [ParentClass]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ParentClass>> updateWhere(
     _i2.DatabaseSession session, {
     required _i2.ColumnValueListBuilder<ParentClassUpdateTable> columnValues,
@@ -456,6 +478,7 @@ class ParentClassRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<ParentClass>(
       columnValues: columnValues(ParentClass.t.updateTable),
@@ -467,6 +490,7 @@ class ParentClassRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -477,6 +501,10 @@ class ParentClassRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ParentClass>> delete(
     _i2.DatabaseSession session,
     List<ParentClass> rows, {
@@ -485,6 +513,7 @@ class ParentClassRepository {
     bool orderDescending = false,
     _i2.OrderByListBuilder<ParentClassTable>? orderByList,
     _i2.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<ParentClass>(
       rows,
@@ -493,6 +522,7 @@ class ParentClassRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -512,6 +542,10 @@ class ParentClassRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ParentClass>> deleteWhere(
     _i2.DatabaseSession session, {
     required _i2.WhereExpressionBuilder<ParentClassTable> where,
@@ -520,6 +554,7 @@ class ParentClassRepository {
     bool orderDescending = false,
     _i2.OrderByListBuilder<ParentClassTable>? orderByList,
     _i2.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ParentClass>(
       where: where(ParentClass.t),
@@ -528,6 +563,7 @@ class ParentClassRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

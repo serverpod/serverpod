@@ -494,4 +494,492 @@ void main() {
       );
     },
   );
+
+  test(
+    'Given a GeographyPoint, when serializing to JSON then it returns the EWKT string.',
+    () {
+      const point = GeographyPoint(longitude: 2.3522, latitude: 48.8566);
+
+      expect(point.toJson(), isA<String>());
+      expect(point.toJson(), 'SRID=4326;POINT(2.3522 48.8566)');
+    },
+  );
+
+  test(
+    'Given an EWKT string, when deserialized using GeographyPointJsonExtension.fromJson, then it creates a valid GeographyPoint.',
+    () {
+      GeographyPoint point = GeographyPointJsonExtension.fromJson(
+        'SRID=3857;POINT(2.3522 48.8566)',
+      );
+
+      expect(point.longitude, 2.3522);
+      expect(point.latitude, 48.8566);
+      expect(point.srid, 3857);
+    },
+  );
+
+  test(
+    'Given a Map, when deserialized using GeographyPointJsonExtension.fromJson, then it creates a valid GeographyPoint.',
+    () {
+      GeographyPoint point = GeographyPointJsonExtension.fromJson({
+        'longitude': -74.006,
+        'latitude': 40.7128,
+        'srid': 4326,
+      });
+
+      expect(point.longitude, -74.006);
+      expect(point.latitude, 40.7128);
+      expect(point.srid, 4326);
+    },
+  );
+
+  test(
+    'Given a Map without srid, when deserialized using GeographyPointJsonExtension.fromJson, then it defaults to Geography.defaultSrid.',
+    () {
+      GeographyPoint point = GeographyPointJsonExtension.fromJson({
+        'longitude': 1.0,
+        'latitude': 2.0,
+      });
+
+      expect(point.srid, Geography.defaultSrid);
+    },
+  );
+
+  test(
+    'Given a Uint8List (EWKB), when deserialized using GeographyPointJsonExtension.fromJson, then it decodes the binary representation.',
+    () {
+      // Little-endian EWKB for SRID=4326;POINT(1.0 2.0)
+      final ewkb = Uint8List.fromList([
+        0x01, // little-endian byte order
+        0x01, 0x00, 0x00, 0x20, // type: Point | SRID_FLAG (0x20000001)
+        0xE6, 0x10, 0x00, 0x00, // SRID: 4326 in LE
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0, 0x3F, // lon: 1.0
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, // lat: 2.0
+      ]);
+      GeographyPoint point = GeographyPointJsonExtension.fromJson(ewkb);
+
+      expect(point.longitude, 1.0);
+      expect(point.latitude, 2.0);
+      expect(point.srid, 4326);
+    },
+  );
+
+  test(
+    'Given a GeographyPoint, when passed to GeographyPointJsonExtension.fromJson, then it remains unchanged.',
+    () {
+      const value = GeographyPoint(longitude: 1.0, latitude: 2.0);
+      GeographyPoint point = GeographyPointJsonExtension.fromJson(value);
+
+      expect(point, same(value));
+    },
+  );
+
+  test(
+    'Given a GeographyPoint, when serialized and deserialized, then all values are preserved.',
+    () {
+      const original = GeographyPoint(
+        longitude: 2.3522,
+        latitude: 48.8566,
+        srid: 3857,
+      );
+      GeographyPoint restored = GeographyPointJsonExtension.fromJson(
+        original.toJson(),
+      );
+
+      expect(restored, equals(original));
+    },
+  );
+
+  test(
+    'Given an unsupported type, when deserialized to a GeographyPoint using GeographyPointJsonExtension.fromJson, then it throws an ArgumentError.',
+    () {
+      expect(
+        () => GeographyPointJsonExtension.fromJson(42),
+        throwsA(isA<ArgumentError>()),
+      );
+    },
+  );
+
+  test(
+    'Given a GeographyLineString, when serializing to JSON then it returns the EWKT string.',
+    () {
+      const lineString = GeographyLineString(
+        points: [
+          GeographyPoint(longitude: -0.1278, latitude: 51.5074),
+          GeographyPoint(longitude: 2.3522, latitude: 48.8566),
+        ],
+      );
+
+      expect(lineString.toJson(), isA<String>());
+      expect(
+        lineString.toJson(),
+        'SRID=4326;LINESTRING(-0.1278 51.5074, 2.3522 48.8566)',
+      );
+    },
+  );
+
+  test(
+    'Given an EWKT string, when deserialized using GeographyLineStringJsonExtension.fromJson, then it creates a valid GeographyLineString.',
+    () {
+      GeographyLineString lineString =
+          GeographyLineStringJsonExtension.fromJson(
+            'SRID=3857;LINESTRING(-0.1278 51.5074, 2.3522 48.8566)',
+          );
+
+      expect(lineString.srid, 3857);
+      expect(lineString.points.length, 2);
+      expect(lineString.points[0].longitude, -0.1278);
+      expect(lineString.points[1].latitude, 48.8566);
+    },
+  );
+
+  test(
+    'Given a Map, when deserialized using GeographyLineStringJsonExtension.fromJson, then it creates a valid GeographyLineString.',
+    () {
+      GeographyLineString lineString =
+          GeographyLineStringJsonExtension.fromJson({
+            'srid': 4326,
+            'points': [
+              {'longitude': -0.1278, 'latitude': 51.5074},
+              {'longitude': 2.3522, 'latitude': 48.8566},
+            ],
+          });
+
+      expect(lineString.srid, 4326);
+      expect(lineString.points.length, 2);
+    },
+  );
+
+  test(
+    'Given a Uint8List (EWKB), when deserialized using GeographyLineStringJsonExtension.fromJson, then it decodes the binary representation.',
+    () {
+      // Little-endian EWKB for SRID=4326;LINESTRING(0.0 0.0, 1.0 2.0)
+      final ewkb = Uint8List.fromList([
+        0x01, // LE
+        0x02, 0x00, 0x00, 0x20, // LineString | SRID_FLAG
+        0xE6, 0x10, 0x00, 0x00, // SRID 4326
+        0x02, 0x00, 0x00, 0x00, // numPoints = 2
+        // point 1 (0.0, 0.0)
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        // point 2 (1.0, 2.0)
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0, 0x3F,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40,
+      ]);
+      GeographyLineString lineString =
+          GeographyLineStringJsonExtension.fromJson(ewkb);
+
+      expect(lineString.srid, 4326);
+      expect(lineString.points.length, 2);
+      expect(lineString.points[1].longitude, 1.0);
+      expect(lineString.points[1].latitude, 2.0);
+    },
+  );
+
+  test(
+    'Given a GeographyLineString, when serialized and deserialized, then all values are preserved.',
+    () {
+      const original = GeographyLineString(
+        points: [
+          GeographyPoint(longitude: -0.1278, latitude: 51.5074),
+          GeographyPoint(longitude: 2.3522, latitude: 48.8566),
+        ],
+      );
+      GeographyLineString restored = GeographyLineStringJsonExtension.fromJson(
+        original.toJson(),
+      );
+
+      expect(restored, equals(original));
+    },
+  );
+
+  test(
+    'Given a GeographyLineString with a custom SRID, when serialized and deserialized, then the SRID is preserved.',
+    () {
+      const original = GeographyLineString(
+        points: [
+          GeographyPoint(longitude: -0.1278, latitude: 51.5074, srid: 3857),
+          GeographyPoint(longitude: 2.3522, latitude: 48.8566, srid: 3857),
+        ],
+        srid: 3857,
+      );
+      GeographyLineString restored = GeographyLineStringJsonExtension.fromJson(
+        original.toJson(),
+      );
+
+      expect(restored.srid, 3857);
+    },
+  );
+
+  test(
+    'Given an unsupported type, when deserialized to a GeographyLineString using GeographyLineStringJsonExtension.fromJson, then it throws an ArgumentError.',
+    () {
+      expect(
+        () => GeographyLineStringJsonExtension.fromJson(42),
+        throwsA(isA<ArgumentError>()),
+      );
+    },
+  );
+
+  test(
+    'Given a GeographyPolygon, when serializing to JSON then it returns the EWKT string.',
+    () {
+      const polygon = GeographyPolygon(
+        exteriorRing: [
+          GeographyPoint(longitude: 0.0, latitude: 0.0),
+          GeographyPoint(longitude: 1.0, latitude: 0.0),
+          GeographyPoint(longitude: 1.0, latitude: 1.0),
+          GeographyPoint(longitude: 0.0, latitude: 0.0),
+        ],
+      );
+
+      expect(polygon.toJson(), isA<String>());
+      expect(
+        polygon.toJson(),
+        'SRID=4326;POLYGON((0.0 0.0, 1.0 0.0, 1.0 1.0, 0.0 0.0))',
+      );
+    },
+  );
+
+  test(
+    'Given an EWKT string with a hole, when deserialized using GeographyPolygonJsonExtension.fromJson, then both rings are parsed.',
+    () {
+      GeographyPolygon polygon = GeographyPolygonJsonExtension.fromJson(
+        'SRID=4326;POLYGON('
+        '(0.0 0.0, 1.0 0.0, 1.0 1.0, 0.0 0.0), '
+        '(0.2 0.2, 0.8 0.2, 0.8 0.8, 0.2 0.2)'
+        ')',
+      );
+
+      expect(polygon.srid, 4326);
+      expect(polygon.exteriorRing.length, 4);
+      expect(polygon.holes.length, 1);
+      expect(polygon.holes[0].length, 4);
+    },
+  );
+
+  test(
+    'Given a Map, when deserialized using GeographyPolygonJsonExtension.fromJson, then it creates a valid GeographyPolygon.',
+    () {
+      GeographyPolygon polygon = GeographyPolygonJsonExtension.fromJson({
+        'srid': 4326,
+        'exteriorRing': [
+          {'longitude': 0.0, 'latitude': 0.0},
+          {'longitude': 1.0, 'latitude': 0.0},
+          {'longitude': 1.0, 'latitude': 1.0},
+          {'longitude': 0.0, 'latitude': 0.0},
+        ],
+        'holes': [],
+      });
+
+      expect(polygon.srid, 4326);
+      expect(polygon.exteriorRing.length, 4);
+      expect(polygon.holes, isEmpty);
+    },
+  );
+
+  test(
+    'Given a Uint8List (EWKB), when deserialized using GeographyPolygonJsonExtension.fromJson, then it decodes the binary representation.',
+    () {
+      // Little-endian EWKB for SRID=4326;POLYGON((0 0, 1 0, 1 1, 0 0))
+      final ewkb = Uint8List.fromList([
+        0x01, // LE
+        0x03, 0x00, 0x00, 0x20, // Polygon | SRID_FLAG
+        0xE6, 0x10, 0x00, 0x00, // SRID 4326
+        0x01, 0x00, 0x00, 0x00, // numRings = 1
+        0x04, 0x00, 0x00, 0x00, // ring[0] numPoints = 4
+        // (0.0, 0.0)
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        // (1.0, 0.0)
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0, 0x3F,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        // (1.0, 1.0)
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0, 0x3F,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0, 0x3F,
+        // (0.0, 0.0) closing point
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      ]);
+      GeographyPolygon polygon = GeographyPolygonJsonExtension.fromJson(ewkb);
+
+      expect(polygon.srid, 4326);
+      expect(polygon.exteriorRing.length, 4);
+      expect(polygon.holes, isEmpty);
+      expect(polygon.exteriorRing[1].longitude, 1.0);
+    },
+  );
+
+  test(
+    'Given a GeographyPolygon with holes, when serialized and deserialized, then the holes are preserved.',
+    () {
+      const original = GeographyPolygon(
+        exteriorRing: [
+          GeographyPoint(longitude: 0.0, latitude: 0.0),
+          GeographyPoint(longitude: 1.0, latitude: 0.0),
+          GeographyPoint(longitude: 1.0, latitude: 1.0),
+          GeographyPoint(longitude: 0.0, latitude: 0.0),
+        ],
+        holes: [
+          [
+            GeographyPoint(longitude: 0.2, latitude: 0.2),
+            GeographyPoint(longitude: 0.8, latitude: 0.2),
+            GeographyPoint(longitude: 0.8, latitude: 0.8),
+            GeographyPoint(longitude: 0.2, latitude: 0.2),
+          ],
+        ],
+      );
+      GeographyPolygon restored = GeographyPolygonJsonExtension.fromJson(
+        original.toJson(),
+      );
+
+      expect(restored.holes.length, 1);
+      expect(restored.holes[0].length, 4);
+    },
+  );
+
+  test(
+    'Given an unsupported type, when deserialized to a GeographyPolygon using GeographyPolygonJsonExtension.fromJson, then it throws an ArgumentError.',
+    () {
+      expect(
+        () => GeographyPolygonJsonExtension.fromJson(42),
+        throwsA(isA<ArgumentError>()),
+      );
+    },
+  );
+
+  test(
+    'Given a GeographyGeometryCollection, when serializing to JSON then it returns the EWKT string.',
+    () {
+      const collection = GeographyGeometryCollection(
+        geometries: [
+          GeographyPoint(longitude: -0.1278, latitude: 51.5074),
+          GeographyPoint(longitude: 2.3522, latitude: 48.8566),
+        ],
+      );
+
+      expect(collection.toJson(), isA<String>());
+      expect(
+        collection.toJson(),
+        'SRID=4326;GEOMETRYCOLLECTION('
+        'POINT(-0.1278 51.5074), POINT(2.3522 48.8566)'
+        ')',
+      );
+    },
+  );
+
+  test(
+    'Given an EWKT string with mixed types, when deserialized using GeographyGeometryCollectionJsonExtension.fromJson, then all types are parsed.',
+    () {
+      GeographyGeometryCollection collection =
+          GeographyGeometryCollectionJsonExtension.fromJson(
+            'SRID=4326;GEOMETRYCOLLECTION('
+            'POINT(-0.1278 51.5074), '
+            'LINESTRING(-0.1278 51.5074, 2.3522 48.8566), '
+            'POLYGON((0.0 0.0, 1.0 0.0, 1.0 1.0, 0.0 0.0))'
+            ')',
+          );
+
+      expect(collection.geometries.length, 3);
+      expect(collection.geometries[0], isA<GeographyPoint>());
+      expect(collection.geometries[1], isA<GeographyLineString>());
+      expect(collection.geometries[2], isA<GeographyPolygon>());
+    },
+  );
+
+  test(
+    'Given an EWKT string for an empty collection, when deserialized using GeographyGeometryCollectionJsonExtension.fromJson, then the geometries are empty.',
+    () {
+      GeographyGeometryCollection collection =
+          GeographyGeometryCollectionJsonExtension.fromJson(
+            'SRID=4326;GEOMETRYCOLLECTION()',
+          );
+
+      expect(collection.geometries, isEmpty);
+    },
+  );
+
+  test(
+    'Given a Map with string geometries, when deserialized using GeographyGeometryCollectionJsonExtension.fromJson, then it parses correctly.',
+    () {
+      GeographyGeometryCollection collection =
+          GeographyGeometryCollectionJsonExtension.fromJson({
+            'srid': 4326,
+            'geometries': [
+              'POINT(-0.1278 51.5074)',
+              'LINESTRING(-0.1278 51.5074, 2.3522 48.8566)',
+            ],
+          });
+
+      expect(collection.geometries.length, 2);
+      expect(collection.geometries[0], isA<GeographyPoint>());
+      expect(collection.geometries[1], isA<GeographyLineString>());
+    },
+  );
+
+  test(
+    'Given a Uint8List (EWKB), when deserialized using GeographyGeometryCollectionJsonExtension.fromJson, then it decodes the binary representation.',
+    () {
+      // LE EWKB for SRID=4326;GEOMETRYCOLLECTION(POINT(1.0 2.0))
+      final ewkb = Uint8List.fromList([
+        0x01, // LE
+        0x07, 0x00, 0x00, 0x20, // GeometryCollection | SRID_FLAG
+        0xE6, 0x10, 0x00, 0x00, // SRID 4326
+        0x01, 0x00, 0x00, 0x00, // numGeoms = 1
+        // sub-geom: POINT(1.0 2.0) without SRID
+        0x01, // LE
+        0x01, 0x00, 0x00, 0x00, // Point (no SRID flag)
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0, 0x3F, // lon 1.0
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, // lat 2.0
+      ]);
+      GeographyGeometryCollection collection =
+          GeographyGeometryCollectionJsonExtension.fromJson(ewkb);
+
+      expect(collection.srid, 4326);
+      expect(collection.geometries.length, 1);
+      expect(collection.geometries[0], isA<GeographyPoint>());
+    },
+  );
+
+  test(
+    'Given a GeographyGeometryCollection with mixed types, when serialized and deserialized, then all sub-geometry types are preserved.',
+    () {
+      const original = GeographyGeometryCollection(
+        geometries: [
+          GeographyPoint(longitude: -0.1278, latitude: 51.5074),
+          GeographyLineString(
+            points: [
+              GeographyPoint(longitude: -0.1278, latitude: 51.5074),
+              GeographyPoint(longitude: 2.3522, latitude: 48.8566),
+            ],
+          ),
+          GeographyPolygon(
+            exteriorRing: [
+              GeographyPoint(longitude: 0.0, latitude: 0.0),
+              GeographyPoint(longitude: 1.0, latitude: 0.0),
+              GeographyPoint(longitude: 1.0, latitude: 1.0),
+              GeographyPoint(longitude: 0.0, latitude: 0.0),
+            ],
+          ),
+        ],
+      );
+      GeographyGeometryCollection restored =
+          GeographyGeometryCollectionJsonExtension.fromJson(original.toJson());
+
+      expect(restored.geometries.length, 3);
+      expect(restored.geometries[0], isA<GeographyPoint>());
+      expect(restored.geometries[1], isA<GeographyLineString>());
+      expect(restored.geometries[2], isA<GeographyPolygon>());
+    },
+  );
+
+  test(
+    'Given an unsupported type, when deserialized to a GeographyGeometryCollection using GeographyGeometryCollectionJsonExtension.fromJson, then it throws an ArgumentError.',
+    () {
+      expect(
+        () => GeographyGeometryCollectionJsonExtension.fromJson(42),
+        throwsA(isA<ArgumentError>()),
+      );
+    },
+  );
 }

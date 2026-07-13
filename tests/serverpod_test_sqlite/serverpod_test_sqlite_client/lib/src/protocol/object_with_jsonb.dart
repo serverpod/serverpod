@@ -14,7 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'simple_data.dart' as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
 
-abstract class ObjectWithJsonb implements _i1.SerializableModel {
+abstract class ObjectWithJsonb
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ObjectWithJsonb._({
     this.id,
     required this.notJsonb,
@@ -123,6 +124,23 @@ abstract class ObjectWithJsonb implements _i1.SerializableModel {
       'jsonb': jsonb.toJson(),
       'jsonbMap': jsonbMap.toJson(),
       'jsonbObject': jsonbObject.toJson(),
+      'jsonbIndexed': jsonbIndexed.toJson(),
+      'jsonbIndexedGin': jsonbIndexedGin.toJson(),
+      'jsonbIndexedGinJsonbPath': jsonbIndexedGinJsonbPath.toJson(),
+      'jsonbIndexedImplicitGin': jsonbIndexedImplicitGin.toJson(),
+      if (nullableJsonb != null) 'nullableJsonb': nullableJsonb?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'ObjectWithJsonb',
+      if (id != null) 'id': id,
+      'notJsonb': notJsonb.toJson(),
+      'jsonb': jsonb.toJson(),
+      'jsonbMap': jsonbMap.toJson(),
+      'jsonbObject': jsonbObject.toJsonForProtocol(),
       'jsonbIndexed': jsonbIndexed.toJson(),
       'jsonbIndexedGin': jsonbIndexedGin.toJson(),
       'jsonbIndexedGinJsonbPath': jsonbIndexedGinJsonbPath.toJson(),

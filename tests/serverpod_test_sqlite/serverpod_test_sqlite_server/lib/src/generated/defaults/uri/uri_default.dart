@@ -340,16 +340,22 @@ class UriDefaultRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UriDefault>> insert(
     _i1.DatabaseSession session,
     List<UriDefault> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<UriDefault>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -383,6 +389,10 @@ class UriDefaultRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UriDefault>> upsert(
     _i1.DatabaseSession session,
     List<UriDefault> rows, {
@@ -390,6 +400,7 @@ class UriDefaultRepository {
     _i1.ColumnSelections<UriDefaultTable>? updateColumns,
     _i1.WhereExpressionBuilder<UriDefaultTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<UriDefault>(
       rows,
@@ -397,6 +408,7 @@ class UriDefaultRepository {
       updateColumns: updateColumns?.call(UriDefault.t),
       updateWhere: updateWhere?.call(UriDefault.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -435,16 +447,22 @@ class UriDefaultRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UriDefault>> update(
     _i1.DatabaseSession session,
     List<UriDefault> rows, {
     _i1.ColumnSelections<UriDefaultTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<UriDefault>(
       rows,
       columns: columns?.call(UriDefault.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -481,6 +499,10 @@ class UriDefaultRepository {
 
   /// Updates all [UriDefault]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UriDefault>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<UriDefaultUpdateTable> columnValues,
@@ -492,6 +514,7 @@ class UriDefaultRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<UriDefault>(
       columnValues: columnValues(UriDefault.t.updateTable),
@@ -503,6 +526,7 @@ class UriDefaultRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -513,6 +537,10 @@ class UriDefaultRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UriDefault>> delete(
     _i1.DatabaseSession session,
     List<UriDefault> rows, {
@@ -521,6 +549,7 @@ class UriDefaultRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<UriDefaultTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<UriDefault>(
       rows,
@@ -529,6 +558,7 @@ class UriDefaultRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -548,6 +578,10 @@ class UriDefaultRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UriDefault>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UriDefaultTable> where,
@@ -556,6 +590,7 @@ class UriDefaultRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<UriDefaultTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UriDefault>(
       where: where(UriDefault.t),
@@ -564,6 +599,7 @@ class UriDefaultRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
