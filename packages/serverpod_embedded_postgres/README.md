@@ -69,6 +69,22 @@ print(pg.endpoint.port);     // some ephemeral port like 49152
 print(pg.endpoint.password); // random 32-char string
 ```
 
+## Connect with external tools
+
+From a Serverpod project configured with `database.dataPath`, run:
+
+```sh
+serverpod database start
+```
+
+The command reads `config/development.yaml` and `config/passwords.yaml`, starts
+the embedded database on the configured TCP port, and prints a connection URI
+for tools such as `psql`, DBeaver, and DataGrip. It keeps the database running
+until interrupted. Start it to connect manually to the database. If this command
+is run before the Serverpod server, it will attach to the database. Use `--mode`
+to select a different configuration or `--server-dir` to select a server
+project explicitly.
+
 ## Detach + attach for cross-VM dev DBs
 
 Set `detach: true` to keep the postmaster alive after your Dart VM
@@ -141,8 +157,8 @@ The `Transport` sealed class has two variants:
 ```dart
 sealed class Transport { const Transport(); }
 final class UnixTransport extends Transport {
-  final String? password;
-  const UnixTransport({this.password});
+  final String? initialPassword;
+  const UnixTransport({this.initialPassword});
 }
 final class TcpTransport extends Transport {
   final int port;          // 0 = ephemeral

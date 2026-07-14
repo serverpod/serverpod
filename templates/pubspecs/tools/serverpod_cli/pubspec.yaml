@@ -51,6 +51,7 @@ dependencies:
   pubspec_parse: ^1.5.0
   recase: ^4.1.0
   serverpod_database: SERVERPOD_VERSION
+  serverpod_embedded_postgres: SERVERPOD_VERSION
   serverpod_logging_cli: ^0.1.0
   serverpod_serialization: SERVERPOD_VERSION
   serverpod_service_client: SERVERPOD_VERSION
