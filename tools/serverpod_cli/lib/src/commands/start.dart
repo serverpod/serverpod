@@ -12,7 +12,6 @@ import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_app_manager.dart';
-import 'package:serverpod_cli/src/commands/start/flutter_dependency_tracker.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_server.dart';
@@ -651,19 +650,16 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     fileChangeSub?.cancel();
     if (!watch) return;
     final currentApps = flutterManager.apps.toList();
-    // One tracker per Flutter app that has a resolved dependency closure. Reused
-    // both to widen the watched directories and to pin the exact pub artifacts
-    // below.
-    final flutterDependencyTrackers = [
+    final flutterPackageGraphPaths = [
       for (final app in currentApps)
-        ?flutterManager.dependencyTrackerFor(app.id),
+        ?flutterManager.packageGraphPathFor(app.id),
     ];
     final watcher = FileWatcher(
       watchPaths: buildWatchPaths(
         config: config,
         flutterApps: currentApps,
         serverDartToolDir: serverDartToolDir,
-        flutterDependencyTrackers: flutterDependencyTrackers,
+        flutterPackageGraphPaths: flutterPackageGraphPaths,
       ),
       // Exact files so a change to one resolution's artifact never triggers the
       // other's action (matters only in a non-workspace layout). The server has
@@ -673,8 +669,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
           ? null
           : p.join(serverDartToolDir, 'package_config.json'),
       packageGraphPaths: {
-        for (final tracker in flutterDependencyTrackers)
-          p.join(tracker.dartToolDir, 'package_graph.json'),
+        ...flutterPackageGraphPaths,
       },
     );
     fileChangeSub = watcher.onFilesChanged
@@ -793,8 +788,8 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
 ///
 /// [serverDartToolDir] is the server's resolution `.dart_tool` (workspace root
 /// or the package itself); watching its `package_config.json` is what makes a
-/// dependency change reload the server in place. In a workspace it equals each
-/// Flutter app's [FlutterDependencyTracker.dartToolDir].
+/// dependency change reload the server in place. [flutterPackageGraphPaths]
+/// contains the resolved or expected graph path for every Flutter app.
 ///
 /// The pub artifacts are watched as exact files rather than their `.dart_tool`
 /// directories: those directories also hold large, churning build state (e.g.
@@ -806,7 +801,7 @@ Set<String> buildWatchPaths({
   required GeneratorConfig config,
   List<FlutterAppConfig> flutterApps = const [],
   String? serverDartToolDir,
-  Iterable<FlutterDependencyTracker> flutterDependencyTrackers = const [],
+  Iterable<String> flutterPackageGraphPaths = const [],
 }) {
   return {
     p.absolute(p.joinAll(config.libSourcePathParts)),
@@ -825,16 +820,14 @@ Set<String> buildWatchPaths({
       p.absolute(p.joinAll([...app.pathParts, 'pubspec.yaml'])),
     ],
     // The server resolution's package_config.json, reloaded into the FES in
-    // place on dependency changes. Watched as an exact file (see above); note
-    // that the single-file watcher stops if the file is deleted (e.g. by a
-    // clean), so dependency tracking then rests until the watcher is rebuilt.
+    // place on dependency changes. The exact-file watcher persists across an
+    // initial absence or deletion without scanning the rest of .dart_tool.
     if (serverDartToolDir != null)
       p.absolute(p.join(serverDartToolDir, 'package_config.json')),
     // Each Flutter resolution's package_graph.json, watched to detect Flutter
     // dependency changes (workspace root or, in a non-workspace project, the
     // Flutter package's own .dart_tool).
-    for (final tracker in flutterDependencyTrackers)
-      p.absolute(p.join(tracker.dartToolDir, 'package_graph.json')),
+    ...flutterPackageGraphPaths.map(p.absolute),
   };
 }
 
