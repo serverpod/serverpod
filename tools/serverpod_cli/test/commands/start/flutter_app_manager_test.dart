@@ -200,7 +200,7 @@ dependencies:
   Future<void> dispose() async {
     await manager.dispose();
     await _fakeVmServer?.close(force: true);
-    await tempDir.delete(recursive: true);
+    await tempDir.deleteBestEffort(recursive: true);
   }
 }
 
@@ -219,10 +219,7 @@ void main() {
       );
     });
 
-    tearDown(() async {
-      await f.dispose();
-      await f.tempDir.deleteBestEffort(recursive: true);
-    });
+    tearDown(() => f.dispose());
 
     test(
       'when initialize is called then each app gets its own info file',
@@ -406,10 +403,7 @@ void main() {
       );
     });
 
-    tearDown(() async {
-      await f.dispose();
-      await f.tempDir.deleteBestEffort(recursive: true);
-    });
+    tearDown(() => f.dispose());
 
     test(
       'when stdoutSinkFor is called then each app gets its own sink target',
@@ -448,10 +442,7 @@ void main() {
         );
       });
 
-      tearDown(() async {
-        await f.dispose();
-        await f.tempDir.deleteBestEffort(recursive: true);
-      });
+      tearDown(() => f.dispose());
 
       test(
         'when launch completes then onReady receives the app URL',
@@ -527,10 +518,7 @@ void main() {
         );
       });
 
-      tearDown(() async {
-        await f.dispose();
-        await f.tempDir.deleteBestEffort(recursive: true);
-      });
+      tearDown(() => f.dispose());
 
       test(
         'when the app finishes launching then onReady fires once without a '
@@ -568,10 +556,7 @@ void main() {
         );
       });
 
-      tearDown(() async {
-        await f.dispose();
-        await f.tempDir.deleteBestEffort(recursive: true);
-      });
+      tearDown(() => f.dispose());
 
       test(
         'when launch is attempted then onLaunchFailed fires and onReady does not',
@@ -602,20 +587,18 @@ void main() {
       );
     });
 
-    tearDown(() async {
-      await f.dispose();
-      await f.tempDir.deleteBestEffort(recursive: true);
-    });
+    tearDown(() => f.dispose());
 
-    test('when loadApps is called after removing apps from the config, '
-        'then removed apps are stopped and new list is reflected', () async {
-      f.serverPubspecFile.writeAsStringSync('''
-name: server
+    group('with an app removed from the flutter_apps config', () {
+      setUp(() {
+        f.serverPubspecFile.writeAsStringSync('''
+name: project_server
 serverpod:
   flutter_apps:
     app-a:
       path: ../app_a_flutter
 ''');
+      });
 
       test(
         'when loadApps is called '
