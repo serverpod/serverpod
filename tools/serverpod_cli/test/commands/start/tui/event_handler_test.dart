@@ -390,6 +390,24 @@ void main() {
         expect(appTab.lines, isEmpty);
       },
     );
+
+    test(
+      'when the error text contains ANSI styling, '
+      'then both structured and raw histories contain plain text.',
+      () {
+        handleFlutterExtensionEvent(
+          holder,
+          'serverpod-app',
+          _flutterErrorEvent({
+            'renderedErrorText': '\x1b[31mA framework error\x1b[0m',
+          }),
+        );
+
+        final entry = appTab.logHistory.single as LogEntry;
+        expect(entry.message, 'A framework error');
+        expect(appTab.lines, ['A framework error']);
+      },
+    );
   });
 
   group('Given a Flutter app tab and a structured application log event,', () {
@@ -500,6 +518,31 @@ void main() {
           'levelIsInferred': false,
           'timestampIsInferred': false,
         });
+      },
+    );
+
+    test(
+      'when the event contains ANSI styling, '
+      'then the rendered message, error, and stack trace contain plain text.',
+      () {
+        handleFlutterLogEvent(
+          holder,
+          'serverpod-app',
+          FlutterLogEvent(
+            time: DateTime.utc(2026, 7, 14, 3),
+            level: LogLevel.error,
+            message: '\x1b[31mFailed\x1b[0m',
+            source: FlutterLogSource.processStderr,
+            loggerName: '\x1b[33mflutter\x1b[0m',
+            error: '\x1b[31mBad state\x1b[0m',
+            stackTrace: '\x1b[2m#0 main (app.dart:1)\x1b[0m',
+          ),
+        );
+
+        final entry = appTab.logHistory.single as LogEntry;
+        expect(entry.message, '[flutter] Failed');
+        expect(entry.error, 'Bad state');
+        expect(entry.stackTrace.toString(), '#0 main (app.dart:1)');
       },
     );
   });

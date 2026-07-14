@@ -3,6 +3,7 @@ import 'package:serverpod_tui/serverpod_tui.dart';
 import 'package:vm_service/vm_service.dart' show Event;
 
 import '../../../util/serverpod_cli_logger.dart';
+import '../../../util/strip_ansi.dart';
 import '../flutter_log_event.dart';
 import 'app.dart';
 import 'tab_model.dart';
@@ -141,18 +142,21 @@ void handleFlutterLogEvent(
   if (tab == null) return;
 
   final loggerName = event.loggerName;
+  final message = loggerName == null
+      ? event.message
+      : '[$loggerName] ${event.message}';
+  final error = event.error;
+  final stackTrace = event.stackTrace;
   tab.logHistory.add(
     LogEntry(
       level: event.level,
       time: event.time,
-      message: loggerName == null
-          ? event.message
-          : '[$loggerName] ${event.message}',
+      message: stripAnsi(message),
       scope: LogScope.root(appId),
-      error: event.error,
-      stackTrace: event.stackTrace == null || event.stackTrace!.isEmpty
+      error: error == null ? null : stripAnsi(error),
+      stackTrace: stackTrace == null || stackTrace.isEmpty
           ? null
-          : StackTrace.fromString(event.stackTrace!),
+          : StackTrace.fromString(stripAnsi(stackTrace)),
       metadata: {
         ...?event.metadata,
         'source': event.source.name,
@@ -202,7 +206,7 @@ void _addRawFlutterEntry(AppLogTab tab, LogEntry entry) {
     if (raw.isNotEmpty) raw.writeln();
     raw.write(entry.stackTrace);
   }
-  tab.lines.addAll(raw.toString().split('\n'));
+  tab.lines.addAll(stripAnsi(raw.toString()).split('\n'));
 }
 
 /// Runs an async action as a tracked operation with spinner in the TUI.
