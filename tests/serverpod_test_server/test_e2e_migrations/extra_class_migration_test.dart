@@ -65,7 +65,6 @@ fields:
     },
   );
 
-
   group(
     'Given protocol model with Map column and a target definition that changes it to CustomClass2',
     () {
@@ -129,7 +128,7 @@ fields:
 
   group(
     'Given protocol model with Map column and a target definition that changes it to FreezedCustomClass',
-        () {
+    () {
       var tag = 'map-to-freezed-custom-class';
       var initialStateProtocols = {
         'migrated_table': '''
@@ -157,28 +156,28 @@ fields:
 
       test(
         'when applying the migration, '
-            'then the column type remains json.',
-            () async {
+        'then the column type remains json.',
+        () async {
           await MigrationTestUtils.createInitialState(
             migrationProtocols: [initialStateProtocols],
             tag: tag,
           );
 
           var createMigrationExitCode =
-          await MigrationTestUtils.createMigrationFromProtocols(
-            protocols: targetStateProtocols,
-            tag: tag,
-          );
+              await MigrationTestUtils.createMigrationFromProtocols(
+                protocols: targetStateProtocols,
+                tag: tag,
+              );
           expect(createMigrationExitCode, 0);
 
           var applyMigrationExitCode =
-          await MigrationTestUtils.runApplyMigrations();
+              await MigrationTestUtils.runApplyMigrations();
           expect(applyMigrationExitCode, 0);
 
           var liveDefinition = await serviceClient.insights
               .getLiveDatabaseDefinition();
           var table = liveDefinition.tables.firstWhere(
-                (t) => t.name == 'migrated_table',
+            (t) => t.name == 'migrated_table',
           );
           var column = table.columns.firstWhere((c) => c.name == 'data');
 

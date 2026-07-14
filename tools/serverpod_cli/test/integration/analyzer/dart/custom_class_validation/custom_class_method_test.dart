@@ -34,33 +34,38 @@ void main() {
       analyzer = CustomClassAnalyzer(testSharedProjectDirectory);
     });
 
-    test('then a validation error is reported that there is a missing a "fromJson" method.', () async {
-      var extraClassFile = File(
-        p.join(trackedDirectory.path, 'no_from_json.dart'),
-      );
-      extraClassFile.createSync(recursive: true);
-      extraClassFile.writeAsStringSync(
-        'class NoFromJson { int toJson() => 1; copyWith() => this; }',
-      );
+    test(
+      'then a validation error is reported that there is a missing a "fromJson" method.',
+      () async {
+        var extraClassFile = File(
+          p.join(trackedDirectory.path, 'no_from_json.dart'),
+        );
+        extraClassFile.createSync(recursive: true);
+        extraClassFile.writeAsStringSync(
+          'class NoFromJson { int toJson() => 1; copyWith() => this; }',
+        );
 
-      await analyzer.analyze(
-        collector: collector,
-        extraClasses: [
-          TypeDefinition(
-            className: 'NoFromJson',
-            nullable: false,
-            sourcePath: extraClassFile.path,
-            packageRoot: testSharedProjectDirectory.path,
-            customClass: true,
+        await analyzer.analyze(
+          collector: collector,
+          extraClasses: [
+            TypeDefinition(
+              className: 'NoFromJson',
+              nullable: false,
+              sourcePath: extraClassFile.path,
+              packageRoot: testSharedProjectDirectory.path,
+              customClass: true,
+            ),
+          ],
+        );
+        expect(collector.errors.isNotEmpty, isTrue);
+        expect(
+          collector.errors.any(
+            (e) => e.message.contains('missing a "fromJson"'),
           ),
-        ],
-      );
-      expect(collector.errors.isNotEmpty, isTrue);
-      expect(
-        collector.errors.any((e) => e.message.contains('missing a "fromJson"')),
-        isTrue,
-      );
-    });
+          isTrue,
+        );
+      },
+    );
   });
 
   group('Given a class missing "toJson()" method', () {
@@ -76,35 +81,42 @@ void main() {
       analyzer = CustomClassAnalyzer(testSharedProjectDirectory);
     });
 
-    test('then a validation error is reported that there is a missing a "toJson()" method.', () async {
-      var extraClassFile = File(p.join(trackedDirectory.path, 'no_to_json.dart'));
-      extraClassFile.createSync(recursive: true);
-      extraClassFile.writeAsStringSync('''
+    test(
+      'then a validation error is reported that there is a missing a "toJson()" method.',
+      () async {
+        var extraClassFile = File(
+          p.join(trackedDirectory.path, 'no_to_json.dart'),
+        );
+        extraClassFile.createSync(recursive: true);
+        extraClassFile.writeAsStringSync('''
 class NoToJson {
   factory NoToJson.fromJson(dynamic json) => throw UnimplementedError();
   NoToJson copyWith() => this;
 }
 ''');
 
-      await analyzer.analyze(
-        collector: collector,
-        extraClasses: [
-          TypeDefinition(
-            className: 'NoToJson',
-            nullable: false,
-            sourcePath: extraClassFile.path,
-            packageRoot: testSharedProjectDirectory.path,
-            customClass: true,
-          ),
-        ],
-      );
+        await analyzer.analyze(
+          collector: collector,
+          extraClasses: [
+            TypeDefinition(
+              className: 'NoToJson',
+              nullable: false,
+              sourcePath: extraClassFile.path,
+              packageRoot: testSharedProjectDirectory.path,
+              customClass: true,
+            ),
+          ],
+        );
 
-      expect(collector.errors.isNotEmpty, isTrue);
-      expect(
-        collector.errors.any((e) => e.message.contains('missing a "toJson()" method')),
-        isTrue,
-      );
-    });
+        expect(collector.errors.isNotEmpty, isTrue);
+        expect(
+          collector.errors.any(
+            (e) => e.message.contains('missing a "toJson()" method'),
+          ),
+          isTrue,
+        );
+      },
+    );
   });
 
   group('Given a class with an async Future "toJson()" method', () {
@@ -119,10 +131,14 @@ class NoToJson {
       analyzer = CustomClassAnalyzer(testSharedProjectDirectory);
     });
 
-    test('then a validation error is reported that "toJson()" method return type must be synchronous.', () async {
-      var extraClassFile = File(p.join(trackedDirectory.path, 'future_to_json.dart'));
-      extraClassFile.createSync(recursive: true);
-      extraClassFile.writeAsStringSync('''
+    test(
+      'then a validation error is reported that "toJson()" method return type must be synchronous.',
+      () async {
+        var extraClassFile = File(
+          p.join(trackedDirectory.path, 'future_to_json.dart'),
+        );
+        extraClassFile.createSync(recursive: true);
+        extraClassFile.writeAsStringSync('''
 import 'dart:async';
 class FutureToJson {
   Future<int> toJson() async => 1;
@@ -131,24 +147,27 @@ class FutureToJson {
 }
 ''');
 
-      await analyzer.analyze(
-        collector: collector,
-        extraClasses: [
-          TypeDefinition(
-            className: 'FutureToJson',
-            nullable: false,
-            sourcePath: extraClassFile.path,
-            packageRoot: testSharedProjectDirectory.path,
-            customClass: true,
-          ),
-        ],
-      );
+        await analyzer.analyze(
+          collector: collector,
+          extraClasses: [
+            TypeDefinition(
+              className: 'FutureToJson',
+              nullable: false,
+              sourcePath: extraClassFile.path,
+              packageRoot: testSharedProjectDirectory.path,
+              customClass: true,
+            ),
+          ],
+        );
 
-      expect(
-        collector.errors.any((e) => e.message.contains('must be synchronous')),
-        isTrue,
-      );
-    });
+        expect(
+          collector.errors.any(
+            (e) => e.message.contains('must be synchronous'),
+          ),
+          isTrue,
+        );
+      },
+    );
   });
 
   group('Given a class with an async Stream "toJson()" method', () {
@@ -163,10 +182,14 @@ class FutureToJson {
       analyzer = CustomClassAnalyzer(testSharedProjectDirectory);
     });
 
-    test('then a validation error is reported that "toJson()" method return type must be synchronous.', () async {
-      var extraClassFile = File(p.join(trackedDirectory.path, 'stream_to_json.dart'));
-      extraClassFile.createSync(recursive: true);
-      extraClassFile.writeAsStringSync('''
+    test(
+      'then a validation error is reported that "toJson()" method return type must be synchronous.',
+      () async {
+        var extraClassFile = File(
+          p.join(trackedDirectory.path, 'stream_to_json.dart'),
+        );
+        extraClassFile.createSync(recursive: true);
+        extraClassFile.writeAsStringSync('''
 import 'dart:async';
 class StreamToJson {
   Stream<int> toJson() async* { yield 1; }
@@ -175,24 +198,27 @@ class StreamToJson {
 }
 ''');
 
-      await analyzer.analyze(
-        collector: collector,
-        extraClasses: [
-          TypeDefinition(
-            className: 'StreamToJson',
-            nullable: false,
-            sourcePath: extraClassFile.path,
-            packageRoot: testSharedProjectDirectory.path,
-            customClass: true,
-          ),
-        ],
-      );
+        await analyzer.analyze(
+          collector: collector,
+          extraClasses: [
+            TypeDefinition(
+              className: 'StreamToJson',
+              nullable: false,
+              sourcePath: extraClassFile.path,
+              packageRoot: testSharedProjectDirectory.path,
+              customClass: true,
+            ),
+          ],
+        );
 
-      expect(
-        collector.errors.any((e) => e.message.contains('must be synchronous')),
-        isTrue,
-      );
-    });
+        expect(
+          collector.errors.any(
+            (e) => e.message.contains('must be synchronous'),
+          ),
+          isTrue,
+        );
+      },
+    );
   });
 
   group('Given a class with a "toJson()" method returning void', () {
@@ -207,10 +233,14 @@ class StreamToJson {
       analyzer = CustomClassAnalyzer(testSharedProjectDirectory);
     });
 
-    test('then a validation error is reported that "toJson()" method cannot return void.', () async {
-      var extraClassFile = File(p.join(trackedDirectory.path, 'void_to_json.dart'));
-      extraClassFile.createSync(recursive: true);
-      extraClassFile.writeAsStringSync('''
+    test(
+      'then a validation error is reported that "toJson()" method cannot return void.',
+      () async {
+        var extraClassFile = File(
+          p.join(trackedDirectory.path, 'void_to_json.dart'),
+        );
+        extraClassFile.createSync(recursive: true);
+        extraClassFile.writeAsStringSync('''
 class VoidToJson {
   void toJson() {}
   factory VoidToJson.fromJson(dynamic json) => throw UnimplementedError();
@@ -218,24 +248,25 @@ class VoidToJson {
 }
 ''');
 
-      await analyzer.analyze(
-        collector: collector,
-        extraClasses: [
-          TypeDefinition(
-            className: 'VoidToJson',
-            nullable: false,
-            sourcePath: extraClassFile.path,
-            packageRoot: testSharedProjectDirectory.path,
-            customClass: true,
-          ),
-        ],
-      );
+        await analyzer.analyze(
+          collector: collector,
+          extraClasses: [
+            TypeDefinition(
+              className: 'VoidToJson',
+              nullable: false,
+              sourcePath: extraClassFile.path,
+              packageRoot: testSharedProjectDirectory.path,
+              customClass: true,
+            ),
+          ],
+        );
 
-      expect(
-        collector.errors.any((e) => e.message.contains('cannot return void')),
-        isTrue,
-      );
-    });
+        expect(
+          collector.errors.any((e) => e.message.contains('cannot return void')),
+          isTrue,
+        );
+      },
+    );
   });
 
   group('Given a class with a "toJson()" method returning an unsupported type', () {
@@ -250,11 +281,15 @@ class VoidToJson {
       analyzer = CustomClassAnalyzer(testSharedProjectDirectory);
     });
 
-    test('then a validation error is reported that "toJson()" method return type is not supported.', () async {
-      var extraClassFile = File(p.join(trackedDirectory.path, 'unsupported_to_json.dart'));
-      extraClassFile.createSync(recursive: true);
-      // 'Object' is not a supported type and triggers a FromDartTypeClassNameException
-      extraClassFile.writeAsStringSync('''
+    test(
+      'then a validation error is reported that "toJson()" method return type is not supported.',
+      () async {
+        var extraClassFile = File(
+          p.join(trackedDirectory.path, 'unsupported_to_json.dart'),
+        );
+        extraClassFile.createSync(recursive: true);
+        // 'Object' is not a supported type and triggers a FromDartTypeClassNameException
+        extraClassFile.writeAsStringSync('''
 class UnsupportedToJson {
   Object toJson() => () {};
   factory UnsupportedToJson.fromJson(dynamic json) => throw UnimplementedError();
@@ -262,23 +297,27 @@ class UnsupportedToJson {
 }
 ''');
 
-      await analyzer.analyze(
-        collector: collector,
-        extraClasses: [
-          TypeDefinition(
-            className: 'UnsupportedToJson',
-            nullable: false,
-            sourcePath: extraClassFile.path,
-            packageRoot: testSharedProjectDirectory.path,
-            customClass: true,
-          ),
-        ],
-      );
+        await analyzer.analyze(
+          collector: collector,
+          extraClasses: [
+            TypeDefinition(
+              className: 'UnsupportedToJson',
+              nullable: false,
+              sourcePath: extraClassFile.path,
+              packageRoot: testSharedProjectDirectory.path,
+              customClass: true,
+            ),
+          ],
+        );
 
-      expect(
-        collector.errors.any((e) => e.message.contains('is not a supported "toJson()" return type')),
-        isTrue,
-      );
-    });
+        expect(
+          collector.errors.any(
+            (e) =>
+                e.message.contains('is not a supported "toJson()" return type'),
+          ),
+          isTrue,
+        );
+      },
+    );
   });
 }

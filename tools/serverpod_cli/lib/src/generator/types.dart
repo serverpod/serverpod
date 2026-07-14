@@ -512,7 +512,6 @@ class TypeDefinition {
 
   /// Get the pgsql type that represents this [TypeDefinition] in the database.
   String get databaseType {
-
     if (customClass && customClassSerializationType != null) {
       return customClassSerializationType!.databaseType;
     }

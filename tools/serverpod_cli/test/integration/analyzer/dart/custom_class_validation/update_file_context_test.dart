@@ -130,21 +130,23 @@ class UserId {
     );
   });
 
-  group('Given a tracked and analyzed extra class file that depends on invalid dart file', () {
-    late File extraClassFile;
-    late List<TypeDefinition> extraClasses;
-    late CustomClassAnalyzer analyzer;
-    late File invalidDartFile;
+  group(
+    'Given a tracked and analyzed extra class file that depends on invalid dart file',
+    () {
+      late File extraClassFile;
+      late List<TypeDefinition> extraClasses;
+      late CustomClassAnalyzer analyzer;
+      late File invalidDartFile;
 
-    var trackedDirectory = Directory(
-      p.join(testSharedProjectDirectory.path, const Uuid().v4()),
-    );
+      var trackedDirectory = Directory(
+        p.join(testSharedProjectDirectory.path, const Uuid().v4()),
+      );
 
-    setUp(() async {
-      extraClassFile = File(p.join(trackedDirectory.path, 'user_id.dart'));
-      extraClassFile.createSync(recursive: true);
+      setUp(() async {
+        extraClassFile = File(p.join(trackedDirectory.path, 'user_id.dart'));
+        extraClassFile.createSync(recursive: true);
 
-      await extraClassFile.writeAsString('''
+        await extraClassFile.writeAsString('''
 import 'invalid_dart.dart';
 
 class UserId {
@@ -159,48 +161,49 @@ class UserId {
   }
 ''');
 
-      invalidDartFile = File(
-        p.join(trackedDirectory.path, 'invalid_dart.dart'),
-      );
-      invalidDartFile.createSync(recursive: true);
-      // Class keyword is combined with class name
-      invalidDartFile.writeAsStringSync('''
+        invalidDartFile = File(
+          p.join(trackedDirectory.path, 'invalid_dart.dart'),
+        );
+        invalidDartFile.createSync(recursive: true);
+        // Class keyword is combined with class name
+        invalidDartFile.writeAsStringSync('''
 classInvalidClass {}
 ''');
 
-      extraClasses = [
-        TypeDefinition(
-          className: 'UserId',
-          nullable: false,
-          sourcePath: extraClassFile.path,
-          packageRoot: testSharedProjectDirectory.path,
-          customClass: true,
-        ),
-      ];
+        extraClasses = [
+          TypeDefinition(
+            className: 'UserId',
+            nullable: false,
+            sourcePath: extraClassFile.path,
+            packageRoot: testSharedProjectDirectory.path,
+            customClass: true,
+          ),
+        ];
 
-      analyzer = CustomClassAnalyzer(
-        testSharedProjectDirectory,
-      );
+        analyzer = CustomClassAnalyzer(
+          testSharedProjectDirectory,
+        );
 
-      await analyzer.analyze(
-        collector: CodeGenerationCollector(),
-        extraClasses: extraClasses,
-      );
-    });
+        await analyzer.analyze(
+          collector: CodeGenerationCollector(),
+          extraClasses: extraClasses,
+        );
+      });
 
-    test(
-      'when the file context is updated with a fix for the invalid dart file '
-      'then true is returned.',
-      () async {
-        invalidDartFile.writeAsStringSync('''
+      test(
+        'when the file context is updated with a fix for the invalid dart file '
+        'then true is returned.',
+        () async {
+          invalidDartFile.writeAsStringSync('''
 class InvalidClass {}
 ''');
 
-        await expectLater(
-          analyzer.updateFileContexts({invalidDartFile.path}, extraClasses),
-          completion(true),
-        );
-      },
-    );
-  });
+          await expectLater(
+            analyzer.updateFileContexts({invalidDartFile.path}, extraClasses),
+            completion(true),
+          );
+        },
+      );
+    },
+  );
 }
