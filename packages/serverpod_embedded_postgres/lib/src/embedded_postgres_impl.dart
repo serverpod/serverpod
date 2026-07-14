@@ -340,45 +340,33 @@ Future<(Transport, String?)> _resolveTransport(
   required File pwFile,
   required bool hadCluster,
 }) async {
-  String? initPassword;
-  if (!hadCluster) {
-    initPassword =
+  String? resolvedPassword;
+  if (!hadCluster || requested is TcpTransport) {
+    resolvedPassword =
         switch (requested) {
           TcpTransport(:final password) => password,
           UnixTransport(:final initialPassword) => initialPassword,
         } ??
-        _generatePassword();
-    pwFile.parent.createSync(recursive: true);
-    pwFile.writeAsStringSync(initPassword);
+        (hadCluster && pwFile.existsSync()
+            ? pwFile.readAsStringSync()
+            : _generatePassword());
+
+    if (!hadCluster || !pwFile.existsSync()) {
+      pwFile.parent.createSync(recursive: true);
+      pwFile.writeAsStringSync(resolvedPassword);
+    }
   }
 
   switch (requested) {
     case UnixTransport():
       // Password is passed to initdb on fresh clusters only; trust auth
       // does not use it for Unix connections.
-      return (requested, initPassword);
-    case TcpTransport(:final port, :final password):
-      final String resolvedPw;
-      if (hadCluster && pwFile.existsSync()) {
-        // Warm restart: the cluster's stored hash matches whatever was
-        // initdb'd. Trust the persisted password unless the caller
-        // explicitly provides one (in which case we assume they know
-        // they aligned both sides).
-        resolvedPw = password ?? pwFile.readAsStringSync();
-      } else if (hadCluster) {
-        // Legacy cluster without a password sidecar. Out of scope to
-        // backfill the role; generate a file for the endpoint only.
-        resolvedPw = password ?? _generatePassword();
-        pwFile.parent.createSync(recursive: true);
-        pwFile.writeAsStringSync(resolvedPw);
-      } else {
-        resolvedPw = initPassword!;
-      }
-
+      return (requested, resolvedPassword);
+    case TcpTransport(:final port):
       var resolvedPort = port == 0 ? await _allocateEphemeralPort() : port;
       return (
-        TcpTransport(port: resolvedPort, password: resolvedPw),
-        resolvedPw,
+        TcpTransport(port: resolvedPort, password: resolvedPassword),
+        resolvedPassword,
       );
   }
 }
