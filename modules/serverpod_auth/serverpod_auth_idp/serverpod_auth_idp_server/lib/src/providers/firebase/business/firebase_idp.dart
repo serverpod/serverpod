@@ -20,7 +20,8 @@ import 'firebase_idp_utils.dart';
 /// custom implementations of the relevant methods.
 class FirebaseIdp implements IdentityProvider {
   /// The method used when authenticating with the Firebase identity provider.
-  static const String method = 'firebase';
+  @override
+  String get method => 'firebase';
 
   /// Admin operations to work with Firebase-backed accounts.
   final FirebaseIdpAdmin admin;

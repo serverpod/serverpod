@@ -19,7 +19,8 @@ import 'github_idp_utils.dart';
 /// custom implementations of the relevant methods.
 class GitHubIdp implements IdentityProvider {
   /// The method used when authenticating with the GitHub identity provider.
-  static const String method = 'github';
+  @override
+  String get method => 'github';
 
   /// Admin operations to work with GitHub-backed accounts.
   final GitHubIdpAdmin admin;

@@ -3,6 +3,9 @@ import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 
 /// A fake identity provider for testing purposes.
 class FakeIdentityProvider implements IdentityProvider {
+  @override
+  String get method => 'fake';
+
   final TokenIssuer tokenIssuer;
   final AuthUsers authUsers;
   final UserProfiles userProfiles;

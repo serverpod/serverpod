@@ -24,7 +24,8 @@ import 'routes/apple_server_notification_route.dart';
 /// custom implementations of the relevant methods.
 class AppleIdp implements IdentityProvider {
   /// The method used when authenticating with the Apple identity provider.
-  static const String method = 'apple';
+  @override
+  String get method => utils.method;
 
   /// Admin operations to work with Apple-backed accounts.
   late final AppleIdpAdmin admin;

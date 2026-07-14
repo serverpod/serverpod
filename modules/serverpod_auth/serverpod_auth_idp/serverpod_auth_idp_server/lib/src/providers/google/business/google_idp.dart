@@ -19,7 +19,8 @@ import 'google_idp_utils.dart';
 /// custom implementations of the relevant methods.
 class GoogleIdp implements IdentityProvider {
   /// The method used when authenticating with the Google identity provider.
-  static const String method = 'google';
+  @override
+  String get method => 'google';
 
   /// Admin operations to work with Google-backed accounts.
   final GoogleIdpAdmin admin;

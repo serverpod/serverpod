@@ -19,7 +19,8 @@ import 'microsoft_idp_utils.dart';
 /// custom implementations of the relevant methods.
 class MicrosoftIdp implements IdentityProvider {
   /// The method used when authenticating with the Microsoft identity provider.
-  static const String method = 'microsoft';
+  @override
+  String get method => 'microsoft';
 
   /// Admin operations to work with Microsoft-backed accounts.
   final MicrosoftIdpAdmin admin;

@@ -19,7 +19,8 @@ import 'facebook_idp_utils.dart';
 /// custom implementations of the relevant methods.
 class FacebookIdp implements IdentityProvider {
   /// The method used when authenticating with the Facebook identity provider.
-  static const String method = 'facebook';
+  @override
+  String get method => 'facebook';
 
   /// Admin operations to work with Facebook-backed accounts.
   final FacebookIdpAdmin admin;

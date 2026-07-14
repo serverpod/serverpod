@@ -350,6 +350,9 @@ void main() {
 
 class UnregisteredIdentityProvider implements IdentityProvider {
   @override
+  String get method => 'unregistered';
+
+  @override
   Future<void> mergeAuthUsers(
     final Session session, {
     required final UuidValue userToKeepId,

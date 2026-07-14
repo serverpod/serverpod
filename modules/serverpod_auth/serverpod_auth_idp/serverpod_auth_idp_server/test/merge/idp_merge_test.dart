@@ -116,6 +116,38 @@ void main() {
     ),
   );
 
+  test(
+    'Given the bundled identity providers, '
+    'when reading their authentication methods, '
+    'then each provider returns its stable method identifier.',
+    () {
+      expect(
+        {
+          AnonymousIdp: anonymousIdp.method,
+          AppleIdp: appleIdp.method,
+          EmailIdp: emailIdp.method,
+          FacebookIdp: facebookIdp.method,
+          FirebaseIdp: firebaseIdp.method,
+          GitHubIdp: githubIdp.method,
+          GoogleIdp: googleIdp.method,
+          MicrosoftIdp: microsoftIdp.method,
+          PasskeyIdp: passkeyIdp.method,
+        },
+        {
+          AnonymousIdp: 'anonymous',
+          AppleIdp: 'apple',
+          EmailIdp: 'email',
+          FacebookIdp: 'facebook',
+          FirebaseIdp: 'firebase',
+          GitHubIdp: 'github',
+          GoogleIdp: 'google',
+          MicrosoftIdp: 'microsoft',
+          PasskeyIdp: 'passkey',
+        },
+      );
+    },
+  );
+
   withServerpod(
     'Given an EmailAccount for userToRemove,',
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,

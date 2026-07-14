@@ -44,6 +44,20 @@ void testSuite<T extends IdentityProvider>(
       );
 
       test(
+        'when building an identity provider, '
+        'then it exposes a non-empty authentication method.',
+        () {
+          final provider = idpBuilder.build(
+            tokenManager: tokenManager,
+            authUsers: authUsers,
+            userProfiles: userProfiles,
+          );
+
+          expect(provider.method, isNotEmpty);
+        },
+      );
+
+      test(
         'when building two identity providers, '
         'then distinct provider instances are returned.',
         () {

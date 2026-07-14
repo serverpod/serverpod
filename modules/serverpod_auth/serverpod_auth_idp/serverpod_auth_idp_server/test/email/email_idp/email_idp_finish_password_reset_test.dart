@@ -375,7 +375,7 @@ void main() {
         await fixture.tokenManager.issueToken(
           session,
           authUserId: authUserId,
-          method: EmailIdp.method,
+          method: fixture.emailIdp.method,
           scopes: {},
         );
 
