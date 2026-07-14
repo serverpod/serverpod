@@ -60,7 +60,7 @@ void run(List<String> args) async {
   // These are used by the default web page.
   pod.webServer.addRoute(
     StaticRoute.withCacheBusting(cacheBustingConfig),
-    '/web',
+    cacheBustingConfig.mountPrefix,
   );
   // {{/webserver}}
 
