@@ -10,39 +10,37 @@ import '../../test_util/builders/generator_config_builder.dart';
 import '../../test_util/endpoint_validation_helpers.dart';
 
 void main() {
-  group(
-    'Given a project whose code generation already ran, '
-    'when generation runs again with unchanged sources,',
-    () {
-      late Directory projectDir;
-      late GeneratorConfig config;
-      late Analyzers analyzers;
-      late File protocolFile;
-      late String protocolContent;
-      late GenerateResult secondRun;
+  group('Given a project whose code generation already ran,', () {
+    late Directory projectDir;
+    late GeneratorConfig config;
+    late Analyzers analyzers;
+    late File protocolFile;
+    late String protocolContent;
 
-      // A timestamp no generation run could produce; pinned on protocol.dart
-      // between the runs so any rewrite - even one with identical content -
-      // is detectable regardless of file system timestamp granularity.
-      final mtimeSentinel = DateTime.utc(2020, 1, 1);
+    // A timestamp no generation run could produce; pinned on protocol.dart
+    // between the runs so any rewrite - even one with identical content -
+    // is detectable regardless of file system timestamp granularity.
+    final mtimeSentinel = DateTime.utc(2020, 1, 1);
 
-      tearDownAll(() => projectDir.deleteIfExists(recursive: true));
+    tearDownAll(() {
+      projectDir.deleteIfExists(recursive: true);
+    });
 
-      setUpAll(() async {
-        projectDir = Directory.systemTemp.createTempSync('cli_test_');
-        await createTestEnvironment(projectDir);
+    setUpAll(() async {
+      projectDir = Directory.systemTemp.createTempSync('cli_test_');
+      await createTestEnvironment(projectDir);
 
-        File(
+      File(
           p.join(projectDir.path, 'lib', 'src', 'protocol', 'item.spy.yaml'),
         )
-          ..createSync(recursive: true)
-          ..writeAsStringSync('''
+        ..createSync(recursive: true)
+        ..writeAsStringSync('''
 class: Item
 fields:
   name: String
 ''');
 
-        File(
+      File(
           p.join(
             projectDir.path,
             'lib',
@@ -51,8 +49,8 @@ fields:
             'item_endpoint.dart',
           ),
         )
-          ..createSync(recursive: true)
-          ..writeAsStringSync('''
+        ..createSync(recursive: true)
+        ..writeAsStringSync('''
 import 'package:serverpod/serverpod.dart';
 import 'package:test_server/src/generated/protocol.dart';
 
@@ -63,16 +61,21 @@ class ItemEndpoint extends Endpoint {
 }
 ''');
 
-        config = buildTestServerConfig(projectDir);
-        analyzers = await Analyzers.create(config);
-        await analyzers.performGenerate(config: config);
+      config = buildTestServerConfig(projectDir);
+      analyzers = await Analyzers.create(config);
+      await analyzers.performGenerate(config: config);
 
-        protocolFile = File(
-          p.join(projectDir.path, 'lib', 'src', 'generated', 'protocol.dart'),
-        );
-        protocolContent = protocolFile.readAsStringSync();
-        protocolFile.setLastModifiedSync(mtimeSentinel);
+      protocolFile = File(
+        p.join(projectDir.path, 'lib', 'src', 'generated', 'protocol.dart'),
+      );
+      protocolContent = protocolFile.readAsStringSync();
+      protocolFile.setLastModifiedSync(mtimeSentinel);
+    });
 
+    group('when generation runs again with unchanged sources,', () {
+      late GenerateResult secondRun;
+
+      setUpAll(() async {
         secondRun = await analyzers.performGenerate(config: config);
       });
 
@@ -87,6 +90,6 @@ class ItemEndpoint extends Endpoint {
         expect(protocolFile.lastModifiedSync().toUtc(), mtimeSentinel);
         expect(protocolFile.readAsStringSync(), protocolContent);
       });
-    },
-  );
+    });
+  });
 }

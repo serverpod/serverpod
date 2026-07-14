@@ -274,8 +274,7 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given a tracked and analyzed directory with a persistently invalid dart '
-    'endpoint file',
+    'Given a tracked and analyzed directory with a persistently invalid dart endpoint file',
     () {
       var trackedDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
@@ -300,25 +299,27 @@ class ExampleEndpoint extends Endpoint {
         await analyzer.analyze(collector: CodeGenerationCollector());
       });
 
-      test('when the file context is updated with an unrelated non-endpoint '
-          'file while the error persists '
-          'then false is returned.', () async {
-        // Regression: a persistent error must not turn every unrelated change
-        // into a regeneration, or watch mode loops forever (each generation
-        // touches generated files, whose events regenerate again).
-        var nonEndpointFile = File(
-          path.join(trackedDirectory.path, 'helper.dart'),
-        );
-        nonEndpointFile.createSync(recursive: true);
-        nonEndpointFile.writeAsStringSync('''
+      test(
+        'when the file context is updated with an unrelated non-endpoint file while the error persists '
+        'then false is returned.',
+        () async {
+          // Regression: a persistent error must not turn every unrelated change
+          // into a regeneration, or watch mode loops forever (each generation
+          // touches generated files, whose events regenerate again).
+          var nonEndpointFile = File(
+            path.join(trackedDirectory.path, 'helper.dart'),
+          );
+          nonEndpointFile.createSync(recursive: true);
+          nonEndpointFile.writeAsStringSync('''
 class HelperClass {}
 ''');
 
-        await expectLater(
-          analyzer.updateFileContexts({nonEndpointFile.path}),
-          completion(false),
-        );
-      });
+          await expectLater(
+            analyzer.updateFileContexts({nonEndpointFile.path}),
+            completion(false),
+          );
+        },
+      );
     },
   );
 

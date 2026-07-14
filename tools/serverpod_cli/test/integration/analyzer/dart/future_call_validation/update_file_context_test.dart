@@ -24,8 +24,7 @@ void main() {
   });
 
   group(
-    'Given a tracked and analyzed directory with a persistently invalid dart '
-    'future call file',
+    'Given a tracked and analyzed directory with a persistently invalid dart future call file',
     () {
       var trackedDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
@@ -53,31 +52,32 @@ class ExampleFutureCall extends FutureCall {
         );
       });
 
-      test('when the file context is updated with an unrelated non-future-call '
-          'file while the error persists '
-          'then false is returned.', () async {
-        // Regression: a persistent error must not turn every unrelated change
-        // into a regeneration, or watch mode loops forever (each generation
-        // touches generated files, whose events regenerate again).
-        var unrelatedFile = File(
-          path.join(trackedDirectory.path, 'helper.dart'),
-        );
-        unrelatedFile.createSync(recursive: true);
-        unrelatedFile.writeAsStringSync('''
+      test(
+        'when the file context is updated with an unrelated non-future-call file while the error persists '
+        'then false is returned.',
+        () async {
+          // Regression: a persistent error must not turn every unrelated change
+          // into a regeneration, or watch mode loops forever (each generation
+          // touches generated files, whose events regenerate again).
+          var unrelatedFile = File(
+            path.join(trackedDirectory.path, 'helper.dart'),
+          );
+          unrelatedFile.createSync(recursive: true);
+          unrelatedFile.writeAsStringSync('''
 class HelperClass {}
 ''');
 
-        await expectLater(
-          analyzer.updateFileContexts({unrelatedFile.path}),
-          completion(false),
-        );
-      });
+          await expectLater(
+            analyzer.updateFileContexts({unrelatedFile.path}),
+            completion(false),
+          );
+        },
+      );
     },
   );
 
   group(
-    'Given a tracked and analyzed directory with an invalid dart future call '
-    'file',
+    'Given a tracked and analyzed directory with an invalid dart future call file',
     () {
       var trackedDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
@@ -106,10 +106,11 @@ class ExampleFutureCall extends FutureCall {
         );
       });
 
-      test('when the file context is updated with a fix for the invalid '
-          'future call file '
-          'then true is returned.', () async {
-        futureCallFile.writeAsStringSync('''
+      test(
+        'when the file context is updated with a fix for the invalid future call file '
+        'then true is returned.',
+        () async {
+          futureCallFile.writeAsStringSync('''
 import 'package:serverpod/serverpod.dart';
 
 class ExampleFutureCall extends FutureCall {
@@ -119,17 +120,17 @@ class ExampleFutureCall extends FutureCall {
 }
 ''');
 
-        await expectLater(
-          analyzer.updateFileContexts({futureCallFile.path}),
-          completion(true),
-        );
-      });
+          await expectLater(
+            analyzer.updateFileContexts({futureCallFile.path}),
+            completion(true),
+          );
+        },
+      );
     },
   );
 
   group(
-    'Given a tracked directory with a valid future call file analyzed before '
-    'any models were provided',
+    'Given a tracked directory with a valid future call file analyzed before any models were provided',
     () {
       var trackedDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
@@ -158,33 +159,38 @@ class ExampleFutureCall extends FutureCall {
         await analyzer.analyze(collector: CodeGenerationCollector());
       });
 
-      test('when the file context is updated with an unrelated non-future-call '
-          'file '
-          'then false is returned.', () async {
-        // Regression: the pending-analysis state is indistinguishable from an
-        // error and used to mark every unrelated change as needing
-        // generation.
-        var unrelatedFile = File(
-          path.join(trackedDirectory.path, 'helper.dart'),
-        );
-        unrelatedFile.createSync(recursive: true);
-        unrelatedFile.writeAsStringSync('''
+      test(
+        'when the file context is updated with an unrelated non-future-call file '
+        'then false is returned.',
+        () async {
+          // Regression: the pending-analysis state is indistinguishable from an
+          // error and used to mark every unrelated change as needing
+          // generation.
+          var unrelatedFile = File(
+            path.join(trackedDirectory.path, 'helper.dart'),
+          );
+          unrelatedFile.createSync(recursive: true);
+          unrelatedFile.writeAsStringSync('''
 class HelperClass {}
 ''');
 
-        await expectLater(
-          analyzer.updateFileContexts({unrelatedFile.path}),
-          completion(false),
-        );
-      });
+          await expectLater(
+            analyzer.updateFileContexts({unrelatedFile.path}),
+            completion(false),
+          );
+        },
+      );
 
-      test('when the file context is updated with the future call file itself '
-          'then true is returned.', () async {
-        await expectLater(
-          analyzer.updateFileContexts({futureCallFile.path}),
-          completion(true),
-        );
-      });
+      test(
+        'when the file context is updated with the future call file itself '
+        'then true is returned.',
+        () async {
+          await expectLater(
+            analyzer.updateFileContexts({futureCallFile.path}),
+            completion(true),
+          );
+        },
+      );
     },
   );
 }
