@@ -43,6 +43,7 @@ Future<({HttpServer server, String wsUri})> _startFakeVmService() async {
 Future<({HttpServer server, String wsUri})> _startFakeLoggingVmService({
   int? loggingLevel = 800,
   List<List<int>> stdoutChunks = const [],
+  Duration stdoutChunkInterval = Duration.zero,
 }) async {
   final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
   server.transform(WebSocketTransformer()).listen((socket) {
@@ -68,7 +69,7 @@ Future<({HttpServer server, String wsUri})> _startFakeLoggingVmService({
       }
 
       final streamId = params['streamId'];
-      Timer(const Duration(milliseconds: 20), () {
+      Timer(const Duration(milliseconds: 20), () async {
         if (socket.readyState != WebSocket.open) return;
         if (streamId == 'Logging' && loggingLevel != null) {
           socket.add(
@@ -117,7 +118,8 @@ Future<({HttpServer server, String wsUri})> _startFakeLoggingVmService({
             }),
           );
         } else if (streamId == 'Stdout') {
-          for (final chunk in stdoutChunks) {
+          for (var index = 0; index < stdoutChunks.length; index++) {
+            final chunk = stdoutChunks[index];
             socket.add(
               jsonEncode({
                 'jsonrpc': '2.0',
@@ -132,6 +134,10 @@ Future<({HttpServer server, String wsUri})> _startFakeLoggingVmService({
                 },
               }),
             );
+            if (index < stdoutChunks.length - 1 &&
+                stdoutChunkInterval > Duration.zero) {
+              await Future<void>.delayed(stdoutChunkInterval);
+            }
           }
         }
       });
@@ -1031,6 +1037,94 @@ The key [GlobalKey#1d408] was used by multiple widgets.''';
           expect(receivedEvents, hasLength(1));
           expect(receivedEvents.single.source, FlutterLogSource.vmStdout);
           expect(stdoutBuffer.toString(), 'A native application message\n');
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a partially mirrored multi-line app log followed by a repeated line, '
+    'when both transports forward the output,',
+    () {
+      late FlutterProcess fp;
+      late ({HttpServer server, String wsUri}) fake;
+      late List<FlutterLogEvent> receivedEvents;
+      late StringBuffer stdoutBuffer;
+      late StreamController<List<int>> stdoutController;
+      late IOSink stdoutSink;
+
+      setUp(() async {
+        fake = await _startFakeLoggingVmService(
+          loggingLevel: null,
+          stdoutChunks: [utf8.encode('A\n'), utf8.encode('A\n')],
+          stdoutChunkInterval: const Duration(milliseconds: 150),
+        );
+        receivedEvents = [];
+        stdoutBuffer = StringBuffer();
+        stdoutController = StreamController<List<int>>();
+        stdoutController.stream
+            .transform(utf8.decoder)
+            .listen(stdoutBuffer.write);
+        stdoutSink = IOSink(stdoutController.sink);
+        final firstVmEvent = Completer<void>();
+        fp = FlutterProcess(
+          flutterPackageDir: Directory.current.path,
+          device: 'linux',
+          flutterExecutable: _dartExecutable(),
+          argsOverrideForTesting: [
+            _shimPath('emits_machine_events.dart'),
+            '--ws=${fake.wsUri}',
+          ],
+          stdoutSink: stdoutSink,
+          onLog: (event) {
+            receivedEvents.add(event);
+            if (event.source == FlutterLogSource.vmStdout &&
+                !firstVmEvent.isCompleted) {
+              firstVmEvent.complete();
+            }
+          },
+        );
+
+        await fp.start();
+        await fp.launched;
+        await fp.connectToVmService();
+        await firstVmEvent.future.timeout(const Duration(seconds: 5));
+        fp.handleMachineLine(
+          jsonEncode([
+            {
+              'event': 'app.log',
+              'params': {'log': 'A\nB', 'error': false},
+            },
+          ]),
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 250));
+        fp.handleMachineLine(
+          jsonEncode([
+            {
+              'event': 'app.log',
+              'params': {'log': 'A', 'error': false},
+            },
+          ]),
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+        await stdoutSink.flush();
+        await Future<void>.delayed(Duration.zero);
+      });
+
+      tearDown(() async {
+        await fp.stop(timeout: const Duration(milliseconds: 100));
+        await fake.server.close(force: true);
+        await stdoutSink.close();
+      });
+
+      test(
+        'then the repeated line is retained once.',
+        () {
+          expect(
+            receivedEvents.map((event) => event.message),
+            ['A', 'A\nB', 'A'],
+          );
+          expect(stdoutBuffer.toString(), 'A\nA\nB\nA\n');
         },
       );
     },

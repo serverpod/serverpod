@@ -764,6 +764,7 @@ class FlutterProcess {
     if (lines.isEmpty) return false;
 
     final matchedIndexes = <int>[];
+    final unmatchedMessages = <String>[];
     for (final message in lines) {
       var matchIndex = -1;
       for (var index = 0; index < _recentRawLogLines.length; index++) {
@@ -778,19 +779,24 @@ class FlutterProcess {
         }
       }
       if (matchIndex == -1) {
-        for (final message in lines) {
-          _rememberRawLogLine(
-            _RecentRawLogLine(
-              channel: channel,
-              message: message,
-              source: event.source,
-              receivedAtMilliseconds: now,
-            ),
-          );
-        }
-        return false;
+        unmatchedMessages.add(message);
+      } else {
+        matchedIndexes.add(matchIndex);
       }
-      matchedIndexes.add(matchIndex);
+    }
+
+    if (unmatchedMessages.isNotEmpty) {
+      for (final message in unmatchedMessages) {
+        _rememberRawLogLine(
+          _RecentRawLogLine(
+            channel: channel,
+            message: message,
+            source: event.source,
+            receivedAtMilliseconds: now,
+          ),
+        );
+      }
+      return false;
     }
 
     for (final index in matchedIndexes) {
