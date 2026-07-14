@@ -1044,6 +1044,99 @@ The key [GlobalKey#1d408] was used by multiple widgets.''';
   );
 
   group(
+    'Given two identical VM lines with app.log mirrors and one additional app.log line, '
+    'when both transports forward them,',
+    () {
+      late FlutterProcess fp;
+      late ({HttpServer server, String wsUri}) fake;
+      late List<FlutterLogEvent> receivedEvents;
+      late StringBuffer stdoutBuffer;
+      late StreamController<List<int>> stdoutController;
+      late IOSink stdoutSink;
+
+      setUp(() async {
+        fake = await _startFakeLoggingVmService(
+          loggingLevel: null,
+          stdoutChunks: [utf8.encode('hello\n'), utf8.encode('hello\n')],
+          stdoutChunkInterval: const Duration(milliseconds: 75),
+        );
+        receivedEvents = [];
+        stdoutBuffer = StringBuffer();
+        stdoutController = StreamController<List<int>>();
+        stdoutController.stream
+            .transform(utf8.decoder)
+            .listen(stdoutBuffer.write);
+        stdoutSink = IOSink(stdoutController.sink);
+        final twoVmEvents = Completer<void>();
+        final additionalAppLogEvent = Completer<void>();
+        fp = FlutterProcess(
+          flutterPackageDir: Directory.current.path,
+          device: 'linux',
+          flutterExecutable: _dartExecutable(),
+          argsOverrideForTesting: [
+            _shimPath('emits_machine_events.dart'),
+            '--ws=${fake.wsUri}',
+          ],
+          stdoutSink: stdoutSink,
+          onLog: (event) {
+            receivedEvents.add(event);
+            if (receivedEvents.length == 2 && !twoVmEvents.isCompleted) {
+              twoVmEvents.complete();
+            }
+            if (receivedEvents.length == 3 &&
+                !additionalAppLogEvent.isCompleted) {
+              additionalAppLogEvent.complete();
+            }
+          },
+        );
+
+        await fp.start();
+        await fp.launched;
+        await fp.connectToVmService();
+        await twoVmEvents.future.timeout(const Duration(seconds: 5));
+        for (var index = 0; index < 3; index++) {
+          fp.handleMachineLine(
+            jsonEncode([
+              {
+                'event': 'app.log',
+                'params': {'log': 'hello', 'error': false},
+              },
+            ]),
+          );
+        }
+        await additionalAppLogEvent.future.timeout(const Duration(seconds: 5));
+        await stdoutSink.flush();
+        await Future<void>.delayed(Duration.zero);
+      });
+
+      tearDown(() async {
+        await fp.stop(timeout: const Duration(milliseconds: 100));
+        await fake.server.close(force: true);
+        await stdoutSink.close();
+      });
+
+      test(
+        'then the mirrors are suppressed and the additional line is retained.',
+        () {
+          expect(
+            receivedEvents.map((event) => event.source),
+            [
+              FlutterLogSource.vmStdout,
+              FlutterLogSource.vmStdout,
+              FlutterLogSource.appLog,
+            ],
+          );
+          expect(
+            receivedEvents.map((event) => event.message),
+            everyElement('hello'),
+          );
+          expect(stdoutBuffer.toString(), 'hello\nhello\nhello\n');
+        },
+      );
+    },
+  );
+
+  group(
     'Given a partially mirrored multi-line app log followed by a repeated line, '
     'when both transports forward the output,',
     () {
@@ -1294,6 +1387,56 @@ The key [GlobalKey#1d408] was used by multiple widgets.''';
             receivedEvents.expand((event) => event.message.split('\n')),
             [for (var index = 1; index <= 20; index++) 'Line $index'],
           );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a Flutter process rapidly emitting identical inferred stderr lines, '
+    'when its log events are forwarded,',
+    () {
+      late FlutterProcess fp;
+      late FlutterLogEvent receivedEvent;
+
+      setUp(() async {
+        final eventCompleter = Completer<FlutterLogEvent>();
+        fp = FlutterProcess(
+          flutterPackageDir: Directory.current.path,
+          device: 'web-server',
+          flutterExecutable: _dartExecutable(),
+          argsOverrideForTesting: [
+            _shimPath('emits_identical_raw_log_burst.dart'),
+          ],
+          onLog: (event) {
+            if (!eventCompleter.isCompleted) eventCompleter.complete(event);
+          },
+        );
+
+        await fp.start();
+        await fp.exitCode;
+        receivedEvent = await eventCompleter.future.timeout(
+          const Duration(seconds: 5),
+        );
+      });
+
+      tearDown(() async {
+        await fp.stop();
+      });
+
+      test(
+        'then they are grouped into one structured entry.',
+        () {
+          expect(
+            receivedEvent.message,
+            'Repeated diagnostic.\n'
+            'Repeated diagnostic.\n'
+            'Repeated diagnostic.',
+          );
+          expect(receivedEvent.metadata, {
+            'coalesced': true,
+            'lineCount': 3,
+          });
         },
       );
     },
