@@ -91,7 +91,7 @@ class FlutterProcess {
   _PendingFlutterLog? _pendingLog;
   _Utf8LineDecoder? _vmStdoutDecoder;
   _Utf8LineDecoder? _vmStderrDecoder;
-  final Stopwatch _logDeduplicationClock = Stopwatch()..start();
+  final Stopwatch _logClock = Stopwatch()..start();
   final List<_RecentRawLogLine> _recentRawLogLines = [];
 
   String? _appId;
@@ -729,9 +729,17 @@ class FlutterProcess {
     }
 
     final pending = _pendingLog;
-    if (pending == null || !pending.canAppend(event)) {
+    final receivedAtMilliseconds = _logClock.elapsedMilliseconds;
+    if (pending == null ||
+        !pending.canAppend(
+          event,
+          receivedAtMilliseconds: receivedAtMilliseconds,
+        )) {
       _flushPendingLog();
-      _pendingLog = _PendingFlutterLog(event);
+      _pendingLog = _PendingFlutterLog(
+        event,
+        receivedAtMilliseconds: receivedAtMilliseconds,
+      );
     } else {
       pending.append(event);
     }
@@ -748,7 +756,7 @@ class FlutterProcess {
     final channel = _rawLogChannel(event);
     if (channel == null) return false;
 
-    final now = _logDeduplicationClock.elapsedMilliseconds;
+    final now = _logClock.elapsedMilliseconds;
     _recentRawLogLines.removeWhere(
       (line) => now - line.receivedAtMilliseconds > 1000,
     );
@@ -1031,19 +1039,30 @@ class FlutterProcess {
 }
 
 class _PendingFlutterLog {
-  _PendingFlutterLog(this.first)
-    : _message = StringBuffer(first.message),
-      _lineCount = _countLines(first.message);
+  _PendingFlutterLog(
+    this.first, {
+    required this.receivedAtMilliseconds,
+  }) : _message = StringBuffer(first.message),
+       _lineCount = _countLines(first.message);
 
   static const maxLines = 100;
   static const maxCharacters = 64 * 1024;
+  static const maxAge = Duration(milliseconds: 250);
 
   final FlutterLogEvent first;
+  final int receivedAtMilliseconds;
   final StringBuffer _message;
   int _lineCount;
 
-  bool canAppend(FlutterLogEvent event) {
+  bool canAppend(
+    FlutterLogEvent event, {
+    required int receivedAtMilliseconds,
+  }) {
     if (event.source != first.source || event.level != first.level) {
+      return false;
+    }
+    if (receivedAtMilliseconds - this.receivedAtMilliseconds >=
+        maxAge.inMilliseconds) {
       return false;
     }
     final additionalLines = _countLines(event.message);

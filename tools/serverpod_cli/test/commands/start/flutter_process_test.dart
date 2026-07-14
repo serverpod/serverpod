@@ -1246,4 +1246,55 @@ The key [GlobalKey#1d408] was used by multiple widgets.''';
       );
     },
   );
+
+  group(
+    'Given a Flutter process continuously emitting inferred stderr lines, '
+    'when its log events are forwarded,',
+    () {
+      late FlutterProcess fp;
+      late List<FlutterLogEvent> receivedEvents;
+
+      setUp(() async {
+        receivedEvents = [];
+        final allLinesForwarded = Completer<void>();
+        fp = FlutterProcess(
+          flutterPackageDir: Directory.current.path,
+          device: 'web-server',
+          flutterExecutable: _dartExecutable(),
+          argsOverrideForTesting: [
+            _shimPath('emits_raw_log_trickle.dart'),
+          ],
+          onLog: (event) {
+            receivedEvents.add(event);
+            final lineCount = receivedEvents.fold<int>(
+              0,
+              (count, event) => count + event.message.split('\n').length,
+            );
+            if (lineCount == 20 && !allLinesForwarded.isCompleted) {
+              allLinesForwarded.complete();
+            }
+          },
+        );
+
+        await fp.start();
+        await fp.exitCode;
+        await allLinesForwarded.future.timeout(const Duration(seconds: 5));
+      });
+
+      tearDown(() async {
+        await fp.stop();
+      });
+
+      test(
+        'then the pending entry is flushed before the output becomes idle.',
+        () {
+          expect(receivedEvents, hasLength(greaterThan(1)));
+          expect(
+            receivedEvents.expand((event) => event.message.split('\n')),
+            [for (var index = 1; index <= 20; index++) 'Line $index'],
+          );
+        },
+      );
+    },
+  );
 }
