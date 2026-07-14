@@ -81,38 +81,73 @@ void main() {
     );
 
     test(
-      'when a cluster is started with TcpTransport '
-      'then TCP auth succeeds using the passwords.yaml-aligned credential.',
+      'when a default cluster is restarted with TcpTransport '
+      'then TCP auth succeeds using its generated password.',
       () async {
         var pgDataDir = Directory(p.join(tmpRoot.path, '.serverpod', 'pgdata'));
-        var pwFile = File(
-          p.join(tmpRoot.path, '.serverpod', 'postgres.password'),
-        );
-        const passwordsYamlDatabase = 'dev-db-password';
 
         var unix = await EmbeddedPostgres.start(
           EmbeddedPostgresOptions(
             dataDir: pgDataDir,
             databaseName: 'projectname',
-            transport: const UnixTransport(
-              initialPassword: passwordsYamlDatabase,
-            ),
             detach: true,
           ),
         );
-        expect(pwFile.existsSync(), isTrue);
-        expect(pwFile.readAsStringSync(), passwordsYamlDatabase);
         await unix.stop();
 
         var tcp = await EmbeddedPostgres.start(
           EmbeddedPostgresOptions(
             dataDir: pgDataDir,
             databaseName: 'projectname',
-            transport: const TcpTransport(password: passwordsYamlDatabase),
+            transport: const TcpTransport(),
             detach: true,
           ),
         );
-        expect(tcp.endpoint.password, passwordsYamlDatabase);
+        var conn = await pg.Connection.open(
+          tcp.endpoint,
+          settings: const pg.ConnectionSettings(sslMode: pg.SslMode.disable),
+        );
+        var rs = await conn.execute('SELECT 1');
+        expect(rs.first.first, 1);
+        await conn.close();
+        await tcp.stop();
+      },
+      timeout: const Timeout(Duration(seconds: 180)),
+    );
+
+    test(
+      'when a cluster created with a configured password is restarted with TcpTransport '
+      'then TCP auth succeeds using the configured password.',
+      () async {
+        var pgDataDir = Directory(p.join(tmpRoot.path, '.serverpod', 'pgdata'));
+        var pwFile = File(
+          p.join(tmpRoot.path, '.serverpod', 'postgres.password'),
+        );
+        const configuredPassword = 'dev-db-password';
+
+        var unix = await EmbeddedPostgres.start(
+          EmbeddedPostgresOptions(
+            dataDir: pgDataDir,
+            databaseName: 'projectname',
+            transport: const UnixTransport(
+              initialPassword: configuredPassword,
+            ),
+            detach: true,
+          ),
+        );
+        expect(pwFile.existsSync(), isTrue);
+        expect(pwFile.readAsStringSync(), configuredPassword);
+        await unix.stop();
+
+        var tcp = await EmbeddedPostgres.start(
+          EmbeddedPostgresOptions(
+            dataDir: pgDataDir,
+            databaseName: 'projectname',
+            transport: const TcpTransport(password: configuredPassword),
+            detach: true,
+          ),
+        );
+        expect(tcp.endpoint.password, configuredPassword);
 
         var conn = await pg.Connection.open(
           tcp.endpoint,
