@@ -9,7 +9,8 @@ void main() {
   withServerpod(
     'Given AuthServices is being configured',
     (final sessionBuilder, final endpoints) {
-      late List<IdentityProviderBuilder<Object>> identityProviderBuilders;
+      late List<IdentityProviderBuilder<IdentityProvider>>
+      identityProviderBuilders;
       late List<TokenManagerBuilder> tokenManagerBuilders;
       late FakeTokenStorage fakeTokenStorage;
 
@@ -83,7 +84,8 @@ void main() {
     'Given an AuthServices with identity providers',
     (final sessionBuilder, final endpoints) {
       late FakeTokenManagerBuilder fakeTokenManagerBuilder;
-      late List<IdentityProviderBuilder<Object>> identityProviderBuilders;
+      late List<IdentityProviderBuilder<IdentityProvider>>
+      identityProviderBuilders;
       late List<TokenManagerBuilder> tokenManagerBuilders;
       late FakeTokenStorage fakeTokenStorage;
 
@@ -140,12 +142,17 @@ void main() {
           'then StateError should be thrown for unregistered provider types',
           () {
             expect(
-              () => AuthServices.getIdentityProvider<String>(),
+              () =>
+                  AuthServices.getIdentityProvider<
+                    UnregisteredIdentityProvider
+                  >(),
               throwsA(
                 isA<StateError>().having(
                   (final e) => e.message,
                   'message',
-                  contains('Provider for String is not registered'),
+                  contains(
+                    'Provider for UnregisteredIdentityProvider is not registered',
+                  ),
                 ),
               ),
             );
@@ -166,7 +173,10 @@ void main() {
         'when accessing an unregistered provider then a StateError is thrown',
         () {
           expect(
-            () => AuthServices.getIdentityProvider<String>(),
+            () =>
+                AuthServices.getIdentityProvider<
+                  UnregisteredIdentityProvider
+                >(),
             throwsA(isA<StateError>()),
           );
         },
@@ -178,7 +188,8 @@ void main() {
     'Given an AuthServices with multiple identity providers',
     (final sessionBuilder, final endpoints) {
       late FakeTokenManagerBuilder fakeTokenManagerBuilder;
-      late List<IdentityProviderBuilder<Object>> multipleProviderBuilders;
+      late List<IdentityProviderBuilder<IdentityProvider>>
+      multipleProviderBuilders;
       late List<TokenManagerBuilder> tokenManagers;
       late FakeTokenStorage fakeTokenStorage;
       late FakeConfig firstFactory;
@@ -219,7 +230,8 @@ void main() {
     'Given an AuthServices with authentication handler',
     (final sessionBuilder, final endpoints) {
       late FakeTokenManagerBuilder fakeTokenManagerBuilder;
-      late List<IdentityProviderBuilder<Object>> identityProviderBuilders;
+      late List<IdentityProviderBuilder<IdentityProvider>>
+      identityProviderBuilders;
       late List<TokenManagerBuilder> tokenManagers;
       late FakeTokenStorage fakeTokenStorage;
       late Session session;
@@ -334,4 +346,14 @@ void main() {
       });
     },
   );
+}
+
+class UnregisteredIdentityProvider implements IdentityProvider {
+  @override
+  Future<void> mergeAuthUsers(
+    final Session session, {
+    required final UuidValue userToKeepId,
+    required final UuidValue userToRemoveId,
+    required final Transaction transaction,
+  }) async {}
 }

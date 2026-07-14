@@ -6,7 +6,7 @@ import 'anonymous_idp_utils.dart';
 
 /// Main class for the anonymous identity provider.
 /// The methods defined here are intended to be called from an endpoint.
-class AnonymousIdp {
+class AnonymousIdp implements IdentityProvider {
   /// The method used when authenticating with the anonymous identity provider.
   static const String method = 'anonymous';
 
@@ -41,6 +41,16 @@ class AnonymousIdp {
       tokenManager,
     );
   }
+
+  /// Anonymous accounts do not retain provider data when auth users are
+  /// merged. Their database records are removed with the discarded auth user.
+  @override
+  Future<void> mergeAuthUsers(
+    final Session session, {
+    required final UuidValue userToKeepId,
+    required final UuidValue userToRemoveId,
+    required final Transaction transaction,
+  }) async {}
 
   /// {@macro anonymous_account_base_endpoint.login}
   Future<AuthSuccess> login(

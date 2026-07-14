@@ -60,13 +60,10 @@ class AccountMergeConfig {
   /// functions are invoked before any other special merge handlers.
   ///
   /// Serverpod's first party auth module automatically migrates Idp account data
-  /// for initialized identity providers that implement
-  /// `AccountMergeHandlerProvider`.
+  /// for all initialized identity providers.
   ///
-  /// Third-party Serverpod module authors should consider implementing
-  /// [AccountMergeHandlerProvider] on their IdentityProvider classes or writing
-  /// an [AccountMergeHandler] for their module which developers can include
-  /// in this list.
+  /// Third-party identity providers implement their account migration behavior
+  /// through [IdentityProvider.mergeAuthUsers].
   List<AccountMergeHandler> get mergeHooks {
     if (_mergeHooks != null) {
       return _mergeHooks;
@@ -116,20 +113,12 @@ class AccountMergeConfig {
     required final Transaction transaction,
   }) async {
     for (final provider in AuthServices.instance.providers) {
-      if (provider is AccountMergeHandlerProvider) {
-        await provider.accountMergeHook(
-          session,
-          userToKeepId: userToKeepId,
-          userToRemoveId: userToRemoveId,
-          transaction: transaction,
-        );
-      } else {
-        session.log(
-          'Auth IDP $provider does not implement AccountMergeHandlerProvider. '
-          'Account data associated with this provider will not be migrated.',
-          level: LogLevel.warning,
-        );
-      }
+      await provider.mergeAuthUsers(
+        session,
+        userToKeepId: userToKeepId,
+        userToRemoveId: userToRemoveId,
+        transaction: transaction,
+      );
     }
   }
 

@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
+import 'package:serverpod_auth_idp_server/providers/anonymous.dart';
 import 'package:serverpod_auth_idp_server/providers/apple.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_auth_idp_server/providers/facebook.dart';
@@ -18,6 +19,86 @@ import '../test_tools/serverpod_test_tools.dart';
 
 void main() {
   const AuthUsers authUsers = AuthUsers();
+  final tokenManager = ServerSideSessionsTokenManager(
+    config: ServerSideSessionsConfig(
+      sessionKeyHashPepper: 'test-session-key-hash-pepper',
+    ),
+    authUsers: authUsers,
+  );
+  final anonymousIdp = AnonymousIdp(
+    const AnonymousIdpConfig(),
+    tokenManager: tokenManager,
+    authUsers: authUsers,
+  );
+  final appleIdp = AppleIdp(
+    const AppleIdpConfig(
+      serviceIdentifier: 'test-service-identifier',
+      bundleIdentifier: 'test-bundle-identifier',
+      redirectUri: 'https://example.com/callback',
+      teamId: 'test-team-id',
+      keyId: 'test-key-id',
+      key: 'test-key',
+    ),
+    tokenManager: tokenManager,
+    authUsers: authUsers,
+  );
+  final emailIdp = EmailIdp(
+    const EmailIdpConfig(secretHashPepper: 'test-secret-hash-pepper'),
+    tokenManager: tokenManager,
+    authUsers: authUsers,
+  );
+  final facebookIdp = FacebookIdp(
+    const FacebookIdpConfig(
+      appId: 'test-app-id',
+      appSecret: 'test-app-secret',
+    ),
+    tokenManager: tokenManager,
+    authUsers: authUsers,
+  );
+  final firebaseIdp = FirebaseIdp(
+    const FirebaseIdpConfig(
+      credentials: FirebaseServiceAccountCredentials(
+        projectId: 'test-project-id',
+      ),
+    ),
+    tokenIssuer: tokenManager,
+    authUsers: authUsers,
+  );
+  final githubIdp = GitHubIdp(
+    GitHubIdpConfig(
+      clientId: 'test-client-id',
+      clientSecret: 'test-client-secret',
+    ),
+    tokenIssuer: tokenManager,
+    authUsers: authUsers,
+  );
+  final googleIdp = GoogleIdp(
+    GoogleIdpConfig(
+      clientSecret: GoogleClientSecret.fromJson({
+        'web': {
+          'client_id': 'test-client-id',
+          'client_secret': 'test-client-secret',
+          'redirect_uris': <String>[],
+        },
+      }),
+    ),
+    tokenIssuer: tokenManager,
+    authUsers: authUsers,
+  );
+  final microsoftIdp = MicrosoftIdp(
+    MicrosoftIdpConfig(
+      clientId: 'test-client-id',
+      clientSecret: 'test-client-secret',
+      fetchProfilePhoto: false,
+    ),
+    tokenIssuer: tokenManager,
+    authUsers: authUsers,
+  );
+  final passkeyIdp = PasskeyIdp(
+    const PasskeyIdpConfig(hostname: 'localhost'),
+    tokenManager: tokenManager,
+    authUsers: authUsers,
+  );
   late AuthUserModel userToKeep;
   late AuthUserModel userToRemove;
 
@@ -36,7 +117,7 @@ void main() {
   );
 
   withServerpod(
-    'Given EmailAccount for userToRemove',
+    'Given an EmailAccount for userToRemove,',
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       setUp(() async {
@@ -53,11 +134,11 @@ void main() {
       });
 
       test(
-        'when EmailIdp.migrate is called then the EmailAccount is moved to '
-        'userToKeep',
+        'when EmailIdp.mergeAuthUsers is called, '
+        'then the EmailAccount is moved to userToKeep.',
         () async {
           await session.db.transaction((final transaction) async {
-            await EmailIdp.migrate(
+            await emailIdp.mergeAuthUsers(
               session,
               userToKeepId: userToKeep.id,
               userToRemoveId: userToRemove.id,
@@ -77,7 +158,7 @@ void main() {
   );
 
   withServerpod(
-    'Given EmailAccount exists for userToKeep',
+    'Given EmailAccounts for userToKeep and userToRemove,',
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       setUp(() async {
@@ -103,11 +184,11 @@ void main() {
       });
 
       test(
-        'when EmailIdp.migrate is called then the EmailAccount '
-        'from userToRemove is moved to userToKeep',
+        'when EmailIdp.mergeAuthUsers is called, '
+        'then the EmailAccount from userToRemove is moved to userToKeep.',
         () async {
           await session.db.transaction((final transaction) async {
-            await EmailIdp.migrate(
+            await emailIdp.mergeAuthUsers(
               session,
               userToKeepId: userToKeep.id,
               userToRemoveId: userToRemove.id,
@@ -136,7 +217,7 @@ void main() {
   );
 
   withServerpod(
-    'Given GoogleAccount for userToRemove',
+    'Given a GoogleAccount for userToRemove,',
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -155,11 +236,11 @@ void main() {
       });
 
       test(
-        'when GoogleIdp.migrate is called then the GoogleAccount is moved to '
-        'userToKeep',
+        'when GoogleIdp.mergeAuthUsers is called, '
+        'then the GoogleAccount is moved to userToKeep.',
         () async {
           await session.db.transaction((final transaction) async {
-            await GoogleIdp.migrate(
+            await googleIdp.mergeAuthUsers(
               session,
               userToKeepId: userToKeep.id,
               userToRemoveId: userToRemove.id,
@@ -179,7 +260,7 @@ void main() {
   );
 
   withServerpod(
-    'Given GoogleAccount exists for userToKeep',
+    'Given GoogleAccounts for userToKeep and userToRemove,',
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -206,11 +287,11 @@ void main() {
       });
 
       test(
-        'when GoogleIdp.migrate is called then the GoogleAccount from '
-        'userToRemove is deleted',
+        'when GoogleIdp.mergeAuthUsers is called, '
+        'then the GoogleAccount from userToRemove is moved to userToKeep.',
         () async {
           await session.db.transaction((final transaction) async {
-            await GoogleIdp.migrate(
+            await googleIdp.mergeAuthUsers(
               session,
               userToKeepId: userToKeep.id,
               userToRemoveId: userToRemove.id,
@@ -239,7 +320,7 @@ void main() {
   );
 
   withServerpod(
-    'Given AppleAccount for userToRemove',
+    'Given an AppleAccount for userToRemove,',
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -259,11 +340,11 @@ void main() {
       });
 
       test(
-        'when AppleIdp.migrate is called then the AppleAccount is moved to '
-        'userToKeep',
+        'when AppleIdp.mergeAuthUsers is called, '
+        'then the AppleAccount is moved to userToKeep.',
         () async {
           await session.db.transaction((final transaction) async {
-            await AppleIdp.migrate(
+            await appleIdp.mergeAuthUsers(
               session,
               userToKeepId: userToKeep.id,
               userToRemoveId: userToRemove.id,
@@ -283,7 +364,7 @@ void main() {
   );
 
   withServerpod(
-    'Given AppleAccount exists for userToKeep',
+    'Given AppleAccounts for userToKeep and userToRemove,',
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -311,11 +392,11 @@ void main() {
       });
 
       test(
-        'when AppleIdp.migrate is called then the AppleAccount from '
-        'userToRemove is deleted',
+        'when AppleIdp.mergeAuthUsers is called, '
+        'then the AppleAccount from userToRemove is moved to userToKeep.',
         () async {
           await session.db.transaction((final transaction) async {
-            await AppleIdp.migrate(
+            await appleIdp.mergeAuthUsers(
               session,
               userToKeepId: userToKeep.id,
               userToRemoveId: userToRemove.id,
@@ -344,7 +425,7 @@ void main() {
   );
 
   withServerpod(
-    'Given FirebaseAccount for userToRemove',
+    'Given a FirebaseAccount for userToRemove,',
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -362,11 +443,11 @@ void main() {
       });
 
       test(
-        'when FirebaseIdp.migrate is called then the FirebaseAccount is moved '
-        'to userToKeep',
+        'when FirebaseIdp.mergeAuthUsers is called, '
+        'then the FirebaseAccount is moved to userToKeep.',
         () async {
           await session.db.transaction((final transaction) async {
-            await FirebaseIdp.migrate(
+            await firebaseIdp.mergeAuthUsers(
               session,
               userToKeepId: userToKeep.id,
               userToRemoveId: userToRemove.id,
@@ -386,7 +467,7 @@ void main() {
   );
 
   withServerpod(
-    'Given FirebaseAccount exists for userToKeep',
+    'Given FirebaseAccounts for userToKeep and userToRemove,',
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -410,11 +491,11 @@ void main() {
       });
 
       test(
-        'when FirebaseIdp.migrate is called then the FirebaseAccount from '
-        'userToRemove is deleted',
+        'when FirebaseIdp.mergeAuthUsers is called, '
+        'then the FirebaseAccount from userToRemove is moved to userToKeep.',
         () async {
           await session.db.transaction((final transaction) async {
-            await FirebaseIdp.migrate(
+            await firebaseIdp.mergeAuthUsers(
               session,
               userToKeepId: userToKeep.id,
               userToRemoveId: userToRemove.id,
@@ -443,7 +524,7 @@ void main() {
   );
 
   withServerpod(
-    'Given GitHubAccount for userToRemove',
+    'Given a GitHubAccount for userToRemove,',
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -461,11 +542,11 @@ void main() {
       });
 
       test(
-        'when GitHubIdp.migrate is called then the GitHubAccount is moved to '
-        'userToKeep',
+        'when GitHubIdp.mergeAuthUsers is called, '
+        'then the GitHubAccount is moved to userToKeep.',
         () async {
           await session.db.transaction((final transaction) async {
-            await GitHubIdp.migrate(
+            await githubIdp.mergeAuthUsers(
               session,
               userToKeepId: userToKeep.id,
               userToRemoveId: userToRemove.id,
@@ -485,7 +566,7 @@ void main() {
   );
 
   withServerpod(
-    'Given GitHubAccount exists for userToKeep',
+    'Given GitHubAccounts for userToKeep and userToRemove,',
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -509,11 +590,11 @@ void main() {
       });
 
       test(
-        'when GitHubIdp.migrate is called then the GitHubAccount from '
-        'userToRemove is deleted',
+        'when GitHubIdp.mergeAuthUsers is called, '
+        'then the GitHubAccount from userToRemove is moved to userToKeep.',
         () async {
           await session.db.transaction((final transaction) async {
-            await GitHubIdp.migrate(
+            await githubIdp.mergeAuthUsers(
               session,
               userToKeepId: userToKeep.id,
               userToRemoveId: userToRemove.id,
@@ -542,7 +623,7 @@ void main() {
   );
 
   withServerpod(
-    'Given active IDPs and multiple accounts',
+    'Given all identity providers with account data for userToRemove,',
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -570,6 +651,25 @@ void main() {
         );
         await GoogleAccount.db.insertRow(session, googleAccount);
 
+        final emailAccount = EmailAccount(
+          authUserId: userToRemove.id,
+          email: 'test-merge@example.com',
+          passwordHash: 'hash',
+        );
+        await EmailAccount.db.insertRow(session, emailAccount);
+
+        final firebaseAccount = FirebaseAccount(
+          authUserId: userToRemove.id,
+          userIdentifier: 'firebase_123',
+        );
+        await FirebaseAccount.db.insertRow(session, firebaseAccount);
+
+        final githubAccount = GitHubAccount(
+          authUserId: userToRemove.id,
+          userIdentifier: 'github_123',
+        );
+        await GitHubAccount.db.insertRow(session, githubAccount);
+
         // Facebook Account
         final facebookAccount = FacebookAccount(
           authUserId: userToRemove.id,
@@ -595,19 +695,29 @@ void main() {
         );
         await PasskeyAccount.db.insertRow(session, passkeyAccount);
 
-        // Initialize AuthServices with a dummy provider that migrates both Apple and Google accounts
+        // Register the actual identity provider implementations so the test
+        // exercises the required IdentityProvider contract.
         AuthServices.set(
           tokenManagerBuilders: [
             ServerSideSessionsConfig(sessionKeyHashPepper: 'pepper_12345'),
           ],
           identityProviderBuilders: [
-            PreBuiltIdpBuilder(TestMergeIdp()),
+            PreBuiltIdpBuilder(anonymousIdp),
+            PreBuiltIdpBuilder(appleIdp),
+            PreBuiltIdpBuilder(emailIdp),
+            PreBuiltIdpBuilder(facebookIdp),
+            PreBuiltIdpBuilder(firebaseIdp),
+            PreBuiltIdpBuilder(githubIdp),
+            PreBuiltIdpBuilder(googleIdp),
+            PreBuiltIdpBuilder(microsoftIdp),
+            PreBuiltIdpBuilder(passkeyIdp),
           ],
         );
       });
 
       test(
-        'when AccountMerger.merge is used then all active IDP accounts are migrated',
+        'when AccountMerger.merge is called, '
+        'then every registered IDP migrates its account data.',
         () async {
           await session.db.transaction((final transaction) async {
             await accountMerger.merge(
@@ -631,6 +741,27 @@ void main() {
           );
           expect(movedGoogleAccount, isNotNull);
           expect(movedGoogleAccount!.authUserId, userToKeep.id);
+
+          final movedEmailAccount = await EmailAccount.db.findFirstRow(
+            session,
+            where: (final t) => t.email.equals('test-merge@example.com'),
+          );
+          expect(movedEmailAccount, isNotNull);
+          expect(movedEmailAccount!.authUserId, userToKeep.id);
+
+          final movedFirebaseAccount = await FirebaseAccount.db.findFirstRow(
+            session,
+            where: (final t) => t.userIdentifier.equals('firebase_123'),
+          );
+          expect(movedFirebaseAccount, isNotNull);
+          expect(movedFirebaseAccount!.authUserId, userToKeep.id);
+
+          final movedGitHubAccount = await GitHubAccount.db.findFirstRow(
+            session,
+            where: (final t) => t.userIdentifier.equals('github_123'),
+          );
+          expect(movedGitHubAccount, isNotNull);
+          expect(movedGitHubAccount!.authUserId, userToKeep.id);
 
           final movedFacebookAccount = await FacebookAccount.db.findFirstRow(
             session,
@@ -658,7 +789,7 @@ void main() {
   );
 
   withServerpod(
-    'Given FacebookAccount for userToRemove',
+    'Given a FacebookAccount for userToRemove,',
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -676,10 +807,11 @@ void main() {
       });
 
       test(
-        'when FacebookIdp.migrate is called then the FacebookAccount is moved to userToKeep',
+        'when FacebookIdp.mergeAuthUsers is called, '
+        'then the FacebookAccount is moved to userToKeep.',
         () async {
           await session.db.transaction((final transaction) async {
-            await FacebookIdp.migrate(
+            await facebookIdp.mergeAuthUsers(
               session,
               userToKeepId: userToKeep.id,
               userToRemoveId: userToRemove.id,
@@ -698,7 +830,7 @@ void main() {
   );
 
   withServerpod(
-    'Given FacebookAccount exists for userToKeep',
+    'Given FacebookAccounts for userToKeep and userToRemove,',
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -722,10 +854,11 @@ void main() {
       });
 
       test(
-        'when FacebookIdp.migrate is called then the FacebookAccount from userToRemove is moved to userToKeep',
+        'when FacebookIdp.mergeAuthUsers is called, '
+        'then the FacebookAccount from userToRemove is moved to userToKeep.',
         () async {
           await session.db.transaction((final transaction) async {
-            await FacebookIdp.migrate(
+            await facebookIdp.mergeAuthUsers(
               session,
               userToKeepId: userToKeep.id,
               userToRemoveId: userToRemove.id,
@@ -750,7 +883,7 @@ void main() {
   );
 
   withServerpod(
-    'Given MicrosoftAccount for userToRemove',
+    'Given a MicrosoftAccount for userToRemove,',
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -768,10 +901,11 @@ void main() {
       });
 
       test(
-        'when MicrosoftIdp.migrate is called then the MicrosoftAccount is moved to userToKeep',
+        'when MicrosoftIdp.mergeAuthUsers is called, '
+        'then the MicrosoftAccount is moved to userToKeep.',
         () async {
           await session.db.transaction((final transaction) async {
-            await MicrosoftIdp.migrate(
+            await microsoftIdp.mergeAuthUsers(
               session,
               userToKeepId: userToKeep.id,
               userToRemoveId: userToRemove.id,
@@ -790,7 +924,7 @@ void main() {
   );
 
   withServerpod(
-    'Given MicrosoftAccount exists for userToKeep',
+    'Given MicrosoftAccounts for userToKeep and userToRemove,',
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -814,10 +948,11 @@ void main() {
       });
 
       test(
-        'when MicrosoftIdp.migrate is called then the MicrosoftAccount from userToRemove is moved to userToKeep',
+        'when MicrosoftIdp.mergeAuthUsers is called, '
+        'then the MicrosoftAccount from userToRemove is moved to userToKeep.',
         () async {
           await session.db.transaction((final transaction) async {
-            await MicrosoftIdp.migrate(
+            await microsoftIdp.mergeAuthUsers(
               session,
               userToKeepId: userToKeep.id,
               userToRemoveId: userToRemove.id,
@@ -842,7 +977,7 @@ void main() {
   );
 
   withServerpod(
-    'Given PasskeyAccount for userToRemove',
+    'Given a PasskeyAccount for userToRemove,',
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -864,10 +999,11 @@ void main() {
       });
 
       test(
-        'when PasskeyIdp.migrate is called then the PasskeyAccount is moved to userToKeep',
+        'when PasskeyIdp.mergeAuthUsers is called, '
+        'then the PasskeyAccount is moved to userToKeep.',
         () async {
           await session.db.transaction((final transaction) async {
-            await PasskeyIdp.migrate(
+            await passkeyIdp.mergeAuthUsers(
               session,
               userToKeepId: userToKeep.id,
               userToRemoveId: userToRemove.id,
@@ -886,7 +1022,7 @@ void main() {
   );
 
   withServerpod(
-    'Given PasskeyAccount exists for userToKeep',
+    'Given PasskeyAccounts for userToKeep and userToRemove,',
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -918,10 +1054,11 @@ void main() {
       });
 
       test(
-        'when PasskeyIdp.migrate is called then the PasskeyAccount from userToRemove is moved to userToKeep',
+        'when PasskeyIdp.mergeAuthUsers is called, '
+        'then the PasskeyAccount from userToRemove is moved to userToKeep.',
         () async {
           await session.db.transaction((final transaction) async {
-            await PasskeyIdp.migrate(
+            await passkeyIdp.mergeAuthUsers(
               session,
               userToKeepId: userToKeep.id,
               userToRemoveId: userToRemove.id,
@@ -944,48 +1081,4 @@ void main() {
       );
     },
   );
-}
-
-class TestMergeIdp implements AccountMergeHandlerProvider {
-  @override
-  AccountMergeHandler get accountMergeHook =>
-      (
-        final session, {
-        required final userToKeepId,
-        required final userToRemoveId,
-        required final transaction,
-      }) async {
-        await Future.wait([
-          AppleIdp.migrate(
-            session,
-            userToKeepId: userToKeepId,
-            userToRemoveId: userToRemoveId,
-            transaction: transaction,
-          ),
-          GoogleIdp.migrate(
-            session,
-            userToKeepId: userToKeepId,
-            userToRemoveId: userToRemoveId,
-            transaction: transaction,
-          ),
-          FacebookIdp.migrate(
-            session,
-            userToKeepId: userToKeepId,
-            userToRemoveId: userToRemoveId,
-            transaction: transaction,
-          ),
-          MicrosoftIdp.migrate(
-            session,
-            userToKeepId: userToKeepId,
-            userToRemoveId: userToRemoveId,
-            transaction: transaction,
-          ),
-          PasskeyIdp.migrate(
-            session,
-            userToKeepId: userToKeepId,
-            userToRemoveId: userToRemoveId,
-            transaction: transaction,
-          ),
-        ]);
-      };
 }

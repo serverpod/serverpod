@@ -1,5 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 
+import '../../common/integrations/identity_provider.dart';
 import '../../common/integrations/provider_builder.dart';
 import '../../common/integrations/token_manager.dart';
 import '../../profile/profile.dart';
@@ -112,13 +113,13 @@ class AuthServices {
     }
   }
 
-  final Map<Type, Object> _providers = {};
+  final Map<Type, IdentityProvider> _providers = {};
 
   /// The collection of initialized identity providers.
-  Iterable<Object> get providers => _providers.values;
+  Iterable<IdentityProvider> get providers => _providers.values;
 
   /// Retrieves the identity provider of type [T].
-  static T getIdentityProvider<T>() {
+  static T getIdentityProvider<T extends IdentityProvider>() {
     final provider = instance._providers[T];
     if (provider == null) {
       throw StateError(

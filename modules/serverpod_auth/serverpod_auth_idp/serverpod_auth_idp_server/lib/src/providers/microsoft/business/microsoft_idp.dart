@@ -17,7 +17,7 @@ import 'microsoft_idp_utils.dart';
 ///
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
-class MicrosoftIdp implements AccountMergeHandlerProvider {
+class MicrosoftIdp implements IdentityProvider {
   /// The method used when authenticating with the Microsoft identity provider.
   static const String method = 'microsoft';
 
@@ -34,14 +34,9 @@ class MicrosoftIdp implements AccountMergeHandlerProvider {
 
   final UserProfiles _userProfiles;
 
-  @override
-  AccountMergeHandler get accountMergeHook => migrate;
-
   /// Migrates [MicrosoftAccount]s from [userToRemoveId] to [userToKeepId].
-  ///
-  /// If the [userToKeepId] already has an associated [MicrosoftAccount], the
-  /// account for [userToRemoveId] is deleted.
-  static Future<void> migrate(
+  @override
+  Future<void> mergeAuthUsers(
     final Session session, {
     required final UuidValue userToKeepId,
     required final UuidValue userToRemoveId,

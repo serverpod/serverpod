@@ -9,7 +9,7 @@ import 'passkey_idp_config.dart';
 import 'passkey_idp_utils.dart';
 
 /// Passkey account management functions.
-class PasskeyIdp implements AccountMergeHandlerProvider {
+class PasskeyIdp implements IdentityProvider {
   /// The method used when authenticating with the Passkey identity provider.
   static const String method = 'passkey';
 
@@ -25,14 +25,9 @@ class PasskeyIdp implements AccountMergeHandlerProvider {
   final AuthUsers _authUsers;
   final TokenIssuer _tokenIssuer;
 
-  @override
-  AccountMergeHandler get accountMergeHook => migrate;
-
   /// Migrates [PasskeyAccount]s from [userToRemoveId] to [userToKeepId].
-  ///
-  /// If the [userToKeepId] already has an associated [PasskeyAccount], the
-  /// account for [userToRemoveId] is deleted.
-  static Future<void> migrate(
+  @override
+  Future<void> mergeAuthUsers(
     final Session session, {
     required final UuidValue userToKeepId,
     required final UuidValue userToRemoveId,

@@ -17,7 +17,7 @@ import 'google_idp_utils.dart';
 ///
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
-class GoogleIdp implements AccountMergeHandlerProvider {
+class GoogleIdp implements IdentityProvider {
   /// The method used when authenticating with the Google identity provider.
   static const String method = 'google';
 
@@ -158,11 +158,9 @@ class GoogleIdp implements AccountMergeHandlerProvider {
   Future<bool> hasAccount(final Session session) async =>
       await utils.getAccount(session) != null;
 
+  /// Migrates all [GoogleAccount]s from [userToRemoveId] to [userToKeepId].
   @override
-  AccountMergeHandler get accountMergeHook => migrate;
-
-  /// Migrates the Google account from [userToRemove] into [userToKeep].
-  static Future<void> migrate(
+  Future<void> mergeAuthUsers(
     final Session session, {
     required final UuidValue userToKeepId,
     required final UuidValue userToRemoveId,

@@ -18,7 +18,7 @@ import 'firebase_idp_utils.dart';
 ///
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
-class FirebaseIdp implements AccountMergeHandlerProvider {
+class FirebaseIdp implements IdentityProvider {
   /// The method used when authenticating with the Firebase identity provider.
   static const String method = 'firebase';
 
@@ -134,17 +134,9 @@ class FirebaseIdp implements AccountMergeHandlerProvider {
   Future<bool> hasAccount(final Session session) async =>
       await utils.getAccount(session) != null;
 
+  /// Migrates all [FirebaseAccount]s from [userToRemoveId] to [userToKeepId].
   @override
-  AccountMergeHandler get accountMergeHook => migrate;
-
-  /// Migrates the [FirebaseAccount] from [userToRemove] to [userToKeep].
-  ///
-  /// If [userToKeep] already has a [FirebaseAccount], the [FirebaseAccount] of
-  /// [userToRemove] will be deleted.
-  ///
-  /// If [userToKeep] does not have a [FirebaseAccount], the [FirebaseAccount] of
-  /// [userToRemove] will be transferred to [userToKeep].
-  static Future<void> migrate(
+  Future<void> mergeAuthUsers(
     final Session session, {
     required final UuidValue userToKeepId,
     required final UuidValue userToRemoveId,

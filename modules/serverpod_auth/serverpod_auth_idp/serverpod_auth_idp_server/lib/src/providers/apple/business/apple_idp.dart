@@ -22,7 +22,7 @@ import 'routes/apple_server_notification_route.dart';
 ///
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
-class AppleIdp implements AccountMergeHandlerProvider {
+class AppleIdp implements IdentityProvider {
   /// The method used when authenticating with the Apple identity provider.
   static const String method = 'apple';
 
@@ -134,17 +134,9 @@ class AppleIdp implements AccountMergeHandlerProvider {
   Future<bool> hasAccount(final Session session) async =>
       await utils.getAccount(session) != null;
 
+  /// Migrates all [AppleAccount]s from [userToRemoveId] to [userToKeepId].
   @override
-  AccountMergeHandler get accountMergeHook => migrate;
-
-  /// Migrates the [AppleAccount] from [userToRemove] to [userToKeep].
-  ///
-  /// If [userToKeep] already has an [AppleAccount], the [AppleAccount] of
-  /// [userToRemove] will be deleted.
-  ///
-  /// If [userToKeep] does not have an [AppleAccount], the [AppleAccount] of
-  /// [userToRemove] will be transferred to [userToKeep].
-  static Future<void> migrate(
+  Future<void> mergeAuthUsers(
     final Session session, {
     required final UuidValue userToKeepId,
     required final UuidValue userToRemoveId,
