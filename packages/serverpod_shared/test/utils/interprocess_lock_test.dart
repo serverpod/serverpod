@@ -18,56 +18,84 @@ void main() {
     if (tempDir.existsSync()) tempDir.deleteSync(recursive: true);
   });
 
-  group('Given an unheld lock path', () {
+  group('Given an unheld lock path acquired via acquire', () {
+    late InterProcessLock lock;
+
+    setUp(() async {
+      lock = await InterProcessLock.acquire(
+        lockPath,
+        staleWhen: const StaleLockPolicy.never(),
+      );
+    });
+
     test(
-      'when acquired '
-      'then the lock file is created and release removes it',
+      'when released '
+      'then the lock file is removed',
       () async {
-        var lock = await InterProcessLock.acquire(
-          lockPath,
-          staleWhen: const StaleLockPolicy.never(),
-        );
         expect(File(lockPath).existsSync(), isTrue);
 
         await lock.release();
         expect(File(lockPath).existsSync(), isFalse);
       },
     );
+  });
+
+  group('Given an unheld lock path acquired via withLock', () {
+    late bool ran;
+    late bool heldDuringAction;
+
+    setUp(() async {
+      ran = false;
+      heldDuringAction = false;
+      await InterProcessLock.withLock(
+        lockPath,
+        staleWhen: const StaleLockPolicy.never(),
+        () async {
+          ran = true;
+          heldDuringAction = File(lockPath).existsSync();
+        },
+      );
+    });
 
     test(
-      'when used via withLock '
+      'when the action completes '
       'then the lock is held during the action and released after',
-      () async {
-        var ran = false;
-        await InterProcessLock.withLock(
-          lockPath,
-          staleWhen: const StaleLockPolicy.never(),
-          () async {
-            ran = true;
-            expect(File(lockPath).existsSync(), isTrue);
-          },
-        );
+      () {
         expect(ran, isTrue);
-        expect(File(lockPath).existsSync(), isFalse);
-      },
-    );
-
-    test(
-      'when used via withLock and the action throws '
-      'then the lock is still released',
-      () async {
-        await expectLater(
-          InterProcessLock.withLock(
-            lockPath,
-            staleWhen: const StaleLockPolicy.never(),
-            () async => throw StateError('boom'),
-          ),
-          throwsStateError,
-        );
+        expect(heldDuringAction, isTrue);
         expect(File(lockPath).existsSync(), isFalse);
       },
     );
   });
+
+  group(
+    'Given an unheld lock path acquired via withLock whose action throws',
+    () {
+      late Object? caughtError;
+
+      setUp(() async {
+        caughtError = null;
+        try {
+          await InterProcessLock.withLock(
+            lockPath,
+            staleWhen: const StaleLockPolicy.never(),
+            () async => throw StateError('boom'),
+          );
+        } catch (e) {
+          caughtError = e;
+        }
+      });
+
+      test(
+        'when the call has completed '
+        'then the error propagates and the lock is still released',
+        () {
+          expect(caughtError, isA<StateError>());
+          expect(File(lockPath).existsSync(), isFalse);
+        },
+      );
+    },
+  );
 
   group('Given a held lock', () {
     late InterProcessLock lock;
