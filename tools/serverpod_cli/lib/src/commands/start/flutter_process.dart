@@ -88,6 +88,8 @@ class FlutterProcess {
   Timer? _vmServiceHeartbeat;
   Timer? _logCoalesceTimer;
   _PendingFlutterLog? _pendingLog;
+  _Utf8LineDecoder? _vmStdoutDecoder;
+  _Utf8LineDecoder? _vmStderrDecoder;
 
   String? _appId;
   FlutterDaemonProtocol? _daemon;
@@ -418,62 +420,66 @@ class FlutterProcess {
     }
 
     if (await tryListen('Stdout')) {
-      _stdoutEventSub = vmService.onStdoutEvent.listen(
-        (e) => _writeVmStreamEvent(
+      _vmStdoutDecoder = _Utf8LineDecoder(
+        (line) => _forwardVmStreamLine(
           _stdout,
-          e,
+          line,
           level: LogLevel.info,
           source: FlutterLogSource.vmStdout,
         ),
       );
+      _stdoutEventSub = vmService.onStdoutEvent.listen(
+        (event) => _writeVmStreamEvent(_vmStdoutDecoder!, event),
+      );
     }
     if (await tryListen('Stderr')) {
-      _stderrEventSub = vmService.onStderrEvent.listen(
-        (e) => _writeVmStreamEvent(
+      _vmStderrDecoder = _Utf8LineDecoder(
+        (line) => _forwardVmStreamLine(
           _stderr,
-          e,
+          line,
           level: LogLevel.error,
           source: FlutterLogSource.vmStderr,
         ),
       );
+      _stderrEventSub = vmService.onStderrEvent.listen(
+        (event) => _writeVmStreamEvent(_vmStderrDecoder!, event),
+      );
     }
   }
 
-  /// Decodes a VM service [event] and writes its text to [sink]
-  void _writeVmStreamEvent(
+  /// Adds a VM service stream [event] to its UTF-8 line decoder.
+  void _writeVmStreamEvent(_Utf8LineDecoder decoder, Event event) {
+    final encodedBytes = event.bytes;
+    if (encodedBytes == null) return;
+    try {
+      decoder.add(base64.decode(encodedBytes));
+    } catch (_) {
+      // Ignore malformed VM service payloads.
+    }
+  }
+
+  void _forwardVmStreamLine(
     IOSink sink,
-    Event event, {
+    String line, {
     required LogLevel level,
     required FlutterLogSource source,
   }) {
-    final bytes = event.bytes;
-    String text;
-    if (bytes != null) {
-      try {
-        text = utf8.decode(base64.decode(bytes), allowMalformed: true);
-      } catch (_) {
-        return;
-      }
-    } else {
-      // No bytes payload on this VM build
+    if (line.isEmpty) {
+      sink.writeln();
       return;
     }
-    if (text.isEmpty) return;
-    final message = _withoutTrailingNewline(text);
-    if (message.isNotEmpty) {
-      _emitLog(
-        FlutterLogEvent(
-          time: DateTime.now(),
-          level: level,
-          message: message,
-          source: source,
-          levelIsInferred: true,
-          timestampIsInferred: true,
-          canCoalesce: true,
-        ),
-      );
-    }
-    sink.write(text);
+    final accepted = _emitLog(
+      FlutterLogEvent(
+        time: DateTime.now(),
+        level: level,
+        message: line,
+        source: source,
+        levelIsInferred: true,
+        timestampIsInferred: true,
+        canCoalesce: true,
+      ),
+    );
+    if (accepted) sink.writeln(line);
   }
 
   /// Hot reload. Daemon-reported success; never throws.
@@ -781,13 +787,6 @@ class FlutterProcess {
     return LogLevel.debug;
   }
 
-  static String _withoutTrailingNewline(String text) {
-    var end = text.length;
-    if (end > 0 && text.codeUnitAt(end - 1) == 10) end--;
-    if (end > 0 && text.codeUnitAt(end - 1) == 13) end--;
-    return text.substring(0, end);
-  }
-
   static String? _instanceValue(InstanceRef? instance) {
     if (instance == null || instance.kind == InstanceKind.kNull) return null;
     return instance.valueAsString;
@@ -841,6 +840,8 @@ class FlutterProcess {
       await _loggingSub?.cancel();
       await _stdoutEventSub?.cancel();
       await _stderrEventSub?.cancel();
+      _vmStdoutDecoder?.close();
+      _vmStderrDecoder?.close();
       _flushPendingLog();
       _vmServiceHeartbeat?.cancel();
       _stdoutLinesSub = null;
@@ -849,6 +850,8 @@ class FlutterProcess {
       _loggingSub = null;
       _stdoutEventSub = null;
       _stderrEventSub = null;
+      _vmStdoutDecoder = null;
+      _vmStderrDecoder = null;
       _vmServiceHeartbeat = null;
 
       await _vmService?.dispose();
@@ -982,4 +985,32 @@ class _PendingFlutterLog {
   }
 
   static int _countLines(String message) => '\n'.allMatches(message).length + 1;
+}
+
+class _Utf8LineDecoder {
+  _Utf8LineDecoder(void Function(String line) onLine) {
+    _sink = const Utf8Decoder(allowMalformed: true).startChunkedConversion(
+      const LineSplitter().startChunkedConversion(
+        _CallbackSink<String>(onLine),
+      ),
+    );
+  }
+
+  late final ByteConversionSink _sink;
+
+  void add(List<int> bytes) => _sink.add(bytes);
+
+  void close() => _sink.close();
+}
+
+class _CallbackSink<T> implements Sink<T> {
+  const _CallbackSink(this._onData);
+
+  final void Function(T data) _onData;
+
+  @override
+  void add(T data) => _onData(data);
+
+  @override
+  void close() {}
 }

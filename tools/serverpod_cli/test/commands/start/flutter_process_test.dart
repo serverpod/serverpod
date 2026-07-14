@@ -905,6 +905,62 @@ The key [GlobalKey#1d408] was used by multiple widgets.''';
   );
 
   group(
+    'Given VM stdout split across partial writes, '
+    'when the stream is forwarded,',
+    () {
+      late FlutterProcess fp;
+      late ({HttpServer server, String wsUri}) fake;
+      late FlutterLogEvent stdoutEvent;
+
+      setUp(() async {
+        fake = await _startFakeLoggingVmService(
+          loggingLevel: null,
+          stdoutChunks: [utf8.encode('Progress: '), utf8.encode('50%\n')],
+        );
+        final stdoutCompleter = Completer<FlutterLogEvent>();
+        fp = FlutterProcess(
+          flutterPackageDir: Directory.current.path,
+          device: 'web-server',
+          flutterExecutable: _dartExecutable(),
+          argsOverrideForTesting: [
+            _shimPath('emits_machine_events.dart'),
+            '--ws=${fake.wsUri}',
+          ],
+          onLog: (event) {
+            if (event.source == FlutterLogSource.vmStdout &&
+                !stdoutCompleter.isCompleted) {
+              stdoutCompleter.complete(event);
+            }
+          },
+        );
+
+        await fp.start();
+        await fp.launched;
+        await fp.connectToVmService();
+        stdoutEvent = await stdoutCompleter.future.timeout(
+          const Duration(seconds: 5),
+        );
+      });
+
+      tearDown(() async {
+        await fp.stop(timeout: const Duration(milliseconds: 100));
+        await fake.server.close(force: true);
+      });
+
+      test(
+        'then one complete structured line is emitted.',
+        () {
+          expect(stdoutEvent.message, 'Progress: 50%');
+          expect(stdoutEvent.metadata, {
+            'coalesced': false,
+            'lineCount': 1,
+          });
+        },
+      );
+    },
+  );
+
+  group(
     'Given a Flutter process whose UTF-8 stderr character spans byte chunks, '
     'when stderr is forwarded,',
     () {
