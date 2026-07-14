@@ -33,8 +33,8 @@ class CustomClassAnalyzer {
   final AnalysisContextCollection collection;
 
   CustomClassAnalyzer(
-    Directory directory,
-    List<String> customClassPackageRoots, {
+    Directory directory, {
+    List<String>? customClassPackageRoots,
     AnalysisContextCollection? collection,
   }) : collection =
            collection ??
@@ -71,7 +71,8 @@ class CustomClassAnalyzer {
     final errorsAfter = _fileCache.values.any((r) => r.hadErrors);
     final keysAfter = _fileCache.keys.toSet();
 
-    if (errorsBefore != errorsAfter ||
+    if (errorsBefore ||
+        errorsAfter ||
         keysBefore.length != keysAfter.length ||
         keysAfter.difference(keysBefore).isNotEmpty) {
       return true;
@@ -166,9 +167,11 @@ class CustomClassAnalyzer {
           continue;
         }
 
-        var element = library.element.getClass(extraClass.className);
+        var element = library.element.exportNamespace.get2(
+          extraClass.className,
+        );
 
-        if (element != null) {
+        if (element is ClassElement) {
           var toJson = element.lookUpMethod(
             name: 'toJson',
             library: library.element,
@@ -244,9 +247,9 @@ class CustomClassAnalyzer {
     TypeDefinition extraClass,
     LibraryElement library,
   ) {
-    var element = library.exportNamespace.get2(extraClass.className);
+    final element = library.exportNamespace.get2(extraClass.className);
 
-    if (element == null || element is! ClassElement) {
+    if (element is! ClassElement) {
       return [
         SourceSpanSeverityException(
           'Custom class "${extraClass.className}" was not found in the library "${extraClass.sourcePath}".',

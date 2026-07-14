@@ -57,7 +57,7 @@ class Analyzers {
 
     final customClassAnalyzer = CustomClassAnalyzer(
       libDirectory,
-      customClassPackageRoots,
+      customClassPackageRoots: customClassPackageRoots,
       collection: collection,
     );
 

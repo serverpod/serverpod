@@ -34,7 +34,7 @@ class MigrationGenerationContext {
     final serializationTypes =
         await CustomClassAnalyzer(
           libDirectory,
-          customClassPackageRoots,
+          customClassPackageRoots: customClassPackageRoots,
         ).analyze(
           collector: customClassAnalyzerCollector,
           extraClasses: config.extraClasses,
