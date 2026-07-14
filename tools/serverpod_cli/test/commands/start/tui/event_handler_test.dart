@@ -473,6 +473,36 @@ void main() {
     );
   });
 
+  group('Given a Flutter app tab and a framework error without a count,', () {
+    late AppLogTab appTab;
+
+    setUp(() {
+      appTab = state.getOrCreateAppLogTab(
+        appId: 'serverpod-app',
+        label: 'Serverpod app',
+      );
+    });
+
+    test(
+      'when the event is dispatched, '
+      'then its metadata does not contain a null value.',
+      () {
+        handleFlutterExtensionEvent(
+          holder,
+          'serverpod-app',
+          _flutterErrorEvent({'renderedErrorText': 'A framework error'}),
+        );
+
+        final entry = appTab.logHistory.single as LogEntry;
+        expect(entry.metadata, {
+          'source': 'flutterError',
+          'levelIsInferred': false,
+          'timestampIsInferred': false,
+        });
+      },
+    );
+  });
+
   group('Given a Flutter app tab receiving a source-structured log event,', () {
     late AppLogTab appTab;
 

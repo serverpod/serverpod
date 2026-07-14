@@ -90,7 +90,7 @@ void handleFlutterExtensionEvent(
         level: LogLevel.error,
         message: message,
         source: FlutterLogSource.flutterError,
-        metadata: {'errorsSinceReload': data['errorsSinceReload']},
+        metadata: {'errorsSinceReload': ?data['errorsSinceReload']},
         timestampIsInferred: !hasEventTimestamp,
       );
       handleFlutterLogEvent(holder, appId, flutterEvent);
