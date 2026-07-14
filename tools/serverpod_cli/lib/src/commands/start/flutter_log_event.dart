@@ -25,6 +25,7 @@ class FlutterLogEvent {
     this.metadata,
     this.levelIsInferred = false,
     this.timestampIsInferred = false,
+    this.canCoalesce = false,
   });
 
   final DateTime time;
@@ -43,4 +44,10 @@ class FlutterLogEvent {
   /// Whether [time] records when the CLI received the event because the source
   /// did not supply a timestamp.
   final bool timestampIsInferred;
+
+  /// Whether adjacent events from the same raw source may be combined.
+  ///
+  /// This is false for transports that already provide semantic event
+  /// boundaries, even when their level or timestamp is inferred.
+  final bool canCoalesce;
 }

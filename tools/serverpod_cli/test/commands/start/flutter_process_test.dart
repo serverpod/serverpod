@@ -830,4 +830,63 @@ The key [GlobalKey#1d408] was used by multiple widgets.''';
       );
     },
   );
+
+  group(
+    'Given a Flutter process emitting inferred stderr lines in two bursts, '
+    'when its log events are forwarded,',
+    () {
+      late FlutterProcess fp;
+      late List<FlutterLogEvent> receivedEvents;
+
+      setUp(() async {
+        receivedEvents = [];
+        final twoEvents = Completer<void>();
+        fp = FlutterProcess(
+          flutterPackageDir: Directory.current.path,
+          device: 'web-server',
+          flutterExecutable: _dartExecutable(),
+          argsOverrideForTesting: [
+            _shimPath('emits_raw_log_bursts.dart'),
+          ],
+          onLog: (event) {
+            receivedEvents.add(event);
+            if (receivedEvents.length == 2 && !twoEvents.isCompleted) {
+              twoEvents.complete();
+            }
+          },
+        );
+
+        await fp.start();
+        await fp.exitCode;
+        await twoEvents.future.timeout(const Duration(seconds: 5));
+      });
+
+      tearDown(() async {
+        await fp.stop();
+      });
+
+      test(
+        'then adjacent lines are grouped and the idle boundary starts a new entry.',
+        () {
+          expect(receivedEvents, hasLength(2));
+          expect(
+            receivedEvents.first.message,
+            'First line of one diagnostic.\n'
+            'Second line of one diagnostic.',
+          );
+          expect(receivedEvents.first.metadata, {
+            'coalesced': true,
+            'lineCount': 2,
+          });
+          expect(receivedEvents.first.levelIsInferred, isTrue);
+          expect(receivedEvents.first.timestampIsInferred, isTrue);
+          expect(receivedEvents.last.message, 'A later diagnostic.');
+          expect(receivedEvents.last.metadata, {
+            'coalesced': false,
+            'lineCount': 1,
+          });
+        },
+      );
+    },
+  );
 }

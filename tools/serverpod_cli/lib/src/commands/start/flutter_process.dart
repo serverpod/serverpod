@@ -87,6 +87,8 @@ class FlutterProcess {
   StreamSubscription<Event>? _stdoutEventSub;
   StreamSubscription<Event>? _stderrEventSub;
   Timer? _vmServiceHeartbeat;
+  Timer? _logCoalesceTimer;
+  _PendingFlutterLog? _pendingLog;
 
   String? _appId;
   FlutterDaemonProtocol? _daemon;
@@ -213,6 +215,7 @@ class FlutterProcess {
             source: FlutterLogSource.processStdout,
             levelIsInferred: true,
             timestampIsInferred: true,
+            canCoalesce: true,
           ),
         );
         _stdout.writeln(line);
@@ -250,6 +253,7 @@ class FlutterProcess {
           source: FlutterLogSource.processStderr,
           levelIsInferred: true,
           timestampIsInferred: true,
+          canCoalesce: true,
         ),
       );
     }
@@ -497,6 +501,7 @@ class FlutterProcess {
           source: source,
           levelIsInferred: true,
           timestampIsInferred: true,
+          canCoalesce: true,
         ),
       );
     }
@@ -733,6 +738,41 @@ class FlutterProcess {
   }
 
   void _emitLog(FlutterLogEvent event) {
+    if (_onLog == null) return;
+
+    final canCoalesce =
+        event.canCoalesce && event.levelIsInferred && event.timestampIsInferred;
+    if (!canCoalesce) {
+      _flushPendingLog();
+      _dispatchLog(event);
+      return;
+    }
+
+    final pending = _pendingLog;
+    if (pending == null || !pending.canAppend(event)) {
+      _flushPendingLog();
+      _pendingLog = _PendingFlutterLog(event);
+    } else {
+      pending.append(event);
+    }
+
+    _logCoalesceTimer?.cancel();
+    _logCoalesceTimer = Timer(
+      const Duration(milliseconds: 50),
+      _flushPendingLog,
+    );
+  }
+
+  void _flushPendingLog() {
+    _logCoalesceTimer?.cancel();
+    _logCoalesceTimer = null;
+    final pending = _pendingLog;
+    if (pending == null) return;
+    _pendingLog = null;
+    _dispatchLog(pending.toEvent());
+  }
+
+  void _dispatchLog(FlutterLogEvent event) {
     try {
       _onLog?.call(event);
     } catch (error, stackTrace) {
@@ -834,6 +874,7 @@ class FlutterProcess {
       await _loggingSub?.cancel();
       await _stdoutEventSub?.cancel();
       await _stderrEventSub?.cancel();
+      _flushPendingLog();
       _vmServiceHeartbeat?.cancel();
       _stdoutBytesSub = null;
       _stderrBytesSub = null;
@@ -926,4 +967,53 @@ class FlutterProcess {
     if (path.endsWith('/ws')) path = path.substring(0, path.length - 3);
     return uri.replace(scheme: scheme, path: path).toString();
   }
+}
+
+class _PendingFlutterLog {
+  _PendingFlutterLog(this.first)
+    : _message = StringBuffer(first.message),
+      _lineCount = _countLines(first.message);
+
+  static const maxLines = 100;
+  static const maxCharacters = 64 * 1024;
+
+  final FlutterLogEvent first;
+  final StringBuffer _message;
+  int _lineCount;
+
+  bool canAppend(FlutterLogEvent event) {
+    if (event.source != first.source || event.level != first.level) {
+      return false;
+    }
+    final additionalLines = _countLines(event.message);
+    return _lineCount + additionalLines <= maxLines &&
+        _message.length + event.message.length + 1 <= maxCharacters;
+  }
+
+  void append(FlutterLogEvent event) {
+    if (_message.isNotEmpty) _message.writeln();
+    _message.write(event.message);
+    _lineCount += _countLines(event.message);
+  }
+
+  FlutterLogEvent toEvent() {
+    return FlutterLogEvent(
+      time: first.time,
+      level: first.level,
+      message: _message.toString(),
+      source: first.source,
+      loggerName: first.loggerName,
+      error: first.error,
+      stackTrace: first.stackTrace,
+      metadata: {
+        ...?first.metadata,
+        'coalesced': _lineCount > _countLines(first.message),
+        'lineCount': _lineCount,
+      },
+      levelIsInferred: first.levelIsInferred,
+      timestampIsInferred: first.timestampIsInferred,
+    );
+  }
+
+  static int _countLines(String message) => '\n'.allMatches(message).length + 1;
 }
