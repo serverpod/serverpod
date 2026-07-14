@@ -10,6 +10,7 @@ import 'package:serverpod_cli/src/commands/start/server_process.dart'
     show vmServiceWsUri;
 import 'package:serverpod_cli/src/util/browser_launcher.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+import 'package:serverpod_cli/src/util/strip_ansi.dart';
 import 'package:serverpod_cli/src/vendored/flutter_daemon_protocol.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:serverpod_shared/log.dart' show LogLevel;
@@ -90,6 +91,8 @@ class FlutterProcess {
   _PendingFlutterLog? _pendingLog;
   _Utf8LineDecoder? _vmStdoutDecoder;
   _Utf8LineDecoder? _vmStderrDecoder;
+  final Stopwatch _logDeduplicationClock = Stopwatch()..start();
+  final List<_RecentRawLogLine> _recentRawLogLines = [];
 
   String? _appId;
   FlutterDaemonProtocol? _daemon;
@@ -679,7 +682,7 @@ class FlutterProcess {
     if (message is! String || message.isEmpty) return;
 
     final stackTrace = params['stackTrace'];
-    _emitLog(
+    final accepted = _emitLog(
       FlutterLogEvent(
         time: DateTime.now(),
         level: level,
@@ -697,6 +700,7 @@ class FlutterProcess {
         timestampIsInferred: true,
       ),
     );
+    if (!accepted) return;
 
     final sink = switch (level) {
       LogLevel.warning || LogLevel.error || LogLevel.fatal => _stderr,
@@ -711,15 +715,17 @@ class FlutterProcess {
     }
   }
 
-  void _emitLog(FlutterLogEvent event) {
-    if (_onLog == null) return;
+  /// Returns whether [event] was accepted for structured and raw forwarding.
+  bool _emitLog(FlutterLogEvent event) {
+    if (_isDuplicateRawLog(event)) return false;
+    if (_onLog == null) return true;
 
     final canCoalesce =
         event.canCoalesce && event.levelIsInferred && event.timestampIsInferred;
     if (!canCoalesce) {
       _flushPendingLog();
       _dispatchLog(event);
-      return;
+      return true;
     }
 
     final pending = _pendingLog;
@@ -735,6 +741,86 @@ class FlutterProcess {
       const Duration(milliseconds: 50),
       _flushPendingLog,
     );
+    return true;
+  }
+
+  bool _isDuplicateRawLog(FlutterLogEvent event) {
+    final channel = _rawLogChannel(event);
+    if (channel == null) return false;
+
+    final now = _logDeduplicationClock.elapsedMilliseconds;
+    _recentRawLogLines.removeWhere(
+      (line) => now - line.receivedAtMilliseconds > 1000,
+    );
+
+    final lines = stripAnsi(event.message)
+        .split('\n')
+        .map(
+          (line) =>
+              line.endsWith('\r') ? line.substring(0, line.length - 1) : line,
+        )
+        .where((line) => line.isNotEmpty)
+        .toList();
+    if (lines.isEmpty) return false;
+
+    final matchedIndexes = <int>[];
+    for (final message in lines) {
+      var matchIndex = -1;
+      for (var index = 0; index < _recentRawLogLines.length; index++) {
+        final line = _recentRawLogLines[index];
+        if (!matchedIndexes.contains(index) &&
+            line.channel == channel &&
+            line.message == message &&
+            line.source != event.source &&
+            !line.duplicateSources.contains(event.source)) {
+          matchIndex = index;
+          break;
+        }
+      }
+      if (matchIndex == -1) {
+        for (final message in lines) {
+          _rememberRawLogLine(
+            _RecentRawLogLine(
+              channel: channel,
+              message: message,
+              source: event.source,
+              receivedAtMilliseconds: now,
+            ),
+          );
+        }
+        return false;
+      }
+      matchedIndexes.add(matchIndex);
+    }
+
+    for (final index in matchedIndexes) {
+      _recentRawLogLines[index].duplicateSources.add(event.source);
+    }
+    return true;
+  }
+
+  void _rememberRawLogLine(_RecentRawLogLine line) {
+    const maxRecentLines = 1000;
+    _recentRawLogLines.add(line);
+    if (_recentRawLogLines.length > maxRecentLines) {
+      _recentRawLogLines.removeAt(0);
+    }
+  }
+
+  static _RawLogChannel? _rawLogChannel(FlutterLogEvent event) {
+    return switch (event.source) {
+      FlutterLogSource.processStdout ||
+      FlutterLogSource.vmStdout => _RawLogChannel.stdout,
+      FlutterLogSource.processStderr ||
+      FlutterLogSource.vmStderr => _RawLogChannel.stderr,
+      FlutterLogSource.appLog => switch (event.level) {
+        LogLevel.warning ||
+        LogLevel.error ||
+        LogLevel.fatal => _RawLogChannel.stderr,
+        _ => _RawLogChannel.stdout,
+      },
+      _ => null,
+    };
   }
 
   void _flushPendingLog() {
@@ -985,6 +1071,23 @@ class _PendingFlutterLog {
   }
 
   static int _countLines(String message) => '\n'.allMatches(message).length + 1;
+}
+
+enum _RawLogChannel { stdout, stderr }
+
+class _RecentRawLogLine {
+  _RecentRawLogLine({
+    required this.channel,
+    required this.message,
+    required this.source,
+    required this.receivedAtMilliseconds,
+  });
+
+  final _RawLogChannel channel;
+  final String message;
+  final FlutterLogSource source;
+  final int receivedAtMilliseconds;
+  final Set<FlutterLogSource> duplicateSources = {};
 }
 
 class _Utf8LineDecoder {

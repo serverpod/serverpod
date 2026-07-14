@@ -961,6 +961,82 @@ The key [GlobalKey#1d408] was used by multiple widgets.''';
   );
 
   group(
+    'Given the same app line from a VM stream and app.log, '
+    'when both transports forward it,',
+    () {
+      late FlutterProcess fp;
+      late ({HttpServer server, String wsUri}) fake;
+      late List<FlutterLogEvent> receivedEvents;
+      late StringBuffer stdoutBuffer;
+      late StreamController<List<int>> stdoutController;
+      late IOSink stdoutSink;
+
+      setUp(() async {
+        const message = 'A native application message';
+        fake = await _startFakeLoggingVmService(
+          loggingLevel: null,
+          stdoutChunks: [utf8.encode('$message\n')],
+        );
+        receivedEvents = [];
+        stdoutBuffer = StringBuffer();
+        stdoutController = StreamController<List<int>>();
+        stdoutController.stream
+            .transform(utf8.decoder)
+            .listen(stdoutBuffer.write);
+        stdoutSink = IOSink(stdoutController.sink);
+        final vmEvent = Completer<void>();
+        fp = FlutterProcess(
+          flutterPackageDir: Directory.current.path,
+          device: 'linux',
+          flutterExecutable: _dartExecutable(),
+          argsOverrideForTesting: [
+            _shimPath('emits_machine_events.dart'),
+            '--ws=${fake.wsUri}',
+          ],
+          stdoutSink: stdoutSink,
+          onLog: (event) {
+            receivedEvents.add(event);
+            if (event.source == FlutterLogSource.vmStdout &&
+                !vmEvent.isCompleted) {
+              vmEvent.complete();
+            }
+          },
+        );
+
+        await fp.start();
+        await fp.launched;
+        await fp.connectToVmService();
+        await vmEvent.future.timeout(const Duration(seconds: 5));
+        fp.handleMachineLine(
+          jsonEncode([
+            {
+              'event': 'app.log',
+              'params': {'log': message, 'error': false},
+            },
+          ]),
+        );
+        await stdoutSink.flush();
+        await Future<void>.delayed(Duration.zero);
+      });
+
+      tearDown(() async {
+        await fp.stop(timeout: const Duration(milliseconds: 100));
+        await fake.server.close(force: true);
+        await stdoutSink.close();
+      });
+
+      test(
+        'then one structured entry and one raw line are retained.',
+        () {
+          expect(receivedEvents, hasLength(1));
+          expect(receivedEvents.single.source, FlutterLogSource.vmStdout);
+          expect(stdoutBuffer.toString(), 'A native application message\n');
+        },
+      );
+    },
+  );
+
+  group(
     'Given a Flutter process whose UTF-8 stderr character spans byte chunks, '
     'when stderr is forwarded,',
     () {
