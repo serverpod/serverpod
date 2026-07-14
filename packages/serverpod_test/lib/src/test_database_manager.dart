@@ -5,9 +5,14 @@ import 'dart:math';
 import 'package:postgres/postgres.dart' as pg;
 import 'package:serverpod_shared/serverpod_shared.dart';
 
-/// Creates and drops the per-group PostgreSQL databases that back
-/// `withServerpod` tests, so groups that commit (rather than rolling back) can
+/// Creates and drops PostgreSQL databases used by tests (e.g. per
+/// `withServerpod` group), so groups that commit (rather than rolling back) can
 /// run in parallel without sharing state.
+///
+/// Prefer [EphemeralTestDatabase.create] when the caller also needs to resolve
+/// the project config and start/attach the embedded postmaster (or plan a
+/// per-group SQLite file). This class is the lower-level PostgreSQL admin API
+/// once connectivity is known.
 ///
 /// All databases live on the one embedded postmaster resolved from the project
 /// config; isolation comes from each group owning its own database, not its own

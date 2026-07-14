@@ -1,9 +1,7 @@
 import 'dart:io';
 
-import 'package:path/path.dart' as p;
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_database/embedded.dart';
-import 'package:serverpod_shared/serverpod_shared.dart' show PasswordManager;
+import 'package:serverpod_test/src/ephemeral_test_database.dart';
 import 'package:serverpod_test/src/io_overrides.dart';
 import 'package:serverpod_test/src/test_database_manager.dart';
 import 'package:serverpod_test/src/test_database_proxy.dart';
@@ -115,8 +113,8 @@ class TestServerpod<T extends InternalTestEndpoints> {
   Serverpod? _serverpodInstance;
   Serverpod get _serverpod => _serverpodInstance ??= _constructServerpod();
 
-  /// Manages this group's own database; retained to drop it on [shutdown].
-  TestDatabaseManager? _databaseManager;
+  /// This group's own database; retained to drop it on [shutdown].
+  EphemeralTestDatabase? _ephemeralDatabase;
 
   /// The per-group database name, decided eagerly in the constructor. It is
   /// baked into the server configuration up front (see [_constructServerpod])
@@ -188,7 +186,10 @@ class TestServerpod<T extends InternalTestEndpoints> {
             } else if (db is SqliteDatabaseConfig) {
               resolved = resolved.copyWith(
                 database: SqliteDatabaseConfig(
-                  filePath: _perGroupSqliteFilePath(db.filePath),
+                  filePath: EphemeralTestDatabase.sqliteFilePath(
+                    db.filePath,
+                    _targetDatabaseName,
+                  ),
                   maxConnectionCount: db.maxConnectionCount,
                 ),
               );
@@ -204,18 +205,6 @@ class TestServerpod<T extends InternalTestEndpoints> {
       },
       stdout: () => NullStdOut(),
       stderr: () => NullStdOut(),
-    );
-  }
-
-  /// This group's own SQLite file, derived from the configured [original] path
-  /// by inserting [_targetDatabaseName] (e.g. `db/test.db` ->
-  /// `db/sp_test_<token>.db`). `:memory:` is left as-is. Relative paths stay
-  /// relative so the SQLite adapter anchors them against the server directory.
-  String _perGroupSqliteFilePath(String original) {
-    if (original == ':memory:') return original;
-    return p.join(
-      p.dirname(original),
-      '$_targetDatabaseName${p.extension(original)}',
     );
   }
 
@@ -241,37 +230,25 @@ class TestServerpod<T extends InternalTestEndpoints> {
     }
   }
 
-  /// Embedded PostgreSQL postmasters launched to back tests, keyed by data
-  /// directory. They are launched once per test process and intentionally kept
-  /// running; see [_startOrAttachSharedEmbeddedPostgres].
-  static final Map<String, ResolvedEmbeddedPostgres> _sharedEmbeddedPostgres =
-      {};
-
   /// Starts the underlying serverpod instance.
   Future<void> start() async {
     try {
       await _withOutputMode(() async {
-        final database = _resolveProjectDatabaseConfig();
-        final isEmbeddedPostgres =
-            database is PostgresDatabaseConfig && database.dataPath != null;
-
-        // Start the shared postmaster before the server connects, so this
-        // group's database can be created on it.
-        final embedded = isEmbeddedPostgres
-            ? await _startOrAttachSharedEmbeddedPostgres(database)
-            : null;
-
-        // SQLite needs nothing here; its per-group file is created when the
-        // server migrates it.
-        if (database is PostgresDatabaseConfig) {
-          try {
-            await _createOwnDatabase(embedded?.connectivity ?? database);
-          } catch (e) {
-            throw InitializationException(
-              'Failed to set up the test database. Ensure the database is '
-              'running and reachable. Error: $e',
-            );
-          }
+        // Provision this group's database before the server connects.
+        // PostgreSQL: CREATE DATABASE on the shared postmaster. SQLite: a
+        // drop-handle for the per-group file (created when migrations run).
+        try {
+          _ephemeralDatabase = await EphemeralTestDatabase.create(
+            runMode: _runMode ?? ServerpodRunMode.test,
+            databaseName: _targetDatabaseName,
+            serverDirectory: _serverpod.serverDirectory,
+            configOverride: _configOverride,
+          );
+        } catch (e) {
+          throw InitializationException(
+            'Failed to set up the test database. Ensure the database is '
+            'running and reachable. Error: $e',
+          );
         }
 
         try {
@@ -283,7 +260,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
             await _serverpod.shutdown(exitProcess: false);
           } catch (_) {}
           try {
-            await _dropOwnDatabase();
+            await _ephemeralDatabase?.drop();
           } catch (_) {}
           rethrow;
         }
@@ -302,62 +279,6 @@ class TestServerpod<T extends InternalTestEndpoints> {
     }
   }
 
-  /// Launches or attaches to the embedded PostgreSQL postmaster backing
-  /// [database], caching it per data directory so every `withServerpod` group
-  /// shares one instance - otherwise the first group would tear it down on its
-  /// own shutdown, stranding the rest. Returns the resolved coordinates, or
-  /// `null` for an externally-managed server.
-  ///
-  /// [database] must be the project config (see [_resolveProjectDatabaseConfig]),
-  /// not the running server's per-group-named one, which the launcher would
-  /// create on first init instead of the project database.
-  Future<ResolvedEmbeddedPostgres?> _startOrAttachSharedEmbeddedPostgres(
-    PostgresDatabaseConfig database,
-  ) async {
-    final baseDirectory = _serverpod.serverDirectory;
-    final key = '${baseDirectory.path}|${database.dataPath}';
-    final existing = _sharedEmbeddedPostgres[key];
-    if (existing != null) return existing;
-
-    final resolved = await startOrAttachEmbeddedPostgres(
-      database,
-      baseDirectory: baseDirectory,
-    );
-    if (resolved != null) {
-      _sharedEmbeddedPostgres[key] = resolved;
-    }
-    return resolved;
-  }
-
-  /// Loads the project's database config the way [Serverpod] would (run mode,
-  /// passwords, and the user's `configOverride`) but without the per-group
-  /// name swap, so the shared postmaster is launched against the project
-  /// database regardless of which group starts first.
-  DatabaseConfig? _resolveProjectDatabaseConfig() {
-    final serverDir = _serverDirectory?.path;
-    final runMode = _runMode ?? ServerpodRunMode.test;
-    final passwords = PasswordManager(runMode: runMode).loadPasswords(
-      serverDir: serverDir,
-    );
-    var config = ServerpodConfig.load(
-      runMode,
-      null,
-      passwords,
-      serverDir: serverDir,
-    );
-    config = _configOverride?.call(config) ?? config;
-    return config.database;
-  }
-
-  /// Creates this group's own PostgreSQL database (dropped on [shutdown]) on
-  /// the server given by [connectivity]: the embedded postmaster's resolved
-  /// coordinates, or the project's configured server.
-  Future<void> _createOwnDatabase(PostgresDatabaseConfig connectivity) async {
-    final manager = TestDatabaseManager(connectivity);
-    _databaseManager = manager;
-    await manager.createEmptyDatabase(_targetDatabaseName);
-  }
-
   /// Shuts down the underlying serverpod instance and drops this group's
   /// database (a PostgreSQL `DROP DATABASE`, or deleting the SQLite file). The
   /// shared embedded postmaster is intentionally left running; it is reclaimed
@@ -366,35 +287,12 @@ class TestServerpod<T extends InternalTestEndpoints> {
     try {
       await _withOutputMode(() async {
         await _serverpod.shutdown(exitProcess: false);
-        await _dropOwnDatabase();
+        await _ephemeralDatabase?.drop();
       });
     } catch (e, stackTrace) {
       throw InitializationException(
         'Failed to shutdown the serverpod instance: $e\n$stackTrace',
       );
-    }
-  }
-
-  /// Drops this group's own database: a PostgreSQL `DROP DATABASE` for the
-  /// per-group database created in [_createOwnDatabase], plus the per-group
-  /// SQLite file. Shared by [shutdown] and [start]'s failure cleanup.
-  Future<void> _dropOwnDatabase() async {
-    await _databaseManager?.dropDatabase(_targetDatabaseName);
-    _deleteOwnSqliteFile();
-  }
-
-  /// Deletes this group's SQLite database file (and its WAL/SHM/journal
-  /// sidecars) when the project uses SQLite. Relative paths are resolved
-  /// against the server directory the SQLite adapter anchors them to.
-  void _deleteOwnSqliteFile() {
-    final db = _serverpod.config.database;
-    if (db is! SqliteDatabaseConfig || db.filePath == ':memory:') return;
-    final base = p.isAbsolute(db.filePath)
-        ? db.filePath
-        : p.join(_serverpod.serverDirectory.path, db.filePath);
-    for (final suffix in const ['', '-wal', '-shm', '-journal']) {
-      final file = File('$base$suffix');
-      if (file.existsSync()) file.deleteSync();
     }
   }
 

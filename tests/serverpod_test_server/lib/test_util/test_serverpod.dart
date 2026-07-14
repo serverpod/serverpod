@@ -6,10 +6,8 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/serverpod.dart'
     show ServerpodInternalMethods;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as auth;
-import 'package:serverpod_database/embedded.dart'
-    show startOrAttachEmbeddedPostgres;
-import 'package:serverpod_shared/serverpod_shared.dart' show PasswordManager;
-import 'package:serverpod_test/serverpod_test.dart' show TestDatabaseManager;
+import 'package:serverpod_test/serverpod_test.dart'
+    show EphemeralTestDatabase, TestDatabaseManager;
 import 'package:serverpod_test_server/src/generated/endpoints.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/redis_probe.dart';
@@ -337,14 +335,15 @@ int stableTestPort([int offset = 0]) => 20000 + (pid + offset * 101) % 10000;
 /// shared embedded postmaster. Suites therefore run concurrently without
 /// colliding on each other's committed data.
 ///
+/// Creation itself is delegated to [EphemeralTestDatabase] (same path as
+/// `withServerpod`); this type only owns the isolate lifecycle: generate
+/// [name], [attachTo] for child isolates, lazy [ensureReady] + migrate, and
+/// never drop (reclaimed when the data directory is cleared between runs).
+///
 /// The runner isolate that generates [name] owns the database: it creates and
 /// migrates it. A child isolate the suite spawns can [attachTo] the runner's
 /// database (passing [name] in the spawn message) to share the same data; an
 /// attached isolate never creates or migrates it.
-///
-/// Created lazily on first use and not dropped: it lives on the shared
-/// postmaster for the process's lifetime, reclaimed when the data directory is
-/// cleared between runs.
 class _IsolateTestDatabase {
   static String? _name;
   static bool _owns = true;
@@ -387,45 +386,14 @@ class _IsolateTestDatabase {
     required String serverDirectory,
     required Future<void> Function() migrate,
   }) async {
-    final database = _resolveProjectDatabaseConfig(
+    // Only reached for embedded PostgreSQL (see [ensureDatabase]). Null means
+    // no database to provision; the postmaster is left running for the process.
+    final created = await EphemeralTestDatabase.create(
       runMode: runMode,
-      serverDirectory: serverDirectory,
+      databaseName: name,
+      serverDirectory: Directory(serverDirectory),
     );
-    // Only PostgreSQL is provisioned per isolate; other configs (e.g. SQLite)
-    // are left as-is.
-    if (database is! PostgresDatabaseConfig) return;
-
-    // Resolve the shared postmaster's coordinates against the *project*
-    // database (launching it on first use), then create this isolate's own
-    // database on it. The launched postmaster is intentionally left running -
-    // it is shared by every isolate and reclaimed when the process exits.
-    final resolved = await startOrAttachEmbeddedPostgres(
-      database,
-      baseDirectory: Directory(serverDirectory),
-    );
-    final connectivity = resolved?.connectivity ?? database;
-
-    await TestDatabaseManager(connectivity).createEmptyDatabase(name);
+    if (created == null) return;
     await migrate();
-  }
-
-  /// Loads the project's database config (run mode, passwords, environment) the
-  /// way the server would, but without the per-isolate name swap - so the
-  /// shared postmaster is launched against the project database, not this
-  /// isolate's.
-  static DatabaseConfig? _resolveProjectDatabaseConfig({
-    required String runMode,
-    required String serverDirectory,
-  }) {
-    final passwords = PasswordManager(
-      runMode: runMode,
-    ).loadPasswords(serverDir: serverDirectory);
-    final config = ServerpodConfig.load(
-      runMode,
-      null,
-      passwords,
-      serverDir: serverDirectory,
-    );
-    return config.database;
   }
 }
