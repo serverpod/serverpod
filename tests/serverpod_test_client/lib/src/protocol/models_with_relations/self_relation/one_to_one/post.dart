@@ -15,7 +15,8 @@ import '../../../models_with_relations/self_relation/one_to_one/post.dart'
     as _i2;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
-abstract class Post implements _i1.SerializableModel {
+abstract class Post
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   Post._({
     this.id,
     required this.content,
@@ -78,6 +79,18 @@ abstract class Post implements _i1.SerializableModel {
       if (previous != null) 'previous': previous?.toJson(),
       if (nextId != null) 'nextId': nextId,
       if (next != null) 'next': next?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Post',
+      if (id != null) 'id': id,
+      'content': content,
+      if (previous != null) 'previous': previous?.toJsonForProtocol(),
+      if (nextId != null) 'nextId': nextId,
+      if (next != null) 'next': next?.toJsonForProtocol(),
     };
   }
 

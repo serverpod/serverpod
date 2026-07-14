@@ -15,7 +15,8 @@ import '../../models_with_relations/one_to_one/address.dart' as _i2;
 import '../../models_with_relations/one_to_one/company.dart' as _i3;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i4;
 
-abstract class Citizen implements _i1.SerializableModel {
+abstract class Citizen
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   Citizen._({
     this.id,
     required this.name,
@@ -100,6 +101,20 @@ abstract class Citizen implements _i1.SerializableModel {
       if (company != null) 'company': company?.toJson(),
       if (oldCompanyId != null) 'oldCompanyId': oldCompanyId,
       if (oldCompany != null) 'oldCompany': oldCompany?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Citizen',
+      if (id != null) 'id': id,
+      'name': name,
+      if (address != null) 'address': address?.toJsonForProtocol(),
+      'companyId': companyId,
+      if (company != null) 'company': company?.toJsonForProtocol(),
+      if (oldCompanyId != null) 'oldCompanyId': oldCompanyId,
+      if (oldCompany != null) 'oldCompany': oldCompany?.toJsonForProtocol(),
     };
   }
 

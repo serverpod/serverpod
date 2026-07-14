@@ -72,6 +72,7 @@ void main() {
         var maybeTableGetter = CompilationUnitHelpers.tryFindMethodDeclaration(
           maybeClassNamedExample!,
           name: 'table',
+          isGetter: true,
         );
 
         var typeArguments = maybeTableGetter?.returnType as NamedType?;
@@ -161,6 +162,7 @@ void main() {
               CompilationUnitHelpers.tryFindMethodDeclaration(
                 maybeClassNamedExample!,
                 name: 'table',
+                isGetter: true,
               );
 
           var typeArguments = maybeTableGetter?.returnType as NamedType?;
@@ -251,6 +253,7 @@ void main() {
               CompilationUnitHelpers.tryFindMethodDeclaration(
                 maybeClassNamedExample!,
                 name: 'table',
+                isGetter: true,
               );
 
           var typeArguments = maybeTableGetter?.returnType as NamedType?;

@@ -14,7 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../defaults/enum/enums/by_name_enum.dart' as _i2;
 import '../../defaults/enum/enums/by_index_enum.dart' as _i3;
 
-abstract class EnumDefaultModel implements _i1.SerializableModel {
+abstract class EnumDefaultModel
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   EnumDefaultModel._({
     this.id,
     _i2.ByNameEnum? byNameEnumDefaultModel,
@@ -93,6 +94,20 @@ abstract class EnumDefaultModel implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'EnumDefaultModel',
+      if (id != null) 'id': id,
+      'byNameEnumDefaultModel': byNameEnumDefaultModel.toJson(),
+      if (byNameEnumDefaultModelNull != null)
+        'byNameEnumDefaultModelNull': byNameEnumDefaultModelNull?.toJson(),
+      'byIndexEnumDefaultModel': byIndexEnumDefaultModel.toJson(),
+      if (byIndexEnumDefaultModelNull != null)
+        'byIndexEnumDefaultModelNull': byIndexEnumDefaultModelNull?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'EnumDefaultModel',
       if (id != null) 'id': id,

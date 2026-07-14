@@ -83,7 +83,11 @@ class FlutterAppManager {
   final String serverpodToolDir;
   final String runMode;
   final void Function(FlutterAppConfig app, String stage) onProgress;
-  final void Function(FlutterAppConfig app, String url) onReady;
+
+  /// Fires once per launch when the app is up: on the published web URL
+  /// for web devices, or on the daemon's `app.started` event otherwise
+  /// ([url] is null when the device publishes no URL).
+  final void Function(FlutterAppConfig app, String? url) onReady;
   final Future<void> Function(FlutterAppConfig app, FlutterProcess process)
   onStart;
   final void Function(FlutterAppConfig app) onStop;
@@ -131,14 +135,14 @@ class FlutterAppManager {
   /// Whether [appId] has a running Flutter process.
   bool isRunning(String appId) => processFor(appId)?.isRunning ?? false;
 
-  /// Whether [appId] is starting up (spawn through URL publication).
+  /// Whether [appId] is starting up (spawn through the ready signal).
   bool isLaunching(String appId) {
     final runtime = _runtimeFor(appId);
     if (runtime == null) return false;
     if (runtime.spawnInFlight) return true;
     final process = runtime.process;
     if (process == null || !process.isRunning) return false;
-    return process.flutterAppUrl == null;
+    return !runtime.readySignaled;
   }
 
   /// Injects [process] for [appId] in tests.
@@ -222,6 +226,7 @@ class FlutterAppManager {
     if (runtime.spawnInFlight) return;
 
     runtime.spawnInFlight = true;
+    runtime.readySignaled = false;
     final isRelaunch = runtime.relaunchInProgress;
     runtime.relaunchInProgress = false;
 
@@ -229,7 +234,8 @@ class FlutterAppManager {
 
     final device = runtime.app.device ?? flutterDeviceWebServerWithBrowser;
 
-    final process = FlutterProcess(
+    late final FlutterProcess process;
+    process = FlutterProcess(
       flutterPackageDir: p.joinAll(runtime.app.pathParts),
       device: device,
       extraArgs: runtime.app.extraRunArgs,
@@ -242,6 +248,10 @@ class FlutterAppManager {
         onProgress(runtime.app, stage);
         log.info('  ${runtime.app.name}: $stage');
       },
+      // The ready signal for non-web devices, which never publish a URL. Web
+      // devices publish their URL before `app.started`, so it is carried
+      // along here when the URL path has not signaled first.
+      onStarted: () => _signalReady(runtime, process.flutterAppUrl),
     );
 
     try {
@@ -417,6 +427,20 @@ class FlutterAppManager {
     );
   }
 
+  /// Invokes [onReady] at most once per launch. Ready has two sources - the
+  /// published web URL (web devices) and the daemon's `app.started` event
+  /// (non-web devices) - so a second signal is swallowed here.
+  void _signalReady(_AppRuntime runtime, String? url) {
+    if (runtime.readySignaled) return;
+    runtime.readySignaled = true;
+    log.info(
+      url == null
+          ? '${runtime.app.name} is running.'
+          : '${runtime.app.name} running at $url',
+    );
+    onReady(runtime.app, url);
+  }
+
   Future<void> _connectAfterLaunch(
     _AppRuntime runtime,
     FlutterProcess process, {
@@ -448,8 +472,7 @@ class FlutterAppManager {
 
     final url = process.flutterAppUrl;
     if (url != null) {
-      log.info('${runtime.app.name} running at $url');
-      onReady(runtime.app, url);
+      _signalReady(runtime, url);
     }
 
     await log.progress(
@@ -483,4 +506,5 @@ class _AppRuntime {
   FlutterDependencyTracker? dependencyTracker;
   bool spawnInFlight = false;
   bool relaunchInProgress = false;
+  bool readySignaled = false;
 }

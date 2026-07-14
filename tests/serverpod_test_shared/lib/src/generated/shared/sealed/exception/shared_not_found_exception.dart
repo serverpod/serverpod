@@ -12,7 +12,10 @@
 part of 'shared_sealed_app_exception.dart';
 
 abstract class SharedNotFoundException extends _i1.SharedSealedAppException
-    implements _i2.SerializableException, _i2.SerializableModel {
+    implements
+        _i2.SerializableException,
+        _i2.SerializableModel,
+        _i2.ProtocolSerialization {
   SharedNotFoundException._({
     required super.message,
     required this.code,
@@ -44,6 +47,15 @@ abstract class SharedNotFoundException extends _i1.SharedSealedAppException
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'SharedNotFoundException',
+      'message': message,
+      'code': code,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'SharedNotFoundException',
       'message': message,

@@ -109,6 +109,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
   final Directory? _serverDirectory;
   final ExperimentalFeatures? _experimentalFeatures;
   final RuntimeParametersListBuilder? _runtimeParametersBuilder;
+  final DatabaseInterceptor? _databaseInterceptor;
   final ServerpodConfig Function(ServerpodConfig)? _configOverride;
 
   Serverpod? _serverpodInstance;
@@ -143,6 +144,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
     Directory? serverDirectory,
     ExperimentalFeatures? experimentalFeatures,
     RuntimeParametersListBuilder? runtimeParametersBuilder,
+    DatabaseInterceptor? databaseInterceptor,
     ServerpodConfig Function(ServerpodConfig)? configOverride,
   }) : _applyMigrations = applyMigrations,
        _endpoints = endpoints,
@@ -152,6 +154,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
        _serverDirectory = serverDirectory,
        _experimentalFeatures = experimentalFeatures,
        _runtimeParametersBuilder = runtimeParametersBuilder,
+       _databaseInterceptor = databaseInterceptor,
        _configOverride = configOverride,
        testServerOutputMode =
            testServerOutputMode ?? TestServerOutputMode.normal {
@@ -194,6 +197,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
           },
           experimentalFeatures: _experimentalFeatures,
           runtimeParametersBuilder: _runtimeParametersBuilder,
+          databaseInterceptor: _databaseInterceptor,
         );
         _endpoints.initializeEndpoints(serverpod.server);
         return serverpod;

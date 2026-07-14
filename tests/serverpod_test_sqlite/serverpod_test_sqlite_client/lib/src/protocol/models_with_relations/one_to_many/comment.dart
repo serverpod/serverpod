@@ -12,11 +12,12 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
-import '../../models_with_relations/one_to_many/order.dart' as _i2;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
-import 'package:serverpod_client/serverpod_client.dart' as _i4;
+import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import '../../models_with_relations/one_to_many/order.dart' as _i3;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
 
-abstract class Comment implements _i1.TableRow<int?> {
+abstract class Comment
+    implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   Comment._({
     this.id,
     required this.description,
@@ -28,7 +29,7 @@ abstract class Comment implements _i1.TableRow<int?> {
     int? id,
     required String description,
     required int orderId,
-    _i2.Order? order,
+    _i3.Order? order,
   }) = _CommentImpl;
 
   factory Comment.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -38,7 +39,7 @@ abstract class Comment implements _i1.TableRow<int?> {
       orderId: jsonSerialization['orderId'] as int,
       order: jsonSerialization['order'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.Order>(jsonSerialization['order']),
+          : _i4.Protocol().deserialize<_i3.Order>(jsonSerialization['order']),
     );
   }
 
@@ -53,19 +54,19 @@ abstract class Comment implements _i1.TableRow<int?> {
 
   int orderId;
 
-  _i2.Order? order;
+  _i3.Order? order;
 
   @override
   _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Comment]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   Comment copyWith({
     int? id,
     String? description,
     int? orderId,
-    _i2.Order? order,
+    _i3.Order? order,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -78,7 +79,18 @@ abstract class Comment implements _i1.TableRow<int?> {
     };
   }
 
-  static CommentInclude include({_i2.OrderInclude? order}) {
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Comment',
+      if (id != null) 'id': id,
+      'description': description,
+      'orderId': orderId,
+      if (order != null) 'order': order?.toJsonForProtocol(),
+    };
+  }
+
+  static CommentInclude include({_i3.OrderInclude? order}) {
     return CommentInclude._(order: order);
   }
 
@@ -106,7 +118,7 @@ abstract class Comment implements _i1.TableRow<int?> {
 
   @override
   String toString() {
-    return _i4.SerializationManager.encode(this);
+    return _i2.SerializationManager.encode(this);
   }
 }
 
@@ -117,7 +129,7 @@ class _CommentImpl extends Comment {
     int? id,
     required String description,
     required int orderId,
-    _i2.Order? order,
+    _i3.Order? order,
   }) : super._(
          id: id,
          description: description,
@@ -127,7 +139,7 @@ class _CommentImpl extends Comment {
 
   /// Returns a shallow copy of this [Comment]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   @override
   Comment copyWith({
     Object? id = _Undefined,
@@ -139,7 +151,7 @@ class _CommentImpl extends Comment {
       id: id is int? ? id : this.id,
       description: description ?? this.description,
       orderId: orderId ?? this.orderId,
-      order: order is _i2.Order? ? order : this.order?.copyWith(),
+      order: order is _i3.Order? ? order : this.order?.copyWith(),
     );
   }
 }
@@ -177,17 +189,17 @@ class CommentTable extends _i1.Table<int?> {
 
   late final _i1.ColumnInt orderId;
 
-  _i2.OrderTable? _order;
+  _i3.OrderTable? _order;
 
-  _i2.OrderTable get order {
+  _i3.OrderTable get order {
     if (_order != null) return _order!;
     _order = _i1.createRelationTable(
       relationFieldName: 'order',
       field: Comment.t.orderId,
-      foreignField: _i2.Order.t.id,
+      foreignField: _i3.Order.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.OrderTable(tableRelation: foreignTableRelation),
+          _i3.OrderTable(tableRelation: foreignTableRelation),
     );
     return _order!;
   }
@@ -209,11 +221,11 @@ class CommentTable extends _i1.Table<int?> {
 }
 
 class CommentInclude extends _i1.IncludeObject {
-  CommentInclude._({_i2.OrderInclude? order}) {
+  CommentInclude._({_i3.OrderInclude? order}) {
     _order = order;
   }
 
-  _i2.OrderInclude? _order;
+  _i3.OrderInclude? _order;
 
   @override
   Map<String, _i1.Include?> get includes => {'order': _order};
@@ -674,7 +686,7 @@ class CommentAttachRowRepository {
   Future<void> order(
     _i1.DatabaseSession session,
     Comment comment,
-    _i2.Order order, {
+    _i3.Order order, {
     _i1.Transaction? transaction,
   }) async {
     if (comment.id == null) {

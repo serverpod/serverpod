@@ -105,6 +105,23 @@ commands:
     exclusiveFlags:
       - [list, no-list]
 
+  - name: start
+    flags:
+      -w, --watch: "Watch files and use the Frontend Server for fast incremental compilation. With --no-watch, the server is started via `dart run`."
+      --no-watch: "Watch files and use the Frontend Server for fast incremental compilation. With --no-watch, the server is started via `dart run`."
+      -d, --directory=: "The server directory (defaults to auto-detect from current directory)."
+      --docker: "Start Docker Compose services if a docker-compose.yaml exists. Default off; pass --docker to opt in to compose-managed services (typically Redis when running PostgreSQL separately)."
+      --no-docker: "Start Docker Compose services if a docker-compose.yaml exists. Default off; pass --docker to opt in to compose-managed services (typically Redis when running PostgreSQL separately)."
+      --tui: "Show interactive terminal UI."
+      --no-tui: "Show interactive terminal UI."
+      --flutter: "Auto-launch the companion Flutter apps as configured on the server pubspec.yaml with `auto_launch: true`. Use --no-flutter to disable auto-launch. Apps can still be started on demand from the TUI."
+      --no-flutter: "Auto-launch the companion Flutter apps as configured on the server pubspec.yaml with `auto_launch: true`. Use --no-flutter to disable auto-launch. Apps can still be started on demand from the TUI."
+    exclusiveFlags:
+      - [watch, no-watch]
+      - [docker, no-docker]
+      - [tui, no-tui]
+      - [flutter, no-flutter]
+
   - name: upgrade
 
   - name: version

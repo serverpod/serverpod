@@ -15,7 +15,8 @@ import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i2;
 import 'shared_model_subclass.dart' as _i3;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i4;
 
-abstract class SharedModelContainer implements _i1.SerializableModel {
+abstract class SharedModelContainer
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   SharedModelContainer._({
     this.id,
     required this.sharedModel,
@@ -295,6 +296,66 @@ abstract class SharedModelContainer implements _i1.SerializableModel {
       if (sharedModelSetNullable != null)
         'sharedModelSetNullable': sharedModelSetNullable?.toJson(
           valueToJson: (v) => v.toJson(),
+        ),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'SharedModelContainer',
+      if (id != null) 'id': id,
+      'sharedModel': sharedModel.toJsonForProtocol(),
+      'sharedModelWithModuleAlias': sharedModelWithModuleAlias
+          .toJsonForProtocol(),
+      if (sharedModelNullable != null)
+        'sharedModelNullable': sharedModelNullable?.toJsonForProtocol(),
+      if (nonPersistedSharedModel != null)
+        'nonPersistedSharedModel': nonPersistedSharedModel?.toJsonForProtocol(),
+      'sharedSubclass': sharedSubclass.toJsonForProtocol(),
+      if (sharedSubclassNullable != null)
+        'sharedSubclassNullable': sharedSubclassNullable?.toJsonForProtocol(),
+      'sharedEnum': sharedEnum.toJson(),
+      if (sharedEnumNullable != null)
+        'sharedEnumNullable': sharedEnumNullable?.toJson(),
+      'sharedSealedParent': sharedSealedParent.toJsonForProtocol(),
+      if (sharedSealedParentNullable != null)
+        'sharedSealedParentNullable': sharedSealedParentNullable
+            ?.toJsonForProtocol(),
+      'sharedSealedChild': sharedSealedChild.toJsonForProtocol(),
+      if (sharedSealedChildNullable != null)
+        'sharedSealedChildNullable': sharedSealedChildNullable
+            ?.toJsonForProtocol(),
+      'sharedModelSubclass': sharedModelSubclass.toJsonForProtocol(),
+      if (sharedModelSubclassNullable != null)
+        'sharedModelSubclassNullable': sharedModelSubclassNullable
+            ?.toJsonForProtocol(),
+      'sharedModelList': sharedModelList.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
+      'sharedModelNullableList': sharedModelNullableList.toJson(
+        valueToJson: (v) => v?.toJsonForProtocol(),
+      ),
+      if (sharedModelListNullable != null)
+        'sharedModelListNullable': sharedModelListNullable?.toJson(
+          valueToJson: (v) => v.toJsonForProtocol(),
+        ),
+      'sharedModelMap': sharedModelMap.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
+      if (sharedModelMapNullable != null)
+        'sharedModelMapNullable': sharedModelMapNullable?.toJson(
+          valueToJson: (v) => v.toJsonForProtocol(),
+        ),
+      'sharedSubclassMap': sharedSubclassMap.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
+      'sharedModelSet': sharedModelSet.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
+      if (sharedModelSetNullable != null)
+        'sharedModelSetNullable': sharedModelSetNullable?.toJson(
+          valueToJson: (v) => v.toJsonForProtocol(),
         ),
     };
   }

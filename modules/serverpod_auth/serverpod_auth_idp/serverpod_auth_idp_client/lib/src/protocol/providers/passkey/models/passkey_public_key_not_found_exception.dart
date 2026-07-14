@@ -14,7 +14,10 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Exception to be thrown if a login attempt was made with an unknown key id.
 abstract class PasskeyPublicKeyNotFoundException
-    implements _i1.SerializableException, _i1.SerializableModel {
+    implements
+        _i1.SerializableException,
+        _i1.SerializableModel,
+        _i1.ProtocolSerialization {
   PasskeyPublicKeyNotFoundException._();
 
   factory PasskeyPublicKeyNotFoundException() =
@@ -32,6 +35,13 @@ abstract class PasskeyPublicKeyNotFoundException
   PasskeyPublicKeyNotFoundException copyWith();
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_auth_idp.PasskeyPublicKeyNotFoundException',
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_auth_idp.PasskeyPublicKeyNotFoundException',
     };

@@ -194,8 +194,24 @@ final class ClientMethodStreamManager {
 
   void _tryCloseConnection() {
     if (_inboundStreams.isEmpty && _outboundStreams.isEmpty) {
-      closeAllConnections();
+      unawaited(_closeConnectionIfUnused());
     }
+  }
+
+  /// Closes the websocket connection if no streams are using it.
+  ///
+  /// The emptiness check is repeated once the lock is acquired, since a new
+  /// method stream may have been opened while this cleanup was waiting for
+  /// the lock. In that case the connection must be kept open.
+  Future<void> _closeConnectionIfUnused() async {
+    await _lock.synchronized(() async {
+      if (_inboundStreams.isNotEmpty || _outboundStreams.isNotEmpty) return;
+      _cancelConnectionTimer();
+      var webSocket = _webSocket;
+      _webSocket = null;
+      await webSocket?.sink.close();
+      await _webSocketListenerCompleter.future;
+    });
   }
 
   /// Builds a unique key for a stream.
@@ -559,14 +575,32 @@ final class ClientMethodStreamManager {
       /// Attempt to send close message to server if connection is still open.
       await webSocket.sink.close();
     } finally {
-      _cancelConnectionTimer();
       if (!webSocketListenerCompleter.isCompleted) {
         webSocketListenerCompleter.complete();
       }
 
       /// Close any still open streams with an exception.
-      await closeAllConnections(closeException);
+      await _cleanUpClosedConnection(webSocket, closeException);
     }
+  }
+
+  /// Cleans up after [webSocket]'s listener has stopped.
+  ///
+  /// If a new connection has already replaced [webSocket], the manager state
+  /// (timers, streams and the current websocket) belongs to the new connection
+  /// and must not be touched. Any streams that belonged to [webSocket] were
+  /// already removed when it was torn down.
+  Future<void> _cleanUpClosedConnection(
+    WebSocketChannel webSocket,
+    Object error,
+  ) async {
+    await _lock.synchronized(() async {
+      if (_webSocket != null && !identical(_webSocket, webSocket)) return;
+      _cancelConnectionTimer();
+      _webSocket = null;
+      await _closeAllStreams(error);
+      await webSocket.sink.close();
+    });
   }
 
   Future<void> _connectSynchronized() async {

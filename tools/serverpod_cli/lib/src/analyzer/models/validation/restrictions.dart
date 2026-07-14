@@ -237,10 +237,14 @@ class Restrictions {
     String _,
     SourceSpan? span,
   ) {
-    if (documentDefinition?.isSharedModel ?? false) {
+    var definition = documentDefinition;
+    if (definition is ModelClassDefinition &&
+        definition.isSharedModel &&
+        definition.database != ModelDatabaseDefinition.all) {
       return [
         SourceSpanSeverityException(
-          'The "table" property is not allowed in shared packages.',
+          'The "table" property in shared packages requires the "database" '
+          'property to be set to "all".',
           span,
         ),
       ];

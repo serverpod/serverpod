@@ -14,7 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_auth_core_client/src/protocol/protocol.dart' as _i2;
 
 /// DTO for transferring JWT token information between server and client.
-abstract class JwtTokenInfo implements _i1.SerializableModel {
+abstract class JwtTokenInfo
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   JwtTokenInfo._({
     required this.id,
     required this.authUserId,
@@ -91,6 +92,20 @@ abstract class JwtTokenInfo implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_auth_core.JwtTokenInfo',
+      'id': id.toJson(),
+      'authUserId': authUserId.toJson(),
+      'scopeNames': scopeNames.toJson(),
+      if (extraClaimsJSON != null) 'extraClaimsJSON': extraClaimsJSON,
+      'lastUpdatedAt': lastUpdatedAt.toJson(),
+      'createdAt': createdAt.toJson(),
+      'method': method,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_auth_core.JwtTokenInfo',
       'id': id.toJson(),

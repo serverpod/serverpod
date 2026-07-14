@@ -16,7 +16,8 @@ import 'authentication_fail_reason.dart' as _i3;
 import 'package:serverpod_auth_client/src/protocol/protocol.dart' as _i4;
 
 /// Provides a response to an authentication attempt.
-abstract class AuthenticationResponse implements _i1.SerializableModel {
+abstract class AuthenticationResponse
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   AuthenticationResponse._({
     required this.success,
     this.key,
@@ -88,6 +89,18 @@ abstract class AuthenticationResponse implements _i1.SerializableModel {
       if (key != null) 'key': key,
       if (keyId != null) 'keyId': keyId,
       if (userInfo != null) 'userInfo': userInfo?.toJson(),
+      if (failReason != null) 'failReason': failReason?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod_auth.AuthenticationResponse',
+      'success': success,
+      if (key != null) 'key': key,
+      if (keyId != null) 'keyId': keyId,
+      if (userInfo != null) 'userInfo': userInfo?.toJsonForProtocol(),
       if (failReason != null) 'failReason': failReason?.toJson(),
     };
   }

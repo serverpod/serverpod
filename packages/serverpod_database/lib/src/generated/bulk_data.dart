@@ -13,7 +13,8 @@
 import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 import 'package:serverpod_database/serverpod_database.dart' as _i2;
 
-abstract class BulkData implements _i1.SerializableModel {
+abstract class BulkData
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   BulkData._({
     required this.tableDefinition,
     required this.data,
@@ -49,6 +50,15 @@ abstract class BulkData implements _i1.SerializableModel {
     return {
       '__className__': 'serverpod.BulkData',
       'tableDefinition': tableDefinition.toJson(),
+      'data': data,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod.BulkData',
+      'tableDefinition': tableDefinition.toJsonForProtocol(),
       'data': data,
     };
   }

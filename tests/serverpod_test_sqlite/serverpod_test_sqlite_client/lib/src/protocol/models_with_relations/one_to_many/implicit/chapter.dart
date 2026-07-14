@@ -13,7 +13,8 @@
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import 'package:serverpod_client/serverpod_client.dart' as _i2;
 
-abstract class Chapter implements _i1.TableRow<int?> {
+abstract class Chapter
+    implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   Chapter._({
     this.id,
     required this.title,
@@ -61,6 +62,15 @@ abstract class Chapter implements _i1.TableRow<int?> {
       'title': title,
       if (_bookChaptersBookId != null)
         '_bookChaptersBookId': _bookChaptersBookId,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Chapter',
+      if (id != null) 'id': id,
+      'title': title,
     };
   }
 

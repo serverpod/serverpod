@@ -12,7 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class NonServerOnlyParentClass implements _i1.SerializableModel {
+class NonServerOnlyParentClass
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   NonServerOnlyParentClass({required this.parentField});
 
   factory NonServerOnlyParentClass.fromJson(
@@ -36,6 +37,14 @@ class NonServerOnlyParentClass implements _i1.SerializableModel {
 
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'NonServerOnlyParentClass',
+      'parentField': parentField,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'NonServerOnlyParentClass',
       'parentField': parentField,

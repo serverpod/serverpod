@@ -26,13 +26,29 @@ class MainScreen extends StatelessComponent {
     final theme = ServerpodTheme.of(context);
     final state = holder.state;
     final creatingProject = state.creatingProject;
-    final summaryMessageAction = isUpgrade ? 'upgrade' : 'create';
+    final summaryAction = isUpgrade ? 'Upgrade' : 'Create';
+
+    void onSubmit() {
+      final canCreate =
+          (state.form.hasSingleScreen || state.form.isSummary) &&
+          state.canCreate;
+
+      if (canCreate) {
+        state.markCreatingProject();
+        holder.markDirty();
+        onCreate();
+      } else {
+        state.form.nextScreen();
+        holder.markDirty();
+      }
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
           child: BorderedBox(
+            backgroundColor: Color.defaultColor,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -50,7 +66,9 @@ class MainScreen extends StatelessComponent {
                           scrollController: scrollController,
                           rebuild: holder.markDirty,
                           summaryDescription:
-                              'Press Enter to $summaryMessageAction the project.',
+                              'Press Enter to ${summaryAction.toLowerCase()} the project.',
+                          onSubmit: onSubmit,
+                          submitButtonLabel: summaryAction,
                         ),
                 ),
               ],
@@ -146,14 +164,12 @@ class MainScreen extends StatelessComponent {
           ),
         Button(
           name: 'Navigate',
-          activationChar: hasSingleScreen ? '←→' : '←↑↓→',
-          activationKeys: [
+          activationChar: '←↑↓→',
+          activationKeys: const [
             LogicalKey.arrowLeft,
             LogicalKey.arrowRight,
-            if (!hasSingleScreen) ...{
-              LogicalKey.arrowUp,
-              LogicalKey.arrowDown,
-            },
+            LogicalKey.arrowUp,
+            LogicalKey.arrowDown,
           ],
           onActivate: (key) {
             switch (key) {
@@ -190,7 +206,7 @@ class MainScreen extends StatelessComponent {
             state.form.onSelect();
             holder.markDirty();
           },
-          enabled: !isSummary && !creatingProject,
+          enabled: !creatingProject,
         ),
         Button(
           name: 'Quit',

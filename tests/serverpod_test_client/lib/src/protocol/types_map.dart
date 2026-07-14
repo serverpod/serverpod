@@ -17,7 +17,8 @@ import 'test_enum_stringified.dart' as _i4;
 import 'types.dart' as _i5;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i6;
 
-abstract class TypesMap implements _i1.SerializableModel {
+abstract class TypesMap
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   TypesMap._({
     this.anIntKey,
     this.aBoolKey,
@@ -449,6 +450,101 @@ abstract class TypesMap implements _i1.SerializableModel {
       if (aListValue != null)
         'aListValue': aListValue?.toJson(
           valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson()),
+        ),
+      if (aRecordValue != null)
+        'aRecordValue': _i6.Protocol().mapContainerToJson(aRecordValue!),
+      if (aNullableRecordValue != null)
+        'aNullableRecordValue': _i6.Protocol().mapContainerToJson(
+          aNullableRecordValue!,
+        ),
+      if (aNullableRecordKey != null)
+        'aNullableRecordKey': _i6.Protocol().mapContainerToJson(
+          aNullableRecordKey!,
+        ),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'TypesMap',
+      if (anIntKey != null) 'anIntKey': anIntKey?.toJson(),
+      if (aBoolKey != null) 'aBoolKey': aBoolKey?.toJson(),
+      if (aDoubleKey != null) 'aDoubleKey': aDoubleKey?.toJson(),
+      if (aDateTimeKey != null)
+        'aDateTimeKey': aDateTimeKey?.toJson(keyToJson: (k) => k.toJson()),
+      if (aStringKey != null) 'aStringKey': aStringKey?.toJson(),
+      if (aByteDataKey != null)
+        'aByteDataKey': aByteDataKey?.toJson(keyToJson: (k) => k.toJson()),
+      if (aDurationKey != null)
+        'aDurationKey': aDurationKey?.toJson(keyToJson: (k) => k.toJson()),
+      if (aUuidKey != null)
+        'aUuidKey': aUuidKey?.toJson(keyToJson: (k) => k.toJson()),
+      if (aUriKey != null)
+        'aUriKey': aUriKey?.toJson(keyToJson: (k) => k.toJson()),
+      if (aBigIntKey != null)
+        'aBigIntKey': aBigIntKey?.toJson(keyToJson: (k) => k.toJson()),
+      if (anEnumKey != null)
+        'anEnumKey': anEnumKey?.toJson(keyToJson: (k) => k.toJson()),
+      if (aStringifiedEnumKey != null)
+        'aStringifiedEnumKey': aStringifiedEnumKey?.toJson(
+          keyToJson: (k) => k.toJson(),
+        ),
+      if (anObjectKey != null)
+        'anObjectKey': anObjectKey?.toJson(
+          keyToJson: (k) => k.toJsonForProtocol(),
+        ),
+      if (aMapKey != null)
+        'aMapKey': aMapKey?.toJson(
+          keyToJson: (k) => k.toJson(keyToJson: (k) => k.toJsonForProtocol()),
+        ),
+      if (aListKey != null)
+        'aListKey': aListKey?.toJson(
+          keyToJson: (k) => k.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+        ),
+      if (aRecordKey != null)
+        'aRecordKey': _i6.Protocol().mapContainerToJson(aRecordKey!),
+      if (anIntValue != null) 'anIntValue': anIntValue?.toJson(),
+      if (aBoolValue != null) 'aBoolValue': aBoolValue?.toJson(),
+      if (aDoubleValue != null) 'aDoubleValue': aDoubleValue?.toJson(),
+      if (aDateTimeValue != null)
+        'aDateTimeValue': aDateTimeValue?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
+      if (aStringValue != null) 'aStringValue': aStringValue?.toJson(),
+      if (aByteDataValue != null)
+        'aByteDataValue': aByteDataValue?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
+      if (aDurationValue != null)
+        'aDurationValue': aDurationValue?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
+      if (aUuidValue != null)
+        'aUuidValue': aUuidValue?.toJson(valueToJson: (v) => v.toJson()),
+      if (aUriValue != null)
+        'aUriValue': aUriValue?.toJson(valueToJson: (v) => v.toJson()),
+      if (aBigIntValue != null)
+        'aBigIntValue': aBigIntValue?.toJson(valueToJson: (v) => v.toJson()),
+      if (anEnumValue != null)
+        'anEnumValue': anEnumValue?.toJson(valueToJson: (v) => v.toJson()),
+      if (aStringifiedEnumValue != null)
+        'aStringifiedEnumValue': aStringifiedEnumValue?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
+      if (anObjectValue != null)
+        'anObjectValue': anObjectValue?.toJson(
+          valueToJson: (v) => v.toJsonForProtocol(),
+        ),
+      if (aMapValue != null)
+        'aMapValue': aMapValue?.toJson(
+          valueToJson: (v) =>
+              v.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+        ),
+      if (aListValue != null)
+        'aListValue': aListValue?.toJson(
+          valueToJson: (v) =>
+              v.toJson(valueToJson: (v) => v.toJsonForProtocol()),
         ),
       if (aRecordValue != null)
         'aRecordValue': _i6.Protocol().mapContainerToJson(aRecordValue!),

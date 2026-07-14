@@ -15,6 +15,8 @@ dependencies:
   serverpod_auth_idp_client: SERVERPOD_VERSION
   serverpod_client: SERVERPOD_VERSION
   serverpod_service_client: SERVERPOD_VERSION
+  serverpod_test_sqlite_shared:
+    path: ../serverpod_test_sqlite_shared
 
 dev_dependencies:
   serverpod_database: SERVERPOD_VERSION

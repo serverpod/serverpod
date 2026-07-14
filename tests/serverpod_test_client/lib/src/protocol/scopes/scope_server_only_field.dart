@@ -15,7 +15,8 @@ import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i2;
 import '../types.dart' as _i3;
 import '../scopes/scope_server_only_field.dart' as _i4;
 
-class ScopeServerOnlyField implements _i1.SerializableModel {
+class ScopeServerOnlyField
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ScopeServerOnlyField({
     this.allScope,
     this.nested,
@@ -63,6 +64,15 @@ class ScopeServerOnlyField implements _i1.SerializableModel {
       '__className__': 'ScopeServerOnlyField',
       if (allScope != null) 'allScope': allScope?.toJson(),
       if (nested != null) 'nested': nested?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'ScopeServerOnlyField',
+      if (allScope != null) 'allScope': allScope?.toJsonForProtocol(),
+      if (nested != null) 'nested': nested?.toJsonForProtocol(),
     };
   }
 

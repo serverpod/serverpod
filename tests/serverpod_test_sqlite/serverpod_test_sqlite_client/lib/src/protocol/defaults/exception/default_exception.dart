@@ -14,7 +14,10 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../defaults/enum/enums/by_name_enum.dart' as _i2;
 
 abstract class DefaultException
-    implements _i1.SerializableException, _i1.SerializableModel {
+    implements
+        _i1.SerializableException,
+        _i1.SerializableModel,
+        _i1.ProtocolSerialization {
   DefaultException._({
     bool? defaultBoolean,
     DateTime? defaultDateTime,
@@ -126,6 +129,23 @@ abstract class DefaultException
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'DefaultException',
+      'defaultBoolean': defaultBoolean,
+      'defaultDateTime': defaultDateTime.toJson(),
+      'defaultDouble': defaultDouble,
+      'defaultDuration': defaultDuration.toJson(),
+      'defaultEnum': defaultEnum.toJson(),
+      'defaultInteger': defaultInteger,
+      'defaultString': defaultString,
+      'defaultUuid': defaultUuid.toJson(),
+      'defaultModelField': defaultModelField,
+      'defaultMixField': defaultMixField,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'DefaultException',
       'defaultBoolean': defaultBoolean,

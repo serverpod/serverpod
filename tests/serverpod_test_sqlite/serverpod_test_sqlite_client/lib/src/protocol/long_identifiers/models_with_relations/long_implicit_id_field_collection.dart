@@ -15,7 +15,8 @@ import '../../long_identifiers/models_with_relations/long_implicit_id_field.dart
     as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
 
-abstract class LongImplicitIdFieldCollection implements _i1.SerializableModel {
+abstract class LongImplicitIdFieldCollection
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   LongImplicitIdFieldCollection._({
     this.id,
     required this.name,
@@ -74,6 +75,19 @@ abstract class LongImplicitIdFieldCollection implements _i1.SerializableModel {
         'thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa':
             thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa
                 ?.toJson(valueToJson: (v) => v.toJson()),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'LongImplicitIdFieldCollection',
+      if (id != null) 'id': id,
+      'name': name,
+      if (thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa != null)
+        'thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa':
+            thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa
+                ?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
   }
 
