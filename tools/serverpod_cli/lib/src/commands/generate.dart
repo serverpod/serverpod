@@ -315,14 +315,20 @@ Future<bool> _performGenerateWatch({
     log.info(generatedCodeAlreadyUpToDate, type: TextLogType.success);
   }
 
-  log.debug(initialCodeGenerationComplete);
-
   // Set up file watcher for source directories only (no web or client).
   final watcher = FileWatcher(
     watchPaths: {
       path.absolute(path.joinAll(config.libSourcePathParts)),
       ...config.sharedModelsLibSourcePaths.map(path.absolute),
     },
+  );
+
+  // Announce "Listening for changes" only once the OS watcher is actually
+  // initialized: events that occur before that (the initial directory scan
+  // can take seconds, notably on Windows) are silently dropped. The `ready`
+  // future only starts completing once the stream below has a subscriber.
+  unawaited(
+    watcher.ready.then((_) => log.debug(initialCodeGenerationComplete)),
   );
 
   // The generated dirs live inside the watched lib/ dirs, so generation
