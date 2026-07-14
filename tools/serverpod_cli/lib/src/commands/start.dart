@@ -42,6 +42,7 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:serverpod_cli/src/vm_proxy/serverpod_hooks.dart';
 import 'package:serverpod_logging_cli/serverpod_logging_cli.dart';
+import 'package:serverpod_shared/log.dart' as structured_log;
 import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
 import 'package:serverpod_tui/serverpod_tui.dart';
 import 'package:stream_transform/stream_transform.dart';
@@ -1109,11 +1110,21 @@ Future<void> _runTuiBackend({
       serverStderrSink: stderrSink,
       flutterStdoutSinkFor: (app) => TuiLogSink(
         holder,
-        addLine: (line) => holder.state.appLogTabFor(app.id)?.lines.add(line),
+        addLine: (line) => handleFlutterOutput(
+          holder,
+          app.id,
+          line,
+          level: structured_log.LogLevel.info,
+        ),
       ),
       flutterStderrSinkFor: (app) => TuiLogSink(
         holder,
-        addLine: (line) => holder.state.appLogTabFor(app.id)?.lines.add(line),
+        addLine: (line) => handleFlutterOutput(
+          holder,
+          app.id,
+          line,
+          level: structured_log.LogLevel.error,
+        ),
       ),
       onEnsureFlutterAppTab: (app) {
         final tab = holder.state.getOrCreateAppLogTab(
@@ -1178,7 +1189,7 @@ Future<void> _runTuiBackend({
         if (vmService == null) return;
         await vmService.streamListen('Extension');
         vmService.onExtensionEvent.listen(
-          (event) => handleServerLogEvent(holder, event),
+          (event) => handleFlutterExtensionEvent(holder, app.id, event),
         );
       },
       onFlutterStop: (app) {

@@ -347,9 +347,27 @@ void main() {
   group('Given a FlutterProcess receiving machine protocol lines', () {
     late FlutterProcess fp;
     late List<String> progressMessages;
+    late StringBuffer stdoutBuffer;
+    late StringBuffer stderrBuffer;
+    late StreamController<List<int>> stdoutController;
+    late StreamController<List<int>> stderrController;
+    late IOSink stdoutSink;
+    late IOSink stderrSink;
 
     setUp(() async {
       progressMessages = <String>[];
+      stdoutBuffer = StringBuffer();
+      stderrBuffer = StringBuffer();
+      stdoutController = StreamController<List<int>>();
+      stderrController = StreamController<List<int>>();
+      stdoutController.stream
+          .transform(utf8.decoder)
+          .listen(stdoutBuffer.write);
+      stderrController.stream
+          .transform(utf8.decoder)
+          .listen(stderrBuffer.write);
+      stdoutSink = IOSink(stdoutController.sink);
+      stderrSink = IOSink(stderrController.sink);
 
       /// FlutterProcess wired only enough to push synthetic lines through
       /// `handleMachineLine` and assert side effects.
@@ -357,8 +375,114 @@ void main() {
         flutterPackageDir: Directory.systemTemp.path,
         device: 'web-server',
         onProgress: progressMessages.add,
+        stdoutSink: stdoutSink,
+        stderrSink: stderrSink,
       );
     });
+
+    tearDown(() async {
+      await stdoutSink.close();
+      await stderrSink.close();
+    });
+
+    test(
+      'when a Flutter application log event contains a framework exception, '
+      'then the complete exception is forwarded to stdout.',
+      () async {
+        const exception = '''
+══╡ EXCEPTION CAUGHT BY WIDGETS LIBRARY ╞══
+Multiple widgets used the same GlobalKey.
+The key [GlobalKey#1d408] was used by multiple widgets.''';
+
+        fp.handleMachineLine(
+          jsonEncode([
+            {
+              'event': 'app.log',
+              'params': {'log': exception, 'error': false},
+            },
+          ]),
+        );
+        await stdoutSink.flush();
+        await Future<void>.delayed(Duration.zero);
+
+        expect(stdoutBuffer.toString(), '$exception\n');
+        expect(stderrBuffer.toString(), isEmpty);
+      },
+    );
+
+    test(
+      'when a Flutter application log event is marked as an error, '
+      'then the complete log is forwarded to stderr.',
+      () async {
+        const warning =
+            '** (serverpod_app:564071): WARNING **: '
+            'Timed out waiting for OpenGL frame';
+
+        fp.handleMachineLine(
+          jsonEncode([
+            {
+              'event': 'app.log',
+              'params': {'log': warning, 'error': true},
+            },
+          ]),
+        );
+        await stderrSink.flush();
+        await Future<void>.delayed(Duration.zero);
+
+        expect(stderrBuffer.toString(), '$warning\n');
+        expect(stdoutBuffer.toString(), isEmpty);
+      },
+    );
+
+    test(
+      'when a Flutter tool warning contains a stack trace, '
+      'then the message and stack trace are forwarded to stderr.',
+      () async {
+        fp.handleMachineLine(
+          jsonEncode([
+            {
+              'event': 'daemon.logMessage',
+              'params': {
+                'level': 'warning',
+                'message': 'Flutter tool warning',
+                'stackTrace': 'first frame\nsecond frame\n',
+              },
+            },
+          ]),
+        );
+        await stderrSink.flush();
+        await Future<void>.delayed(Duration.zero);
+
+        expect(
+          stderrBuffer.toString(),
+          'Flutter tool warning\nfirst frame\nsecond frame\n',
+        );
+        expect(stdoutBuffer.toString(), isEmpty);
+      },
+    );
+
+    test(
+      'when a Flutter tool status message is received, '
+      'then the message is forwarded to stdout.',
+      () async {
+        fp.handleMachineLine(
+          jsonEncode([
+            {
+              'event': 'daemon.logMessage',
+              'params': {
+                'level': 'status',
+                'message': 'Building Linux application...',
+              },
+            },
+          ]),
+        );
+        await stdoutSink.flush();
+        await Future<void>.delayed(Duration.zero);
+
+        expect(stdoutBuffer.toString(), 'Building Linux application...\n');
+        expect(stderrBuffer.toString(), isEmpty);
+      },
+    );
 
     test(
       'when given a line that does not start with [ '

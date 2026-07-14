@@ -454,12 +454,18 @@ class MainScreen extends StatelessComponent {
 
   Component _buildTabContent(ServerpodThemeData st, PaneTab tab) {
     return switch (tab) {
-      ServerLogTab() => _buildStructuredLogView(tab.scrollController),
+      ServerLogTab() => _buildStructuredLogView(
+        state.logHistory,
+        tab.scrollController,
+      ),
       AppLogTab appTab => Column(
         children: [
           ?_buildFlutterStatusLine(st, appTab),
           Expanded(
-            child: _buildRawOutputView(appTab.lines, appTab.scrollController),
+            child: _buildStructuredLogView(
+              appTab.logHistory,
+              appTab.scrollController,
+            ),
           ),
         ],
       ),
@@ -606,9 +612,10 @@ class MainScreen extends StatelessComponent {
     );
   }
 
-  Component _buildStructuredLogView(ScrollController logScrollController) {
-    final items = state.logHistory;
-
+  Component _buildStructuredLogView(
+    List<Object> items,
+    ScrollController logScrollController,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(left: 1),
       child: SelectionArea(

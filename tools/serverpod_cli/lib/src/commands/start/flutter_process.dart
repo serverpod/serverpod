@@ -559,10 +559,41 @@ class FlutterProcess {
         case 'app.stop':
           log.debug('Flutter daemon emitted app.stop; tearing down.');
           unawaited(_onAppStop());
+        case 'app.log':
+          // Native devices report application and platform output here. Keep
+          // this alongside the VM streams, which are required for web targets.
+          _forwardMachineLog(
+            paramMap,
+            messageKey: 'log',
+            isError: paramMap['error'] == true,
+          );
         case 'daemon.logMessage':
-          final message = paramMap['message'];
-          if (message is String) log.debug('flutter[daemon] $message');
+          final level = paramMap['level'];
+          _forwardMachineLog(
+            paramMap,
+            messageKey: 'message',
+            isError: level == 'error' || level == 'warning',
+          );
       }
+    }
+  }
+
+  void _forwardMachineLog(
+    Map<dynamic, dynamic> params, {
+    required String messageKey,
+    required bool isError,
+  }) {
+    final message = params[messageKey];
+    if (message is! String || message.isEmpty) return;
+
+    final sink = isError ? _stderr : _stdout;
+    sink.write(message);
+    if (!message.endsWith('\n')) sink.writeln();
+
+    final stackTrace = params['stackTrace'];
+    if (stackTrace is String && stackTrace.isNotEmpty) {
+      sink.write(stackTrace);
+      if (!stackTrace.endsWith('\n')) sink.writeln();
     }
   }
 

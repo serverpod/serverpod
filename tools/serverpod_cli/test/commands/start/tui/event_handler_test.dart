@@ -4,6 +4,7 @@ import 'package:nocterm/nocterm.dart' show ClipboardManager;
 import 'package:serverpod_cli/src/commands/start/tui/app.dart';
 import 'package:serverpod_cli/src/commands/start/tui/event_handler.dart';
 import 'package:serverpod_cli/src/commands/start/tui/state.dart';
+import 'package:serverpod_cli/src/commands/start/tui/tab_model.dart';
 import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_tui/serverpod_tui.dart';
 import 'package:test/test.dart';
@@ -14,6 +15,15 @@ Event _logEvent(Map<String, Object?> data) {
     kind: EventKind.kExtension,
     timestamp: 0,
     extensionKind: 'ext.serverpod.log',
+    extensionData: ExtensionData.parse(data),
+  );
+}
+
+Event _flutterErrorEvent(Map<String, Object?> data) {
+  return Event(
+    kind: EventKind.kExtension,
+    timestamp: 0,
+    extensionKind: 'Flutter.Error',
     extensionData: ExtensionData.parse(data),
   );
 }
@@ -319,6 +329,125 @@ void main() {
 
       expect(state.logHistory, isEmpty);
     });
+  });
+
+  group('Given a Flutter app tab and a framework error event,', () {
+    late AppLogTab appTab;
+
+    setUp(() {
+      appTab = state.getOrCreateAppLogTab(
+        appId: 'serverpod-app',
+        label: 'Serverpod app',
+      );
+    });
+
+    test(
+      'when the event is dispatched, '
+      'then the complete error is added to the app as one structured entry.',
+      () {
+        const error =
+            "'package:flutter/src/widgets/framework.dart': Failed assertion: "
+            "line 2168 pos 12: '_elements.contains(element)': is not true.\n"
+            'See also: https://docs.flutter.dev/testing/errors';
+
+        handleFlutterExtensionEvent(
+          holder,
+          'serverpod-app',
+          _flutterErrorEvent({
+            'errorsSinceReload': 0,
+            'renderedErrorText': error,
+          }),
+        );
+
+        expect(appTab.logHistory, hasLength(1));
+        final entry = appTab.logHistory.single as LogEntry;
+        expect(entry.level, LogLevel.error);
+        expect(entry.message, error);
+        expect(appTab.lines, error.split('\n'));
+        expect(state.logHistory, isEmpty);
+      },
+    );
+
+    test(
+      'when a Flutter error event has no rendered error text, '
+      'then it is ignored.',
+      () {
+        handleFlutterExtensionEvent(
+          holder,
+          'serverpod-app',
+          _flutterErrorEvent({'errorsSinceReload': 0}),
+        );
+
+        expect(appTab.logHistory, isEmpty);
+        expect(appTab.lines, isEmpty);
+      },
+    );
+  });
+
+  group('Given a Flutter app tab and a structured application log event,', () {
+    late AppLogTab appTab;
+
+    setUp(() {
+      appTab = state.getOrCreateAppLogTab(
+        appId: 'serverpod-app',
+        label: 'Serverpod app',
+      );
+    });
+
+    test(
+      'when the event is dispatched, '
+      'then it is added to the app instead of the server log.',
+      () {
+        handleFlutterExtensionEvent(
+          holder,
+          'serverpod-app',
+          _logEvent({
+            'type': 'log',
+            'level': 'warning',
+            'message': 'Application warning',
+            'timestamp': '2026-07-14T03:00:00.000Z',
+          }),
+        );
+
+        expect(appTab.logHistory, hasLength(1));
+        final entry = appTab.logHistory.single as LogEntry;
+        expect(entry.level, LogLevel.warning);
+        expect(entry.message, 'Application warning');
+        expect(appTab.lines, ['Application warning']);
+        expect(state.logHistory, isEmpty);
+      },
+    );
+  });
+
+  group('Given a Flutter app tab receiving unstructured output,', () {
+    late AppLogTab appTab;
+
+    setUp(() {
+      appTab = state.getOrCreateAppLogTab(
+        appId: 'serverpod-app',
+        label: 'Serverpod app',
+      );
+    });
+
+    test(
+      'when an stderr line is received, '
+      'then it is retained and rendered as a structured error entry.',
+      () {
+        handleFlutterOutput(
+          holder,
+          'serverpod-app',
+          'libEGL warning: failed to create dri2 screen',
+          level: LogLevel.error,
+        );
+
+        expect(appTab.lines, [
+          'libEGL warning: failed to create dri2 screen',
+        ]);
+        final entry = appTab.logHistory.single as LogEntry;
+        expect(entry.level, LogLevel.error);
+        expect(entry.message, 'libEGL warning: failed to create dri2 screen');
+      },
+    );
   });
 
   group('Given parseLogLevel', () {
