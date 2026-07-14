@@ -42,6 +42,8 @@ class FlutterNotInstalledException implements Exception {
 /// vm-service URI and the `flutter-vm-service-info.json` file);
 /// reload/restart go via [FlutterDaemonProtocol] over daemon stdin.
 class FlutterProcess {
+  static const _rawLogDeduplicationWindow = Duration(seconds: 5);
+
   final String _flutterPackageDir;
   final String _flutterExecutable;
   final String _device;
@@ -758,7 +760,9 @@ class FlutterProcess {
 
     final now = _logClock.elapsedMilliseconds;
     _recentRawLogLines.removeWhere(
-      (line) => now - line.receivedAtMilliseconds > 1000,
+      (line) =>
+          now - line.receivedAtMilliseconds >
+          _rawLogDeduplicationWindow.inMilliseconds,
     );
 
     final lines = stripAnsi(event.message)

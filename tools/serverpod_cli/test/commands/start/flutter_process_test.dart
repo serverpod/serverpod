@@ -967,7 +967,7 @@ The key [GlobalKey#1d408] was used by multiple widgets.''';
   );
 
   group(
-    'Given the same app line from a VM stream and app.log, '
+    'Given the same app line from a VM stream and delayed app.log, '
     'when both transports forward it,',
     () {
       late FlutterProcess fp;
@@ -1013,6 +1013,7 @@ The key [GlobalKey#1d408] was used by multiple widgets.''';
         await fp.launched;
         await fp.connectToVmService();
         await vmEvent.future.timeout(const Duration(seconds: 5));
+        await Future<void>.delayed(const Duration(milliseconds: 1250));
         fp.handleMachineLine(
           jsonEncode([
             {
