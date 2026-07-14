@@ -5,12 +5,14 @@ import 'dart:io';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/messages.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_log_event.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart'
     show vmServiceWsUri;
 import 'package:serverpod_cli/src/util/browser_launcher.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/vendored/flutter_daemon_protocol.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
+import 'package:serverpod_shared/log.dart' show LogLevel;
 import 'package:vm_service/vm_service.dart';
 import 'package:vm_service/vm_service_io.dart';
 
@@ -45,6 +47,7 @@ class FlutterProcess {
   final List<String> _extraArgs;
   final IOSink _stdout;
   final IOSink _stderr;
+  final void Function(FlutterLogEvent event)? _onLog;
 
   /// IDE-facing proxy. When non-null, the process binds upstream on
   /// VM-service connect and unbinds on shutdown so the IDE sees a
@@ -108,6 +111,7 @@ class FlutterProcess {
     VmServiceProxy? flutterProxy,
     void Function(String stage)? onProgress,
     void Function()? onStarted,
+    void Function(FlutterLogEvent event)? onLog,
     IOSink? stdoutSink,
     IOSink? stderrSink,
     List<String>? machineArgsOverride,
@@ -120,6 +124,7 @@ class FlutterProcess {
        _flutterProxy = flutterProxy,
        _onProgress = onProgress,
        _onStarted = onStarted,
+       _onLog = onLog,
        _stdout = stdoutSink ?? stdout,
        _stderr = stderrSink ?? stderr,
        _launchBrowser = device == flutterDeviceWebServerWithBrowser,
@@ -200,6 +205,16 @@ class FlutterProcess {
       if (line.startsWith('[')) {
         stdoutLines.add(line);
       } else if (line.isNotEmpty) {
+        _emitLog(
+          FlutterLogEvent(
+            time: DateTime.now(),
+            level: LogLevel.info,
+            message: line,
+            source: FlutterLogSource.processStdout,
+            levelIsInferred: true,
+            timestampIsInferred: true,
+          ),
+        );
         _stdout.writeln(line);
       }
     }
@@ -224,7 +239,42 @@ class FlutterProcess {
       },
     );
     _machineLinesSub = stdoutLines.stream.listen(handleMachineLine);
-    _stderrBytesSub = process.stderr.listen(_stderr.add);
+    final stderrLineBuffer = StringBuffer();
+    void routeStderrLine(String line) {
+      if (line.isEmpty) return;
+      _emitLog(
+        FlutterLogEvent(
+          time: DateTime.now(),
+          level: LogLevel.error,
+          message: line,
+          source: FlutterLogSource.processStderr,
+          levelIsInferred: true,
+          timestampIsInferred: true,
+        ),
+      );
+    }
+
+    _stderrBytesSub = process.stderr.listen(
+      (data) {
+        _stderr.add(data);
+        stderrLineBuffer.write(utf8.decode(data, allowMalformed: true));
+        final bufferStr = stderrLineBuffer.toString();
+        final lastNewline = bufferStr.lastIndexOf('\n');
+        if (lastNewline == -1) return;
+        final ready = bufferStr.substring(0, lastNewline);
+        stderrLineBuffer.clear();
+        stderrLineBuffer.write(bufferStr.substring(lastNewline + 1));
+        lineSplitter.convert(ready).forEach(routeStderrLine);
+      },
+      onDone: () {
+        if (stderrLineBuffer.isNotEmpty) {
+          lineSplitter
+              .convert(stderrLineBuffer.toString())
+              .forEach(routeStderrLine);
+          stderrLineBuffer.clear();
+        }
+      },
+    );
 
     unawaited(
       process.exitCode.then((code) async {
@@ -354,32 +404,76 @@ class FlutterProcess {
     }
 
     if (await tryListen('Logging')) {
-      const severeLevel = 1000;
       _loggingSub = vmService.onLoggingEvent.listen((event) {
         final record = event.logRecord;
-        final message = record?.message?.valueAsString;
+        final message = _instanceValue(record?.message);
         if (message == null || message.isEmpty) return;
-        final name = record?.loggerName?.valueAsString ?? '';
+        final name = _instanceValue(record?.loggerName) ?? '';
         final line = name.isEmpty ? message : '[$name] $message';
-        final sink = (record?.level ?? 0) >= severeLevel ? _stderr : _stdout;
+        final vmLevel = record?.level;
+        final hasVmLevel = vmLevel != null && vmLevel >= 0;
+        final level = _logLevelFromVmLevel(
+          hasVmLevel ? vmLevel : null,
+        );
+        final sink = switch (level) {
+          LogLevel.warning || LogLevel.error || LogLevel.fatal => _stderr,
+          _ => _stdout,
+        };
+        final recordTime = record?.time;
+        final hasRecordTime = recordTime != null && recordTime >= 0;
+        _emitLog(
+          FlutterLogEvent(
+            time: hasRecordTime
+                ? DateTime.fromMillisecondsSinceEpoch(recordTime)
+                : DateTime.now(),
+            level: level,
+            message: message,
+            source: FlutterLogSource.vmLogging,
+            loggerName: name.isEmpty ? null : name,
+            error: _instanceValue(record?.error),
+            stackTrace: _instanceValue(record?.stackTrace),
+            metadata: {
+              'vmLevel': ?(hasVmLevel ? vmLevel : null),
+              'sequenceNumber': ?record?.sequenceNumber,
+              'zone': ?_instanceValue(record?.zone),
+            },
+            levelIsInferred: !hasVmLevel,
+            timestampIsInferred: !hasRecordTime,
+          ),
+        );
         sink.writeln(line);
       });
     }
 
     if (await tryListen('Stdout')) {
       _stdoutEventSub = vmService.onStdoutEvent.listen(
-        (e) => _writeVmStreamEvent(_stdout, e),
+        (e) => _writeVmStreamEvent(
+          _stdout,
+          e,
+          level: LogLevel.info,
+          source: FlutterLogSource.vmStdout,
+        ),
       );
     }
     if (await tryListen('Stderr')) {
       _stderrEventSub = vmService.onStderrEvent.listen(
-        (e) => _writeVmStreamEvent(_stderr, e),
+        (e) => _writeVmStreamEvent(
+          _stderr,
+          e,
+          level: LogLevel.error,
+          source: FlutterLogSource.vmStderr,
+        ),
       );
     }
   }
 
   /// Decodes a VM service [event] and writes its text to [sink]
-  static void _writeVmStreamEvent(IOSink sink, Event event) {
+  void _writeVmStreamEvent(
+    IOSink sink,
+    Event event, {
+    required LogLevel level,
+    required FlutterLogSource source,
+  }) {
     final bytes = event.bytes;
     String text;
     if (bytes != null) {
@@ -393,6 +487,19 @@ class FlutterProcess {
       return;
     }
     if (text.isEmpty) return;
+    final message = _withoutTrailingNewline(text);
+    if (message.isNotEmpty) {
+      _emitLog(
+        FlutterLogEvent(
+          time: DateTime.now(),
+          level: level,
+          message: message,
+          source: source,
+          levelIsInferred: true,
+          timestampIsInferred: true,
+        ),
+      );
+    }
     sink.write(text);
   }
 
@@ -565,14 +672,18 @@ class FlutterProcess {
           _forwardMachineLog(
             paramMap,
             messageKey: 'log',
-            isError: paramMap['error'] == true,
+            level: paramMap['error'] == true ? LogLevel.error : LogLevel.info,
+            source: FlutterLogSource.appLog,
+            levelIsInferred: true,
           );
         case 'daemon.logMessage':
-          final level = paramMap['level'];
+          final daemonLevel = paramMap['level'];
           _forwardMachineLog(
             paramMap,
             messageKey: 'message',
-            isError: level == 'error' || level == 'warning',
+            level: _logLevelFromDaemonLevel(daemonLevel),
+            source: FlutterLogSource.daemon,
+            levelIsInferred: !_isKnownDaemonLevel(daemonLevel),
           );
       }
     }
@@ -581,20 +692,97 @@ class FlutterProcess {
   void _forwardMachineLog(
     Map<dynamic, dynamic> params, {
     required String messageKey,
-    required bool isError,
+    required LogLevel level,
+    required FlutterLogSource source,
+    bool levelIsInferred = false,
   }) {
     final message = params[messageKey];
     if (message is! String || message.isEmpty) return;
 
-    final sink = isError ? _stderr : _stdout;
+    final stackTrace = params['stackTrace'];
+    _emitLog(
+      FlutterLogEvent(
+        time: DateTime.now(),
+        level: level,
+        message: message,
+        source: source,
+        stackTrace: stackTrace is String && stackTrace.isNotEmpty
+            ? stackTrace
+            : null,
+        metadata: source == FlutterLogSource.daemon
+            ? {'daemonLevel': params['level']}
+            : source == FlutterLogSource.appLog
+            ? {'error': params['error'] == true}
+            : null,
+        levelIsInferred: levelIsInferred,
+        timestampIsInferred: true,
+      ),
+    );
+
+    final sink = switch (level) {
+      LogLevel.warning || LogLevel.error || LogLevel.fatal => _stderr,
+      _ => _stdout,
+    };
     sink.write(message);
     if (!message.endsWith('\n')) sink.writeln();
 
-    final stackTrace = params['stackTrace'];
     if (stackTrace is String && stackTrace.isNotEmpty) {
       sink.write(stackTrace);
       if (!stackTrace.endsWith('\n')) sink.writeln();
     }
+  }
+
+  void _emitLog(FlutterLogEvent event) {
+    try {
+      _onLog?.call(event);
+    } catch (error, stackTrace) {
+      log.warning('Flutter log listener failed: $error\n$stackTrace');
+    }
+  }
+
+  static LogLevel _logLevelFromDaemonLevel(Object? level) {
+    return switch (level) {
+      'trace' || 'debug' => LogLevel.debug,
+      'status' || 'info' => LogLevel.info,
+      'warning' || 'warn' => LogLevel.warning,
+      'error' => LogLevel.error,
+      'fatal' => LogLevel.fatal,
+      _ => LogLevel.info,
+    };
+  }
+
+  static bool _isKnownDaemonLevel(Object? level) {
+    return const {
+      'trace',
+      'debug',
+      'status',
+      'info',
+      'warning',
+      'warn',
+      'error',
+      'fatal',
+    }.contains(level);
+  }
+
+  static LogLevel _logLevelFromVmLevel(int? level) {
+    final value = level ?? 800;
+    if (value >= 1200) return LogLevel.fatal;
+    if (value >= 1000) return LogLevel.error;
+    if (value >= 900) return LogLevel.warning;
+    if (value >= 800) return LogLevel.info;
+    return LogLevel.debug;
+  }
+
+  static String _withoutTrailingNewline(String text) {
+    var end = text.length;
+    if (end > 0 && text.codeUnitAt(end - 1) == 10) end--;
+    if (end > 0 && text.codeUnitAt(end - 1) == 13) end--;
+    return text.substring(0, end);
+  }
+
+  static String? _instanceValue(InstanceRef? instance) {
+    if (instance == null || instance.kind == InstanceKind.kNull) return null;
+    return instance.valueAsString;
   }
 
   Future<void> _openBrowser(Uri url) async {

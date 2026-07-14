@@ -3,6 +3,7 @@ import 'package:serverpod_tui/serverpod_tui.dart';
 import 'package:vm_service/vm_service.dart' show Event;
 
 import '../../../util/serverpod_cli_logger.dart';
+import '../flutter_log_event.dart';
 import 'app.dart';
 import 'tab_model.dart';
 
@@ -79,17 +80,26 @@ void handleFlutterExtensionEvent(
     case 'Flutter.Error':
       final message = data['renderedErrorText'];
       if (message is! String || message.isEmpty) return;
-      _addFlutterEntry(
+      final eventTimestamp = event.timestamp;
+      final hasEventTimestamp = eventTimestamp != null && eventTimestamp >= 0;
+      final flutterEvent = FlutterLogEvent(
+        time: hasEventTimestamp
+            ? DateTime.fromMillisecondsSinceEpoch(eventTimestamp)
+            : DateTime.now(),
+        level: LogLevel.error,
+        message: message,
+        source: FlutterLogSource.flutterError,
+        metadata: {'errorsSinceReload': data['errorsSinceReload']},
+        timestampIsInferred: !hasEventTimestamp,
+      );
+      handleFlutterLogEvent(holder, appId, flutterEvent);
+      _addRawFlutterEntry(
         tab,
         LogEntry(
           level: LogLevel.error,
-          time: DateTime.now(),
+          time: flutterEvent.time,
           message: message,
           scope: LogScope.root(appId),
-          metadata: {
-            'source': 'Flutter.Error',
-            'errorsSinceReload': data['errorsSinceReload'],
-          },
         ),
       );
     case 'ext.serverpod.log':
@@ -105,29 +115,53 @@ void handleFlutterExtensionEvent(
   holder.markDirty();
 }
 
-/// Adds an unstructured Flutter stdout/stderr line to both the raw history
-/// used by MCP and the structured history rendered by the TUI.
+/// Adds a raw Flutter stdout/stderr line to the history used by MCP.
+///
+/// The corresponding structured entry arrives separately through
+/// [handleFlutterLogEvent], before the process flattens it into this stream.
 void handleFlutterOutput(
   StartAppStateHolder holder,
   String appId,
-  String line, {
-  required LogLevel level,
-}) {
+  String line,
+) {
   final tab = holder.state.appLogTabFor(appId);
   if (tab == null) return;
 
   tab.lines.add(line);
-  if (line.isNotEmpty) {
-    tab.logHistory.add(
-      LogEntry(
-        level: level,
-        time: DateTime.now(),
-        message: line,
-        scope: LogScope.root(appId),
-        metadata: const {'source': 'stdio'},
-      ),
-    );
-  }
+  holder.markDirty();
+}
+
+/// Adds a Flutter event with the structure supplied by its original source.
+void handleFlutterLogEvent(
+  StartAppStateHolder holder,
+  String appId,
+  FlutterLogEvent event,
+) {
+  final tab = holder.state.appLogTabFor(appId);
+  if (tab == null) return;
+
+  final loggerName = event.loggerName;
+  tab.logHistory.add(
+    LogEntry(
+      level: event.level,
+      time: event.time,
+      message: loggerName == null
+          ? event.message
+          : '[$loggerName] ${event.message}',
+      scope: LogScope.root(appId),
+      error: event.error,
+      stackTrace: event.stackTrace == null || event.stackTrace!.isEmpty
+          ? null
+          : StackTrace.fromString(event.stackTrace!),
+      metadata: {
+        ...?event.metadata,
+        'source': event.source.name,
+        'loggerName': ?loggerName,
+        'levelIsInferred': event.levelIsInferred,
+        'timestampIsInferred': event.timestampIsInferred,
+      },
+    ),
+  );
   holder.markDirty();
 }
 
@@ -155,6 +189,10 @@ LogEntry _logEntryFromData(
 void _addFlutterEntry(AppLogTab tab, LogEntry entry) {
   tab.logHistory.add(entry);
 
+  _addRawFlutterEntry(tab, entry);
+}
+
+void _addRawFlutterEntry(AppLogTab tab, LogEntry entry) {
   final raw = StringBuffer(entry.message);
   if (entry.error != null) {
     if (raw.isNotEmpty) raw.writeln();

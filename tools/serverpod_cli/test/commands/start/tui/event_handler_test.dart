@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:nocterm/nocterm.dart' show ClipboardManager;
+import 'package:serverpod_cli/src/commands/start/flutter_log_event.dart';
 import 'package:serverpod_cli/src/commands/start/tui/app.dart';
 import 'package:serverpod_cli/src/commands/start/tui/event_handler.dart';
 import 'package:serverpod_cli/src/commands/start/tui/state.dart';
@@ -362,7 +363,14 @@ void main() {
         expect(appTab.logHistory, hasLength(1));
         final entry = appTab.logHistory.single as LogEntry;
         expect(entry.level, LogLevel.error);
+        expect(entry.time, DateTime.fromMillisecondsSinceEpoch(0));
         expect(entry.message, error);
+        expect(entry.metadata, {
+          'errorsSinceReload': 0,
+          'source': 'flutterError',
+          'levelIsInferred': false,
+          'timestampIsInferred': false,
+        });
         expect(appTab.lines, error.split('\n'));
         expect(state.logHistory, isEmpty);
       },
@@ -431,21 +439,67 @@ void main() {
 
     test(
       'when an stderr line is received, '
-      'then it is retained and rendered as a structured error entry.',
+      'then it is retained without inventing a second structured entry.',
       () {
         handleFlutterOutput(
           holder,
           'serverpod-app',
           'libEGL warning: failed to create dri2 screen',
-          level: LogLevel.error,
         );
 
         expect(appTab.lines, [
           'libEGL warning: failed to create dri2 screen',
         ]);
+        expect(appTab.logHistory, isEmpty);
+      },
+    );
+  });
+
+  group('Given a Flutter app tab receiving a source-structured log event,', () {
+    late AppLogTab appTab;
+
+    setUp(() {
+      appTab = state.getOrCreateAppLogTab(
+        appId: 'serverpod-app',
+        label: 'Serverpod app',
+      );
+    });
+
+    test(
+      'when the event is dispatched, '
+      'then its severity, timestamp, logger, error, and stack trace are preserved.',
+      () {
+        final time = DateTime.utc(2026, 7, 14, 3);
+
+        handleFlutterLogEvent(
+          holder,
+          'serverpod-app',
+          FlutterLogEvent(
+            time: time,
+            level: LogLevel.warning,
+            message: 'Connection is slow',
+            source: FlutterLogSource.vmLogging,
+            loggerName: 'sync',
+            error: 'TimeoutException',
+            stackTrace: '#0 sync (package:app/sync.dart:10:3)',
+          ),
+        );
+
         final entry = appTab.logHistory.single as LogEntry;
-        expect(entry.level, LogLevel.error);
-        expect(entry.message, 'libEGL warning: failed to create dri2 screen');
+        expect(entry.level, LogLevel.warning);
+        expect(entry.time, time);
+        expect(entry.message, '[sync] Connection is slow');
+        expect(entry.error, 'TimeoutException');
+        expect(
+          entry.stackTrace.toString(),
+          '#0 sync (package:app/sync.dart:10:3)',
+        );
+        expect(entry.metadata, {
+          'source': 'vmLogging',
+          'loggerName': 'sync',
+          'levelIsInferred': false,
+          'timestampIsInferred': false,
+        });
       },
     );
   });

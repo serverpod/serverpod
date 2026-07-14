@@ -4,8 +4,10 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/messages.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_log_event.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
+import 'package:serverpod_shared/log.dart' show LogLevel;
 import 'package:test/test.dart';
 
 /// Path of a Dart shim under `test/commands/start/flutter_shims/`.
@@ -31,6 +33,87 @@ Future<({HttpServer server, String wsUri})> _startFakeVmService() async {
       (data) {},
       onDone: () => socket.close(),
     );
+  });
+  return (
+    server: server,
+    wsUri: 'ws://127.0.0.1:${server.port}/ws',
+  );
+}
+
+Future<({HttpServer server, String wsUri})> _startFakeLoggingVmService() async {
+  final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+  server.transform(WebSocketTransformer()).listen((socket) {
+    socket.listen((data) {
+      if (data is! String) return;
+      final request = jsonDecode(data);
+      if (request is! Map<String, dynamic>) return;
+
+      final id = request['id'];
+      if (id == null) return;
+      socket.add(
+        jsonEncode({
+          'jsonrpc': '2.0',
+          'id': id,
+          'result': {'type': 'Success'},
+        }),
+      );
+
+      final params = request['params'];
+      if (request['method'] != 'streamListen' ||
+          params is! Map<String, dynamic> ||
+          params['streamId'] != 'Logging') {
+        return;
+      }
+
+      Timer(const Duration(milliseconds: 20), () {
+        if (socket.readyState != WebSocket.open) return;
+        socket.add(
+          jsonEncode({
+            'jsonrpc': '2.0',
+            'method': 'streamNotify',
+            'params': {
+              'streamId': 'Logging',
+              'event': {
+                'type': 'Event',
+                'kind': 'Logging',
+                'timestamp': 1783997898247,
+                'logRecord': {
+                  'type': 'LogRecord',
+                  'message': {
+                    'type': '@Instance',
+                    'kind': 'String',
+                    'valueAsString': 'Using WidgetsApp configuration',
+                  },
+                  'time': 1783997898247,
+                  'level': 800,
+                  'sequenceNumber': 1,
+                  'loggerName': {
+                    'type': '@Instance',
+                    'kind': 'String',
+                    'valueAsString': 'GoRouter',
+                  },
+                  'zone': {
+                    'type': '@Instance',
+                    'kind': 'Null',
+                    'valueAsString': 'null',
+                  },
+                  'error': {
+                    'type': '@Instance',
+                    'kind': 'Null',
+                    'valueAsString': 'null',
+                  },
+                  'stackTrace': {
+                    'type': '@Instance',
+                    'kind': 'Null',
+                    'valueAsString': 'null',
+                  },
+                },
+              },
+            },
+          }),
+        );
+      });
+    }, onDone: socket.close);
   });
   return (
     server: server,
@@ -353,6 +436,7 @@ void main() {
     late StreamController<List<int>> stderrController;
     late IOSink stdoutSink;
     late IOSink stderrSink;
+    late List<FlutterLogEvent> logEvents;
 
     setUp(() async {
       progressMessages = <String>[];
@@ -368,6 +452,7 @@ void main() {
           .listen(stderrBuffer.write);
       stdoutSink = IOSink(stdoutController.sink);
       stderrSink = IOSink(stderrController.sink);
+      logEvents = [];
 
       /// FlutterProcess wired only enough to push synthetic lines through
       /// `handleMachineLine` and assert side effects.
@@ -377,6 +462,7 @@ void main() {
         onProgress: progressMessages.add,
         stdoutSink: stdoutSink,
         stderrSink: stderrSink,
+        onLog: logEvents.add,
       );
     });
 
@@ -407,6 +493,11 @@ The key [GlobalKey#1d408] was used by multiple widgets.''';
 
         expect(stdoutBuffer.toString(), '$exception\n');
         expect(stderrBuffer.toString(), isEmpty);
+        expect(logEvents, hasLength(1));
+        expect(logEvents.single.level, LogLevel.info);
+        expect(logEvents.single.source, FlutterLogSource.appLog);
+        expect(logEvents.single.message, exception);
+        expect(logEvents.single.levelIsInferred, isTrue);
       },
     );
 
@@ -431,6 +522,9 @@ The key [GlobalKey#1d408] was used by multiple widgets.''';
 
         expect(stderrBuffer.toString(), '$warning\n');
         expect(stdoutBuffer.toString(), isEmpty);
+        expect(logEvents.single.level, LogLevel.error);
+        expect(logEvents.single.source, FlutterLogSource.appLog);
+        expect(logEvents.single.levelIsInferred, isTrue);
       },
     );
 
@@ -458,6 +552,10 @@ The key [GlobalKey#1d408] was used by multiple widgets.''';
           'Flutter tool warning\nfirst frame\nsecond frame\n',
         );
         expect(stdoutBuffer.toString(), isEmpty);
+        expect(logEvents.single.level, LogLevel.warning);
+        expect(logEvents.single.source, FlutterLogSource.daemon);
+        expect(logEvents.single.stackTrace, 'first frame\nsecond frame\n');
+        expect(logEvents.single.levelIsInferred, isFalse);
       },
     );
 
@@ -481,6 +579,9 @@ The key [GlobalKey#1d408] was used by multiple widgets.''';
 
         expect(stdoutBuffer.toString(), 'Building Linux application...\n');
         expect(stderrBuffer.toString(), isEmpty);
+        expect(logEvents.single.level, LogLevel.info);
+        expect(logEvents.single.source, FlutterLogSource.daemon);
+        expect(logEvents.single.levelIsInferred, isFalse);
       },
     );
 
@@ -675,4 +776,58 @@ The key [GlobalKey#1d408] was used by multiple widgets.''';
       },
     );
   });
+
+  group(
+    'Given a VM Logging record whose optional values are Null instances, '
+    'when the record is received,',
+    () {
+      late FlutterProcess fp;
+      late ({HttpServer server, String wsUri}) fake;
+      late FlutterLogEvent receivedEvent;
+
+      setUp(() async {
+        fake = await _startFakeLoggingVmService();
+        final eventCompleter = Completer<FlutterLogEvent>();
+        fp = FlutterProcess(
+          flutterPackageDir: Directory.current.path,
+          device: 'web-server',
+          flutterExecutable: _dartExecutable(),
+          argsOverrideForTesting: [
+            _shimPath('emits_machine_events.dart'),
+            '--ws=${fake.wsUri}',
+          ],
+          onLog: (event) {
+            if (event.source == FlutterLogSource.vmLogging &&
+                !eventCompleter.isCompleted) {
+              eventCompleter.complete(event);
+            }
+          },
+        );
+
+        await fp.start();
+        await fp.launched;
+        await fp.connectToVmService();
+        receivedEvent = await eventCompleter.future.timeout(
+          const Duration(seconds: 5),
+        );
+      });
+
+      tearDown(() async {
+        await fp.stop(timeout: const Duration(milliseconds: 100));
+        await fake.server.close(force: true);
+      });
+
+      test(
+        'then no error, stack trace, or null-valued metadata is emitted.',
+        () {
+          expect(receivedEvent.error, isNull);
+          expect(receivedEvent.stackTrace, isNull);
+          expect(receivedEvent.metadata, {
+            'vmLevel': 800,
+            'sequenceNumber': 1,
+          });
+        },
+      );
+    },
+  );
 }
