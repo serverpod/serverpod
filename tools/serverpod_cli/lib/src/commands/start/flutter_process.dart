@@ -415,7 +415,8 @@ class FlutterProcess {
         final name = _instanceValue(record?.loggerName) ?? '';
         final line = name.isEmpty ? message : '[$name] $message';
         final vmLevel = record?.level;
-        final hasVmLevel = vmLevel != null && vmLevel >= 0;
+        // Level 0 is dart:developer's default "unspecified" value.
+        final hasVmLevel = vmLevel != null && vmLevel > 0;
         final level = _logLevelFromVmLevel(
           hasVmLevel ? vmLevel : null,
         );

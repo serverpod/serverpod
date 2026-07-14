@@ -40,7 +40,10 @@ Future<({HttpServer server, String wsUri})> _startFakeVmService() async {
   );
 }
 
-Future<({HttpServer server, String wsUri})> _startFakeLoggingVmService() async {
+Future<({HttpServer server, String wsUri})> _startFakeLoggingVmService({
+  int? loggingLevel = 800,
+  List<List<int>> stdoutChunks = const [],
+}) async {
   final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
   server.transform(WebSocketTransformer()).listen((socket) {
     socket.listen((data) {
@@ -60,58 +63,77 @@ Future<({HttpServer server, String wsUri})> _startFakeLoggingVmService() async {
 
       final params = request['params'];
       if (request['method'] != 'streamListen' ||
-          params is! Map<String, dynamic> ||
-          params['streamId'] != 'Logging') {
+          params is! Map<String, dynamic>) {
         return;
       }
 
+      final streamId = params['streamId'];
       Timer(const Duration(milliseconds: 20), () {
         if (socket.readyState != WebSocket.open) return;
-        socket.add(
-          jsonEncode({
-            'jsonrpc': '2.0',
-            'method': 'streamNotify',
-            'params': {
-              'streamId': 'Logging',
-              'event': {
-                'type': 'Event',
-                'kind': 'Logging',
-                'timestamp': 1783997898247,
-                'logRecord': {
-                  'type': 'LogRecord',
-                  'message': {
-                    'type': '@Instance',
-                    'kind': 'String',
-                    'valueAsString': 'Using WidgetsApp configuration',
-                  },
-                  'time': 1783997898247,
-                  'level': 800,
-                  'sequenceNumber': 1,
-                  'loggerName': {
-                    'type': '@Instance',
-                    'kind': 'String',
-                    'valueAsString': 'GoRouter',
-                  },
-                  'zone': {
-                    'type': '@Instance',
-                    'kind': 'Null',
-                    'valueAsString': 'null',
-                  },
-                  'error': {
-                    'type': '@Instance',
-                    'kind': 'Null',
-                    'valueAsString': 'null',
-                  },
-                  'stackTrace': {
-                    'type': '@Instance',
-                    'kind': 'Null',
-                    'valueAsString': 'null',
+        if (streamId == 'Logging' && loggingLevel != null) {
+          socket.add(
+            jsonEncode({
+              'jsonrpc': '2.0',
+              'method': 'streamNotify',
+              'params': {
+                'streamId': 'Logging',
+                'event': {
+                  'type': 'Event',
+                  'kind': 'Logging',
+                  'timestamp': 1783997898247,
+                  'logRecord': {
+                    'type': 'LogRecord',
+                    'message': {
+                      'type': '@Instance',
+                      'kind': 'String',
+                      'valueAsString': 'Using WidgetsApp configuration',
+                    },
+                    'time': 1783997898247,
+                    'level': loggingLevel,
+                    'sequenceNumber': 1,
+                    'loggerName': {
+                      'type': '@Instance',
+                      'kind': 'String',
+                      'valueAsString': 'GoRouter',
+                    },
+                    'zone': {
+                      'type': '@Instance',
+                      'kind': 'Null',
+                      'valueAsString': 'null',
+                    },
+                    'error': {
+                      'type': '@Instance',
+                      'kind': 'Null',
+                      'valueAsString': 'null',
+                    },
+                    'stackTrace': {
+                      'type': '@Instance',
+                      'kind': 'Null',
+                      'valueAsString': 'null',
+                    },
                   },
                 },
               },
-            },
-          }),
-        );
+            }),
+          );
+        } else if (streamId == 'Stdout') {
+          for (final chunk in stdoutChunks) {
+            socket.add(
+              jsonEncode({
+                'jsonrpc': '2.0',
+                'method': 'streamNotify',
+                'params': {
+                  'streamId': 'Stdout',
+                  'event': {
+                    'type': 'Event',
+                    'kind': 'WriteEvent',
+                    'bytes': base64Encode(chunk),
+                  },
+                },
+              }),
+            );
+          }
+        }
       });
     }, onDone: socket.close);
   });
@@ -826,6 +848,57 @@ The key [GlobalKey#1d408] was used by multiple widgets.''';
             'vmLevel': 800,
             'sequenceNumber': 1,
           });
+        },
+      );
+    },
+  );
+
+  group(
+    'Given VM logging with an unspecified level, '
+    'when the record is forwarded,',
+    () {
+      late FlutterProcess fp;
+      late ({HttpServer server, String wsUri}) fake;
+      late FlutterLogEvent loggingEvent;
+
+      setUp(() async {
+        fake = await _startFakeLoggingVmService(loggingLevel: 0);
+        final loggingCompleter = Completer<FlutterLogEvent>();
+        fp = FlutterProcess(
+          flutterPackageDir: Directory.current.path,
+          device: 'web-server',
+          flutterExecutable: _dartExecutable(),
+          argsOverrideForTesting: [
+            _shimPath('emits_machine_events.dart'),
+            '--ws=${fake.wsUri}',
+          ],
+          onLog: (event) {
+            if (event.source == FlutterLogSource.vmLogging &&
+                !loggingCompleter.isCompleted) {
+              loggingCompleter.complete(event);
+            }
+          },
+        );
+
+        await fp.start();
+        await fp.launched;
+        await fp.connectToVmService();
+        loggingEvent = await loggingCompleter.future.timeout(
+          const Duration(seconds: 5),
+        );
+      });
+
+      tearDown(() async {
+        await fp.stop(timeout: const Duration(milliseconds: 100));
+        await fake.server.close(force: true);
+      });
+
+      test(
+        'then it is represented as inferred info.',
+        () {
+          expect(loggingEvent.level, LogLevel.info);
+          expect(loggingEvent.levelIsInferred, isTrue);
+          expect(loggingEvent.metadata, {'sequenceNumber': 1});
         },
       );
     },
