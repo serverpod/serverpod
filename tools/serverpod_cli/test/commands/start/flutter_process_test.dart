@@ -905,6 +905,64 @@ The key [GlobalKey#1d408] was used by multiple widgets.''';
   );
 
   group(
+    'Given a Flutter process whose UTF-8 stderr character spans byte chunks, '
+    'when stderr is forwarded,',
+    () {
+      late FlutterProcess fp;
+      late FlutterLogEvent receivedEvent;
+      late StringBuffer stderrBuffer;
+      late StreamController<List<int>> stderrController;
+      late IOSink stderrSink;
+
+      setUp(() async {
+        final eventCompleter = Completer<FlutterLogEvent>();
+        stderrBuffer = StringBuffer();
+        stderrController = StreamController<List<int>>();
+        stderrController.stream
+            .transform(utf8.decoder)
+            .listen(stderrBuffer.write);
+        stderrSink = IOSink(stderrController.sink);
+        fp = FlutterProcess(
+          flutterPackageDir: Directory.current.path,
+          device: 'web-server',
+          flutterExecutable: _dartExecutable(),
+          argsOverrideForTesting: [
+            _shimPath('emits_split_utf8_stderr.dart'),
+          ],
+          stderrSink: stderrSink,
+          onLog: (event) {
+            if (event.source == FlutterLogSource.processStderr &&
+                !eventCompleter.isCompleted) {
+              eventCompleter.complete(event);
+            }
+          },
+        );
+
+        await fp.start();
+        await fp.exitCode;
+        receivedEvent = await eventCompleter.future.timeout(
+          const Duration(seconds: 5),
+        );
+        await stderrSink.flush();
+        await Future<void>.delayed(Duration.zero);
+      });
+
+      tearDown(() async {
+        await fp.stop();
+        await stderrSink.close();
+      });
+
+      test(
+        'then the structured entry and raw line preserve the character.',
+        () {
+          expect(receivedEvent.message, 'Falha: conexão');
+          expect(stderrBuffer.toString(), 'Falha: conexão\n');
+        },
+      );
+    },
+  );
+
+  group(
     'Given a Flutter process emitting inferred stderr lines in two bursts, '
     'when its log events are forwarded,',
     () {

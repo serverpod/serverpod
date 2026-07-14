@@ -80,9 +80,8 @@ class FlutterProcess {
 
   Process? _process;
   StreamSubscription<ProcessSignal>? _sigtermSub;
-  StreamSubscription<List<int>>? _stdoutBytesSub;
-  StreamSubscription<List<int>>? _stderrBytesSub;
-  StreamSubscription<String>? _machineLinesSub;
+  StreamSubscription<String>? _stdoutLinesSub;
+  StreamSubscription<String>? _stderrLinesSub;
   StreamSubscription<Event>? _loggingSub;
   StreamSubscription<Event>? _stdoutEventSub;
   StreamSubscription<Event>? _stderrEventSub;
@@ -200,14 +199,11 @@ class FlutterProcess {
     }
 
     // `[`-prefixed lines -> machine parser; rest -> _stdout as text.
-    final stdoutLines = StreamController<String>();
-    const lineSplitter = LineSplitter();
-    final lineBuffer = StringBuffer();
     void routeLine(String line) {
       if (line.startsWith('[')) {
-        stdoutLines.add(line);
+        handleMachineLine(line);
       } else if (line.isNotEmpty) {
-        _emitLog(
+        final accepted = _emitLog(
           FlutterLogEvent(
             time: DateTime.now(),
             level: LogLevel.info,
@@ -218,34 +214,21 @@ class FlutterProcess {
             canCoalesce: true,
           ),
         );
-        _stdout.writeln(line);
+        if (accepted) _stdout.writeln(line);
       }
     }
 
-    _stdoutBytesSub = process.stdout.listen(
-      (data) {
-        lineBuffer.write(utf8.decode(data, allowMalformed: true));
-        final bufferStr = lineBuffer.toString();
-        final lastNewline = bufferStr.lastIndexOf('\n');
-        if (lastNewline == -1) return;
-        final ready = bufferStr.substring(0, lastNewline);
-        lineBuffer.clear();
-        lineBuffer.write(bufferStr.substring(lastNewline + 1));
-        lineSplitter.convert(ready).forEach(routeLine);
-      },
-      onDone: () {
-        if (lineBuffer.isNotEmpty) {
-          lineSplitter.convert(lineBuffer.toString()).forEach(routeLine);
-          lineBuffer.clear();
-        }
-        stdoutLines.close();
-      },
-    );
-    _machineLinesSub = stdoutLines.stream.listen(handleMachineLine);
-    final stderrLineBuffer = StringBuffer();
+    _stdoutLinesSub = process.stdout
+        .transform(const Utf8Decoder(allowMalformed: true))
+        .transform(const LineSplitter())
+        .listen(routeLine);
+
     void routeStderrLine(String line) {
-      if (line.isEmpty) return;
-      _emitLog(
+      if (line.isEmpty) {
+        _stderr.writeln();
+        return;
+      }
+      final accepted = _emitLog(
         FlutterLogEvent(
           time: DateTime.now(),
           level: LogLevel.error,
@@ -256,29 +239,13 @@ class FlutterProcess {
           canCoalesce: true,
         ),
       );
+      if (accepted) _stderr.writeln(line);
     }
 
-    _stderrBytesSub = process.stderr.listen(
-      (data) {
-        _stderr.add(data);
-        stderrLineBuffer.write(utf8.decode(data, allowMalformed: true));
-        final bufferStr = stderrLineBuffer.toString();
-        final lastNewline = bufferStr.lastIndexOf('\n');
-        if (lastNewline == -1) return;
-        final ready = bufferStr.substring(0, lastNewline);
-        stderrLineBuffer.clear();
-        stderrLineBuffer.write(bufferStr.substring(lastNewline + 1));
-        lineSplitter.convert(ready).forEach(routeStderrLine);
-      },
-      onDone: () {
-        if (stderrLineBuffer.isNotEmpty) {
-          lineSplitter
-              .convert(stderrLineBuffer.toString())
-              .forEach(routeStderrLine);
-          stderrLineBuffer.clear();
-        }
-      },
-    );
+    _stderrLinesSub = process.stderr
+        .transform(const Utf8Decoder(allowMalformed: true))
+        .transform(const LineSplitter())
+        .listen(routeStderrLine);
 
     unawaited(
       process.exitCode.then((code) async {
@@ -868,18 +835,16 @@ class FlutterProcess {
 
     try {
       _process = null;
-      await _stdoutBytesSub?.cancel();
-      await _stderrBytesSub?.cancel();
-      await _machineLinesSub?.cancel();
+      await _stdoutLinesSub?.cancel();
+      await _stderrLinesSub?.cancel();
       await _sigtermSub?.cancel();
       await _loggingSub?.cancel();
       await _stdoutEventSub?.cancel();
       await _stderrEventSub?.cancel();
       _flushPendingLog();
       _vmServiceHeartbeat?.cancel();
-      _stdoutBytesSub = null;
-      _stderrBytesSub = null;
-      _machineLinesSub = null;
+      _stdoutLinesSub = null;
+      _stderrLinesSub = null;
       _sigtermSub = null;
       _loggingSub = null;
       _stdoutEventSub = null;
