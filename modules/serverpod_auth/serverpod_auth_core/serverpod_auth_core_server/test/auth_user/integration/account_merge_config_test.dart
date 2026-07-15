@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:test/test.dart';
@@ -7,7 +8,7 @@ import '../../serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given defaultCoreDataMergeHandler is called,',
+    'Given the default core data merge handler,',
     (final sessionBuilder, final endpoints) {
       late Session session;
       const authUsers = AuthUsers();
