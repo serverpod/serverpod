@@ -38,7 +38,15 @@ per-user cache (`~/Library/Caches/serverpod/pg-binaries` on macOS,
 starts reuse the cache and reach ready in under a second on a warm
 cluster. The bundle ships **PostGIS 3.5.4** and **pgvector 0.8.3**, so
 `CREATE EXTENSION postgis` / `CREATE EXTENSION vector` work out of the
-box. See `tool/build_postgres/` for how the bundles are built.
+box. See `tool/build_postgres/` for how the bundles are built and
+[PLATFORMS.md](PLATFORMS.md) for the bundle-revision and immutability
+model.
+
+Bundles are downloaded by default; a missing release asset is an error,
+not a silent multi-minute source build. Set `SERVERPOD_PG_SOURCE=build`
+(or `binarySource: BinarySource.build`) to force a local build - this
+requires the native toolchain and is intended for development and CI,
+not end users.
 
 ## Two transports
 
@@ -102,12 +110,13 @@ Pre-populate the cache without booting a postmaster:
 ```sh
 dart run serverpod_embedded_postgres:prefetch
 dart run serverpod_embedded_postgres:prefetch --version 16.13.0
-dart run serverpod_embedded_postgres:prefetch --target linux-amd64
+dart run serverpod_embedded_postgres:prefetch --target linux-x64
 ```
 
 `--target` lets a CI runner warm the cache for non-host platforms, e.g.
-a macOS shared-cache job pre-extracting the `linux-amd64` bundle for
-test workers to consume.
+a macOS shared-cache job pre-extracting the `linux-x64` bundle for test
+workers to consume. Valid targets: `linux-x64`, `linux-arm64`,
+`macos-x64`, `macos-arm64`, `windows-x64`.
 
 ## What's exposed
 
@@ -149,16 +158,22 @@ final class TcpTransport extends Transport {
 
 Errors are a sealed hierarchy rooted at `EmbeddedPostgresException`:
 `BinaryFetchException`, `BinaryVerificationException`,
-`UnsupportedPlatformException`, `InitdbException`,
+`BinaryBuildException`, `UnsupportedPlatformException`,
+`UnsupportedVersionException`, `InitdbException`,
 `StartupTimeoutException`, `CrashedException` (carries `logTail`),
-`AttachException`, `StaleClusterException`. `switch` over them
-exhaustively.
+`AttachException`, `PostmasterLockBusyException`,
+`StaleClusterException`. `switch` over them exhaustively.
 
 ## What's not included
 
 - **PostgreSQL extensions** beyond PostGIS and pgvector (which the bundle
-  ships) - others would need to be added to the Zig build in
+  ships) - others would need to be added to the build in
   `tool/build_postgres/`.
+- **Full PostGIS.** The bundled PostGIS covers Serverpod's supported
+  surface (geography types + `ST_Intersects`/`ST_DWithin`/`ST_Distance`/
+  `ST_Covers`/`ST_CoveredBy`); raster, the address standardizer, and
+  protobuf-backed output are compiled out. See
+  [PLATFORMS.md](PLATFORMS.md).
 - **Replication / logical decoding / hot standby** - out of scope for
   a dev-loop tool.
 - **pg_dump / pgAdmin wrappers** - use `pg_dump` directly against

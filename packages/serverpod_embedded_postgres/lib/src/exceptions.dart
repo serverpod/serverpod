@@ -16,8 +16,8 @@ sealed class EmbeddedPostgresException implements Exception {
   String toString() => '$runtimeType: $message';
 }
 
-/// HTTP failure or unexpected payload while fetching the Zonky JAR or its
-/// `.sha256` sidecar from Maven Central.
+/// HTTP failure or unexpected payload while fetching the PostgreSQL bundle
+/// archive or its `.sha256` sidecar.
 final class BinaryFetchException extends EmbeddedPostgresException {
   /// HTTP status code when the failure was a non-200 response (else `null`,
   /// e.g. a timeout). `404` means the prebuilt bundle isn't published - the
@@ -28,9 +28,10 @@ final class BinaryFetchException extends EmbeddedPostgresException {
   const BinaryFetchException(super.message, {this.statusCode});
 }
 
-/// SHA-256 mismatch on a downloaded Zonky JAR. The cached download is
-/// removed before this is thrown - retrying [EmbeddedPostgres.start] will
-/// re-fetch.
+/// A downloaded or extracted bundle failed verification: SHA-256 mismatch
+/// against the sidecar, or an embedded manifest that disagrees with the
+/// requested artifact. Nothing is cached before this is thrown - retrying
+/// [EmbeddedPostgres.start] will re-fetch.
 final class BinaryVerificationException extends EmbeddedPostgresException {
   /// Creates a [BinaryVerificationException] with [message].
   const BinaryVerificationException(super.message);

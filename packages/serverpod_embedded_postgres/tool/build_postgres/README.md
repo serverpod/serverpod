@@ -1,8 +1,11 @@
 # Building the embedded PostgreSQL bundles
 
 These scripts build the binary bundles that `serverpod_embedded_postgres`
-downloads at runtime: **PostgreSQL 16.13 + PostGIS 3.5.4 + pgvector 0.8.3**,
-driving each project's own build system via a thin compiler wrapper
+downloads at runtime: **PostgreSQL + PostGIS + pgvector**, with every
+component version (and its source SHA-256) pinned in `versions.env` - the
+canonical bundle spec, cross-checked against the Dart-side `BundleSpec` by
+`bundle_spec_test.dart`. The scripts drive each project's own build system
+via a thin compiler wrapper
 (`shim/_ccwrap`). The wrapper picks the compiler per platform: **Zig**
 (`zig cc`/`zig c++`) on Linux - for an old-glibc target - **Apple clang** on
 macOS, and **mingw-w64 gcc** on Windows. No Docker; the output is a single
@@ -18,15 +21,17 @@ Unlike Zonky's stock binaries, these ship the spatial + vector extensions.
 ```sh
 # Build on the *target* OS/arch (native per-runner; not cross-compiled).
 PGBUILD=/tmp/pgbuild packages/serverpod_embedded_postgres/tool/build_postgres/build-all.sh
-# => $PGBUILD/dist/serverpod-postgres-<bom>-<os>-<arch>.tar.xz (+ .sha256)
+# => $PGBUILD/dist/serverpod-postgres-<bom>-r<rev>-<os>-<arch>.tar.xz (+ .sha256)
 ```
 
 Requires on `PATH`: `cmake`, `pkg-config`, `bison`, `flex`, `make`, `curl`,
-`perl`, `tar`/`xz`, plus the platform compiler - `zig` 0.16.x on Linux, Apple
-clang (Xcode) on macOS (also `xcrun`/`install_name_tool`/`codesign`),
-mingw-w64 gcc on Windows. CI (`.github/workflows/build-embedded-postgres.yaml`)
-runs this per-runner (zig only on Linux), publishing to a
-`embedded-postgres-v<bom>` release.
+`perl`, `tar`/`xz`, `patchelf` (Linux), plus the platform compiler - `zig`
+0.16.x on Linux, Apple clang (Xcode) on macOS (also
+`xcrun`/`install_name_tool`/`codesign`), mingw-w64 gcc on Windows. CI
+(`.github/workflows/build-embedded-postgres.yaml`) runs this per-runner (zig
+only on Linux), publishing all five platforms atomically to an immutable
+`embedded-postgres-v<bom>-r<rev>` release. A bundle fix that keeps the same
+PG version must bump `BUNDLE_REVISION` in `versions.env`.
 
 The Linux zig path is zig-version-sensitive (UBSan defaults, glibc target). For
 local Linux builds, [anyzig](https://github.com/marler8997/anyzig) is

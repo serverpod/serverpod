@@ -4,10 +4,10 @@
 ///
 ///   dart run serverpod_embedded_postgres:prefetch
 ///   dart run serverpod_embedded_postgres:prefetch --version 16.13.0
-///   dart run serverpod_embedded_postgres:prefetch --target linux-amd64
+///   dart run serverpod_embedded_postgres:prefetch --target linux-x64
 ///
 /// `--target` lets a CI host warm caches for non-host platforms (e.g.,
-/// pre-extract the linux-amd64 bundle on a macOS runner that will later
+/// pre-extract the linux-x64 bundle on a macOS runner that will later
 /// upload it to a shared cache).
 library;
 
@@ -29,8 +29,8 @@ enum PrefetchOption<V> implements OptionDefinition<V> {
     StringOption(
       argName: 'target',
       helpText:
-          'Zonky platform suffix (e.g. linux-amd64, darwin-arm64v8, '
-          'windows-amd64). Defaults to the host platform.',
+          'Bundle platform suffix (linux-x64, linux-arm64, macos-x64, '
+          'macos-arm64, windows-x64). Defaults to the host platform.',
     ),
   ),
   help(
@@ -41,8 +41,7 @@ enum PrefetchOption<V> implements OptionDefinition<V> {
       defaultsTo: false,
       helpText: 'Show this usage information.',
     ),
-  )
-  ;
+  );
 
   const PrefetchOption(this.option);
 

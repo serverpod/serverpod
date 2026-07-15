@@ -69,7 +69,7 @@ class EmbeddedPostgresOptions {
   /// - Removes PostgreSQL `postmaster.pid` when its PID is dead.
   /// - **POSIX:** if both pidfiles still reference our recorded postmaster and
   ///   that postmaster no longer has its original Dart supervisor as parent,
-  ///   prefers `pg_ctl stop` from the same Zonky `bin/` (passed from
+  ///   prefers `pg_ctl stop` from the same bundle `bin/` (passed from
   ///   [EmbeddedPostgres.start]) so backends and **SysV shared memory** are
   ///   torn down cleanly; then kills any remaining subtree on Linux (`/proc`).
   ///   Skipped on Windows and older pidfiles without supervisor metadata.

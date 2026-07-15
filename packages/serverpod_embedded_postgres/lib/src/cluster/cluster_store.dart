@@ -17,7 +17,7 @@ import 'postgres_conf_builder.dart';
 /// else would be churn.
 class ClusterStore {
   /// PG install dir from [BinaryStore.ensure], e.g.
-  /// `~/Library/Caches/serverpod/pg-binaries/16.13.0/darwin-amd64`.
+  /// `~/Library/Caches/serverpod/pg-binaries/16.13.0-r1/macos-x64`.
   final Directory installDir;
 
   /// PGDATA - per-project, persistent across restarts.

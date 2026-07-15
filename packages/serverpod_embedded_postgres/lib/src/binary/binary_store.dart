@@ -15,12 +15,12 @@ import 'binary_source.dart';
 import 'bundle_builder.dart';
 import 'serverpod_bundle.dart';
 
-/// Per-user cache of Zonky PG binaries.
+/// Per-user cache of PostgreSQL binary bundles.
 ///
 /// Conceptually a key/value store from [BinaryArtifact] -> on-disk install
-/// directory. On cache miss [ensure] downloads the JAR from Maven, verifies
-/// its SHA-256 against Maven's sidecar, and extracts the inner txz into the
-/// install dir.
+/// directory. On cache miss [ensure] downloads the artifact's archive,
+/// verifies its SHA-256 against the artifact's sidecar, and extracts it
+/// into the install dir.
 ///
 /// Concurrency model: a per-artifact claim file (`O_CREAT|O_EXCL` via
 /// [File.createSync] with `exclusive: true`) elects one extractor. Other
@@ -157,10 +157,10 @@ class BinaryStore {
   /// Ensures [artifact] is installed locally and returns its install dir.
   ///
   /// On cache miss this elects exactly one caller (across processes and
-  /// isolates) to fetch the JAR from Maven, verify it against Maven's
-  /// `.sha256` sidecar, and extract into a staging dir before atomically
-  /// renaming into place. Concurrent callers wait for the winner's
-  /// `.meta.json` to appear and then return the same install dir.
+  /// isolates) to fetch the archive, verify it against its `.sha256`
+  /// sidecar, and extract into a staging dir before atomically renaming
+  /// into place. Concurrent callers wait for the winner's `.meta.json` to
+  /// appear and then return the same install dir.
   ///
   /// [onProgress] receives `(fraction, stage)` where `stage` is one of
   /// `'download'` or `'extract'`. The `fraction` ramps 0->1 within each
@@ -525,7 +525,7 @@ enum _LoserOutcome { metaAppeared, staleStolen, timedOut }
 /// transient mirror latency doesn't fail an otherwise-healthy fetch.
 const Duration _sha256Timeout = Duration(seconds: 60);
 
-/// Cap on the JAR download (~200 MB cold). Sized for a slow Maven mirror
+/// Cap on the archive download (tens of MB cold). Sized for a slow mirror
 /// over a constrained CI connection - tighter risks false-positive
 /// failures on legitimately-slow networks; looser defeats the point of
 /// adding the timeout at all.

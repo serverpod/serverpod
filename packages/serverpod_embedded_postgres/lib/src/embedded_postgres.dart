@@ -25,7 +25,7 @@ abstract class EmbeddedPostgres {
   /// Throws [PostmasterLockBusyException] if a live postmaster already holds
   /// [opts.dataDir].
   ///
-  /// Phases on cold first run: download Zonky binaries (if not cached) ->
+  /// Phases on cold first run: download the PG bundle (if not cached) ->
   /// `initdb` -> spawn `postgres` -> wait for ready -> `CREATE DATABASE`.
   /// Network download is gated by [opts.onProgress], not [opts.startTimeout].
   ///
