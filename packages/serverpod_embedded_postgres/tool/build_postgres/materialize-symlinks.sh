@@ -11,33 +11,57 @@
 #   2. The mingw PostGIS form: targets like `./share/...` are written
 #      relative to the BUNDLE ROOT, unresolvable from the link's directory.
 #      Interpreted relative to <stage-dir> instead.
-# Both interpretations are confined to the stage: absolute targets and
-# targets containing `..` are rejected outright. There is deliberately NO
+# Both interpretations are confined to the stage: absolute targets and paths
+# that resolve outside the stage are rejected. The bundle-root interpretation
+# is reserved for the known `./share/...` form. There is deliberately NO
 # basename fallback - it could silently copy a same-named file from an
 # unrelated directory.
 set -euo pipefail
 STAGE="${1:?usage: materialize-symlinks.sh <stage-dir>}"
-STAGE="${STAGE%/}"
 
 fail() { echo "materialize-symlinks: $*" >&2; exit 1; }
 
+[ -d "$STAGE" ] || fail "$STAGE is not a directory"
+STAGE="$(cd -P "$STAGE" && pwd)"
+
+# Canonicalize an existing path's parent and reject it when an intermediate
+# directory symlink or `..` component takes it outside the stage. The final
+# component is left unresolved so a symlink chain can be followed explicitly.
+inside_stage() {
+  local path="$1" parent normalized
+  parent="$(cd -P "$(dirname "$path")" 2>/dev/null && pwd)" || return 1
+  normalized="$parent/$(basename "$path")"
+  case "$normalized" in
+    "$STAGE"/*) printf '%s\n' "$normalized" ;;
+    *) fail "$path resolves outside the stage ($normalized)" ;;
+  esac
+}
+
 # Resolves the symlink in $1 to the regular file it denotes and prints that
-# file's path. Fails the script on absolute / `..` / cyclic targets; returns
-# 1 when no interpretation yields an existing regular file in the stage.
+# file's path. Fails the script on absolute / escaping / cyclic targets;
+# returns 1 when no interpretation yields an existing regular file.
 resolve() {
   local link="$1" hops=0 target candidate next
   while [ "$hops" -lt 32 ]; do
     target="$(readlink "$link")"
     case "$target" in
       /*) fail "$link has an absolute target ($target)" ;;
-      ../*|*/../*|*/..|..) fail "$link target may escape the stage ($target)" ;;
     esac
     next=""
-    for candidate in "$(dirname "$link")/$target" "$STAGE/${target#./}"; do
-      if [ -e "$candidate" ] || [ -L "$candidate" ]; then
-        next="$candidate"; break
-      fi
-    done
+    candidate="$(inside_stage "$(dirname "$link")/$target")" || candidate=""
+    if [ -n "$candidate" ] && { [ -e "$candidate" ] || [ -L "$candidate" ]; }; then
+      next="$candidate"
+    fi
+    if [ -z "$next" ]; then
+      case "$target" in
+        ./share/*)
+          candidate="$(inside_stage "$STAGE/${target#./}")" || candidate=""
+          if [ -n "$candidate" ] && { [ -e "$candidate" ] || [ -L "$candidate" ]; }; then
+            next="$candidate"
+          fi
+          ;;
+      esac
+    fi
     [ -n "$next" ] || return 1
     if [ -L "$next" ]; then
       link="$next"; hops=$((hops + 1)); continue

@@ -17,8 +17,7 @@ void main() {
 
   late Directory stage;
 
-  Future<ProcessResult> run() =>
-      Process.run('bash', [script, stage.path]);
+  Future<ProcessResult> run() => Process.run('bash', [script, stage.path]);
 
   File fileIn(String relative) => File(p.join(stage.path, relative));
   Link linkIn(String relative) => Link(p.join(stage.path, relative));
@@ -51,9 +50,7 @@ void main() {
         expect(fileIn('share/extension/entry.sql').readAsStringSync(), 'REAL');
         expect(fileIn('share/extension/hop.sql').readAsStringSync(), 'REAL');
         expect(
-          stage
-              .listSync(recursive: true)
-              .whereType<Link>(),
+          stage.listSync(recursive: true).whereType<Link>(),
           isEmpty,
         );
       },
@@ -111,7 +108,7 @@ void main() {
   );
 
   group(
-    'Given a cross-directory target whose basename collides with an '
+    'Given a valid parent-relative target whose basename collides with an '
     'unrelated same-directory file,',
     () {
       setUp(() {
@@ -123,21 +120,71 @@ void main() {
 
       test(
         'when materializing, '
-        'then the link is rejected rather than resolved to the colliding file.',
+        'then the actual target is copied rather than the colliding file.',
         () async {
           var result = await run();
 
-          expect(result.exitCode, isNot(0));
-          expect(result.stderr, contains('link.sql'));
+          expect(result.exitCode, 0, reason: '${result.stderr}');
           expect(
-            linkIn('share/extension/link.sql').existsSync(),
-            isTrue,
-            reason: 'a rejected link must be left untouched, not copied over',
+            fileIn('share/extension/link.sql').readAsStringSync(),
+            'RIGHT',
           );
         },
       );
     },
   );
+
+  group(
+    'Given a dangling same-directory target whose basename exists only at the bundle root,',
+    () {
+      setUp(() {
+        fileIn('missing.sql').writeAsStringSync('WRONG');
+        linkIn('share/extension/link.sql').createSync('missing.sql');
+      });
+
+      test(
+        'when materializing, '
+        'then the link is rejected instead of copying the unrelated root file.',
+        () async {
+          var result = await run();
+
+          expect(result.exitCode, isNot(0));
+          expect(result.stderr, contains('cannot materialize'));
+          expect(linkIn('share/extension/link.sql').existsSync(), isTrue);
+        },
+      );
+    },
+  );
+
+  group('Given a parent-relative target that escapes the stage,', () {
+    late File outsideFile;
+
+    setUp(() {
+      outsideFile = File('${stage.path}_outside.sql')
+        ..writeAsStringSync('OUTSIDE');
+      var target = p.relative(
+        outsideFile.path,
+        from: p.join(stage.path, 'share', 'extension'),
+      );
+      linkIn('share/extension/link.sql').createSync(target);
+    });
+
+    tearDown(() {
+      if (outsideFile.existsSync()) outsideFile.deleteSync();
+    });
+
+    test(
+      'when materializing, '
+      'then the run fails without copying the outside file.',
+      () async {
+        var result = await run();
+
+        expect(result.exitCode, isNot(0));
+        expect(result.stderr, contains('resolves outside the stage'));
+        expect(linkIn('share/extension/link.sql').existsSync(), isTrue);
+      },
+    );
+  });
 
   group('Given a symlink cycle,', () {
     setUp(() {
