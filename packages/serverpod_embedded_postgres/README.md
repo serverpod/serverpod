@@ -31,8 +31,8 @@ Future<void> main() async {
 ```
 
 The first call downloads a Serverpod PostgreSQL bundle (PostgreSQL +
-PostGIS + pgvector, compiled with Zig) from GitHub Releases into the
-per-user cache (`~/Library/Caches/serverpod/pg-binaries` on macOS,
+PostGIS + pgvector) from GitHub Releases into the per-user cache
+(`~/Library/Caches/serverpod/pg-binaries` on macOS,
 `$XDG_CACHE_HOME/serverpod/pg-binaries` on Linux,
 `%LOCALAPPDATA%\serverpod\Cache\pg-binaries` on Windows). Subsequent
 starts reuse the cache and reach ready in under a second on a warm
@@ -40,7 +40,8 @@ cluster. The bundle ships **PostGIS 3.5.4** and **pgvector 0.8.3**, so
 `CREATE EXTENSION postgis` / `CREATE EXTENSION vector` work out of the
 box. See `tool/build_postgres/` for how the bundles are built and
 [PLATFORMS.md](PLATFORMS.md) for the bundle-revision and append-only release
-model.
+model. Maintainers should follow [PUBLISH.md](PUBLISH.md) when releasing a
+new bundle.
 
 Bundles are downloaded by default; a missing release asset is an error,
 not a silent multi-minute source build. Set `SERVERPOD_PG_SOURCE=build`
@@ -54,7 +55,9 @@ not end users.
 directory already gates filesystem access to the socket. PG `chdir`s to
 `PGDATA` before binding so `unix_socket_directories = '../run'` lands a
 ~20-byte path in `sockaddr_un.sun_path`, well under the 104-byte macOS
-cap regardless of how deep your project lives.
+cap regardless of how deep your project lives. Fresh clusters still receive
+an initial superuser password (configured or generated) so the same cluster
+can later be reopened over TCP without reinitialization.
 
 **TCP loopback (`TcpTransport`).** scram-sha-256 against `127.0.0.1`,
 password via [TcpTransport.password] (Serverpod passes `config/passwords.yaml`
@@ -88,10 +91,10 @@ serverpod database start
 The command reads `config/development.yaml` and `config/passwords.yaml`, starts
 the embedded database on the configured TCP port, and prints a connection URI
 for tools such as `psql`, DBeaver, and DataGrip. It keeps the database running
-until interrupted. Start it to connect manually to the database. If this command
-is run before the Serverpod server, it will attach to the database. Use `--mode`
-to select a different configuration or `--server-dir` to select a server
-project explicitly.
+until interrupted. If this command starts the postmaster before the Serverpod
+server, the server attaches to that existing postmaster rather than launching
+a competing one. Use `--mode` to select a different configuration or
+`--server-dir` to select a server project explicitly.
 
 ## Detach + attach for cross-VM dev DBs
 
@@ -139,12 +142,19 @@ workers to consume. Valid targets: `linux-x64`, `linux-arm64`,
 
 ```dart
 abstract class EmbeddedPostgres {
-  // Boot or reattach.
+  // Boot, coordinate ownership, or reattach.
   static Future<EmbeddedPostgres> start(EmbeddedPostgresOptions opts);
+  static Future<EmbeddedStartResult> startOrAttach(
+    EmbeddedPostgresOptions opts,
+  );
   static Future<EmbeddedPostgres> attach(Directory dataDir);
 
   // Cache utilities.
-  static Future<void> prefetch(Version version, {String? target});
+  static Future<void> prefetch(
+    Version version, {
+    String? target,
+    BinarySource? source,
+  });
   static Directory defaultBinaryCache();
 
   // Connection handles.
@@ -201,11 +211,14 @@ Errors are a sealed hierarchy rooted at `EmbeddedPostgresException`:
 - **Encryption at rest** - dev tool.
 - **Connection pooling** - delegated to `package:postgres`.
 
-## Design
+## Further documentation
 
-See `docs/design/serverpod_embedded_postgres_spec.md` for the full
-design, including the rationale for UDS-by-default, binary-source
-choice, supervisor lifecycle, error model, and verification plan.
+- [PLATFORMS.md](PLATFORMS.md): supported targets, extension contract, and
+  platform-specific limitations.
+- [tool/build_postgres/README.md](tool/build_postgres/README.md): native build
+  recipe and archive invariants.
+- [PUBLISH.md](PUBLISH.md): bundle revision, tagging, publication, and recovery
+  runbook for maintainers.
 
 ## Platform support
 

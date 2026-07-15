@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
-# End-to-end: fetch sources, build PostgreSQL + pgvector + PostGIS with Zig,
-# and package a relocatable bundle. Run on the *target* OS/arch (native
-# per-runner); cross-compiling Postgres+PostGIS is not the model here.
+# End-to-end: fetch sources, build PostgreSQL + pgvector + PostGIS, and package
+# a relocatable bundle. Run on the *target* OS/arch (native per-runner);
+# cross-compiling Postgres+PostGIS is not the model here.
 #
 #   PGBUILD=/path/to/scratch ./build-all.sh
 #
-# Requires on PATH: zig (0.16.x), cmake, pkg-config, bison, flex, make, curl,
-# perl, tar/xz. macOS additionally uses xcrun/install_name_tool/codesign.
-# Local builds: with anyzig (github.com/marler8997/anyzig), `export
-# ZIG_VERSION=0.16.0` to pin the validated version; leave unset for plain zig.
+# Requires on PATH: cmake, pkg-config, bison, flex, make, curl, perl, and
+# tar/xz, plus the native compiler: Zig 0.16.0 on Linux, Apple clang on macOS,
+# or mingw-w64 GCC on Windows. macOS additionally uses
+# xcrun/install_name_tool/codesign. Linux local builds using anyzig
+# (github.com/marler8997/anyzig) should `export ZIG_VERSION=0.16.0`; leave it
+# unset for a plain Zig installation.
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=versions.env

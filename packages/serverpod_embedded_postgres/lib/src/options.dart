@@ -45,9 +45,9 @@ class EmbeddedPostgresOptions {
   final Version version;
 
   /// Override the per-user binary cache root. Defaults to:
-  ///   - Linux: `$XDG_CACHE_HOME/serverpod` or `~/.cache/serverpod`
-  ///   - macOS: `~/Library/Caches/serverpod`
-  ///   - Windows: `%LOCALAPPDATA%\serverpod\Cache`
+  ///   - Linux: `$XDG_CACHE_HOME/serverpod/pg-binaries` or `~/.cache/serverpod/pg-binaries`
+  ///   - macOS: `~/Library/Caches/serverpod/pg-binaries`
+  ///   - Windows: `%LOCALAPPDATA%\serverpod\Cache\pg-binaries`
   final Directory? binaryCache;
 
   /// Cap on `initdb` + start-to-ready. Network download (first run only) is

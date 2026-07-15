@@ -42,6 +42,11 @@ and cache entries, so it reaches users whose cache holds the previous one.
 Every archive embeds a `serverpod-bundle-manifest.json` that is validated
 after extraction against the requested identity.
 
+Each Serverpod package version maps a PostgreSQL version to one exact revision
+in its `BundleSpec`; it never resolves a floating "latest" bundle. See
+[PUBLISH.md](PUBLISH.md) for the complete bump, preflight, tag, atomic publish,
+and failed-draft recovery workflow.
+
 ### Download by default
 
 The runtime **downloads** the prebuilt bundle by default and fails with an
@@ -93,9 +98,10 @@ back to all supported Windows versions.
 
 ### 3. Elevated tokens
 
-PostgreSQL refuses to run under an Administrators-group token. CI runs
-the Windows integration and smoke jobs under a limited token via
-`PsExec -l`; local elevated terminals will see PG's own refusal message.
+PostgreSQL refuses to run under an Administrators-group token. Every CI job
+that starts the Windows postmaster, including bundle smoke, integration, and
+generated-project bootstrap tests, runs under a limited token via `PsExec -l`;
+local elevated terminals will see PG's own refusal message.
 
 ## What "verified" means
 

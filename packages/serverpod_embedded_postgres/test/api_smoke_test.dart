@@ -40,6 +40,20 @@ void main() {
 
       expect(opts.version, Version(15, 12, 0));
     });
+
+    test(
+      'when selecting the source-build mode, '
+      'then BinarySource is available through the public library.',
+      () {
+        var opts = EmbeddedPostgresOptions(
+          dataDir: Directory('/tmp/_unused'),
+          databaseName: 'projectname',
+          binarySource: BinarySource.build,
+        );
+
+        expect(opts.binarySource, BinarySource.build);
+      },
+    );
   });
 
   group('Given the sealed exception hierarchy', () {

@@ -11,14 +11,15 @@ runs:
   using: composite
   steps:
     # Covers everything that determines the built bytes: the build scripts +
-    # canonical versions.env (tool/build_postgres/**), the Dart-side bundle
-    # spec, options.dart (default PG version), and the toolchain setup action.
-    # Post-build checks (smoke scripts) are deliberately excluded - they gate
-    # publication but do not alter the bundle.
+    # canonical versions.env (tool/build_postgres/**, excluding its README)
+    # and the toolchain setup action. The bundle-spec test separately rejects
+    # drift in the Dart-side mapping/default. Runtime files, documentation,
+    # and post-build smoke checks are deliberately excluded because they do
+    # not alter bundle bytes.
     - id: hash
       shell: bash
       run: |
-        h="${{ hashFiles('packages/serverpod_embedded_postgres/lib/src/options.dart', 'packages/serverpod_embedded_postgres/lib/src/binary/bundle_spec.dart', 'packages/serverpod_embedded_postgres/tool/build_postgres/**', '.github/actions/setup-pg-build-toolchain/action.yml') }}"
+        h="${{ hashFiles('packages/serverpod_embedded_postgres/tool/build_postgres/**', '!packages/serverpod_embedded_postgres/tool/build_postgres/README.md', '.github/actions/setup-pg-build-toolchain/action.yml') }}"
         if [ -z "$h" ]; then
           echo "::error::recipe hash is empty - fileset moved? A degenerate hash would let stale bundles match."
           exit 1

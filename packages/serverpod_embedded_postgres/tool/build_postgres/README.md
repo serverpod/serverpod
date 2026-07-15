@@ -26,13 +26,15 @@ PGBUILD=/tmp/pgbuild packages/serverpod_embedded_postgres/tool/build_postgres/bu
 
 Requires on `PATH`: `cmake`, `pkg-config`, `bison`, `flex`, `make`, `curl`,
 `perl`, `tar`/`xz`, `patchelf` (Linux), plus the platform compiler - `zig`
-0.16.x on Linux, Apple clang (Xcode) on macOS (also
-`xcrun`/`install_name_tool`/`codesign`), mingw-w64 gcc on Windows. CI
-(`.github/workflows/build-embedded-postgres.yaml`) runs this per-runner (zig
-only on Linux), publishing all five platforms atomically under an append-only
+0.16.0 on Linux, Apple clang (Xcode) on macOS (also
+`xcrun/install_name_tool/codesign`), and `mingw-w64 gcc` on Windows.
+
+The [CI workflow](../../../.github/workflows/build-embedded-postgres.yaml) runs
+this per-runner, publishing all five platforms atomically under an append-only
 `embedded-postgres-v<bom>-r<rev>` identity. The workflow never updates a
 published bundle tag. A bundle fix that keeps the same PG version must bump
-`BUNDLE_REVISION` in `versions.env`.
+`BUNDLE_REVISION` in `versions.env`. See [`../../PUBLISH.md`](../../PUBLISH.md)
+for the release checklist, tag workflow, and failed-draft recovery procedure.
 
 The Linux zig path is zig-version-sensitive (UBSan defaults, glibc target). For
 local Linux builds, [anyzig](https://github.com/marler8997/anyzig) is
