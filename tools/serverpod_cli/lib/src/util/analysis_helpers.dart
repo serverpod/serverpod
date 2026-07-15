@@ -14,8 +14,8 @@ Future<void> refreshAnalysisContext(
   Iterable<String> changedFiles,
 ) async {
   for (final changedFile in changedFiles) {
-    var absolutePath = p.canonicalize(File(changedFile).absolute.path);
-    final context = tryContextFor(collection, absolutePath);
+    var absolutePath = p.normalize(File(changedFile).absolute.path);
+    final context = findContextFor(collection, absolutePath);
     if (context != null) {
       context.changeFile(absolutePath);
     }
@@ -36,7 +36,7 @@ AnalysisContextCollection createAnalysisContextCollection(
   ];
 
   return AnalysisContextCollection(
-    includedPaths: includedPaths.map((path) => p.canonicalize(path)).toList(),
+    includedPaths: includedPaths.map((path) => p.normalize(path)).toList(),
     resourceProvider: PhysicalResourceProvider.INSTANCE,
     sdkPath: getSdkPath(),
   );
@@ -44,13 +44,18 @@ AnalysisContextCollection createAnalysisContextCollection(
 
 /// Returns the [AnalysisContext] containing [path], or `null` if [path] is
 /// not included in this collection.
-AnalysisContext? tryContextFor(
+AnalysisContext? findContextFor(
   AnalysisContextCollection collection,
   String path,
 ) {
-  try {
-    return collection.contextFor(p.canonicalize(path));
-  } on StateError {
-    return null;
+  final absolutePath = p.normalize(p.absolute(path));
+
+  for (final context in collection.contexts) {
+    final contextRoot = p.normalize(context.contextRoot.root.path);
+    if (p.isWithin(contextRoot, absolutePath) ||
+        p.equals(contextRoot, absolutePath)) {
+      return context;
+    }
   }
+  return null;
 }

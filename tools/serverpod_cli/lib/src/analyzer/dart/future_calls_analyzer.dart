@@ -49,7 +49,7 @@ class FutureCallsAnalyzer {
     required Directory directory,
     AnalysisContextCollection? collection,
   }) : collection = collection ?? createAnalysisContextCollection(directory),
-       absoluteIncludedPaths = p.canonicalize(directory.absolute.path);
+       absoluteIncludedPaths = directory.absolute.path;
 
   /// Cached per-file analysis results for future call files.
   /// Uses [SplayTreeMap] to keep keys sorted, ensuring deterministic
@@ -64,7 +64,6 @@ class FutureCallsAnalyzer {
   Future<bool> updateFileContexts(Set<String> filePaths) async {
     // Only consider files within the tracked directory.
     final relevantPaths = filePaths
-        .map(p.canonicalize)
         .where((f) => p.isWithin(absoluteIncludedPaths, p.absolute(f)))
         .toSet();
 
@@ -298,7 +297,6 @@ class FutureCallsAnalyzer {
       yield* analyzedFiles
           // Limit discovery to the server's lib directory to avoid scanning
           // extra class packages or other roots in the shared [AnalysisContextCollection].
-          .map(p.canonicalize)
           .where((path) => p.isWithin(absoluteIncludedPaths, path))
           .where((path) => path.endsWith('.dart'))
           .where((path) => !path.endsWith('_test.dart'));
@@ -307,12 +305,12 @@ class FutureCallsAnalyzer {
 
   /// Resolves a single file to a [ResolvedLibraryResult].
   Future<ResolvedLibraryResult?> _resolveLibrary(String filePath) async {
-    final canonicalFilePath = p.canonicalize(filePath);
-    final context = tryContextFor(collection, canonicalFilePath);
+    final normalizedFilePath = p.normalize(filePath);
+    final context = findContextFor(collection, normalizedFilePath);
     if (context == null) return null;
 
     final result = await context.currentSession.getResolvedLibrary(
-      canonicalFilePath,
+      normalizedFilePath,
     );
 
     if (result is ResolvedLibraryResult) {
