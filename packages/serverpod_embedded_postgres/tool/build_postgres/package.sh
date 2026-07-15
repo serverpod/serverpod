@@ -165,18 +165,15 @@ echo "package: identity OK (postgres $actual_pg, pgvector $actual_vec, postgis $
 cd "$OUT"
 # Windows: PostGIS installs ~345 extension upgrade-SQL files as symlinks, and on
 # mingw their targets are bundle-root-relative (./share/...) - unresolvable from
-# the file's own dir, so tar -h can't follow them and a plain Windows runner
-# can't recreate them on extraction ("Cannot create symlink ... No such file").
-# Every target is a file in the SAME extension dir, so resolve each by basename
-# (following symlink chains) and replace it with a real copy; the bundle then
-# carries no symlinks. macOS/Linux keep theirs (smaller, and they extract fine).
+# the file's own dir, so tar -h can't follow them and end-user extraction
+# (Dart Link.createSync) can't recreate them without symlink privilege. A
+# Windows bundle must therefore carry no symlinks: materialize every one into
+# a real copy, failing the build on any link that can't be (shipping it would
+# defer the failure to the user's machine). macOS/Linux keep their symlinks
+# (smaller, and they extract fine).
 case "$(uname -s)" in
   MINGW*|MSYS*|CYGWIN*)
-    find "$STAGE" -type l 2>/dev/null | while IFS= read -r link; do
-      d=$(dirname "$link"); t=$(basename "$(readlink "$link")"); n=0
-      while [ -L "$d/$t" ] && [ "$n" -lt 32 ]; do t=$(basename "$(readlink "$d/$t")"); n=$((n+1)); done
-      [ -f "$d/$t" ] && { rm -f "$link"; cp "$d/$t" "$link"; }
-    done
+    bash "$HERE/materialize-symlinks.sh" "$STAGE"
     ;;
 esac
 # Archive STAGE's *contents* (bin/ lib/ share/ at the tar root), NOT a wrapper
