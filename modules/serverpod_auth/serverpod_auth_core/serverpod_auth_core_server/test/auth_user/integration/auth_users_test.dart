@@ -516,6 +516,59 @@ void main() {
   );
 
   withServerpod(
+    'Given a single auth user,',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late AuthUserModel authUser;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        authUser = await authUsers.create(session);
+      });
+
+      test(
+        'when attempting to merge the user with itself, '
+        'then the merge is rejected without deleting the user.',
+        () async {
+          final accountMerger = AccountMerger(
+            config: AccountMergeConfig(
+              applicationMergeHandler:
+                  (
+                    final session, {
+                    required final userToKeepId,
+                    required final userToRemoveId,
+                    required final transaction,
+                  }) {},
+            ),
+          );
+
+          await expectLater(
+            () => accountMerger.merge(
+              session,
+              userToKeepId: authUser.id,
+              userToRemoveId: authUser.id,
+            ),
+            throwsA(
+              isA<ArgumentError>()
+                  .having(
+                    (final error) => error.name,
+                    'name',
+                    'userToRemoveId',
+                  )
+                  .having(
+                    (final error) => error.message,
+                    'message',
+                    'The user to remove must be different from the user to keep.',
+                  ),
+            ),
+          );
+          expect(await AuthUser.db.findById(session, authUser.id), isNotNull);
+        },
+      );
+    },
+  );
+
+  withServerpod(
     'Given the default application data merge hook,',
     (final sessionBuilder, final endpoints) {
       late Session session;

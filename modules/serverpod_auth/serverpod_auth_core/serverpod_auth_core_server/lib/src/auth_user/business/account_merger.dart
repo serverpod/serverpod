@@ -22,12 +22,21 @@ class AccountMerger {
   /// [AccountMergeConfig.mergeHooks].
   ///
   /// Throws an [AuthUserNotFoundException] if either user is not found.
+  /// Throws an [ArgumentError] if [userToKeepId] and [userToRemoveId] are equal.
   Future<void> merge(
     final Session session, {
     required final UuidValue userToKeepId,
     required final UuidValue userToRemoveId,
     final Transaction? transaction,
   }) async {
+    if (userToKeepId == userToRemoveId) {
+      throw ArgumentError.value(
+        userToRemoveId,
+        'userToRemoveId',
+        'The user to remove must be different from the user to keep.',
+      );
+    }
+
     return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
       final transaction,
     ) async {
