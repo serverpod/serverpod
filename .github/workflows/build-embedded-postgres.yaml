@@ -123,14 +123,40 @@ jobs:
 
       # Same battery over TCP localhost - no CI test suite executes the bundle
       # on windows, so without this gate a windows-only miscompile (e.g. the
-      # mingw halfvec backend crash) ships silently.
-      - name: Smoke-test the bundle (Windows / MSYS2)
+      # mingw halfvec backend crash) ships silently. Hosted Windows runners are
+      # elevated (runneradmin) and postgres refuses an Administrators-group
+      # token, so the smoke runs under a limited token via PsExec -l - the same
+      # mechanism as the embedded-PG integration jobs in dart-tests.yaml.
+      # PsExec drops the inner process's stdout in GHA, so the wrapper logs to
+      # a file the outer step prints; the exit code still propagates.
+      - name: Install PsExec (Windows)
+        if: matrix.os == 'windows'
+        run: choco install pstools --no-progress -y --limit-output
+      - name: Extract bundle for the smoke test (Windows / MSYS2)
         if: matrix.os == 'windows'
         shell: msys2 {0}
         run: |
-          d="$(mktemp -d)"
+          d="$(cygpath -u "$RUNNER_TEMP")/smoke-bundle"
+          mkdir -p "$d"
           tar -C "$d" -xf "$(cygpath -u "$RUNNER_TEMP")/pgbuild/dist"/serverpod-postgres-*.tar.xz
-          bash packages/serverpod_embedded_postgres/tool/smoke_bundle_windows.sh "$d"
+      - name: Prep smoke script (Windows)
+        if: matrix.os == 'windows'
+        shell: bash
+        run: |
+          cat > run-smoke.cmd <<'EOF'
+          @echo off
+          msys2 -c "bash packages/serverpod_embedded_postgres/tool/smoke_bundle_windows.sh \"$(cygpath -u \"$RUNNER_TEMP\")/smoke-bundle\"" > "%TEMP%\smoke.log" 2>&1
+          exit /b %errorlevel%
+          EOF
+      - name: Smoke-test the bundle (Windows, non-admin)
+        if: matrix.os == 'windows'
+        shell: cmd
+        run: |
+          psexec -accepteula -nobanner -l cmd /c "%CD%\run-smoke.cmd"
+          set RC=%errorlevel%
+          if exist "%TEMP%\smoke.log" type "%TEMP%\smoke.log"
+          exit /b %RC%
+        timeout-minutes: 10
 
       # Publish-eligible copy, only reached if the smoke gate above passed (a
       # failed gate fails the job, skipping this). The publish job consumes
@@ -143,20 +169,22 @@ jobs:
             ${{ runner.temp }}/pgbuild/dist/*.tar.xz
             ${{ runner.temp }}/pgbuild/dist/*.tar.xz.sha256
 
-  # One release create/update for the whole matrix, instead of each build job
-  # racing softprops/action-gh-release on the same tag. Each leg stages a
-  # `release-*` artifact only after passing its gates, so this publishes
-  # exactly the bundles that did.
+  # One all-or-nothing release for the whole matrix. Downloads are the
+  # consumer path, so a release missing a platform would strand that
+  # platform's users on a 404; one failed leg therefore fails the whole
+  # release. Assets are assembled on a draft and only then flipped live,
+  # because a published release is immutable - it cannot be completed (or
+  # corrected) retroactively. A correction ships as a new bundle revision.
   publish:
     name: Publish GitHub Release
     needs: build
-    # always(): one failed leg must not block publishing the platforms that
-    # built and passed their gates (consumers fall back to building from
-    # source when their platform's asset is missing).
-    if: ${{ always() && startsWith(github.ref, 'refs/tags/embedded-postgres-v') }}
+    if: ${{ startsWith(github.ref, 'refs/tags/embedded-postgres-v') }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ github.ref_name }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - name: Download validated bundles
@@ -165,21 +193,59 @@ jobs:
           pattern: release-*
           path: release
           merge-multiple: true
-      - name: Fail if no validated bundle was produced
-        run: |
-          ls release/*.tar.xz >/dev/null 2>&1 || {
-            echo "::error::no validated bundle to publish (all validated builds failed the smoke gate?)"; exit 1;
-          }
       # Record which recipe built these bundles.
       - name: Compute recipe hash
         id: recipe
         uses: ./.github/actions/pg-recipe-hash
       - name: Attach the recipe hash
         run: echo "${{ steps.recipe.outputs.hash }}" > release/recipe.sha256
-      - name: Publish to the GitHub Release
-        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2.6.2
-        with:
-          files: |
-            release/*.tar.xz
-            release/*.tar.xz.sha256
-            release/recipe.sha256
+      - name: Verify the release set is complete and self-consistent
+        run: |
+          stem="${TAG#embedded-postgres-v}"
+          bad=0
+          for plat in linux-x64 linux-arm64 macos-x64 macos-arm64 windows-x64; do
+            a="release/serverpod-postgres-$stem-$plat.tar.xz"
+            if [ ! -f "$a" ] || [ ! -f "$a.sha256" ]; then
+              echo "::error::missing $(basename "$a") or its .sha256 sidecar"; bad=1; continue
+            fi
+            echo "$(cat "$a.sha256")  $a" | sha256sum --check --quiet - \
+              || { echo "::error::sha256 mismatch for $(basename "$a")"; bad=1; }
+          done
+          # Nothing beyond the expected set may ride along either (e.g. an
+          # artifact staged under a different identity by a stale re-run).
+          expected=11  # 5 archives + 5 sidecars + recipe.sha256
+          actual="$(ls release | wc -l)"
+          if [ "$actual" -ne "$expected" ]; then
+            echo "::error::expected $expected files in release/, found $actual: $(ls release | tr '\n' ' ')"; bad=1
+          fi
+          [ "$bad" -eq 0 ]
+      - name: Fail if this bundle tag is already published
+        run: |
+          if gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG" --silent 2>/dev/null; then
+            echo "::error::release $TAG is already published - published bundles are immutable; ship the fix as a new bundle revision (bump BUNDLE_REVISION in versions.env)"
+            exit 1
+          fi
+      - name: Publish atomically via a draft release
+        run: |
+          # Sweep leftover drafts from previously failed publish attempts;
+          # the published-release guard above already ran, so only drafts
+          # can match the tag here.
+          gh api "repos/$GITHUB_REPOSITORY/releases" \
+            -q ".[] | select(.tag_name == \"$TAG\" and .draft) | .id" |
+            while read -r id; do
+              gh api -X DELETE "repos/$GITHUB_REPOSITORY/releases/$id"
+            done
+          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --draft --verify-tag \
+            --title "Embedded PostgreSQL bundle ${TAG#embedded-postgres-v}" \
+            --notes "PostgreSQL + PostGIS + pgvector bundles consumed by serverpod_embedded_postgres." \
+            release/*
+          # Asset uploads are per-file and can fail partway (gh would exit
+          # non-zero, but belt-and-suspenders); recount on the draft before
+          # flipping it live.
+          uploaded="$(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets -q '.assets | length')"
+          expected="$(ls release | wc -l)"
+          if [ "$uploaded" -ne "$expected" ]; then
+            echo "::error::draft release has $uploaded assets, expected $expected - not publishing"
+            exit 1
+          fi
+          gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --draft=false
