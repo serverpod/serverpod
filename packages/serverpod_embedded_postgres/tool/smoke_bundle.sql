@@ -19,10 +19,20 @@ CREATE TABLE smoke_vec (
   s sparsevec(3),
   b bit(3)
 );
--- Both index families Serverpod generates.
-CREATE INDEX ON smoke_vec USING hnsw (v vector_l2_ops);
-CREATE INDEX ON smoke_vec USING hnsw (h halfvec_l2_ops);
-CREATE INDEX ON smoke_vec USING ivfflat (v vector_cosine_ops) WITH (lists = 1);
+-- Every type/index-family combination Serverpod's model analyzer permits.
+-- The chosen operator classes also cover the non-default L1, inner-product,
+-- cosine, and Jaccard index paths; the SELECT below exercises every distance
+-- operator on every value type that exposes it.
+CREATE INDEX smoke_v_hnsw ON smoke_vec USING hnsw (v vector_l1_ops);
+CREATE INDEX smoke_v_ivfflat ON smoke_vec
+  USING ivfflat (v vector_ip_ops) WITH (lists = 1);
+CREATE INDEX smoke_h_hnsw ON smoke_vec USING hnsw (h halfvec_l1_ops);
+CREATE INDEX smoke_h_ivfflat ON smoke_vec
+  USING ivfflat (h halfvec_cosine_ops) WITH (lists = 1);
+CREATE INDEX smoke_s_hnsw ON smoke_vec USING hnsw (s sparsevec_l1_ops);
+CREATE INDEX smoke_b_hnsw ON smoke_vec USING hnsw (b bit_jaccard_ops);
+CREATE INDEX smoke_b_ivfflat ON smoke_vec
+  USING ivfflat (b bit_hamming_ops) WITH (lists = 1);
 INSERT INTO smoke_vec VALUES
   (1, '[1,2,3]', '[1,2,3]', '{1:1,3:3}/3', B'101'),
   (2, '[4,5,6]', '[4,5,6]', '{2:2}/3', B'111');
@@ -30,8 +40,9 @@ INSERT INTO smoke_vec VALUES
 -- l2 <->, inner product <#>, cosine <=>, l1 <+>, hamming <~>, jaccard <%>.
 SELECT id,
        v <-> '[1,2,4]', v <#> '[1,2,4]', v <=> '[1,2,4]', v <+> '[1,2,4]',
-       h <-> '[1,2,4]', l2_normalize(h),
-       s <-> '{1:1}/3',
+       h <-> '[1,2,4]', h <#> '[1,2,4]', h <=> '[1,2,4]', h <+> '[1,2,4]',
+       s <-> '{1:1}/3', s <#> '{1:1}/3', s <=> '{1:1}/3', s <+> '{1:1}/3',
+       l2_normalize(h),
        b <~> B'110', b <%> B'110'
   FROM smoke_vec ORDER BY v <-> '[1,2,4]';
 
@@ -54,6 +65,17 @@ INSERT INTO smoke_geo VALUES (
   ST_GeogFromText(
     'SRID=4326;GEOMETRYCOLLECTION(POINT(1 1), LINESTRING(0 0, 2 2))')
 );
+-- Both spatial index families Serverpod permits, for every mapped geography
+-- type. These are separate PostGIS operator-class paths from the functions
+-- below and must load on every published platform too.
+CREATE INDEX smoke_pt_gist ON smoke_geo USING gist (pt);
+CREATE INDEX smoke_pt_spgist ON smoke_geo USING spgist (pt);
+CREATE INDEX smoke_ln_gist ON smoke_geo USING gist (ln);
+CREATE INDEX smoke_ln_spgist ON smoke_geo USING spgist (ln);
+CREATE INDEX smoke_pg_gist ON smoke_geo USING gist (pg);
+CREATE INDEX smoke_pg_spgist ON smoke_geo USING spgist (pg);
+CREATE INDEX smoke_gc_gist ON smoke_geo USING gist (gc);
+CREATE INDEX smoke_gc_spgist ON smoke_geo USING spgist (gc);
 SELECT id,
        ST_Intersects(pg, ST_GeogFromText('SRID=4326;POINT(1 2)')),
        ST_DWithin(pt, ST_GeogFromText('SRID=4326;POINT(1 2.001)'), 200),
