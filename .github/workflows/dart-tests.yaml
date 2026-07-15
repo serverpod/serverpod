@@ -949,7 +949,28 @@ jobs:
           restore-keys: |
             pub-${{ runner.os }}-${{ matrix.flutter-version }}-
       - uses: ./.github/actions/use-embedded-pg
+      - name: Install PsExec (Windows)
+        if: matrix.os == 'windows-latest'
+        run: choco install pstools --no-progress -y --limit-output
+      - name: Prep run script (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: bash
+        run: |
+          cat > run-bootstrap.cmd <<'EOF'
+          @echo off
+          bash util/run_tests_bootstrap ${{ matrix.shard }} 17 > "%TEMP%\inner.log" 2>&1
+          exit /b %errorlevel%
+          EOF
+      - name: Run unit tests (Windows, non-admin)
+        if: matrix.os == 'windows-latest'
+        shell: cmd
+        run: |
+          psexec -accepteula -nobanner -l cmd /c "%CD%\run-bootstrap.cmd"
+          set RC=%errorlevel%
+          if exist "%TEMP%\inner.log" type "%TEMP%\inner.log"
+          exit /b %RC%
       - name: Run unit tests
+        if: matrix.os != 'windows-latest'
         shell: bash
         run: util/run_tests_bootstrap ${{ matrix.shard }} 17
 
