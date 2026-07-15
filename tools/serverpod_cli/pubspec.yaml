@@ -52,6 +52,7 @@ dependencies:
   pubspec_parse: ^1.5.0
   recase: ^4.1.0
   serverpod_database: 4.0.0-beta.0
+  serverpod_embedded_postgres: 4.0.0-beta.0
   serverpod_logging_cli: ^0.1.0
   serverpod_serialization: 4.0.0-beta.0
   serverpod_service_client: 4.0.0-beta.0
