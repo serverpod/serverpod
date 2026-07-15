@@ -600,4 +600,190 @@ void main() {
       );
     },
   );
+
+  withServerpod(
+    'Given a registered identity provider mutates data before a later provider fails,',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+
+      setUp(() {
+        session = sessionBuilder.build();
+        AuthServices.set(
+          tokenManagerBuilders: [
+            FakeTokenManagerBuilder(tokenStorage: FakeTokenStorage()),
+          ],
+          identityProviderBuilders: [
+            PreBuiltIdpBuilder(_BlockingMergeIdentityProvider()),
+            PreBuiltIdpBuilder(_ThrowingMergeIdentityProvider()),
+          ],
+          accountMergeConfig: AccountMergeConfig(
+            applicationMergeHandler:
+                (
+                  final session, {
+                  required final userToKeepId,
+                  required final userToRemoveId,
+                  required final transaction,
+                }) {},
+          ),
+        );
+      });
+
+      test(
+        'when merging the users, '
+        'then every provider mutation is rolled back and both users remain.',
+        () async {
+          final userToKeep = await authUsers.create(session);
+          final userToRemove = await authUsers.create(session);
+
+          await expectLater(
+            () => AuthServices.instance.accountMerger.merge(
+              session,
+              userToKeepId: userToKeep.id,
+              userToRemoveId: userToRemove.id,
+            ),
+            throwsA(
+              isA<StateError>().having(
+                (final error) => error.message,
+                'message',
+                'Identity provider merge failed.',
+              ),
+            ),
+          );
+
+          final unchangedUserToRemove = await AuthUser.db.findById(
+            session,
+            userToRemove.id,
+          );
+          expect(unchangedUserToRemove?.blocked, isFalse);
+          expect(await AuthUser.db.findById(session, userToKeep.id), isNotNull);
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given core data is migrated before the application merge handler fails,',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late AccountMerger accountMerger;
+
+      setUp(() {
+        session = sessionBuilder.build();
+        AuthServices.set(
+          tokenManagerBuilders: [
+            FakeTokenManagerBuilder(tokenStorage: FakeTokenStorage()),
+          ],
+          accountMergeConfig: AccountMergeConfig(
+            applicationMergeHandler:
+                (
+                  final session, {
+                  required final userToKeepId,
+                  required final userToRemoveId,
+                  required final transaction,
+                }) => throw StateError('Application merge failed.'),
+          ),
+        );
+        accountMerger = AuthServices.instance.accountMerger;
+      });
+
+      test(
+        'when merging within an existing transaction, '
+        'then the core migration is rolled back to its savepoint.',
+        () async {
+          final userToKeep = await authUsers.create(
+            session,
+            scopes: {Scope.admin},
+          );
+          final userToRemove = await authUsers.create(
+            session,
+            scopes: {const Scope('source')},
+          );
+          final refreshToken = await RefreshToken.db.insertRow(
+            session,
+            RefreshToken(
+              authUserId: userToRemove.id,
+              scopeNames: {},
+              method: 'test',
+              fixedSecret: ByteData(16),
+              rotatingSecretHash: 'hash',
+            ),
+          );
+
+          await session.db.transaction((final transaction) async {
+            await expectLater(
+              () => accountMerger.merge(
+                session,
+                userToKeepId: userToKeep.id,
+                userToRemoveId: userToRemove.id,
+                transaction: transaction,
+              ),
+              throwsA(
+                isA<StateError>().having(
+                  (final error) => error.message,
+                  'message',
+                  'Application merge failed.',
+                ),
+              ),
+            );
+
+            final unchangedUserToKeep = await AuthUser.db.findById(
+              session,
+              userToKeep.id,
+              transaction: transaction,
+            );
+            final unchangedRefreshToken = await RefreshToken.db.findById(
+              session,
+              refreshToken.id!,
+              transaction: transaction,
+            );
+            expect(unchangedUserToKeep?.scopeNames, {Scope.admin.name!});
+            expect(unchangedRefreshToken?.authUserId, userToRemove.id);
+            expect(
+              await AuthUser.db.findById(
+                session,
+                userToRemove.id,
+                transaction: transaction,
+              ),
+              isNotNull,
+            );
+          });
+        },
+      );
+    },
+  );
+}
+
+class _BlockingMergeIdentityProvider implements IdentityProvider {
+  @override
+  String get method => 'blocking-merge-test';
+
+  @override
+  Future<void> mergeAuthUsers(
+    final Session session, {
+    required final UuidValue userToKeepId,
+    required final UuidValue userToRemoveId,
+    required final Transaction transaction,
+  }) async {
+    await AuthUser.db.updateWhere(
+      session,
+      where: (final t) => t.id.equals(userToRemoveId),
+      columnValues: (final t) => [t.blocked(true)],
+      transaction: transaction,
+    );
+  }
+}
+
+class _ThrowingMergeIdentityProvider implements IdentityProvider {
+  @override
+  String get method => 'throwing-merge-test';
+
+  @override
+  Future<void> mergeAuthUsers(
+    final Session session, {
+    required final UuidValue userToKeepId,
+    required final UuidValue userToRemoveId,
+    required final Transaction transaction,
+  }) async {
+    throw StateError('Identity provider merge failed.');
+  }
 }
