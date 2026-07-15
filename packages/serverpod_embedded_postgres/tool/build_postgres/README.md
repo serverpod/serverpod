@@ -52,8 +52,29 @@ version explicitly: `export ZIG_VERSION=0.16.0` and `shim` will invoke
 | `build-deps-cpp.sh` | GEOS + PROJ (shared dylibs) |
 | `build-postgis.sh` | PostGIS against core + deps |
 | `package.sh` | stage + relocate + `tar.xz` + sha256 |
+| `materialize-symlinks.sh` | Windows only: replace stage symlinks with real copies (or fail) |
 | `build-all.sh` | orchestrates all of the above |
 | `shim/` | the per-platform compiler wrapper (zig/clang/gcc - see below) |
+
+## Archive link invariants
+
+`package.sh` inspects the finished `.tar.xz` (not just the stage) and fails
+on any entry the runtime's extractor cannot faithfully reproduce:
+
+- **Hardlink entries are forbidden on every platform.** `package:archive`'s
+  tar decoder stores a hardlink entry's target in `ArchiveFile.symbolicLink`,
+  so the runtime would recreate it as a *symlink* - silently different
+  semantics on POSIX, and an outright extraction failure on Windows. GNU tar
+  (Linux, MSYS2) packs with `--hard-dereference`; the macOS bsdtar has no
+  equivalent, so packaging refuses a hardlinked stage there.
+- **Symlink entries are additionally forbidden on Windows**, whose end users
+  extract without the `SeCreateSymbolicLink` privilege.
+  `materialize-symlinks.sh` replaces every stage symlink with a real copy,
+  resolving targets with normal link-relative semantics first and the mingw
+  PostGIS bundle-root-relative form (`./share/...`) second - both confined
+  to the stage, with no basename fallback - and fails the build on any link
+  it cannot materialize (shipping it would defer the failure to the user's
+  machine). macOS/Linux bundles keep their symlinks.
 
 ## The `shim` wrapper
 

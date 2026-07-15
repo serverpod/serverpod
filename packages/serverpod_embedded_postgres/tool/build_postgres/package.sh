@@ -186,12 +186,44 @@ esac
 # emits to carry xattrs such as com.apple.provenance. ustar suffices: every path
 # and symlink target is well under its 100-byte limit. Applied unconditionally,
 # since the failure depends on host xattrs.
+# No archive may contain HARDLINK entries: package:archive's tar decoder
+# stores a hardlink's target in ArchiveFile.symbolicLink, so the runtime
+# would recreate it as a SYMLINK - silently changing semantics on POSIX and
+# failing outright on Windows (no symlink privilege). GNU tar (Linux, MSYS2)
+# materializes them with --hard-dereference; macOS bsdtar has no equivalent,
+# so refuse a hardlinked stage there instead. Nothing in the build creates
+# hardlinks today - this pins that invariant down.
 tar_opts="--format=ustar"
 case "$(uname -s)" in
-  Darwin) export COPYFILE_DISABLE=1; tar_opts="$tar_opts --no-mac-metadata" ;;
+  Darwin)
+    export COPYFILE_DISABLE=1; tar_opts="$tar_opts --no-mac-metadata"
+    hardlinked="$(find "$STAGE" -type f -links +1)"
+    [ -z "$hardlinked" ] || {
+      echo "package: stage contains hardlinked files (bsdtar would emit hardlink entries the runtime cannot extract):" >&2
+      echo "$hardlinked" >&2; exit 1;
+    }
+    ;;
+  *) tar_opts="$tar_opts --hard-dereference" ;;
 esac
 # shellcheck disable=SC2086 # intentional word-splitting of tar_opts
 tar $tar_opts -C "$STAGE" -cJf "$NAME.tar.xz" .
+
+# Inspect the finished ARTIFACT, not just the stage or the tar options: the
+# invariant is about what consumers download. Hardlink entries ('h' in
+# tar -tv) are forbidden everywhere; symlink entries ('l') are additionally
+# forbidden on Windows, whose consumers cannot create them.
+forbidden="$(tar -tvf "$NAME.tar.xz" | awk 'substr($0,1,1)=="h"')"
+case "$(uname -s)" in
+  MINGW*|MSYS*|CYGWIN*)
+    win_links="$(tar -tvf "$NAME.tar.xz" | awk 'substr($0,1,1)=="l"')"
+    forbidden="$forbidden${win_links:+${forbidden:+
+}$win_links}"
+    ;;
+esac
+[ -z "$forbidden" ] || {
+  echo "package: $NAME.tar.xz contains link entries the runtime cannot extract:" >&2
+  echo "$forbidden" >&2; exit 1;
+}
 ( command -v shasum >/dev/null && shasum -a 256 "$NAME.tar.xz" || sha256sum "$NAME.tar.xz" ) | awk '{print $1}' > "$NAME.tar.xz.sha256"
 echo "bundle: $NAME.tar.xz  $(du -h "$NAME.tar.xz" | awk '{print $1}')"
 echo "sha256: $(cat "$NAME.tar.xz.sha256")"
