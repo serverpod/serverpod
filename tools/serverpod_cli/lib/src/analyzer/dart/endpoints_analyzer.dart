@@ -49,7 +49,7 @@ class EndpointsAnalyzer {
     AnalysisContextCollection? collection,
   }) : extraClasses = extraClasses ?? [],
        collection = collection ?? createAnalysisContextCollection(directory),
-       absoluteIncludedPaths = directory.absolute.path;
+       absoluteIncludedPaths = p.canonicalize(directory.absolute.path);
 
   /// Cached per-file analysis results for endpoint files.
   /// Uses [SplayTreeMap] to keep keys sorted, ensuring deterministic
@@ -69,6 +69,7 @@ class EndpointsAnalyzer {
   Future<bool> updateFileContexts(Set<String> filePaths) async {
     // Only consider files within the tracked directory.
     final relevantPaths = filePaths
+        .map(p.canonicalize)
         .where((f) => p.isWithin(absoluteIncludedPaths, p.absolute(f)))
         .toSet();
 
@@ -291,6 +292,7 @@ class EndpointsAnalyzer {
       yield* analyzedFiles
           // Limit discovery to the server's lib directory to avoid scanning
           // extra class packages or other roots in the shared [AnalysisContextCollection].
+          .map(p.canonicalize)
           .where((path) => p.isWithin(absoluteIncludedPaths, path))
           .where((path) => path.endsWith('.dart'))
           .where((path) => !path.endsWith('_test.dart'));
