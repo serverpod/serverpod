@@ -898,11 +898,17 @@ void main() {
             );
           });
 
+          final movedAccount = await FacebookAccount.db.findFirstRow(
+            session,
+            where: (final t) => t.userIdentifier.equals('facebook_123'),
+          );
+          expect(movedAccount?.authUserId, userToKeep.id);
+
           final keptAccount = await FacebookAccount.db.findFirstRow(
             session,
-            where: (final t) => t.authUserId.equals(userToKeep.id),
+            where: (final t) => t.userIdentifier.equals('facebook_keep'),
           );
-          expect(keptAccount, isNotNull);
+          expect(keptAccount?.authUserId, userToKeep.id);
 
           final deletedAccount = await FacebookAccount.db.findFirstRow(
             session,
@@ -992,11 +998,17 @@ void main() {
             );
           });
 
+          final movedAccount = await MicrosoftAccount.db.findFirstRow(
+            session,
+            where: (final t) => t.userIdentifier.equals('microsoft_123'),
+          );
+          expect(movedAccount?.authUserId, userToKeep.id);
+
           final keptAccount = await MicrosoftAccount.db.findFirstRow(
             session,
-            where: (final t) => t.authUserId.equals(userToKeep.id),
+            where: (final t) => t.userIdentifier.equals('microsoft_keep'),
           );
-          expect(keptAccount, isNotNull);
+          expect(keptAccount?.authUserId, userToKeep.id);
 
           final deletedAccount = await MicrosoftAccount.db.findFirstRow(
             session,
