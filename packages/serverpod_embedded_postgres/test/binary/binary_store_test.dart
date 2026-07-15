@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:archive/archive_io.dart';
@@ -320,7 +321,7 @@ void main() {
     },
   );
 
-  group('Given two revisions of the same PG version', () {
+  group('Given two revisions of the same PG version,', () {
     late _FakeBundleArtifact r1;
     late _FakeBundleArtifact r2;
 
@@ -368,6 +369,50 @@ void main() {
 
         expect(downloads, [r2.archiveUrl]);
         expect(r2Dir.path, isNot(r1Dir.path));
+        expect(store.metaFileFor(r2).existsSync(), isTrue);
+
+        store.close();
+      },
+    );
+
+    test(
+      'when ensure runs concurrently for both revisions, '
+      'then both installs proceed independently.',
+      () async {
+        var bytes = Uint8List.fromList([1, 2, 3]);
+        var shaHex = sha256.convert(bytes).toString();
+        var activeDownloads = 0;
+        var maximumActiveDownloads = 0;
+        var store = BinaryStore(
+          cacheRoot: cache,
+          httpClient: MockClient((req) async {
+            if (req.url == r1.archiveUrl || req.url == r2.archiveUrl) {
+              activeDownloads++;
+              maximumActiveDownloads = max(
+                maximumActiveDownloads,
+                activeDownloads,
+              );
+              await Future<void>.delayed(const Duration(milliseconds: 100));
+              activeDownloads--;
+              return http.Response.bytes(bytes, 200);
+            }
+            if (req.url == r1.sha256Url || req.url == r2.sha256Url) {
+              return http.Response(shaHex, 200);
+            }
+            return http.Response('not found', 404);
+          }),
+          pollInterval: const Duration(milliseconds: 10),
+          hardTimeout: const Duration(seconds: 2),
+        );
+
+        var installs = await Future.wait([
+          store.ensure(r1),
+          store.ensure(r2),
+        ]);
+
+        expect(maximumActiveDownloads, 2);
+        expect(installs[0].path, isNot(installs[1].path));
+        expect(store.metaFileFor(r1).existsSync(), isTrue);
         expect(store.metaFileFor(r2).existsSync(), isTrue);
 
         store.close();
