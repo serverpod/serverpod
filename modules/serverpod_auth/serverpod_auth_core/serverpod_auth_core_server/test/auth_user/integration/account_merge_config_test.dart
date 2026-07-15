@@ -293,6 +293,67 @@ void main() {
           expect(removeProfile, isNotNull);
         },
       );
+
+      test(
+        'when only the userToRemove profile has an image, '
+        'then the image is moved to the userToKeep profile and survives cleanup.',
+        () async {
+          final userToKeep = await authUsers.create(session);
+          final userToRemove = await authUsers.create(session);
+          final keepProfile = await UserProfile.db.insertRow(
+            session,
+            UserProfile(authUserId: userToKeep.id),
+          );
+          final removeProfile = await UserProfile.db.insertRow(
+            session,
+            UserProfile(authUserId: userToRemove.id),
+          );
+          final sourceImage = await UserProfileImage.db.insertRow(
+            session,
+            UserProfileImage(
+              userProfileId: removeProfile.id!,
+              storageId: 'public',
+              path: 'source-image.png',
+              url: Uri.parse('https://example.com/source-image.png'),
+            ),
+          );
+          await UserProfile.db.updateRow(
+            session,
+            removeProfile.copyWith(imageId: sourceImage.id),
+            columns: (final t) => [t.imageId],
+          );
+
+          await session.db.transaction((final transaction) async {
+            await AccountMergeConfig.defaultCoreDataMergeHandler(
+              session,
+              userToKeepId: userToKeep.id,
+              userToRemoveId: userToRemove.id,
+              transaction: transaction,
+            );
+            await AccountMergeConfig.defaultMergeCleanupHandler(
+              session,
+              userToKeepId: userToKeep.id,
+              userToRemoveId: userToRemove.id,
+              transaction: transaction,
+            );
+          });
+
+          final mergedProfile = await UserProfile.db.findById(
+            session,
+            keepProfile.id!,
+          );
+          final movedImage = await UserProfileImage.db.findById(
+            session,
+            sourceImage.id!,
+          );
+          expect(mergedProfile?.imageId, sourceImage.id);
+          expect(movedImage?.userProfileId, keepProfile.id);
+          expect(
+            await AuthUser.db.findById(session, userToRemove.id),
+            isNull,
+          );
+        },
+      );
     },
   );
 }

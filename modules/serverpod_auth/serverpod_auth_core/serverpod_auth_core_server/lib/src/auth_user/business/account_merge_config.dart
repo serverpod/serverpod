@@ -210,6 +210,16 @@ class AccountMergeConfig {
       if (keepProfile != null) {
         // Both profiles exist, merge fields
         final mergedProfile = keepProfile.merge(removeProfile);
+        if (keepProfile.imageId == null && removeProfile.imageId != null) {
+          await UserProfileImage.db.updateWhere(
+            session,
+            where: (final t) => t.id.equals(removeProfile.imageId),
+            columnValues: (final t) => [
+              t.userProfileId(keepProfile.id!),
+            ],
+            transaction: transaction,
+          );
+        }
         await UserProfile.db.updateRow(
           session,
           mergedProfile,
