@@ -6,6 +6,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../../generated/protocol.dart';
+import '../util/user_profile_extension.dart';
 import 'exceptions.dart';
 import 'user_profile_config.dart';
 
@@ -632,28 +633,4 @@ final class UserImageFromBytes extends UserImageSource {
 
   /// Creates a new [UserImageFromBytes] instance.
   UserImageFromBytes(this.bytes);
-}
-
-/// Extensions method to convert a [UserProfile] to its model, used in merging
-/// functions.
-extension on UserProfile {
-  /// Returns the model of the database entity.
-  UserProfileModel toModel() {
-    return UserProfileModel(
-      authUserId: authUserId,
-      userName: userName,
-      fullName: fullName,
-      email: email,
-      imageUrl: image?.url,
-    );
-  }
-
-  /// Returns the model of the database entity.
-  UserProfileData toProfileData() {
-    return UserProfileData(
-      userName: userName,
-      fullName: fullName,
-      email: email,
-    );
-  }
 }
