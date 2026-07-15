@@ -185,44 +185,72 @@ void main() {
   );
 
   withServerpod(
-    'Given an AuthServices with multiple identity providers',
+    'Given identity provider builders with duplicate authentication methods,',
     (final sessionBuilder, final endpoints) {
       late FakeTokenManagerBuilder fakeTokenManagerBuilder;
-      late List<IdentityProviderBuilder<IdentityProvider>>
-      multipleProviderBuilders;
-      late List<TokenManagerBuilder> tokenManagers;
       late FakeTokenStorage fakeTokenStorage;
-      late FakeConfig firstFactory;
-      late FakeConfig secondFactory;
 
       setUp(() {
         fakeTokenStorage = FakeTokenStorage();
         fakeTokenManagerBuilder = FakeTokenManagerBuilder(
           tokenStorage: fakeTokenStorage,
         );
-
-        firstFactory = const FakeConfig();
-        secondFactory = const FakeConfig();
-        multipleProviderBuilders = [firstFactory, secondFactory];
-
-        tokenManagers = [
-          FakeTokenManagerBuilder(tokenStorage: fakeTokenStorage),
-        ];
-
-        AuthServices.set(
-          tokenManagerBuilders: [fakeTokenManagerBuilder, ...tokenManagers],
-          identityProviderBuilders: multipleProviderBuilders,
-        );
       });
 
-      group('when accessing providers', () {
-        test('then each provider should be accessible independently', () {
-          final provider =
-              AuthServices.getIdentityProvider<FakeIdentityProvider>();
-          expect(provider, isA<FakeIdentityProvider>());
-          expect(provider.tokenIssuer, isA<MultiTokenManager>());
-        });
-      });
+      test(
+        'when configuring AuthServices, '
+        'then registration fails with both provider types in the error.',
+        () {
+          expect(
+            () => AuthServices.set(
+              tokenManagerBuilders: [fakeTokenManagerBuilder],
+              identityProviderBuilders: [
+                const FakeConfig(),
+                PreBuiltIdpBuilder(_DuplicateMethodIdentityProvider()),
+              ],
+            ),
+            throwsA(
+              isA<StateError>().having(
+                (final error) => error.message,
+                'message',
+                'Identity provider method "fake" is already registered by '
+                    'FakeIdentityProvider; cannot register '
+                    '_DuplicateMethodIdentityProvider.',
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given an identity provider with an empty authentication method,',
+    (final sessionBuilder, final endpoints) {
+      test(
+        'when configuring AuthServices, '
+        'then registration fails with the provider type in the error.',
+        () {
+          expect(
+            () => AuthServices.set(
+              tokenManagerBuilders: [
+                FakeTokenManagerBuilder(tokenStorage: FakeTokenStorage()),
+              ],
+              identityProviderBuilders: [
+                PreBuiltIdpBuilder(_EmptyMethodIdentityProvider()),
+              ],
+            ),
+            throwsA(
+              isA<StateError>().having(
+                (final error) => error.message,
+                'message',
+                'Identity provider _EmptyMethodIdentityProvider has an empty '
+                    'method.',
+              ),
+            ),
+          );
+        },
+      );
     },
   );
 
@@ -351,6 +379,32 @@ void main() {
 class UnregisteredIdentityProvider implements IdentityProvider {
   @override
   String get method => 'unregistered';
+
+  @override
+  Future<void> mergeAuthUsers(
+    final Session session, {
+    required final UuidValue userToKeepId,
+    required final UuidValue userToRemoveId,
+    required final Transaction transaction,
+  }) async {}
+}
+
+class _DuplicateMethodIdentityProvider implements IdentityProvider {
+  @override
+  String get method => 'fake';
+
+  @override
+  Future<void> mergeAuthUsers(
+    final Session session, {
+    required final UuidValue userToKeepId,
+    required final UuidValue userToRemoveId,
+    required final Transaction transaction,
+  }) async {}
+}
+
+class _EmptyMethodIdentityProvider implements IdentityProvider {
+  @override
+  String get method => '';
 
   @override
   Future<void> mergeAuthUsers(

@@ -104,12 +104,27 @@ class AuthServices {
           .toList(),
     );
 
-    for (final provider in identityProviderBuilders) {
-      _providers[provider.type] = provider.build(
+    for (final providerBuilder in identityProviderBuilders) {
+      final provider = providerBuilder.build(
         tokenManager: tokenManager,
         authUsers: authUsers,
         userProfiles: userProfiles,
       );
+      if (provider.method.isEmpty) {
+        throw StateError(
+          'Identity provider ${provider.runtimeType} has an empty method.',
+        );
+      }
+      for (final registeredProvider in _providers.values) {
+        if (registeredProvider.method == provider.method) {
+          throw StateError(
+            'Identity provider method "${provider.method}" is already '
+            'registered by ${registeredProvider.runtimeType}; cannot register '
+            '${provider.runtimeType}.',
+          );
+        }
+      }
+      _providers[providerBuilder.type] = provider;
     }
   }
 
