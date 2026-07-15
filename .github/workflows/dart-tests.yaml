@@ -481,6 +481,8 @@ jobs:
           # runs here on every OS.
           - name: test_server (tagged)
             scope: serverpod_test_server
+            # This 437-test suite exceeds 15 minutes on ARM and macOS.
+            timeout_minutes: 30
             run: bash util/run_tests_integration_embedded tests/serverpod_test_server test_integration -x timing
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -524,14 +526,14 @@ jobs:
           set RC=%errorlevel%
           if exist "%TEMP%\inner.log" type "%TEMP%\inner.log"
           exit /b %RC%
-        timeout-minutes: 15
+        timeout-minutes: ${{ matrix.suite.timeout_minutes || 15 }}
       - name: Run integration tests against embedded PG
         if: matrix.os != 'windows-latest'
         env:
           SHARD_INDEX: ${{ matrix.suite.shard-index }}
           TOTAL_SHARDS: ${{ matrix.suite.total-shards }}
         run: ${{ matrix.suite.run }}
-        timeout-minutes: 15
+        timeout-minutes: ${{ matrix.suite.timeout_minutes || 15 }}
 
   serverpod_embedded_postgres_tests:
     name: serverpod_embedded_postgres integration (${{ matrix.os }})
