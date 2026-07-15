@@ -12,6 +12,7 @@ import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_embedded_postgres/serverpod_embedded_postgres.dart';
 import 'package:serverpod_embedded_postgres/src/binary/binary_store.dart';
+import 'package:serverpod_embedded_postgres/src/binary/bundle_builder.dart';
 import 'package:serverpod_embedded_postgres/src/binary/bundle_spec.dart';
 import 'package:serverpod_embedded_postgres/src/binary/maven_url.dart';
 import 'package:serverpod_embedded_postgres/src/binary/serverpod_bundle.dart';
@@ -374,6 +375,38 @@ void main() {
     );
   });
 
+  group('Given a release asset that is not published (404) '
+      'and an available builder', () {
+    test(
+      'when ensure runs in the default download mode '
+      'then BinaryFetchException(404) is thrown and the builder is never invoked.',
+      () async {
+        var store = BinaryStore(
+          cacheRoot: cache,
+          httpClient: MockClient((req) async {
+            return http.Response('not found', 404);
+          }),
+        );
+
+        await expectLater(
+          store.ensure(
+            _FakeBundleArtifact(spec: _specWithRevision(1)),
+            builder: const _MustNotBuildBuilder(),
+          ),
+          throwsA(
+            isA<BinaryFetchException>().having(
+              (e) => e.statusCode,
+              'statusCode',
+              404,
+            ),
+          ),
+        );
+
+        store.close();
+      },
+    );
+  });
+
   group(
     'Given a bundle whose embedded manifest disagrees with the requested artifact',
     () {
@@ -417,6 +450,19 @@ void main() {
       );
     },
   );
+}
+
+/// Fails the test if the download path ever falls back to building.
+final class _MustNotBuildBuilder extends BundleBuilder {
+  const _MustNotBuildBuilder();
+
+  @override
+  Future<File> build({
+    required BundleSpec spec,
+    required String platform,
+  }) async {
+    fail('the builder must not be invoked in download mode');
+  }
 }
 
 BundleSpec _specWithRevision(int revision) => BundleSpec(

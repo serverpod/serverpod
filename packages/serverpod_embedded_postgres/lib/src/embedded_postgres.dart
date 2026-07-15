@@ -65,7 +65,7 @@ abstract class EmbeddedPostgres {
   /// platform. CI hosts can pass a different target to populate caches
   /// for other platforms.
   /// [source] selects download vs. build-from-source (defaults to the
-  /// `SERVERPOD_PG_SOURCE` env, else [BinarySource.auto]); pass
+  /// `SERVERPOD_PG_SOURCE` env, else [BinarySource.download]); pass
   /// [BinarySource.build] to force a local build (CI warm-up before publish).
   ///
   /// Throws [UnsupportedVersionException] when no bundle is published for

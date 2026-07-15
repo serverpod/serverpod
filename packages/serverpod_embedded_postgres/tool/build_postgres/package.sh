@@ -107,7 +107,13 @@ MINGW*|MSYS*|CYGWIN*)
   # install_name rewrite above. patchelf (post-build) avoids $ORIGIN being
   # mangled by make/cmake at link time.
   cp -P "$DEPS"/lib/libgeos_c.so* "$DEPS"/lib/libgeos.so* "$DEPS"/lib/libproj.so* "$STAGE/lib/" 2>/dev/null || true
-  command -v patchelf >/dev/null 2>&1 || { sudo apt-get update -qq && sudo apt-get install -y -qq patchelf; }
+  # patchelf is a build prerequisite (installed by setup-pg-build-toolchain in
+  # CI); installing packages from inside the build would make the recipe
+  # depend on the host's package manager state - fail with instructions
+  # instead.
+  command -v patchelf >/dev/null 2>&1 || {
+    echo "package: patchelf not found - install it first (e.g. apt-get install patchelf)" >&2; exit 1;
+  }
   # bin/ executables reach postgres's own libs (libpq) + geo deps in lib/.
   # Without this they keep configure's absolute build-tree rpath, which only
   # resolves on the build host (or is masked by a system libpq elsewhere).

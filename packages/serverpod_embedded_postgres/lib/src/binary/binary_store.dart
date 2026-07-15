@@ -173,7 +173,7 @@ class BinaryStore {
   Future<Directory> ensure(
     BinaryArtifact artifact, {
     void Function(double fraction, String stage)? onProgress,
-    BinarySource source = BinarySource.auto,
+    BinarySource source = BinarySource.download,
     BundleBuilder? builder,
   }) async {
     var installDir = installDirFor(artifact);

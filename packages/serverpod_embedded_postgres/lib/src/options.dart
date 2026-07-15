@@ -88,10 +88,11 @@ class EmbeddedPostgresOptions {
   /// sized for parallel test suites sharing one postmaster.
   final int maxConnections;
 
-  /// Where the PostgreSQL bundle comes from: [BinarySource.download],
-  /// [BinarySource.build], or [BinarySource.auto] (download, falling back to a
-  /// local build when the prebuilt bundle isn't published). `null` defers to
-  /// the `SERVERPOD_PG_SOURCE` env var, else [BinarySource.auto].
+  /// Where the PostgreSQL bundle comes from: [BinarySource.download] (the
+  /// default), [BinarySource.build], or [BinarySource.auto] (download,
+  /// falling back to a local build when the prebuilt bundle isn't
+  /// published). `null` defers to the `SERVERPOD_PG_SOURCE` env var, else
+  /// [BinarySource.download].
   ///
   /// Building requires the toolchain (zig/cmake/make/bison/flex/perl, plus
   /// bash/MSYS2 on Windows); see `tool/build_postgres/`.

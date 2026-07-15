@@ -18,6 +18,16 @@ runs:
       with:
         version: 0.16.0
 
+    # patchelf rewrites the bundle's ELF rpaths in package.sh, which fails
+    # with instructions when it's missing rather than apt-getting mid-build.
+    - name: Install patchelf (Linux)
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        command -v patchelf >/dev/null 2>&1 || {
+          sudo apt-get update -qq && sudo apt-get install -y -qq patchelf
+        }
+
     # ubuntu runners ship cmake/bison/flex/make/pkg-config; macOS ships cmake
     # only, so install the rest there (macOS uses Apple clang as the compiler).
     - name: Install build tools (macOS)
