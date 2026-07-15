@@ -14,6 +14,7 @@ import 'package:serverpod_cli/src/util/strip_ansi.dart';
 import 'package:serverpod_cli/src/vendored/flutter_daemon_protocol.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:serverpod_shared/log.dart' show LogLevel;
+import 'package:serverpod_tui/serverpod_tui.dart' show BoundedQueueList;
 import 'package:vm_service/vm_service.dart';
 import 'package:vm_service/vm_service_io.dart';
 
@@ -43,6 +44,7 @@ class FlutterNotInstalledException implements Exception {
 /// reload/restart go via [FlutterDaemonProtocol] over daemon stdin.
 class FlutterProcess {
   static const _rawLogDeduplicationWindow = Duration(seconds: 5);
+  static const _maxRecentRawLogLines = 1000;
 
   final String _flutterPackageDir;
   final String _flutterExecutable;
@@ -94,7 +96,9 @@ class FlutterProcess {
   _Utf8LineDecoder? _vmStdoutDecoder;
   _Utf8LineDecoder? _vmStderrDecoder;
   final Stopwatch _logClock = Stopwatch()..start();
-  final List<_RecentRawLogLine> _recentRawLogLines = [];
+  final _recentRawLogLines = BoundedQueueList<_RecentRawLogLine>(
+    _maxRecentRawLogLines,
+  );
 
   String? _appId;
   FlutterDaemonProtocol? _daemon;
@@ -799,7 +803,7 @@ class FlutterProcess {
 
     if (unmatchedMessages.isNotEmpty) {
       for (final message in unmatchedMessages) {
-        _rememberRawLogLine(
+        _recentRawLogLines.add(
           _RecentRawLogLine(
             channel: channel,
             message: message,
@@ -815,14 +819,6 @@ class FlutterProcess {
       _recentRawLogLines[index].duplicateSources.add(event.source);
     }
     return true;
-  }
-
-  void _rememberRawLogLine(_RecentRawLogLine line) {
-    const maxRecentLines = 1000;
-    _recentRawLogLines.add(line);
-    if (_recentRawLogLines.length > maxRecentLines) {
-      _recentRawLogLines.removeAt(0);
-    }
   }
 
   static _RawLogChannel? _rawLogChannel(FlutterLogEvent event) {
