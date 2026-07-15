@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/start/flutter_dependency_tracker.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_log_event.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:serverpod_cli/src/commands/start/package_dependency_tracker.dart';
 import 'package:serverpod_cli/src/config/flutter_app_config.dart';
@@ -44,6 +45,7 @@ class FlutterAppManager {
     required this.onStop,
     required this.onLaunchFailed,
     required this.onEnsureAppTab,
+    required this.onLog,
     required this.stdoutSinkFor,
     required this.stderrSinkFor,
     required this.serverPubspecFile,
@@ -93,6 +95,7 @@ class FlutterAppManager {
   final void Function(FlutterAppConfig app) onStop;
   final void Function(FlutterAppConfig app) onLaunchFailed;
   final void Function(FlutterAppConfig app) onEnsureAppTab;
+  final void Function(FlutterAppConfig app, FlutterLogEvent event) onLog;
   final IOSink Function(FlutterAppConfig app) stdoutSinkFor;
   final IOSink Function(FlutterAppConfig app) stderrSinkFor;
 
@@ -244,6 +247,7 @@ class FlutterAppManager {
       machineArgsOverride: argsOverrideForTesting?.call(runtime.app),
       stdoutSink: stdoutSinkFor(runtime.app),
       stderrSink: stderrSinkFor(runtime.app),
+      onLog: (event) => onLog(runtime.app, event),
       onProgress: (stage) {
         onProgress(runtime.app, stage);
         log.info('  ${runtime.app.name}: $stage');

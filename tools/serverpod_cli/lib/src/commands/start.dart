@@ -13,6 +13,7 @@ import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_app_manager.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_dependency_tracker.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_log_event.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_server.dart';
@@ -376,6 +377,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   IOSink Function(FlutterAppConfig app)? flutterStderrSinkFor,
   void Function(FlutterAppConfig app)? onEnsureFlutterAppTab,
   void Function(FlutterAppConfig app, String stage)? onFlutterProgress,
+  void Function(FlutterAppConfig app, FlutterLogEvent event)? onFlutterLog,
   void Function(FlutterAppConfig app, String? url)? onFlutterReady,
   void Function(FlutterAppConfig app)? onFlutterLaunchFailed,
   void Function(FlutterAppConfig app)? onFlutterStop,
@@ -596,6 +598,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     onStop: (app) => onFlutterStop?.call(app),
     onLaunchFailed: (app) => onFlutterLaunchFailed?.call(app),
     onEnsureAppTab: (app) => onEnsureFlutterAppTab?.call(app),
+    onLog: (app, event) => onFlutterLog?.call(app, event),
     stdoutSinkFor: (app) => flutterStdoutSinkFor?.call(app) ?? stdout,
     stderrSinkFor: (app) => flutterStderrSinkFor?.call(app) ?? stderr,
   );
@@ -1130,12 +1133,14 @@ Future<void> _runTuiBackend({
       serverStderrSink: stderrSink,
       flutterStdoutSinkFor: (app) => TuiLogSink(
         holder,
-        addLine: (line) => holder.state.appLogTabFor(app.id)?.lines.add(line),
+        addLine: (line) => handleFlutterOutput(holder, app.id, line),
       ),
       flutterStderrSinkFor: (app) => TuiLogSink(
         holder,
-        addLine: (line) => holder.state.appLogTabFor(app.id)?.lines.add(line),
+        addLine: (line) => handleFlutterOutput(holder, app.id, line),
       ),
+      onFlutterLog: (app, event) =>
+          handleFlutterLogEvent(holder, app.id, event),
       onEnsureFlutterAppTab: (app) {
         final tab = holder.state.getOrCreateAppLogTab(
           appId: app.id,
@@ -1199,7 +1204,7 @@ Future<void> _runTuiBackend({
         if (vmService == null) return;
         await vmService.streamListen('Extension');
         vmService.onExtensionEvent.listen(
-          (event) => handleServerLogEvent(holder, event),
+          (event) => handleFlutterExtensionEvent(holder, app.id, event),
         );
       },
       onFlutterStop: (app) {
