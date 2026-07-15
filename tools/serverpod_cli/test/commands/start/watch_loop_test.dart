@@ -190,6 +190,7 @@ void main() {
         onStop: (_) {},
         onLaunchFailed: (_) {},
         onEnsureAppTab: (_) {},
+        onLog: (_, _) {},
         stdoutSinkFor: (_) => stdout,
         stderrSinkFor: (_) => stderr,
       );

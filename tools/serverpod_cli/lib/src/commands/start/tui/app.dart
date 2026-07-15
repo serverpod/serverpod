@@ -433,7 +433,8 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
     }
 
     final focusedTab = state.tabs.focusedTab;
-    if (event.logicalKey == LogicalKey.keyE && focusedTab is ServerLogTab) {
+    if (event.logicalKey == LogicalKey.keyE &&
+        (focusedTab is ServerLogTab || focusedTab is AppLogTab)) {
       state.expandStackTraces = !state.expandStackTraces;
       _rebuild();
       return true;

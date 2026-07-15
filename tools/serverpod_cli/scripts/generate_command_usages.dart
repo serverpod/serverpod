@@ -9,6 +9,7 @@ import 'package:serverpod_cli/src/commands/cloud.dart';
 import 'package:serverpod_cli/src/commands/create.dart';
 import 'package:serverpod_cli/src/commands/create_migration.dart';
 import 'package:serverpod_cli/src/commands/create_repair_migration.dart';
+import 'package:serverpod_cli/src/commands/database.dart';
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/generate_pubspecs.dart';
 import 'package:serverpod_cli/src/commands/language_server.dart';
@@ -56,6 +57,7 @@ void main(final List<String> args) {
         AnalyzePubspecsCommand(),
         CloudCommand(),
         CreateCommand(),
+        DatabaseCommand(),
         QuickstartCommand(),
         GenerateCommand(),
         GeneratePubspecsCommand(),

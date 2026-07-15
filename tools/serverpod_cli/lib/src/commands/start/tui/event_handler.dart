@@ -3,7 +3,10 @@ import 'package:serverpod_tui/serverpod_tui.dart';
 import 'package:vm_service/vm_service.dart' show Event;
 
 import '../../../util/serverpod_cli_logger.dart';
+import '../../../util/strip_ansi.dart';
+import '../flutter_log_event.dart';
 import 'app.dart';
+import 'tab_model.dart';
 
 int _actionCounter = 0;
 
@@ -17,30 +20,15 @@ void handleServerLogEvent(TuiAppStateHolder holder, Event event) {
   final type = data['type'] as String?;
   switch (type) {
     case 'log':
-      final stackTrace = data['stackTrace'] as String?;
-      final message = data['message'] as String? ?? '';
-      final time =
-          DateTime.tryParse(data['timestamp'] as String? ?? '') ??
-          DateTime.now();
-      state.logHistory.add(
-        LogEntry(
-          level: parseLogLevel(data['level'] as String? ?? 'info'),
-          time: time,
-          message: message,
-          scope: LogScope.root('server'),
-          error: data['error']?.toString(),
-          stackTrace: stackTrace != null && stackTrace.isNotEmpty
-              ? StackTrace.fromString(stackTrace)
-              : null,
-        ),
-      );
+      final entry = _logEntryFromData(data, scopeLabel: 'server');
+      state.logHistory.add(entry);
 
       // An alert carries `metadata: {'alert': true}`. AlertMessage.parse
       // strips any `<...>` copy markup for display; the raw log line above
       // keeps the markup.
       final metadata = data['metadata'];
       if (metadata is Map && metadata['alert'] == true) {
-        holder.showAlert(AlertMessage.parse(message), time: time);
+        holder.showAlert(AlertMessage.parse(entry.message), time: entry.time);
       }
 
     case 'scope_start':
@@ -71,6 +59,154 @@ void handleServerLogEvent(TuiAppStateHolder holder, Event event) {
       }
   }
   holder.markDirty();
+}
+
+/// Dispatches Flutter VM extension events to the matching app log tab.
+///
+/// Flutter framework assertions are emitted as `Flutter.Error` events when
+/// structured errors are enabled. In that mode Flutter intentionally does not
+/// repeat the error on stderr, so this stream is the authoritative source.
+void handleFlutterExtensionEvent(
+  StartAppStateHolder holder,
+  String appId,
+  Event event,
+) {
+  final tab = holder.state.appLogTabFor(appId);
+  if (tab == null) return;
+
+  final data = event.extensionData?.data;
+  if (data == null) return;
+
+  switch (event.extensionKind) {
+    case 'Flutter.Error':
+      final message = data['renderedErrorText'];
+      if (message is! String || message.isEmpty) return;
+      final eventTimestamp = event.timestamp;
+      final hasEventTimestamp = eventTimestamp != null && eventTimestamp >= 0;
+      final flutterEvent = FlutterLogEvent(
+        time: hasEventTimestamp
+            ? DateTime.fromMillisecondsSinceEpoch(eventTimestamp)
+            : DateTime.now(),
+        level: LogLevel.error,
+        message: message,
+        source: FlutterLogSource.flutterError,
+        metadata: {'errorsSinceReload': ?data['errorsSinceReload']},
+        timestampIsInferred: !hasEventTimestamp,
+      );
+      handleFlutterLogEvent(holder, appId, flutterEvent);
+      _addRawFlutterEntry(
+        tab,
+        LogEntry(
+          level: LogLevel.error,
+          time: flutterEvent.time,
+          message: message,
+          scope: LogScope.root(appId),
+        ),
+      );
+    case 'ext.serverpod.log':
+      if (data['type'] != 'log') return;
+      _addFlutterEntry(
+        tab,
+        _logEntryFromData(data, scopeLabel: appId),
+      );
+    default:
+      return;
+  }
+
+  holder.markDirty();
+}
+
+/// Adds a raw Flutter stdout/stderr line to the history used by MCP.
+///
+/// The corresponding structured entry arrives separately through
+/// [handleFlutterLogEvent], before the process flattens it into this stream.
+void handleFlutterOutput(
+  StartAppStateHolder holder,
+  String appId,
+  String line,
+) {
+  final tab = holder.state.appLogTabFor(appId);
+  if (tab == null) return;
+
+  tab.lines.add(line);
+  holder.markDirty();
+}
+
+/// Adds a Flutter event with the structure supplied by its original source.
+void handleFlutterLogEvent(
+  StartAppStateHolder holder,
+  String appId,
+  FlutterLogEvent event,
+) {
+  final tab = holder.state.appLogTabFor(appId);
+  if (tab == null) return;
+
+  final loggerName = event.loggerName;
+  final message = loggerName == null
+      ? event.message
+      : '[$loggerName] ${event.message}';
+  final error = event.error;
+  final stackTrace = event.stackTrace;
+  tab.logHistory.add(
+    LogEntry(
+      level: event.level,
+      time: event.time,
+      message: stripAnsi(message),
+      scope: LogScope.root(appId),
+      error: error == null ? null : stripAnsi(error),
+      stackTrace: stackTrace == null || stackTrace.isEmpty
+          ? null
+          : StackTrace.fromString(stripAnsi(stackTrace)),
+      metadata: {
+        ...?event.metadata,
+        'source': event.source.name,
+        'loggerName': ?loggerName,
+        'levelIsInferred': event.levelIsInferred,
+        'timestampIsInferred': event.timestampIsInferred,
+      },
+    ),
+  );
+  holder.markDirty();
+}
+
+LogEntry _logEntryFromData(
+  Map<String, dynamic> data, {
+  required String scopeLabel,
+}) {
+  final stackTrace = data['stackTrace'] as String?;
+  return LogEntry(
+    level: parseLogLevel(data['level'] as String? ?? 'info'),
+    time:
+        DateTime.tryParse(data['timestamp'] as String? ?? '') ?? DateTime.now(),
+    message: data['message'] as String? ?? '',
+    scope: LogScope.root(scopeLabel),
+    error: data['error']?.toString(),
+    stackTrace: stackTrace != null && stackTrace.isNotEmpty
+        ? StackTrace.fromString(stackTrace)
+        : null,
+    metadata: data['metadata'] is Map
+        ? Map<String, Object?>.from(data['metadata'] as Map)
+        : null,
+  );
+}
+
+void _addFlutterEntry(AppLogTab tab, LogEntry entry) {
+  tab.logHistory.add(entry);
+
+  _addRawFlutterEntry(tab, entry);
+}
+
+void _addRawFlutterEntry(AppLogTab tab, LogEntry entry) {
+  final raw = StringBuffer(entry.message);
+  if (entry.error != null) {
+    if (raw.isNotEmpty) raw.writeln();
+    raw.write(entry.error);
+  }
+  if (entry.stackTrace != null) {
+    if (raw.isNotEmpty) raw.writeln();
+    raw.write(entry.stackTrace);
+  }
+  tab.lines.addAll(stripAnsi(raw.toString()).split('\n'));
 }
 
 /// Runs an async action as a tracked operation with spinner in the TUI.

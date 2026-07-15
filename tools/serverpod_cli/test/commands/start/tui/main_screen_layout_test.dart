@@ -35,10 +35,27 @@ Future<NoctermTester> _pumpAppsLayout(Size size) async {
   ];
   final admin = state.getOrCreateAppLogTab(appId: 'admin', label: 'Admin');
   admin.lines.add('admin-log-line');
-  state
-      .getOrCreateAppLogTab(appId: 'portal', label: 'Portal')
-      .lines
-      .add('portal-log-line');
+  admin.logHistory.add(
+    LogEntry(
+      time: DateTime(2026),
+      level: LogLevel.info,
+      message: 'admin-log-line',
+      scope: LogScope.root('admin'),
+    ),
+  );
+  final portal = state.getOrCreateAppLogTab(
+    appId: 'portal',
+    label: 'Portal',
+  );
+  portal.lines.add('portal-log-line');
+  portal.logHistory.add(
+    LogEntry(
+      time: DateTime(2026),
+      level: LogLevel.info,
+      message: 'portal-log-line',
+      scope: LogScope.root('portal'),
+    ),
+  );
   state.tabs.focusTab(admin);
 
   return _pump(state, size);
