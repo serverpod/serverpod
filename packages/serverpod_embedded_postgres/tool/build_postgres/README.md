@@ -29,9 +29,10 @@ Requires on `PATH`: `cmake`, `pkg-config`, `bison`, `flex`, `make`, `curl`,
 0.16.x on Linux, Apple clang (Xcode) on macOS (also
 `xcrun`/`install_name_tool`/`codesign`), mingw-w64 gcc on Windows. CI
 (`.github/workflows/build-embedded-postgres.yaml`) runs this per-runner (zig
-only on Linux), publishing all five platforms atomically to an immutable
-`embedded-postgres-v<bom>-r<rev>` release. A bundle fix that keeps the same
-PG version must bump `BUNDLE_REVISION` in `versions.env`.
+only on Linux), publishing all five platforms atomically under an append-only
+`embedded-postgres-v<bom>-r<rev>` identity. The workflow never updates a
+published bundle tag. A bundle fix that keeps the same PG version must bump
+`BUNDLE_REVISION` in `versions.env`.
 
 The Linux zig path is zig-version-sensitive (UBSan defaults, glibc target). For
 local Linux builds, [anyzig](https://github.com/marler8997/anyzig) is
@@ -94,9 +95,7 @@ does this) because PROJ bakes in the build-time data path.
 
 ## Platform status
 
-| platform | status |
-|---|---|
-| macOS x64 | ✅ Apple clang; bundle verified end-to-end (crash repro + pgvector/PostGIS/PROJ/GEOS) |
-| macOS arm64 | ✅ same recipe (Apple clang); `package.sh` re-signs after `install_name_tool` - pending CI confirmation |
-| Linux x64 / arm64 | ⏳ builds (zig, glibc-2.28 target); `--without-address-standardizer`; relocation packaging (ELF `$ORIGIN` rpath) status per CI |
-| Windows x64 | ⏳ builds via mingw-w64 gcc; GEOS/PROJ DLLs use `CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS` + sit beside `postgres.exe`; being brought up on CI (PostGIS-on-mingw + packaging next) |
+See [`../../PLATFORMS.md`](../../PLATFORMS.md) for the maintained support
+matrix and the verification gates each published target must pass. Keeping the
+status in one place prevents the build instructions from drifting from the
+runtime's published-target list.

@@ -32,7 +32,7 @@ const int _pgDefaultPort = 5432;
 /// Concrete implementation backing [EmbeddedPostgres.start].
 ///
 /// Orchestrates:
-///   1. [BinaryStore.ensure] - download + verify + extract Zonky bundle.
+///   1. [BinaryStore.ensure] - download + verify + extract Serverpod bundle.
 ///   2. [ClusterStore.ensureInitialized] - run initdb if PG_VERSION is missing.
 ///   3. [ClusterStore.requireMajorMatch] - fail loudly on cross-major.
 ///   4. [ClusterStore.reconcilePostgresConf] - write our managed block.

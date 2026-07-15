@@ -7,13 +7,13 @@ import '../exceptions.dart';
 import 'bundle_spec.dart';
 
 /// Builds the Serverpod PostgreSQL bundle from source by driving the scripts in
-/// `tool/build_postgres/` (Zig as the C/C++ compiler). Used as the fallback
-/// when the prebuilt bundle isn't published, or when a build is forced via
-/// [BinarySource.build].
+/// `tool/build_postgres/` with the platform compiler selected by its wrapper.
+/// Used as the fallback when the prebuilt bundle isn't published, or when a
+/// build is forced via [BinarySource.build].
 ///
-/// Requires the build toolchain on PATH: a C/C++ compiler (zig 0.16.x on
-/// macOS/Linux, mingw-w64 gcc on Windows), cmake, pkg-config, make, bison, flex,
-/// perl, curl, tar/xz - and `bash` (MSYS2 on Windows). The scripts
+/// Requires the build toolchain on PATH: Zig 0.16.x on Linux, Apple clang on
+/// macOS, or mingw-w64 gcc on Windows, plus cmake, pkg-config, make, bison,
+/// flex, perl, curl, tar/xz - and `bash` (MSYS2 on Windows). The scripts
 /// are found relative to this package; override their location with the
 /// `SERVERPOD_PG_BUILD_DIR` env var (e.g. for AOT/compiled consumers where
 /// package resolution is unavailable).
@@ -45,8 +45,9 @@ class BundleBuilder {
     if (!await _onPath(bash)) {
       throw BinaryBuildException(
         'building the embedded PostgreSQL bundle from source requires '
-        '`$bash` plus a C/C++ toolchain (zig on macOS/Linux, mingw-w64 gcc on '
-        'Windows) and cmake, make, bison, flex, perl. On Windows install MSYS2 '
+        '`$bash` plus a C/C++ toolchain (Zig on Linux, Apple clang on macOS, '
+        'mingw-w64 gcc on Windows) and cmake, make, bison, flex, perl. On '
+        'Windows install MSYS2 '
         '(with mingw-w64-gcc) and set SERVERPOD_PG_BUILD_BASH to its bash.',
       );
     }

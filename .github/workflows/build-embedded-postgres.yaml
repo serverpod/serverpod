@@ -50,7 +50,7 @@ jobs:
       # Identity resolution: a tag push (embedded-postgres-v<bom>-r<rev>)
       # names the exact bundle; a manual dispatch takes explicit inputs and
       # falls back to the canonical versions.env spec. Legacy tags without a
-      # revision are rejected - they cannot name an immutable bundle.
+      # revision are rejected - they cannot name a unique append-only bundle.
       - name: Resolve bundle identity
         id: pgver
         shell: bash
@@ -179,9 +179,9 @@ jobs:
   # One all-or-nothing release for the whole matrix. Downloads are the
   # consumer path, so a release missing a platform would strand that
   # platform's users on a 404; one failed leg therefore fails the whole
-  # release. Assets are assembled on a draft and only then flipped live,
-  # because a published release is immutable - it cannot be completed (or
-  # corrected) retroactively. A correction ships as a new bundle revision.
+  # release. Assets are assembled on a draft and only then flipped live.
+  # This workflow treats a published bundle identity as append-only: it will
+  # not update an existing release, and a correction ships as a new revision.
   publish:
     name: Publish GitHub Release
     needs: build
@@ -229,7 +229,7 @@ jobs:
       - name: Fail if this bundle tag is already published
         run: |
           if gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG" --silent 2>/dev/null; then
-            echo "::error::release $TAG is already published - published bundles are immutable; ship the fix as a new bundle revision (bump BUNDLE_REVISION in versions.env)"
+            echo "::error::release $TAG is already published - this workflow never updates a published bundle; ship the fix as a new bundle revision (bump BUNDLE_REVISION in versions.env)"
             exit 1
           fi
       - name: Publish atomically via a draft release

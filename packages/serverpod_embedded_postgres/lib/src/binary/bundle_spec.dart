@@ -6,10 +6,11 @@ import '../exceptions.dart';
 /// (PostgreSQL + PostGIS + pgvector): the component versions plus the bundle
 /// packaging [revision].
 ///
-/// Published bundles are immutable. Any change that alters the shipped bytes
-/// while the PostgreSQL version stays the same (an extension bump, a compiler
-/// or packaging fix) must ship as a new [revision] - the revision is what
-/// lets a fixed bundle reach users whose cache already holds the broken one.
+/// Published bundle identities are append-only. Any change that alters the
+/// shipped bytes while the PostgreSQL version stays the same (an extension
+/// bump, a compiler or packaging fix) must ship as a new [revision] - the
+/// revision is what lets a fixed bundle reach users whose cache already holds
+/// the broken one.
 ///
 /// Keep in sync with `tool/build_postgres/versions.env` (the shell side of
 /// this spec); `bundle_spec_test.dart` cross-checks the two.
@@ -39,7 +40,7 @@ class BundleSpec {
       '${postgresVersion.major}.${postgresVersion.minor}.'
       '${postgresVersion.patch}';
 
-  /// Unique, immutable identity of the bundle: `<bom>-r<revision>`. Names
+  /// Unique, append-only identity of the bundle: `<bom>-r<revision>`. Names
   /// the release tag, the archive, and the cache entry, so two revisions of
   /// the same PG version can never be mistaken for each other.
   String get bundleId => '$bom-r$revision';

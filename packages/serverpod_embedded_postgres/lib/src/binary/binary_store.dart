@@ -40,8 +40,8 @@ class BinaryStore {
   /// Each artifact installs under `<cacheRoot>/<cacheKey>/<platform>/`.
   final Directory cacheRoot;
 
-  /// HTTP client used for Maven fetches. Injectable for tests; the default
-  /// is a per-store [http.Client] - call [close] to release it.
+  /// HTTP client used for archive and checksum fetches. Injectable for tests;
+  /// the default is a per-store [http.Client] - call [close] to release it.
   final http.Client _http;
 
   /// Whether [_http] is owned by this store (and should be closed by

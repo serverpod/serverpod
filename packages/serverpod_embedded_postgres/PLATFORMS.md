@@ -24,18 +24,23 @@ The compiler is **Zig on Linux**, **Apple clang on macOS**, and
 SHA-256) is pinned in `tool/build_postgres/versions.env`, the canonical
 bundle specification, cross-checked against the Dart-side `BundleSpec`.
 
-### Bundle revisions and immutability
+### Bundle revisions and append-only releases
 
 A bundle's identity is `<pg-version>-r<revision>`, e.g. `16.13.0-r1` -
 release tag `embedded-postgres-v16.13.0-r1`, archive
 `serverpod-postgres-16.13.0-r1-<os>-<arch>.tar.xz`, cache directory
-`<cache>/16.13.0-r1/<os>-<arch>/`. Published releases are **immutable**
-and **complete** (all five platforms publish atomically or not at all).
-Any fix that changes the shipped bytes while the PostgreSQL version stays
-the same must bump `BUNDLE_REVISION`; the new revision has its own release,
-URLs, and cache entries, so it reaches users whose cache holds the previous
-one. Every archive embeds a `serverpod-bundle-manifest.json` that is
-validated after extraction against the requested identity.
+`<cache>/16.13.0-r1/<os>-<arch>/`. Bundle identities are **append-only**
+and releases are **complete** (all five platforms publish atomically or not
+at all). The release workflow refuses to update a published bundle tag; this
+is workflow policy, not GitHub's repository-wide immutable-releases setting.
+Repository administrators must likewise treat published bundle assets as
+append-only.
+
+Any fix that changes the shipped bytes while the PostgreSQL version stays the
+same must bump `BUNDLE_REVISION`; the new revision has its own release, URLs,
+and cache entries, so it reaches users whose cache holds the previous one.
+Every archive embeds a `serverpod-bundle-manifest.json` that is validated
+after extraction against the requested identity.
 
 ### Download by default
 
@@ -54,8 +59,9 @@ string, polygon, geometry collection) with `ST_Intersects`, `ST_DWithin`,
 `halfvec`, `sparsevec`, and bit distance operators with HNSW/IVFFlat
 indexes. Raster, the address standardizer, protobuf-backed output (e.g.
 vector tiles), and PROJ network grids are compiled out. The release smoke
-gate (`tool/smoke_bundle.sql`) exercises exactly this contract on every
-platform before publication.
+gate (`tool/smoke_bundle.sql`) exercises every supported geography operation,
+pgvector value type and distance operator, and permitted spatial/vector
+type-and-index-family combination on every platform before publication.
 
 ## Windows notes
 

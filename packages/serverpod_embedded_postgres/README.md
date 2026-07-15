@@ -39,7 +39,7 @@ starts reuse the cache and reach ready in under a second on a warm
 cluster. The bundle ships **PostGIS 3.5.4** and **pgvector 0.8.3**, so
 `CREATE EXTENSION postgis` / `CREATE EXTENSION vector` work out of the
 box. See `tool/build_postgres/` for how the bundles are built and
-[PLATFORMS.md](PLATFORMS.md) for the bundle-revision and immutability
+[PLATFORMS.md](PLATFORMS.md) for the bundle-revision and append-only release
 model.
 
 Bundles are downloaded by default; a missing release asset is an error,
