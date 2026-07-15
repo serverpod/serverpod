@@ -8,8 +8,15 @@ on:
   workflow_dispatch:
     inputs:
       pg_version:
-        description: 'PG version (bom), e.g. 16.13.0'
-        default: '16.13.0'
+        description: >-
+          PG version (bom), e.g. 16.13.0. Defaults to the canonical
+          tool/build_postgres/versions.env spec.
+        default: ''
+      bundle_revision:
+        description: >-
+          Bundle packaging revision, e.g. 2. Defaults to the canonical
+          tool/build_postgres/versions.env spec.
+        default: ''
   push:
     tags: ['embedded-postgres-v*']
 
@@ -40,25 +47,41 @@ jobs:
       - name: Set up build toolchain
         uses: ./.github/actions/setup-pg-build-toolchain
 
-      # On a tag push the workflow_dispatch input is empty, so derive the version
-      # from the tag (embedded-postgres-v<bom>) - otherwise assets would always be
-      # named 16.13.0 regardless of the release tag.
-      - name: Resolve PG version
+      # Identity resolution: a tag push (embedded-postgres-v<bom>-r<rev>)
+      # names the exact bundle; a manual dispatch takes explicit inputs and
+      # falls back to the canonical versions.env spec. Legacy tags without a
+      # revision are rejected - they cannot name an immutable bundle.
+      - name: Resolve bundle identity
         id: pgver
         shell: bash
         run: |
+          . packages/serverpod_embedded_postgres/tool/build_postgres/versions.env
           v="${{ github.event.inputs.pg_version }}"
-          [ -n "$v" ] || v="${GITHUB_REF_NAME#embedded-postgres-v}"
+          r="${{ github.event.inputs.bundle_revision }}"
+          if [[ "$GITHUB_REF_NAME" == embedded-postgres-v* ]]; then
+            stem="${GITHUB_REF_NAME#embedded-postgres-v}"
+            case "$stem" in
+              *-r*) v="${stem%-r*}"; r="${stem##*-r}" ;;
+              *)
+                echo "::error::tag $GITHUB_REF_NAME carries no bundle revision (expected embedded-postgres-v<bom>-r<rev>)"
+                exit 1
+                ;;
+            esac
+          fi
+          [ -n "$v" ] || v="$PG_BOM"
+          [ -n "$r" ] || r="$BUNDLE_REVISION"
           echo "value=$v" >> "$GITHUB_OUTPUT"
+          echo "revision=$r" >> "$GITHUB_OUTPUT"
 
       - name: Build + package + assert version (Unix)
         if: matrix.os != 'windows'
         env:
           PGBUILD: ${{ runner.temp }}/pgbuild
           PG_VERSION: ${{ steps.pgver.outputs.value }}
+          BUNDLE_REVISION: ${{ steps.pgver.outputs.revision }}
         run: |
           bash packages/serverpod_embedded_postgres/tool/build_postgres/build-all.sh
-          f="$PGBUILD/dist/serverpod-postgres-${PG_VERSION}-${BUNDLE_OS}-${BUNDLE_ARCH}.tar.xz"
+          f="$PGBUILD/dist/serverpod-postgres-${PG_VERSION}-r${BUNDLE_REVISION}-${BUNDLE_OS}-${BUNDLE_ARCH}.tar.xz"
           [ -f "$f" ] || { echo "::error::expected bundle $f not produced; dist has: $(ls "$PGBUILD"/dist 2>/dev/null)"; exit 1; }
           echo "verified bundle: $(basename "$f")"
 
@@ -67,12 +90,13 @@ jobs:
         shell: msys2 {0}
         env:
           PG_VERSION: ${{ steps.pgver.outputs.value }}
+          BUNDLE_REVISION: ${{ steps.pgver.outputs.revision }}
         run: |
           # cygpath bridges the Windows RUNNER_TEMP to an MSYS path pointing at
           # the same dir, so the upload step (Windows path) finds the artifacts.
           export PGBUILD="$(cygpath -u "$RUNNER_TEMP")/pgbuild"
           bash packages/serverpod_embedded_postgres/tool/build_postgres/build-all.sh
-          f="$PGBUILD/dist/serverpod-postgres-${PG_VERSION}-${BUNDLE_OS}-${BUNDLE_ARCH}.tar.xz"
+          f="$PGBUILD/dist/serverpod-postgres-${PG_VERSION}-r${BUNDLE_REVISION}-${BUNDLE_OS}-${BUNDLE_ARCH}.tar.xz"
           [ -f "$f" ] || { echo "::error::expected bundle $f not produced; dist has: $(ls "$PGBUILD"/dist 2>/dev/null)"; exit 1; }
           echo "verified bundle: $(basename "$f")"
 

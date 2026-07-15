@@ -4,6 +4,7 @@ import 'dart:isolate';
 import 'package:path/path.dart' as p;
 
 import '../exceptions.dart';
+import 'bundle_spec.dart';
 
 /// Builds the Serverpod PostgreSQL bundle from source by driving the scripts in
 /// `tool/build_postgres/` (Zig as the C/C++ compiler). Used as the fallback
@@ -20,11 +21,14 @@ class BundleBuilder {
   /// Creates a [BundleBuilder].
   const BundleBuilder();
 
-  /// Builds the bundle for [bom] (`major.minor.patch`) and [platform]
-  /// (`<os>-<arch>`), returning the produced `.tar.xz`. Build output streams to
-  /// this process's stdout/stderr. Throws [BinaryBuildException] on any failure
-  /// (missing toolchain, missing scripts, non-zero build, or no artifact).
-  Future<File> build({required String bom, required String platform}) async {
+  /// Builds the bundle for [spec] and [platform] (`<os>-<arch>`), returning
+  /// the produced `.tar.xz`. Build output streams to this process's
+  /// stdout/stderr. Throws [BinaryBuildException] on any failure (missing
+  /// toolchain, missing scripts, non-zero build, or no artifact).
+  Future<File> build({
+    required BundleSpec spec,
+    required String platform,
+  }) async {
     var toolDir = await _toolDir();
     var script = File(p.join(toolDir.path, 'build-all.sh'));
     if (!script.existsSync()) {
@@ -70,7 +74,8 @@ class BundleBuilder {
           'PGBUILD': fwd(scratch.path),
           'BUNDLE_OS': os,
           'BUNDLE_ARCH': arch,
-          'PG_VERSION': bom,
+          'PG_VERSION': spec.bom,
+          'BUNDLE_REVISION': '${spec.revision}',
         },
         mode: ProcessStartMode.inheritStdio,
       );
@@ -82,7 +87,7 @@ class BundleBuilder {
         p.join(
           scratch.path,
           'dist',
-          'serverpod-postgres-$bom-$platform.tar.xz',
+          'serverpod-postgres-${spec.bundleId}-$platform.tar.xz',
         ),
       );
       if (!bundle.existsSync()) {

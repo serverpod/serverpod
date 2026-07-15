@@ -6,6 +6,7 @@ import 'package:pub_semver/pub_semver.dart';
 import 'binary/binary_source.dart' show BinarySource, resolveBinarySource;
 import 'binary/binary_store.dart' show BinaryStore;
 import 'binary/bundle_builder.dart' show BundleBuilder;
+import 'binary/bundle_spec.dart' show bundleSpecFor;
 import 'binary/serverpod_bundle.dart'
     show ServerpodBundleArtifact, serverpodPlatformSuffixes;
 import 'embedded_postgres_impl.dart';
@@ -66,6 +67,9 @@ abstract class EmbeddedPostgres {
   /// [source] selects download vs. build-from-source (defaults to the
   /// `SERVERPOD_PG_SOURCE` env, else [BinarySource.auto]); pass
   /// [BinarySource.build] to force a local build (CI warm-up before publish).
+  ///
+  /// Throws [UnsupportedVersionException] when no bundle is published for
+  /// [version] - before any network access.
   static Future<void> prefetch(
     Version version, {
     String? target,
@@ -77,11 +81,12 @@ abstract class EmbeddedPostgres {
         '${serverpodPlatformSuffixes.join(', ')}.',
       );
     }
+    var spec = bundleSpecFor(version);
     var platform =
         target ??
-        ServerpodBundleArtifact.forCurrentPlatform(version: version).platform;
+        ServerpodBundleArtifact.forCurrentPlatform(spec: spec).platform;
     var artifact = ServerpodBundleArtifact(
-      version: version,
+      spec: spec,
       platform: platform,
     );
     var store = BinaryStore();

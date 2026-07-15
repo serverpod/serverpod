@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:typed_data';
@@ -11,7 +12,9 @@ import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_embedded_postgres/serverpod_embedded_postgres.dart';
 import 'package:serverpod_embedded_postgres/src/binary/binary_store.dart';
+import 'package:serverpod_embedded_postgres/src/binary/bundle_spec.dart';
 import 'package:serverpod_embedded_postgres/src/binary/maven_url.dart';
+import 'package:serverpod_embedded_postgres/src/binary/serverpod_bundle.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -315,6 +318,173 @@ void main() {
       );
     },
   );
+
+  group('Given two revisions of the same PG version', () {
+    late _FakeBundleArtifact r1;
+    late _FakeBundleArtifact r2;
+
+    setUp(() {
+      r1 = _FakeBundleArtifact(spec: _specWithRevision(1));
+      r2 = _FakeBundleArtifact(spec: _specWithRevision(2));
+    });
+
+    test(
+      'when resolving their install dirs '
+      'then each revision gets its own directory.',
+      () {
+        var store = BinaryStore(cacheRoot: cache);
+
+        expect(
+          store.installDirFor(r1).path,
+          isNot(store.installDirFor(r2).path),
+        );
+
+        store.close();
+      },
+    );
+
+    test(
+      'when revision 1 is already cached and ensure runs for revision 2 '
+      'then revision 2 is downloaded rather than served from the stale cache.',
+      () async {
+        var bytes = Uint8List.fromList([1, 2, 3]);
+        var shaHex = sha256.convert(bytes).toString();
+        var downloads = <Uri>[];
+        var store = BinaryStore(
+          cacheRoot: cache,
+          httpClient: MockClient((req) async {
+            if (req.url == r2.archiveUrl) {
+              downloads.add(req.url);
+              return http.Response.bytes(bytes, 200);
+            }
+            if (req.url == r2.sha256Url) return http.Response(shaHex, 200);
+            return http.Response('not found', 404);
+          }),
+        );
+        var r1Dir = await _installFake(store, r1);
+
+        var r2Dir = await store.ensure(r2);
+
+        expect(downloads, [r2.archiveUrl]);
+        expect(r2Dir.path, isNot(r1Dir.path));
+        expect(store.metaFileFor(r2).existsSync(), isTrue);
+
+        store.close();
+      },
+    );
+  });
+
+  group(
+    'Given a bundle whose embedded manifest disagrees with the requested artifact',
+    () {
+      test(
+        'when ensure runs '
+        'then BinaryVerificationException is thrown and nothing is cached.',
+        () async {
+          var artifact = _FakeBundleArtifact(
+            spec: _specWithRevision(2),
+            manifestOverride: {
+              'postgres': '16.13.0',
+              'revision': 1,
+              'platform': 'linux-x64',
+              'postgis': '3.5.4',
+              'pgvector': '0.8.3',
+            },
+          );
+          var bytes = Uint8List.fromList([1, 2, 3]);
+          var store = BinaryStore(
+            cacheRoot: cache,
+            httpClient: MockClient((req) async {
+              if (req.url == artifact.archiveUrl) {
+                return http.Response.bytes(bytes, 200);
+              }
+              if (req.url == artifact.sha256Url) {
+                return http.Response(sha256.convert(bytes).toString(), 200);
+              }
+              return http.Response('not found', 404);
+            }),
+          );
+
+          await expectLater(
+            store.ensure(artifact),
+            throwsA(isA<BinaryVerificationException>()),
+          );
+          expect(store.installDirFor(artifact).existsSync(), isFalse);
+          expect(store.metaFileFor(artifact).existsSync(), isFalse);
+
+          store.close();
+        },
+      );
+    },
+  );
+}
+
+BundleSpec _specWithRevision(int revision) => BundleSpec(
+  postgresVersion: Version(16, 13, 0),
+  revision: revision,
+  postgisVersion: '3.5.4',
+  pgvectorVersion: '0.8.3',
+);
+
+/// Installs [artifact] into [store] via a self-contained mock server, so a
+/// test can start from a "revision already cached" state.
+Future<Directory> _installFake(
+  BinaryStore store,
+  _FakeBundleArtifact artifact,
+) async {
+  var bytes = Uint8List.fromList([9, 9, 9]);
+  var seeded = BinaryStore(
+    cacheRoot: store.cacheRoot,
+    httpClient: MockClient((req) async {
+      if (req.url == artifact.archiveUrl) {
+        return http.Response.bytes(bytes, 200);
+      }
+      if (req.url == artifact.sha256Url) {
+        return http.Response(sha256.convert(bytes).toString(), 200);
+      }
+      return http.Response('not found', 404);
+    }),
+  );
+  try {
+    return await seeded.ensure(artifact);
+  } finally {
+    seeded.close();
+  }
+}
+
+/// A Serverpod bundle artifact whose "extraction" writes a minimal install
+/// tree directly (bin/postgres + the identity manifest), sidestepping the
+/// XZ layer that synthetic fixtures cannot roundtrip reliably. Passing
+/// [manifestOverride] simulates a mislabeled archive.
+final class _FakeBundleArtifact extends ServerpodBundleArtifact {
+  final Map<String, Object?>? manifestOverride;
+
+  _FakeBundleArtifact({required super.spec, this.manifestOverride})
+    : super(platform: 'linux-x64');
+
+  @override
+  void extractInto(
+    Uint8List archiveBytes,
+    Directory destination, {
+    void Function(double fraction)? onProgress,
+  }) {
+    File(
+      p.join(destination.path, 'bin', 'postgres'),
+    ).createSync(recursive: true);
+    File(p.join(destination.path, bundleManifestFileName)).writeAsStringSync(
+      jsonEncode(
+        manifestOverride ??
+            {
+              'postgres': spec.bom,
+              'revision': spec.revision,
+              'platform': platform,
+              'postgis': spec.postgisVersion,
+              'pgvector': spec.pgvectorVersion,
+            },
+      ),
+    );
+    onProgress?.call(1.0);
+  }
 }
 
 /// Mock client that responds to the JAR URL and the sidecar URL for a given

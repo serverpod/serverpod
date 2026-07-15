@@ -42,6 +42,14 @@ final class UnsupportedPlatformException extends EmbeddedPostgresException {
   const UnsupportedPlatformException(super.message);
 }
 
+/// The requested PostgreSQL version has no published Serverpod bundle
+/// specification. Raised before any network access; the remedy is to request
+/// one of the published versions (listed in [message]).
+final class UnsupportedVersionException extends EmbeddedPostgresException {
+  /// Creates an [UnsupportedVersionException] with [message].
+  const UnsupportedVersionException(super.message);
+}
+
 /// Building the bundle from source failed, or the build toolchain
 /// (zig/cmake/make/bison/flex/perl, plus `bash`/MSYS2 on Windows) is missing.
 /// Raised when the prebuilt bundle is unavailable and a local build was

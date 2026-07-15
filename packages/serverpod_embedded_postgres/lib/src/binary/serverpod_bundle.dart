@@ -1,11 +1,14 @@
+import 'dart:convert';
 import 'dart:ffi' show Abi;
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 
 import '../exceptions.dart';
 import 'binary_artifact.dart';
+import 'bundle_spec.dart';
 import 'zonky_archive.dart';
 
 /// GitHub `owner/repo` that hosts the Serverpod-built PostgreSQL bundles
@@ -14,8 +17,11 @@ import 'zonky_archive.dart';
 String get _bundleRepo =>
     Platform.environment['SERVERPOD_PG_BUNDLE_REPO'] ?? 'serverpod/serverpod';
 
-/// Release tag carrying the bundle assets for a given PG version.
-String _releaseTag(String bom) => 'embedded-postgres-v$bom';
+/// Name of the identity manifest at the bundle root. Written by `package.sh`
+/// and validated after extraction (see
+/// [ServerpodBundleArtifact.validateExtracted]) so a mislabeled or stale
+/// archive can never be promoted into the cache.
+const String bundleManifestFileName = 'serverpod-bundle-manifest.json';
 
 /// Every `<os>-<arch>` suffix for which a Serverpod bundle is published.
 /// Used to validate caller-supplied targets (e.g. `prefetch`) before they
@@ -54,9 +60,10 @@ String serverpodPlatformSuffix(Abi abi) {
 /// A Serverpod-built PostgreSQL bundle (PostgreSQL + PostGIS + pgvector),
 /// distributed as an `.tar.xz` on GitHub Releases. Unlike Zonky's stock
 /// binaries, these ship the spatial + vector extensions.
-class ServerpodBundleArtifact implements BinaryArtifact {
-  /// Major.minor.patch PG version.
-  final Version version;
+class ServerpodBundleArtifact extends BinaryArtifact {
+  /// Full bill of materials: PG version, extension versions, and the bundle
+  /// packaging revision.
+  final BundleSpec spec;
 
   /// Bundle platform suffix, e.g. `macos-x64`. Use
   /// [ServerpodBundleArtifact.forCurrentPlatform] to derive it from the host.
@@ -65,31 +72,38 @@ class ServerpodBundleArtifact implements BinaryArtifact {
 
   /// Direct constructor. Most callers should prefer
   /// [ServerpodBundleArtifact.forCurrentPlatform].
-  const ServerpodBundleArtifact({
-    required this.version,
-    required this.platform,
-  });
+  const ServerpodBundleArtifact({required this.spec, required this.platform});
 
   /// Resolves the artifact for the host's current ABI.
   factory ServerpodBundleArtifact.forCurrentPlatform({
-    required Version version,
+    required BundleSpec spec,
   }) {
     return ServerpodBundleArtifact(
-      version: version,
+      spec: spec,
       platform: serverpodPlatformSuffix(Abi.current()),
     );
   }
 
-  @override
-  String get bom => '${version.major}.${version.minor}.${version.patch}';
+  /// Major.minor.patch PG version.
+  Version get version => spec.postgresVersion;
 
   @override
-  String get archiveFileName => 'serverpod-postgres-$bom-$platform.tar.xz';
+  String get bom => spec.bom;
+
+  /// `<bom>-r<revision>`: two revisions of the same PG version are distinct
+  /// artifacts with distinct URLs and distinct cache entries, so a bundle
+  /// fix always reaches users whose cache holds the previous revision.
+  @override
+  String get cacheKey => spec.bundleId;
+
+  @override
+  String get archiveFileName =>
+      'serverpod-postgres-${spec.bundleId}-$platform.tar.xz';
 
   @override
   Uri get archiveUrl => Uri.parse(
     'https://github.com/$_bundleRepo/releases/download/'
-    '${_releaseTag(bom)}/$archiveFileName',
+    '${spec.releaseTag}/$archiveFileName',
   );
 
   @override
@@ -108,15 +122,65 @@ class ServerpodBundleArtifact implements BinaryArtifact {
     );
   }
 
+  /// Rejects an extracted tree whose embedded manifest is missing or
+  /// disagrees with [spec]/[platform]. This catches mislabeled archives
+  /// (right filename, wrong contents) that a SHA-256 sidecar - published
+  /// alongside the same wrong archive - cannot.
+  @override
+  void validateExtracted(Directory installDir) {
+    var manifestFile = File(p.join(installDir.path, bundleManifestFileName));
+    if (!manifestFile.existsSync()) {
+      throw BinaryVerificationException(
+        'Bundle $archiveFileName contains no $bundleManifestFileName; '
+        'refusing to cache an unidentifiable bundle.',
+      );
+    }
+    Object? decoded;
+    try {
+      decoded = jsonDecode(manifestFile.readAsStringSync());
+    } on FormatException catch (e) {
+      throw BinaryVerificationException(
+        'Bundle $archiveFileName has a malformed $bundleManifestFileName: '
+        '${e.message}',
+      );
+    }
+    if (decoded is! Map<String, Object?>) {
+      throw BinaryVerificationException(
+        'Bundle $archiveFileName has a malformed $bundleManifestFileName: '
+        'expected a JSON object, found ${decoded.runtimeType}.',
+      );
+    }
+    var manifest = decoded;
+    var mismatches = <String>[];
+    void check(String key, Object expected) {
+      var actual = manifest[key];
+      if (actual != expected) {
+        mismatches.add('$key: expected $expected, found $actual');
+      }
+    }
+
+    check('postgres', spec.bom);
+    check('revision', spec.revision);
+    check('platform', platform);
+    check('postgis', spec.postgisVersion);
+    check('pgvector', spec.pgvectorVersion);
+    if (mismatches.isNotEmpty) {
+      throw BinaryVerificationException(
+        'Bundle manifest of $archiveFileName does not match the requested '
+        'artifact:\n  ${mismatches.join('\n  ')}',
+      );
+    }
+  }
+
   @override
   String toString() => 'ServerpodBundleArtifact($archiveFileName)';
 
   @override
   bool operator ==(Object other) =>
       other is ServerpodBundleArtifact &&
-      other.version == version &&
+      other.spec == spec &&
       other.platform == platform;
 
   @override
-  int get hashCode => Object.hash(version, platform);
+  int get hashCode => Object.hash(spec, platform);
 }

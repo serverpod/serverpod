@@ -7,10 +7,18 @@
 # needed); Linux rewrites every ELF's rpath to $ORIGIN-relative.
 set -euo pipefail
 B="${PGBUILD:-$HOME/pgzig}"; PREFIX="$B/out/pg"; DEPS="$B/deps"; OUT="$B/dist"
-VER="${PG_VERSION:-16.13.0}"
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Canonical spec supplies the component versions and the default identity;
+# an explicitly exported PG_VERSION / BUNDLE_REVISION (CI, BundleBuilder)
+# wins, so capture the env before sourcing.
+ENV_PG_VERSION="${PG_VERSION:-}"; ENV_BUNDLE_REVISION="${BUNDLE_REVISION:-}"
+# shellcheck source=versions.env
+. "$HERE/versions.env"
+VER="${ENV_PG_VERSION:-$PG_BOM}"
+REV="${ENV_BUNDLE_REVISION:-$BUNDLE_REVISION}"
 OS="${BUNDLE_OS:-$(uname -s | tr '[:upper:]' '[:lower:]' | sed -E 's/darwin/macos/; s/(mingw|msys|cygwin).*/windows/')}"
 ARCH="${BUNDLE_ARCH:-$(uname -m | sed 's/x86_64/x64/; s/aarch64/arm64/')}"
-NAME="serverpod-postgres-${VER}-${OS}-${ARCH}"
+NAME="serverpod-postgres-${VER}-r${REV}-${OS}-${ARCH}"
 STAGE="$OUT/$NAME"
 
 rm -rf "$STAGE"; mkdir -p "$STAGE"
@@ -21,6 +29,20 @@ rm -rf "$STAGE/include" "$STAGE/lib/pkgconfig" "$STAGE"/lib/*.a 2>/dev/null || t
 # PROJ runtime data (proj.db etc.) - OS-agnostic. The launcher sets PROJ_LIB
 # to <install>/share/proj (see supervisor.dart).
 mkdir -p "$STAGE/share/proj"; cp -R "$DEPS"/share/proj/. "$STAGE/share/proj/"
+
+# Identity manifest, validated by the Dart side after extraction: an archive
+# whose manifest doesn't match the requested artifact is refused, so a
+# mislabeled bundle can never poison the per-user cache. revision is a bare
+# int on purpose - the validator compares it as one.
+cat > "$STAGE/serverpod-bundle-manifest.json" <<EOF
+{
+  "postgres": "$VER",
+  "revision": $REV,
+  "platform": "$OS-$ARCH",
+  "postgis": "$POSTGIS_VERSION",
+  "pgvector": "$PGVECTOR_VERSION"
+}
+EOF
 
 case "$(uname -s)" in
 Darwin)

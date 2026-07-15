@@ -13,6 +13,7 @@ import '../exceptions.dart';
 import 'binary_artifact.dart';
 import 'binary_source.dart';
 import 'bundle_builder.dart';
+import 'serverpod_bundle.dart';
 
 /// Per-user cache of Zonky PG binaries.
 ///
@@ -36,7 +37,7 @@ import 'bundle_builder.dart';
 /// runaway claims into actionable failures rather than CI hangs.
 class BinaryStore {
   /// Cache root, e.g. `~/Library/Caches/serverpod/pg-binaries`.
-  /// Each artifact installs under `<cacheRoot>/<bom>/<platform>/`.
+  /// Each artifact installs under `<cacheRoot>/<cacheKey>/<platform>/`.
   final Directory cacheRoot;
 
   /// HTTP client used for Maven fetches. Injectable for tests; the default
@@ -135,7 +136,7 @@ class BinaryStore {
   /// Install dir for [artifact] under this cache root. Read-only by
   /// convention - callers should not write into the returned directory.
   Directory installDirFor(BinaryArtifact artifact) =>
-      Directory(p.join(cacheRoot.path, artifact.bom, artifact.platform));
+      Directory(p.join(cacheRoot.path, artifact.cacheKey, artifact.platform));
 
   /// Path to the manifest written after a successful install. Presence of
   /// this file is the cache-hit predicate for [ensure].
@@ -149,7 +150,7 @@ class BinaryStore {
   File _claimFileFor(BinaryArtifact artifact) => File(
     p.join(
       cacheRoot.path,
-      '${artifact.bom}.${artifact.platform}.claim',
+      '${artifact.cacheKey}.${artifact.platform}.claim',
     ),
   );
 
@@ -213,7 +214,7 @@ class BinaryStore {
           case _LoserOutcome.timedOut:
             throw BinaryFetchException(
               'Timed out after ${_formatDuration(hardTimeout)} waiting for '
-              'another extractor of ${artifact.bom}/${artifact.platform}. '
+              'another extractor of ${artifact.cacheKey}/${artifact.platform}. '
               'Claim: ${claim.path} (${_describeClaimAge(claim)})',
             );
         }
@@ -307,7 +308,7 @@ class BinaryStore {
     var stagingDir = Directory(
       p.join(
         cacheRoot.path,
-        '${artifact.bom}.${artifact.platform}.staging.$pid.${_randomTag()}',
+        '${artifact.cacheKey}.${artifact.platform}.staging.$pid.${_randomTag()}',
       ),
     );
     stagingDir.createSync(recursive: true);
@@ -329,6 +330,11 @@ class BinaryStore {
         );
       }
 
+      // Artifact-specific identity check (e.g. the Serverpod bundle's
+      // embedded manifest) - a mislabeled archive must never be promoted
+      // into the cache, where it would satisfy every future lookup.
+      artifact.validateExtracted(stagingDir);
+
       // Move into place. Parent must exist; any prior install at the
       // canonical path is removed first (we hold the claim, so this is
       // safe - no concurrent reader could be inside it).
@@ -341,6 +347,7 @@ class BinaryStore {
       meta.writeAsStringSync(
         jsonEncode({
           'bom': artifact.bom,
+          'bundle_id': artifact.cacheKey,
           'platform': artifact.platform,
           'source_url': sourceLabel,
           'sha256': shaHex,
@@ -419,9 +426,15 @@ class BinaryStore {
         'no builder available to build ${artifact.archiveFileName}.',
       );
     }
+    if (artifact is! ServerpodBundleArtifact) {
+      throw BinaryBuildException(
+        'only Serverpod bundles can be built from source; '
+        '${artifact.archiveFileName} is download-only.',
+      );
+    }
     onProgress?.call(0.0, 'build');
     var file = await builder.build(
-      bom: artifact.bom,
+      spec: artifact.spec,
       platform: artifact.platform,
     );
     var bytes = await file.readAsBytes();

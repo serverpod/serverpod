@@ -10,6 +10,7 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 import 'binary/binary_source.dart';
 import 'binary/binary_store.dart';
 import 'binary/bundle_builder.dart';
+import 'binary/bundle_spec.dart';
 import 'binary/executable.dart';
 import 'binary/serverpod_bundle.dart';
 import 'cluster/cluster_store.dart';
@@ -189,7 +190,7 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
   }) async {
     var binaryStore = BinaryStore(cacheRoot: options.binaryCache);
     var artifact = ServerpodBundleArtifact.forCurrentPlatform(
-      version: options.version,
+      spec: bundleSpecFor(options.version),
     );
     Directory installDir;
     try {

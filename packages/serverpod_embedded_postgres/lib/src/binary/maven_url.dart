@@ -43,7 +43,7 @@ String platformSuffixForAbi(Abi abi) {
 ///
 /// Combines the inputs needed to fetch the JAR and verify it. Stateless;
 /// safe to share across calls.
-class ZonkyArtifact implements BinaryArtifact {
+class ZonkyArtifact extends BinaryArtifact {
   /// Major.minor.patch PG version (Zonky calls this the "BOM").
   final Version version;
 

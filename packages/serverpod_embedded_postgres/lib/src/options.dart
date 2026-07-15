@@ -38,6 +38,10 @@ class EmbeddedPostgresOptions {
 
   /// PostgreSQL major.minor.patch version. Defaults to
   /// [defaultPostgresVersion]; bump in lockstep with Serverpod Cloud.
+  ///
+  /// Must match a published Serverpod bundle - [EmbeddedPostgres.start]
+  /// throws [UnsupportedVersionException] (before any network access) for
+  /// versions without one.
   final Version version;
 
   /// Override the per-user binary cache root. Defaults to:

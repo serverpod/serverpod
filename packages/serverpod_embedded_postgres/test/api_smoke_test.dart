@@ -54,6 +54,7 @@ void main() {
           BinaryVerificationException() => 'verify',
           BinaryBuildException() => 'build',
           UnsupportedPlatformException() => 'platform',
+          UnsupportedVersionException() => 'version',
           InitdbException() => 'initdb',
           StartupTimeoutException() => 'timeout',
           CrashedException() => 'crashed',

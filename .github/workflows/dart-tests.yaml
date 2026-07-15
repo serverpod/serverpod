@@ -252,11 +252,11 @@ jobs:
 
   # Build the bundle ONCE per platform, and only if needed.
   # Then hand it to the embedded PG test jobs below (which `needs:` this) as an artifact
+  # The bundle identity (PG_BOM + BUNDLE_REVISION) comes from the canonical
+  # tool/build_postgres/versions.env, sourced per-step - not duplicated here.
   seed_embedded_pg:
     name: Seed embedded PG bundle (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
-    env:
-      PG_BOM: "16.13.0"
     strategy:
       fail-fast: false
       matrix:
@@ -287,10 +287,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RECIPE_HASH: ${{ steps.recipe.outputs.hash }}
         run: |
-          tag="embedded-postgres-v$PG_BOM"
+          . packages/serverpod_embedded_postgres/tool/build_postgres/versions.env
+          tag="embedded-postgres-v$PG_BOM-r$BUNDLE_REVISION"
           os="$(echo "${{ runner.os }}" | tr '[:upper:]' '[:lower:]')"
           arch="$(echo "${{ runner.arch }}" | tr '[:upper:]' '[:lower:]')"
-          asset="serverpod-postgres-$PG_BOM-$os-$arch.tar.xz"
+          asset="serverpod-postgres-$PG_BOM-r$BUNDLE_REVISION-$os-$arch.tar.xz"
           use=false
           if released="$(gh release view "$tag" --repo "$GITHUB_REPOSITORY" --json assets -q '.assets[].name' 2>/dev/null)"; then
             if echo "$released" | grep -qx "recipe.sha256" &&
@@ -326,6 +327,7 @@ jobs:
           SERVERPOD_PG_BUNDLE_REPO: ${{ github.repository }}
         working-directory: packages/serverpod_embedded_postgres
         run: |
+          . tool/build_postgres/versions.env
           dart pub get
           dart run serverpod_embedded_postgres:prefetch --version "$PG_BOM"
       - name: Set up build toolchain
@@ -339,6 +341,7 @@ jobs:
         timeout-minutes: 60
         working-directory: packages/serverpod_embedded_postgres
         run: |
+          . tool/build_postgres/versions.env
           dart pub get
           dart run serverpod_embedded_postgres:prefetch --version "$PG_BOM"
       - name: Build + seed bundle (Windows / MSYS2)
@@ -359,6 +362,7 @@ jobs:
           # resolves to System32\bash.exe (the WSL launcher), not MSYS2 bash.
           # Point the builder at THIS shell's bash explicitly (Windows path).
           export SERVERPOD_PG_BUILD_BASH="$(cygpath -w "$(command -v bash)")"
+          . tool/build_postgres/versions.env
           dart pub get
           rc=0
           dart run serverpod_embedded_postgres:prefetch --version "$PG_BOM" || rc=$?
