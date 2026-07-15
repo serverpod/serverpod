@@ -75,19 +75,7 @@ run_sql() {
   "$BIN/psql" -v ON_ERROR_STOP=1 -h "$SOCK" -p "$PORT" -U postgres -d postgres -X -q "$@"
 }
 
-echo "smoke: load extensions + write/read"
-run_sql <<'SQL'
-CREATE EXTENSION vector;
-CREATE EXTENSION postgis;
--- halfvec exercises pgvector's _Float16 code paths, which have miscompiled
--- on mingw before. Mirrors the serverpod test migration's shape.
-CREATE TABLE smoke_half (id int PRIMARY KEY, h halfvec(3));
-CREATE INDEX ON smoke_half USING hnsw (h halfvec_l2_ops);
-INSERT INTO smoke_half VALUES (1, '[1,2,3]'), (2, '[4,5,6]');
-SELECT id, h <-> '[1,2,4]' AS dist, l2_normalize(h) FROM smoke_half ORDER BY dist;
-CREATE TABLE smoke (id int PRIMARY KEY, v vector(3), g geometry(Point, 4326));
-INSERT INTO smoke VALUES (1, '[1,2,3]', ST_SetSRID(ST_MakePoint(1, 2), 4326));
-SELECT id, v <-> '[1,2,4]' AS dist, ST_AsText(g) AS pt, postgis_version() FROM smoke;
-SQL
+echo "smoke: load extensions + exercise the supported contract"
+run_sql < "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/smoke_bundle.sql"
 
 echo "smoke: OK -- $("$BIN/postgres" --version)"
