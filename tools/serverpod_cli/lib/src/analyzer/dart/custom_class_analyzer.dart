@@ -55,9 +55,9 @@ class CustomClassAnalyzer {
     var extraPathsSet = extraClasses
         .map((e) => e.sourcePath)
         .whereType<String>()
-        .map(p.absolute)
+        .map(p.canonicalize)
         .toSet();
-    var relevantPaths = affectedPaths.map(p.absolute).toSet();
+    var relevantPaths = affectedPaths.map(p.canonicalize).toSet();
 
     final errorsBefore = _fileCache.values.any((r) => r.hadErrors);
     final keysBefore = _fileCache.keys.toSet();
@@ -102,7 +102,7 @@ class CustomClassAnalyzer {
     for (var extraClass in extraClasses) {
       if (extraClass.sourcePath != null) {
         classesByPath
-            .putIfAbsent(p.absolute(extraClass.sourcePath!), () => [])
+            .putIfAbsent(p.canonicalize(extraClass.sourcePath!), () => [])
             .add(extraClass);
       }
     }
@@ -210,12 +210,12 @@ class CustomClassAnalyzer {
 
   /// Resolves a single file to a [ResolvedLibraryResult].
   Future<ResolvedLibraryResult?> _resolveLibrary(String filePath) async {
-    final normalizedFilePath = p.normalize(filePath);
-    final context = tryContextFor(collection, normalizedFilePath);
+    final canonicalFilePath = p.canonicalize(filePath);
+    final context = tryContextFor(collection, canonicalFilePath);
     if (context == null) return null;
 
     final result = await context.currentSession.getResolvedLibrary(
-      normalizedFilePath,
+      canonicalFilePath,
     );
 
     if (result is ResolvedLibraryResult) {
