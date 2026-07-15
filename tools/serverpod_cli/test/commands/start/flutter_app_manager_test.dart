@@ -4,7 +4,9 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/start/flutter_app_manager.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_log_event.dart';
 import 'package:serverpod_cli/src/config/flutter_app_config.dart';
+import 'package:serverpod_shared/log.dart' show LogLevel;
 import 'package:test/test.dart';
 
 import '../../test_util/file_system_entity_helpers.dart';
@@ -102,6 +104,7 @@ class _ManagerFixture {
     void Function(FlutterAppConfig app)? onStop,
     void Function(FlutterAppConfig app)? onLaunchFailed,
     void Function(FlutterAppConfig app)? onEnsureAppTab,
+    void Function(FlutterAppConfig app, FlutterLogEvent event)? onLog,
     IOSink Function(FlutterAppConfig app)? stdoutSinkFor,
     IOSink Function(FlutterAppConfig app)? stderrSinkFor,
   }) async {
@@ -148,6 +151,7 @@ $appEntries''');
       onStop: onStop ?? (_) {},
       onLaunchFailed: onLaunchFailed ?? (_) {},
       onEnsureAppTab: onEnsureAppTab ?? (_) {},
+      onLog: onLog ?? (_, _) {},
       stdoutSinkFor: stdoutSinkFor ?? (_) => stdout,
       stderrSinkFor: stderrSinkFor ?? (_) => stderr,
       flutterExecutableForTesting: shim == null ? null : _dartExecutable(),
@@ -545,14 +549,17 @@ void main() {
       late _ManagerFixture f;
       late Completer<FlutterAppConfig> launchFailed;
       late int readyCalls;
+      late List<(String, FlutterLogEvent)> logEvents;
 
       setUp(() async {
         readyCalls = 0;
+        logEvents = [];
         launchFailed = Completer<FlutterAppConfig>();
         f = await _ManagerFixture.create(
           shim: 'exits_during_build.dart',
           onReady: (_, _) => readyCalls++,
           onLaunchFailed: (app) => launchFailed.complete(app),
+          onLog: (app, event) => logEvents.add((app.id, event)),
         );
       });
 
@@ -573,6 +580,25 @@ void main() {
           expect(readyCalls, 0);
           expect(f.manager.isRunning('project'), isFalse);
           expect(f.manager.isLaunching('project'), isFalse);
+        },
+      );
+
+      test(
+        'when stderr is emitted then its typed log event keeps the app identity',
+        () async {
+          await f.manager.launch('project');
+          await launchFailed.future.timeout(const Duration(seconds: 30));
+
+          expect(logEvents, hasLength(1));
+          final (appId, event) = logEvents.single;
+          expect(appId, 'project');
+          expect(event.level, LogLevel.error);
+          expect(event.source, FlutterLogSource.processStderr);
+          expect(event.levelIsInferred, isTrue);
+          expect(
+            event.message,
+            'Error: unable to find asset declared in pubspec.yaml.',
+          );
         },
       );
     },

@@ -47,6 +47,7 @@ Future<ResolvedEmbeddedPostgres?> startOrAttachEmbeddedPostgres(
       dataDir: dataDir,
       databaseName: config.name,
       username: config.user,
+      transport: UnixTransport(initialPassword: config.password),
       detach: false,
       repairStaleLocks: true,
     ),

@@ -99,18 +99,6 @@ void main() {
       expect(state.expandStackTraces, isFalse);
     });
 
-    test(
-      'when e is pressed on an app log tab then traces do not toggle',
-      () async {
-        state.getOrCreateAppLogTab(appId: 'app', label: 'App');
-        state.tabs.focusedAreaIndex = 1;
-
-        await _sendKey(tester, LogicalKey.keyE);
-
-        expect(state.expandStackTraces, isFalse);
-      },
-    );
-
     test('when backtick is pressed then the raw server logs open', () async {
       expect(state.showRawServerLogs, isFalse);
 
@@ -130,6 +118,36 @@ void main() {
       await _sendKey(tester, LogicalKey.keyS);
       expect(state.showRawServerLogs, isFalse);
     });
+  });
+
+  group('Given a Flutter app log tab with a stack-traced error entry,', () {
+    setUp(() {
+      final appTab = state.getOrCreateAppLogTab(appId: 'app', label: 'App');
+      appTab.logHistory.add(
+        LogEntry(
+          time: DateTime(2026),
+          level: LogLevel.error,
+          message: 'Flutter framework error',
+          scope: LogScope.root('app'),
+          stackTrace: StackTrace.fromString('#0 a\n#1 b'),
+        ),
+      );
+      state.tabs.focusTab(appTab);
+    });
+
+    test(
+      'when e is pressed, '
+      'then the app stack traces expand and collapse.',
+      () async {
+        expect(state.expandStackTraces, isFalse);
+
+        await _sendKey(tester, LogicalKey.keyE);
+        expect(state.expandStackTraces, isTrue);
+
+        await _sendKey(tester, LogicalKey.keyE);
+        expect(state.expandStackTraces, isFalse);
+      },
+    );
   });
 
   group('Given the raw server logs overlay is open', () {

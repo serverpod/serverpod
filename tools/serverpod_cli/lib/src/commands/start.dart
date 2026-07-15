@@ -13,6 +13,7 @@ import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_app_manager.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_dependency_tracker.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_log_event.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_server.dart';
@@ -376,6 +377,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   IOSink Function(FlutterAppConfig app)? flutterStderrSinkFor,
   void Function(FlutterAppConfig app)? onEnsureFlutterAppTab,
   void Function(FlutterAppConfig app, String stage)? onFlutterProgress,
+  void Function(FlutterAppConfig app, FlutterLogEvent event)? onFlutterLog,
   void Function(FlutterAppConfig app, String? url)? onFlutterReady,
   void Function(FlutterAppConfig app)? onFlutterLaunchFailed,
   void Function(FlutterAppConfig app)? onFlutterStop,
@@ -596,6 +598,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     onStop: (app) => onFlutterStop?.call(app),
     onLaunchFailed: (app) => onFlutterLaunchFailed?.call(app),
     onEnsureAppTab: (app) => onEnsureFlutterAppTab?.call(app),
+    onLog: (app, event) => onFlutterLog?.call(app, event),
     stdoutSinkFor: (app) => flutterStdoutSinkFor?.call(app) ?? stdout,
     stderrSinkFor: (app) => flutterStderrSinkFor?.call(app) ?? stderr,
   );
@@ -1035,25 +1038,35 @@ Future<int> _runWithTui({
   }
 
   // Runs after the TUI tears down (alternate screen restored) but before the
-  // process exits. Restores the stdout logger and replays any captured crash
-  // so it survives in the user's scrollback - mirrors how `serverpod create`
+  // process exits. Replays any captured crash and server process errors
+  // so they survive in the user's scrollback - mirrors how `serverpod create`
   // flushes its errors to the terminal on exit.
-  Future<void> preExit() async {
+  Future<void> preExit(int exitCode) async {
+    var shouldFlushLogs = false;
+
     final crash = fatalCrash;
-    if (crash == null) return;
-    // Swap the TUI-backed logger (whose output went to the now-gone alternate
-    // screen) for a fresh stdout-backed one, so the replayed crash actually
-    // reaches the terminal.
-    await closeLogger();
-    initializeLogger();
-    printInternalError(crash.error, crash.stackTrace);
-    await log.flush();
+    if (crash != null) {
+      printInternalError(crash.error, crash.stackTrace);
+      shouldFlushLogs = true;
+    }
+
+    if (exitCode != 0 && _serverProcessErrorBuffer.isNotEmpty) {
+      log.error(_serverProcessErrorBuffer.toString());
+      shouldFlushLogs = true;
+    }
+
+    if (shouldFlushLogs) await log.flush();
   }
 
   // Wait for the backend's dispose to finish before calling shutdownTuiApp
   unawaited(
     shutdown.future.then((code) async {
       await backendFuture;
+      // Swap the TUI-backed logger (whose output went to the now-gone alternate
+      // screen) for a fresh stdout-backed one, so the replayed errors actually
+      // reach the terminal.
+      await closeLogger();
+      initializeLogger();
       shutdownTuiApp(code);
     }),
   );
@@ -1068,6 +1081,11 @@ Future<int> _runWithTui({
   // so shutdown.future is completed.
   return shutdown.future;
 }
+
+/// Buffer for errors from [ServerProcess] stderr
+/// which will be flushed to the terminal if the TUI
+/// exits with a non-zero exit code.
+final _serverProcessErrorBuffer = StringBuffer();
 
 /// Backend logic that runs after the TUI is mounted and ready.
 Future<void> _runTuiBackend({
@@ -1092,7 +1110,13 @@ Future<void> _runTuiBackend({
     final argsRef = ServerArgsRef(serverArgs);
 
     final stdoutSink = TuiLogSink(holder, addLine: holder.state.rawLines.add);
-    final stderrSink = TuiLogSink(holder, addLine: holder.state.rawLines.add);
+    final stderrSink = TuiLogSink(
+      holder,
+      addLine: (line) {
+        _serverProcessErrorBuffer.writeln(line);
+        holder.state.rawLines.add(line);
+      },
+    );
 
     final result = await _setupWatchLoop(
       config: config,
@@ -1109,12 +1133,14 @@ Future<void> _runTuiBackend({
       serverStderrSink: stderrSink,
       flutterStdoutSinkFor: (app) => TuiLogSink(
         holder,
-        addLine: (line) => holder.state.appLogTabFor(app.id)?.lines.add(line),
+        addLine: (line) => handleFlutterOutput(holder, app.id, line),
       ),
       flutterStderrSinkFor: (app) => TuiLogSink(
         holder,
-        addLine: (line) => holder.state.appLogTabFor(app.id)?.lines.add(line),
+        addLine: (line) => handleFlutterOutput(holder, app.id, line),
       ),
+      onFlutterLog: (app, event) =>
+          handleFlutterLogEvent(holder, app.id, event),
       onEnsureFlutterAppTab: (app) {
         final tab = holder.state.getOrCreateAppLogTab(
           appId: app.id,
@@ -1178,7 +1204,7 @@ Future<void> _runTuiBackend({
         if (vmService == null) return;
         await vmService.streamListen('Extension');
         vmService.onExtensionEvent.listen(
-          (event) => handleServerLogEvent(holder, event),
+          (event) => handleFlutterExtensionEvent(holder, app.id, event),
         );
       },
       onFlutterStop: (app) {

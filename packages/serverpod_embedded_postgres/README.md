@@ -57,10 +57,11 @@ directory already gates filesystem access to the socket. PG `chdir`s to
 cap regardless of how deep your project lives.
 
 **TCP loopback (`TcpTransport`).** scram-sha-256 against `127.0.0.1`,
-random 32-char password persisted to `<.serverpod>/postgres.password`
-for warm-restart consistency. `TcpTransport(port: 0)` (the default) gets
-an ephemeral port; explicit ports are honored. Port-race collision is
-retried up to 3 times before bubbling up.
+password via [TcpTransport.password] (Serverpod passes `config/passwords.yaml`
+`database` here) or a random dev credential when omitted. Persisted to
+`<.serverpod>/postgres.password` for warm-restart consistency. The default
+`TcpTransport(port: 0)` gets an ephemeral port; explicit ports are honored.
+Port-race collision is retried up to 3 times before bubbling up.
 
 ```dart
 // TCP variant:
@@ -75,6 +76,22 @@ final pg = await EmbeddedPostgres.start(
 print(pg.endpoint.port);     // some ephemeral port like 49152
 print(pg.endpoint.password); // random 32-char string
 ```
+
+## Connect with external tools
+
+From a Serverpod project configured with `database.dataPath`, run:
+
+```sh
+serverpod database start
+```
+
+The command reads `config/development.yaml` and `config/passwords.yaml`, starts
+the embedded database on the configured TCP port, and prints a connection URI
+for tools such as `psql`, DBeaver, and DataGrip. It keeps the database running
+until interrupted. Start it to connect manually to the database. If this command
+is run before the Serverpod server, it will attach to the database. Use `--mode`
+to select a different configuration or `--server-dir` to select a server
+project explicitly.
 
 ## Detach + attach for cross-VM dev DBs
 
@@ -148,7 +165,10 @@ The `Transport` sealed class has two variants:
 
 ```dart
 sealed class Transport { const Transport(); }
-final class UnixTransport extends Transport { const UnixTransport(); }
+final class UnixTransport extends Transport {
+  final String? initialPassword;
+  const UnixTransport({this.initialPassword});
+}
 final class TcpTransport extends Transport {
   final int port;          // 0 = ephemeral
   final String? password;  // null = generate random
