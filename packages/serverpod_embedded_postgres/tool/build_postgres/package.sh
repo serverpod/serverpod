@@ -209,21 +209,14 @@ esac
 tar $tar_opts -C "$STAGE" -cJf "$NAME.tar.xz" .
 
 # Inspect the finished ARTIFACT, not just the stage or the tar options: the
-# invariant is about what consumers download. Hardlink entries ('h' in
-# tar -tv) are forbidden everywhere; symlink entries ('l') are additionally
-# forbidden on Windows, whose consumers cannot create them.
-forbidden="$(tar -tvf "$NAME.tar.xz" | awk 'substr($0,1,1)=="h"')"
+# invariant is about what consumers download. Hardlink entries are forbidden
+# everywhere; symlink entries are additionally forbidden on Windows.
 case "$(uname -s)" in
   MINGW*|MSYS*|CYGWIN*)
-    win_links="$(tar -tvf "$NAME.tar.xz" | awk 'substr($0,1,1)=="l"')"
-    forbidden="$forbidden${win_links:+${forbidden:+
-}$win_links}"
+    bash "$HERE/assert-archive-links.sh" "$NAME.tar.xz" --forbid-symlinks
     ;;
+  *) bash "$HERE/assert-archive-links.sh" "$NAME.tar.xz" ;;
 esac
-[ -z "$forbidden" ] || {
-  echo "package: $NAME.tar.xz contains link entries the runtime cannot extract:" >&2
-  echo "$forbidden" >&2; exit 1;
-}
 ( command -v shasum >/dev/null && shasum -a 256 "$NAME.tar.xz" || sha256sum "$NAME.tar.xz" ) | awk '{print $1}' > "$NAME.tar.xz.sha256"
 echo "bundle: $NAME.tar.xz  $(du -h "$NAME.tar.xz" | awk '{print $1}')"
 echo "sha256: $(cat "$NAME.tar.xz.sha256")"

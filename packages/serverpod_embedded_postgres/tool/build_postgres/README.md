@@ -53,6 +53,7 @@ version explicitly: `export ZIG_VERSION=0.16.0` and `shim` will invoke
 | `build-postgis.sh` | PostGIS against core + deps |
 | `package.sh` | stage + relocate + `tar.xz` + sha256 |
 | `materialize-symlinks.sh` | Windows only: replace stage symlinks with real copies (or fail) |
+| `assert-archive-links.sh` | enforce the completed archive's hardlink/symlink policy |
 | `build-all.sh` | orchestrates all of the above |
 | `shim/` | the per-platform compiler wrapper (zig/clang/gcc - see below) |
 
@@ -71,10 +72,12 @@ on any entry the runtime's extractor cannot faithfully reproduce:
   extract without the `SeCreateSymbolicLink` privilege.
   `materialize-symlinks.sh` replaces every stage symlink with a real copy,
   resolving targets with normal link-relative semantics first and the mingw
-  PostGIS bundle-root-relative form (`./share/...`) second - both confined
-  to the stage, with no basename fallback - and fails the build on any link
-  it cannot materialize (shipping it would defer the failure to the user's
-  machine). macOS/Linux bundles keep their symlinks.
+  PostGIS bundle-root-relative form (`./share/...`) second. Parent-relative
+  targets are accepted when they remain inside the stage; absolute and
+  escaping targets are rejected. There is no basename or unrestricted
+  bundle-root fallback. The build fails on any link it cannot materialize
+  (shipping it would defer the failure to the user's machine). macOS/Linux
+  bundles keep their symlinks.
 
 ## The `shim` wrapper
 
