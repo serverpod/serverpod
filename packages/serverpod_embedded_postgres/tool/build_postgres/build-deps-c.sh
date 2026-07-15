@@ -2,6 +2,9 @@
 # Build the C dependencies of PostGIS as static libs into $DEPS, using zig cc.
 # (sqlite3 - needed by PROJ; libxml2 - GML/KML; json-c - GeoJSON)
 set -euo pipefail
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=versions.env
+. "$HERE/versions.env"
 B="${PGBUILD:-$HOME/pgzig}"; DEPS="$B/deps"; SRC="$B/src"; LOG="$B/logs"; mkdir -p "$LOG"
 WCC="$B/shim/cc"
 export PATH="$DEPS/bin:$PATH"
@@ -17,7 +20,7 @@ case "$(uname -s)" in
 esac
 
 echo "=== sqlite ($(date +%H:%M:%S)) ==="
-cd "$SRC/sqlite-autoconf-3470200"
+cd "$SRC/sqlite-autoconf-$SQLITE_AUTOCONF"
 make distclean >/dev/null 2>&1 || true
 CC="$WCC" ./configure --prefix="$DEPS" --disable-shared --enable-static >"$LOG/dep-sqlite.log" 2>&1
 make -j"$J" >>"$LOG/dep-sqlite.log" 2>&1
@@ -25,7 +28,7 @@ make install >>"$LOG/dep-sqlite.log" 2>&1
 echo "sqlite: $("$DEPS/bin/sqlite3" --version | awk '{print $1}')"
 
 echo "=== libxml2 ($(date +%H:%M:%S)) ==="
-cd "$SRC/libxml2-2.13.8"
+cd "$SRC/libxml2-$LIBXML2_VERSION"
 make distclean >/dev/null 2>&1 || true
 CC="$WCC" ./configure --prefix="$DEPS" --disable-shared --enable-static \
   --without-python --without-lzma --without-zlib --without-iconv >"$LOG/dep-libxml2.log" 2>&1
@@ -34,7 +37,7 @@ make install >>"$LOG/dep-libxml2.log" 2>&1
 echo "libxml2: $("$DEPS/bin/xml2-config" --version)"
 
 echo "=== json-c ($(date +%H:%M:%S)) ==="
-cd "$SRC/json-c-0.18"
+cd "$SRC/json-c-$JSONC_VERSION"
 rm -rf build && mkdir build && cd build
 cmake -G "Unix Makefiles" \
   -DCMAKE_INSTALL_PREFIX="$DEPS" \

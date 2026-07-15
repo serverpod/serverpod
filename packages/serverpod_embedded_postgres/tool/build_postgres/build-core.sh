@@ -1,11 +1,15 @@
 #!/usr/bin/env bash
-# Build postgres 16.13 core with zig as the C/C++ compiler (macOS host).
+# Build the postgres core (version from versions.env) with zig as the C/C++
+# compiler (macOS host).
 # Produces an install whose pg_config reports the zig wrapper as CC/CXX, so
 # downstream PGXS/PostGIS builds inherit it, and whose backend exports all its
 # globals (force-keep) so dlopen'd extensions resolve them at runtime.
 set -euo pipefail
 
-B="${PGBUILD:-$HOME/pgzig}"; SRC="$B/src/postgresql-16.13"; PREFIX="$B/out/pg"; LOG="$B/logs"; mkdir -p "$LOG"
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=versions.env
+. "$HERE/versions.env"
+B="${PGBUILD:-$HOME/pgzig}"; SRC="$B/src/postgresql-$PG_UPSTREAM_VERSION"; PREFIX="$B/out/pg"; LOG="$B/logs"; mkdir -p "$LOG"
 WCC="$B/shim/cc"; WCXX="$B/shim/cxx"
 J="$(getconf _NPROCESSORS_ONLN 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)"
 export CC="$WCC" CXX="$WCXX"

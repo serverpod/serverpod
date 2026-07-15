@@ -70,6 +70,13 @@ jobs:
           fi
           [ -n "$v" ] || v="$PG_BOM"
           [ -n "$r" ] || r="$BUNDLE_REVISION"
+          # The checked-out recipe can only build the spec it describes, so a
+          # tag or dispatch input naming anything else would produce a
+          # mislabeled bundle - reject it instead.
+          if [ "$v" != "$PG_BOM" ] || [ "$r" != "$BUNDLE_REVISION" ]; then
+            echo "::error::requested bundle $v-r$r does not match the canonical spec $PG_BOM-r$BUNDLE_REVISION (tool/build_postgres/versions.env) - update versions.env in the tagged commit instead"
+            exit 1
+          fi
           echo "value=$v" >> "$GITHUB_OUTPUT"
           echo "revision=$r" >> "$GITHUB_OUTPUT"
 

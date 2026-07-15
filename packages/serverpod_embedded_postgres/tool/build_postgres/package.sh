@@ -127,6 +127,35 @@ MINGW*|MSYS*|CYGWIN*)
   ;;
 esac
 
+# The bundle must BE what its name claims. Assert the packaged binaries' own
+# version strings against the declared identity, so a version bump that
+# missed a script, a stale build tree, or a mislabeled dispatch cannot ship a
+# wrongly-named bundle. (`postgres --version` prints and exits before the
+# win32 admin-token check, so this is safe on elevated CI runners too.)
+PGEXE="$STAGE/bin/postgres"; [ -x "$PGEXE" ] || PGEXE="$STAGE/bin/postgres.exe"
+actual_pg="$("$PGEXE" --version | awk '{print $NF}')"
+[ "$actual_pg" = "${VER%.*}" ] || {
+  echo "package: postgres reports $actual_pg but the bundle is labeled $VER" >&2; exit 1;
+}
+# The extension dir is share/extension or share/postgresql/extension depending
+# on whether the build prefix contains "postgres"/"pgsql" (PG's layout rule) -
+# find the control file instead of assuming.
+ctl_ver() {
+  local f
+  f="$(find "$STAGE/share" -type f -name "$1" 2>/dev/null | head -1)"
+  [ -n "$f" ] || { echo "package: $1 not found under $STAGE/share" >&2; return 1; }
+  sed -n "s/^default_version *= *'\(.*\)'.*/\1/p" "$f"
+}
+actual_vec="$(ctl_ver vector.control)"
+[ "$actual_vec" = "$PGVECTOR_VERSION" ] || {
+  echo "package: pgvector control reports ${actual_vec:-<none>}, spec says $PGVECTOR_VERSION" >&2; exit 1;
+}
+actual_gis="$(ctl_ver postgis.control)"
+[ "$actual_gis" = "$POSTGIS_VERSION" ] || {
+  echo "package: postgis control reports ${actual_gis:-<none>}, spec says $POSTGIS_VERSION" >&2; exit 1;
+}
+echo "package: identity OK (postgres $actual_pg, pgvector $actual_vec, postgis $actual_gis)"
+
 cd "$OUT"
 # Windows: PostGIS installs ~345 extension upgrade-SQL files as symlinks, and on
 # mingw their targets are bundle-root-relative (./share/...) - unresolvable from

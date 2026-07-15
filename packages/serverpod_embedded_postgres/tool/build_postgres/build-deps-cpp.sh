@@ -2,6 +2,9 @@
 # Build the C++ dependencies of PostGIS as static libs into $DEPS, using zig c++.
 # (GEOS - geometry engine; PROJ - projections, needs sqlite3 from build-deps-c.sh)
 set -euo pipefail
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=versions.env
+. "$HERE/versions.env"
 B="${PGBUILD:-$HOME/pgzig}"; DEPS="$B/deps"; SRC="$B/src"; LOG="$B/logs"; mkdir -p "$LOG"
 WCC="$B/shim/cc"; WCXX="$B/shim/cxx"
 export PATH="$DEPS/bin:$PATH"
@@ -39,8 +42,8 @@ case "$(uname -s)" in
     ;;
 esac
 
-echo "=== GEOS 3.13.0 ($(date +%H:%M:%S)) ==="
-cd "$SRC/geos-3.13.0"
+echo "=== GEOS $GEOS_VERSION ($(date +%H:%M:%S)) ==="
+cd "$SRC/geos-$GEOS_VERSION"
 rm -rf build && mkdir build && cd build
 cmake -G "Unix Makefiles" \
   -DCMAKE_INSTALL_PREFIX="$DEPS" \
@@ -52,8 +55,8 @@ make -j"$J" >>"$LOG/dep-geos.log" 2>&1
 make install >>"$LOG/dep-geos.log" 2>&1
 echo "geos: $("$DEPS/bin/geos-config" --version 2>/dev/null)"
 
-echo "=== PROJ 9.5.1 ($(date +%H:%M:%S)) ==="
-cd "$SRC/proj-9.5.1"
+echo "=== PROJ $PROJ_VERSION ($(date +%H:%M:%S)) ==="
+cd "$SRC/proj-$PROJ_VERSION"
 rm -rf build && mkdir build && cd build
 # CXXFLAGS carries PROJ_CXXFLAGS (mingw <cstdint> fix); empty/no-op elsewhere.
 CXXFLAGS="$PROJ_CXXFLAGS" cmake -G "Unix Makefiles" \

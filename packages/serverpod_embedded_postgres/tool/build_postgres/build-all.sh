@@ -11,6 +11,8 @@
 # ZIG_VERSION=0.16.0` to pin the validated version; leave unset for plain zig.
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=versions.env
+. "$HERE/versions.env"
 B="${PGBUILD:-$HOME/pgzig}"
 WCC="$B/shim/cc"
 PREFIX="$B/out/pg"
@@ -34,7 +36,7 @@ echo "### build-deps-c";   "$HERE/build-deps-c.sh"
 echo "### build-deps-cpp"; "$HERE/build-deps-cpp.sh"
 
 echo "### pgvector"
-cd "$B/src/pgvector-0.8.3"; make clean >/dev/null 2>&1 || true
+cd "$B/src/pgvector-$PGVECTOR_VERSION"; make clean >/dev/null 2>&1 || true
 # Portable, dispatch-free build (COPT=-DDISABLE_DISPATCH, OPTFLAGS="" => no
 # -march=native). pgvector's runtime SIMD dispatch otherwise (a) emits a non-GOT
 # __cpu_model relocation that lld rejects in our PIC build on Linux/glibc

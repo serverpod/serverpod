@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
-# Build PostGIS 3.5.4 against the zig-built postgres + the static dep chain.
+# Build PostGIS (version from versions.env) against the zig-built postgres +
+# the static dep chain.
 set -euo pipefail
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=versions.env
+. "$HERE/versions.env"
 B="${PGBUILD:-$HOME/pgzig}"; DEPS="$B/deps"; SRC="$B/src"; PREFIX="$B/out/pg"; LOG="$B/logs"; mkdir -p "$LOG"
 WCC="$B/shim/cc"; WCXX="$B/shim/cxx"
 export PATH="$DEPS/bin:$PREFIX/bin:$PATH"
 J="$(getconf _NPROCESSORS_ONLN 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)"
 
-cd "$SRC/postgis-3.5.4"
+cd "$SRC/postgis-$POSTGIS_VERSION"
 make distclean >/dev/null 2>&1 || true
 
 export CC="$WCC" CXX="$WCXX"
