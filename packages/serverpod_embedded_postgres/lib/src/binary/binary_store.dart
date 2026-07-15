@@ -399,10 +399,27 @@ class BinaryStore {
     // SHA and archive are independent fetches; run them in parallel to save one
     // RTT. The progress callback fires once each completes.
     onProgress?.call(0.0, 'download');
-    var fetches = await Future.wait([
-      _fetchSha256(artifact),
-      _downloadArchive(artifact),
-    ]);
+    late List<Object> fetches;
+    try {
+      fetches = await Future.wait([
+        _fetchSha256(artifact),
+        _downloadArchive(artifact),
+      ]);
+    } on BinaryFetchException catch (error) {
+      if (error.statusCode != 404 || artifact is! ServerpodBundleArtifact) {
+        rethrow;
+      }
+      throw BinaryFetchException(
+        'Prebuilt PostgreSQL bundle '
+        '${artifact.cacheKey}/${artifact.platform} is unavailable: the '
+        'release archive or its SHA-256 sidecar returned 404.\n'
+        'Expected archive: ${artifact.archiveUrl}\n'
+        'For an intentional development or CI source build, install the '
+        'native build toolchain and set SERVERPOD_PG_SOURCE=build '
+        '(or =auto to fall back only on 404).',
+        statusCode: 404,
+      );
+    }
     onProgress?.call(1.0, 'download');
     var expectedSha = fetches[0] as String;
     var bytes = fetches[1] as Uint8List;

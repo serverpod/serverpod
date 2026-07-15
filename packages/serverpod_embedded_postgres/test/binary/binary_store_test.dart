@@ -439,11 +439,17 @@ void main() {
             builder: const _MustNotBuildBuilder(),
           ),
           throwsA(
-            isA<BinaryFetchException>().having(
-              (e) => e.statusCode,
-              'statusCode',
-              404,
-            ),
+            isA<BinaryFetchException>()
+                .having((e) => e.statusCode, 'statusCode', 404)
+                .having(
+                  (e) => e.message,
+                  'message',
+                  allOf(
+                    contains('16.13.0-r1/linux-x64'),
+                    contains('archive or its SHA-256 sidecar returned 404'),
+                    contains('SERVERPOD_PG_SOURCE=build'),
+                  ),
+                ),
           ),
         );
 
