@@ -92,6 +92,62 @@ void main() {
       );
 
       test(
+        'when userToRemove is blocked, '
+        'then userToKeep becomes blocked.',
+        () async {
+          final userToKeep = await authUsers.create(session);
+          final userToRemove = await authUsers.create(
+            session,
+            blocked: true,
+          );
+
+          await session.db.transaction(
+            (final transaction) async =>
+                AccountMergeConfig.defaultCoreDataMergeHandler(
+                  session,
+                  userToKeepId: userToKeep.id,
+                  userToRemoveId: userToRemove.id,
+                  transaction: transaction,
+                ),
+          );
+
+          final updatedUserToKeep = await AuthUser.db.findById(
+            session,
+            userToKeep.id,
+          );
+          expect(updatedUserToKeep?.blocked, isTrue);
+        },
+      );
+
+      test(
+        'when userToKeep is blocked and userToRemove is not blocked, '
+        'then userToKeep remains blocked.',
+        () async {
+          final userToKeep = await authUsers.create(
+            session,
+            blocked: true,
+          );
+          final userToRemove = await authUsers.create(session);
+
+          await session.db.transaction(
+            (final transaction) async =>
+                AccountMergeConfig.defaultCoreDataMergeHandler(
+                  session,
+                  userToKeepId: userToKeep.id,
+                  userToRemoveId: userToRemove.id,
+                  transaction: transaction,
+                ),
+          );
+
+          final updatedUserToKeep = await AuthUser.db.findById(
+            session,
+            userToKeep.id,
+          );
+          expect(updatedUserToKeep?.blocked, isTrue);
+        },
+      );
+
+      test(
         'when userToRemove has refresh tokens, then they are moved to userToKeep.',
         () async {
           final userToKeep = await authUsers.create(session);

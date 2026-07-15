@@ -158,8 +158,13 @@ class AccountMergeConfig {
       ...userToKeep.scopeNames,
       ...userToRemove.scopeNames,
     };
-    if (combinedScopes.length > userToKeep.scopeNames.length) {
-      userToKeep = userToKeep.copyWith(scopeNames: combinedScopes);
+    final mergedBlocked = userToKeep.blocked || userToRemove.blocked;
+    if (combinedScopes.length > userToKeep.scopeNames.length ||
+        mergedBlocked != userToKeep.blocked) {
+      userToKeep = userToKeep.copyWith(
+        scopeNames: combinedScopes,
+        blocked: mergedBlocked,
+      );
       userToKeep = await AuthUser.db.updateRow(
         session,
         userToKeep,
