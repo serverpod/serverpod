@@ -20,7 +20,10 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 /// throws it). Clients can catch this to prompt the user to verify their
 /// email address.
 abstract class FirebaseEmailNotVerifiedException
-    implements _i1.SerializableException, _i1.SerializableModel {
+    implements
+        _i1.SerializableException,
+        _i1.SerializableModel,
+        _i1.ProtocolSerialization {
   FirebaseEmailNotVerifiedException._();
 
   factory FirebaseEmailNotVerifiedException() =
@@ -38,6 +41,13 @@ abstract class FirebaseEmailNotVerifiedException
   FirebaseEmailNotVerifiedException copyWith();
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_auth_idp.FirebaseEmailNotVerifiedException',
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_auth_idp.FirebaseEmailNotVerifiedException',
     };
