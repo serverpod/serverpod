@@ -28,6 +28,9 @@ class MainScreen extends StatelessComponent {
     this.onLaunchApp,
     this.onTabSelected,
     this.onQuit,
+    required this.onCopyAlert,
+    required this.onDismissAlert,
+    required this.onStopOrCloseAppTab,
   });
 
   final ServerWatchState state;
@@ -46,6 +49,15 @@ class MainScreen extends StatelessComponent {
   /// Invoked after a tab is selected via mouse click so the screen redraws.
   final VoidCallback? onTabSelected;
   final VoidCallback? onQuit;
+
+  /// Copies the pinned alert's segment (also bound to the `C` key).
+  final VoidCallback onCopyAlert;
+
+  /// Dismisses the pinned alert (also bound to `Esc`).
+  final VoidCallback onDismissAlert;
+
+  /// Stops the app or closes the tab for the given app tab (also bound to `X`).
+  final void Function(AppLogTab tab) onStopOrCloseAppTab;
 
   List<(String, List<(String, String)>)> get _helpBindings => [
     (
@@ -122,6 +134,9 @@ class MainScreen extends StatelessComponent {
                                       child: AlertLine(
                                         alert: alert,
                                         time: state.alertTime,
+                                        copied: state.alertCopied,
+                                        onCopy: onCopyAlert,
+                                        onDismiss: onDismissAlert,
                                       ),
                                     ),
                                   ],
@@ -512,21 +527,24 @@ class MainScreen extends StatelessComponent {
                   Text(labelSep, style: separatorStyle),
                   status,
                   Expanded(child: const SizedBox.shrink()),
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: 'X',
-                          style: TextStyle(
-                            color: st.activationKey,
-                            fontWeight: FontWeight.bold,
+                  GestureDetector(
+                    onTap: () => onStopOrCloseAppTab(tab),
+                    child: RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'X',
+                            style: TextStyle(
+                              color: st.activationKey,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        TextSpan(
-                          text: ' $xLabel',
-                          style: TextStyle(color: st.brightText),
-                        ),
-                      ],
+                          TextSpan(
+                            text: ' $xLabel',
+                            style: TextStyle(color: st.brightText),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],

@@ -15,7 +15,8 @@ import 'chat_message.dart' as _i2;
 import 'package:serverpod_chat_client/src/protocol/protocol.dart' as _i3;
 
 /// A chunk of chat messages.
-abstract class ChatMessageChunk implements _i1.SerializableModel {
+abstract class ChatMessageChunk
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ChatMessageChunk._({
     required this.channel,
     required this.messages,
@@ -63,6 +64,16 @@ abstract class ChatMessageChunk implements _i1.SerializableModel {
       '__className__': 'serverpod_chat.ChatMessageChunk',
       'channel': channel,
       'messages': messages.toJson(valueToJson: (v) => v.toJson()),
+      'hasOlderMessages': hasOlderMessages,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod_chat.ChatMessageChunk',
+      'channel': channel,
+      'messages': messages.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       'hasOlderMessages': hasOlderMessages,
     };
   }

@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Message to notify the server that messages have been read.
-abstract class ChatReadMessage implements _i1.SerializableModel {
+abstract class ChatReadMessage
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ChatReadMessage._({
     this.id,
     required this.channel,
@@ -62,6 +63,17 @@ abstract class ChatReadMessage implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_chat.ChatReadMessage',
+      if (id != null) 'id': id,
+      'channel': channel,
+      'userId': userId,
+      'lastReadMessageId': lastReadMessageId,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_chat.ChatReadMessage',
       if (id != null) 'id': id,

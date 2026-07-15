@@ -13,7 +13,8 @@
 import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 import 'package:serverpod_database/serverpod_database.dart' as _i2;
 
-abstract class DatabaseMigration implements _i1.SerializableModel {
+abstract class DatabaseMigration
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   DatabaseMigration._({
     required this.actions,
     required this.warnings,
@@ -58,6 +59,16 @@ abstract class DatabaseMigration implements _i1.SerializableModel {
       '__className__': 'serverpod.DatabaseMigration',
       'actions': actions.toJson(valueToJson: (v) => v.toJson()),
       'warnings': warnings.toJson(valueToJson: (v) => v.toJson()),
+      'migrationApiVersion': migrationApiVersion,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod.DatabaseMigration',
+      'actions': actions.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'warnings': warnings.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       'migrationApiVersion': migrationApiVersion,
     };
   }

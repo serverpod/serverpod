@@ -13,7 +13,8 @@
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import 'package:serverpod_client/serverpod_client.dart' as _i2;
 
-abstract class EmptyModelWithTable implements _i1.TableRow<int?> {
+abstract class EmptyModelWithTable
+    implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   EmptyModelWithTable._({this.id});
 
   factory EmptyModelWithTable({int? id}) = _EmptyModelWithTableImpl;
@@ -38,6 +39,14 @@ abstract class EmptyModelWithTable implements _i1.TableRow<int?> {
   EmptyModelWithTable copyWith({int? id});
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'EmptyModelWithTable',
+      if (id != null) 'id': id,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'EmptyModelWithTable',
       if (id != null) 'id': id,

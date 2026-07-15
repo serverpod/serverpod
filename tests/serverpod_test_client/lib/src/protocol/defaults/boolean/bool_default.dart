@@ -12,7 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class BoolDefault implements _i1.SerializableModel {
+abstract class BoolDefault
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   BoolDefault._({
     this.id,
     bool? boolDefaultTrue,
@@ -72,6 +73,18 @@ abstract class BoolDefault implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'BoolDefault',
+      if (id != null) 'id': id,
+      'boolDefaultTrue': boolDefaultTrue,
+      'boolDefaultFalse': boolDefaultFalse,
+      if (boolDefaultNullFalse != null)
+        'boolDefaultNullFalse': boolDefaultNullFalse,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'BoolDefault',
       if (id != null) 'id': id,

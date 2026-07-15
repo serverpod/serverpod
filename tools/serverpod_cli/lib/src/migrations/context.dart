@@ -14,12 +14,6 @@ class MigrationGenerationContext {
 
   final List<SerializableModelDefinition> modelDefinitions;
 
-  bool get hasClientDatabaseTables => modelDefinitions.any(
-    (definition) =>
-        definition is ModelClassDefinition &&
-        definition.shouldGenerateTableCode(false),
-  );
-
   static Future<MigrationGenerationContext> load(GeneratorConfig config) async {
     final libDirectory = Directory(p.joinAll(config.libSourcePathParts));
 

@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Just some simple data.
-abstract class SimpleDateTime implements _i1.SerializableModel {
+abstract class SimpleDateTime
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   SimpleDateTime._({
     this.id,
     required this.dateTime,
@@ -50,6 +51,15 @@ abstract class SimpleDateTime implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'SimpleDateTime',
+      if (id != null) 'id': id,
+      'dateTime': dateTime.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'SimpleDateTime',
       if (id != null) 'id': id,

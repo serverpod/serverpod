@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i2;
 
-abstract class ObjectWithNullableCustomClass implements _i1.SerializableModel {
+abstract class ObjectWithNullableCustomClass
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ObjectWithNullableCustomClass._({
     this.nullableCustomClassWithoutProtocolSerialization,
     this.nullableCustomClassWithProtocolSerialization,
@@ -99,6 +100,54 @@ abstract class ObjectWithNullableCustomClass implements _i1.SerializableModel {
         'nullableCustomClassWithProtocolSerializationMethod':
             nullableCustomClassWithProtocolSerializationMethod?.toJson(),
       'nonNullableCustomClass': nonNullableCustomClass.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'ObjectWithNullableCustomClass',
+      if (nullableCustomClassWithoutProtocolSerialization != null)
+        'nullableCustomClassWithoutProtocolSerialization':
+            // ignore: unnecessary_type_check
+            nullableCustomClassWithoutProtocolSerialization
+                is _i1.ProtocolSerialization
+            ? (nullableCustomClassWithoutProtocolSerialization
+                      as _i1.ProtocolSerialization)
+                  .toJsonForProtocol()
+            :
+              // ignore: dead_code
+              nullableCustomClassWithoutProtocolSerialization?.toJson(),
+      if (nullableCustomClassWithProtocolSerialization != null)
+        'nullableCustomClassWithProtocolSerialization':
+            // ignore: unnecessary_type_check
+            nullableCustomClassWithProtocolSerialization
+                is _i1.ProtocolSerialization
+            ? (nullableCustomClassWithProtocolSerialization
+                      as _i1.ProtocolSerialization)
+                  .toJsonForProtocol()
+            :
+              // ignore: dead_code
+              nullableCustomClassWithProtocolSerialization?.toJson(),
+      if (nullableCustomClassWithProtocolSerializationMethod != null)
+        'nullableCustomClassWithProtocolSerializationMethod':
+            // ignore: unnecessary_type_check
+            nullableCustomClassWithProtocolSerializationMethod
+                is _i1.ProtocolSerialization
+            ? (nullableCustomClassWithProtocolSerializationMethod
+                      as _i1.ProtocolSerialization)
+                  .toJsonForProtocol()
+            :
+              // ignore: dead_code
+              nullableCustomClassWithProtocolSerializationMethod?.toJson(),
+      'nonNullableCustomClass':
+          // ignore: unnecessary_type_check
+          nonNullableCustomClass is _i1.ProtocolSerialization
+          ? (nonNullableCustomClass as _i1.ProtocolSerialization)
+                .toJsonForProtocol()
+          :
+            // ignore: dead_code
+            nonNullableCustomClass.toJson(),
     };
   }
 

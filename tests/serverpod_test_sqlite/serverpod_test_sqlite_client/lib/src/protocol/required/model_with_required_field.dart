@@ -13,7 +13,8 @@
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import 'package:serverpod_client/serverpod_client.dart' as _i2;
 
-abstract class ModelWithRequiredField implements _i1.TableRow<int?> {
+abstract class ModelWithRequiredField
+    implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   ModelWithRequiredField._({
     this.id,
     required this.name,
@@ -66,6 +67,17 @@ abstract class ModelWithRequiredField implements _i1.TableRow<int?> {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'ModelWithRequiredField',
+      if (id != null) 'id': id,
+      'name': name,
+      if (email != null) 'email': email,
+      if (phone != null) 'phone': phone,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ModelWithRequiredField',
       if (id != null) 'id': id,

@@ -27,7 +27,8 @@ import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 ///
 /// The two relations are declared with explicit `field=` foreign keys so the FK
 /// column names stay short (the long names only affect the relation aliases).
-abstract class BleedRoot implements _i1.SerializableModel {
+abstract class BleedRoot
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   BleedRoot._({
     this.id,
     required this.name,
@@ -109,6 +110,25 @@ abstract class BleedRoot implements _i1.SerializableModel {
       if (childRelationWithExtremelyLongFieldNameForcingTrun23 != null)
         'childRelationWithExtremelyLongFieldNameForcingTrun23':
             childRelationWithExtremelyLongFieldNameForcingTrun23?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'BleedRoot',
+      if (id != null) 'id': id,
+      'name': name,
+      if (firstChildId != null) 'firstChildId': firstChildId,
+      if (childRelationWithExtremelyLongFieldNameForcingTrun24 != null)
+        'childRelationWithExtremelyLongFieldNameForcingTrun24':
+            childRelationWithExtremelyLongFieldNameForcingTrun24
+                ?.toJsonForProtocol(),
+      if (secondChildId != null) 'secondChildId': secondChildId,
+      if (childRelationWithExtremelyLongFieldNameForcingTrun23 != null)
+        'childRelationWithExtremelyLongFieldNameForcingTrun23':
+            childRelationWithExtremelyLongFieldNameForcingTrun23
+                ?.toJsonForProtocol(),
     };
   }
 

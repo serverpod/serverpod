@@ -17,7 +17,10 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 /// This is a generic exception that does not expose any details regarding the
 /// cause of the failure to avoid leaking information to potential attackers.
 abstract class GoogleIdTokenVerificationException
-    implements _i1.SerializableException, _i1.SerializableModel {
+    implements
+        _i1.SerializableException,
+        _i1.SerializableModel,
+        _i1.ProtocolSerialization {
   GoogleIdTokenVerificationException._();
 
   factory GoogleIdTokenVerificationException() =
@@ -35,6 +38,13 @@ abstract class GoogleIdTokenVerificationException
   GoogleIdTokenVerificationException copyWith();
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_auth_idp.GoogleIdTokenVerificationException',
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_auth_idp.GoogleIdTokenVerificationException',
     };

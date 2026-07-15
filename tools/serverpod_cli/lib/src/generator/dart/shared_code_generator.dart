@@ -43,7 +43,7 @@ class DartSharedCodeGenerator extends CodeGenerator {
         var code = generator
             .generateModelLibrary(entry.model)
             .generateCode(allocator: entry.allocator)
-            .replaceAll(serverpodProtocolUrl(false), serverpodSerializationUrl);
+            .replaceServerpodUrls();
         result[path] = code;
       }
     }
@@ -100,12 +100,35 @@ class DartSharedCodeGenerator extends CodeGenerator {
         'src',
         'generated',
         'protocol.dart',
-      ])] = sharedClassGenerator.generateProtocol().generateCode().replaceAll(
-        serverpodProtocolUrl(false),
-        serverpodSerializationUrl,
-      );
+      ])] = sharedClassGenerator
+          .generateProtocol()
+          .generateCode()
+          .replaceServerpodUrls();
     }
 
     return result;
+  }
+}
+
+extension on String {
+  /// Replace all serverpod URLs with the corresponding package URLs that holds
+  /// the Classes exported by the serverpod package. Applying the replacement
+  /// here prevents having to transform all `serverCode` bool parameters into
+  /// an enum to account for shared packages as well. The ideal solution is to
+  /// refactor the code generator to avoid plumbing this parameter to several
+  /// calls as we currently do.
+  String replaceServerpodUrls() {
+    return replaceAll(
+          serverpodProtocolUrl(false),
+          serverpodSerializationUrl,
+        )
+        .replaceAll(
+          serverpodUrl(false),
+          serverpodDatabaseUrl(false),
+        )
+        .replaceAll(
+          serverpodServiceClientUrl(false),
+          serverpodDatabaseUrl(false),
+        );
   }
 }

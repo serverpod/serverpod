@@ -17,7 +17,7 @@ import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
 /// A class that holds child objects defined in a module.
 abstract class ModulePolymorphicChildContainer
-    implements _i1.SerializableModel {
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ModulePolymorphicChildContainer._({
     required this.moduleObject,
     required this.moduleObjectList,
@@ -67,6 +67,18 @@ abstract class ModulePolymorphicChildContainer
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'ModulePolymorphicChildContainer',
+      'moduleObject': moduleObject.toJson(),
+      'moduleObjectList': moduleObjectList.toJson(
+        valueToJson: (v) => v.toJson(),
+      ),
+      'moduleObjectMap': moduleObjectMap.toJson(valueToJson: (v) => v.toJson()),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ModulePolymorphicChildContainer',
       'moduleObject': moduleObject.toJson(),

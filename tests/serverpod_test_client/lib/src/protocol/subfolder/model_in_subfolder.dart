@@ -17,7 +17,8 @@ import 'package:serverpod_test_module_client/serverpod_test_module_client.dart'
     as _i4;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i5;
 
-abstract class ModelInSubfolder implements _i1.SerializableModel {
+abstract class ModelInSubfolder
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ModelInSubfolder._({
     this.classField,
     this.enumField,
@@ -156,6 +157,45 @@ abstract class ModelInSubfolder implements _i1.SerializableModel {
     return {
       '__className__': 'ModelInSubfolder',
       if (classField != null) 'classField': classField?.toJson(),
+      if (enumField != null) 'enumField': enumField?.toJson(),
+      if (enumListField != null)
+        'enumListField': enumListField?.toJson(valueToJson: (v) => v.toJson()),
+      if (enumRecordField != null)
+        'enumRecordField': _i5.Protocol().mapRecordToJson(enumRecordField),
+      if (enumRecordListField != null)
+        'enumRecordListField': _i5.Protocol().mapContainerToJson(
+          enumRecordListField!,
+        ),
+      if (moduleClassRecordField != null)
+        'moduleClassRecordField': _i5.Protocol().mapRecordToJson(
+          moduleClassRecordField,
+        ),
+      if (classRecordField != null)
+        'classRecordField': _i5.Protocol().mapRecordToJson(classRecordField),
+      if (enumNamedRecordField != null)
+        'enumNamedRecordField': _i5.Protocol().mapRecordToJson(
+          enumNamedRecordField,
+        ),
+      if (enumNamedRecordListField != null)
+        'enumNamedRecordListField': _i5.Protocol().mapContainerToJson(
+          enumNamedRecordListField!,
+        ),
+      if (moduleClassNamedRecordField != null)
+        'moduleClassNamedRecordField': _i5.Protocol().mapRecordToJson(
+          moduleClassNamedRecordField,
+        ),
+      if (classNamedRecordField != null)
+        'classNamedRecordField': _i5.Protocol().mapRecordToJson(
+          classNamedRecordField,
+        ),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'ModelInSubfolder',
+      if (classField != null) 'classField': classField?.toJsonForProtocol(),
       if (enumField != null) 'enumField': enumField?.toJson(),
       if (enumListField != null)
         'enumListField': enumListField?.toJson(valueToJson: (v) => v.toJson()),

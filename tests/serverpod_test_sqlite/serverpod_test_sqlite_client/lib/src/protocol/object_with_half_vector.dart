@@ -12,7 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class ObjectWithHalfVector implements _i1.SerializableModel {
+abstract class ObjectWithHalfVector
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ObjectWithHalfVector._({
     this.id,
     required this.halfVector,
@@ -92,6 +93,23 @@ abstract class ObjectWithHalfVector implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'ObjectWithHalfVector',
+      if (id != null) 'id': id,
+      'halfVector': halfVector.toJson(),
+      if (halfVectorNullable != null)
+        'halfVectorNullable': halfVectorNullable?.toJson(),
+      'halfVectorIndexedHnsw': halfVectorIndexedHnsw.toJson(),
+      'halfVectorIndexedHnswWithParams': halfVectorIndexedHnswWithParams
+          .toJson(),
+      'halfVectorIndexedIvfflat': halfVectorIndexedIvfflat.toJson(),
+      'halfVectorIndexedIvfflatWithParams': halfVectorIndexedIvfflatWithParams
+          .toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ObjectWithHalfVector',
       if (id != null) 'id': id,

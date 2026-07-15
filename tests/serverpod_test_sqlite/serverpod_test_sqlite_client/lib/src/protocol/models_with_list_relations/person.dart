@@ -12,11 +12,11 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
-import '../models_with_list_relations/organization.dart' as _i2;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
-import 'package:serverpod_client/serverpod_client.dart' as _i4;
+import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import '../models_with_list_relations/organization.dart' as _i3;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
 
-abstract class Person implements _i1.TableRow<int?> {
+abstract class Person implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   Person._({
     this.id,
     required this.name,
@@ -28,7 +28,7 @@ abstract class Person implements _i1.TableRow<int?> {
     int? id,
     required String name,
     int? organizationId,
-    _i2.Organization? organization,
+    _i3.Organization? organization,
   }) = _PersonImpl;
 
   factory Person.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -38,7 +38,7 @@ abstract class Person implements _i1.TableRow<int?> {
       organizationId: jsonSerialization['organizationId'] as int?,
       organization: jsonSerialization['organization'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.Organization>(
+          : _i4.Protocol().deserialize<_i3.Organization>(
               jsonSerialization['organization'],
             ),
       $_cityCitizensCityId: jsonSerialization['_cityCitizensCityId'] as int?,
@@ -56,7 +56,7 @@ abstract class Person implements _i1.TableRow<int?> {
 
   int? organizationId;
 
-  _i2.Organization? organization;
+  _i3.Organization? organization;
 
   final int? _cityCitizensCityId;
 
@@ -65,12 +65,12 @@ abstract class Person implements _i1.TableRow<int?> {
 
   /// Returns a shallow copy of this [Person]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   Person copyWith({
     int? id,
     String? name,
     int? organizationId,
-    _i2.Organization? organization,
+    _i3.Organization? organization,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -85,7 +85,19 @@ abstract class Person implements _i1.TableRow<int?> {
     };
   }
 
-  static PersonInclude include({_i2.OrganizationInclude? organization}) {
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Person',
+      if (id != null) 'id': id,
+      'name': name,
+      if (organizationId != null) 'organizationId': organizationId,
+      if (organization != null)
+        'organization': organization?.toJsonForProtocol(),
+    };
+  }
+
+  static PersonInclude include({_i3.OrganizationInclude? organization}) {
     return PersonInclude._(organization: organization);
   }
 
@@ -113,7 +125,7 @@ abstract class Person implements _i1.TableRow<int?> {
 
   @override
   String toString() {
-    return _i4.SerializationManager.encode(this);
+    return _i2.SerializationManager.encode(this);
   }
 }
 
@@ -124,7 +136,7 @@ class _PersonImpl extends Person {
     int? id,
     required String name,
     int? organizationId,
-    _i2.Organization? organization,
+    _i3.Organization? organization,
   }) : super._(
          id: id,
          name: name,
@@ -134,7 +146,7 @@ class _PersonImpl extends Person {
 
   /// Returns a shallow copy of this [Person]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   @override
   Person copyWith({
     Object? id = _Undefined,
@@ -148,7 +160,7 @@ class _PersonImpl extends Person {
       organizationId: organizationId is int?
           ? organizationId
           : this.organizationId,
-      organization: organization is _i2.Organization?
+      organization: organization is _i3.Organization?
           ? organization
           : this.organization?.copyWith(),
       $_cityCitizensCityId: this._cityCitizensCityId,
@@ -161,7 +173,7 @@ class PersonImplicit extends _PersonImpl {
     int? id,
     required String name,
     int? organizationId,
-    _i2.Organization? organization,
+    _i3.Organization? organization,
     int? $_cityCitizensCityId,
   }) : _cityCitizensCityId = $_cityCitizensCityId,
        super(
@@ -230,19 +242,19 @@ class PersonTable extends _i1.Table<int?> {
 
   late final _i1.ColumnInt organizationId;
 
-  _i2.OrganizationTable? _organization;
+  _i3.OrganizationTable? _organization;
 
   late final _i1.ColumnInt $_cityCitizensCityId;
 
-  _i2.OrganizationTable get organization {
+  _i3.OrganizationTable get organization {
     if (_organization != null) return _organization!;
     _organization = _i1.createRelationTable(
       relationFieldName: 'organization',
       field: Person.t.organizationId,
-      foreignField: _i2.Organization.t.id,
+      foreignField: _i3.Organization.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.OrganizationTable(tableRelation: foreignTableRelation),
+          _i3.OrganizationTable(tableRelation: foreignTableRelation),
     );
     return _organization!;
   }
@@ -272,11 +284,11 @@ class PersonTable extends _i1.Table<int?> {
 }
 
 class PersonInclude extends _i1.IncludeObject {
-  PersonInclude._({_i2.OrganizationInclude? organization}) {
+  PersonInclude._({_i3.OrganizationInclude? organization}) {
     _organization = organization;
   }
 
-  _i2.OrganizationInclude? _organization;
+  _i3.OrganizationInclude? _organization;
 
   @override
   Map<String, _i1.Include?> get includes => {'organization': _organization};
@@ -739,7 +751,7 @@ class PersonAttachRowRepository {
   Future<void> organization(
     _i1.DatabaseSession session,
     Person person,
-    _i2.Organization organization, {
+    _i3.Organization organization, {
     _i1.Transaction? transaction,
   }) async {
     if (person.id == null) {

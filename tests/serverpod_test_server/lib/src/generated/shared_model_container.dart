@@ -322,48 +322,57 @@ abstract class SharedModelContainer
     return {
       '__className__': 'SharedModelContainer',
       if (id != null) 'id': id,
-      'sharedModel': sharedModel.toJson(),
-      'sharedModelWithModuleAlias': sharedModelWithModuleAlias.toJson(),
+      'sharedModel': sharedModel.toJsonForProtocol(),
+      'sharedModelWithModuleAlias': sharedModelWithModuleAlias
+          .toJsonForProtocol(),
       if (sharedModelNullable != null)
-        'sharedModelNullable': sharedModelNullable?.toJson(),
+        'sharedModelNullable': sharedModelNullable?.toJsonForProtocol(),
       if (nonPersistedSharedModel != null)
-        'nonPersistedSharedModel': nonPersistedSharedModel?.toJson(),
-      'sharedSubclass': sharedSubclass.toJson(),
+        'nonPersistedSharedModel': nonPersistedSharedModel?.toJsonForProtocol(),
+      'sharedSubclass': sharedSubclass.toJsonForProtocol(),
       if (sharedSubclassNullable != null)
-        'sharedSubclassNullable': sharedSubclassNullable?.toJson(),
+        'sharedSubclassNullable': sharedSubclassNullable?.toJsonForProtocol(),
       'sharedEnum': sharedEnum.toJson(),
       if (sharedEnumNullable != null)
         'sharedEnumNullable': sharedEnumNullable?.toJson(),
-      'sharedSealedParent': sharedSealedParent.toJson(),
+      'sharedSealedParent': sharedSealedParent.toJsonForProtocol(),
       if (sharedSealedParentNullable != null)
-        'sharedSealedParentNullable': sharedSealedParentNullable?.toJson(),
-      'sharedSealedChild': sharedSealedChild.toJson(),
+        'sharedSealedParentNullable': sharedSealedParentNullable
+            ?.toJsonForProtocol(),
+      'sharedSealedChild': sharedSealedChild.toJsonForProtocol(),
       if (sharedSealedChildNullable != null)
-        'sharedSealedChildNullable': sharedSealedChildNullable?.toJson(),
+        'sharedSealedChildNullable': sharedSealedChildNullable
+            ?.toJsonForProtocol(),
       'sharedModelSubclass': sharedModelSubclass.toJsonForProtocol(),
       if (sharedModelSubclassNullable != null)
         'sharedModelSubclassNullable': sharedModelSubclassNullable
             ?.toJsonForProtocol(),
-      'sharedModelList': sharedModelList.toJson(valueToJson: (v) => v.toJson()),
+      'sharedModelList': sharedModelList.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
       'sharedModelNullableList': sharedModelNullableList.toJson(
-        valueToJson: (v) => v?.toJson(),
+        valueToJson: (v) => v?.toJsonForProtocol(),
       ),
       if (sharedModelListNullable != null)
         'sharedModelListNullable': sharedModelListNullable?.toJson(
-          valueToJson: (v) => v.toJson(),
+          valueToJson: (v) => v.toJsonForProtocol(),
         ),
-      'sharedModelMap': sharedModelMap.toJson(valueToJson: (v) => v.toJson()),
+      'sharedModelMap': sharedModelMap.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
       if (sharedModelMapNullable != null)
         'sharedModelMapNullable': sharedModelMapNullable?.toJson(
-          valueToJson: (v) => v.toJson(),
+          valueToJson: (v) => v.toJsonForProtocol(),
         ),
       'sharedSubclassMap': sharedSubclassMap.toJson(
-        valueToJson: (v) => v.toJson(),
+        valueToJson: (v) => v.toJsonForProtocol(),
       ),
-      'sharedModelSet': sharedModelSet.toJson(valueToJson: (v) => v.toJson()),
+      'sharedModelSet': sharedModelSet.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
       if (sharedModelSetNullable != null)
         'sharedModelSetNullable': sharedModelSetNullable?.toJson(
-          valueToJson: (v) => v.toJson(),
+          valueToJson: (v) => v.toJsonForProtocol(),
         ),
     };
   }

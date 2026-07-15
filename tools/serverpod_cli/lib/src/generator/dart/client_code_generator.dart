@@ -61,7 +61,7 @@ class DartClientCodeGenerator extends CodeGenerator {
       p.joinAll([...config.generatedDartClientModelPathParts, 'client.dart']):
           clientClassGenerator.generateClientEndpointCalls().generateCode(),
     };
-    if (_hasClientDatabaseTables(protocolDefinition) &&
+    if (protocolDefinition.models.hasHostClientDatabaseTables &&
         config.type != PackageType.module) {
       files[p.joinAll([
         ...config.clientPackagePathParts,
@@ -72,11 +72,5 @@ class DartClientCodeGenerator extends CodeGenerator {
           .emitPlaceholderRegistry();
     }
     return files;
-  }
-
-  bool _hasClientDatabaseTables(ProtocolDefinition protocolDefinition) {
-    return protocolDefinition.models.any(
-      (m) => m is ModelClassDefinition && m.shouldGenerateTableCode(false),
-    );
   }
 }

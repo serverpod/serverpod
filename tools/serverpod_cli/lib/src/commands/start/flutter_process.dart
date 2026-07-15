@@ -53,9 +53,13 @@ class FlutterProcess {
   final VmServiceProxy? _flutterProxy;
 
   /// Fires `'launching'` on spawn, `'connecting'` before VM-service
-  /// connect, `'ready'` on `app.started`, plus verbatim `app.progress`
-  /// messages in between.
+  /// connect, plus verbatim `app.progress` messages in between.
   final void Function(String stage)? _onProgress;
+
+  /// Fires on the daemon's `app.started` event, i.e. the app is fully up
+  /// on its device. This is the only launch-complete signal on non-web
+  /// devices, which never publish an `app.webLaunchUrl`.
+  final void Function()? _onStarted;
 
   /// When true, open [flutterAppUrl] in the default browser once it is
   /// published by the daemon (`app.webLaunchUrl`).
@@ -103,6 +107,7 @@ class FlutterProcess {
     List<String> extraArgs = const [],
     VmServiceProxy? flutterProxy,
     void Function(String stage)? onProgress,
+    void Function()? onStarted,
     IOSink? stdoutSink,
     IOSink? stderrSink,
     List<String>? machineArgsOverride,
@@ -114,6 +119,7 @@ class FlutterProcess {
        _extraArgs = extraArgs,
        _flutterProxy = flutterProxy,
        _onProgress = onProgress,
+       _onStarted = onStarted,
        _stdout = stdoutSink ?? stdout,
        _stderr = stderrSink ?? stderr,
        _launchBrowser = device == flutterDeviceWebServerWithBrowser,
@@ -549,7 +555,7 @@ class FlutterProcess {
             _onProgress?.call(message);
           }
         case 'app.started':
-          _onProgress?.call('ready');
+          _onStarted?.call();
         case 'app.stop':
           log.debug('Flutter daemon emitted app.stop; tearing down.');
           unawaited(_onAppStop());

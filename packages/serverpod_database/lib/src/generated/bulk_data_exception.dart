@@ -13,7 +13,10 @@
 import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 
 abstract class BulkDataException
-    implements _i1.SerializableException, _i1.SerializableModel {
+    implements
+        _i1.SerializableException,
+        _i1.SerializableModel,
+        _i1.ProtocolSerialization {
   BulkDataException._({
     required this.message,
     this.query,
@@ -44,6 +47,15 @@ abstract class BulkDataException
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod.BulkDataException',
+      'message': message,
+      if (query != null) 'query': query,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod.BulkDataException',
       'message': message,

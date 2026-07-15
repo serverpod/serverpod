@@ -111,12 +111,10 @@ class StartCommand extends ServerpodCommand<StartOption> {
   final name = 'start';
 
   @override
-  bool get hidden => true;
-
-  @override
   final description =
-      'EXPERIMENTAL! Generate code and start the server. '
-      'Use --watch to watch for changes and hot reload.';
+      'Start the full development stack with hot reload: generates code, '
+      'runs the server, and launches the companion Flutter apps in an '
+      'interactive terminal UI.';
 
   @override
   String get invocation => 'serverpod start [-- <server-args>]';
@@ -378,7 +376,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   IOSink Function(FlutterAppConfig app)? flutterStderrSinkFor,
   void Function(FlutterAppConfig app)? onEnsureFlutterAppTab,
   void Function(FlutterAppConfig app, String stage)? onFlutterProgress,
-  void Function(FlutterAppConfig app, String url)? onFlutterReady,
+  void Function(FlutterAppConfig app, String? url)? onFlutterReady,
   void Function(FlutterAppConfig app)? onFlutterLaunchFailed,
   void Function(FlutterAppConfig app)? onFlutterStop,
   Future<void> Function(ServerProcess server)? onServerStart,
@@ -1037,25 +1035,35 @@ Future<int> _runWithTui({
   }
 
   // Runs after the TUI tears down (alternate screen restored) but before the
-  // process exits. Restores the stdout logger and replays any captured crash
-  // so it survives in the user's scrollback - mirrors how `serverpod create`
+  // process exits. Replays any captured crash and server process errors
+  // so they survive in the user's scrollback - mirrors how `serverpod create`
   // flushes its errors to the terminal on exit.
-  Future<void> preExit() async {
+  Future<void> preExit(int exitCode) async {
+    var shouldFlushLogs = false;
+
     final crash = fatalCrash;
-    if (crash == null) return;
-    // Swap the TUI-backed logger (whose output went to the now-gone alternate
-    // screen) for a fresh stdout-backed one, so the replayed crash actually
-    // reaches the terminal.
-    await closeLogger();
-    initializeLogger();
-    printInternalError(crash.error, crash.stackTrace);
-    await log.flush();
+    if (crash != null) {
+      printInternalError(crash.error, crash.stackTrace);
+      shouldFlushLogs = true;
+    }
+
+    if (exitCode != 0 && _serverProcessErrorBuffer.isNotEmpty) {
+      log.error(_serverProcessErrorBuffer.toString());
+      shouldFlushLogs = true;
+    }
+
+    if (shouldFlushLogs) await log.flush();
   }
 
   // Wait for the backend's dispose to finish before calling shutdownTuiApp
   unawaited(
     shutdown.future.then((code) async {
       await backendFuture;
+      // Swap the TUI-backed logger (whose output went to the now-gone alternate
+      // screen) for a fresh stdout-backed one, so the replayed errors actually
+      // reach the terminal.
+      await closeLogger();
+      initializeLogger();
       shutdownTuiApp(code);
     }),
   );
@@ -1070,6 +1078,11 @@ Future<int> _runWithTui({
   // so shutdown.future is completed.
   return shutdown.future;
 }
+
+/// Buffer for errors from [ServerProcess] stderr
+/// which will be flushed to the terminal if the TUI
+/// exits with a non-zero exit code.
+final _serverProcessErrorBuffer = StringBuffer();
 
 /// Backend logic that runs after the TUI is mounted and ready.
 Future<void> _runTuiBackend({
@@ -1094,7 +1107,13 @@ Future<void> _runTuiBackend({
     final argsRef = ServerArgsRef(serverArgs);
 
     final stdoutSink = TuiLogSink(holder, addLine: holder.state.rawLines.add);
-    final stderrSink = TuiLogSink(holder, addLine: holder.state.rawLines.add);
+    final stderrSink = TuiLogSink(
+      holder,
+      addLine: (line) {
+        _serverProcessErrorBuffer.writeln(line);
+        holder.state.rawLines.add(line);
+      },
+    );
 
     final result = await _setupWatchLoop(
       config: config,
@@ -1144,6 +1163,8 @@ Future<void> _runTuiBackend({
       onFlutterReady: (app, url) {
         final tab = holder.state.appLogTabFor(app.id);
         if (tab != null) {
+          // Null on non-web devices, which publish no URL; the status line
+          // then falls back to its generic running label.
           tab.url = url;
           tab.ready = true;
           tab.stopped = false;

@@ -14,7 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'simple_data.dart' as _i2;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
-abstract class ObjectWithObject implements _i1.SerializableModel {
+abstract class ObjectWithObject
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ObjectWithObject._({
     this.id,
     required this.data,
@@ -159,6 +160,48 @@ abstract class ObjectWithObject implements _i1.SerializableModel {
       if (nestedDataMap != null)
         'nestedDataMap': nestedDataMap?.toJson(
           valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson()),
+        ),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'ObjectWithObject',
+      if (id != null) 'id': id,
+      'data': data.toJsonForProtocol(),
+      if (nullableData != null)
+        'nullableData': nullableData?.toJsonForProtocol(),
+      'dataList': dataList.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      if (nullableDataList != null)
+        'nullableDataList': nullableDataList?.toJson(
+          valueToJson: (v) => v.toJsonForProtocol(),
+        ),
+      'listWithNullableData': listWithNullableData.toJson(
+        valueToJson: (v) => v?.toJsonForProtocol(),
+      ),
+      if (nullableListWithNullableData != null)
+        'nullableListWithNullableData': nullableListWithNullableData?.toJson(
+          valueToJson: (v) => v?.toJsonForProtocol(),
+        ),
+      if (nestedDataList != null)
+        'nestedDataList': nestedDataList?.toJson(
+          valueToJson: (v) =>
+              v.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+        ),
+      if (nestedDataListInMap != null)
+        'nestedDataListInMap': nestedDataListInMap?.toJson(
+          valueToJson: (v) => v.toJson(
+            valueToJson: (v) => v?.toJson(
+              valueToJson: (v) =>
+                  v.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+            ),
+          ),
+        ),
+      if (nestedDataMap != null)
+        'nestedDataMap': nestedDataMap?.toJson(
+          valueToJson: (v) =>
+              v.toJson(valueToJson: (v) => v.toJsonForProtocol()),
         ),
     };
   }

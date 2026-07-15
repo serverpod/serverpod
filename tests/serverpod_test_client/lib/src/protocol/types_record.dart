@@ -17,7 +17,8 @@ import 'test_enum_stringified.dart' as _i4;
 import 'simple_data.dart' as _i5;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i6;
 
-abstract class TypesRecord implements _i1.SerializableModel {
+abstract class TypesRecord
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   TypesRecord._({
     this.anInt,
     this.aBool,
@@ -254,6 +255,44 @@ abstract class TypesRecord implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'TypesRecord',
+      if (anInt != null) 'anInt': _i6.Protocol().mapRecordToJson(anInt),
+      if (aBool != null) 'aBool': _i6.Protocol().mapRecordToJson(aBool),
+      if (aDouble != null) 'aDouble': _i6.Protocol().mapRecordToJson(aDouble),
+      if (aDateTime != null)
+        'aDateTime': _i6.Protocol().mapRecordToJson(aDateTime),
+      if (aString != null) 'aString': _i6.Protocol().mapRecordToJson(aString),
+      if (aByteData != null)
+        'aByteData': _i6.Protocol().mapRecordToJson(aByteData),
+      if (aDuration != null)
+        'aDuration': _i6.Protocol().mapRecordToJson(aDuration),
+      if (aUuid != null) 'aUuid': _i6.Protocol().mapRecordToJson(aUuid),
+      if (aUri != null) 'aUri': _i6.Protocol().mapRecordToJson(aUri),
+      if (aBigInt != null) 'aBigInt': _i6.Protocol().mapRecordToJson(aBigInt),
+      if (anEnum != null) 'anEnum': _i6.Protocol().mapRecordToJson(anEnum),
+      if (aStringifiedEnum != null)
+        'aStringifiedEnum': _i6.Protocol().mapRecordToJson(aStringifiedEnum),
+      if (aList != null) 'aList': _i6.Protocol().mapRecordToJson(aList),
+      if (aMap != null) 'aMap': _i6.Protocol().mapRecordToJson(aMap),
+      if (aSet != null) 'aSet': _i6.Protocol().mapRecordToJson(aSet),
+      if (aSimpleData != null)
+        'aSimpleData': _i6.Protocol().mapRecordToJson(aSimpleData),
+      if (aNamedModel != null)
+        'aNamedModel': _i6.Protocol().mapRecordToJson(aNamedModel),
+      if (aPositionalAndNamedModel != null)
+        'aPositionalAndNamedModel': _i6.Protocol().mapRecordToJson(
+          aPositionalAndNamedModel,
+        ),
+      if (aNestedRecord != null)
+        'aNestedRecord': _i6.Protocol().mapRecordToJson(aNestedRecord),
+      if (aNestedContainers != null)
+        'aNestedContainers': _i6.Protocol().mapRecordToJson(aNestedContainers),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'TypesRecord',
       if (anInt != null) 'anInt': _i6.Protocol().mapRecordToJson(anInt),

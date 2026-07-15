@@ -205,6 +205,44 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
     }
   }
 
+  /// Stops [tab]'s app while it is running or launching - the tab stays so its
+  /// marker flips to stopped and it can be relaunched - and once stopped closes
+  /// the tab, refocusing the last remaining app tab. Bound to the `X` key and
+  /// the clickable `X Stop App`/`X Close Tab` status-line hint. Returns whether
+  /// it acted, so the key handler can fall through when the tab is in neither
+  /// state.
+  bool _stopOrCloseAppTab(AppLogTab tab) {
+    final state = component.holder.state;
+    final appId = tab.appId;
+    final running = state.isAppRunning?.call(appId) ?? false;
+    final launching = state.isAppLaunching?.call(appId) ?? false;
+
+    if (running || launching) {
+      final index = state.launchableApps.indexWhere((a) => a.id == appId);
+      if (index < 0) return false;
+      onStopApp?.call(index);
+      _rebuild();
+      return true;
+    }
+
+    if (tab.stopped) {
+      state.removeAppLogTab(appId);
+      final lastTab = state.appsTabArea?.tabs.whereType<AppLogTab>().lastOrNull;
+      if (lastTab == null) {
+        state.launchPanelIndex = 0;
+      } else {
+        state.tabs.focusTab(lastTab);
+        state.launchPanelIndex = state.launchableApps.indexWhere(
+          (a) => a.id == lastTab.appId,
+        );
+      }
+      _rebuild();
+      return true;
+    }
+
+    return false;
+  }
+
   @override
   void onExit() {
     final quit = onQuit;
@@ -250,6 +288,9 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
           },
           onLaunchApp: _launchApp,
           onQuit: onQuit,
+          onCopyAlert: copyAlert,
+          onDismissAlert: dismissAlert,
+          onStopOrCloseAppTab: _stopOrCloseAppTab,
         ),
       ),
     );
@@ -274,38 +315,11 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
       return true;
     }
 
-    // 'x' acts on the active Flutter app tab: while the app is running (or
-    // launching) it stops the app - the tab stays so its marker flips to
-    // stopped and it can be relaunched - and once stopped it closes the tab.
+    // 'x' acts on the active Flutter app tab.
     if (event.logicalKey == LogicalKey.keyX) {
-      final appsArea = state.appsTabArea;
-      final activeTab = appsArea?.selected;
-      if (activeTab is AppLogTab) {
-        final appId = activeTab.appId;
-        final running = state.isAppRunning?.call(appId) ?? false;
-        final launching = state.isAppLaunching?.call(appId) ?? false;
-
-        if (running || launching) {
-          final index = state.launchableApps.indexWhere((a) => a.id == appId);
-          if (index >= 0) {
-            onStopApp?.call(index);
-            _rebuild();
-            return true;
-          }
-        } else if (activeTab.stopped) {
-          state.removeAppLogTab(appId);
-          final lastTab = appsArea?.tabs.whereType<AppLogTab>().lastOrNull;
-          if (lastTab == null) {
-            state.launchPanelIndex = 0;
-          } else {
-            state.tabs.focusTab(lastTab);
-            state.launchPanelIndex = state.launchableApps.indexWhere(
-              (a) => a.id == lastTab.appId,
-            );
-          }
-          _rebuild();
-          return true;
-        }
+      final activeTab = state.appsTabArea?.selected;
+      if (activeTab is AppLogTab && _stopOrCloseAppTab(activeTab)) {
+        return true;
       }
     }
 

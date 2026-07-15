@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_test_module_client/src/protocol/protocol.dart' as _i2;
 
-abstract class DynamicOnModule implements _i1.SerializableModel {
+abstract class DynamicOnModule
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   DynamicOnModule._({
     required this.name,
     required this.data,
@@ -50,6 +51,18 @@ abstract class DynamicOnModule implements _i1.SerializableModel {
       '__className__': 'serverpod_test_module.DynamicOnModule',
       'name': name,
       'data': _i2.Protocol().dynamicFieldToJson(data),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod_test_module.DynamicOnModule',
+      'name': name,
+      'data': _i2.Protocol().dynamicFieldToJson(
+        data,
+        forProtocol: true,
+      ),
     };
   }
 

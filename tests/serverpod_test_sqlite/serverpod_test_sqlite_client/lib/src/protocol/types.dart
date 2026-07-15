@@ -11,13 +11,13 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
-import 'dart:typed_data' as _i2;
-import 'package:serverpod_client/serverpod_client.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import 'dart:typed_data' as _i3;
 import 'test_enum.dart' as _i4;
 import 'test_enum_stringified.dart' as _i5;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i6;
 
-abstract class Types implements _i1.TableRow<int?> {
+abstract class Types implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   Types._({
     this.id,
     this.anInt,
@@ -53,19 +53,19 @@ abstract class Types implements _i1.TableRow<int?> {
     double? aDouble,
     DateTime? aDateTime,
     String? aString,
-    _i2.ByteData? aByteData,
+    _i3.ByteData? aByteData,
     Duration? aDuration,
-    _i3.UuidValue? aUuid,
+    _i2.UuidValue? aUuid,
     Uri? aUri,
     BigInt? aBigInt,
-    _i3.Vector? aVector,
-    _i3.HalfVector? aHalfVector,
-    _i3.SparseVector? aSparseVector,
-    _i3.Bit? aBit,
-    _i3.GeographyPoint? aGeographyPoint,
-    _i3.GeographyLineString? aGeographyLineString,
-    _i3.GeographyPolygon? aGeographyPolygon,
-    _i3.GeographyGeometryCollection? aGeographyGeometryCollection,
+    _i2.Vector? aVector,
+    _i2.HalfVector? aHalfVector,
+    _i2.SparseVector? aSparseVector,
+    _i2.Bit? aBit,
+    _i2.GeographyPoint? aGeographyPoint,
+    _i2.GeographyLineString? aGeographyLineString,
+    _i2.GeographyPolygon? aGeographyPolygon,
+    _i2.GeographyGeometryCollection? aGeographyGeometryCollection,
     _i4.TestEnum? anEnum,
     _i5.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
@@ -80,62 +80,62 @@ abstract class Types implements _i1.TableRow<int?> {
       anInt: jsonSerialization['anInt'] as int?,
       aBool: jsonSerialization['aBool'] == null
           ? null
-          : _i3.BoolJsonExtension.fromJson(jsonSerialization['aBool']),
+          : _i2.BoolJsonExtension.fromJson(jsonSerialization['aBool']),
       aDouble: (jsonSerialization['aDouble'] as num?)?.toDouble(),
       aDateTime: jsonSerialization['aDateTime'] == null
           ? null
-          : _i3.DateTimeJsonExtension.fromJson(jsonSerialization['aDateTime']),
+          : _i2.DateTimeJsonExtension.fromJson(jsonSerialization['aDateTime']),
       aString: jsonSerialization['aString'] as String?,
       aByteData: jsonSerialization['aByteData'] == null
           ? null
-          : _i3.ByteDataJsonExtension.fromJson(jsonSerialization['aByteData']),
+          : _i2.ByteDataJsonExtension.fromJson(jsonSerialization['aByteData']),
       aDuration: jsonSerialization['aDuration'] == null
           ? null
-          : _i3.DurationJsonExtension.fromJson(jsonSerialization['aDuration']),
+          : _i2.DurationJsonExtension.fromJson(jsonSerialization['aDuration']),
       aUuid: jsonSerialization['aUuid'] == null
           ? null
-          : _i3.UuidValueJsonExtension.fromJson(jsonSerialization['aUuid']),
+          : _i2.UuidValueJsonExtension.fromJson(jsonSerialization['aUuid']),
       aUri: jsonSerialization['aUri'] == null
           ? null
-          : _i3.UriJsonExtension.fromJson(jsonSerialization['aUri']),
+          : _i2.UriJsonExtension.fromJson(jsonSerialization['aUri']),
       aBigInt: jsonSerialization['aBigInt'] == null
           ? null
-          : _i3.BigIntJsonExtension.fromJson(jsonSerialization['aBigInt']),
+          : _i2.BigIntJsonExtension.fromJson(jsonSerialization['aBigInt']),
       aVector: jsonSerialization['aVector'] == null
           ? null
-          : _i3.VectorJsonExtension.fromJson(jsonSerialization['aVector']),
+          : _i2.VectorJsonExtension.fromJson(jsonSerialization['aVector']),
       aHalfVector: jsonSerialization['aHalfVector'] == null
           ? null
-          : _i3.HalfVectorJsonExtension.fromJson(
+          : _i2.HalfVectorJsonExtension.fromJson(
               jsonSerialization['aHalfVector'],
             ),
       aSparseVector: jsonSerialization['aSparseVector'] == null
           ? null
-          : _i3.SparseVectorJsonExtension.fromJson(
+          : _i2.SparseVectorJsonExtension.fromJson(
               jsonSerialization['aSparseVector'],
             ),
       aBit: jsonSerialization['aBit'] == null
           ? null
-          : _i3.BitJsonExtension.fromJson(jsonSerialization['aBit']),
+          : _i2.BitJsonExtension.fromJson(jsonSerialization['aBit']),
       aGeographyPoint: jsonSerialization['aGeographyPoint'] == null
           ? null
-          : _i3.GeographyPointJsonExtension.fromJson(
+          : _i2.GeographyPointJsonExtension.fromJson(
               jsonSerialization['aGeographyPoint'],
             ),
       aGeographyLineString: jsonSerialization['aGeographyLineString'] == null
           ? null
-          : _i3.GeographyLineStringJsonExtension.fromJson(
+          : _i2.GeographyLineStringJsonExtension.fromJson(
               jsonSerialization['aGeographyLineString'],
             ),
       aGeographyPolygon: jsonSerialization['aGeographyPolygon'] == null
           ? null
-          : _i3.GeographyPolygonJsonExtension.fromJson(
+          : _i2.GeographyPolygonJsonExtension.fromJson(
               jsonSerialization['aGeographyPolygon'],
             ),
       aGeographyGeometryCollection:
           jsonSerialization['aGeographyGeometryCollection'] == null
           ? null
-          : _i3.GeographyGeometryCollectionJsonExtension.fromJson(
+          : _i2.GeographyGeometryCollectionJsonExtension.fromJson(
               jsonSerialization['aGeographyGeometryCollection'],
             ),
       anEnum: jsonSerialization['anEnum'] == null
@@ -182,31 +182,31 @@ abstract class Types implements _i1.TableRow<int?> {
 
   String? aString;
 
-  _i2.ByteData? aByteData;
+  _i3.ByteData? aByteData;
 
   Duration? aDuration;
 
-  _i3.UuidValue? aUuid;
+  _i2.UuidValue? aUuid;
 
   Uri? aUri;
 
   BigInt? aBigInt;
 
-  _i3.Vector? aVector;
+  _i2.Vector? aVector;
 
-  _i3.HalfVector? aHalfVector;
+  _i2.HalfVector? aHalfVector;
 
-  _i3.SparseVector? aSparseVector;
+  _i2.SparseVector? aSparseVector;
 
-  _i3.Bit? aBit;
+  _i2.Bit? aBit;
 
-  _i3.GeographyPoint? aGeographyPoint;
+  _i2.GeographyPoint? aGeographyPoint;
 
-  _i3.GeographyLineString? aGeographyLineString;
+  _i2.GeographyLineString? aGeographyLineString;
 
-  _i3.GeographyPolygon? aGeographyPolygon;
+  _i2.GeographyPolygon? aGeographyPolygon;
 
-  _i3.GeographyGeometryCollection? aGeographyGeometryCollection;
+  _i2.GeographyGeometryCollection? aGeographyGeometryCollection;
 
   _i4.TestEnum? anEnum;
 
@@ -225,7 +225,7 @@ abstract class Types implements _i1.TableRow<int?> {
 
   /// Returns a shallow copy of this [Types]
   /// with some or all fields replaced by the given arguments.
-  @_i3.useResult
+  @_i2.useResult
   Types copyWith({
     int? id,
     int? anInt,
@@ -233,19 +233,19 @@ abstract class Types implements _i1.TableRow<int?> {
     double? aDouble,
     DateTime? aDateTime,
     String? aString,
-    _i2.ByteData? aByteData,
+    _i3.ByteData? aByteData,
     Duration? aDuration,
-    _i3.UuidValue? aUuid,
+    _i2.UuidValue? aUuid,
     Uri? aUri,
     BigInt? aBigInt,
-    _i3.Vector? aVector,
-    _i3.HalfVector? aHalfVector,
-    _i3.SparseVector? aSparseVector,
-    _i3.Bit? aBit,
-    _i3.GeographyPoint? aGeographyPoint,
-    _i3.GeographyLineString? aGeographyLineString,
-    _i3.GeographyPolygon? aGeographyPolygon,
-    _i3.GeographyGeometryCollection? aGeographyGeometryCollection,
+    _i2.Vector? aVector,
+    _i2.HalfVector? aHalfVector,
+    _i2.SparseVector? aSparseVector,
+    _i2.Bit? aBit,
+    _i2.GeographyPoint? aGeographyPoint,
+    _i2.GeographyLineString? aGeographyLineString,
+    _i2.GeographyPolygon? aGeographyPolygon,
+    _i2.GeographyGeometryCollection? aGeographyGeometryCollection,
     _i4.TestEnum? anEnum,
     _i5.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
@@ -255,6 +255,42 @@ abstract class Types implements _i1.TableRow<int?> {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'Types',
+      if (id != null) 'id': id,
+      if (anInt != null) 'anInt': anInt,
+      if (aBool != null) 'aBool': aBool,
+      if (aDouble != null) 'aDouble': aDouble,
+      if (aDateTime != null) 'aDateTime': aDateTime?.toJson(),
+      if (aString != null) 'aString': aString,
+      if (aByteData != null) 'aByteData': aByteData?.toJson(),
+      if (aDuration != null) 'aDuration': aDuration?.toJson(),
+      if (aUuid != null) 'aUuid': aUuid?.toJson(),
+      if (aUri != null) 'aUri': aUri?.toJson(),
+      if (aBigInt != null) 'aBigInt': aBigInt?.toJson(),
+      if (aVector != null) 'aVector': aVector?.toJson(),
+      if (aHalfVector != null) 'aHalfVector': aHalfVector?.toJson(),
+      if (aSparseVector != null) 'aSparseVector': aSparseVector?.toJson(),
+      if (aBit != null) 'aBit': aBit?.toJson(),
+      if (aGeographyPoint != null) 'aGeographyPoint': aGeographyPoint?.toJson(),
+      if (aGeographyLineString != null)
+        'aGeographyLineString': aGeographyLineString?.toJson(),
+      if (aGeographyPolygon != null)
+        'aGeographyPolygon': aGeographyPolygon?.toJson(),
+      if (aGeographyGeometryCollection != null)
+        'aGeographyGeometryCollection': aGeographyGeometryCollection?.toJson(),
+      if (anEnum != null) 'anEnum': anEnum?.toJson(),
+      if (aStringifiedEnum != null)
+        'aStringifiedEnum': aStringifiedEnum?.toJson(),
+      if (aList != null) 'aList': aList?.toJson(),
+      if (aMap != null) 'aMap': aMap?.toJson(),
+      if (aSet != null) 'aSet': aSet?.toJson(),
+      if (aRecord != null) 'aRecord': _i6.Protocol().mapRecordToJson(aRecord),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'Types',
       if (id != null) 'id': id,
@@ -317,7 +353,7 @@ abstract class Types implements _i1.TableRow<int?> {
 
   @override
   String toString() {
-    return _i3.SerializationManager.encode(this);
+    return _i2.SerializationManager.encode(this);
   }
 }
 
@@ -331,19 +367,19 @@ class _TypesImpl extends Types {
     double? aDouble,
     DateTime? aDateTime,
     String? aString,
-    _i2.ByteData? aByteData,
+    _i3.ByteData? aByteData,
     Duration? aDuration,
-    _i3.UuidValue? aUuid,
+    _i2.UuidValue? aUuid,
     Uri? aUri,
     BigInt? aBigInt,
-    _i3.Vector? aVector,
-    _i3.HalfVector? aHalfVector,
-    _i3.SparseVector? aSparseVector,
-    _i3.Bit? aBit,
-    _i3.GeographyPoint? aGeographyPoint,
-    _i3.GeographyLineString? aGeographyLineString,
-    _i3.GeographyPolygon? aGeographyPolygon,
-    _i3.GeographyGeometryCollection? aGeographyGeometryCollection,
+    _i2.Vector? aVector,
+    _i2.HalfVector? aHalfVector,
+    _i2.SparseVector? aSparseVector,
+    _i2.Bit? aBit,
+    _i2.GeographyPoint? aGeographyPoint,
+    _i2.GeographyLineString? aGeographyLineString,
+    _i2.GeographyPolygon? aGeographyPolygon,
+    _i2.GeographyGeometryCollection? aGeographyGeometryCollection,
     _i4.TestEnum? anEnum,
     _i5.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
@@ -380,7 +416,7 @@ class _TypesImpl extends Types {
 
   /// Returns a shallow copy of this [Types]
   /// with some or all fields replaced by the given arguments.
-  @_i3.useResult
+  @_i2.useResult
   @override
   Types copyWith({
     Object? id = _Undefined,
@@ -416,32 +452,32 @@ class _TypesImpl extends Types {
       aDouble: aDouble is double? ? aDouble : this.aDouble,
       aDateTime: aDateTime is DateTime? ? aDateTime : this.aDateTime,
       aString: aString is String? ? aString : this.aString,
-      aByteData: aByteData is _i2.ByteData?
+      aByteData: aByteData is _i3.ByteData?
           ? aByteData
           : this.aByteData?.clone(),
       aDuration: aDuration is Duration? ? aDuration : this.aDuration,
-      aUuid: aUuid is _i3.UuidValue? ? aUuid : this.aUuid,
+      aUuid: aUuid is _i2.UuidValue? ? aUuid : this.aUuid,
       aUri: aUri is Uri? ? aUri : this.aUri,
       aBigInt: aBigInt is BigInt? ? aBigInt : this.aBigInt,
-      aVector: aVector is _i3.Vector? ? aVector : this.aVector?.clone(),
-      aHalfVector: aHalfVector is _i3.HalfVector?
+      aVector: aVector is _i2.Vector? ? aVector : this.aVector?.clone(),
+      aHalfVector: aHalfVector is _i2.HalfVector?
           ? aHalfVector
           : this.aHalfVector?.clone(),
-      aSparseVector: aSparseVector is _i3.SparseVector?
+      aSparseVector: aSparseVector is _i2.SparseVector?
           ? aSparseVector
           : this.aSparseVector?.clone(),
-      aBit: aBit is _i3.Bit? ? aBit : this.aBit?.clone(),
-      aGeographyPoint: aGeographyPoint is _i3.GeographyPoint?
+      aBit: aBit is _i2.Bit? ? aBit : this.aBit?.clone(),
+      aGeographyPoint: aGeographyPoint is _i2.GeographyPoint?
           ? aGeographyPoint
           : this.aGeographyPoint,
-      aGeographyLineString: aGeographyLineString is _i3.GeographyLineString?
+      aGeographyLineString: aGeographyLineString is _i2.GeographyLineString?
           ? aGeographyLineString
           : this.aGeographyLineString,
-      aGeographyPolygon: aGeographyPolygon is _i3.GeographyPolygon?
+      aGeographyPolygon: aGeographyPolygon is _i2.GeographyPolygon?
           ? aGeographyPolygon
           : this.aGeographyPolygon,
       aGeographyGeometryCollection:
-          aGeographyGeometryCollection is _i3.GeographyGeometryCollection?
+          aGeographyGeometryCollection is _i2.GeographyGeometryCollection?
           ? aGeographyGeometryCollection
           : this.aGeographyGeometryCollection,
       anEnum: anEnum is _i4.TestEnum? ? anEnum : this.anEnum,
@@ -502,7 +538,7 @@ class TypesUpdateTable extends _i1.UpdateTable<TypesTable> {
     value,
   );
 
-  _i1.ColumnValue<_i2.ByteData, _i2.ByteData> aByteData(_i2.ByteData? value) =>
+  _i1.ColumnValue<_i3.ByteData, _i3.ByteData> aByteData(_i3.ByteData? value) =>
       _i1.ColumnValue(
         table.aByteData,
         value,
@@ -514,7 +550,7 @@ class TypesUpdateTable extends _i1.UpdateTable<TypesTable> {
         value,
       );
 
-  _i1.ColumnValue<_i3.UuidValue, _i3.UuidValue> aUuid(_i3.UuidValue? value) =>
+  _i1.ColumnValue<_i2.UuidValue, _i2.UuidValue> aUuid(_i2.UuidValue? value) =>
       _i1.ColumnValue(
         table.aUuid,
         value,
@@ -530,56 +566,56 @@ class TypesUpdateTable extends _i1.UpdateTable<TypesTable> {
     value,
   );
 
-  _i1.ColumnValue<_i3.Vector, _i3.Vector> aVector(_i3.Vector? value) =>
+  _i1.ColumnValue<_i2.Vector, _i2.Vector> aVector(_i2.Vector? value) =>
       _i1.ColumnValue(
         table.aVector,
         value,
       );
 
-  _i1.ColumnValue<_i3.HalfVector, _i3.HalfVector> aHalfVector(
-    _i3.HalfVector? value,
+  _i1.ColumnValue<_i2.HalfVector, _i2.HalfVector> aHalfVector(
+    _i2.HalfVector? value,
   ) => _i1.ColumnValue(
     table.aHalfVector,
     value,
   );
 
-  _i1.ColumnValue<_i3.SparseVector, _i3.SparseVector> aSparseVector(
-    _i3.SparseVector? value,
+  _i1.ColumnValue<_i2.SparseVector, _i2.SparseVector> aSparseVector(
+    _i2.SparseVector? value,
   ) => _i1.ColumnValue(
     table.aSparseVector,
     value,
   );
 
-  _i1.ColumnValue<_i3.Bit, _i3.Bit> aBit(_i3.Bit? value) => _i1.ColumnValue(
+  _i1.ColumnValue<_i2.Bit, _i2.Bit> aBit(_i2.Bit? value) => _i1.ColumnValue(
     table.aBit,
     value,
   );
 
-  _i1.ColumnValue<_i3.GeographyPoint, _i3.GeographyPoint> aGeographyPoint(
-    _i3.GeographyPoint? value,
+  _i1.ColumnValue<_i2.GeographyPoint, _i2.GeographyPoint> aGeographyPoint(
+    _i2.GeographyPoint? value,
   ) => _i1.ColumnValue(
     table.aGeographyPoint,
     value,
   );
 
-  _i1.ColumnValue<_i3.GeographyLineString, _i3.GeographyLineString>
-  aGeographyLineString(_i3.GeographyLineString? value) => _i1.ColumnValue(
+  _i1.ColumnValue<_i2.GeographyLineString, _i2.GeographyLineString>
+  aGeographyLineString(_i2.GeographyLineString? value) => _i1.ColumnValue(
     table.aGeographyLineString,
     value,
   );
 
-  _i1.ColumnValue<_i3.GeographyPolygon, _i3.GeographyPolygon> aGeographyPolygon(
-    _i3.GeographyPolygon? value,
+  _i1.ColumnValue<_i2.GeographyPolygon, _i2.GeographyPolygon> aGeographyPolygon(
+    _i2.GeographyPolygon? value,
   ) => _i1.ColumnValue(
     table.aGeographyPolygon,
     value,
   );
 
   _i1.ColumnValue<
-    _i3.GeographyGeometryCollection,
-    _i3.GeographyGeometryCollection
+    _i2.GeographyGeometryCollection,
+    _i2.GeographyGeometryCollection
   >
-  aGeographyGeometryCollection(_i3.GeographyGeometryCollection? value) =>
+  aGeographyGeometryCollection(_i2.GeographyGeometryCollection? value) =>
       _i1.ColumnValue(
         table.aGeographyGeometryCollection,
         value,

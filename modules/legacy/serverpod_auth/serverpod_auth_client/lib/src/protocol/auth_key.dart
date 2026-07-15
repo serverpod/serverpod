@@ -14,7 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_auth_client/src/protocol/protocol.dart' as _i2;
 
 /// Provides a method of access for a user to authenticate with the server.
-abstract class AuthKey implements _i1.SerializableModel {
+abstract class AuthKey
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   AuthKey._({
     this.id,
     required this.userId,
@@ -80,6 +81,19 @@ abstract class AuthKey implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_auth.AuthKey',
+      if (id != null) 'id': id,
+      'userId': userId,
+      'hash': hash,
+      if (key != null) 'key': key,
+      'scopeNames': scopeNames.toJson(),
+      'method': method,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_auth.AuthKey',
       if (id != null) 'id': id,

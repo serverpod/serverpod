@@ -13,7 +13,8 @@
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import 'package:serverpod_client/serverpod_client.dart' as _i2;
 
-abstract class UniqueData implements _i1.TableRow<int?> {
+abstract class UniqueData
+    implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   UniqueData._({
     this.id,
     required this.number,
@@ -58,6 +59,16 @@ abstract class UniqueData implements _i1.TableRow<int?> {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'UniqueData',
+      if (id != null) 'id': id,
+      'number': number,
+      'email': email,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'UniqueData',
       if (id != null) 'id': id,

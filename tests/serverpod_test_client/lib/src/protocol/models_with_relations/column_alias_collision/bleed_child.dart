@@ -19,7 +19,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 /// When two long-named relations point at this table, the truncated column
 /// alias of one relation's `id` collides with the other relation's
 /// `bleedingText`, bleeding the string into the int field on deserialization.
-abstract class BleedChild implements _i1.SerializableModel {
+abstract class BleedChild
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   BleedChild._({
     this.id,
     this.bleedingText,
@@ -53,6 +54,15 @@ abstract class BleedChild implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'BleedChild',
+      if (id != null) 'id': id,
+      if (bleedingText != null) 'bleedingText': bleedingText,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'BleedChild',
       if (id != null) 'id': id,

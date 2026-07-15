@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i2;
 
-abstract class ObjectWithJsonbClassLevel implements _i1.SerializableModel {
+abstract class ObjectWithJsonbClassLevel
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ObjectWithJsonbClassLevel._({
     this.id,
     required this.implicitJsonb,
@@ -65,6 +66,17 @@ abstract class ObjectWithJsonbClassLevel implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'ObjectWithJsonbClassLevel',
+      if (id != null) 'id': id,
+      'implicitJsonb': implicitJsonb.toJson(),
+      'explicitJsonb': explicitJsonb.toJson(),
+      'json': json.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ObjectWithJsonbClassLevel',
       if (id != null) 'id': id,

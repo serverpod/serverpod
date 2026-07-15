@@ -99,7 +99,7 @@ abstract class UserData
       '__className__': 'UserData',
       if (id != null) 'id': id,
       'authUserId': authUserId.toJson(),
-      if (authUser != null) 'authUser': authUser?.toJsonForProtocol(),
+      if (authUser != null) 'authUser': authUser?.toJson(),
       'displayName': displayName,
       if (bio != null) 'bio': bio,
     };

@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Database bindings for a sign in with email.
-abstract class EmailAuth implements _i1.SerializableModel {
+abstract class EmailAuth
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   EmailAuth._({
     this.id,
     required this.userId,
@@ -62,6 +63,17 @@ abstract class EmailAuth implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_auth.EmailAuth',
+      if (id != null) 'id': id,
+      'userId': userId,
+      'email': email,
+      'hash': hash,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_auth.EmailAuth',
       if (id != null) 'id': id,

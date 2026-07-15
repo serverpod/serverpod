@@ -45,6 +45,7 @@ declare -a DART_PACKAGES_PATHS=(
     "tests/serverpod_test_client"
     "tests/serverpod_test_server"
     "tests/serverpod_test_shared"
+    "tests/serverpod_test_sqlite/serverpod_test_sqlite_shared"
     "tests/serverpod_test_module/serverpod_test_module_client"
     "tests/serverpod_test_module/serverpod_test_module_server"
     "tests/serverpod_test_nonvector/serverpod_test_nonvector_client"

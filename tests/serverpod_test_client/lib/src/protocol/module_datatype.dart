@@ -15,7 +15,8 @@ import 'package:serverpod_test_module_client/serverpod_test_module_client.dart'
     as _i2;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
-abstract class ModuleDatatype implements _i1.SerializableModel {
+abstract class ModuleDatatype
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ModuleDatatype._({
     required this.model,
     required this.list,
@@ -68,6 +69,17 @@ abstract class ModuleDatatype implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'ModuleDatatype',
+      'model': model.toJson(),
+      'list': list.toJson(valueToJson: (v) => v.toJson()),
+      'map': map.toJson(valueToJson: (v) => v.toJson()),
+      if (record != null) 'record': _i3.Protocol().mapRecordToJson(record),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ModuleDatatype',
       'model': model.toJson(),
