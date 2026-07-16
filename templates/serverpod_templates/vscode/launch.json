@@ -8,7 +8,7 @@
       "name": "projectname_flutter",
       "type": "dart",
       "request": "attach",
-      "vmServiceInfoFile": "${workspaceFolder}/projectname_server/.dart_tool/serverpod/flutter-vm-service-info.json",
+      "vmServiceInfoFile": "${workspaceFolder}/projectname_server/.dart_tool/serverpod/flutter-vm-service-info-projectname.json",
       "preLaunchTask": "serverpod_start",
       "internalConsoleOptions": "neverOpen"
     },
@@ -21,7 +21,7 @@
       "preLaunchTask": "serverpod_start",
       "internalConsoleOptions": "neverOpen"
     }
-  // {{#flutterApp}}
+    // {{#flutterApp}}
   ],
   "compounds": [
     {
@@ -36,6 +36,6 @@
         "order": 1
       }
     }
-  // {{/flutterApp}}
+    // {{/flutterApp}}
   ]
 }

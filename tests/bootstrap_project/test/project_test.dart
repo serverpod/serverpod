@@ -906,6 +906,14 @@ void main() async {
             isTrue,
             reason: 'launch.json does not contain flutter configuration.',
           );
+          expect(
+            launchJson,
+            contains(
+              'flutter-vm-service-info-$projectName.json',
+            ),
+            reason:
+                'Flutter configuration does not reference the per-app VM service info file.',
+          );
 
           // Verify flutter config appears before server config
           final flutterIndex = launchJson.indexOf('"${projectName}_flutter"');
