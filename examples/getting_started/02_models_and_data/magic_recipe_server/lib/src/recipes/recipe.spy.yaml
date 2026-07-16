@@ -1,0 +1,13 @@
+# @@@SNIPSTART 02-typed-endpoint-model
+### Our AI generated Recipe
+class: Recipe
+fields:
+  ### The author of the recipe
+  author: String
+  ### The recipe text
+  text: String
+  ### The date the recipe was created
+  date: DateTime
+  ### The ingredients the user has passed in
+  ingredients: String
+# @@@SNIPEND
