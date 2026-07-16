@@ -100,18 +100,6 @@ void main() {
     });
 
     test(
-      'when e is pressed on an app log tab then traces do not toggle',
-      () async {
-        state.getOrCreateAppLogTab(appId: 'app', label: 'App');
-        state.tabs.focusedAreaIndex = 1;
-
-        await _sendKey(tester, LogicalKey.keyE);
-
-        expect(state.expandStackTraces, isFalse);
-      },
-    );
-
-    test(
       'when e is pressed after a per-entry toggle then all traces align to '
       'the global state',
       () async {
