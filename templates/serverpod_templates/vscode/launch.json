@@ -2,6 +2,12 @@
   "version": "0.2.0",
   "configurations": [
     // {{#flutterApp}}
+    // If the server pubspec configures multiple Flutter apps, add an attach
+    // configuration like this for each app and add every configuration name
+    // to the compound below. Use the VM-service info file pattern
+    // `${workspaceFolder}/projectname_server/.dart_tool/serverpod/flutter-vm-service-info-<appId>.json`,
+    // where `<appId>` is the app's key under `serverpod.flutter_apps` in the
+    // server pubspec.
     {
       // Attaches to the Flutter app `serverpod start` spawns. Don't
       // launch a second instance here - it would race for the port.
