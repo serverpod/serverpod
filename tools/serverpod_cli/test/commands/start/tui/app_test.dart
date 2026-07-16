@@ -99,6 +99,38 @@ void main() {
       expect(state.expandStackTraces, isFalse);
     });
 
+    test(
+      'when e is pressed on an app log tab then traces do not toggle',
+      () async {
+        state.getOrCreateAppLogTab(appId: 'app', label: 'App');
+        state.tabs.focusedAreaIndex = 1;
+
+        await _sendKey(tester, LogicalKey.keyE);
+
+        expect(state.expandStackTraces, isFalse);
+      },
+    );
+
+    test(
+      'when e is pressed after a per-entry toggle then all traces align to '
+      'the global state',
+      () async {
+        final entry = state.logHistory.whereType<LogEntry>().first;
+        state.toggleStackTrace(entry);
+        expect(state.isStackTraceExpanded(entry), isTrue);
+
+        // E flips the global flag and drops per-entry deviations, so the
+        // already-expanded entry stays expanded (not double-flipped shut).
+        await _sendKey(tester, LogicalKey.keyE);
+        expect(state.expandStackTraces, isTrue);
+        expect(state.isStackTraceExpanded(entry), isTrue);
+
+        await _sendKey(tester, LogicalKey.keyE);
+        expect(state.expandStackTraces, isFalse);
+        expect(state.isStackTraceExpanded(entry), isFalse);
+      },
+    );
+
     test('when backtick is pressed then the raw server logs open', () async {
       expect(state.showRawServerLogs, isFalse);
 

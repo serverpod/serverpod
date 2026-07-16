@@ -291,6 +291,10 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
           onCopyAlert: copyAlert,
           onDismissAlert: dismissAlert,
           onStopOrCloseAppTab: _stopOrCloseAppTab,
+          onToggleStackTrace: (entry) {
+            state.toggleStackTrace(entry);
+            _rebuild();
+          },
         ),
       ),
     );
@@ -435,7 +439,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
     final focusedTab = state.tabs.focusedTab;
     if (event.logicalKey == LogicalKey.keyE &&
         (focusedTab is ServerLogTab || focusedTab is AppLogTab)) {
-      state.expandStackTraces = !state.expandStackTraces;
+      state.toggleAllStackTraces();
       _rebuild();
       return true;
     }
