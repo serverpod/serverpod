@@ -61,10 +61,10 @@ class ClusterStore {
   /// machines, no Zonky-locale availability surprises) and seeds the
   /// auth methods so we never need to rewrite `pg_hba.conf`.
   ///
-  /// [password] is required for TCP transport (scram-sha-256 over the
-  /// host loopback): without a stored password the role can't be
-  /// authenticated via scram. Passed via `initdb --pwfile`. For UDS
-  /// (trust auth) [password] should be null.
+  /// [password] should be set for fresh clusters so the superuser can
+  /// authenticate over TCP later. Passed via `initdb --pwfile`. UDS
+  /// connections use trust auth and ignore the stored password. Omit only
+  /// when reusing a legacy cluster that was initialized without one.
   Future<void> ensureInitialized({
     required String username,
     String? password,

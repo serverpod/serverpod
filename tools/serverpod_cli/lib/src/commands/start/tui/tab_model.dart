@@ -43,16 +43,18 @@ class AppLogTab implements PaneTab {
     required this.appId,
     required this.label,
     BoundedQueueList<String>? lines,
+    BoundedQueueList<Object>? logHistory,
     ScrollController? scrollController,
     this.ready = false,
     this.stopped = false,
     this.url,
     this.startupStage,
-  }) : lines = lines ?? BoundedQueueList<String>(maxRawLines),
+  }) : lines = lines ?? BoundedQueueList<String>(maxLogEntries),
+       logHistory = logHistory ?? BoundedQueueList<Object>(maxLogEntries),
        scrollController = scrollController ?? ScrollController();
 
-  /// Maximum number of raw lines to keep.
-  static const maxRawLines = 10000;
+  /// Maximum number of raw lines and structured entries to keep.
+  static const maxLogEntries = 10000;
 
   /// Stable app identifier from [FlutterAppConfig.id].
   final String appId;
@@ -79,6 +81,9 @@ class AppLogTab implements PaneTab {
 
   /// Raw stdout/stderr lines for this app.
   final BoundedQueueList<String> lines;
+
+  /// Structured entries rendered in this app's log tab.
+  final BoundedQueueList<Object> logHistory;
 
   @override
   final ScrollController scrollController;

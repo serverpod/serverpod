@@ -179,6 +179,7 @@ class ServerWatchState extends TuiState {
     for (final tab in appsTabArea?.tabs ?? []) {
       if (tab is AppLogTab) {
         tab.lines.clear();
+        tab.logHistory.clear();
       }
     }
   }

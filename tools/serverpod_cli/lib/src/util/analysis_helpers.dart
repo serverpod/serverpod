@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
+import 'package:analyzer/file_system/file_system.dart' show ResourceProvider;
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:path/path.dart' as p;
 
@@ -20,12 +21,17 @@ Future<void> refreshAnalysisContext(
 }
 
 /// Creates an [AnalysisContextCollection] for the given [directory].
+///
+/// Pass [resourceProvider] to back the collection with something other than
+/// the physical file system (e.g. an overlay provider that shadows files
+/// with in-memory content).
 AnalysisContextCollection createAnalysisContextCollection(
-  Directory directory,
-) {
+  Directory directory, {
+  ResourceProvider? resourceProvider,
+}) {
   return AnalysisContextCollection(
     includedPaths: [directory.absolute.path],
-    resourceProvider: PhysicalResourceProvider.INSTANCE,
+    resourceProvider: resourceProvider ?? PhysicalResourceProvider.INSTANCE,
     sdkPath: getSdkPath(),
   );
 }

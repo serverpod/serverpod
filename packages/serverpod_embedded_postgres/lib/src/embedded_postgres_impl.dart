@@ -328,37 +328,45 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
 /// Resolves the user-supplied [transport] into a concrete one ready to
 /// pass to ClusterStore + Supervisor:
 ///
+///   - For fresh clusters, always seeds a superuser password (written to
+///     [pwFile]) so a later switch to [TcpTransport] works without re-init.
+///     Unix connections still use trust auth.
 ///   - For [TcpTransport] with `port == 0`, allocates an ephemeral port
 ///     by binding `127.0.0.1:0` and reading the kernel-assigned port.
-///   - For TCP overall, persists / reads the password sidecar so warm
-///     restarts use the same credential the cluster was init'd with.
-///   - For [UnixTransport], no resolution is needed (returns identity).
+///   - For warm TCP restarts, reads the persisted password sidecar so
+///     the endpoint matches whatever `initdb --pwfile` seeded.
 Future<(Transport, String?)> _resolveTransport(
   Transport requested, {
   required File pwFile,
   required bool hadCluster,
 }) async {
+  String? resolvedPassword;
+  if (!hadCluster || requested is TcpTransport) {
+    resolvedPassword =
+        switch (requested) {
+          TcpTransport(:final password) => password,
+          UnixTransport(:final initialPassword) => initialPassword,
+        } ??
+        (hadCluster && pwFile.existsSync()
+            ? pwFile.readAsStringSync()
+            : _generatePassword());
+
+    if (!hadCluster || !pwFile.existsSync()) {
+      pwFile.parent.createSync(recursive: true);
+      pwFile.writeAsStringSync(resolvedPassword);
+    }
+  }
+
   switch (requested) {
     case UnixTransport():
-      return (requested, null);
-    case TcpTransport(:final port, :final password):
-      String resolvedPw;
-      if (hadCluster && pwFile.existsSync()) {
-        // Warm restart: the cluster's stored hash matches whatever was
-        // initdb'd. Trust the persisted password unless the caller
-        // explicitly provides one (in which case we assume they know
-        // they aligned both sides).
-        resolvedPw = password ?? pwFile.readAsStringSync();
-      } else {
-        resolvedPw = password ?? _generatePassword();
-        pwFile.parent.createSync(recursive: true);
-        pwFile.writeAsStringSync(resolvedPw);
-      }
-
+      // Password is passed to initdb on fresh clusters only; trust auth
+      // does not use it for Unix connections.
+      return (requested, resolvedPassword);
+    case TcpTransport(:final port):
       var resolvedPort = port == 0 ? await _allocateEphemeralPort() : port;
       return (
-        TcpTransport(port: resolvedPort, password: resolvedPw),
-        resolvedPw,
+        TcpTransport(port: resolvedPort, password: resolvedPassword),
+        resolvedPassword,
       );
   }
 }
