@@ -77,6 +77,28 @@ void main() {
       );
 
       test(
+        'then targetTableDefinitions is a static getter so hot reload refreshes it.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            matches(
+              RegExp(
+                r'static List<.*TableDefinition> get targetTableDefinitions =>',
+              ),
+            ),
+          );
+          expect(
+            codeMap[expectedFileName],
+            isNot(
+              contains(
+                RegExp(r'static final List<.*TableDefinition> targetTableDefinitions'),
+              ),
+            ),
+          );
+        },
+      );
+
+      test(
         'then the protocol.dart does not expose client migrations directly.',
         () {
           expect(

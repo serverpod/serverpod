@@ -710,6 +710,30 @@ void main() {
     late var content = codeMap[expectedFileName]!;
 
     test(
+      'then targetTableDefinitions is a static getter so hot reload refreshes it.',
+      () {
+        expect(
+          content,
+          matches(
+            RegExp(
+              r'static List<.*TableDefinition> get targetTableDefinitions =>',
+            ),
+          ),
+        );
+        expect(
+          content,
+          isNot(
+            contains(
+              RegExp(
+                r'static final List<.*TableDefinition> targetTableDefinitions',
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
       'then the protocol contains non-nullable vector field with correct type and dimension.',
       () {
         expect(content, contains('dartType: \'Vector(384)\''));
