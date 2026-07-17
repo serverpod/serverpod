@@ -73,7 +73,7 @@ class FutureCallsAnalyzer {
         .where((f) => p.isWithin(absoluteIncludedPaths, p.absolute(f)))
         .toSet();
 
-    final erroredBefore = _erroredFiles;
+    final erroredFilesBefore = _erroredFiles;
     final keysBefore = _fileCache.keys.toSet();
 
     await analyze(
@@ -81,7 +81,7 @@ class FutureCallsAnalyzer {
       changedFiles: relevantPaths,
     );
 
-    final erroredAfter = _erroredFiles;
+    final erroredFilesAfter = _erroredFiles;
     final keysAfter = _fileCache.keys.toSet();
 
     // Regenerate when the set of future call files changed, or when any
@@ -93,8 +93,8 @@ class FutureCallsAnalyzer {
     // exists anywhere in the project.
     if (keysBefore.length != keysAfter.length ||
         keysAfter.difference(keysBefore).isNotEmpty ||
-        erroredBefore.length != erroredAfter.length ||
-        erroredAfter.difference(erroredBefore).isNotEmpty) {
+        erroredFilesBefore.length != erroredFilesAfter.length ||
+        erroredFilesAfter.difference(erroredFilesBefore).isNotEmpty) {
       return true;
     }
 
