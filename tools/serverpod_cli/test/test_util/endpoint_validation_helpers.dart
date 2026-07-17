@@ -6,7 +6,7 @@ import 'package:path/path.dart' as path;
 /// Resolves the absolute path to the serverpod monorepo root via the test
 /// isolate's package config. The previous `Directory('../..')` approach
 /// breaks when dart_test sandboxes [Directory.current] in concurrent runs.
-Future<String> _resolveServerpodRoot() async {
+Future<String> resolveServerpodRoot() async {
   final uri = await Isolate.resolvePackageUri(
     Uri.parse('package:serverpod_cli/analyzer.dart'),
   );
@@ -19,8 +19,14 @@ Future<String> _resolveServerpodRoot() async {
   );
 }
 
+/// Absolute path to `tools/serverpod_cli/bin/serverpod_cli.dart`.
+Future<String> resolveServerpodCliEntrypoint() async {
+  final root = await resolveServerpodRoot();
+  return path.join(root, 'tools', 'serverpod_cli', 'bin', 'serverpod_cli.dart');
+}
+
 Future createTestEnvironment(Directory testProjectDirectory) async {
-  final pathToServerpodRoot = await _resolveServerpodRoot();
+  final pathToServerpodRoot = await resolveServerpodRoot();
 
   var pubspecFile = File(path.join(testProjectDirectory.path, 'pubspec.yaml'));
   pubspecFile.createSync(recursive: true);
