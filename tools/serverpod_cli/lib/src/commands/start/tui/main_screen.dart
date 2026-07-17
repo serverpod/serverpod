@@ -23,7 +23,6 @@ class MainScreen extends StatelessComponent {
     this.onHotReload,
     this.onHotRestart,
     this.onCreateMigration,
-    this.onApplyMigration,
     this.onClearLogs,
     this.onLaunchApp,
     this.onTabSelected,
@@ -43,7 +42,6 @@ class MainScreen extends StatelessComponent {
   final VoidCallback? onHotReload;
   final VoidCallback? onHotRestart;
   final void Function({bool force})? onCreateMigration;
-  final VoidCallback? onApplyMigration;
   final VoidCallback? onClearLogs;
   final ValueChanged<int>? onLaunchApp;
 
@@ -788,13 +786,6 @@ class MainScreen extends StatelessComponent {
           onActivate: (_) => onCreateMigration?.call(),
           onShiftActivate: (_) => onCreateMigration?.call(force: true),
           enabled: actionsEnabled && onCreateMigration != null,
-        ),
-        Button(
-          name: 'Apply migrations',
-          activationChar: 'A',
-          activationKeys: const [LogicalKey.keyA],
-          onActivate: (_) => onApplyMigration?.call(),
-          enabled: actionsEnabled && onApplyMigration != null,
         ),
         Button(
           name: 'Clear logs',

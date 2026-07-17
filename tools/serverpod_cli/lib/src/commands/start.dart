@@ -1384,7 +1384,13 @@ Future<void> _runTuiBackend({
           runTrackedAction(
             holder,
             force ? 'Force-creating migration' : 'Creating migration',
-            () => _runCreateMigrationForTui(config, force: force),
+            () async {
+              await _runCreateMigrationForTui(
+                config,
+                force: force,
+              );
+              await ctx.session.applyMigration();
+            },
           );
         };
         holder.onCreateRepairMigration = ({bool force = false}) {
@@ -1393,21 +1399,16 @@ Future<void> _runTuiBackend({
             force
                 ? 'Force-creating repair migration'
                 : 'Creating repair migration',
-            () => _runCreateRepairMigrationForTui(
-              config,
-              runMode: runModeFromServerArgs(serverArgs),
-              force: force,
-            ),
+            () async {
+              await _runCreateRepairMigrationForTui(
+                config,
+                runMode: runModeFromServerArgs(serverArgs),
+                force: force,
+              );
+              await ctx.session.applyMigration();
+            },
           );
         };
-        holder.onApplyMigration = () {
-          runTrackedAction(
-            holder,
-            'Applying migrations',
-            ctx.session.applyMigration,
-          );
-        };
-
         holder.state.serverReady = ctx.session.isRunning;
         // Degraded start (no server yet): expose the manual "Start server"
         // recovery action. The watcher also auto-recovers in watch mode.
