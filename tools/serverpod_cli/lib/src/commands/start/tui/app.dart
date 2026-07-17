@@ -1,8 +1,10 @@
 import 'dart:async';
 
-import 'package:nocterm/nocterm.dart';
+import 'package:nocterm/nocterm.dart' hide LogEntry;
+import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_tui/serverpod_tui.dart';
 
+import 'inspectable_scroll_controller.dart';
 import 'main_screen.dart';
 
 import 'state.dart';
@@ -205,6 +207,63 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
     }
   }
 
+  /// Scrolls the log view holding [entry] so it stays in view after its
+  /// stack trace expanded or collapsed via the clickable affordance.
+  ///
+  /// Expanding grows the entry downwards (towards newer entries), which in the
+  /// bottom-anchored log view shoves the clicked line up - past the top edge
+  /// for a long trace. Collapsing does the reverse and can drop the entry
+  /// below the viewport when scrolled up. Runs after the toggle's frame so the
+  /// re-laid-out geometry is measured, then scrolls just enough to keep the
+  /// entry on screen; an entry taller than the viewport is pinned with its
+  /// message and affordance line at the top and the trace filling the rest.
+  void _keepToggledEntryInView(LogEntry entry) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      final located = _locateLogEntry(entry);
+      if (located == null) return;
+      final (items, controller) = located;
+
+      // The list renders newest-first (`reverse: true`), so builder index 0
+      // is the last history item. Resolved inside the callback: entries
+      // arriving during the toggle's frame shift the index.
+      final itemIndex = items.lastIndexOf(entry);
+      if (itemIndex < 0) return;
+      final builderIndex = items.length - 1 - itemIndex;
+
+      final geometry = controller.itemOffsetAndExtent(builderIndex);
+      if (geometry == null) return;
+      final (itemOffset, itemExtent) = geometry;
+
+      if (itemExtent > controller.viewportDimension) {
+        // In the reversed list the item's scroll-space end is its visual top.
+        controller.jumpTo(
+          itemOffset + itemExtent - controller.viewportDimension,
+        );
+      } else {
+        controller.ensureVisible(
+          itemOffset: itemOffset,
+          itemExtent: itemExtent,
+        );
+      }
+    });
+  }
+
+  /// Finds the log history and scroll controller of the view showing [entry]:
+  /// the server log or one of the app log tabs. Null when the entry has been
+  /// evicted from every history.
+  (List<Object>, InspectableScrollController)? _locateLogEntry(LogEntry entry) {
+    final state = component.holder.state;
+    if (state.logHistory.contains(entry)) {
+      return (state.logHistory, state.serverLogTab.scrollController);
+    }
+    for (final tab in state.appsTabArea?.tabs ?? const <PaneTab>[]) {
+      if (tab is AppLogTab && tab.logHistory.contains(entry)) {
+        return (tab.logHistory, tab.scrollController);
+      }
+    }
+    return null;
+  }
+
   /// Stops [tab]'s app while it is running or launching - the tab stays so its
   /// marker flips to stopped and it can be relaunched - and once stopped closes
   /// the tab, refocusing the last remaining app tab. Bound to the `X` key and
@@ -294,6 +353,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
           onToggleStackTrace: (entry) {
             state.toggleStackTrace(entry);
             _rebuild();
+            _keepToggledEntryInView(entry);
           },
         ),
       ),

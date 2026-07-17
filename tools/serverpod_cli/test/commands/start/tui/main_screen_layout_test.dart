@@ -407,4 +407,87 @@ void main() {
       },
     );
   });
+
+  group(
+    'Given a scrollback with a stack trace taller than the viewport',
+    () {
+      late NoctermTester tester;
+
+      LogEntry infoEntry(String message) => LogEntry(
+        time: DateTime(2026),
+        level: LogLevel.info,
+        message: message,
+        scope: LogScope.root('server'),
+      );
+
+      setUp(() async {
+        final state = ServerWatchState();
+        state.showSplash = false;
+        state.serverReady = true;
+        // Old entries above, the error in the middle, newer entries below;
+        // the 60-line trace exceeds the 24-row viewport when expanded.
+        for (var i = 0; i < 50; i++) {
+          state.logHistory.add(infoEntry('older-$i'));
+        }
+        state.logHistory.add(
+          LogEntry(
+            time: DateTime(2026),
+            level: LogLevel.error,
+            message: 'boom',
+            scope: LogScope.root('server'),
+            error: 'Exception: boom',
+            stackTrace: StackTrace.fromString(
+              [for (var i = 0; i < 60; i++) '#$i frame-$i'].join('\n'),
+            ),
+          ),
+        );
+        for (var i = 0; i < 10; i++) {
+          state.logHistory.add(infoEntry('newer-$i'));
+        }
+        tester = await _pump(state, const Size(100, 24));
+      });
+
+      test(
+        'when the trace is expanded and collapsed then the clicked entry '
+        'stays in view',
+        () async {
+          final expand = tester.terminalState.findText('E Expand').first;
+          await tester.tap(expand.x, expand.y);
+          await tester.pump();
+
+          final ts = tester.terminalState;
+          expect(
+            ts.containsText('E Collapse'),
+            isTrue,
+            reason:
+                'expanding a trace taller than the screen must keep the '
+                'clicked affordance in view (pinned to the top)',
+          );
+          expect(
+            ts.containsText('#0 frame-0'),
+            isTrue,
+            reason: 'the start of the trace must be shown below the entry',
+          );
+          expect(
+            ts.containsText('frame-59'),
+            isFalse,
+            reason: 'the trace tail cannot fit and must overflow off-screen',
+          );
+
+          final collapse = tester.terminalState.findText('E Collapse').first;
+          await tester.tap(collapse.x, collapse.y);
+          await tester.pump();
+
+          expect(
+            tester.terminalState.containsText('E Expand'),
+            isTrue,
+            reason:
+                'collapsing from a scrolled-up position must follow the '
+                'entry back into view',
+          );
+          expect(tester.terminalState.containsText('boom'), isTrue);
+        },
+      );
+    },
+  );
 }
