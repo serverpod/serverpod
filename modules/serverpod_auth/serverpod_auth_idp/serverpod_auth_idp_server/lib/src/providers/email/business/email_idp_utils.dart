@@ -120,7 +120,6 @@ extension on EmailAccountRequestServerException {
       case EmailAccountRequestNotFoundException():
       case EmailAccountRequestNotVerifiedException():
       case EmailAccountAlreadyRegisteredException():
-      case EmailAccountRequestAlreadyExistsException():
       case EmailAccountRequestVerificationCodeAlreadyUsedException():
         return EmailAccountRequestExceptionReason.invalid;
       case EmailAccountRequestVerificationTooManyAttemptsException():
@@ -137,7 +136,6 @@ extension on EmailAccountRequestServerException {
 extension on EmailPasswordResetServerException {
   EmailAccountPasswordResetExceptionReason get reason {
     switch (this) {
-      case EmailPasswordResetAccountNotFoundException():
       case EmailPasswordResetInvalidVerificationCodeException():
       case EmailPasswordResetRequestNotFoundException():
       case EmailPasswordResetVerificationCodeAlreadyUsedException():
