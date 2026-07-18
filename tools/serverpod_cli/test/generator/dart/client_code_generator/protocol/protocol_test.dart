@@ -91,7 +91,9 @@ void main() {
             codeMap[expectedFileName],
             isNot(
               contains(
-                RegExp(r'static final List<.*TableDefinition> targetTableDefinitions'),
+                RegExp(
+                  r'static final List<.*TableDefinition> targetTableDefinitions',
+                ),
               ),
             ),
           );
