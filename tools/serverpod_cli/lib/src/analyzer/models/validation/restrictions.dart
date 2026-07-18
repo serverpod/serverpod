@@ -537,9 +537,10 @@ class Restrictions {
     var definition = documentDefinition;
     if (definition is! ClassDefinition) return [];
 
-    var field = definition.findField(parentNodeName);
+    var relationField = definition.findField(parentNodeName);
+    var relation = relationField?.relation;
 
-    if (field?.relation?.isForeignKeyOrigin == false) {
+    if (relation?.isForeignKeyOrigin == false) {
       return [
         SourceSpanSeverityException(
           'The "$key" property can only be set on the side holding the foreign key.',
@@ -548,7 +549,82 @@ class Restrictions {
       ];
     }
 
+    var foreignKeyField = _resolveForeignKeyField(
+      definition,
+      relationField,
+    );
+    var foreignKeyRelation = foreignKeyField?.relation;
+    if (foreignKeyRelation is! ForeignRelationDefinition) return [];
+
+    var action = switch (key) {
+      Keyword.onDelete => foreignKeyRelation.onDelete,
+      Keyword.onUpdate => foreignKeyRelation.onUpdate,
+      _ => null,
+    };
+
+    if (action == ForeignKeyAction.setNull) {
+      return _validateSetNullAction(key, foreignKeyField!, span);
+    }
+
+    if (action == ForeignKeyAction.setDefault) {
+      return _validateSetDefaultAction(key, foreignKeyField!, span);
+    }
+
     return [];
+  }
+
+  SerializableModelFieldDefinition? _resolveForeignKeyField(
+    ClassDefinition definition,
+    SerializableModelFieldDefinition? relationField,
+  ) {
+    var relation = relationField?.relation;
+
+    if (relation is ForeignRelationDefinition) {
+      return relationField;
+    }
+
+    if (relation is ObjectRelationDefinition) {
+      return definition.findField(relation.fieldName);
+    }
+
+    return null;
+  }
+
+  List<SourceSpanSeverityException> _validateSetNullAction(
+    String key,
+    SerializableModelFieldDefinition foreignKeyField,
+    SourceSpan? span,
+  ) {
+    var isNullableDatabaseColumn =
+        foreignKeyField.name != defaultPrimaryKeyName &&
+        foreignKeyField.type.nullable;
+    if (isNullableDatabaseColumn) return [];
+
+    return [
+      SourceSpanSeverityException(
+        'The foreign key field "${foreignKeyField.name}" must be nullable in '
+        'the database when "$key" is set to "SetNull".',
+        span,
+      ),
+    ];
+  }
+
+  List<SourceSpanSeverityException> _validateSetDefaultAction(
+    String key,
+    SerializableModelFieldDefinition foreignKeyField,
+    SourceSpan? span,
+  ) {
+    if (foreignKeyField.defaultPersistValue != null) return [];
+
+    return [
+      SourceSpanSeverityException(
+        'The foreign key field "${foreignKeyField.name}" must define a '
+        'database default using "default" or "defaultPersist" when "$key" is '
+        'set to "SetDefault". "defaultModel" only initializes Dart objects '
+        'and is not applied by the database.',
+        span,
+      ),
+    ];
   }
 
   List<SourceSpanSeverityException> validateOptionalKey(
@@ -2641,6 +2717,10 @@ class Restrictions {
       );
     }
 
+    errors.addAll(
+      _validateDefaultOnRelationField(field, Keyword.defaultKey, span),
+    );
+
     if ((definition is ModelClassDefinition) &&
         (definition.tableName != null) &&
         (parentNodeName == defaultPrimaryKeyName)) {
@@ -2706,6 +2786,13 @@ class Restrictions {
       );
     }
 
+    var relationErrors = _validateDefaultOnRelationField(
+      field,
+      Keyword.defaultPersistKey,
+      span,
+    );
+    errors.addAll(relationErrors);
+
     if (field.hasOnlyDatabaseDefaults && !field.type.nullable) {
       errors.add(
         SourceSpanSeverityException(
@@ -2718,7 +2805,7 @@ class Restrictions {
     /// We perform this check here instead of using [mutuallyExclusiveKeys] because our
     /// concern is specifically whether the field should be persisted in the database.
     /// Using "persist" is allowed, while using "!persist" is not allowed.
-    if (!field.shouldPersist) {
+    if (relationErrors.isEmpty && !field.shouldPersist) {
       errors.add(
         SourceSpanSeverityException(
           'The "defaultPersist" property is mutually exclusive with the "!persist" property.',
@@ -2728,6 +2815,23 @@ class Restrictions {
     }
 
     return errors;
+  }
+
+  List<SourceSpanSeverityException> _validateDefaultOnRelationField(
+    SerializableModelFieldDefinition field,
+    String key,
+    SourceSpan? span,
+  ) {
+    var relation = field.relation;
+    if (relation == null || relation is ForeignRelationDefinition) return [];
+
+    return [
+      SourceSpanSeverityException(
+        'The "$key" property can only be used on persisted fields or on id '
+        'fields that define the foreign key relation.',
+        span,
+      ),
+    ];
   }
 
   Map<dynamic, int> _duplicatesCount(List<dynamic> list) {

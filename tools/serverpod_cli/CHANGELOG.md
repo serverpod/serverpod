@@ -6,6 +6,7 @@
 - feat: Adds support for creating server only projects.
 - fix: Fixes `upsert` with `updateWhere` throwing on SQLite when conflicts are filtered out.
 - fix: Adds missing export of `DeepCollectionEquality` for shared models. Backported to 3.4.11.
+- fix: Validates `SetNull` and `SetDefault` relation actions against foreign key column constraints.
 - fix: Prevents the creation of orphaned images on subsequent IDP logins. Backported to 3.4.11.
 - refactor: Refines the serverpod start TUI app status, stop/close, and launcher.
 - chore: Changes the template to serve the Flutter web app under root if website is not enabled.
