@@ -7,6 +7,20 @@ const generatedCodeAlreadyUpToDate = '✓ Generated code is already up to date.'
 
 // Start command messages
 const serverRunning = 'Server running.';
+const startingDockerServices = 'Starting Docker services';
+const dockerComposeFileMissing =
+    'No Docker Compose file (e.g. docker-compose.yaml) was found in the '
+    'server project. Restore the project Docker configuration or run without '
+    '`--docker`.';
+const dockerNotInstalled =
+    'Docker does not seem to be installed. Install Docker and try again, or '
+    'pass `--no-docker` to skip starting Docker services.';
+const dockerNotRunning =
+    'Docker is not running. Start Docker and try again, or pass `--no-docker` '
+    'to skip starting Docker services.';
+const dockerComposeStartFailed =
+    'Docker Compose could not start the project services. Check the Docker '
+    'output, correct the problem, and try again.';
 
 /// Shown when `serverpod start --watch` cannot bring the server up because the
 /// project does not generate or compile. The file watcher keeps running, so a

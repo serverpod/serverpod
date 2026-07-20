@@ -72,11 +72,12 @@ enum StartOption<V> implements OptionDefinition<V> {
   docker(
     FlagOption(
       argName: 'docker',
-      defaultsTo: false,
       helpText:
-          'Start Docker Compose services if a docker-compose.yaml exists. '
-          'Default off; pass --docker to opt in to compose-managed services '
-          '(typically Redis when running PostgreSQL separately).',
+          'Start Docker Compose services if a Docker Compose file exists. '
+          'Defaults to on if the project has a Docker Compose file and the '
+          'database is configured to PostgreSQL without a dataPath. Otherwise, '
+          'defaults to off. Pass --docker or --no-docker to override the '
+          'default behavior.',
     ),
   ),
   tui(
@@ -192,7 +193,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
     if (await _detectExistingInstance(config)) return;
 
     final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
-    final docker = commandConfig.value(StartOption.docker);
+    final docker = commandConfig.optionalValue(StartOption.docker);
 
     // Listen for termination signals before starting any services so that
     // a SIGINT at any point triggers graceful shutdown (including Docker
@@ -272,57 +273,122 @@ Future<bool> _runHooksFor(
   }
 }
 
+/// Compose file names Docker Compose resolves by default, in its own lookup
+/// order.
+const _composeFileNames = [
+  'compose.yaml',
+  'compose.yml',
+  'docker-compose.yaml',
+  'docker-compose.yml',
+];
+
+File? _findComposeFile(String serverDir) {
+  for (final name in _composeFileNames) {
+    final file = File(p.join(serverDir, name));
+    if (file.existsSync()) return file;
+  }
+  return null;
+}
+
+bool _resolveStartDocker({
+  required bool? dockerFlag,
+  required String serverDir,
+  required String runMode,
+}) {
+  if (dockerFlag != null) return dockerFlag;
+
+  // Projects without a compose file (e.g. using a remote or natively
+  // installed database) have nothing for Docker Compose to start. Only an
+  // explicit --docker treats a missing compose file as an error.
+  if (_findComposeFile(serverDir) == null) return false;
+
+  try {
+    final passwords = PasswordManager(runMode: runMode).loadPasswords(
+      serverDir: serverDir,
+    );
+    final serverConfig = ServerpodConfig.load(
+      runMode,
+      null,
+      passwords,
+      serverDir: serverDir,
+    );
+    final database = serverConfig.database;
+    return database is PostgresDatabaseConfig && database.dataPath == null;
+  } catch (_) {
+    // Config may be incomplete during early project setup; do not start
+    // Docker automatically. Users can still pass --docker explicitly.
+    return false;
+  }
+}
+
 /// Ensures Docker Compose services are running.
 ///
 /// Returns `true` if this method started the containers (meaning we should
-/// stop them on shutdown). Returns `false` if no action was taken.
-Future<bool> _ensureDockerServices(String serverDir) async {
-  final composeFile = File(p.join(serverDir, 'docker-compose.yaml'));
-  if (!await composeFile.exists()) return false;
+/// stop them on shutdown), `false` if they were already running, and `null`
+/// when Docker cannot be used.
+Future<bool?> _ensureDockerServices(String serverDir) async {
+  if (_findComposeFile(serverDir) == null) {
+    log.error(dockerComposeFileMissing);
+    return null;
+  }
 
   // Check if containers are already running.
-  final ps = await Process.run(
-    'docker',
+  final ps = await _runDocker(
     ['compose', 'ps', '--status', 'running', '-q'],
-    workingDirectory: serverDir,
+    serverDir,
   );
 
+  if (ps == null) {
+    log.error(dockerNotInstalled);
+    return null;
+  }
+
   if (ps.exitCode != 0) {
-    log.warning(
-      'Docker does not appear to be running. '
-      'Start Docker or use --no-docker to skip.',
-    );
-    return false;
+    log.error(dockerNotRunning);
+    return null;
   }
 
   final running = (ps.stdout as String).trim();
   if (running.isNotEmpty) return false;
 
   // Start containers.
-  log.info('Starting Docker Compose services...');
-  final up = await Process.run(
-    'docker',
-    ['compose', 'up', '-d'],
-    workingDirectory: serverDir,
-  );
+  final up = await _runDocker(['compose', 'up', '-d'], serverDir);
+
+  if (up == null) {
+    log.error(dockerNotInstalled);
+    return null;
+  }
 
   if (up.exitCode != 0) {
     final error = (up.stderr as String).trim();
-    log.warning('Failed to start Docker Compose services: $error');
-    return false;
+    log.error('$dockerComposeStartFailed\n\n$error');
+    return null;
   }
 
   log.info('Docker Compose services started.');
   return true;
 }
 
+/// Runs `docker` with [arguments] in [serverDir]. Returns `null` when the
+/// binary cannot be launched (Docker not installed or not on PATH).
+Future<ProcessResult?> _runDocker(
+  List<String> arguments,
+  String serverDir,
+) async {
+  try {
+    return await Process.run(
+      'docker',
+      arguments,
+      workingDirectory: serverDir,
+    );
+  } on ProcessException {
+    return null;
+  }
+}
+
 Future<void> _stopDockerServices(String serverDir) async {
   log.info('Stopping Docker Compose services...');
-  await Process.run(
-    'docker',
-    ['compose', 'stop'],
-    workingDirectory: serverDir,
-  );
+  await _runDocker(['compose', 'stop'], serverDir);
 }
 
 /// Prepends `--apply-migrations` to [serverArgs] unless it is already present.
@@ -362,7 +428,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   required String serverDir,
   required ServerArgsRef serverArgs,
   required bool watch,
-  required bool docker,
+  required bool? docker,
   // When the project fails to generate or compile: if `true`, keep the session
   // open with no server running and recover later (the file watcher auto-boots
   // in watch mode; [WatchSession.retryStart] boots on demand otherwise). If
@@ -407,12 +473,21 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     return const WatchLoopAborted(0);
   }
 
+  final startDocker = _resolveStartDocker(
+    dockerFlag: docker,
+    serverDir: serverDir,
+    runMode: runModeFromServerArgs(serverArgs.value),
+  );
+
   var startedDocker = false;
-  if (docker) {
-    await log.progress('Starting Docker services', () async {
-      startedDocker = await _ensureDockerServices(serverDir);
-      return true;
+  if (startDocker) {
+    bool? dockerStarted;
+    await log.progress(startingDockerServices, () async {
+      dockerStarted = await _ensureDockerServices(serverDir);
+      return dockerStarted != null;
     });
+    if (dockerStarted == null) return const WatchLoopAborted(1);
+    startedDocker = dockerStarted!;
   }
 
   Future<void> stopDockerIfStarted() async {
@@ -1105,7 +1180,7 @@ Future<void> _runTuiBackend({
     tuiWriter.attach(holder);
 
     final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
-    final docker = commandConfig.value(StartOption.docker);
+    final docker = commandConfig.optionalValue(StartOption.docker);
 
     final argsRef = ServerArgsRef(serverArgs);
 
