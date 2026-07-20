@@ -262,51 +262,58 @@ database:
     );
   });
 
-  group('Given a Serverpod project on a machine without Docker,', () {
-    late Directory projectRoot;
-    late Directory serverDirectory;
-    late Directory fakeBinDirectory;
+  group(
+    'Given a Serverpod project on a machine without Docker,',
+    // Dart ignores PATH supplied through Process.run's environment map when
+    // resolving executables on Windows, so the test cannot hide a Docker
+    // installation on Windows CI.
+    testOn: '!windows',
+    () {
+      late Directory projectRoot;
+      late Directory serverDirectory;
+      late Directory fakeBinDirectory;
 
-    setUp(() async {
-      projectRoot = await _createTestProject('''
+      setUp(() async {
+        projectRoot = await _createTestProject('''
 database:
   host: localhost
   port: 5432
   name: test
   user: postgres
 ''');
-      serverDirectory = Directory(p.join(projectRoot.path, 'test_server'));
-      // An empty directory as the only PATH entry, so `docker` cannot be
-      // launched at all.
-      fakeBinDirectory = Directory(p.join(projectRoot.path, 'bin'));
-      await fakeBinDirectory.create();
-      await _createComposeFile(serverDirectory);
-    });
+        serverDirectory = Directory(p.join(projectRoot.path, 'test_server'));
+        // An empty directory as the only PATH entry, so `docker` cannot be
+        // launched at all.
+        fakeBinDirectory = Directory(p.join(projectRoot.path, 'bin'));
+        await fakeBinDirectory.create();
+        await _createComposeFile(serverDirectory);
+      });
 
-    tearDown(() => projectRoot.delete(recursive: true));
+      tearDown(() => projectRoot.delete(recursive: true));
 
-    test(
-      'when serverpod start runs without a Docker flag, '
-      'then startup fails with instructions for installing Docker.',
-      () async {
-        final result = await _runStartInSubprocess(
-          serverDirectory: serverDirectory,
-          pathVariable: fakeBinDirectory.path,
-          dockerArgument: null,
-        );
+      test(
+        'when serverpod start runs without a Docker flag, '
+        'then startup fails with instructions for installing Docker.',
+        () async {
+          final result = await _runStartInSubprocess(
+            serverDirectory: serverDirectory,
+            pathVariable: fakeBinDirectory.path,
+            dockerArgument: null,
+          );
 
-        expect(result.exitCode, 1);
-        expect(
-          result.output,
-          contains('$startingDockerServices failed.'),
-        );
-        expect(
-          _normalizeWhitespace(result.output),
-          contains(dockerNotInstalled),
-        );
-      },
-    );
-  });
+          expect(result.exitCode, 1);
+          expect(
+            result.output,
+            contains('$startingDockerServices failed.'),
+          );
+          expect(
+            _normalizeWhitespace(result.output),
+            contains(dockerNotInstalled),
+          );
+        },
+      );
+    },
+  );
 
   group(
     'Given a Serverpod project whose Docker service is not running,',
