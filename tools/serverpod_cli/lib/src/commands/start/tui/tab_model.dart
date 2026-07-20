@@ -49,6 +49,7 @@ class AppLogTab implements PaneTab {
     this.ready = false,
     this.stopped = false,
     this.url,
+    this.device,
     this.startupStage,
   }) : lines = lines ?? BoundedQueueList<String>(maxLogEntries),
        logHistory = logHistory ?? BoundedQueueList<Object>(maxLogEntries),
@@ -73,6 +74,10 @@ class AppLogTab implements PaneTab {
 
   /// HTTP URL the Flutter app is served at.
   String? url;
+
+  /// Configured launch device from [FlutterAppConfig.device], or null for
+  /// the default web device.
+  String? device;
 
   /// Latest `app.progress` message from the Flutter daemon.
   String? startupStage;

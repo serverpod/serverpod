@@ -1224,6 +1224,8 @@ Future<void> _runTuiBackend({
         tab.ready = false;
         tab.stopped = false;
         tab.url = null;
+        // Refreshed per launch; the configured device may have changed.
+        tab.device = app.device;
         // Focus the tab only when the launch was initiated from the launch
         // panel (which is open at that point). Apps auto-started by
         // `serverpod start` launch with the panel closed, so the Server logs

@@ -90,6 +90,27 @@ Future<NoctermTester> _pumpLaunchPanel({
   return _pump(state, const Size(120, 24));
 }
 
+/// Builds a single ready app tab with [device] and [url], then pumps it.
+Future<NoctermTester> _pumpReadyAppTab({String? device, String? url}) async {
+  final state = ServerWatchState();
+  state.showSplash = false;
+  state.serverReady = true;
+  state.launchableApps = [
+    const FlutterAppConfig(
+      id: 'app',
+      name: 'App',
+      relativePathParts: ['..', 'app'],
+      serverPackageDirectoryPathParts: [],
+    ),
+  ];
+  final tab = state.getOrCreateAppLogTab(appId: 'app', label: 'App');
+  tab.ready = true;
+  tab.device = device;
+  tab.url = url;
+  state.tabs.focusTab(tab);
+  return _pump(state, const Size(200, 30));
+}
+
 /// Pumps [state] at [size] and returns the tester, disposing it on teardown.
 Future<NoctermTester> _pump(ServerWatchState state, Size size) async {
   final holder = StartAppStateHolder(state);
@@ -290,6 +311,52 @@ void main() {
         expect(launchingMarker.style.color, isNot(runningMarker.style.color));
       },
     );
+  });
+
+  group('Given a ready Flutter app tab with a configured device', () {
+    late NoctermTester tester;
+
+    setUp(() async {
+      tester = await _pumpReadyAppTab(device: 'emulator-5554');
+    });
+
+    test('then the status line names the device', () {
+      expect(
+        tester.terminalState.containsText('Running on device emulator-5554'),
+        isTrue,
+      );
+    });
+  });
+
+  group('Given a ready Flutter app tab without a configured device', () {
+    late NoctermTester tester;
+
+    setUp(() async {
+      tester = await _pumpReadyAppTab();
+    });
+
+    test('then the status line shows the generic running label', () {
+      expect(tester.terminalState.containsText('Running on device'), isTrue);
+    });
+  });
+
+  group('Given a ready Flutter app tab with a published URL', () {
+    late NoctermTester tester;
+
+    setUp(() async {
+      tester = await _pumpReadyAppTab(
+        device: 'chrome',
+        url: 'http://localhost:8080',
+      );
+    });
+
+    test('then the status line shows the URL, not the device', () {
+      expect(
+        tester.terminalState.containsText('http://localhost:8080'),
+        isTrue,
+      );
+      expect(tester.terminalState.containsText('Running on device'), isFalse);
+    });
   });
 
   group('Given a structured log with stack-traced error entries', () {
