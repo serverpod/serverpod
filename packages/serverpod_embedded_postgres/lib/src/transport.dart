@@ -14,9 +14,15 @@ sealed class Transport {
 /// `../run` (after its `chdir(PGDATA)`) and keep `sun_path` ~20 bytes
 /// regardless of how deep the project lives on disk.
 final class UnixTransport extends Transport {
-  /// Creates a UDS transport. There is nothing to configure - the socket
-  /// directory is derived from [EmbeddedPostgresOptions.dataDir].
-  const UnixTransport();
+  /// Superuser password seeded at `initdb` time. Unix connections use trust
+  /// auth and ignore this; it is persisted to `postgres.password` in the data
+  /// directory parent so a later switch to [TcpTransport] works without
+  /// re-init. If null, a random password is generated on first init.
+  final String? initialPassword;
+
+  /// Creates a UDS transport. The socket directory is derived from the
+  /// [EmbeddedPostgresOptions.dataDir] option.
+  const UnixTransport({this.initialPassword});
 }
 
 /// Connection over loopback TCP. Authentication is `scram-sha-256`.
@@ -27,9 +33,10 @@ final class TcpTransport extends Transport {
   /// cover the close-then-rebind race.
   final int port;
 
-  /// Password for the configured username. If null, a cryptographically
-  /// random password is generated at start time and surfaced via
-  /// [EmbeddedPostgres.connectionString] / [EmbeddedPostgres.endpoint].
+  /// Superuser password for `scram-sha-256` over loopback. Seeded at `initdb`
+  /// on fresh clusters and persisted to `<dataDir parent>/postgres.password`.
+  /// If null, a cryptographically random password is generated. Serverpod
+  /// passes `config/passwords.yaml` `database` here.
   final String? password;
 
   /// Creates a TCP transport bound to `127.0.0.1`. Pass [port] to pin a

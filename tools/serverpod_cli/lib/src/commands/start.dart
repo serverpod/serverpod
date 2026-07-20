@@ -12,7 +12,7 @@ import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_app_manager.dart';
-import 'package:serverpod_cli/src/commands/start/flutter_dependency_tracker.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_log_event.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_server.dart';
@@ -376,6 +376,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   IOSink Function(FlutterAppConfig app)? flutterStderrSinkFor,
   void Function(FlutterAppConfig app)? onEnsureFlutterAppTab,
   void Function(FlutterAppConfig app, String stage)? onFlutterProgress,
+  void Function(FlutterAppConfig app, FlutterLogEvent event)? onFlutterLog,
   void Function(FlutterAppConfig app, String? url)? onFlutterReady,
   void Function(FlutterAppConfig app)? onFlutterLaunchFailed,
   void Function(FlutterAppConfig app)? onFlutterStop,
@@ -596,6 +597,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     onStop: (app) => onFlutterStop?.call(app),
     onLaunchFailed: (app) => onFlutterLaunchFailed?.call(app),
     onEnsureAppTab: (app) => onEnsureFlutterAppTab?.call(app),
+    onLog: (app, event) => onFlutterLog?.call(app, event),
     stdoutSinkFor: (app) => flutterStdoutSinkFor?.call(app) ?? stdout,
     stderrSinkFor: (app) => flutterStderrSinkFor?.call(app) ?? stderr,
   );
@@ -651,19 +653,16 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     fileChangeSub?.cancel();
     if (!watch) return;
     final currentApps = flutterManager.apps.toList();
-    // One tracker per Flutter app that has a resolved dependency closure. Reused
-    // both to widen the watched directories and to pin the exact pub artifacts
-    // below.
-    final flutterDependencyTrackers = [
+    final flutterPackageGraphPaths = [
       for (final app in currentApps)
-        ?flutterManager.dependencyTrackerFor(app.id),
+        ?flutterManager.packageGraphPathFor(app.id),
     ];
     final watcher = FileWatcher(
       watchPaths: buildWatchPaths(
         config: config,
         flutterApps: currentApps,
         serverDartToolDir: serverDartToolDir,
-        flutterDependencyTrackers: flutterDependencyTrackers,
+        flutterPackageGraphPaths: flutterPackageGraphPaths,
       ),
       // Exact files so a change to one resolution's artifact never triggers the
       // other's action (matters only in a non-workspace layout). The server has
@@ -673,8 +672,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
           ? null
           : p.join(serverDartToolDir, 'package_config.json'),
       packageGraphPaths: {
-        for (final tracker in flutterDependencyTrackers)
-          p.join(tracker.dartToolDir, 'package_graph.json'),
+        ...flutterPackageGraphPaths,
       },
     );
     fileChangeSub = watcher.onFilesChanged
@@ -786,21 +784,27 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   );
 }
 
-/// The directories the watch-mode [FileWatcher] observes: server/shared/client
+/// The paths the watch-mode [FileWatcher] observes: server/shared/client
 /// source, the server's web dir, each Flutter app's lib and pubspec.yaml, and
-/// the resolution `.dart_tool`(s) carrying `package_config.json` /
-/// `package_graph.json`.
+/// the exact `package_config.json` / `package_graph.json` files of the
+/// resolution `.dart_tool`(s).
 ///
 /// [serverDartToolDir] is the server's resolution `.dart_tool` (workspace root
-/// or the package itself); watching it is what makes a dependency change reload
-/// the server in place. In a workspace it equals each Flutter app's
-/// [FlutterDependencyTracker.dartToolDir] and dedupes to a single watch.
+/// or the package itself); watching its `package_config.json` is what makes a
+/// dependency change reload the server in place. [flutterPackageGraphPaths]
+/// contains the resolved or expected graph path for every Flutter app.
+///
+/// The pub artifacts are watched as exact files rather than their `.dart_tool`
+/// directories: those directories also hold large, churning build state (e.g.
+/// `flutter_build` intermediates when a Flutter app builds, or the server's
+/// dill), and a recursive directory watch has to scan and re-list that tree on
+/// every build - heavy disk I/O for events that would all be discarded anyway.
 @visibleForTesting
 Set<String> buildWatchPaths({
   required GeneratorConfig config,
   List<FlutterAppConfig> flutterApps = const [],
   String? serverDartToolDir,
-  Iterable<FlutterDependencyTracker> flutterDependencyTrackers = const [],
+  Iterable<String> flutterPackageGraphPaths = const [],
 }) {
   return {
     p.absolute(p.joinAll(config.libSourcePathParts)),
@@ -818,16 +822,15 @@ Set<String> buildWatchPaths({
       // full Flutter relaunch.
       p.absolute(p.joinAll([...app.pathParts, 'pubspec.yaml'])),
     ],
-    // The server's resolution .dart_tool, watched for package_config.json
-    // (reloaded into the FES in place) and, in a workspace, the shared
-    // package_graph.json. Dedupes against the Flutter trackers' dirs in a
-    // workspace layout.
-    if (serverDartToolDir != null) p.absolute(serverDartToolDir),
-    // Each Flutter resolution's .dart_tool holds package_graph.json, watched to
-    // detect Flutter dependency changes (workspace root or, in a non-workspace
-    // project, the Flutter package's own .dart_tool).
-    for (final tracker in flutterDependencyTrackers)
-      p.absolute(tracker.dartToolDir),
+    // The server resolution's package_config.json, reloaded into the FES in
+    // place on dependency changes. The exact-file watcher persists across an
+    // initial absence or deletion without scanning the rest of .dart_tool.
+    if (serverDartToolDir != null)
+      p.absolute(p.join(serverDartToolDir, 'package_config.json')),
+    // Each Flutter resolution's package_graph.json, watched to detect Flutter
+    // dependency changes (workspace root or, in a non-workspace project, the
+    // Flutter package's own .dart_tool).
+    ...flutterPackageGraphPaths.map(p.absolute),
   };
 }
 
@@ -1130,12 +1133,14 @@ Future<void> _runTuiBackend({
       serverStderrSink: stderrSink,
       flutterStdoutSinkFor: (app) => TuiLogSink(
         holder,
-        addLine: (line) => holder.state.appLogTabFor(app.id)?.lines.add(line),
+        addLine: (line) => handleFlutterOutput(holder, app.id, line),
       ),
       flutterStderrSinkFor: (app) => TuiLogSink(
         holder,
-        addLine: (line) => holder.state.appLogTabFor(app.id)?.lines.add(line),
+        addLine: (line) => handleFlutterOutput(holder, app.id, line),
       ),
+      onFlutterLog: (app, event) =>
+          handleFlutterLogEvent(holder, app.id, event),
       onEnsureFlutterAppTab: (app) {
         final tab = holder.state.getOrCreateAppLogTab(
           appId: app.id,
@@ -1199,7 +1204,7 @@ Future<void> _runTuiBackend({
         if (vmService == null) return;
         await vmService.streamListen('Extension');
         vmService.onExtensionEvent.listen(
-          (event) => handleServerLogEvent(holder, event),
+          (event) => handleFlutterExtensionEvent(holder, app.id, event),
         );
       },
       onFlutterStop: (app) {

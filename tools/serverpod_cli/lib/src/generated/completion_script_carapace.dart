@@ -55,6 +55,15 @@ commands:
       flag:
         template: ["mini", "fullstack", "server", "module"]
 
+  - name: database
+
+    commands:
+      - name: start
+        flags:
+          -s, --server-dir=: "Server project directory. Defaults to auto-detection."
+          -m, --mode=: "Serverpod run mode whose database config should be used."
+          -p, --port=: "TCP port override. Defaults to the configured database port."
+
   - name: quickstart
     flags:
       -f, --force: "Create the project even if there are issues that prevent it from running out of the box."

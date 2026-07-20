@@ -8,6 +8,7 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
+import 'package:serverpod_cli/src/commands/watcher.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/generator/analyzers.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
@@ -314,8 +315,6 @@ Future<bool> _performGenerateWatch({
     log.info(generatedCodeAlreadyUpToDate, type: TextLogType.success);
   }
 
-  log.debug(initialCodeGenerationComplete);
-
   // Set up file watcher for source directories only (no web or client).
   final watcher = FileWatcher(
     watchPaths: {
@@ -328,12 +327,28 @@ Future<bool> _performGenerateWatch({
     },
   );
 
+  // Announce "Listening for changes" only once the OS watcher is actually
+  // initialized: events that occur before that (the initial directory scan
+  // can take seconds, notably on Windows) are silently dropped. The `ready`
+  // future only starts completing once the stream below has a subscriber.
+  unawaited(
+    watcher.ready.then((_) => log.debug(initialCodeGenerationComplete)),
+  );
+
+  // The generated dirs live inside the watched lib/ dirs, so generation
+  // output shows up as watcher events. Feeding those back into generation
+  // would make every run trigger the next one.
+  final generatedDirPaths = config.generatedDirPaths;
+  bool isGenerated(String filePath) => generatedDirPaths.any(
+    (dir) => path.isWithin(dir, path.absolute(filePath)),
+  );
+
   // Process file change events.
   await for (final event in watcher.onFilesChanged) {
     final affectedPaths = {
       ...event.dartFiles,
       ...event.modelFiles,
-    };
+    }.where((f) => !isGenerated(f)).toSet();
 
     if (affectedPaths.isEmpty) continue;
 

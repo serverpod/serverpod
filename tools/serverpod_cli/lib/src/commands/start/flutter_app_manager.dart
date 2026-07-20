@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/start/flutter_dependency_tracker.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_log_event.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:serverpod_cli/src/commands/start/package_dependency_tracker.dart';
 import 'package:serverpod_cli/src/config/flutter_app_config.dart';
@@ -44,6 +45,7 @@ class FlutterAppManager {
     required this.onStop,
     required this.onLaunchFailed,
     required this.onEnsureAppTab,
+    required this.onLog,
     required this.stdoutSinkFor,
     required this.stderrSinkFor,
     required this.serverPubspecFile,
@@ -93,6 +95,7 @@ class FlutterAppManager {
   final void Function(FlutterAppConfig app) onStop;
   final void Function(FlutterAppConfig app) onLaunchFailed;
   final void Function(FlutterAppConfig app) onEnsureAppTab;
+  final void Function(FlutterAppConfig app, FlutterLogEvent event) onLog;
   final IOSink Function(FlutterAppConfig app) stdoutSinkFor;
   final IOSink Function(FlutterAppConfig app) stderrSinkFor;
 
@@ -159,12 +162,28 @@ class FlutterAppManager {
   FlutterDependencyTracker? dependencyTrackerFor(String appId) =>
       _runtimes[appId]?.dependencyTracker;
 
+  /// The dependency graph to watch for [appId].
+  ///
+  /// Before the first Flutter run creates a resolution, this returns the
+  /// package-local path that Flutter will create. Once a tracker is available,
+  /// its resolved workspace or package-local `.dart_tool` path is used.
+  String? packageGraphPathFor(String appId) {
+    final runtime = _runtimeFor(appId);
+    if (runtime == null || !runtime.app.hasPackage) return null;
+    final dartToolDir =
+        runtime.dependencyTracker?.dartToolDir ??
+        p.join(p.joinAll(runtime.app.pathParts), '.dart_tool');
+    return p.join(dartToolDir, 'package_graph.json');
+  }
+
   /// Checks dependency changes for [appId].
   PackageDependencyChange checkDependencyChange(String appId) {
     if (dependencyChangeOverrideForTesting != null) {
       return dependencyChangeOverrideForTesting!(appId);
     }
-    return _runtimes[appId]?.dependencyTracker?.refresh() ??
+    final runtime = _runtimes[appId];
+    if (runtime?.dependencyTracker == null) _setupDependencyTracker(appId);
+    return runtime?.dependencyTracker?.refresh() ??
         PackageDependencyChange.none;
   }
 
@@ -244,6 +263,7 @@ class FlutterAppManager {
       machineArgsOverride: argsOverrideForTesting?.call(runtime.app),
       stdoutSink: stdoutSinkFor(runtime.app),
       stderrSink: stderrSinkFor(runtime.app),
+      onLog: (event) => onLog(runtime.app, event),
       onProgress: (stage) {
         onProgress(runtime.app, stage);
         log.info('  ${runtime.app.name}: $stage');
