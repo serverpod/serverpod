@@ -128,12 +128,13 @@ Future<Process> startServerpod(
   List<String> args, {
   required String workingDirectory,
   RunType runType = RunType.compiled,
+  Map<String, String> environment = const {},
 }) async {
   final (exe, fullArgs) = await _resolveCommand(args, runType);
   return Process.start(
     exe,
     fullArgs,
     workingDirectory: workingDirectory,
-    environment: {'SERVERPOD_HOME': serverpodHome},
+    environment: {'SERVERPOD_HOME': serverpodHome, ...environment},
   );
 }
