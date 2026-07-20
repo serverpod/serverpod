@@ -291,4 +291,159 @@ void main() {
       },
     );
   });
+
+  group('Given a structured log with stack-traced error entries', () {
+    late ServerWatchState state;
+    late NoctermTester tester;
+
+    setUp(() async {
+      state = ServerWatchState();
+      state.showSplash = false;
+      state.serverReady = true;
+      for (final (message, trace) in [
+        ('boom', '#0 boom-trace'),
+        ('kaboom', '#0 other-trace'),
+      ]) {
+        state.logHistory.add(
+          LogEntry(
+            time: DateTime(2026),
+            level: LogLevel.error,
+            message: message,
+            scope: LogScope.root('server'),
+            error: 'Exception: $message',
+            stackTrace: StackTrace.fromString(trace),
+          ),
+        );
+      }
+
+      tester = await _pump(state, const Size(100, 24));
+    });
+
+    test('then a collapsed entry shows a styled clickable affordance', () {
+      final ts = tester.terminalState;
+
+      expect(ts.containsText('▸ 1-line stack trace E Expand'), isTrue);
+      expect(ts.containsText('#0 boom-trace'), isFalse);
+
+      // The `E` key hint follows the action-button convention: the
+      // activation key is highlighted apart from the label.
+      final key = ts.getStyledText().firstWhere(
+        (s) =>
+            s.text.trim() == 'E' &&
+            s.style.color == ServerpodThemeData.dark.activationKey,
+        orElse: () => throw StateError('No styled activation-key E found'),
+      );
+      expect(key.style.color, ServerpodThemeData.dark.activationKey);
+    });
+
+    test(
+      'when one entry is clicked then the others stays collapsed',
+      () async {
+        expect(tester.terminalState.findText('E Expand'), hasLength(2));
+
+        final affordance = tester.terminalState.findText('E Expand').first;
+        await tester.tap(affordance.x, affordance.y);
+        await tester.pump();
+
+        final ts = tester.terminalState;
+        final expandedBoth =
+            ts.containsText('#0 boom-trace') &&
+            ts.containsText('#0 other-trace');
+        expect(expandedBoth, isFalse, reason: 'only one entry may expand');
+        expect(
+          ts.containsText('#0 boom-trace') || ts.containsText('#0 other-trace'),
+          isTrue,
+          reason: 'the clicked entry must expand',
+        );
+        expect(
+          ts.findText('E Expand'),
+          hasLength(1),
+          reason: 'the other entry must keep its collapsed affordance',
+        );
+      },
+    );
+  });
+
+  group(
+    'Given a scrollback with a stack trace taller than the viewport',
+    () {
+      late NoctermTester tester;
+
+      LogEntry infoEntry(String message) => LogEntry(
+        time: DateTime(2026),
+        level: LogLevel.info,
+        message: message,
+        scope: LogScope.root('server'),
+      );
+
+      setUp(() async {
+        final state = ServerWatchState();
+        state.showSplash = false;
+        state.serverReady = true;
+        // Old entries above, the error in the middle, newer entries below;
+        // the 60-line trace exceeds the 24-row viewport when expanded.
+        for (var i = 0; i < 50; i++) {
+          state.logHistory.add(infoEntry('older-$i'));
+        }
+        state.logHistory.add(
+          LogEntry(
+            time: DateTime(2026),
+            level: LogLevel.error,
+            message: 'boom',
+            scope: LogScope.root('server'),
+            error: 'Exception: boom',
+            stackTrace: StackTrace.fromString(
+              [for (var i = 0; i < 60; i++) '#$i frame-$i'].join('\n'),
+            ),
+          ),
+        );
+        for (var i = 0; i < 10; i++) {
+          state.logHistory.add(infoEntry('newer-$i'));
+        }
+        tester = await _pump(state, const Size(100, 24));
+      });
+
+      test(
+        'when the trace is expanded and collapsed then the clicked entry '
+        'stays in view',
+        () async {
+          final expand = tester.terminalState.findText('E Expand').first;
+          await tester.tap(expand.x, expand.y);
+          await tester.pump();
+
+          final ts = tester.terminalState;
+          expect(
+            ts.containsText('E Collapse'),
+            isTrue,
+            reason:
+                'expanding a trace taller than the screen must keep the '
+                'clicked affordance in view (pinned to the top)',
+          );
+          expect(
+            ts.containsText('#0 frame-0'),
+            isTrue,
+            reason: 'the start of the trace must be shown below the entry',
+          );
+          expect(
+            ts.containsText('frame-59'),
+            isFalse,
+            reason: 'the trace tail cannot fit and must overflow off-screen',
+          );
+
+          final collapse = tester.terminalState.findText('E Collapse').first;
+          await tester.tap(collapse.x, collapse.y);
+          await tester.pump();
+
+          expect(
+            tester.terminalState.containsText('E Expand'),
+            isTrue,
+            reason:
+                'collapsing from a scrolled-up position must follow the '
+                'entry back into view',
+          );
+          expect(tester.terminalState.containsText('boom'), isTrue);
+        },
+      );
+    },
+  );
 }

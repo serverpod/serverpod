@@ -1,4 +1,5 @@
 import 'package:nocterm/nocterm.dart';
+import 'package:serverpod_cli/src/commands/start/tui/inspectable_scroll_controller.dart';
 import 'package:serverpod_tui/serverpod_tui.dart';
 
 /// Identifier for the primary (server log) area.
@@ -23,8 +24,8 @@ abstract class PaneTab {
 /// Structured server log view pinned to [kMainArea].
 class ServerLogTab implements PaneTab {
   /// Creates a [ServerLogTab].
-  ServerLogTab({ScrollController? scrollController})
-    : scrollController = scrollController ?? ScrollController();
+  ServerLogTab({InspectableScrollController? scrollController})
+    : scrollController = scrollController ?? InspectableScrollController();
 
   @override
   String get areaId => kMainArea;
@@ -33,7 +34,7 @@ class ServerLogTab implements PaneTab {
   String get label => 'Server logs';
 
   @override
-  final ScrollController scrollController;
+  final InspectableScrollController scrollController;
 }
 
 /// Flutter app log view pinned to [kAppsArea].
@@ -44,14 +45,14 @@ class AppLogTab implements PaneTab {
     required this.label,
     BoundedQueueList<String>? lines,
     BoundedQueueList<Object>? logHistory,
-    ScrollController? scrollController,
+    InspectableScrollController? scrollController,
     this.ready = false,
     this.stopped = false,
     this.url,
     this.startupStage,
   }) : lines = lines ?? BoundedQueueList<String>(maxLogEntries),
        logHistory = logHistory ?? BoundedQueueList<Object>(maxLogEntries),
-       scrollController = scrollController ?? ScrollController();
+       scrollController = scrollController ?? InspectableScrollController();
 
   /// Maximum number of raw lines and structured entries to keep.
   static const maxLogEntries = 10000;
@@ -86,7 +87,7 @@ class AppLogTab implements PaneTab {
   final BoundedQueueList<Object> logHistory;
 
   @override
-  final ScrollController scrollController;
+  final InspectableScrollController scrollController;
 }
 
 /// A layout region with its own tab strip.
