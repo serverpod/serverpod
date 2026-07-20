@@ -491,7 +491,9 @@ class MainScreen extends StatelessComponent {
 
     String statusText;
     if (tab.ready) {
-      statusText = tab.url ?? 'App running';
+      final device = tab.device;
+      statusText =
+          tab.url ?? 'Running on device${device == null ? '' : ' $device'}';
     } else if (tab.stopped) {
       statusText = 'App stopped';
     } else {
