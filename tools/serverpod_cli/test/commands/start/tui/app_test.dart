@@ -99,26 +99,6 @@ void main() {
       expect(state.expandStackTraces, isFalse);
     });
 
-    test(
-      'when e is pressed after a per-entry toggle then all traces align to '
-      'the global state',
-      () async {
-        final entry = state.logHistory.whereType<LogEntry>().first;
-        state.toggleStackTrace(entry);
-        expect(state.isStackTraceExpanded(entry), isTrue);
-
-        // E flips the global flag and drops per-entry deviations, so the
-        // already-expanded entry stays expanded (not double-flipped shut).
-        await _sendKey(tester, LogicalKey.keyE);
-        expect(state.expandStackTraces, isTrue);
-        expect(state.isStackTraceExpanded(entry), isTrue);
-
-        await _sendKey(tester, LogicalKey.keyE);
-        expect(state.expandStackTraces, isFalse);
-        expect(state.isStackTraceExpanded(entry), isFalse);
-      },
-    );
-
     test('when backtick is pressed then the raw server logs open', () async {
       expect(state.showRawServerLogs, isFalse);
 
@@ -139,6 +119,44 @@ void main() {
       expect(state.showRawServerLogs, isFalse);
     });
   });
+
+  group(
+    'Given a structured log tab with a stack-traced error entry and one expanded entry,',
+    () {
+      late LogEntry expandedEntry;
+      setUp(() {
+        state.logHistory.add(
+          LogEntry(
+            time: DateTime(2026),
+            level: LogLevel.error,
+            message: 'boom',
+            scope: LogScope.root('server'),
+            error: 'Exception: boom',
+            stackTrace: StackTrace.fromString('#0 a\n#1 b'),
+          ),
+        );
+
+        expandedEntry = state.logHistory.whereType<LogEntry>().first;
+        state.toggleStackTrace(expandedEntry);
+        expect(state.isStackTraceExpanded(expandedEntry), isTrue);
+      });
+
+      test(
+        'when e is pressed, then all traces align to the global state',
+        () async {
+          // E flips the global flag and drops per-entry deviations, so the
+          // already-expanded entry stays expanded (not double-flipped shut).
+          await _sendKey(tester, LogicalKey.keyE);
+          expect(state.expandStackTraces, isTrue);
+          expect(state.isStackTraceExpanded(expandedEntry), isTrue);
+
+          await _sendKey(tester, LogicalKey.keyE);
+          expect(state.expandStackTraces, isFalse);
+          expect(state.isStackTraceExpanded(expandedEntry), isFalse);
+        },
+      );
+    },
+  );
 
   group('Given a Flutter app log tab with a stack-traced error entry,', () {
     setUp(() {
