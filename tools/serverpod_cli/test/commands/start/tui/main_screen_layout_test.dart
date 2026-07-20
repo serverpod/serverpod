@@ -313,51 +313,49 @@ void main() {
     );
   });
 
-  group('Given a ready Flutter app tab', () {
-    test(
-      'when it has a configured device '
-      'then the status line names it',
-      () async {
-        final tester = await _pumpReadyAppTab(device: 'emulator-5554');
+  group('Given a ready Flutter app tab with a configured device', () {
+    late NoctermTester tester;
 
-        expect(
-          tester.terminalState.containsText('Running on device emulator-5554'),
-          isTrue,
-        );
-      },
-    );
+    setUp(() async {
+      tester = await _pumpReadyAppTab(device: 'emulator-5554');
+    });
 
-    test(
-      'when it has no configured device '
-      'then the status line shows the generic running label',
-      () async {
-        final tester = await _pumpReadyAppTab();
+    test('then the status line names the device', () {
+      expect(
+        tester.terminalState.containsText('Running on device emulator-5554'),
+        isTrue,
+      );
+    });
+  });
 
-        expect(
-          tester.terminalState.containsText('Running on device'),
-          isTrue,
-        );
-      },
-    );
+  group('Given a ready Flutter app tab without a configured device', () {
+    late NoctermTester tester;
 
-    test(
-      'when a URL is published '
-      'then the status line shows the URL, not the device',
-      () async {
-        final tester = await _pumpReadyAppTab(
-          device: 'chrome',
-          url: 'http://localhost:8080',
-        );
+    setUp(() async {
+      tester = await _pumpReadyAppTab();
+    });
 
-        expect(
-          tester.terminalState.containsText('http://localhost:8080'),
-          isTrue,
-        );
-        expect(
-          tester.terminalState.containsText('Running on device'),
-          isFalse,
-        );
-      },
-    );
+    test('then the status line shows the generic running label', () {
+      expect(tester.terminalState.containsText('Running on device'), isTrue);
+    });
+  });
+
+  group('Given a ready Flutter app tab with a published URL', () {
+    late NoctermTester tester;
+
+    setUp(() async {
+      tester = await _pumpReadyAppTab(
+        device: 'chrome',
+        url: 'http://localhost:8080',
+      );
+    });
+
+    test('then the status line shows the URL, not the device', () {
+      expect(
+        tester.terminalState.containsText('http://localhost:8080'),
+        isTrue,
+      );
+      expect(tester.terminalState.containsText('Running on device'), isFalse);
+    });
   });
 }
