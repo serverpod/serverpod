@@ -31,6 +31,7 @@ class MainScreen extends StatelessComponent {
     required this.onCopyAlert,
     required this.onDismissAlert,
     required this.onStopOrCloseAppTab,
+    required this.onToggleStackTrace,
   });
 
   final ServerWatchState state;
@@ -58,6 +59,10 @@ class MainScreen extends StatelessComponent {
 
   /// Stops the app or closes the tab for the given app tab (also bound to `X`).
   final void Function(AppLogTab tab) onStopOrCloseAppTab;
+
+  /// Flips the stack-trace visibility of one log entry, invoked by clicking
+  /// its expand/collapse affordance (`E` toggles all entries at once).
+  final void Function(LogEntry entry) onToggleStackTrace;
 
   List<(String, List<(String, String)>)> get _helpBindings => [
     (
@@ -653,6 +658,9 @@ class MainScreen extends StatelessComponent {
 
   /// Renders a single [LogEntry], appending its stack trace - or a collapsed
   /// affordance hinting that one exists - when the entry carries one.
+  ///
+  /// The affordance line is clickable and toggles just this entry's trace;
+  /// the `E` key still expands or collapses all traces at once.
   Component _buildLogEntry(BuildContext context, LogEntry entry, int index) {
     final message = LogMessageWidget(key: ValueKey(index), entry: entry);
     final stackTrace = entry.stackTrace?.toString().trimRight();
@@ -660,13 +668,35 @@ class MainScreen extends StatelessComponent {
 
     final st = ServerpodTheme.of(context);
     final dim = TextStyle(color: st.debugLevel, fontWeight: FontWeight.dim);
+    final expanded = state.isStackTraceExpanded(entry);
 
-    final trailing = state.expandStackTraces
-        ? Text(stackTrace, style: dim)
-        : Text(
-            '▸ ${stackTrace.split('\n').length}-line stack trace (press e)',
-            style: dim,
-          );
+    final lineCount = stackTrace.split('\n').length;
+    final affordance = GestureDetector(
+      onTap: () => onToggleStackTrace(entry),
+      child: RichText(
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: expanded
+                  ? '▾ $lineCount-line stack trace '
+                  : '▸ $lineCount-line stack trace ',
+              style: dim,
+            ),
+            TextSpan(
+              text: 'E',
+              style: TextStyle(
+                color: st.activationKey,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            TextSpan(
+              text: expanded ? ' Collapse' : ' Expand',
+              style: TextStyle(color: st.brightText),
+            ),
+          ],
+        ),
+      ),
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -674,8 +704,13 @@ class MainScreen extends StatelessComponent {
         message,
         Padding(
           padding: const EdgeInsets.only(left: 6),
-          child: trailing,
+          child: affordance,
         ),
+        if (expanded)
+          Padding(
+            padding: const EdgeInsets.only(left: 6),
+            child: Text(stackTrace, style: dim),
+          ),
       ],
     );
   }
