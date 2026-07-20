@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math' as math;
@@ -216,6 +217,7 @@ class BinaryStore {
               'Timed out after ${_formatDuration(hardTimeout)} waiting for '
               'another extractor of ${artifact.cacheKey}/${artifact.platform}. '
               'Claim: ${claim.path} (${_describeClaimAge(claim)})',
+              kind: BinaryFetchFailureKind.coordination,
             );
         }
       }
@@ -413,11 +415,9 @@ class BinaryStore {
         'Prebuilt PostgreSQL bundle '
         '${artifact.cacheKey}/${artifact.platform} is unavailable: the '
         'release archive or its SHA-256 sidecar returned 404.\n'
-        'Expected archive: ${artifact.archiveUrl}\n'
-        'For an intentional development or CI source build, install the '
-        'native build toolchain and set SERVERPOD_PG_SOURCE=build '
-        '(or =auto to fall back only on 404).',
+        'Expected archive: ${artifact.archiveUrl}',
         statusCode: 404,
+        kind: BinaryFetchFailureKind.unavailable,
       );
     }
     onProgress?.call(1.0, 'download');
@@ -468,19 +468,17 @@ class BinaryStore {
   }
 
   Future<String> _fetchSha256(BinaryArtifact artifact) async {
-    final resp = await _http
-        .get(artifact.sha256Url)
-        .timeout(
-          _sha256Timeout,
-          onTimeout: () => throw BinaryFetchException(
-            'Timed out after ${_sha256Timeout.inSeconds}s fetching '
-            '${artifact.sha256Url}',
-          ),
-        );
+    final resp = await _get(
+      artifact.sha256Url,
+      timeout: _sha256Timeout,
+    );
     if (resp.statusCode != 200) {
       throw BinaryFetchException(
         'GET ${artifact.sha256Url} returned ${resp.statusCode}',
         statusCode: resp.statusCode,
+        kind: resp.statusCode == 404
+            ? BinaryFetchFailureKind.unavailable
+            : BinaryFetchFailureKind.download,
       );
     }
     final body = resp.body.trim();
@@ -494,22 +492,41 @@ class BinaryStore {
   }
 
   Future<Uint8List> _downloadArchive(BinaryArtifact artifact) async {
-    final resp = await _http
-        .get(artifact.archiveUrl)
-        .timeout(
-          _jarTimeout,
-          onTimeout: () => throw BinaryFetchException(
-            'Timed out after ${_jarTimeout.inMinutes} min downloading '
-            '${artifact.archiveUrl}',
-          ),
-        );
+    final resp = await _get(
+      artifact.archiveUrl,
+      timeout: _jarTimeout,
+    );
     if (resp.statusCode != 200) {
       throw BinaryFetchException(
         'GET ${artifact.archiveUrl} returned ${resp.statusCode}',
         statusCode: resp.statusCode,
+        kind: resp.statusCode == 404
+            ? BinaryFetchFailureKind.unavailable
+            : BinaryFetchFailureKind.download,
       );
     }
     return resp.bodyBytes;
+  }
+
+  Future<http.Response> _get(Uri url, {required Duration timeout}) async {
+    try {
+      return await _http.get(url).timeout(timeout);
+    } on TimeoutException {
+      throw BinaryFetchException(
+        'Timed out after ${_formatDuration(timeout)} fetching $url',
+        kind: BinaryFetchFailureKind.download,
+      );
+    } on http.ClientException catch (error) {
+      throw BinaryFetchException(
+        'Failed to fetch $url: $error',
+        kind: BinaryFetchFailureKind.download,
+      );
+    } on IOException catch (error) {
+      throw BinaryFetchException(
+        'Failed to fetch $url: $error',
+        kind: BinaryFetchFailureKind.download,
+      );
+    }
   }
 
   /// Releases the underlying HTTP client if it was created by this store.

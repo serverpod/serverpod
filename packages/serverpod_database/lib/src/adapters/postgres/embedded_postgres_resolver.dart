@@ -5,6 +5,8 @@ import 'package:postgres/postgres.dart' as pg;
 import 'package:serverpod_embedded_postgres/serverpod_embedded_postgres.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
+import 'embedded_postgres_user_facing_error.dart';
+
 /// Outcome of [startOrAttachEmbeddedPostgres].
 class ResolvedEmbeddedPostgres {
   /// Connection coordinates for the resolved postmaster, carrying the
@@ -42,18 +44,29 @@ Future<ResolvedEmbeddedPostgres?> startOrAttachEmbeddedPostgres(
   final dataDir = config._embeddedPostgresDataDir(baseDirectory: baseDirectory);
   if (dataDir == null) return null;
 
-  final result = await EmbeddedPostgres.startOrAttach(
-    EmbeddedPostgresOptions(
-      dataDir: dataDir,
-      databaseName: config.name,
-      username: config.user,
-      transport: UnixTransport(
-        initialPassword: config.password.isEmpty ? null : config.password,
+  final EmbeddedStartResult result;
+  try {
+    result = await EmbeddedPostgres.startOrAttach(
+      EmbeddedPostgresOptions(
+        dataDir: dataDir,
+        databaseName: config.name,
+        username: config.user,
+        transport: UnixTransport(
+          initialPassword: config.password.isEmpty ? null : config.password,
+        ),
+        detach: false,
+        repairStaleLocks: true,
       ),
-      detach: false,
-      repairStaleLocks: true,
-    ),
-  );
+    );
+  } catch (error, stackTrace) {
+    Error.throwWithStackTrace(
+      EmbeddedPostgresStartupException(
+        formatEmbeddedPostgresFailure(error),
+        includeStackTrace: shouldReportEmbeddedPostgresFailure(error),
+      ),
+      stackTrace,
+    );
+  }
 
   return ResolvedEmbeddedPostgres(
     connectivity: config._connectivityFrom(result.handle.endpoint),
@@ -86,4 +99,23 @@ extension on PostgresDatabaseConfig {
         name: name,
         isUnixSocket: endpoint.isUnixSocket,
       );
+}
+
+/// An embedded database startup failure that has already been translated into
+/// user-facing guidance.
+final class EmbeddedPostgresStartupException implements Exception {
+  /// Message that can be shown directly to a Serverpod user.
+  final String message;
+
+  /// Whether the original stack trace should be shown for issue reporting.
+  final bool includeStackTrace;
+
+  /// Creates a user-facing embedded database startup failure.
+  const EmbeddedPostgresStartupException(
+    this.message, {
+    required this.includeStackTrace,
+  });
+
+  @override
+  String toString() => message;
 }

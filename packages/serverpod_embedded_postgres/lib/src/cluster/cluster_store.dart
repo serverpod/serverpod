@@ -94,7 +94,7 @@ class ClusterStore {
 
       var result = await Process.run(initdb, args);
       if (result.exitCode != 0) {
-        throw InitdbException(
+        throw InitializeDatabaseException(
           'initdb exit ${result.exitCode}\n'
           '--- stdout ---\n${result.stdout}\n'
           '--- stderr ---\n${result.stderr}',

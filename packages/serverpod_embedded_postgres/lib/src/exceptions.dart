@@ -24,8 +24,32 @@ final class BinaryFetchException extends EmbeddedPostgresException {
   /// trigger for the build-from-source fallback in [BinarySource.auto].
   final int? statusCode;
 
-  /// Creates a [BinaryFetchException] with [message] and optional [statusCode].
-  const BinaryFetchException(super.message, {this.statusCode});
+  /// The stage of the fetch that failed.
+  final BinaryFetchFailureKind kind;
+
+  /// Creates a [BinaryFetchException] with [message], optional [statusCode],
+  /// and the neutral failure classification [kind].
+  const BinaryFetchException(
+    super.message, {
+    this.statusCode,
+    this.kind = BinaryFetchFailureKind.invalidResponse,
+  });
+}
+
+/// Identifies which part of obtaining a binary bundle failed.
+enum BinaryFetchFailureKind {
+  /// The request could not complete, or returned a response that may be
+  /// transient.
+  download,
+
+  /// The requested bundle or checksum sidecar does not exist.
+  unavailable,
+
+  /// The server returned content that does not satisfy the bundle contract.
+  invalidResponse,
+
+  /// Coordination with another process preparing the same bundle failed.
+  coordination,
 }
 
 /// A downloaded or extracted bundle failed verification: SHA-256 mismatch
@@ -62,9 +86,9 @@ final class BinaryBuildException extends EmbeddedPostgresException {
 
 /// `initdb` returned a non-zero exit code. [message] embeds the captured
 /// stdout + stderr.
-final class InitdbException extends EmbeddedPostgresException {
-  /// Creates an [InitdbException] with [message].
-  const InitdbException(super.message);
+final class InitializeDatabaseException extends EmbeddedPostgresException {
+  /// Creates an [InitializeDatabaseException] with [message].
+  const InitializeDatabaseException(super.message);
 }
 
 /// `postgres` did not become ready within

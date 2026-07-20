@@ -6,3 +6,4 @@
 library;
 
 export 'src/adapters/postgres/embedded_postgres_resolver.dart';
+export 'src/adapters/postgres/embedded_postgres_user_facing_error.dart';

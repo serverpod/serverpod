@@ -61,7 +61,7 @@ void main() {
       'when exhaustively switching over EmbeddedPostgresException '
       'then all variants are reachable.',
       () {
-        EmbeddedPostgresException any = const InitdbException('x');
+        EmbeddedPostgresException any = const InitializeDatabaseException('x');
 
         var label = switch (any) {
           BinaryFetchException() => 'fetch',
@@ -69,7 +69,7 @@ void main() {
           BinaryBuildException() => 'build',
           UnsupportedPlatformException() => 'platform',
           UnsupportedVersionException() => 'version',
-          InitdbException() => 'initdb',
+          InitializeDatabaseException() => 'initdb',
           StartupTimeoutException() => 'timeout',
           CrashedException() => 'crashed',
           AttachException() => 'attach',

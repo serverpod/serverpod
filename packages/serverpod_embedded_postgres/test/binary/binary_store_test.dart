@@ -125,13 +125,46 @@ void main() {
 
         await expectLater(
           store.ensure(artifact),
-          throwsA(isA<BinaryFetchException>()),
+          throwsA(
+            isA<BinaryFetchException>().having(
+              (error) => error.kind,
+              'kind',
+              BinaryFetchFailureKind.invalidResponse,
+            ),
+          ),
         );
 
         store.close();
       },
     );
   });
+
+  test(
+    'Given a network failure while downloading the bundle, '
+    'when ensure runs, '
+    'then it throws a download-classified BinaryFetchException.',
+    () async {
+      var store = BinaryStore(
+        cacheRoot: cache,
+        httpClient: MockClient((request) async {
+          throw http.ClientException('connection failed', request.url);
+        }),
+      );
+
+      await expectLater(
+        store.ensure(artifact),
+        throwsA(
+          isA<BinaryFetchException>().having(
+            (error) => error.kind,
+            'kind',
+            BinaryFetchFailureKind.download,
+          ),
+        ),
+      );
+
+      store.close();
+    },
+  );
 
   group('Given an empty cache and 4 concurrent isolates', () {
     test(
@@ -442,12 +475,17 @@ void main() {
             isA<BinaryFetchException>()
                 .having((e) => e.statusCode, 'statusCode', 404)
                 .having(
+                  (e) => e.kind,
+                  'kind',
+                  BinaryFetchFailureKind.unavailable,
+                )
+                .having(
                   (e) => e.message,
                   'message',
                   allOf(
                     contains('16.13.0-r1/linux-x64'),
                     contains('archive or its SHA-256 sidecar returned 404'),
-                    contains('SERVERPOD_PG_SOURCE=build'),
+                    isNot(contains('SERVERPOD_PG_SOURCE')),
                   ),
                 ),
           ),
