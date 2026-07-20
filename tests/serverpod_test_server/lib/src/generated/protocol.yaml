@@ -160,7 +160,6 @@ fieldScopes:
   - retrieveObject:
 testFutureCalls:
   - makeFutureCall:
-  - makeFutureCallThatThrows:
 listParameters:
   - returnIntList:
   - returnIntListList:

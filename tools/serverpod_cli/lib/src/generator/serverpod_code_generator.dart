@@ -58,6 +58,27 @@ abstract class ServerpodCodeGenerator {
     return allFiles.keys.toList();
   }
 
+  /// Generate and save the server future calls file, ahead of full protocol
+  /// generation.
+  ///
+  /// This allows endpoint analysis to resolve imports of the generated
+  /// future calls file on a clean tree. The file is generated again (with
+  /// identical content) by [generateProtocolDefinition].
+  ///
+  /// Returns a list of generated files.
+  static Future<List<String>> generateFutureCalls({
+    required ProtocolDefinition protocolDefinition,
+    required GeneratorConfig config,
+  }) async {
+    var allFiles = const DartServerCodeGenerator().generateFutureCallsCode(
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+    await _writeFiles(allFiles);
+
+    return allFiles.keys.toList();
+  }
+
   /// Writes generated files to disk, skipping files whose content is
   /// unchanged to avoid unnecessary file-system modification timestamps.
   static Future<void> _writeFiles(Map<String, String> files) async {

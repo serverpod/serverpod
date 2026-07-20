@@ -7,7 +7,8 @@ import 'package:test/test.dart';
 import 'package:serverpod/serverpod.dart';
 
 import 'package:serverpod_test_client/serverpod_test_client.dart';
-import 'package:serverpod_test_server/src/futureCalls/test_exception_call.dart';
+import 'package:serverpod_test_server/src/generated/future_calls.dart';
+import 'package:serverpod_test_server/src/generated/protocol.dart' as server;
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 
 import 'test_exception_handler.dart';
@@ -107,7 +108,6 @@ void main() {
   group(
     'Given a serverpod server with future calls and a diagnostic event handler',
     () {
-      var client = Client('http://localhost:8080/');
       var exceptionHandler = TestExceptionHandler();
       late Serverpod pod;
 
@@ -118,7 +118,6 @@ void main() {
             diagnosticEventHandlers: [exceptionHandler],
           ),
         );
-        pod.registerFutureCall(TestExceptionCall(), 'testExceptionCall');
         await pod.start();
       });
 
@@ -128,12 +127,13 @@ void main() {
       });
 
       test(
-        'when a client calls an endpoint method that schedules a future call that throws '
+        'when a scheduled future call throws '
         'then the diagnostic event handler gets called',
         () async {
-          await client.testFutureCalls.makeFutureCallThatThrows(
-            SimpleData(num: 42),
-          );
+          await pod.futureCalls
+              .callWithDelay(const Duration(seconds: 1))
+              .testExceptionCall
+              .run(server.SimpleData(num: 42));
 
           final record = await exceptionHandler.events.first.timeout(
             const Duration(seconds: 6),
