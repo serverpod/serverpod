@@ -22,6 +22,7 @@ MSYS2_ARG_CONV_EXCL='*' net.exe user \
 runner_temp_msys="$(cygpath -u "$RUNNER_TEMP")"
 test_work_msys="$runner_temp_msys/limited-test"
 test_work_win="$(cygpath -m "$test_work_msys")"
+test_path_win="$(cygpath -mp "$PATH")"
 
 grant_test_user_write_access() {
   local path="$1"
@@ -58,12 +59,37 @@ if [[ -n "${FLUTTER_ROOT:-}" ]]; then
     /v AllowDevelopmentWithoutDevLicense /t REG_DWORD /d 1 /f
 fi
 
+# PsExec starts the alternate account with its own environment. Forward only
+# the tool and CI variables the test commands require; copying the complete
+# runner environment would also expose unrelated credentials.
+test_environment_commands="set \"PATH=$test_path_win\"
+set \"PUB_CACHE=$(cygpath -m "$PUB_CACHE")\"
+set \"RUNNER_TEMP=$(cygpath -m "$RUNNER_TEMP")\"
+set \"SHARD_INDEX=${SHARD_INDEX:-}\"
+set \"TOTAL_SHARDS=${TOTAL_SHARDS:-}\""
+
+append_test_environment_variable() {
+  local name="$1"
+  local value="${!name:-}"
+  [[ -n "$value" ]] || return 0
+  test_environment_commands+=$'\n'"set \"$name=$value\""
+}
+
+append_test_environment_variable CI
+append_test_environment_variable DART_HOME
+append_test_environment_variable FLUTTER_ROOT
+append_test_environment_variable GITHUB_ACTIONS
+append_test_environment_variable GITHUB_WORKSPACE
+append_test_environment_variable SERVERPOD_PG_CACHE_DIR
+append_test_environment_variable SERVERPOD_SILENCE_LIFECYCLE_MESSAGES
+
 # Flutter and the Dart analyzer store persistent tool state in APPDATA and
-# LOCALAPPDATA. Keep that state in the isolated Low Integrity work tree instead
-# of changing the runner profile.
+# LOCALAPPDATA. Keep that state in the isolated test work tree instead of
+# changing either account's profile.
 LIMITED_PROCESS_WORK_NAME=limited-test \
 LIMITED_PROCESS_LOG_NAME=output.log \
-LIMITED_PROCESS_COMMAND="set \"APPDATA=$test_work_win\"
+LIMITED_PROCESS_COMMAND="$test_environment_commands
+set \"APPDATA=$test_work_win\"
 set \"LOCALAPPDATA=$test_work_win\"
 $LIMITED_TEST_COMMAND" \
   "$HERE/prepare_windows_limited_process" "$launcher"

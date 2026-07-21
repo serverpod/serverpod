@@ -507,15 +507,12 @@ jobs:
         if: matrix.os == 'windows-latest'
         env:
           LIMITED_TEST_COMMAND: ${{ matrix.suite.run }}
+          SHARD_INDEX: ${{ matrix.suite.shard-index }}
+          TOTAL_SHARDS: ${{ matrix.suite.total-shards }}
         shell: bash
         run: bash util/prepare_windows_limited_test run-suite.cmd
       - name: Run integration tests against embedded PG (Windows, non-admin)
         if: matrix.os == 'windows-latest'
-        # Sharding env (empty for non-sharded suites); PsExec inherits it into the
-        # limited-token process, where the run script reads SHARD_INDEX/TOTAL_SHARDS.
-        env:
-          SHARD_INDEX: ${{ matrix.suite.shard-index }}
-          TOTAL_SHARDS: ${{ matrix.suite.total-shards }}
         shell: cmd
         run: |
           psexec -accepteula -nobanner ^
