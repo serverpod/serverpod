@@ -28,10 +28,12 @@ scripts:
     run: melos analyze --fatal-infos --fatal-warnings --category="noTemplates"
   test:
     description: >-
-      Run the host (no-Docker) test suites via `dart test`. Embedded PostgreSQL
-      is provisioned by the tests and the serverpod CLI is run from source, so
-      nothing needs to be installed or activated. Stops at the first failing
-      suite. The e2e and Docker-based flutter suites are excluded.
+      Run the primary host test suites via `dart test`. Embedded PostgreSQL is
+      provisioned by the tests and the serverpod CLI is run from source. The
+      bootstrap group includes Dockerfile and Compose checks on non-Windows
+      hosts, and Redis-tagged integration tests require Redis at redis:6379.
+      Stops at the first failing suite. The e2e and Dockerized Flutter suites
+      are excluded.
     steps:
       - test_unit
       - test_bootstrap
@@ -72,6 +74,12 @@ scripts:
       - test_integration_server
       - test_integration_modules
       - test_integration_sqlite_server
+  test_integration_embedded_pg_build:
+    description: >-
+      Build the embedded PostgreSQL bundle from source in an isolated cache,
+      then run its package integration tests and the host integration suite.
+      Requires the native PostgreSQL bundle build toolchain.
+    run: bash util/run_tests_integration_embedded_pg_build
   test_integration_server:
     description: serverpod_test_server integration tests (real-server-boot + withServerpod).
     run: |

@@ -39,9 +39,7 @@ starts reuse the cache and reach ready in under a second on a warm
 cluster. The bundle ships **PostGIS 3.5.4** and **pgvector 0.8.3**, so
 `CREATE EXTENSION postgis` / `CREATE EXTENSION vector` work out of the
 box. See `tool/build_postgres/` for how the bundles are built and
-[PLATFORMS.md](PLATFORMS.md) for the bundle-revision and append-only release
-model. Maintainers should follow [PUBLISH.md](PUBLISH.md) when releasing a
-new bundle.
+[PUBLISH.md](PUBLISH.md) for bundle versioning and publishing instructions.
 
 Bundles are downloaded by default; a missing release asset is an error,
 not a silent multi-minute source build. Set `SERVERPOD_PG_SOURCE=build`
@@ -186,13 +184,6 @@ final class TcpTransport extends Transport {
 }
 ```
 
-Errors are a sealed hierarchy rooted at `EmbeddedPostgresException`:
-`BinaryFetchException`, `BinaryVerificationException`,
-`BinaryBuildException`, `UnsupportedPlatformException`,
-`UnsupportedVersionException`, `InitdbException`,
-`StartupTimeoutException`, `CrashedException` (carries `logTail`),
-`AttachException`, `PostmasterLockBusyException`,
-`StaleClusterException`. `switch` over them exhaustively.
 
 ## What's not included
 
@@ -202,8 +193,7 @@ Errors are a sealed hierarchy rooted at `EmbeddedPostgresException`:
 - **Full PostGIS.** The bundled PostGIS covers Serverpod's supported
   surface (geography types + `ST_Intersects`/`ST_DWithin`/`ST_Distance`/
   `ST_Covers`/`ST_CoveredBy`); raster, the address standardizer, and
-  protobuf-backed output are compiled out. See
-  [PLATFORMS.md](PLATFORMS.md).
+  protobuf-backed output are compiled out.
 - **Replication / logical decoding / hot standby** - out of scope for
   a dev-loop tool.
 - **pg_dump / pgAdmin wrappers** - use `pg_dump` directly against
@@ -213,8 +203,8 @@ Errors are a sealed hierarchy rooted at `EmbeddedPostgresException`:
 
 ## Further documentation
 
-- [PLATFORMS.md](PLATFORMS.md): supported targets, extension contract, and
-  platform-specific limitations.
+- [PLATFORMS.md](PLATFORMS.md): supported targets and platform-specific
+  limitations.
 - [tool/build_postgres/README.md](tool/build_postgres/README.md): native build
   recipe and archive invariants.
 - [PUBLISH.md](PUBLISH.md): bundle revision, tagging, publication, and recovery

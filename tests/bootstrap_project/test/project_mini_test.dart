@@ -478,8 +478,6 @@ void main() async {
           reason: 'Failed to create the serverpod project.',
         );
 
-        // The server boots against embedded PostgreSQL (config/development.yaml
-        // sets `dataPath`), so no external database needs provisioning.
         var startProjectProcess = await startProcess(
           'dart',
           ['bin/main.dart', '--apply-migrations', '--role', 'maintenance'],
@@ -489,11 +487,6 @@ void main() async {
         var startProjectExitCode = await startProjectProcess.exitCode;
         expect(startProjectExitCode, 0);
       },
-      // The generated server now uses embedded PostgreSQL; drop this skip once
-      // embedded PG is verified on Windows CI.
-      skip: Platform.isWindows
-          ? 'Pending: verify embedded PostgreSQL on Windows CI'
-          : null,
     );
   });
 
@@ -802,8 +795,6 @@ void main() async {
           reason: 'Failed to upgrade the serverpod project.',
         );
 
-        // The server boots against embedded PostgreSQL (config/development.yaml
-        // sets `dataPath`), so no external database needs provisioning.
         var startProjectProcess = await startProcess(
           'dart',
           ['bin/main.dart', '--apply-migrations', '--role', 'maintenance'],
@@ -830,9 +821,6 @@ void main() async {
 
         expect(testProcess.exitCode, 0, reason: 'Tests are failing.');
       },
-      skip: !dartPubSeesFlutter()
-          ? 'dart pub cannot resolve the Flutter SDK here (version-manager shim)'
-          : null,
     );
   });
 
@@ -874,9 +862,6 @@ void main() async {
 
         expect(testProcess.exitCode, 0);
       },
-      skip: !dartPubSeesFlutter()
-          ? 'dart pub cannot resolve the Flutter SDK here (version-manager shim)'
-          : null,
     );
   });
 }

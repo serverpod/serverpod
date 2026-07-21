@@ -87,13 +87,13 @@ abstract interface class EphemeralTestDatabase {
   /// Relative paths stay relative so the SQLite adapter can anchor them
   /// against the server directory.
   ///
-  /// Throws a [StateError] for `:memory:`: an in-memory database is private to
-  /// each connection, so it cannot back a test server.
+  /// Throws a [StateError] for `:memory:` because Serverpod requires a
+  /// file-backed SQLite database.
   static String sqliteFilePath(String original, String databaseName) {
     if (original == ':memory:') {
       throw StateError(
-        "SQLite ':memory:' databases are not supported in tests; "
-        'configure a file-backed database instead.',
+        "Serverpod does not support SQLite ':memory:' databases. "
+        'Configure a file-backed SQLite database instead.',
       );
     }
     return p.join(

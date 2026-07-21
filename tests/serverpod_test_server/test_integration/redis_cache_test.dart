@@ -7,22 +7,15 @@ import 'dart:typed_data';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cache/redis_cache.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
-import 'package:serverpod_test_server/test_util/redis_probe.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:serverpod_test_shared/serverpod_test_shared.dart' hide Protocol;
 import 'package:test/test.dart';
 
-void main() async {
-  final redisSkip = await redisSkipReason();
-  if (redisSkip != null) {
-    test('redis cache suite', () => markTestSkipped(redisSkip));
-    return;
-  }
-
-  var session = await IntegrationTestServer(withRedis: true).session();
-
+void main() {
+  late Session session;
   late RedisCache cache;
   setUpAll(() async {
+    session = await IntegrationTestServer(withRedis: true).session();
     var redisController = session.serverpod.redisController;
     await redisController?.start();
     cache = RedisCache(Protocol(), redisController);
@@ -497,7 +490,12 @@ void main() async {
   });
 
   group('Given a null Redis controller', () {
-    final tempController = session.serverpod.redisController;
+    late RedisController? tempController;
+
+    setUpAll(() {
+      tempController = session.serverpod.redisController;
+    });
+
     setUp(() async {
       assert(
         session.serverpod.redisController != null,

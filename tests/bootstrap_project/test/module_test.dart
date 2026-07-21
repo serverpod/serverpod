@@ -510,9 +510,6 @@ void main() {
       test(
         'when running tests then example unit and integration tests passes',
         () async {
-          // The generated server's integration tests run on embedded
-          // PostgreSQL (config/test.yaml sets `dataPath`), so no external
-          // database needs to be provisioned here.
           var testProcess = await startProcess(
             'dart',
             ['test'],
@@ -527,11 +524,5 @@ void main() {
         },
       );
     },
-    // Previously skipped because the Postgres docker image is unavailable on
-    // Windows GitHub Actions. The generated tests now use embedded PostgreSQL,
-    // so this skip can be dropped once embedded PG is verified on Windows CI.
-    skip: Platform.isWindows
-        ? 'Pending: verify embedded PostgreSQL on Windows CI'
-        : null,
   );
 }

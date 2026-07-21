@@ -5,20 +5,22 @@ import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
-import 'package:serverpod_test_server/test_util/redis_probe.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
-void main() async {
-  final redisSkip = await redisSkipReason();
-
-  group('Given redis is enabled', skip: redisSkip, () {
+void main() {
+  group('Given Redis is enabled and reachable, ', () {
     late Session session;
     late Serverpod server;
     setUp(() async {
       server = IntegrationTestServer.create(withRedis: true);
       await server.startWithDatabase();
       session = await server.createSession();
+      expect(
+        server.redisController,
+        isNotNull,
+        reason: 'Redis-tagged tests require a working Redis connection.',
+      );
     });
 
     tearDown(() async {

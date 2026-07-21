@@ -55,8 +55,11 @@ void main() {
     );
   });
 
-  group('Given a Postgres configuration that omits maxConnections', () {
-    test('when building the config then the default is used.', () {
+  test(
+    'Given a Postgres configuration that omits maxConnections, '
+    'when building the config, '
+    'then the default is used.',
+    () {
       var tmp = Directory.systemTemp.createTempSync('conf_builder_test_');
       try {
         var pgData = Directory(p.join(tmp.path, 'pgdata'))..createSync();
@@ -71,11 +74,14 @@ void main() {
       } finally {
         tmp.deleteSync(recursive: true);
       }
-    });
-  });
+    },
+  );
 
-  group('Given a Postgres configuration that sets maxConnections', () {
-    test('when building the config then it overrides the default.', () {
+  test(
+    'Given a Postgres configuration that sets maxConnections, '
+    'when building the config, '
+    'then it overrides the default.',
+    () {
       var tmp = Directory.systemTemp.createTempSync('conf_builder_test_');
       try {
         var pgData = Directory(p.join(tmp.path, 'pgdata'))..createSync();
@@ -91,8 +97,8 @@ void main() {
       } finally {
         tmp.deleteSync(recursive: true);
       }
-    });
-  });
+    },
+  );
 
   group('Given rewriteManagedBlock', () {
     test(

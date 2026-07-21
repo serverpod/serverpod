@@ -8,7 +8,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:serverpod_shared/process_io.dart';
-
 import 'package:test/test.dart';
 
 // This suite runs the server in-process on the host (no Docker), so it is

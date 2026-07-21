@@ -10,13 +10,20 @@ import 'package:serverpod_test/serverpod_test.dart'
     show EphemeralTestDatabase, TestDatabaseManager;
 import 'package:serverpod_test_server/src/generated/endpoints.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
-import 'package:serverpod_test_server/test_util/redis_probe.dart';
 import 'package:test/test.dart';
 
 var _integrationTestMode =
     Platform.environment['INTEGRATION_TEST_SERVERPOD_MODE'] ?? 'production';
 
 var _integrationTestFlags = ['-m', _integrationTestMode];
+
+RedisConfig _redisTestConfig() => RedisConfig(
+  enabled: true,
+  host: 'redis',
+  port: 6379,
+  // Matches config/passwords.yaml and CI's `redis-server --requirepass`.
+  password: 'password',
+);
 
 class IntegrationTestServer extends TestServerpod {
   IntegrationTestServer({
@@ -195,7 +202,7 @@ class TestServerpod {
       authenticationHandler: auth.authenticationHandler,
       runtimeParametersBuilder: runtimeParametersBuilder,
       configOverride: (config) => withRedis
-          ? _useIsolateDatabase(config).copyWith(redis: redisTestConfig())
+          ? _useIsolateDatabase(config).copyWith(redis: _redisTestConfig())
           : _useIsolateDatabase(config),
     );
   }
@@ -306,7 +313,7 @@ ServerpodConfig _isolatedTestConfig(
     database: database is PostgresDatabaseConfig
         ? _embeddedDatabase(database)
         : database,
-    redis: withRedis ? redisTestConfig() : null,
+    redis: withRedis ? _redisTestConfig() : null,
   );
 }
 

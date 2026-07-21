@@ -60,8 +60,6 @@ void main() async {
           reason: 'Failed to create the serverpod project.',
         );
 
-        // The server boots against embedded PostgreSQL (config/development.yaml
-        // sets `dataPath`), so no external database needs provisioning.
         var startProjectProcess = await startProcess(
           'dart',
           ['bin/main.dart', '--apply-migrations', '--role', 'maintenance'],
@@ -71,11 +69,6 @@ void main() async {
         var startProjectExitCode = await startProjectProcess.exitCode;
         expect(startProjectExitCode, 0);
       },
-      // The generated server now uses embedded PostgreSQL; drop this skip once
-      // embedded PG is verified on Windows CI.
-      skip: Platform.isWindows
-          ? 'Pending: verify embedded PostgreSQL on Windows CI'
-          : null,
     );
   });
 
@@ -115,8 +108,6 @@ void main() async {
           reason: 'Failed to create the serverpod project.',
         );
 
-        // The server boots against embedded PostgreSQL (config/development.yaml
-        // sets `dataPath`), so no external database needs provisioning.
         startProjectProcess = await startProcess(
           'dart',
           ['bin/main.dart', '--apply-migrations'],
@@ -124,9 +115,6 @@ void main() async {
         );
 
         var serverStarted = false;
-        // A fresh project's first `dart run` compiles the whole server graph
-        // (now including embedded-postgres support), so give the cold boot a
-        // generous budget.
         for (int retries = 0; retries < 60; retries++) {
           try {
             var response = await http.get(Uri.parse('http://localhost:8080'));
@@ -146,11 +134,6 @@ void main() async {
           reason: 'Failed to get 200 response from server.',
         );
       },
-      // The generated server now uses embedded PostgreSQL; drop this skip once
-      // embedded PG is verified on Windows CI.
-      skip: Platform.isWindows
-          ? 'Pending: verify embedded PostgreSQL on Windows CI'
-          : null,
     );
   });
 
@@ -1106,9 +1089,6 @@ void main() async {
     test(
       'when running tests then example unit and integration tests passes',
       () async {
-        // The generated server's integration tests run on embedded PostgreSQL
-        // (config/test.yaml sets `dataPath`), so no external database needs to
-        // be provisioned here.
         var testProcess = await startProcess(
           'dart',
           ['test'],
@@ -1121,27 +1101,18 @@ void main() async {
 
         await expectLater(testProcess.exitCode, completion(0));
       },
-      skip: !dartPubSeesFlutter()
-          ? 'dart pub cannot resolve the Flutter SDK here (version-manager shim)'
-          : null,
     );
 
     test(
       'when starting the server against its docker compose stack '
       'then migrations apply and the server boots',
       () async {
-        // Existing projects commonly run against the compose-hosted Postgres
-        // rather than embedded PostgreSQL; simulate one by dropping the
-        // generated `dataPath` so the config's compose coordinates
-        // (localhost:8090) take effect.
         final configFile = File(
           path.join(commandRoot, 'config', 'development.yaml'),
         );
+        final configSource = configFile.readAsStringSync();
         configFile.writeAsStringSync(
-          configFile.readAsStringSync().replaceFirst(
-            RegExp(r'\n\s*dataPath:[^\n]*'),
-            '',
-          ),
+          configSource.replaceFirst(RegExp(r'\n\s*dataPath:[^\n]*'), ''),
         );
 
         final docker = await startProcess(
@@ -1150,6 +1121,7 @@ void main() async {
           workingDirectory: commandRoot,
           ignorePlatform: true,
         );
+
         addTearDown(() async {
           await runProcess(
             'docker',
@@ -1158,6 +1130,7 @@ void main() async {
             skipBatExtentionOnWindows: true,
           );
         });
+
         expect(
           await docker.exitCode,
           0,
@@ -1166,7 +1139,13 @@ void main() async {
 
         final startProjectProcess = await startProcess(
           'dart',
-          ['bin/main.dart', '--apply-migrations', '--role', 'maintenance'],
+          [
+            'run',
+            'bin/main.dart',
+            '--apply-migrations',
+            '--role',
+            'maintenance',
+          ],
           workingDirectory: commandRoot,
         );
         expect(await startProjectProcess.exitCode, 0);

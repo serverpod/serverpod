@@ -7,9 +7,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:serverpod_shared/process_io.dart';
-
 import 'package:http/http.dart';
+import 'package:serverpod_shared/process_io.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -20,6 +19,7 @@ void main() {
   setUpAll(() async {
     // Migrate the main config database once
     final result = await Process.run(dartExecutablePath, [
+      'run',
       'bin/main.dart',
       '--mode=test',
       '--role',

@@ -13,7 +13,7 @@ import 'package:uuid/uuid.dart';
   // absolute temp path, and macOS install_name_tool rejects install names
   // longer than sqlite3_connection_pool's precompiled (headerpad-less)
   // dylibs can absorb (~170 chars) when dartdev patches them in .dart_tool.
-  final projectName = 't_${Uuid().v4().replaceAll('-', '').substring(0, 8)}';
+  final projectName = 't${Uuid().v4().replaceAll('-', '').substring(0, 9)}';
   final commandRoot = path.join(root, projectName, '${projectName}_server');
 
   return (projectName: projectName, commandRoot: commandRoot);
@@ -211,38 +211,6 @@ String getServerpodCliEntrypointPath({required final String rootPath}) {
     'bin',
     'serverpod_cli.dart',
   );
-}
-
-bool? _dartPubSeesFlutter;
-
-/// Whether this environment's plain `dart pub` can resolve `flutter from sdk`.
-///
-/// false if dart shim is not the Flutter-embedded binary (fx puro).
-///
-/// When false, any `dart test` or implicit re-resolve inside a created
-/// project's workspace (which contains the Flutter app) fails with
-/// 'version solving failed'. Callers should skip those tests.
-bool dartPubSeesFlutter() => _dartPubSeesFlutter ??= _probeDartPubFlutter();
-
-bool _probeDartPubFlutter() {
-  final dir = Directory.systemTemp.createTempSync('spb_flutter_probe_');
-  try {
-    File(
-      path.join(dir.path, 'pubspec.yaml'),
-    ).writeAsStringSync(
-      'name: flutter_probe\nenvironment:\n  sdk: ^3.0.0\ndependencies:\n  flutter:\n    sdk: flutter\n',
-    );
-    final result = Process.runSync('dart', [
-      'pub',
-      'get',
-      '--offline',
-    ], workingDirectory: dir.path);
-    return result.exitCode == 0;
-  } finally {
-    try {
-      dir.deleteSync(recursive: true);
-    } catch (_) {}
-  }
 }
 
 String _getCommandToRun(String command, bool ignorePlatform) {

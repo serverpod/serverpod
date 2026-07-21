@@ -6,22 +6,11 @@ import 'dart:async';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart' as c;
 import 'package:serverpod_test_client/serverpod_test_client.dart';
-import 'package:serverpod_test_server/test_util/redis_probe.dart';
 import 'package:serverpod_test_server/test_util/test_key_manager.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
-void main() async {
-  // Revocation is broadcast via redis when the config enables it (the
-  // integration configs do), so these tests need a reachable redis.
-  final redisSkip = await redisSkipReason();
-  if (redisSkip != null) {
-    test('revoked authentication stream suite', () {
-      markTestSkipped(redisSkip);
-    });
-    return;
-  }
-
+void main() {
   late Serverpod server;
   late Session session;
   late c.Client client;
@@ -49,6 +38,11 @@ void main() async {
       server.apiUrl,
       // ignore: deprecated_member_use
       authenticationKeyManager: authKeyManager,
+    );
+    expect(
+      server.redisController,
+      isNotNull,
+      reason: 'Redis-tagged tests require a working Redis connection.',
     );
   });
 

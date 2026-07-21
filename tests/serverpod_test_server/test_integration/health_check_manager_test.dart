@@ -39,7 +39,7 @@ void main() {
         await server.ensureDatabase();
         session = await server.createSession();
         await server.clearHealthChecks(session);
-        await server.startWithDatabase();
+        await server.start();
         client = Client(server.apiUrl);
 
         // Await the first health check to be performed.
@@ -126,7 +126,7 @@ void main() {
       await server.ensureDatabase();
       session = await server.createSession();
       await server.clearHealthChecks(session);
-      await server.startWithDatabase();
+      await server.start();
 
       // Await the first health check to be performed.
       await Future.delayed(const Duration(seconds: 3));

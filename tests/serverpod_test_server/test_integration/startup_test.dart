@@ -20,8 +20,7 @@ void main() {
       () async {
         await server.start();
       },
-      // Covers first-use provisioning in setUp: embedded-PG launch + create +
-      // migrate.
+      // First-use provisioning in setUp: embedded-PG launch + create + migrate.
       timeout: Timeout(Duration(seconds: 120)),
     );
 
@@ -32,8 +31,7 @@ void main() {
         await server.shutdown(exitProcess: false);
         await server.start();
       },
-      // Covers first-use provisioning in setUp: embedded-PG launch + create +
-      // migrate.
+      // First-use provisioning in setUp: embedded-PG launch + create + migrate.
       timeout: Timeout(Duration(seconds: 120)),
     );
   });

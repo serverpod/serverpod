@@ -6,9 +6,10 @@
 # required. All tests tagged 'integration' (the test-tools default) are excluded
 # here; they run in run_tests_integration_concurrently.
 #
-# The redis-tagged tests are included only when a Redis is reachable on
-# redis:6379 (resolved to localhost via /etc/hosts; hosted in CI). A local run
-# without that alias/Redis simply skips them.
+# The redis-tagged tests require Redis on redis:6379 (resolved to localhost via
+# /etc/hosts; hosted in CI). Missing Redis is a test failure so CI cannot
+# silently lose coverage. Local runs that intentionally omit Redis must invoke
+# dart test directly with `-x redis`.
 
 if [ ! -f util/.serverpod_util_root ]; then
     echo "Run this script from the root of the Serverpod repository"
@@ -44,17 +45,6 @@ rm -rf "$SERVERPOD_DATABASE_DATA_PATH"
 echo "### Apply migrations (embedded PG)"
 dart run bin/main.dart -m production -r maintenance --apply-migrations
 
-# Include the redis-tagged tests only if a Redis is reachable (bash /dev/tcp -
-# no redis-cli dependency). Without one, skip them rather than fail.
-REDIS_TAG_FILTER="-x redis"
-if (exec 3<>/dev/tcp/redis/6379) 2>/dev/null; then
-    exec 3>&- 3<&-
-    echo "### Redis reachable at redis:6379 - including redis-tagged tests"
-    REDIS_TAG_FILTER=""
-else
-    echo "### Redis not reachable at redis:6379 - skipping redis-tagged tests"
-fi
-
 # Assign whole test files to this shard, round-robin. The tag filters below still
 # decide which tests within those files actually run.
 shard_test_files=()
@@ -73,7 +63,7 @@ fi
 # Each withServerpod group / IntegrationTestServer suite provisions its own
 # database (and binds ephemeral ports), so these run concurrently.
 echo "### Running integration tests (${#shard_test_files[@]} files, shard $shard_index/$total_shards)"
-dart test "${shard_test_files[@]}" -x integration $REDIS_TAG_FILTER --reporter=failures-only
+dart test "${shard_test_files[@]}" -x integration --reporter=failures-only
 
 # Verify the embedded data path was created. Don't remove it here: the tests
 # leave the postmaster running (it is reaped on the next start), so an rm would
