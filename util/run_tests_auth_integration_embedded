@@ -10,7 +10,7 @@ fi
 
 set -e
 export SERVERPOD_SILENCE_LIFECYCLE_MESSAGES="1"
-export SERVERPOD_DATABASE_DATA_PATH=".serverpod/test/pgdata"
+export SERVERPOD_DATABASE_DATA_PATH="${SERVERPOD_DATABASE_DATA_PATH:-.serverpod/test/pgdata}"
 
 # Optional sharding for parallel CI jobs: pass <shard-index> <total-shards>
 # (0-based index). Defaults to a single shard, so non-sharded callers are
