@@ -7,7 +7,6 @@
 /// TerminateProcess and needs no in-process listener.
 library;
 
-import 'dart:async';
 import 'dart:io';
 
 Future<void> main(List<String> args) async {
@@ -21,5 +20,10 @@ Future<void> main(List<String> args) async {
     ProcessSignal.sigterm.watch().listen((_) => exit(0));
     ProcessSignal.sigint.watch().listen((_) => exit(0));
   }
-  await Completer<void>().future;
+  // An uncompleted Future alone does not keep every supported Dart VM's event
+  // loop alive. A pending timer does, so this stand-in remains a live process
+  // until the spawning test terminates it.
+  while (true) {
+    await Future<void>.delayed(const Duration(hours: 1));
+  }
 }
