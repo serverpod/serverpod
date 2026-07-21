@@ -148,20 +148,23 @@ jobs:
           tar -C "$d" -xf "$(cygpath -u "$RUNNER_TEMP")/pgbuild/dist"/serverpod-postgres-*.tar.xz
       - name: Prep smoke script (Windows)
         if: matrix.os == 'windows'
-        shell: bash
-        run: |
-          cat > run-smoke.cmd <<'EOF'
-          @echo off
-          msys2 -c "bash packages/serverpod_embedded_postgres/tool/smoke_bundle_windows.sh \"$(cygpath -u \"$RUNNER_TEMP\")/smoke-bundle\"" > "%TEMP%\smoke.log" 2>&1
-          exit /b %errorlevel%
-          EOF
+        shell: msys2 {0}
+        run: >-
+          bash packages/serverpod_embedded_postgres/tool/prepare_smoke_bundle_windows.sh
+          run-smoke.cmd
       - name: Smoke-test the bundle (Windows, non-admin)
         if: matrix.os == 'windows'
+        env:
+          SMOKE_LOG: ${{ runner.temp }}\smoke-work\smoke.log
         shell: cmd
         run: |
           psexec -accepteula -nobanner -l cmd /c "%CD%\run-smoke.cmd"
-          set RC=%errorlevel%
-          if exist "%TEMP%\smoke.log" type "%TEMP%\smoke.log"
+          set "RC=%errorlevel%"
+          if not exist "%SMOKE_LOG%" (
+            echo ::error::the limited smoke process produced no log at %SMOKE_LOG%
+            exit /b 1
+          )
+          type "%SMOKE_LOG%"
           exit /b %RC%
         timeout-minutes: 10
 
