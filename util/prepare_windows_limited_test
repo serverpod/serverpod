@@ -34,11 +34,14 @@ mkdir -p "$pub_cache_msys"
 make_low_integrity_writable "$pub_cache_msys"
 
 # Project creation resolves generated workspaces with `flutter pub get` when
-# Flutter is available. The Flutter tool takes locks and updates stamps in its
-# own mutable cache, which must therefore be writable by the limited process.
+# Flutter is available. Flutter updates both its cache and the flutter_tools
+# package (including its .dart_tool directory) while bootstrapping the tool.
 if [[ -n "${FLUTTER_ROOT:-}" ]]; then
-  flutter_cache_msys="$(cygpath -u "$FLUTTER_ROOT")/bin/cache"
+  flutter_root_msys="$(cygpath -u "$FLUTTER_ROOT")"
+  flutter_cache_msys="$flutter_root_msys/bin/cache"
+  flutter_tools_msys="$flutter_root_msys/packages/flutter_tools"
   make_low_integrity_writable "$flutter_cache_msys"
+  make_low_integrity_writable "$flutter_tools_msys"
 fi
 
 LIMITED_PROCESS_WORK_NAME=limited-test \
