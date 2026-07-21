@@ -354,7 +354,7 @@ void main() {
     },
   );
 
-  group('Given two revisions of the same PG version,', () {
+  group('Given two revisions of the same PG version, ', () {
     late _FakeBundleArtifact r1;
     late _FakeBundleArtifact r2;
 
@@ -364,7 +364,7 @@ void main() {
     });
 
     test(
-      'when resolving their install dirs '
+      'when resolving their install dirs, '
       'then each revision gets its own directory.',
       () {
         var store = BinaryStore(cacheRoot: cache);
@@ -373,36 +373,6 @@ void main() {
           store.installDirFor(r1).path,
           isNot(store.installDirFor(r2).path),
         );
-
-        store.close();
-      },
-    );
-
-    test(
-      'when revision 1 is already cached and ensure runs for revision 2 '
-      'then revision 2 is downloaded rather than served from the stale cache.',
-      () async {
-        var bytes = Uint8List.fromList([1, 2, 3]);
-        var shaHex = sha256.convert(bytes).toString();
-        var downloads = <Uri>[];
-        var store = BinaryStore(
-          cacheRoot: cache,
-          httpClient: MockClient((req) async {
-            if (req.url == r2.archiveUrl) {
-              downloads.add(req.url);
-              return http.Response.bytes(bytes, 200);
-            }
-            if (req.url == r2.sha256Url) return http.Response(shaHex, 200);
-            return http.Response('not found', 404);
-          }),
-        );
-        var r1Dir = await _installFake(store, r1);
-
-        var r2Dir = await store.ensure(r2);
-
-        expect(downloads, [r2.archiveUrl]);
-        expect(r2Dir.path, isNot(r1Dir.path));
-        expect(store.metaFileFor(r2).existsSync(), isTrue);
 
         store.close();
       },
@@ -453,90 +423,117 @@ void main() {
     );
   });
 
-  group('Given a release asset that is not published (404) '
-      'and an available builder', () {
-    test(
-      'when ensure runs in the default download mode '
-      'then BinaryFetchException(404) is thrown and the builder is never invoked.',
-      () async {
-        var store = BinaryStore(
-          cacheRoot: cache,
-          httpClient: MockClient((req) async {
-            return http.Response('not found', 404);
-          }),
-        );
+  test(
+    'Given revision 1 is cached and revision 2 has the same PostgreSQL version, '
+    'when ensure runs for revision 2, '
+    'then revision 2 is downloaded into a separate cache entry.',
+    () async {
+      var r1 = _FakeBundleArtifact(spec: _specWithRevision(1));
+      var r2 = _FakeBundleArtifact(spec: _specWithRevision(2));
+      var bytes = Uint8List.fromList([1, 2, 3]);
+      var shaHex = sha256.convert(bytes).toString();
+      var downloads = <Uri>[];
+      var store = BinaryStore(
+        cacheRoot: cache,
+        httpClient: MockClient((req) async {
+          if (req.url == r2.archiveUrl) {
+            downloads.add(req.url);
+            return http.Response.bytes(bytes, 200);
+          }
+          if (req.url == r2.sha256Url) return http.Response(shaHex, 200);
+          return http.Response('not found', 404);
+        }),
+      );
+      var r1Dir = await _installFake(store, r1);
 
-        await expectLater(
-          store.ensure(
-            _FakeBundleArtifact(spec: _specWithRevision(1)),
-            builder: const _MustNotBuildBuilder(),
-          ),
-          throwsA(
-            isA<BinaryFetchException>()
-                .having((e) => e.statusCode, 'statusCode', 404)
-                .having(
-                  (e) => e.kind,
-                  'kind',
-                  BinaryFetchFailureKind.unavailable,
-                )
-                .having(
-                  (e) => e.message,
-                  'message',
-                  allOf(
-                    contains('16.13.0-r1/linux-x64'),
-                    contains('archive or its SHA-256 sidecar returned 404'),
-                    isNot(contains('SERVERPOD_PG_SOURCE')),
-                  ),
+      var r2Dir = await store.ensure(r2);
+
+      expect(downloads, [r2.archiveUrl]);
+      expect(r2Dir.path, isNot(r1Dir.path));
+      expect(store.metaFileFor(r2).existsSync(), isTrue);
+
+      store.close();
+    },
+  );
+
+  test(
+    'Given an unpublished release asset and an available builder, '
+    'when ensure runs in the default download mode, '
+    'then BinaryFetchException(404) is thrown and the builder is never invoked.',
+    () async {
+      var store = BinaryStore(
+        cacheRoot: cache,
+        httpClient: MockClient((req) async {
+          return http.Response('not found', 404);
+        }),
+      );
+
+      await expectLater(
+        store.ensure(
+          _FakeBundleArtifact(spec: _specWithRevision(1)),
+          builder: const _MustNotBuildBuilder(),
+        ),
+        throwsA(
+          isA<BinaryFetchException>()
+              .having((e) => e.statusCode, 'statusCode', 404)
+              .having(
+                (e) => e.kind,
+                'kind',
+                BinaryFetchFailureKind.unavailable,
+              )
+              .having(
+                (e) => e.message,
+                'message',
+                allOf(
+                  contains('16.13.0-r1/linux-x64'),
+                  contains('archive or its SHA-256 sidecar returned 404'),
+                  isNot(contains('SERVERPOD_PG_SOURCE')),
                 ),
-          ),
-        );
+              ),
+        ),
+      );
 
-        store.close();
-      },
-    );
-  });
+      store.close();
+    },
+  );
 
-  group(
-    'Given a bundle whose embedded manifest disagrees with the requested artifact',
-    () {
-      test(
-        'when ensure runs '
-        'then BinaryVerificationException is thrown and nothing is cached.',
-        () async {
-          var artifact = _FakeBundleArtifact(
-            spec: _specWithRevision(2),
-            manifestOverride: {
-              'postgres': '16.13.0',
-              'revision': 1,
-              'platform': 'linux-x64',
-              'postgis': '3.5.4',
-              'pgvector': '0.8.3',
-            },
-          );
-          var bytes = Uint8List.fromList([1, 2, 3]);
-          var store = BinaryStore(
-            cacheRoot: cache,
-            httpClient: MockClient((req) async {
-              if (req.url == artifact.archiveUrl) {
-                return http.Response.bytes(bytes, 200);
-              }
-              if (req.url == artifact.sha256Url) {
-                return http.Response(sha256.convert(bytes).toString(), 200);
-              }
-              return http.Response('not found', 404);
-            }),
-          );
-
-          await expectLater(
-            store.ensure(artifact),
-            throwsA(isA<BinaryVerificationException>()),
-          );
-          expect(store.installDirFor(artifact).existsSync(), isFalse);
-          expect(store.metaFileFor(artifact).existsSync(), isFalse);
-
-          store.close();
+  test(
+    'Given a bundle whose manifest disagrees with the requested artifact, '
+    'when ensure runs, '
+    'then verification fails and nothing is cached.',
+    () async {
+      var artifact = _FakeBundleArtifact(
+        spec: _specWithRevision(2),
+        manifestOverride: {
+          'postgres': '16.13.0',
+          'revision': 1,
+          'platform': 'linux-x64',
+          'postgis': '3.5.4',
+          'pgvector': '0.8.3',
         },
       );
+      var bytes = Uint8List.fromList([1, 2, 3]);
+      var store = BinaryStore(
+        cacheRoot: cache,
+        httpClient: MockClient((req) async {
+          if (req.url == artifact.archiveUrl) {
+            return http.Response.bytes(bytes, 200);
+          }
+          if (req.url == artifact.sha256Url) {
+            return http.Response(sha256.convert(bytes).toString(), 200);
+          }
+          return http.Response('not found', 404);
+        }),
+      );
+
+      await expectLater(
+        store.ensure(artifact),
+        throwsA(isA<BinaryVerificationException>()),
+      );
+      expect(store.installDirFor(artifact).existsSync(), isFalse);
+      expect(store.metaFileFor(artifact).existsSync(), isFalse);
+
+      store.close();
     },
   );
 }

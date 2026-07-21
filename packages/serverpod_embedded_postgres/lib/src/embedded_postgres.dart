@@ -93,7 +93,7 @@ abstract class EmbeddedPostgres {
     try {
       await store.ensure(
         artifact,
-        source: resolveBinarySource(source),
+        source: resolveBinarySource(explicit: source),
         builder: const BundleBuilder(),
       );
     } finally {

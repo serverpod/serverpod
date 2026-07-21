@@ -42,8 +42,11 @@ void main() {
     if (fixture.existsSync()) fixture.deleteSync(recursive: true);
   });
 
-  group('Given an archive containing a hardlink entry,', () {
-    setUp(() {
+  test(
+    'Given an archive containing a hardlink entry, '
+    'when validating the runtime archive contract, '
+    'then validation fails naming the hardlink entry.',
+    () async {
       var target = File(p.join(fixture.path, 'target'))
         ..writeAsStringSync('content');
       var hardlink = p.join(fixture.path, 'hardlink');
@@ -52,20 +55,14 @@ void main() {
 
       var tarResult = createTar(['target', 'hardlink']);
       expect(tarResult.exitCode, 0, reason: '${tarResult.stderr}');
-    });
 
-    test(
-      'when validating the runtime archive contract, '
-      'then validation fails naming the hardlink entry.',
-      () async {
-        var result = await validate();
+      var result = await validate();
 
-        expect(result.exitCode, isNot(0));
-        expect(result.stderr, contains('forbidden link entries'));
-        expect(result.stderr, contains('hardlink'));
-      },
-    );
-  });
+      expect(result.exitCode, isNot(0));
+      expect(result.stderr, contains('forbidden link entries'));
+      expect(result.stderr, contains('hardlink'));
+    },
+  );
 
   group('Given an archive containing a symbolic-link entry,', () {
     setUp(() {
@@ -99,32 +96,29 @@ void main() {
     );
   });
 
-  group('Given a stage containing hardlinked files,', () {
-    setUp(() {
+  test(
+    'Given a stage containing hardlinked files, '
+    'when GNU tar materializes them into independent archive files, '
+    'then validation succeeds.',
+    () async {
       var target = File(p.join(fixture.path, 'target'))
         ..writeAsStringSync('content');
       var hardlink = p.join(fixture.path, 'hardlink');
       var linkResult = Process.runSync('ln', [target.path, hardlink]);
       expect(linkResult.exitCode, 0, reason: '${linkResult.stderr}');
-    });
 
-    test(
-      'when GNU tar materializes them into independent archive files, '
-      'then validation succeeds.',
-      () async {
-        var tarResult = createTar(
-          ['target', 'hardlink'],
-          hardDereference: true,
-        );
-        expect(tarResult.exitCode, 0, reason: '${tarResult.stderr}');
+      var tarResult = createTar(
+        ['target', 'hardlink'],
+        hardDereference: true,
+      );
+      expect(tarResult.exitCode, 0, reason: '${tarResult.stderr}');
 
-        var result = await validate();
+      var result = await validate();
 
-        expect(result.exitCode, 0, reason: '${result.stderr}');
-      },
-      onPlatform: const {
-        'mac-os': Skip('Apple bsdtar has no --hard-dereference option'),
-      },
-    );
-  });
+      expect(result.exitCode, 0, reason: '${result.stderr}');
+    },
+    onPlatform: const {
+      'mac-os': Skip('Apple bsdtar has no --hard-dereference option'),
+    },
+  );
 }

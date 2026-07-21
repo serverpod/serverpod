@@ -6,44 +6,44 @@ import 'package:serverpod_embedded_postgres/src/exceptions.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given the published bundle specs', () {
-    test(
-      'when resolving a published PG version, '
-      'then the spec carries a revisioned bundle id and release tag.',
-      () {
-        var spec = bundleSpecFor(Version(16, 13, 0));
+  test(
+    'Given a PostgreSQL version with a published bundle, '
+    'when its bundle spec is resolved, '
+    'then the spec carries a revisioned bundle id and release tag.',
+    () {
+      var spec = bundleSpecFor(Version(16, 13, 0));
 
-        expect(spec.bom, '16.13.0');
-        expect(spec.bundleId, '16.13.0-r${spec.revision}');
-        expect(spec.releaseTag, 'embedded-postgres-v${spec.bundleId}');
-      },
-    );
+      expect(spec.bom, '16.13.0');
+      expect(spec.bundleId, '16.13.0-r${spec.revision}');
+      expect(spec.releaseTag, 'embedded-postgres-v${spec.bundleId}');
+    },
+  );
 
-    test(
-      'when resolving a PG version with no published bundle, '
-      'then UnsupportedVersionException lists the published versions.',
-      () {
-        expect(
-          () => bundleSpecFor(Version(16, 14, 0)),
-          throwsA(
-            isA<UnsupportedVersionException>().having(
-              (e) => e.message,
-              'message',
-              allOf(
-                contains(
-                  'No Serverpod PostgreSQL bundle is published '
-                  'for version 16.14.0',
-                ),
-                contains('16.13.0'),
+  test(
+    'Given a PostgreSQL version with no published bundle, '
+    'when its bundle spec is resolved, '
+    'then UnsupportedVersionException lists the published versions.',
+    () {
+      expect(
+        () => bundleSpecFor(Version(16, 14, 0)),
+        throwsA(
+          isA<UnsupportedVersionException>().having(
+            (e) => e.message,
+            'message',
+            allOf(
+              contains(
+                'No Serverpod PostgreSQL bundle is published '
+                'for version 16.14.0',
               ),
+              contains('16.13.0'),
             ),
           ),
-        );
-      },
-    );
-  });
+        ),
+      );
+    },
+  );
 
-  group('Given the canonical versions.env of the build scripts', () {
+  group('Given the canonical versions.env of the build scripts, ', () {
     late Map<String, String> env;
 
     setUp(() {

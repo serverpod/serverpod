@@ -18,12 +18,20 @@ enum BinarySource {
   build,
 }
 
-/// Resolves the effective [BinarySource]: an [explicit] value wins, else the
-/// `SERVERPOD_PG_SOURCE` env var (`auto` | `download` | `build`), else
-/// [BinarySource.download].
-BinarySource resolveBinarySource([BinarySource? explicit]) {
+/// Resolves the effective [BinarySource]: an [explicit] value wins, else
+/// `SERVERPOD_PG_SOURCE` from [environment] (`auto` | `download` | `build`),
+/// else [BinarySource.download].
+///
+/// [environment] defaults to [Platform.environment]. It can be supplied by
+/// callers that need to resolve the source against a specific environment.
+BinarySource resolveBinarySource({
+  BinarySource? explicit,
+  Map<String, String>? environment,
+}) {
   if (explicit != null) return explicit;
-  switch (Platform.environment['SERVERPOD_PG_SOURCE']?.trim().toLowerCase()) {
+  switch ((environment ?? Platform.environment)['SERVERPOD_PG_SOURCE']
+      ?.trim()
+      .toLowerCase()) {
     case 'auto':
       return BinarySource.auto;
     case 'build':

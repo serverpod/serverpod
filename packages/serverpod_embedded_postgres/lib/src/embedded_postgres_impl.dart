@@ -197,7 +197,7 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
       installDir = await binaryStore.ensure(
         artifact,
         onProgress: options.onProgress,
-        source: resolveBinarySource(options.binarySource),
+        source: resolveBinarySource(explicit: options.binarySource),
         builder: const BundleBuilder(),
       );
     } finally {
