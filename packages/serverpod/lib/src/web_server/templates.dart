@@ -38,7 +38,6 @@ class Templates {
           data,
           name: templateKey,
           lenient: true,
-          htmlEscapeValues: false,
         );
       } else if (entity is Directory) {
         var subDirName = basename(entity.path);

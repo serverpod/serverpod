@@ -220,10 +220,15 @@ class TemplateRenderer {
 
   String _renderTemplate(String content, TemplateContext context) {
     try {
-      var template = Template(content, lenient: true, htmlEscapeValues: false);
+      var template = Template(content, lenient: true);
       return template.renderString(
         context.toMustacheMap(),
-        onMissingVariable: (name, context) => '{{$name}}',
+        onMissingVariable: (name, context) {
+          // Variables matching @/asset/path are used for cache busting.
+          // Triple curly braces are used to skip HTML escaping.
+          if (RegExp(r'@/[^}]+').hasMatch(name)) return '{{{$name}}}';
+          return '{{$name}}';
+        },
       );
     } catch (_) {
       return content;

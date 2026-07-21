@@ -455,8 +455,11 @@ abstract class WidgetRoute extends Route {
   /// to a specific virtual host (defaults to `null`, matching any host).
   WidgetRoute({super.methods, super.path, super.host, this.cacheBustingConfig});
 
-  /// Used to cache-bust paths for {{@/path/to/asset}} patterns in the template.
+  /// Used to cache-bust paths for `{{{@/path/to/asset}}}` patterns in the template.
   final CacheBustingConfig? cacheBustingConfig;
+
+  /// Matches `@/path/to/asset` patterns in the template.
+  final _cacheBustingPathRegExp = RegExp(r'@/[^}]+');
 
   /// Override this method to build your web widget from the current [session]
   /// and [request].
@@ -487,13 +490,22 @@ abstract class WidgetRoute extends Route {
       ),
     );
 
-    // Cache-bust paths for {{@/path/to/asset}} patterns in the template.
+    // Cache-bust paths for {{{@/path/to/asset}}} patterns in the template.
     // This warms up CacheBustingConfig's cache so that the
     // cache-busted paths are available synchronously when rendering.
     if (cacheBustingConfig case final buster?) {
-      final regex = RegExp(r'\{\{@(/[^}]+)\}\}');
+      final regex = RegExp(r'\{\{\{@(/[^}]+)\}\}\}');
       final matches = regex
-          .allMatches(widget.render(onMissingVariable: (name) => '{{$name}}'))
+          .allMatches(
+            widget.render(
+              onMissingVariable: (name) {
+                if (_cacheBustingPathRegExp.hasMatch(name)) {
+                  return '{{{$name}}}';
+                }
+                return '{{$name}}';
+              },
+            ),
+          )
           .toList();
       for (final match in matches) {
         await buster.tryAssetPath(match.group(1)!);
@@ -503,10 +515,11 @@ abstract class WidgetRoute extends Route {
     final renderedContent = widget.render(
       onMissingVariable: (name) {
         if (cacheBustingConfig case final buster?) {
-          // Strip leading '@' from the name
-          // which is used to indicate that the asset should be cache-busted.
-          if (name.startsWith('@')) name = name.substring(1);
-          return buster.tryAssetPathSync(name);
+          if (_cacheBustingPathRegExp.hasMatch(name)) {
+            // Strip leading '@' from the path
+            // which is used to indicate that the asset should be cache-busted.
+            return buster.tryAssetPathSync(name.substring(1));
+          }
         }
         return null;
       },
