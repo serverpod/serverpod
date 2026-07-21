@@ -80,6 +80,7 @@ class MainScreen extends StatelessComponent {
             state.launchableApps.length == 1 ? 'Launch app' : 'Launch apps',
           ),
         ('Shift+M', 'Force Create migration'),
+        ('A', 'Apply migration'),
         ('P', 'Repair migration'),
         ('Shift+P', 'Force Repair migration'),
         ('E', 'Expand / collapse stack traces'),

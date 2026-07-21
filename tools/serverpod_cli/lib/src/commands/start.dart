@@ -1389,7 +1389,7 @@ Future<void> _runTuiBackend({
                 config,
                 force: force,
               );
-              await ctx.session.applyMigration();
+              await _tryApplyMigrationForTui(ctx.session.applyMigration);
             },
           );
         };
@@ -1405,8 +1405,15 @@ Future<void> _runTuiBackend({
                 runMode: runModeFromServerArgs(serverArgs),
                 force: force,
               );
-              await ctx.session.applyMigration();
+              await _tryApplyMigrationForTui(ctx.session.applyMigration);
             },
+          );
+        };
+        holder.onApplyMigration = () {
+          runTrackedAction(
+            holder,
+            'Applying migrations',
+            ctx.session.applyMigration,
           );
         };
         holder.state.serverReady = ctx.session.isRunning;
@@ -1502,6 +1509,22 @@ Future<void> _runCreateMigrationForTui(
   );
   if (result.isError) throw Exception(result.message);
   log.info(result.message);
+}
+
+/// Applies a newly created migration without changing the tracked status of
+/// the successful create operation if applying it fails.
+Future<void> _tryApplyMigrationForTui(
+  Future<void> Function() applyMigration,
+) async {
+  try {
+    await applyMigration();
+  } catch (error, stackTrace) {
+    log.error(
+      'Failed to apply migration: $error.',
+      stackTrace: stackTrace,
+    );
+    log.info('Press A to retry apply migration');
+  }
 }
 
 /// Runs `create-migration` for the MCP `create_migration` tool. Returns a

@@ -24,6 +24,7 @@ class StartAppStateHolder extends TuiAppStateHolder<ServerWatchState> {
   void Function(int index)? _onStopApp;
   void Function({bool force})? _onCreateMigration;
   void Function({bool force})? _onCreateRepairMigration;
+  VoidCallback? _onApplyMigration;
   VoidCallback? _onQuit;
 
   @override
@@ -42,6 +43,7 @@ class StartAppStateHolder extends TuiAppStateHolder<ServerWatchState> {
     widgetState.onStopApp = _onStopApp;
     widgetState.onCreateMigration = _onCreateMigration;
     widgetState.onCreateRepairMigration = _onCreateRepairMigration;
+    widgetState.onApplyMigration = _onApplyMigration;
     widgetState.onQuit = _onQuit;
   }
 
@@ -85,6 +87,11 @@ class StartAppStateHolder extends TuiAppStateHolder<ServerWatchState> {
     _widgetState?.onCreateRepairMigration = cb;
   }
 
+  set onApplyMigration(VoidCallback? cb) {
+    _onApplyMigration = cb;
+    _widgetState?.onApplyMigration = cb;
+  }
+
   set onQuit(VoidCallback? cb) {
     _onQuit = cb;
     _widgetState?.onQuit = cb;
@@ -118,6 +125,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
   void Function(int index)? onStopApp;
   void Function({bool force})? onCreateMigration;
   void Function({bool force})? onCreateRepairMigration;
+  VoidCallback? onApplyMigration;
   VoidCallback? onQuit;
 
   bool _minSplashElapsed = false;
@@ -511,6 +519,16 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
         state.serverReady &&
         !state.actionBusy) {
       onCreateRepairMigration?.call(force: event.isShiftPressed);
+      return true;
+    }
+
+    // Applying migrations remains available as a recovery action when the
+    // automatic apply following migration creation fails. Also documented
+    // on the help screen.
+    if (event.logicalKey == LogicalKey.keyA &&
+        state.serverReady &&
+        !state.actionBusy) {
+      onApplyMigration?.call();
       return true;
     }
 
