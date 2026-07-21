@@ -1,31 +1,17 @@
 #!/usr/bin/env bash
-# Prepares a command wrapper for tests that must run through PsExec -l on a
-# Windows GitHub Actions runner.
+# Adds the embedded PostgreSQL paths needed by Windows tests, then delegates
+# the PsExec -l launcher setup to prepare_windows_limited_process.
 
 set -euo pipefail
 
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 launcher="${1:?usage: prepare_windows_limited_test <launcher.cmd>}"
 : "${LIMITED_TEST_COMMAND:?LIMITED_TEST_COMMAND must be set}"
 : "${RUNNER_TEMP:?RUNNER_TEMP must be set}"
 
-launcher_msys="$(cygpath -a -u "$launcher")"
-command_msys="${launcher_msys%.cmd}-command.cmd"
-command_win="$(cygpath -w "$command_msys")"
-run_directory_win="$(cygpath -w "$PWD")"
-
 runner_temp_msys="$(cygpath -u "$RUNNER_TEMP")"
 test_work_msys="$runner_temp_msys/limited-test"
-test_work_win="$(cygpath -w "$test_work_msys")"
-test_log_win="$(cygpath -w "$test_work_msys/output.log")"
 test_data_path_win="$(cygpath -m "$test_work_msys/pgdata")"
-
-# PsExec -l uses a Low Integrity token, which cannot write to the runner's
-# regular temporary directory. Give the test process one explicitly writable
-# tree for temporary files and captured output.
-mkdir -p "$test_work_msys"
-rm -f "$test_work_msys/output.log"
-MSYS2_ARG_CONV_EXCL='*' icacls.exe "$test_work_win" \
-  /setintegritylevel '(OI)(CI)L'
 
 # BinaryStore should only need to read the seeded cache. Keep it writable by
 # the limited process as well so lock or metadata recovery cannot fail solely
@@ -35,22 +21,8 @@ if [[ -d .pg-cache ]]; then
     /setintegritylevel '(OI)(CI)L' /t /c /q
 fi
 
-# Keep the test command separate from the launcher so commands containing
-# operators such as `&&` are interpreted exactly as they are in the workflow.
-cat > "$command_msys" <<EOF
-@echo off
-$LIMITED_TEST_COMMAND
-EOF
-
-cat > "$launcher_msys" <<EOF
-@echo off
-setlocal
-set "TEMP=$test_work_win"
-set "TMP=$test_work_win"
-set "TMPDIR=$test_work_msys"
-set "SERVERPOD_DATABASE_DATA_PATH=$test_data_path_win"
-cd /d "$run_directory_win"
-call "$command_win" > "$test_log_win" 2>&1
-set "RC=%errorlevel%"
-exit /b %RC%
-EOF
+LIMITED_PROCESS_WORK_NAME=limited-test \
+LIMITED_PROCESS_LOG_NAME=output.log \
+LIMITED_PROCESS_COMMAND="set \"SERVERPOD_DATABASE_DATA_PATH=$test_data_path_win\"
+$LIMITED_TEST_COMMAND" \
+  "$HERE/prepare_windows_limited_process" "$launcher"

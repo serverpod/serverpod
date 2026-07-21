@@ -149,9 +149,17 @@ jobs:
       - name: Prep smoke script (Windows)
         if: matrix.os == 'windows'
         shell: msys2 {0}
-        run: >-
-          bash packages/serverpod_embedded_postgres/tool/prepare_smoke_bundle_windows.sh
-          run-smoke.cmd
+        run: |
+          runner_temp_msys="$(cygpath -u "$RUNNER_TEMP")"
+          workspace_msys="$(cygpath -u "$GITHUB_WORKSPACE")"
+          msys2_cmd_win="$(cygpath -w "$runner_temp_msys/setup-msys2/msys2.cmd")"
+          smoke_script_msys="$workspace_msys/packages/serverpod_embedded_postgres/tool/smoke_bundle_windows.sh"
+          bundle_msys="$runner_temp_msys/smoke-bundle"
+
+          LIMITED_PROCESS_WORK_NAME=smoke-work \
+          LIMITED_PROCESS_LOG_NAME=smoke.log \
+          LIMITED_PROCESS_COMMAND="call \"$msys2_cmd_win\" \"$smoke_script_msys\" \"$bundle_msys\"" \
+            bash util/prepare_windows_limited_process run-smoke.cmd
       - name: Smoke-test the bundle (Windows, non-admin)
         if: matrix.os == 'windows'
         env:
