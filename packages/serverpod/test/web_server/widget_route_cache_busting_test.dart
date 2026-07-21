@@ -48,8 +48,8 @@ void main() {
 
       await d.file('cache_bust_page.html', '''
 <html>
-  <script src="{{@/static/app.js}}"></script>
-  <link rel="stylesheet" href="{{@/static/style.css}}">
+  <script src="{{{@/static/app.js}}}"></script>
+  <link rel="stylesheet" href="{{{@/static/style.css}}}">
 </html>''').create();
 
       await d.file('non_bust_page.html', '''
