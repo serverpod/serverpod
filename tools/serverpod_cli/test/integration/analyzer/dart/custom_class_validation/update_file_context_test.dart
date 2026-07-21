@@ -131,6 +131,74 @@ class UserId {
   });
 
   group(
+    'Given a tracked and analyzed extra class file with a persistently invalid dart syntax',
+    () {
+      late File extraClassFile;
+      late List<TypeDefinition> extraClasses;
+      late CustomClassAnalyzer analyzer;
+      late File nonCustomClass;
+
+      var trackedDirectory = Directory(
+        p.join(testSharedProjectDirectory.path, const Uuid().v4()),
+      );
+
+      setUp(() async {
+        extraClassFile = File(p.join(trackedDirectory.path, 'user_id.dart'));
+        extraClassFile.createSync(recursive: true);
+        // Class is missing closing brackets
+        await extraClassFile.writeAsString('''
+class UserId {
+  final int id;
+  UserId(this.id);
+  int toJson() { 
+    return id;
+  }
+  factory UserId.fromJson(dynamic json) => UserId(json);
+  UserId copyWith({int? id}) => UserId(id ?? this.id);
+''');
+
+        extraClasses = [
+          TypeDefinition(
+            className: 'UserId',
+            nullable: false,
+            sourcePath: extraClassFile.path,
+            packageRoot: testSharedProjectDirectory.path,
+            customClass: true,
+          ),
+        ];
+
+        analyzer = CustomClassAnalyzer(
+          testSharedProjectDirectory,
+        );
+
+        await analyzer.analyze(
+          collector: CodeGenerationCollector(),
+          extraClasses: extraClasses,
+        );
+      });
+
+      test(
+        'when the file context is updated with an unrelated non custom class file while the error persists '
+        'then false is returned.',
+        () async {
+          nonCustomClass = File(
+            p.join(trackedDirectory.path, 'helper.dart'),
+          );
+          nonCustomClass.createSync(recursive: true);
+          nonCustomClass.writeAsStringSync('''
+class HelperClass {}
+''');
+
+          await expectLater(
+            analyzer.updateFileContexts({nonCustomClass.path}, extraClasses),
+            completion(false),
+          );
+        },
+      );
+    },
+  );
+
+  group(
     'Given a tracked and analyzed extra class file that depends on invalid dart file',
     () {
       late File extraClassFile;
@@ -155,7 +223,7 @@ class UserId {
   int toJson() { 
     InvalidClass example = InvalidClass();
     return id;
-  };
+  }
   factory UserId.fromJson(dynamic json) => UserId(json);
   UserId copyWith({int? id}) => UserId(id ?? this.id);
   }

@@ -46,6 +46,12 @@ class CustomClassAnalyzer {
   /// Cached analysis results keyed by absolute file path.
   final _fileCache = SplayTreeMap<String, _CustomClassFileResult>();
 
+  /// The custom class files currently cached with errors.
+  Set<String> get _erroredFiles => {
+    for (final entry in _fileCache.entries)
+      if (entry.value.hadErrors) entry.key,
+  };
+
   /// Updates the analyzer context for the provided [affectedPaths].
   /// Returns [true] if any meaningful change was detected in an extra class.
   Future<bool> updateFileContexts(
@@ -59,7 +65,7 @@ class CustomClassAnalyzer {
         .toSet();
     var relevantPaths = affectedPaths.map(p.absolute).toSet();
 
-    final errorsBefore = _fileCache.values.any((r) => r.hadErrors);
+    final erroredFilesBefore = _erroredFiles;
     final keysBefore = _fileCache.keys.toSet();
 
     await analyze(
@@ -68,13 +74,19 @@ class CustomClassAnalyzer {
       changedFiles: relevantPaths,
     );
 
-    final errorsAfter = _fileCache.values.any((r) => r.hadErrors);
+    final erroredFilesAfter = _erroredFiles;
     final keysAfter = _fileCache.keys.toSet();
 
-    if (errorsBefore ||
-        errorsAfter ||
-        keysBefore.length != keysAfter.length ||
-        keysAfter.difference(keysBefore).isNotEmpty) {
+    // Regenerate when the set of custom class files changed, or when any file's
+    // error state flipped (an error appearing or clearing changes the parsed
+    // definitions). A persistently broken file, by contrast, must not turn
+    // every unrelated change - such as watcher echoes of freshly generated
+    // files - into another generation, or generation loops forever while an
+    // error exists anywhere in the project.
+    if (keysBefore.length != keysAfter.length ||
+        keysAfter.difference(keysBefore).isNotEmpty ||
+        erroredFilesBefore.length != erroredFilesAfter.length ||
+        erroredFilesAfter.difference(erroredFilesBefore).isNotEmpty) {
       return true;
     }
 
