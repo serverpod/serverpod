@@ -42,6 +42,13 @@ if [[ -n "${FLUTTER_ROOT:-}" ]]; then
   flutter_tools_msys="$flutter_root_msys/packages/flutter_tools"
   make_low_integrity_writable "$flutter_cache_msys"
   make_low_integrity_writable "$flutter_tools_msys"
+
+  # PsExec -l removes the runner administrator's symlink privilege. Flutter
+  # projects use symlinks for plugins, so allow the limited process to create
+  # them in its Low Integrity work tree without requiring elevation.
+  MSYS2_ARG_CONV_EXCL='*' reg.exe add \
+    'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock' \
+    /v AllowDevelopmentWithoutDevLicense /t REG_DWORD /d 1 /f
 fi
 
 # Flutter and the Dart analyzer store persistent tool state in APPDATA and
