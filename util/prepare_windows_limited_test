@@ -13,6 +13,7 @@ launcher="${1:?usage: prepare_windows_limited_test <launcher.cmd>}"
 
 test_user='serverpod_ci'
 test_password="Serverpod-CI-${RANDOM}${RANDOM}!"
+test_principal="${COMPUTERNAME}\\${test_user}"
 # PsExec -l also forces Low Integrity, which prevents Flutter from creating
 # plugin symlinks. A normal standard account removes the Administrators group
 # without imposing that extra restriction.
@@ -24,23 +25,26 @@ test_work_msys="$runner_temp_msys/limited-test"
 test_work_win="$(cygpath -m "$test_work_msys")"
 test_path_win="$(cygpath -mp "$PATH")"
 
-grant_test_user_write_access() {
+grant_test_user_access() {
   local path="$1"
+  local permissions="$2"
   [[ -d "$path" ]] || return 0
   MSYS2_ARG_CONV_EXCL='*' icacls.exe "$(cygpath -w "$path")" \
-    /grant "${test_user}:(OI)(CI)M" /t /c /q
+    /grant "${test_principal}:${permissions}" /t /c /q
 }
 
 # Tests and Dart tooling may update lockfiles, generated sources, and build-hook
-# state anywhere in this ephemeral CI checkout. Give the test account the same
-# write access as the runner account throughout it.
-grant_test_user_write_access "$PWD"
+# state anywhere in this ephemeral CI checkout. Full control is intentional:
+# migration tests create and recursively remove directories below trees owned
+# by the runner account, which requires inheritable ownership-related rights on
+# Windows in addition to ordinary file writes.
+grant_test_user_access "$PWD" '(OI)(CI)F'
 
 # Package downloads live outside the checkout and may also be updated while
 # Dart starts a test process.
 pub_cache_msys="$(cygpath -u "$PUB_CACHE")"
 mkdir -p "$pub_cache_msys"
-grant_test_user_write_access "$pub_cache_msys"
+grant_test_user_access "$pub_cache_msys" '(OI)(CI)M'
 
 # Project creation resolves generated workspaces with `flutter pub get` when
 # Flutter is available. A Flutter command may update files across the SDK while
@@ -49,7 +53,7 @@ if [[ -n "${FLUTTER_ROOT:-}" ]]; then
   flutter_root_msys="$(cygpath -u "$FLUTTER_ROOT")"
   flutter_root_win="$(cygpath -m "$FLUTTER_ROOT")"
   flutter_cache_msys="$flutter_root_msys/bin/cache"
-  grant_test_user_write_access "$flutter_root_msys"
+  grant_test_user_access "$flutter_root_msys" '(OI)(CI)M'
 
   # All earlier Flutter commands in this job have completed. Remove their
   # disposable startup-lock files so an inherited owner-specific ACL cannot
@@ -123,7 +127,7 @@ $flutter_preflight_commands
 $LIMITED_TEST_COMMAND" \
   "$HERE/prepare_windows_limited_process" "$launcher"
 
-grant_test_user_write_access "$test_work_msys"
+grant_test_user_access "$test_work_msys" '(OI)(CI)M'
 
 echo "::add-mask::$test_password"
 echo "SERVERPOD_WINDOWS_TEST_USER=$test_user" >> "$GITHUB_ENV"
