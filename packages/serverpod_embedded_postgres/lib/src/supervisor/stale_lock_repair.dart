@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_shared/process_io.dart';
 
+import 'pg_ctl.dart';
 import 'process_identity.dart';
 
 /// Best-effort cleanup of embedded-Postgres lock state after an abrupt exit
@@ -17,7 +18,7 @@ import 'process_identity.dart';
 /// Async step: if both pidfiles still point at the same live postmaster
 /// whose original Dart supervisor is gone:
 /// 1. Prefer [`pg_ctl stop`](https://www.postgresql.org/docs/current/app-pg-ctl.html)
-///    when [pgCtlExecutable] exists (same Zonky `bin/` as `postgres`) so
+///    when [pgCtlExecutable] exists (same bundle `bin/` as `postgres`) so
 ///    backends exit and SysV shared memory is released cleanly.
 /// 2. Fall back to SIGTERM/SIGKILL on the postmaster (TerminateProcess on
 ///    Windows). PG's SIGTERM handler propagates to its backends; if both
@@ -80,7 +81,12 @@ Future<void> _terminateLiveOrphanPostmaster(
   // Prefer pg_ctl so shared memory is released cleanly; fall back to
   // SIGTERM/SIGKILL on the postmaster.
   if (pgCtlExecutable != null && pgCtlExecutable.existsSync()) {
-    await _tryPgCtlStop(pgCtlExecutable, pgDataDir);
+    await stopWithPgCtl(
+      pgCtl: pgCtlExecutable,
+      dataDir: pgDataDir,
+      timeout: const Duration(seconds: 10),
+      mode: 'immediate',
+    );
   }
   if (isProcessAlive(pid)) {
     await _killPostmaster(pid);
@@ -93,42 +99,6 @@ Future<void> _terminateLiveOrphanPostmaster(
 
 Future<void> _delayForIpcTeardown() async {
   await Future<void>.delayed(const Duration(milliseconds: 150));
-}
-
-/// Tries `pg_ctl stop` so shared memory is released (orphan recovery only).
-///
-/// Uses **immediate** mode with a **short** `-t` budget: this path is for dev
-/// recovery after bad exits, not graceful production shutdown. A `fast` stop
-/// can block on checkpoints and, combined with two `-t 30` passes, stalled
-/// `setUpAll` for up to ~60s between test groups.
-Future<void> _tryPgCtlStop(File pgCtl, Directory pgDataDir) async {
-  if (!pgCtl.existsSync()) return;
-
-  String dataPath;
-  try {
-    dataPath = p.normalize(
-      Directory(pgDataDir.absolute.path).resolveSymbolicLinksSync(),
-    );
-  } on FileSystemException {
-    dataPath = p.normalize(p.absolute(pgDataDir.path));
-  }
-
-  try {
-    Process.runSync(pgCtl.path, [
-      'stop',
-      '-D',
-      dataPath,
-      '-m',
-      'immediate',
-      '-w',
-      '-t',
-      '10',
-      '-s',
-    ]);
-  } on ProcessException {
-    // Fall through; subtree kill may still help.
-  }
-  await Future<void>.delayed(const Duration(milliseconds: 80));
 }
 
 /// SIGTERM-then-SIGKILL the postmaster (Process.killPid maps to

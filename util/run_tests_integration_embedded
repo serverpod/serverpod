@@ -71,6 +71,28 @@ if [ ! -d "$SERVERPOD_DATABASE_DATA_PATH" ]; then
     exit 1
 fi
 
+# Dart cannot send POSIX signals on Windows. The shared postmaster intentionally
+# outlives the test isolates, so stop it through PostgreSQL before deleting its
+# data directory on the Windows runner.
+case "${OSTYPE:-}" in
+    msys*|cygwin*)
+        if [ -f "$SERVERPOD_DATABASE_DATA_PATH/postmaster.pid" ]; then
+            pg_cache="$(cygpath -u "${SERVERPOD_PG_CACHE_DIR:?}")"
+            pg_ctl="$(find "$pg_cache" -type f -name pg_ctl.exe -print -quit)"
+            if [ -z "$pg_ctl" ]; then
+                echo "Could not find pg_ctl.exe under $SERVERPOD_PG_CACHE_DIR"
+                cd "$REPO_ROOT"
+                exit 1
+            fi
+            "$pg_ctl" stop \
+                -D "$SERVERPOD_DATABASE_DATA_PATH" \
+                -m fast \
+                -w \
+                -t 30
+        fi
+        ;;
+esac
+
 # Remove the database data path
 rm -rf "$SERVERPOD_DATABASE_DATA_PATH"
 

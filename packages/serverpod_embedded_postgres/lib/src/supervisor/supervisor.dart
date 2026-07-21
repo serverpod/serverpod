@@ -8,6 +8,7 @@ import '../binary/executable.dart';
 import '../exceptions.dart';
 import '../transport.dart';
 import 'log_buffer.dart';
+import 'pg_ctl.dart';
 import 'process_identity.dart';
 import 'supervised_process.dart';
 
@@ -177,10 +178,9 @@ class Supervisor implements SupervisedProcess {
     return supervisor;
   }
 
-  /// Smart shutdown of the postmaster:
-  ///   1. SIGINT (PG fast smart-shutdown).
-  ///   2. After [timeout]/2, SIGTERM (immediate fast-shutdown).
-  ///   3. After [timeout], SIGKILL (last resort).
+  /// Smart shutdown of the postmaster. Windows uses `pg_ctl`, because Dart
+  /// cannot deliver POSIX signals there. POSIX escalates from SIGINT to
+  /// SIGTERM and finally SIGKILL.
   ///
   /// Removes the pidfile and closes the log sink. Idempotent: subsequent
   /// callers share the first call's future and only return once the
@@ -194,24 +194,37 @@ class Supervisor implements SupervisedProcess {
       await sub.cancel();
     }
 
-    if (!_exitCompleter.isCompleted) {
-      _process.kill(ProcessSignal.sigint);
+    if (Platform.isWindows && !_exitCompleter.isCompleted) {
+      var stoppedCleanly = await stopWithPgCtl(
+        pgCtl: pgCtlForPostgresExecutable(identity.executable),
+        dataDir: Directory(identity.dataDir),
+        timeout: timeout,
+      );
+      if (stoppedCleanly) {
+        await _waitWithDeadline(
+          _exitCompleter.future,
+          const Duration(seconds: 1),
+        );
+      }
     }
 
-    var halfway = timeout ~/ 2;
-    var firstWait = await _waitWithDeadline(_exitCompleter.future, halfway);
-    if (firstWait == null && !_exitCompleter.isCompleted) {
-      _process.kill(ProcessSignal.sigterm);
-      var secondWait = await _waitWithDeadline(
-        _exitCompleter.future,
-        timeout - halfway,
-      );
-      if (secondWait == null && !_exitCompleter.isCompleted) {
-        _process.kill(ProcessSignal.sigkill);
-        await _exitCompleter.future.timeout(
-          const Duration(seconds: 5),
-          onTimeout: () => -1,
+    if (!_exitCompleter.isCompleted) {
+      _process.kill(ProcessSignal.sigint);
+      var halfway = timeout ~/ 2;
+      var firstWait = await _waitWithDeadline(_exitCompleter.future, halfway);
+      if (firstWait == null && !_exitCompleter.isCompleted) {
+        _process.kill(ProcessSignal.sigterm);
+        var secondWait = await _waitWithDeadline(
+          _exitCompleter.future,
+          timeout - halfway,
         );
+        if (secondWait == null && !_exitCompleter.isCompleted) {
+          _process.kill(ProcessSignal.sigkill);
+          await _exitCompleter.future.timeout(
+            const Duration(seconds: 5),
+            onTimeout: () => -1,
+          );
+        }
       }
     }
 

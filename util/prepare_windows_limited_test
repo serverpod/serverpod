@@ -21,27 +21,17 @@ make_low_integrity_writable() {
     /setintegritylevel '(OI)(CI)L' /t /c /q
 }
 
-# Dart writes package downloads and build-hook state while starting tests.
-# Dependency resolution has already populated these trees using the runner's
-# normal token, so make them writable by the limited test process.
+# PsExec's Low Integrity token should otherwise behave like the developer who
+# owns a normal checkout. Tests and Dart tooling may update lockfiles, generated
+# sources, and build-hook state anywhere in this ephemeral CI checkout, so give
+# the limited process the same write access throughout it.
+make_low_integrity_writable "$PWD"
+
+# Package downloads live outside the checkout and may also be updated while
+# Dart starts a test process.
 pub_cache_msys="$(cygpath -u "$PUB_CACHE")"
 mkdir -p "$pub_cache_msys"
 make_low_integrity_writable "$pub_cache_msys"
-
-while IFS= read -r -d '' dart_tool; do
-  make_low_integrity_writable "$dart_tool"
-done < <(
-  find . -type d \
-    \( -name .git -o -name .pg-cache -o -name .pub-cache \) -prune -o \
-    -type d -name .dart_tool -print0
-)
-
-# BinaryStore should only need to read the seeded cache. Keep it writable as
-# well so lock or metadata recovery does not fail because the artifact was
-# unpacked with the runner's normal integrity level.
-if [[ -d .pg-cache ]]; then
-  make_low_integrity_writable "$PWD/.pg-cache"
-fi
 
 LIMITED_PROCESS_WORK_NAME=limited-test \
 LIMITED_PROCESS_LOG_NAME=output.log \
