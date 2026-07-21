@@ -262,14 +262,13 @@ void main() async {
           group(
             'then the workspace has Serverpod and Dart MCP servers configured',
             () {
-              final serverDirRelative = '${projectName}_server';
-              final genericConfig =
+              String expectedMcpConfig() =>
                   '''
 {
   "mcpServers": {
     "serverpod": {
       "command": "serverpod",
-      "args": ["mcp-server", "--server-dir", "$serverDirRelative"]
+      "args": ["mcp-server", "--server-dir", "${projectName}_server"]
     },
     "dart": {
       "command": "dart",
@@ -284,7 +283,7 @@ void main() async {
                   path.join(tempPath, projectName, '.mcp.json'),
                 );
                 expect(claude.existsSync(), isTrue);
-                expect(claude.readAsStringSync(), genericConfig);
+                expect(claude.readAsStringSync(), expectedMcpConfig());
               });
 
               test('for Cursor', () {
@@ -292,7 +291,7 @@ void main() async {
                   path.join(tempPath, projectName, '.cursor/mcp.json'),
                 );
                 expect(cursor.existsSync(), isTrue);
-                expect(cursor.readAsStringSync(), genericConfig);
+                expect(cursor.readAsStringSync(), expectedMcpConfig());
               });
 
               test('for VS Code', () {
@@ -302,7 +301,7 @@ void main() async {
                 expect(vscode.existsSync(), isTrue);
                 expect(
                   vscode.readAsStringSync(),
-                  genericConfig.replaceAll('mcpServers', 'servers'),
+                  expectedMcpConfig().replaceAll('mcpServers', 'servers'),
                 );
               });
             },
