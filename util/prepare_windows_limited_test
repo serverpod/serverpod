@@ -43,15 +43,20 @@ mkdir -p "$pub_cache_msys"
 grant_test_user_write_access "$pub_cache_msys"
 
 # Project creation resolves generated workspaces with `flutter pub get` when
-# Flutter is available. Flutter updates both its cache and the flutter_tools
-# package (including its .dart_tool directory) while bootstrapping the tool.
+# Flutter is available. A Flutter command may update files across the SDK while
+# bootstrapping the tool, not only its cache and flutter_tools package.
 if [[ -n "${FLUTTER_ROOT:-}" ]]; then
   flutter_root_msys="$(cygpath -u "$FLUTTER_ROOT")"
   flutter_root_win="$(cygpath -m "$FLUTTER_ROOT")"
   flutter_cache_msys="$flutter_root_msys/bin/cache"
-  flutter_tools_msys="$flutter_root_msys/packages/flutter_tools"
-  grant_test_user_write_access "$flutter_cache_msys"
-  grant_test_user_write_access "$flutter_tools_msys"
+  grant_test_user_write_access "$flutter_root_msys"
+
+  # All earlier Flutter commands in this job have completed. Remove their
+  # disposable startup-lock files so an inherited owner-specific ACL cannot
+  # make flutter.bat retry its silent lock-acquisition loop forever.
+  rm -f \
+    "$flutter_cache_msys/flutter.bat.lock" \
+    "$flutter_cache_msys/lockfile"
 
   # Flutter projects use symlinks for plugins. Allow the standard test account
   # to create them without requiring elevation.
@@ -95,6 +100,15 @@ append_test_environment_variable GITHUB_WORKSPACE
 append_test_environment_variable SERVERPOD_PG_CACHE_DIR
 append_test_environment_variable SERVERPOD_SILENCE_LIFECYCLE_MESSAGES
 
+flutter_preflight_commands=''
+if [[ -n "${FLUTTER_ROOT:-}" ]]; then
+  # Fail with a bounded diagnostic instead of allowing a nested Flutter command
+  # to consume the bootstrap test's full timeout while acquiring its SDK lock.
+  flutter_preflight_commands='echo Verifying Flutter under the Windows test account
+bash -c "timeout 60s cmd.exe /d /c flutter --version"
+if errorlevel 1 exit /b %errorlevel%'
+fi
+
 # Flutter and the Dart analyzer store persistent tool state in APPDATA and
 # LOCALAPPDATA. Keep that state in the isolated test work tree instead of
 # changing either account's profile.
@@ -103,6 +117,7 @@ LIMITED_PROCESS_LOG_NAME=output.log \
 LIMITED_PROCESS_COMMAND="$test_environment_commands
 set \"APPDATA=$test_work_win\"
 set \"LOCALAPPDATA=$test_work_win\"
+$flutter_preflight_commands
 $LIMITED_TEST_COMMAND" \
   "$HERE/prepare_windows_limited_process" "$launcher"
 
