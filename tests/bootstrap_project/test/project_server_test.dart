@@ -10,9 +10,31 @@ import '../lib/src/util.dart';
 void main() async {
   final rootPath = path.join(Directory.current.path, '..', '..');
   final cliProjectPath = getServerpodCliProjectPath(rootPath: rootPath);
-  final tempPath = Directory.systemTemp.createTempSync('spb_').path;
+
+  Directory? tempDirectory;
+  late final String tempPath;
+  late final String projectName;
+  late final String serverDir;
+  late final String flutterDir;
+  late final String clientDir;
+  late final String runningProjectName;
+  late final String runningCommandRoot;
 
   setUpAll(() async {
+    tempDirectory = Directory.systemTemp.createTempSync('spb_');
+    tempPath = tempDirectory!.path;
+
+    final project = createRandomProjectName(tempPath);
+    projectName = project.projectName;
+    final projectFolders = createProjectFolderPaths(projectName);
+    serverDir = projectFolders.serverDir;
+    flutterDir = projectFolders.flutterDir;
+    clientDir = projectFolders.clientDir;
+
+    final runningProject = createRandomProjectName(tempPath);
+    runningProjectName = runningProject.projectName;
+    runningCommandRoot = runningProject.commandRoot;
+
     final pubGetProcess = await startProcess('dart', [
       'pub',
       'get',
@@ -22,18 +44,13 @@ void main() async {
 
   tearDownAll(() async {
     try {
-      await Directory(tempPath).delete(recursive: true);
+      await tempDirectory?.delete(recursive: true);
     } catch (e) {}
   });
 
   group(
     'Given a clean state',
     () {
-      final (:projectName, commandRoot: _) = createRandomProjectName(tempPath);
-      final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
-        projectName,
-      );
-
       group(
         'when creating a new project with the server template',
         () {
@@ -764,8 +781,6 @@ void main() async {
   group(
     'Given a created project with the server template and a running pod',
     () {
-      final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
-
       late Process createProcess;
       late Process startProjectProcess;
 
@@ -773,7 +788,7 @@ void main() async {
         createProcess = await startServerpodCli(
           [
             'create',
-            projectName,
+            runningProjectName,
             '--template',
             'server',
             '-v',
@@ -791,7 +806,7 @@ void main() async {
         startProjectProcess = await startProcessAndWaitForKeywords(
           'dart',
           ['bin/main.dart', '--apply-migrations'],
-          workingDirectory: commandRoot,
+          workingDirectory: runningCommandRoot,
           keywords: ['Webserver listening on'],
         );
       });
