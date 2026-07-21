@@ -30,7 +30,9 @@ class Protocol extends _i1.DatabaseSerializationManager {
 
   static final Protocol _instance = Protocol._();
 
-  static final List<_i2.TableDefinition> targetTableDefinitions = [
+  final Set<_i1.SerializationManager> _hostProtocols = {};
+
+  static List<_i2.TableDefinition> get targetTableDefinitions => [
     _i2.TableDefinition(
       name: 'serverpod_auth_migration_migrated_user',
       dartName: 'MigratedUser',
@@ -114,8 +116,6 @@ class Protocol extends _i1.DatabaseSerializationManager {
     ..._i5.Protocol.targetTableDefinitions,
     ..._i6.Protocol.targetTableDefinitions,
   ];
-
-  final Set<_i1.SerializationManager> _hostProtocols = {};
 
   void registerHostProtocol(
     String projectName,

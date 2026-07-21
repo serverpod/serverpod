@@ -146,63 +146,6 @@ class LibraryGenerator {
               ? const Code('Protocol._().._registerHostProtocols()')
               : const Code('Protocol._()'),
       ),
-      if (shouldExtendDatabaseSerializationManager)
-        Field(
-          (f) => f
-            ..name = 'targetTableDefinitions'
-            ..static = true
-            ..modifier = FieldModifier.final$
-            ..type = TypeReference(
-              (t) => t
-                ..symbol = 'List'
-                ..types.add(_tableDefinitionReference(serverCode)),
-            )
-            ..assignment =
-                createDatabaseDefinitionFromModels(
-                  allModels,
-                  config.name,
-                  config.modulesAll,
-                  serverCode: serverCode,
-                ).toCode(
-                  config: config,
-                  serverCode: serverCode,
-                  additionalTables: serverCode
-                      ? [
-                          for (var module in config.modules)
-                            refer(
-                              'Protocol.targetTableDefinitions',
-                              module.dartImportUrl(serverCode),
-                            ).spread,
-                          for (var packageName
-                              in config.sharedModelsSourcePathsParts.keys)
-                            if (!sharedPackage)
-                              _protocolTargetTableDefinitionsSpread(
-                                'package:$packageName/$packageName.dart',
-                                serverCode,
-                              ),
-                          if (config.name != 'serverpod' &&
-                              config.type != PackageType.module)
-                            refer(
-                              'Protocol.targetTableDefinitions',
-                              serverpodProtocolUrl(serverCode),
-                            ).spread,
-                        ]
-                      : [
-                          for (var module in config.modules)
-                            _protocolTargetTableDefinitionsSpread(
-                              module.dartImportUrl(serverCode),
-                              serverCode,
-                            ),
-                          for (var packageName
-                              in config.sharedModelsSourcePathsParts.keys)
-                            if (!sharedPackage)
-                              _protocolTargetTableDefinitionsSpread(
-                                'package:$packageName/$packageName.dart',
-                                serverCode,
-                              ),
-                        ],
-                ),
-        ),
       if (_supportsHostProtocols)
         Field(
           (f) => f
@@ -225,7 +168,72 @@ class LibraryGenerator {
         .where((f) => f.shouldIncludeField(serverCode))
         .distinct();
 
+    // Emitted as a getter (not `static final`) so hot reload under
+    // `serverpod start` re-evaluates the list after model changes.
+    // Dart hot reload does not re-run static field initializers, which
+    // previously left verifyDatabaseIntegrity comparing against a stale
+    // target schema (see serverpod/serverpod#5433).
+    final targetTableDefinitionsBody = shouldExtendDatabaseSerializationManager
+        ? createDatabaseDefinitionFromModels(
+            allModels,
+            config.name,
+            config.modulesAll,
+            serverCode: serverCode,
+          ).toCode(
+            config: config,
+            serverCode: serverCode,
+            additionalTables: serverCode
+                ? [
+                    for (var module in config.modules)
+                      refer(
+                        'Protocol.targetTableDefinitions',
+                        module.dartImportUrl(serverCode),
+                      ).spread,
+                    for (var packageName
+                        in config.sharedModelsSourcePathsParts.keys)
+                      if (!sharedPackage)
+                        _protocolTargetTableDefinitionsSpread(
+                          'package:$packageName/$packageName.dart',
+                          serverCode,
+                        ),
+                    if (config.name != 'serverpod' &&
+                        config.type != PackageType.module)
+                      refer(
+                        'Protocol.targetTableDefinitions',
+                        serverpodProtocolUrl(serverCode),
+                      ).spread,
+                  ]
+                : [
+                    for (var module in config.modules)
+                      _protocolTargetTableDefinitionsSpread(
+                        module.dartImportUrl(serverCode),
+                        serverCode,
+                      ),
+                    for (var packageName
+                        in config.sharedModelsSourcePathsParts.keys)
+                      if (!sharedPackage)
+                        _protocolTargetTableDefinitionsSpread(
+                          'package:$packageName/$packageName.dart',
+                          serverCode,
+                        ),
+                  ],
+          )
+        : null;
+
     protocol.methods.addAll([
+      if (targetTableDefinitionsBody != null)
+        Method(
+          (m) => m
+            ..name = 'targetTableDefinitions'
+            ..static = true
+            ..type = MethodType.getter
+            ..returns = TypeReference(
+              (t) => t
+                ..symbol = 'List'
+                ..types.add(_tableDefinitionReference(serverCode)),
+            )
+            ..body = targetTableDefinitionsBody,
+        ),
       if (_supportsHostProtocols) ..._buildModuleHostProtocolMethods(),
       Method(
         (m) => m

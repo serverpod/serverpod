@@ -30,7 +30,9 @@ class Protocol extends _i1.DatabaseSerializationManager {
 
   static final Protocol _instance = Protocol._();
 
-  static final List<_i1.TableDefinition> targetTableDefinitions = [
+  final Set<_i2.SerializationManager> _hostProtocols = {};
+
+  static List<_i1.TableDefinition> get targetTableDefinitions => [
     _i1.TableDefinition(
       name: 'shared_table_record',
       dartName: 'SharedTableRecord',
@@ -75,8 +77,6 @@ class Protocol extends _i1.DatabaseSerializationManager {
       managed: true,
     ),
   ];
-
-  final Set<_i2.SerializationManager> _hostProtocols = {};
 
   void registerHostProtocol(
     String projectName,
