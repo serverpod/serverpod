@@ -17,7 +17,7 @@ test_password="Serverpod-CI-${RANDOM}${RANDOM}!"
 # plugin symlinks. A normal standard account removes the Administrators group
 # without imposing that extra restriction.
 MSYS2_ARG_CONV_EXCL='*' net.exe user \
-  "$test_user" "$test_password" /add
+  "$test_user" "$test_password" /add /y
 
 runner_temp_msys="$(cygpath -u "$RUNNER_TEMP")"
 test_work_msys="$runner_temp_msys/limited-test"
