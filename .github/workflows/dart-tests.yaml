@@ -949,6 +949,10 @@ jobs:
           restore-keys: |
             pub-${{ runner.os }}-${{ matrix.flutter-version }}-
       - uses: ./.github/actions/use-embedded-pg
+      - name: Resolve bootstrap dependencies (Windows)
+        if: matrix.os == 'windows-latest'
+        run: dart pub get
+        working-directory: tests/bootstrap_project
       - name: Install PsExec (Windows)
         if: matrix.os == 'windows-latest'
         run: choco install pstools --no-progress -y --limit-output

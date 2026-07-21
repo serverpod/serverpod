@@ -8,17 +8,39 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 launcher="${1:?usage: prepare_windows_limited_test <launcher.cmd>}"
 : "${LIMITED_TEST_COMMAND:?LIMITED_TEST_COMMAND must be set}"
 : "${RUNNER_TEMP:?RUNNER_TEMP must be set}"
+: "${PUB_CACHE:?PUB_CACHE must be set}"
 
 runner_temp_msys="$(cygpath -u "$RUNNER_TEMP")"
 test_work_msys="$runner_temp_msys/limited-test"
 test_data_path_win="$(cygpath -m "$test_work_msys/pgdata")"
 
-# BinaryStore should only need to read the seeded cache. Keep it writable by
-# the limited process as well so lock or metadata recovery cannot fail solely
-# because the action unpacked it with the runner's normal integrity level.
-if [[ -d .pg-cache ]]; then
-  MSYS2_ARG_CONV_EXCL='*' icacls.exe "$(cygpath -w "$PWD/.pg-cache")" \
+make_low_integrity_writable() {
+  local path="$1"
+  [[ -d "$path" ]] || return 0
+  MSYS2_ARG_CONV_EXCL='*' icacls.exe "$(cygpath -w "$path")" \
     /setintegritylevel '(OI)(CI)L' /t /c /q
+}
+
+# Dart writes package downloads and build-hook state while starting tests.
+# Dependency resolution has already populated these trees using the runner's
+# normal token, so make them writable by the limited test process.
+pub_cache_msys="$(cygpath -u "$PUB_CACHE")"
+mkdir -p "$pub_cache_msys"
+make_low_integrity_writable "$pub_cache_msys"
+
+while IFS= read -r -d '' dart_tool; do
+  make_low_integrity_writable "$dart_tool"
+done < <(
+  find . -type d \
+    \( -name .git -o -name .pg-cache -o -name .pub-cache \) -prune -o \
+    -type d -name .dart_tool -print0
+)
+
+# BinaryStore should only need to read the seeded cache. Keep it writable as
+# well so lock or metadata recovery does not fail because the artifact was
+# unpacked with the runner's normal integrity level.
+if [[ -d .pg-cache ]]; then
+  make_low_integrity_writable "$PWD/.pg-cache"
 fi
 
 LIMITED_PROCESS_WORK_NAME=limited-test \
