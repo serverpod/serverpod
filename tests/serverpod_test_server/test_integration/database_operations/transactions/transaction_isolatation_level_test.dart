@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_test_server/test_util/test_tags.dart';
 import 'package:test/test.dart';
 
 import '../../test_tools/serverpod_test_tools.dart';
@@ -11,7 +10,6 @@ void main() async {
   withServerpod(
     'Given read committed transaction isolation level and single row in database',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
     (sessionBuilder, _) {
       var session = sessionBuilder.build();
 
@@ -79,7 +77,6 @@ void main() async {
   withServerpod(
     'Given repeatable read transaction isolation level',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
     (sessionBuilder, _) {
       var session = sessionBuilder.build();
 
@@ -205,7 +202,6 @@ void main() async {
   withServerpod(
     'Given serializable transaction isolation level',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
     (sessionBuilder, _) {
       var session = sessionBuilder.build();
 

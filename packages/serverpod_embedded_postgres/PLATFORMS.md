@@ -1,15 +1,19 @@
 # Platform support
 
-Status of `serverpod_embedded_postgres` on each `(OS, arch)` tuple
-covered by Zonky's binaries.
+Status of `serverpod_embedded_postgres` on each `(OS, arch)` tuple covered
+by the Serverpod PostgreSQL bundles (PostgreSQL + PostGIS + pgvector).
 
-| Tuple              | Verified on this machine | Notes |
-| ------------------ | :----------------------: | ----- |
-| `macos-arm64`      | indirectly (universal)   | Zonky's `darwin-arm64v8` ships a universal Mach-O; the same artifact ran natively on the Intel host used for development. Direct M-series testing pending. |
-| `macos-x64`        | yes                      | Full integration test suite (BinaryStore -> ClusterStore -> Supervisor -> SELECT 1, UDS + TCP, attach round-trip) passes on a 2019 Intel Mac running macOS 25.3. |
-| `linux-x64`        | not yet                  | Should work; relies only on cross-platform Dart APIs. CI matrix in phase 10. |
-| `linux-arm64`      | not yet                  | Same as above. |
-| `windows-x64`      | partial (see below)      | UDS path is wired correctly; identity check uses exe-path equality only (no dataDir match); orphan-kill works via TerminateProcess. |
+| Tuple           | Verified | How |
+| --------------- | :------: | --- |
+| `linux-x64`     | yes      | Full integration suite + release smoke gate in CI (`ubuntu-22.04` / `ubuntu-latest`). |
+| `linux-arm64`   | yes      | Same, on `ubuntu-22.04-arm` / `ubuntu-24.04-arm`. |
+| `macos-x64`     | yes      | Same, on `macos-15-intel`. |
+| `macos-arm64`   | yes      | Same, on `macos-15`. |
+| `windows-x64`   | yes      | Same, on `windows-2022` / `windows-latest`, under a limited (non-admin) token. |
+
+These are the only published targets; `serverpodPlatformSuffixes` (and the
+`prefetch --target` validation) reflects exactly this set. Native Windows
+ARM64 is not yet published.
 
 ## Windows notes
 
@@ -28,8 +32,8 @@ PID identity (also recorded) gives a second pin.
 
 ### 2. AF_UNIX availability
 
-PostgreSQL 13+ on Windows 10 1803+ supports AF_UNIX, and Zonky's
-`windows-amd64` artifact is built with that flag. Dart 3.11+ added
+PostgreSQL 13+ on Windows 10 1803+ supports AF_UNIX, and the Windows
+bundle is built with that flag. Dart 3.11+ added
 `InternetAddressType.unix` support on Windows.
 
 `requireUnixSocketSupport()` (in `serverpod_shared`) enforces the Dart
@@ -39,14 +43,20 @@ older than 1803 will fail at PG bind time with a less-friendly error.
 **Workaround:** use `TcpTransport()` on those hosts; loopback works
 back to all supported Windows versions.
 
+### 3. Elevated tokens
+
+PostgreSQL refuses to run under an Administrators-group token. Every CI job
+that starts the Windows postmaster, including bundle smoke, integration, and
+generated-project bootstrap tests, runs under a limited token via `PsExec -l`;
+local elevated terminals will see PG's own refusal message.
+
 ## What "verified" means
 
-For a tuple to be verified, the integration test suite (currently 14
-end-to-end tests) must pass against a real Zonky 16.13 install. The
-suite covers: cold + warm install, initdb, conf reconcile, supervisor
-spawn + ready-detect + signal escalation, UDS connect, TCP connect with
-scram-sha-256, ephemeral port allocation, password persistence,
-detach + attach round-trip, and the StaleClusterException major-mismatch
-path.
+For a tuple to be verified, two gates must pass in CI against a real
+Serverpod bundle:
 
-CI matrix landing the remaining tuples is tracked in phase 10.
+1. The integration test suite (BinaryStore -> ClusterStore -> Supervisor,
+   UDS + TCP, attach round-trip, stale-lock recovery).
+2. The release smoke battery (`tool/smoke_bundle.sql`): extension loading
+   plus the supported spatial/vector contract documented in
+   [README.md](README.md), run before any bundle is published.

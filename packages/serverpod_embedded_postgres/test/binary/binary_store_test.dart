@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:archive/archive_io.dart';
@@ -11,7 +13,10 @@ import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_embedded_postgres/serverpod_embedded_postgres.dart';
 import 'package:serverpod_embedded_postgres/src/binary/binary_store.dart';
+import 'package:serverpod_embedded_postgres/src/binary/bundle_builder.dart';
+import 'package:serverpod_embedded_postgres/src/binary/bundle_spec.dart';
 import 'package:serverpod_embedded_postgres/src/binary/maven_url.dart';
+import 'package:serverpod_embedded_postgres/src/binary/serverpod_bundle.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -120,13 +125,46 @@ void main() {
 
         await expectLater(
           store.ensure(artifact),
-          throwsA(isA<BinaryFetchException>()),
+          throwsA(
+            isA<BinaryFetchException>().having(
+              (error) => error.kind,
+              'kind',
+              BinaryFetchFailureKind.invalidResponse,
+            ),
+          ),
         );
 
         store.close();
       },
     );
   });
+
+  test(
+    'Given a network failure while downloading the bundle, '
+    'when ensure runs, '
+    'then it throws a download-classified BinaryFetchException.',
+    () async {
+      var store = BinaryStore(
+        cacheRoot: cache,
+        httpClient: MockClient((request) async {
+          throw http.ClientException('connection failed', request.url);
+        }),
+      );
+
+      await expectLater(
+        store.ensure(artifact),
+        throwsA(
+          isA<BinaryFetchException>().having(
+            (error) => error.kind,
+            'kind',
+            BinaryFetchFailureKind.download,
+          ),
+        ),
+      );
+
+      store.close();
+    },
+  );
 
   group('Given an empty cache and 4 concurrent isolates', () {
     test(
@@ -315,6 +353,270 @@ void main() {
       );
     },
   );
+
+  group('Given two revisions of the same PG version, ', () {
+    late _FakeBundleArtifact r1;
+    late _FakeBundleArtifact r2;
+
+    setUp(() {
+      r1 = _FakeBundleArtifact(spec: _specWithRevision(1));
+      r2 = _FakeBundleArtifact(spec: _specWithRevision(2));
+    });
+
+    test(
+      'when resolving their install dirs, '
+      'then each revision gets its own directory.',
+      () {
+        var store = BinaryStore(cacheRoot: cache);
+
+        expect(
+          store.installDirFor(r1).path,
+          isNot(store.installDirFor(r2).path),
+        );
+
+        store.close();
+      },
+    );
+
+    test(
+      'when ensure runs concurrently for both revisions, '
+      'then both installs proceed independently.',
+      () async {
+        var bytes = Uint8List.fromList([1, 2, 3]);
+        var shaHex = sha256.convert(bytes).toString();
+        var activeDownloads = 0;
+        var maximumActiveDownloads = 0;
+        var store = BinaryStore(
+          cacheRoot: cache,
+          httpClient: MockClient((req) async {
+            if (req.url == r1.archiveUrl || req.url == r2.archiveUrl) {
+              activeDownloads++;
+              maximumActiveDownloads = max(
+                maximumActiveDownloads,
+                activeDownloads,
+              );
+              await Future<void>.delayed(const Duration(milliseconds: 100));
+              activeDownloads--;
+              return http.Response.bytes(bytes, 200);
+            }
+            if (req.url == r1.sha256Url || req.url == r2.sha256Url) {
+              return http.Response(shaHex, 200);
+            }
+            return http.Response('not found', 404);
+          }),
+          pollInterval: const Duration(milliseconds: 10),
+          hardTimeout: const Duration(seconds: 2),
+        );
+
+        var installs = await Future.wait([
+          store.ensure(r1),
+          store.ensure(r2),
+        ]);
+
+        expect(maximumActiveDownloads, 2);
+        expect(installs[0].path, isNot(installs[1].path));
+        expect(store.metaFileFor(r1).existsSync(), isTrue);
+        expect(store.metaFileFor(r2).existsSync(), isTrue);
+
+        store.close();
+      },
+    );
+  });
+
+  test(
+    'Given revision 1 is cached and revision 2 has the same PostgreSQL version, '
+    'when ensure runs for revision 2, '
+    'then revision 2 is downloaded into a separate cache entry.',
+    () async {
+      var r1 = _FakeBundleArtifact(spec: _specWithRevision(1));
+      var r2 = _FakeBundleArtifact(spec: _specWithRevision(2));
+      var bytes = Uint8List.fromList([1, 2, 3]);
+      var shaHex = sha256.convert(bytes).toString();
+      var downloads = <Uri>[];
+      var store = BinaryStore(
+        cacheRoot: cache,
+        httpClient: MockClient((req) async {
+          if (req.url == r2.archiveUrl) {
+            downloads.add(req.url);
+            return http.Response.bytes(bytes, 200);
+          }
+          if (req.url == r2.sha256Url) return http.Response(shaHex, 200);
+          return http.Response('not found', 404);
+        }),
+      );
+      var r1Dir = await _installFake(store, r1);
+
+      var r2Dir = await store.ensure(r2);
+
+      expect(downloads, [r2.archiveUrl]);
+      expect(r2Dir.path, isNot(r1Dir.path));
+      expect(store.metaFileFor(r2).existsSync(), isTrue);
+
+      store.close();
+    },
+  );
+
+  test(
+    'Given an unpublished release asset and an available builder, '
+    'when ensure runs in the default download mode, '
+    'then BinaryFetchException(404) is thrown and the builder is never invoked.',
+    () async {
+      var store = BinaryStore(
+        cacheRoot: cache,
+        httpClient: MockClient((req) async {
+          return http.Response('not found', 404);
+        }),
+      );
+
+      await expectLater(
+        store.ensure(
+          _FakeBundleArtifact(spec: _specWithRevision(1)),
+          builder: const _MustNotBuildBuilder(),
+        ),
+        throwsA(
+          isA<BinaryFetchException>()
+              .having((e) => e.statusCode, 'statusCode', 404)
+              .having(
+                (e) => e.kind,
+                'kind',
+                BinaryFetchFailureKind.unavailable,
+              )
+              .having(
+                (e) => e.message,
+                'message',
+                allOf(
+                  contains('16.13.0-r1/linux-x64'),
+                  contains('archive or its SHA-256 sidecar returned 404'),
+                  isNot(contains('SERVERPOD_PG_SOURCE')),
+                ),
+              ),
+        ),
+      );
+
+      store.close();
+    },
+  );
+
+  test(
+    'Given a bundle whose manifest disagrees with the requested artifact, '
+    'when ensure runs, '
+    'then verification fails and nothing is cached.',
+    () async {
+      var artifact = _FakeBundleArtifact(
+        spec: _specWithRevision(2),
+        manifestOverride: {
+          'postgres': '16.13.0',
+          'revision': 1,
+          'platform': 'linux-x64',
+          'postgis': '3.5.4',
+          'pgvector': '0.8.3',
+        },
+      );
+      var bytes = Uint8List.fromList([1, 2, 3]);
+      var store = BinaryStore(
+        cacheRoot: cache,
+        httpClient: MockClient((req) async {
+          if (req.url == artifact.archiveUrl) {
+            return http.Response.bytes(bytes, 200);
+          }
+          if (req.url == artifact.sha256Url) {
+            return http.Response(sha256.convert(bytes).toString(), 200);
+          }
+          return http.Response('not found', 404);
+        }),
+      );
+
+      await expectLater(
+        store.ensure(artifact),
+        throwsA(isA<BinaryVerificationException>()),
+      );
+      expect(store.installDirFor(artifact).existsSync(), isFalse);
+      expect(store.metaFileFor(artifact).existsSync(), isFalse);
+
+      store.close();
+    },
+  );
+}
+
+/// Fails the test if the download path ever falls back to building.
+final class _MustNotBuildBuilder extends BundleBuilder {
+  const _MustNotBuildBuilder();
+
+  @override
+  Future<File> build({
+    required BundleSpec spec,
+    required String platform,
+  }) async {
+    fail('the builder must not be invoked in download mode');
+  }
+}
+
+BundleSpec _specWithRevision(int revision) => BundleSpec(
+  postgresVersion: Version(16, 13, 0),
+  revision: revision,
+  postgisVersion: '3.5.4',
+  pgvectorVersion: '0.8.3',
+);
+
+/// Installs [artifact] into [store] via a self-contained mock server, so a
+/// test can start from a "revision already cached" state.
+Future<Directory> _installFake(
+  BinaryStore store,
+  _FakeBundleArtifact artifact,
+) async {
+  var bytes = Uint8List.fromList([9, 9, 9]);
+  var seeded = BinaryStore(
+    cacheRoot: store.cacheRoot,
+    httpClient: MockClient((req) async {
+      if (req.url == artifact.archiveUrl) {
+        return http.Response.bytes(bytes, 200);
+      }
+      if (req.url == artifact.sha256Url) {
+        return http.Response(sha256.convert(bytes).toString(), 200);
+      }
+      return http.Response('not found', 404);
+    }),
+  );
+  try {
+    return await seeded.ensure(artifact);
+  } finally {
+    seeded.close();
+  }
+}
+
+/// A Serverpod bundle artifact whose "extraction" writes a minimal install
+/// tree directly (bin/postgres + the identity manifest), sidestepping the
+/// XZ layer that synthetic fixtures cannot roundtrip reliably. Passing
+/// [manifestOverride] simulates a mislabeled archive.
+final class _FakeBundleArtifact extends ServerpodBundleArtifact {
+  final Map<String, Object?>? manifestOverride;
+
+  _FakeBundleArtifact({required super.spec, this.manifestOverride})
+    : super(platform: 'linux-x64');
+
+  @override
+  void extractInto(
+    Uint8List archiveBytes,
+    Directory destination, {
+    void Function(double fraction)? onProgress,
+  }) {
+    File(
+      p.join(destination.path, 'bin', 'postgres'),
+    ).createSync(recursive: true);
+    File(p.join(destination.path, bundleManifestFileName)).writeAsStringSync(
+      jsonEncode(
+        manifestOverride ??
+            {
+              'postgres': spec.bom,
+              'revision': spec.revision,
+              'platform': platform,
+              'postgis': spec.postgisVersion,
+              'pgvector': spec.pgvectorVersion,
+            },
+      ),
+    );
+    onProgress?.call(1.0);
+  }
 }
 
 /// Mock client that responds to the JAR URL and the sidecar URL for a given

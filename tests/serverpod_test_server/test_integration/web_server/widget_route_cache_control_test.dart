@@ -51,7 +51,7 @@ void main() {
       serverpod.webServer.addRoute(JsonTestRoute(), '/json-route');
       serverpod.webServer.addRoute(RedirectTestRoute(), '/redirect-route');
 
-      await serverpod.start();
+      await serverpod.startWithDatabase();
     });
 
     tearDown(() async {
@@ -63,7 +63,7 @@ void main() {
       'then the cache-control header is set to no-cache and private',
       () async {
         var response = await http.get(
-          Uri.parse('http://localhost:8082/html-route'),
+          Uri.parse('${serverpod.webUrl}html-route'),
         );
 
         expect(response.headers['cache-control'], 'no-cache, private');
@@ -75,7 +75,7 @@ void main() {
       'then the cache-control header is set to no-cache and private',
       () async {
         var response = await http.get(
-          Uri.parse('http://localhost:8082/json-route'),
+          Uri.parse('${serverpod.webUrl}json-route'),
         );
 
         expect(response.headers['cache-control'], 'no-cache, private');
@@ -85,7 +85,7 @@ void main() {
     test('when requesting a JSON widget route '
         'then the content-type is application/json', () async {
       var response = await http.get(
-        Uri.parse('http://localhost:8082/json-route'),
+        Uri.parse('${serverpod.webUrl}json-route'),
       );
 
       expect(response.headers['content-type'], contains('application/json'));
@@ -96,7 +96,7 @@ void main() {
       'then the content-type is text/html even with cache headers set',
       () async {
         var response = await http.get(
-          Uri.parse('http://localhost:8082/html-route'),
+          Uri.parse('${serverpod.webUrl}html-route'),
         );
 
         expect(response.headers['content-type'], contains('text/html'));
@@ -107,7 +107,7 @@ void main() {
     test('when requesting a JSON widget route '
         'then both content-type and cache headers are set correctly', () async {
       var response = await http.get(
-        Uri.parse('http://localhost:8082/json-route'),
+        Uri.parse('${serverpod.webUrl}json-route'),
       );
 
       expect(response.headers['content-type'], contains('application/json'));
@@ -122,7 +122,7 @@ void main() {
         var client = http.Client();
         var request = http.Request(
           'GET',
-          Uri.parse('http://localhost:8082/redirect-route'),
+          Uri.parse('${serverpod.webUrl}redirect-route'),
         );
         request.followRedirects = false;
 
@@ -141,7 +141,7 @@ void main() {
       var client = http.Client();
       var request = http.Request(
         'GET',
-        Uri.parse('http://localhost:8082/redirect-route'),
+        Uri.parse('${serverpod.webUrl}redirect-route'),
       );
       request.followRedirects = false;
 

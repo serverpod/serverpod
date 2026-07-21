@@ -1,9 +1,11 @@
+@Tags(['redis'])
+library;
+
 import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart' as c;
 import 'package:serverpod_test_client/serverpod_test_client.dart';
-import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/test_key_manager.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
@@ -21,20 +23,26 @@ void main() {
     // a user with Admin scope.
     var tokenCounter = 0;
     server = IntegrationTestServer.create(
+      withRedis: true,
       authenticationHandler: (session, token) async => AuthenticationInfo(
         authenticatedUserId,
         {Scope.admin},
         authId: 'token-${tokenCounter++}',
       ),
     );
-    await server.start();
+    await server.startWithDatabase();
     session = await server.createSession();
 
     authKeyManager = TestAuthKeyManager();
     client = c.Client(
-      serverUrl,
+      server.apiUrl,
       // ignore: deprecated_member_use
       authenticationKeyManager: authKeyManager,
+    );
+    expect(
+      server.redisController,
+      isNotNull,
+      reason: 'Redis-tagged tests require a working Redis connection.',
     );
   });
 

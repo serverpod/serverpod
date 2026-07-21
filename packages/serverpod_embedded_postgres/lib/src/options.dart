@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:pub_semver/pub_semver.dart';
 
+import 'binary/binary_source.dart';
+import 'cluster/postgres_conf_builder.dart';
 import 'transport.dart';
 
 /// Default PostgreSQL major.minor version. Tracks Serverpod Cloud and the
@@ -36,12 +38,16 @@ class EmbeddedPostgresOptions {
 
   /// PostgreSQL major.minor.patch version. Defaults to
   /// [defaultPostgresVersion]; bump in lockstep with Serverpod Cloud.
+  ///
+  /// Must match a published Serverpod bundle - [EmbeddedPostgres.start]
+  /// throws [UnsupportedVersionException] (before any network access) for
+  /// versions without one.
   final Version version;
 
   /// Override the per-user binary cache root. Defaults to:
-  ///   - Linux: `$XDG_CACHE_HOME/serverpod` or `~/.cache/serverpod`
-  ///   - macOS: `~/Library/Caches/serverpod`
-  ///   - Windows: `%LOCALAPPDATA%\serverpod\Cache`
+  ///   - Linux: `$XDG_CACHE_HOME/serverpod/pg-binaries` or `~/.cache/serverpod/pg-binaries`
+  ///   - macOS: `~/Library/Caches/serverpod/pg-binaries`
+  ///   - Windows: `%LOCALAPPDATA%\serverpod\Cache\pg-binaries`
   final Directory? binaryCache;
 
   /// Cap on `initdb` + start-to-ready. Network download (first run only) is
@@ -63,7 +69,7 @@ class EmbeddedPostgresOptions {
   /// - Removes PostgreSQL `postmaster.pid` when its PID is dead.
   /// - **POSIX:** if both pidfiles still reference our recorded postmaster and
   ///   that postmaster no longer has its original Dart supervisor as parent,
-  ///   prefers `pg_ctl stop` from the same Zonky `bin/` (passed from
+  ///   prefers `pg_ctl stop` from the same bundle `bin/` (passed from
   ///   [EmbeddedPostgres.start]) so backends and **SysV shared memory** are
   ///   torn down cleanly; then kills any remaining subtree on Linux (`/proc`).
   ///   Skipped on Windows and older pidfiles without supervisor metadata.
@@ -78,6 +84,20 @@ class EmbeddedPostgresOptions {
   /// `serverpod_cli start` wires this into the existing CLI progress UI.
   final void Function(double fraction, String stage)? onProgress;
 
+  /// The cluster's `max_connections`. Defaults to [defaultMaxConnections],
+  /// sized for parallel test suites sharing one postmaster.
+  final int maxConnections;
+
+  /// Where the PostgreSQL bundle comes from: [BinarySource.download] (the
+  /// default), [BinarySource.build], or [BinarySource.auto] (download,
+  /// falling back to a local build when the prebuilt bundle isn't
+  /// published). `null` defers to the `SERVERPOD_PG_SOURCE` env var, else
+  /// [BinarySource.download].
+  ///
+  /// Building requires the toolchain (zig/cmake/make/bison/flex/perl, plus
+  /// bash/MSYS2 on Windows); see `tool/build_postgres/`.
+  final BinarySource? binarySource;
+
   /// Creates options for [EmbeddedPostgres.start]. Only [dataDir] and
   /// [databaseName] are required; the rest have safe dev defaults.
   EmbeddedPostgresOptions({
@@ -91,5 +111,7 @@ class EmbeddedPostgresOptions {
     this.detach = false,
     this.repairStaleLocks = false,
     this.onProgress,
+    this.maxConnections = defaultMaxConnections,
+    this.binarySource,
   }) : version = version ?? defaultPostgresVersion;
 }

@@ -1,0 +1,28 @@
+name: Use prebuilt serverpod CLI bundle
+description: >-
+  Downloads the serverpod_cli bundle built once by the build_cli job and unpacks
+  it into .cli, exporting SERVERPOD_CLI_EXE so the migration/e2e suites reuse it
+  instead of recompiling serverpod_cli per run. Requires the repo checked out and
+  the calling job to `needs: build_cli`.
+
+runs:
+  using: composite
+  steps:
+    - name: Download the prebuilt serverpod CLI bundle
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      with:
+        name: serverpod-cli-${{ runner.os }}
+        path: cli-bundle
+    - name: Reuse the prebuilt CLI
+      shell: bash
+      run: |
+        mkdir -p .cli
+        tar -C .cli -xpzf cli-bundle/serverpod-cli.tgz
+        # The executable name is platform-dependent (serverpod_cli[.exe|.bat]);
+        # resolve it here, once, so consumers just use $SERVERPOD_CLI_EXE.
+        CLI="$(echo "$GITHUB_WORKSPACE"/.cli/bin/serverpod_cli*)"
+        if [ ! -x "$CLI" ]; then
+          echo "::error::no CLI executable found under .cli/bin after unpacking the bundle"
+          exit 1
+        fi
+        echo "SERVERPOD_CLI_EXE=$CLI" >> "$GITHUB_ENV"

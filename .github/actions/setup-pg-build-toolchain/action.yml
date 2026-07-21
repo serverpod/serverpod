@@ -1,0 +1,57 @@
+name: Set up embedded-postgres build toolchain
+description: >-
+  Installs the per-OS toolchain for building the embedded-postgres bundle via
+  tool/build_postgres/build-all.sh: Zig on Linux, cmake/bison/flex on macOS,
+  MSYS2 (mingw-w64 gcc + build tools) on Windows. The compiler the build itself
+  uses is Zig on Linux, Apple clang on macOS, mingw-w64 gcc on Windows. Branches
+  on runner.os so callers pass no input. Single source of truth shared by the CI
+  seed job (dart-tests.yaml) and the release workflow (build-embedded-postgres.yaml)
+  so their toolchains can't drift. Requires the repo to be checked out first.
+
+runs:
+  using: composite
+  steps:
+    # Zig is the compiler on Linux only.
+    - name: Set up Zig 0.16.0
+      if: runner.os == 'Linux'
+      uses: mlugg/setup-zig@d1434d08867e3ee9daa34448df10607b98908d29 # v2.2.1
+      with:
+        version: 0.16.0
+
+    # patchelf rewrites the bundle's ELF rpaths in package.sh, which fails
+    # with instructions when it's missing rather than apt-getting mid-build.
+    - name: Install patchelf (Linux)
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        command -v patchelf >/dev/null 2>&1 || {
+          sudo apt-get update -qq && sudo apt-get install -y -qq patchelf
+        }
+
+    # ubuntu runners ship cmake/bison/flex/make/pkg-config; macOS ships cmake
+    # only, so install the rest there (macOS uses Apple clang as the compiler).
+    - name: Install build tools (macOS)
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        brew install pkg-config bison flex
+        echo "$(brew --prefix bison)/bin" >> "$GITHUB_PATH"
+        echo "$(brew --prefix flex)/bin"  >> "$GITHUB_PATH"
+
+    # MSYS2 supplies the Unix build shell (sh/make/bison/flex/perl/autoconf) +
+    # cmake/pkgconf + binutils (windres/dlltool for postgres's win32 build) +
+    # gcc, which IS the compiler on Windows (the wrapper execs gcc/g++ there;
+    # zig is used only on macOS/Linux). path-type: inherit keeps the toolchain
+    # visible inside the MSYS2 shell for the caller's build step.
+    - name: Set up MSYS2 (Windows)
+      if: runner.os == 'Windows'
+      uses: msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884 # v2.32.0
+      with:
+        msystem: MINGW64
+        path-type: inherit
+        install: >-
+          base-devel bison flex tar xz curl
+          mingw-w64-x86_64-gcc
+          mingw-w64-x86_64-cmake
+          mingw-w64-x86_64-pkgconf
+          mingw-w64-x86_64-binutils

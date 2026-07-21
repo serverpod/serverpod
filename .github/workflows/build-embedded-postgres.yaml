@@ -1,0 +1,258 @@
+name: Build embedded postgres bundles
+
+# Builds the Serverpod PostgreSQL bundles (PostgreSQL + PostGIS + pgvector)
+# consumed by serverpod_embedded_postgres at runtime, via the shared
+# tool/build_postgres/build-all.sh. Per-platform compiler: Zig on Linux, Apple
+# clang on macOS, mingw-w64 gcc on Windows. Native per-runner build, no cross-compile.
+on:
+  workflow_dispatch:
+    inputs:
+      pg_version:
+        description: >-
+          PG version (bom), e.g. 16.13.0. Defaults to the canonical
+          tool/build_postgres/versions.env spec.
+        default: ''
+      bundle_revision:
+        description: >-
+          Bundle packaging revision, e.g. 2. Defaults to the canonical
+          tool/build_postgres/versions.env spec.
+        default: ''
+  push:
+    tags: ['embedded-postgres-v*']
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.os }}-${{ matrix.arch }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { runner: macos-15-intel,   os: macos,   arch: x64 }
+          - { runner: macos-15,         os: macos,   arch: arm64 }
+          - { runner: ubuntu-22.04,     os: linux,   arch: x64 }
+          - { runner: ubuntu-22.04-arm, os: linux,   arch: arm64 }
+          - { runner: windows-2022,     os: windows, arch: x64 }
+    env:
+      BUNDLE_OS: ${{ matrix.os }}
+      BUNDLE_ARCH: ${{ matrix.arch }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      # Per-OS build toolchain (zig / clang+brew / MSYS2), shared with the CI
+      # seed job via a composite action so the two can't drift.
+      - name: Set up build toolchain
+        uses: ./.github/actions/setup-pg-build-toolchain
+
+      # Identity resolution: a tag push (embedded-postgres-v<bom>-r<rev>)
+      # names the exact bundle; a manual dispatch takes explicit inputs and
+      # falls back to the canonical versions.env spec. Legacy tags without a
+      # revision are rejected - they cannot name a unique append-only bundle.
+      - name: Resolve bundle identity
+        id: pgver
+        shell: bash
+        run: |
+          . packages/serverpod_embedded_postgres/tool/build_postgres/versions.env
+          v="${{ github.event.inputs.pg_version }}"
+          r="${{ github.event.inputs.bundle_revision }}"
+          if [[ "$GITHUB_REF_NAME" == embedded-postgres-v* ]]; then
+            stem="${GITHUB_REF_NAME#embedded-postgres-v}"
+            case "$stem" in
+              *-r*) v="${stem%-r*}"; r="${stem##*-r}" ;;
+              *)
+                echo "::error::tag $GITHUB_REF_NAME carries no bundle revision (expected embedded-postgres-v<bom>-r<rev>)"
+                exit 1
+                ;;
+            esac
+          fi
+          [ -n "$v" ] || v="$PG_BOM"
+          [ -n "$r" ] || r="$BUNDLE_REVISION"
+          # The checked-out recipe can only build the spec it describes, so a
+          # tag or dispatch input naming anything else would produce a
+          # mislabeled bundle - reject it instead.
+          if [ "$v" != "$PG_BOM" ] || [ "$r" != "$BUNDLE_REVISION" ]; then
+            echo "::error::requested bundle $v-r$r does not match the canonical spec $PG_BOM-r$BUNDLE_REVISION (tool/build_postgres/versions.env) - update versions.env in the tagged commit instead"
+            exit 1
+          fi
+          echo "value=$v" >> "$GITHUB_OUTPUT"
+          echo "revision=$r" >> "$GITHUB_OUTPUT"
+
+      - name: Build + package + assert version (Unix)
+        if: matrix.os != 'windows'
+        env:
+          PGBUILD: ${{ runner.temp }}/pgbuild
+          PG_VERSION: ${{ steps.pgver.outputs.value }}
+          BUNDLE_REVISION: ${{ steps.pgver.outputs.revision }}
+        run: |
+          bash packages/serverpod_embedded_postgres/tool/build_postgres/build-all.sh
+          f="$PGBUILD/dist/serverpod-postgres-${PG_VERSION}-r${BUNDLE_REVISION}-${BUNDLE_OS}-${BUNDLE_ARCH}.tar.xz"
+          [ -f "$f" ] || { echo "::error::expected bundle $f not produced; dist has: $(ls "$PGBUILD"/dist 2>/dev/null)"; exit 1; }
+          echo "verified bundle: $(basename "$f")"
+
+      - name: Build + package + assert version (Windows / MSYS2)
+        if: matrix.os == 'windows'
+        shell: msys2 {0}
+        env:
+          PG_VERSION: ${{ steps.pgver.outputs.value }}
+          BUNDLE_REVISION: ${{ steps.pgver.outputs.revision }}
+        run: |
+          # cygpath bridges the Windows RUNNER_TEMP to an MSYS path pointing at
+          # the same dir, so the upload step (Windows path) finds the artifacts.
+          export PGBUILD="$(cygpath -u "$RUNNER_TEMP")/pgbuild"
+          bash packages/serverpod_embedded_postgres/tool/build_postgres/build-all.sh
+          f="$PGBUILD/dist/serverpod-postgres-${PG_VERSION}-r${BUNDLE_REVISION}-${BUNDLE_OS}-${BUNDLE_ARCH}.tar.xz"
+          [ -f "$f" ] || { echo "::error::expected bundle $f not produced; dist has: $(ls "$PGBUILD"/dist 2>/dev/null)"; exit 1; }
+          echo "verified bundle: $(basename "$f")"
+
+      # Inspection artifact for every platform, uploaded BEFORE the smoke gate so
+      # a failing bundle is still downloadable for debugging.
+      - name: Upload bundle artifact (inspection)
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: serverpod-postgres-${{ matrix.os }}-${{ matrix.arch }}
+          path: |
+            ${{ runner.temp }}/pgbuild/dist/*.tar.xz
+            ${{ runner.temp }}/pgbuild/dist/*.tar.xz.sha256
+
+      # Real run: initdb + load pgvector/halfvec/PostGIS + write/read. A
+      # failure fails the job and so blocks this platform's publish.
+      - name: Smoke-test the bundle (Unix)
+        if: matrix.os != 'windows'
+        env:
+          PGBUILD: ${{ runner.temp }}/pgbuild
+        run: |
+          d="$(mktemp -d)"
+          tar -C "$d" -xf "$PGBUILD"/dist/serverpod-postgres-*.tar.xz
+          bash packages/serverpod_embedded_postgres/tool/smoke_bundle.sh "$d"
+
+      # Same battery over TCP localhost - no CI test suite executes the bundle
+      # on windows, so without this gate a windows-only miscompile (e.g. the
+      # mingw halfvec backend crash) ships silently. Hosted Windows runners are
+      # elevated (runneradmin) and postgres refuses an Administrators-group
+      # token, so the smoke runs under a limited token via PsExec -l - the same
+      # mechanism as the embedded-PG integration jobs in dart-tests.yaml.
+      # PsExec drops the inner process's stdout in GHA, so the wrapper logs to
+      # a file the outer step prints; the exit code still propagates.
+      - name: Install PsExec (Windows)
+        if: matrix.os == 'windows'
+        run: choco install pstools --no-progress -y --limit-output
+      - name: Extract bundle for the smoke test (Windows / MSYS2)
+        if: matrix.os == 'windows'
+        shell: msys2 {0}
+        run: |
+          d="$(cygpath -u "$RUNNER_TEMP")/smoke-bundle"
+          mkdir -p "$d"
+          tar -C "$d" -xf "$(cygpath -u "$RUNNER_TEMP")/pgbuild/dist"/serverpod-postgres-*.tar.xz
+      - name: Prep smoke script (Windows)
+        if: matrix.os == 'windows'
+        shell: bash
+        run: |
+          cat > run-smoke.cmd <<'EOF'
+          @echo off
+          msys2 -c "bash packages/serverpod_embedded_postgres/tool/smoke_bundle_windows.sh \"$(cygpath -u \"$RUNNER_TEMP\")/smoke-bundle\"" > "%TEMP%\smoke.log" 2>&1
+          exit /b %errorlevel%
+          EOF
+      - name: Smoke-test the bundle (Windows, non-admin)
+        if: matrix.os == 'windows'
+        shell: cmd
+        run: |
+          psexec -accepteula -nobanner -l cmd /c "%CD%\run-smoke.cmd"
+          set RC=%errorlevel%
+          if exist "%TEMP%\smoke.log" type "%TEMP%\smoke.log"
+          exit /b %RC%
+        timeout-minutes: 10
+
+      # Publish-eligible copy, only reached if the smoke gate above passed (a
+      # failed gate fails the job, skipping this). The publish job consumes
+      # exactly these `release-*` artifacts.
+      - name: Stage bundle for release
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: release-${{ matrix.os }}-${{ matrix.arch }}
+          path: |
+            ${{ runner.temp }}/pgbuild/dist/*.tar.xz
+            ${{ runner.temp }}/pgbuild/dist/*.tar.xz.sha256
+
+  # One all-or-nothing release for the whole matrix. Downloads are the
+  # consumer path, so a release missing a platform would strand that
+  # platform's users on a 404; one failed leg therefore fails the whole
+  # release. Assets are assembled on a draft and only then flipped live.
+  # This workflow treats a published bundle identity as append-only: it will
+  # not update an existing release, and a correction ships as a new revision.
+  publish:
+    name: Publish GitHub Release
+    needs: build
+    if: ${{ startsWith(github.ref, 'refs/tags/embedded-postgres-v') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Download validated bundles
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: release-*
+          path: release
+          merge-multiple: true
+      # Record which recipe built these bundles.
+      - name: Compute recipe hash
+        id: recipe
+        uses: ./.github/actions/pg-recipe-hash
+      - name: Attach the recipe hash
+        run: echo "${{ steps.recipe.outputs.hash }}" > release/recipe.sha256
+      - name: Verify the release set is complete and self-consistent
+        run: |
+          stem="${TAG#embedded-postgres-v}"
+          bad=0
+          for plat in linux-x64 linux-arm64 macos-x64 macos-arm64 windows-x64; do
+            a="release/serverpod-postgres-$stem-$plat.tar.xz"
+            if [ ! -f "$a" ] || [ ! -f "$a.sha256" ]; then
+              echo "::error::missing $(basename "$a") or its .sha256 sidecar"; bad=1; continue
+            fi
+            echo "$(cat "$a.sha256")  $a" | sha256sum --check --quiet - \
+              || { echo "::error::sha256 mismatch for $(basename "$a")"; bad=1; }
+          done
+          # Nothing beyond the expected set may ride along either (e.g. an
+          # artifact staged under a different identity by a stale re-run).
+          expected=11  # 5 archives + 5 sidecars + recipe.sha256
+          actual="$(ls release | wc -l)"
+          if [ "$actual" -ne "$expected" ]; then
+            echo "::error::expected $expected files in release/, found $actual: $(ls release | tr '\n' ' ')"; bad=1
+          fi
+          [ "$bad" -eq 0 ]
+      - name: Fail if this bundle tag is already published
+        run: |
+          if gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG" --silent 2>/dev/null; then
+            echo "::error::release $TAG is already published - this workflow never updates a published bundle; ship the fix as a new bundle revision (bump BUNDLE_REVISION in versions.env)"
+            exit 1
+          fi
+      - name: Publish atomically via a draft release
+        run: |
+          # Sweep leftover drafts from previously failed publish attempts;
+          # the published-release guard above already ran, so only drafts
+          # can match the tag here.
+          gh api "repos/$GITHUB_REPOSITORY/releases" \
+            -q ".[] | select(.tag_name == \"$TAG\" and .draft) | .id" |
+            while read -r id; do
+              gh api -X DELETE "repos/$GITHUB_REPOSITORY/releases/$id"
+            done
+          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --draft --verify-tag \
+            --title "Embedded PostgreSQL bundle ${TAG#embedded-postgres-v}" \
+            --notes "PostgreSQL + PostGIS + pgvector bundles consumed by serverpod_embedded_postgres." \
+            release/*
+          # Asset uploads are per-file and can fail partway (gh would exit
+          # non-zero, but belt-and-suspenders); recount on the draft before
+          # flipping it live.
+          uploaded="$(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets -q '.assets | length')"
+          expected="$(ls release | wc -l)"
+          if [ "$uploaded" -ne "$expected" ]; then
+            echo "::error::draft release has $uploaded assets, expected $expected - not publishing"
+            exit 1
+          fi
+          gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --draft=false

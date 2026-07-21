@@ -4,8 +4,7 @@ import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/file_system/file_system.dart' show ResourceProvider;
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:path/path.dart' as p;
-
-import 'sdk_path.dart';
+import 'package:serverpod_shared/process_io.dart';
 
 /// Notifies the [collection] that the given [files] have been created or
 /// modified on disk, so subsequent analysis calls resolve updated content.

@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_sqlite_server/src/generated/protocol.dart';
-import 'package:serverpod_test_server/test_util/test_tags.dart';
 import 'package:serverpod_test_server/test_util/mock_stdout.dart';
 import 'package:test/test.dart';
 
@@ -440,7 +439,6 @@ void main() {
     // Testing that lockMode without a transaction throws requires rollback to
     // be disabled since the test framework wraps calls in a transaction.
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
     (sessionBuilder, _) {
       late Session session;
 

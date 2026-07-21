@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
+
 import '../binary/executable.dart';
 import '../exceptions.dart';
 import '../transport.dart';
@@ -25,6 +27,7 @@ class Supervisor implements SupervisedProcess {
   final File _pidFile;
   final LogBuffer _ring;
   final IOSink _logSink;
+  final Future<void> _outputDone;
   final List<StreamSubscription<ProcessSignal>> _signalSubs;
   final Completer<int> _exitCompleter = Completer();
 
@@ -36,11 +39,13 @@ class Supervisor implements SupervisedProcess {
     required File pidFile,
     required LogBuffer ring,
     required IOSink logSink,
+    required Future<void> outputDone,
     required List<StreamSubscription<ProcessSignal>> signalSubs,
   }) : _process = process,
        _pidFile = pidFile,
        _ring = ring,
        _logSink = logSink,
+       _outputDone = outputDone,
        _signalSubs = signalSubs {
     unawaited(_process.exitCode.then(_exitCompleter.complete));
   }
@@ -84,25 +89,47 @@ class Supervisor implements SupervisedProcess {
       '\n=== supervisor start @ ${DateTime.now().toIso8601String()} ===',
     );
 
+    // Serverpod bundles ship PostGIS, whose PROJ has the build-time data dir
+    // baked in. Point PROJ_LIB at the bundle's own copy so coordinate
+    // transforms resolve after the install tree was relocated by the cache.
+    // (No-op for bundles without a share/proj, e.g. plain Zonky binaries.)
+    var projData = Directory(p.join(installDir.path, 'share', 'proj'));
+    var environment = <String, String>{
+      ...Platform.environment,
+      if (projData.existsSync()) 'PROJ_LIB': projData.path,
+    };
+
     var process = await Process.start(
       executable,
       ['-D', dataDir.path],
       mode: ProcessStartMode.normal,
+      environment: environment,
     );
 
+    // Diagnostic: when SERVERPOD_PG_LOG_STDERR=1, mirror the postmaster log to
+    // this process's stderr so a backend crash ("server process ... was
+    // terminated by signal N", PANIC, out-of-memory, etc.) shows up inline in
+    // CI output. Otherwise it only lands in the per-datadir postgres.log, which
+    // a test runner never surfaces.
+    var mirrorLog = Platform.environment['SERVERPOD_PG_LOG_STDERR'] == '1';
     void handleLine(String line) {
       logSink.writeln(line);
       ring.add(line);
+      if (mirrorLog) stderr.writeln('[pg] $line');
     }
 
-    process.stdout
+    var stdoutSub = process.stdout
         .transform(utf8.decoder)
         .transform(const LineSplitter())
         .listen(handleLine);
-    process.stderr
+    var stderrSub = process.stderr
         .transform(utf8.decoder)
         .transform(const LineSplitter())
         .listen(handleLine);
+    var outputDone = [
+      stdoutSub.asFuture<void>().catchError((_) {}),
+      stderrSub.asFuture<void>().catchError((_) {}),
+    ].wait;
 
     var identity = ProcessIdentity.capture(
       process: process,
@@ -118,6 +145,7 @@ class Supervisor implements SupervisedProcess {
       pidFile: pidFile,
       ring: ring,
       logSink: logSink,
+      outputDone: outputDone,
       signalSubs: signalSubs,
     );
 
@@ -195,6 +223,7 @@ class Supervisor implements SupervisedProcess {
         // user's problem (they got the orphan-detection mismatch already).
       }
     }
+    await _waitWithDeadline(_outputDone, const Duration(seconds: 2));
     await _logSink.flush();
     await _logSink.close();
   }
@@ -286,7 +315,8 @@ bool _isReady(Supervisor supervisor) {
 bool _logTailIndicatesLockBusy(List<String> logTail) {
   for (var line in logTail) {
     var lower = line.toLowerCase();
-    if (lower.contains('postmaster.pid') && lower.contains('already exists')) {
+    if (lower.contains('already exists') &&
+        (lower.contains('postmaster.pid') || lower.contains('.s.pgsql'))) {
       return true;
     }
   }

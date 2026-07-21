@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:meta/meta.dart' as meta;
 import 'package:path/path.dart' as p;
 import 'package:serverpod/serverpod.dart' hide LogLevel;
+import 'package:serverpod_database/embedded.dart';
 import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -798,8 +799,16 @@ class Serverpod {
     // Ensure the database pool manager has started.
     // The call to start() is necessary in case this method is being invoked
     // after a shutdown. Otherwise, the pool manager won't be started again.
-    _databasePoolManager?.start();
-    await _databasePoolManager?.started;
+    try {
+      _databasePoolManager?.start();
+      await _databasePoolManager?.started;
+    } on EmbeddedPostgresStartupException catch (error, stackTrace) {
+      log.error(
+        error.message,
+        stackTrace: error.includeStackTrace ? stackTrace : null,
+      );
+      throw ExitException(1);
+    }
 
     if (Features.enableMigrations) {
       int? maxAttempts = config.role == ServerpodRole.maintenance ? 6 : null;

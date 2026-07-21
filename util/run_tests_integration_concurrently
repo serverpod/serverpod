@@ -1,8 +1,10 @@
 #!/bin/bash
 
-# This script runs the integration tests that are compatible with running concurrently.
-# Only tests tagged with 'integration' (default tag for the test tools) will be run in parallel
-# and the rest are excluded from this job.
+# Runs the serverpod_test_server integration tests that ARE safe to run
+# concurrently (tagged 'integration', driven by withServerpod) against an
+# embedded PostgreSQL postmaster - no Docker required. withServerpod provisions
+# a per-test-group database, so no up-front apply-migrations is needed (matches
+# the other *_integration_embedded suites).
 
 if [ ! -f util/.serverpod_util_root ]; then
     echo "Run this script from the root of the Serverpod repository"
@@ -10,13 +12,67 @@ if [ ! -f util/.serverpod_util_root ]; then
     exit 1
 fi
 
-# Makes script exit on first non-zero error code
 set -e
+export SERVERPOD_SILENCE_LIFECYCLE_MESSAGES="1"
+export SERVERPOD_DATABASE_DATA_PATH=".serverpod/test/pgdata"
+# Embedded PG runs the server in the host timezone, whereas the former docker
+# server ran in the container's UTC. Pin UTC so timezone-sensitive tests (e.g.
+# cron-scheduled future calls) behave identically regardless of host/runner tz.
+export TZ="UTC"
 
-cd tests/docker/tests_integration
+# Whole-file sharding for parallel CI jobs: pass <shard-index> <total-shards>
+# (0-based index, default 0 1 = a single shard). dart test's own --total-shards
+# splits at the test-CASE level, which breaks tests that intentionally share
+# state across cases in a group (e.g. test_tools/session_copy_with_test). We
+# assign whole files to a shard instead (see below). The native-asset warmup
+# below always runs regardless of shard.
+shard_index="${1:-0}"
+total_shards="${2:-1}"
 
-docker compose --progress quiet --profile concurrent up \
-  --abort-on-container-exit \
-  --exit-code-from serverpod_test_server_concurrent_tests \
-  --build \
-  --remove-orphans
+REPO_ROOT="$(pwd)"
+
+cd "tests/serverpod_test_server"
+rm -rf "$SERVERPOD_DATABASE_DATA_PATH"
+
+# start_timeout_test spawns a fresh `dart test`, which would otherwise re-run
+# Dart's native-asset build hooks (compiling libsqlite3) within its 4s startup
+# budget and time out on a cold runner. Warm the hooks once here using the same
+# target the spawned run uses (--name matches nothing, so no server boots), so
+# that run reuses the cached assets. The serial suite gets this for free via its
+# up-front apply-migrations `dart run`.
+echo "### Warming native-asset build hooks (for start_timeout_test's spawned dart test)"
+dart test test_integration/test_tools/start_timeout_test/test_that_will_not_timeout.dart \
+    --name '___native_asset_warmup_no_match___' >/dev/null 2>&1 || true
+
+# Assign whole test files to this shard, round-robin. The -t integration filter
+# below still decides which tests within those files actually run.
+shard_test_files=()
+file_i=0
+while IFS= read -r test_file; do
+    if [ "$total_shards" -le 1 ] || [ $(( file_i % total_shards )) -eq "$shard_index" ]; then
+        shard_test_files+=("$test_file")
+    fi
+    file_i=$(( file_i + 1 ))
+done < <(find test_integration -name '*_test.dart' | sort)
+if [ ${#shard_test_files[@]} -eq 0 ]; then
+    echo "### No test files assigned to shard $shard_index/$total_shards"
+    exit 0
+fi
+
+# INTEGRATION_TEST_SERVERPOD_MODE=test selects test.yaml (ephemeral ports), so
+# the few test files that boot a server outside a group don't collide on ports.
+echo "### Running concurrent integration tests (${#shard_test_files[@]} files, shard $shard_index/$total_shards)"
+INTEGRATION_TEST_SERVERPOD_MODE=test dart test "${shard_test_files[@]}" -t integration --reporter=failures-only
+
+# Verify the embedded data path was created. Don't remove it here: the tests
+# leave the postmaster running (it is reaped on the next start), so an rm would
+# race it still writing into pgdata/base and fail the job with "Directory not
+# empty". CI runners are ephemeral and the next run's pre-test rm gives a clean
+# slate, so post-run cleanup is unnecessary anyway.
+if [ ! -d "$SERVERPOD_DATABASE_DATA_PATH" ]; then
+    echo "Test did not create the database data path: $SERVERPOD_DATABASE_DATA_PATH"
+    cd "$REPO_ROOT"
+    exit 1
+fi
+
+cd "$REPO_ROOT"

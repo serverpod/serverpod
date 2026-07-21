@@ -5,7 +5,6 @@ import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:test/test.dart';
 
 import '../../serverpod_test_tools.dart';
-import '../../test_tags.dart';
 
 void main() {
   final jwt = Jwt(
@@ -437,7 +436,6 @@ void main() {
 
   withServerpod(
     'Given an auth user with a refresh token with scopes and extra claims,',
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       const String scopeName = 'test scope';
       late Session session;

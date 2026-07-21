@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+# Builds the host embedded PostgreSQL bundle from source into a fresh cache,
+# then runs both the bundle's own integration tests and the repository's host
+# integration suite against that exact cache.
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+CACHE_DIR="$(mktemp -d "${TMPDIR:-/tmp}/serverpod-pg-cache.XXXXXX")"
+CACHE_ENV="$CACHE_DIR"
+
+cleanup() {
+  rm -rf "$CACHE_DIR"
+}
+trap cleanup EXIT
+
+if [[ "${OS:-}" == "Windows_NT" ]]; then
+  if [[ -z "${MSYSTEM:-}" ]] || ! command -v cygpath >/dev/null 2>&1; then
+    echo "Run this command from an MSYS2 shell on Windows." >&2
+    exit 1
+  fi
+  CACHE_ENV="$(cygpath -w "$CACHE_DIR")"
+  if [[ -z "${SERVERPOD_PG_BUILD_BASH:-}" ]]; then
+    SERVERPOD_PG_BUILD_BASH="$(cygpath -w "$(command -v bash)")"
+    export SERVERPOD_PG_BUILD_BASH
+  fi
+fi
+
+export SERVERPOD_PG_CACHE_DIR="$CACHE_ENV"
+export SERVERPOD_PG_SOURCE=build
+
+echo "Building the embedded PostgreSQL bundle from source..."
+(
+  cd "$ROOT/packages/serverpod_embedded_postgres"
+  dart run serverpod_embedded_postgres:prefetch
+)
+
+echo "Running serverpod_embedded_postgres integration tests..."
+(
+  cd "$ROOT/packages/serverpod_embedded_postgres"
+  dart test --tags=integration --reporter=failures-only
+)
+
+echo "Running the repository host integration suite..."
+cd "$ROOT"
+dart run melos run test_integration

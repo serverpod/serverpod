@@ -9,8 +9,6 @@ import 'package:test/test.dart';
 const _testToken = 'test-token';
 const _testUserId = 'test-user-123';
 const _testAuthId = 'auth-id-456';
-const _apiServerUrl = 'http://localhost:8080/';
-const _webServerUrl = 'http://localhost:8082/session-test';
 
 // Custom auth provider that returns a raw unwrapped token
 class _UnwrappedTokenAuthProvider implements ClientAuthKeyProvider {
@@ -65,7 +63,7 @@ void main() {
 
         server.webServer.addRoute(SessionTestRoute(), '/session-test');
 
-        await server.start();
+        await server.startWithDatabase();
       });
 
       tearDownAll(() async {
@@ -83,7 +81,7 @@ void main() {
         late Client client;
 
         setUp(() {
-          client = Client(_apiServerUrl)
+          client = Client(server.apiUrl)
             ..authKeyProvider = _BearerTokenAuthProvider(_testToken);
         });
 
@@ -104,7 +102,7 @@ void main() {
         late Client client;
 
         setUp(() {
-          client = Client(_apiServerUrl)
+          client = Client(server.apiUrl)
             ..authKeyProvider = _UnwrappedTokenAuthProvider(_testToken);
         });
 
@@ -127,7 +125,7 @@ void main() {
         late Client client;
 
         setUp(() {
-          client = Client(_apiServerUrl)
+          client = Client(server.apiUrl)
             ..authKeyProvider = _UnwrappedTokenAuthProvider(_testToken);
         });
 
@@ -151,7 +149,7 @@ void main() {
           'then request should fail with 400',
           () async {
             final response = await http.get(
-              Uri.parse(_webServerUrl),
+              Uri.parse('${server.webUrl}session-test'),
               headers: {
                 'Authorization': _testToken,
               },
@@ -198,7 +196,7 @@ void main() {
 
       server.webServer.addRoute(SessionTestRoute(), '/session-test');
 
-      await server.start();
+      await server.startWithDatabase();
     });
 
     tearDownAll(() async {
@@ -209,7 +207,7 @@ void main() {
       late Client client;
 
       setUp(() {
-        client = Client(_apiServerUrl)
+        client = Client(server.apiUrl)
           ..authKeyProvider = _UnwrappedTokenAuthProvider(_testToken);
       });
 
@@ -230,7 +228,7 @@ void main() {
       late Client client;
 
       setUp(() {
-        client = Client(_apiServerUrl)
+        client = Client(server.apiUrl)
           ..authKeyProvider = _UnwrappedTokenAuthProvider(_testToken);
       });
 
@@ -254,7 +252,7 @@ void main() {
       late Client client;
 
       setUp(() {
-        client = Client(_apiServerUrl)
+        client = Client(server.apiUrl)
           ..authKeyProvider = _BearerTokenAuthProvider(_testToken);
       });
 
@@ -275,7 +273,7 @@ void main() {
       late Client client;
 
       setUp(() {
-        client = Client(_apiServerUrl)
+        client = Client(server.apiUrl)
           ..authKeyProvider = _BasicTokenAuthProvider(_testToken);
       });
 
@@ -297,7 +295,7 @@ void main() {
         'then session should be authenticated',
         () async {
           final response = await http.get(
-            Uri.parse(_webServerUrl),
+            Uri.parse('${server.webUrl}session-test'),
             headers: {
               'Authorization': _testToken,
             },
@@ -316,7 +314,7 @@ void main() {
         'then session should be authenticated',
         () async {
           final response = await http.get(
-            Uri.parse(_webServerUrl),
+            Uri.parse('${server.webUrl}session-test'),
             headers: {
               'Authorization': 'Bearer $_testToken',
             },
