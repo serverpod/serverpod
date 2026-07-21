@@ -37,11 +37,11 @@ bundle is built with that flag. Dart 3.11+ added
 `InternetAddressType.unix` support on Windows.
 
 `requireUnixSocketSupport()` (in `serverpod_shared`) enforces the Dart
-SDK requirement; it does not enforce the OS version. Calling
-`EmbeddedPostgres.start` with `UnixTransport()` on a Windows version
-older than 1803 will fail at PG bind time with a less-friendly error.
-**Workaround:** use `TcpTransport()` on those hosts; loopback works
-back to all supported Windows versions.
+SDK requirement; it does not enforce the OS version. The default transport
+automatically falls back to loopback TCP when the running Dart SDK lacks
+AF_UNIX support. Explicitly requesting `UnixTransport()` on a Windows version
+older than 1803 will fail at PG bind time with a less-friendly error; use
+`TcpTransport()` on those hosts.
 
 ### 3. Elevated tokens
 
