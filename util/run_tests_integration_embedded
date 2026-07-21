@@ -71,43 +71,43 @@ if [ ! -d "$SERVERPOD_DATABASE_DATA_PATH" ]; then
     exit 1
 fi
 
-# Dart cannot send POSIX signals on Windows. The shared postmaster intentionally
-# outlives the test isolates, so stop it through PostgreSQL before deleting its
-# data directory on the Windows runner.
-case "${OSTYPE:-}" in
-    msys*|cygwin*)
-        if [ -f "$SERVERPOD_DATABASE_DATA_PATH/postmaster.pid" ]; then
-            pg_cache="$(cygpath -u "${SERVERPOD_PG_CACHE_DIR:?}")"
-            pg_ctl="$(find "$pg_cache" -type f -name pg_ctl.exe -print -quit)"
-            if [ -z "$pg_ctl" ]; then
-                echo "Could not find pg_ctl.exe under $SERVERPOD_PG_CACHE_DIR"
-                cd "$REPO_ROOT"
-                exit 1
-            fi
-            "$pg_ctl" stop \
-                -D "$SERVERPOD_DATABASE_DATA_PATH" \
-                -m fast \
-                -w \
-                -t 30 || true
-        fi
+# The shared postmaster intentionally outlives the test isolates. Stop it
+# through PostgreSQL before deleting its data directory; otherwise it can race
+# cleanup by recreating files on POSIX, while Windows keeps files open until all
+# backend processes exit.
+if [ -f "$SERVERPOD_DATABASE_DATA_PATH/postmaster.pid" ]; then
+    pg_cache="${SERVERPOD_PG_CACHE_DIR:?}"
+    case "${OSTYPE:-}" in
+        msys*|cygwin*) pg_cache="$(cygpath -u "$pg_cache")" ;;
+    esac
 
-        # A test isolate can exit after its directly supervised postmaster but
-        # before all Windows backend processes have released their handles.
-        # Keep the cleanup assertion, but allow those children a bounded grace
-        # period to finish rather than failing on the first deletion attempt.
-        for _ in {1..50}; do
-            rm -rf "$SERVERPOD_DATABASE_DATA_PATH" 2> /dev/null && break
-            sleep 0.1
-        done
-        if [ -d "$SERVERPOD_DATABASE_DATA_PATH" ]; then
-            echo "Could not remove the embedded PostgreSQL test data directory"
-            cd "$REPO_ROOT"
-            exit 1
-        fi
-        ;;
-    *)
-        rm -rf "$SERVERPOD_DATABASE_DATA_PATH"
-        ;;
-esac
+    pg_ctl=""
+    while IFS= read -r candidate; do
+        pg_ctl="$candidate"
+        break
+    done < <(find "$pg_cache" -type f \( -name pg_ctl -o -name pg_ctl.exe \) -print)
+    if [ -z "$pg_ctl" ]; then
+        echo "Could not find pg_ctl under $SERVERPOD_PG_CACHE_DIR"
+        cd "$REPO_ROOT"
+        exit 1
+    fi
+    "$pg_ctl" stop \
+        -D "$SERVERPOD_DATABASE_DATA_PATH" \
+        -m fast \
+        -w \
+        -t 30 || true
+fi
+
+# Allow PostgreSQL's child processes a bounded grace period to release handles
+# or finish exiting, while retaining a hard assertion that cleanup succeeded.
+for _ in {1..50}; do
+    rm -rf "$SERVERPOD_DATABASE_DATA_PATH" 2> /dev/null && break
+    sleep 0.1
+done
+if [ -d "$SERVERPOD_DATABASE_DATA_PATH" ]; then
+    echo "Could not remove the embedded PostgreSQL test data directory"
+    cd "$REPO_ROOT"
+    exit 1
+fi
 
 cd "$REPO_ROOT"
