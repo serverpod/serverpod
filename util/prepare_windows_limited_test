@@ -45,11 +45,13 @@ if [[ -n "${FLUTTER_ROOT:-}" ]]; then
   make_low_integrity_writable "$flutter_tools_msys"
 fi
 
-# Flutter stores persistent tool state in APPDATA. Keep that state in the
-# isolated Low Integrity work tree instead of changing the runner profile.
+# Flutter and the Dart analyzer store persistent tool state in APPDATA and
+# LOCALAPPDATA. Keep that state in the isolated Low Integrity work tree instead
+# of changing the runner profile.
 LIMITED_PROCESS_WORK_NAME=limited-test \
 LIMITED_PROCESS_LOG_NAME=output.log \
 LIMITED_PROCESS_COMMAND="set \"APPDATA=$test_work_win\"
+set \"LOCALAPPDATA=$test_work_win\"
 set \"SERVERPOD_DATABASE_DATA_PATH=$test_data_path_win\"
 $LIMITED_TEST_COMMAND" \
   "$HERE/prepare_windows_limited_process" "$launcher"
