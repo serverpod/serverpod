@@ -928,7 +928,7 @@ jobs:
   bootstrap_tests:
     name: Bootstrap tests
     runs-on: ${{ matrix.os }}
-    needs: seed_embedded_pg
+    needs: [seed_embedded_pg, build_cli]
     # Land every pub get in one workspace dir so it caches consistently across Windows and Ubuntu.
     env:
       PUB_CACHE: ${{ github.workspace }}/.pub-cache
@@ -952,6 +952,7 @@ jobs:
           restore-keys: |
             pub-${{ runner.os }}-${{ matrix.flutter-version }}-
       - uses: ./.github/actions/use-embedded-pg
+      - uses: ./.github/actions/use-cli-bundle
       - name: Resolve bootstrap dependencies (Windows)
         if: matrix.os == 'windows-latest'
         run: dart pub get
