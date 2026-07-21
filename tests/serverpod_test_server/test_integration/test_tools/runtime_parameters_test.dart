@@ -1,5 +1,4 @@
 import 'package:serverpod/database.dart';
-import 'package:serverpod_test_server/test_util/test_tags.dart';
 import 'package:test/test.dart';
 
 import 'serverpod_test_tools.dart';
@@ -44,7 +43,6 @@ void main() {
         expect(vectorRow['max_parallel_workers_per_gather'], '2');
       });
     },
-    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
   );
 
   withServerpod(
@@ -111,7 +109,6 @@ void main() {
         await validateParameters();
       });
     },
-    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
   );
 
   withServerpod(
@@ -203,6 +200,5 @@ void main() {
         expect(globalRow['ivfflat_max_probes'], '32768');
       });
     },
-    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
   );
 }

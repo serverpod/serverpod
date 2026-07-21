@@ -1,7 +1,6 @@
 import 'package:serverpod/protocol.dart'
     show FutureCallClaimEntry, FutureCallEntry;
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_test_server/test_util/test_tags.dart';
 import 'package:serverpod_test_sqlite_server/src/generated/protocol.dart';
 import 'package:serverpod_test_sqlite_server/src/generated/future_calls.dart';
 import 'package:test/test.dart';
@@ -12,7 +11,6 @@ void main() {
   withServerpod(
     'Given future call execution is enabled and a scheduled recurring future call, ',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
     configOverride: (config) => config.copyWith(
       futureCallExecutionEnabled: true,
       futureCall: const FutureCallConfig(

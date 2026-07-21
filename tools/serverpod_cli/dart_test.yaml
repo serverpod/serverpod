@@ -1,0 +1,3 @@
+# The integration generate/analyzer tests run the full Dart analyzer over a
+# scratch project. This can be slow on loaded machine
+timeout: 4x # 2min

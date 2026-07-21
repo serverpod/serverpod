@@ -1,0 +1,20 @@
+name: Use seeded embedded PostgreSQL bundle
+description: >-
+  Downloads the embedded-postgres bundle built by the seed_embedded_pg job (for
+  this runner's os/arch) and unpacks it into .pg-cache. Uses tar so the exec bits
+  and geo-lib symlinks a plain artifact zip would drop are restored. Requires the
+  repo checked out and the calling job to `needs: seed_embedded_pg`.
+
+runs:
+  using: composite
+  steps:
+    - name: Download the seeded embedded PG bundle
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      with:
+        name: pg-bundle-${{ runner.os }}-${{ runner.arch }}
+        path: .
+    - name: Unpack the seeded embedded PG bundle
+      shell: bash
+      run: |
+        mkdir -p .pg-cache
+        tar -C .pg-cache -xpzf pg-bundle.tgz

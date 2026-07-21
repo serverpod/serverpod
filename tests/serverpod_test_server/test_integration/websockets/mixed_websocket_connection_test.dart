@@ -1,4 +1,3 @@
-import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 import 'package:web_socket/web_socket.dart';
@@ -13,12 +12,12 @@ void main() {
       late WebSocket endpointWebSocketConnection;
 
       setUp(() async {
-        await server.start();
+        await server.startWithDatabase();
         methodWebSocketConnection = await WebSocket.connect(
-          Uri.parse(serverMethodWebsocketUrl),
+          Uri.parse(server.methodWebSocketUrl),
         );
         endpointWebSocketConnection = await WebSocket.connect(
-          Uri.parse(serverEndpointWebsocketUrl),
+          Uri.parse(server.endpointWebSocketUrl),
         );
       });
 

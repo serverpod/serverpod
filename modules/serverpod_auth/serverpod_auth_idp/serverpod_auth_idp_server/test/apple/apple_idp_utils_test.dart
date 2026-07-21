@@ -4,7 +4,6 @@ import 'package:serverpod_auth_idp_server/providers/apple.dart';
 import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
 import 'package:test/test.dart';
 
-import '../test_tags.dart';
 import '../test_tools/serverpod_test_tools.dart';
 
 void main() {
@@ -13,7 +12,6 @@ void main() {
 
   withServerpod(
     'Given an unauthenticated session',
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       setUp(() {
         utils = _createUtils();

@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:serverpod_test_server/test_util/test_tags.dart';
 import 'package:test/test.dart';
 import 'package:uuid/uuid.dart';
 
@@ -12,7 +11,6 @@ import 'package:serverpod_cli/src/migrations/generator.dart';
 void main() {
   withServerpod(
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
     'Given unapplied repair migration that errors if applied multiple times',
     (sessionBuilder, _) async {
       final migrationName = MigrationGenerator.createVersionName(null);

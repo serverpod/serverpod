@@ -5,6 +5,13 @@ services:
       dockerfile: tests/docker/tests_flutter/Dockerfile-server
     environment:
       SERVERPOD_SILENCE_LIFECYCLE_MESSAGES: '1'
+      # This stack provides its own postgres + redis services; the run-mode
+      # configs default to embedded postgres (an empty dataPath opts out)
+      # and carry no redis.
+      SERVERPOD_DATABASE_DATA_PATH: ''
+      SERVERPOD_REDIS_ENABLED: 'true'
+      SERVERPOD_REDIS_HOST: 'redis'
+      SERVERPOD_REDIS_PORT: '6379'
     depends_on:
       - 'postgres'
       - 'redis'

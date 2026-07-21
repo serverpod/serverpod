@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cli_tools/cli_tools.dart';
+import 'package:package_config/package_config.dart' as pc;
 import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
@@ -28,19 +29,16 @@ void main() {
   });
 
   group('Given a Serverpod project configured with SQLite,', () {
-    late Directory projectRoot;
     late Directory serverDirectory;
 
     setUp(() async {
-      projectRoot = await _createTestProject('''
+      final projectRoot = await _createTestProject('''
 database:
   filePath: db.sqlite
 ''');
       serverDirectory = Directory(p.join(projectRoot.path, 'test_server'));
       _testLogger.reset();
     });
-
-    tearDown(() => projectRoot.delete(recursive: true));
 
     test(
       'when serverpod start runs without a Docker flag, '
@@ -74,11 +72,10 @@ database:
   group(
     'Given a Serverpod project configured with SQLite and Redis enabled,',
     () {
-      late Directory projectRoot;
       late Directory serverDirectory;
 
       setUp(() async {
-        projectRoot = await _createTestProject('''
+        final projectRoot = await _createTestProject('''
 database:
   filePath: db.sqlite
 redis:
@@ -89,8 +86,6 @@ redis:
         serverDirectory = Directory(p.join(projectRoot.path, 'test_server'));
         _testLogger.reset();
       });
-
-      tearDown(() => projectRoot.delete(recursive: true));
 
       test(
         'when serverpod start runs without a Docker flag, '
@@ -112,11 +107,10 @@ redis:
   group(
     'Given a Serverpod project configured with PostgreSQL and dataPath,',
     () {
-      late Directory projectRoot;
       late Directory serverDirectory;
 
       setUp(() async {
-        projectRoot = await _createTestProject('''
+        final projectRoot = await _createTestProject('''
 database:
   host: localhost
   port: 5432
@@ -127,8 +121,6 @@ database:
         serverDirectory = Directory(p.join(projectRoot.path, 'test_server'));
         _testLogger.reset();
       });
-
-      tearDown(() => projectRoot.delete(recursive: true));
 
       test(
         'when serverpod start runs without a Docker flag, '
@@ -166,11 +158,10 @@ database:
   group(
     'Given a Serverpod project configured with PostgreSQL without dataPath,',
     () {
-      late Directory projectRoot;
       late Directory serverDirectory;
 
       setUp(() async {
-        projectRoot = await _createTestProject('''
+        final projectRoot = await _createTestProject('''
 database:
   host: localhost
   port: 5432
@@ -180,8 +171,6 @@ database:
         serverDirectory = Directory(p.join(projectRoot.path, 'test_server'));
         _testLogger.reset();
       });
-
-      tearDown(() => projectRoot.delete(recursive: true));
 
       test(
         'when serverpod start runs without a Docker flag, '
@@ -233,19 +222,16 @@ database:
   );
 
   group('Given a Serverpod project without a Docker Compose file,', () {
-    late Directory projectRoot;
     late Directory serverDirectory;
 
     setUp(() async {
-      projectRoot = await _createTestProject('''
+      final projectRoot = await _createTestProject('''
 database:
   filePath: db.sqlite
 ''');
       serverDirectory = Directory(p.join(projectRoot.path, 'test_server'));
       _testLogger.reset();
     });
-
-    tearDown(() => projectRoot.delete(recursive: true));
 
     test(
       'when serverpod start runs with --docker, '
@@ -269,12 +255,11 @@ database:
     // installation on Windows CI.
     testOn: '!windows',
     () {
-      late Directory projectRoot;
       late Directory serverDirectory;
       late Directory fakeBinDirectory;
 
       setUp(() async {
-        projectRoot = await _createTestProject('''
+        final projectRoot = await _createTestProject('''
 database:
   host: localhost
   port: 5432
@@ -288,8 +273,6 @@ database:
         await fakeBinDirectory.create();
         await _createComposeFile(serverDirectory);
       });
-
-      tearDown(() => projectRoot.delete(recursive: true));
 
       test(
         'when serverpod start runs without a Docker flag, '
@@ -322,12 +305,11 @@ database:
     // on Windows.
     testOn: '!windows',
     () {
-      late Directory projectRoot;
       late Directory serverDirectory;
       late Directory fakeBinDirectory;
 
       setUp(() async {
-        projectRoot = await _createTestProject('''
+        final projectRoot = await _createTestProject('''
 database:
   filePath: db.sqlite
 ''');
@@ -340,8 +322,6 @@ database:
           _FakeDockerBehavior.notRunning,
         );
       });
-
-      tearDown(() => projectRoot.delete(recursive: true));
 
       test(
         'when serverpod start runs with --docker, '
@@ -373,12 +353,11 @@ database:
     // on Windows.
     testOn: '!windows',
     () {
-      late Directory projectRoot;
       late Directory serverDirectory;
       late Directory fakeBinDirectory;
 
       setUp(() async {
-        projectRoot = await _createTestProject('''
+        final projectRoot = await _createTestProject('''
 database:
   filePath: db.sqlite
 ''');
@@ -391,8 +370,6 @@ database:
           _FakeDockerBehavior.composeUpFailure,
         );
       });
-
-      tearDown(() => projectRoot.delete(recursive: true));
 
       test(
         'when serverpod start runs with --docker, '
@@ -460,79 +437,117 @@ Future<Directory> _createTestProject(String databaseConfig) async {
   final projectRoot = await Directory(
     p.join(Directory.current.path, '.dart_tool'),
   ).createTemp('start_command_test_');
-  final serverDirectory = Directory(p.join(projectRoot.path, 'test_server'));
-  final clientDirectory = Directory(p.join(projectRoot.path, 'test_client'));
+  try {
+    final serverDirectory = Directory(p.join(projectRoot.path, 'test_server'));
+    final clientDirectory = Directory(p.join(projectRoot.path, 'test_client'));
 
-  await Directory(
-    p.join(serverDirectory.path, 'lib', 'src', 'models'),
-  ).create(recursive: true);
-  await Directory(p.join(serverDirectory.path, 'config')).create();
-  await Directory(p.join(serverDirectory.path, '.dart_tool')).create();
-  await clientDirectory.create();
+    await Directory(
+      p.join(serverDirectory.path, 'lib', 'src', 'models'),
+    ).create(recursive: true);
+    await Directory(p.join(serverDirectory.path, 'config')).create();
+    await Directory(p.join(serverDirectory.path, '.dart_tool')).create();
+    await clientDirectory.create();
 
-  await File(p.join(serverDirectory.path, 'pubspec.yaml')).writeAsString('''
+    await File(p.join(serverDirectory.path, 'pubspec.yaml')).writeAsString('''
 name: test_server
 environment:
   sdk: ^3.10.0
 dependencies:
   serverpod: any
 ''');
-  await File(p.join(clientDirectory.path, 'pubspec.yaml')).writeAsString('''
+    await File(p.join(clientDirectory.path, 'pubspec.yaml')).writeAsString('''
 name: test_client
 environment:
   sdk: ^3.10.0
 dependencies:
   serverpod_client: any
 ''');
-  await File(
-    p.join(serverDirectory.path, 'config', 'development.yaml'),
-  ).writeAsString(databaseConfig);
-  await File(
-    p.join(serverDirectory.path, 'config', 'passwords.yaml'),
-  ).writeAsString('''
+    await File(
+      p.join(serverDirectory.path, 'config', 'development.yaml'),
+    ).writeAsString(databaseConfig);
+    await File(
+      p.join(serverDirectory.path, 'config', 'passwords.yaml'),
+    ).writeAsString('''
 development:
   database: password
   redis: password
 ''');
-  await File(
-    p.join(serverDirectory.path, 'lib', 'src', 'models', 'invalid.spy.yaml'),
-  ).writeAsString('''
+    await File(
+      p.join(serverDirectory.path, 'lib', 'src', 'models', 'invalid.spy.yaml'),
+    ).writeAsString('''
 class: Invalid
 fields:
   value: InvalidType
 ''');
 
-  final serverpodPackageConfig = File(
-    p.join(
-      Directory.current.path,
-      '..',
-      '..',
-      'packages',
-      'serverpod',
-      '.dart_tool',
-      'package_config.json',
-    ),
-  );
-  final packageConfig =
-      jsonDecode(await serverpodPackageConfig.readAsString())
-          as Map<String, dynamic>;
-  final packages = packageConfig['packages'] as List<dynamic>;
-  for (final package in packages.cast<Map<String, dynamic>>()) {
-    package['rootUri'] = serverpodPackageConfig.uri
-        .resolve(package['rootUri'] as String)
-        .toString();
-  }
-  packages.add({
-    'name': 'test_server',
-    'rootUri': serverDirectory.uri.toString(),
-    'packageUri': 'lib/',
-    'languageVersion': '3.10',
-  });
-  await File(
-    p.join(serverDirectory.path, '.dart_tool', 'package_config.json'),
-  ).writeAsString(jsonEncode(packageConfig));
+    final hostConfig = await pc.findPackageConfig(Directory.current);
+    if (hostConfig == null) {
+      throw StateError(
+        'Could not locate the host package_config.json from '
+        '${Directory.current.path}. Run `dart pub get` first.',
+      );
+    }
+    // The generator must locate the synthetic project's declared `serverpod`
+    // module, but these tests stop at the intentionally invalid model before
+    // compiling server code. Point at the repository package directly instead
+    // of adding Serverpod and its runtime dependency graph to the CLI tests.
+    final serverpodRoot = Directory(
+      p.join(Directory.current.path, '..', '..', 'packages', 'serverpod'),
+    );
+    if (!await File(p.join(serverpodRoot.path, 'pubspec.yaml')).exists()) {
+      throw StateError(
+        'Could not locate the repository serverpod package at '
+        '${serverpodRoot.path}.',
+      );
+    }
 
-  return projectRoot;
+    final packages = <Map<String, Object?>>[
+      for (final package in hostConfig.packages)
+        if (package.name != 'serverpod')
+          {
+            'name': package.name,
+            'rootUri': package.root.toString(),
+            'packageUri': 'lib/',
+            'languageVersion': package.languageVersion?.toString() ?? '3.0',
+          },
+      {
+        'name': 'serverpod',
+        'rootUri': serverpodRoot.uri.toString(),
+        'packageUri': 'lib/',
+        'languageVersion': '3.10',
+      },
+      {
+        'name': 'test_server',
+        'rootUri': serverDirectory.uri.toString(),
+        'packageUri': 'lib/',
+        'languageVersion': '3.10',
+      },
+    ];
+    await File(
+      p.join(serverDirectory.path, '.dart_tool', 'package_config.json'),
+    ).writeAsString(
+      jsonEncode({
+        'configVersion': 2,
+        'packages': packages,
+      }),
+    );
+
+    addTearDown(() async {
+      if (await projectRoot.exists()) {
+        await projectRoot.delete(recursive: true);
+      }
+    });
+    return projectRoot;
+  } catch (error, stackTrace) {
+    try {
+      if (await projectRoot.exists()) {
+        await projectRoot.delete(recursive: true);
+      }
+    } catch (_) {
+      // Preserve the fixture-construction failure that made cleanup necessary.
+    }
+    Error.throwWithStackTrace(error, stackTrace);
+  }
 }
 
 /// Creates an empty `docker-compose.yaml`. Empty on purpose: even if a real

@@ -8,6 +8,7 @@ import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/server_directory_finder.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+import 'package:serverpod_database/embedded.dart';
 import 'package:serverpod_embedded_postgres/serverpod_embedded_postgres.dart';
 import 'package:serverpod_shared/serverpod_shared.dart'
     show PasswordManager, PostgresDatabaseConfig, ServerpodConfig;
@@ -117,10 +118,13 @@ class DatabaseStartCommand extends ServerpodCommand<DatabaseStartOption> {
         await Future<void>.delayed(const Duration(seconds: 1));
       }
       await postgres.stop();
+    } on _DatabaseStartConfigurationException catch (e) {
+      log.error(e.message);
+      throw ExitException.error();
     } catch (e, stackTrace) {
       log.error(
-        'Failed to start embedded PostgreSQL: $e',
-        stackTrace: stackTrace,
+        formatEmbeddedPostgresFailure(e),
+        stackTrace: shouldReportEmbeddedPostgresFailure(e) ? stackTrace : null,
       );
       throw ExitException.error();
     }
@@ -144,15 +148,17 @@ Future<EmbeddedPostgres> _startFromServerpodConfig({
   );
   var databaseConfig = serverConfig.database;
   if (databaseConfig is! PostgresDatabaseConfig) {
-    throw StateError(
-      'Run mode "$runMode" does not configure a PostgreSQL database.',
+    throw _DatabaseStartConfigurationException(
+      'Run mode "$runMode" does not use PostgreSQL. Select a run mode '
+      'configured for PostgreSQL and try again.',
     );
   }
 
   var dataPath = databaseConfig.dataPath;
   if (dataPath == null) {
-    throw StateError(
-      'Run mode "$runMode" does not configure database.dataPath.',
+    throw _DatabaseStartConfigurationException(
+      'The command `serverpod database start` can only be used with an '
+      'embedded database, but run mode "$runMode" uses an external database.',
     );
   }
 
@@ -172,4 +178,10 @@ Future<EmbeddedPostgres> _startFromServerpodConfig({
       repairStaleLocks: true,
     ),
   );
+}
+
+final class _DatabaseStartConfigurationException implements Exception {
+  final String message;
+
+  const _DatabaseStartConfigurationException(this.message);
 }

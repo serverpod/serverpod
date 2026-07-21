@@ -1,3 +1,6 @@
+@Tags(['redis'])
+library;
+
 import 'dart:async';
 
 import 'package:serverpod_test_client/serverpod_test_client.dart';

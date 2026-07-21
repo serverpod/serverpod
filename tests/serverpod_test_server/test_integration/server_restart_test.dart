@@ -19,21 +19,21 @@ void main() {
   test(
     'Given a running Serverpod server when it is shutdown and restarted then it can be successfully started again.',
     () async {
-      await serverpod.start();
+      await serverpod.startWithDatabase();
 
       await serverpod.shutdown(exitProcess: false);
 
-      await expectLater(serverpod.start(), completes);
+      await expectLater(serverpod.startWithDatabase(), completes);
     },
   );
 
   test(
     'Given a running Serverpod server when it is shutdown and started then database request can be made.',
     () async {
-      await serverpod.start();
+      await serverpod.startWithDatabase();
 
       await serverpod.shutdown(exitProcess: false);
-      await serverpod.start();
+      await serverpod.startWithDatabase();
 
       var session = await serverpod.createSession();
       // ignore: invalid_use_of_internal_member
@@ -46,11 +46,11 @@ void main() {
     () async {
       var record = MockStdout();
       await IOOverrides.runZoned(() async {
-        await serverpod.start();
+        await serverpod.startWithDatabase();
 
         await serverpod.shutdown(exitProcess: false);
 
-        await expectLater(serverpod.start(), completes);
+        await expectLater(serverpod.startWithDatabase(), completes);
       }, stderr: () => record);
 
       expect(record.output, isEmpty);
