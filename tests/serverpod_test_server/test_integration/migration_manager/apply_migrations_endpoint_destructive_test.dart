@@ -18,6 +18,15 @@ void main() {
       const tableName = 'endpoint_destructive_test_migrated_table';
 
       setUp(() async {
+        final migrationDirectory = Directory(
+          path.join(Directory.current.path, 'migrations'),
+        );
+        final writeProbe = Directory(
+          path.join(migrationDirectory.path, '.write_probe_$pid'),
+        );
+        writeProbe.createSync();
+        writeProbe.deleteSync();
+
         var protocols = {
           'endpoint_destructive_test_migrated_table':
               '''
