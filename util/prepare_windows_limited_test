@@ -33,6 +33,14 @@ pub_cache_msys="$(cygpath -u "$PUB_CACHE")"
 mkdir -p "$pub_cache_msys"
 make_low_integrity_writable "$pub_cache_msys"
 
+# Project creation resolves generated workspaces with `flutter pub get` when
+# Flutter is available. The Flutter tool takes locks and updates stamps in its
+# own mutable cache, which must therefore be writable by the limited process.
+if [[ -n "${FLUTTER_ROOT:-}" ]]; then
+  flutter_cache_msys="$(cygpath -u "$FLUTTER_ROOT")/bin/cache"
+  make_low_integrity_writable "$flutter_cache_msys"
+fi
+
 LIMITED_PROCESS_WORK_NAME=limited-test \
 LIMITED_PROCESS_LOG_NAME=output.log \
 LIMITED_PROCESS_COMMAND="set \"SERVERPOD_DATABASE_DATA_PATH=$test_data_path_win\"
