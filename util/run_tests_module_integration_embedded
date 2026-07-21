@@ -9,10 +9,6 @@ if [ ! -f util/.serverpod_util_root ]; then
     exit 1
 fi
 
-set -e
-export SERVERPOD_SILENCE_LIFECYCLE_MESSAGES="1"
-export SERVERPOD_DATABASE_DATA_PATH="${SERVERPOD_DATABASE_DATA_PATH:-.serverpod/test/pgdata}"
-
 # Optional sharding for parallel CI jobs: pass <shard-index> <total-shards>
 # (0-based index). Defaults to a single shard, so non-sharded callers are
 # unchanged.
@@ -23,20 +19,6 @@ if [ "$total_shards" -gt 1 ]; then
     shard_args=(--total-shards "$total_shards" --shard-index "$shard_index")
 fi
 
-REPO_ROOT="$(pwd)"
-
-cd "tests/serverpod_test_module/serverpod_test_module_server"
-
-dart test -t integration --reporter=failures-only "${shard_args[@]}"
-
-# Verify that the database data path exists
-if [ ! -d "$SERVERPOD_DATABASE_DATA_PATH" ]; then
-    echo "Test did not create the database data path: $SERVERPOD_DATABASE_DATA_PATH"
-    cd "$REPO_ROOT"
-    exit 1
-fi
-
-# Remove the database data path
-rm -rf "$SERVERPOD_DATABASE_DATA_PATH"
-
-cd "$REPO_ROOT"
+exec bash util/run_tests_integration_embedded \
+    tests/serverpod_test_module/serverpod_test_module_server \
+    "${shard_args[@]}"
