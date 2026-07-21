@@ -33,6 +33,7 @@ class Supervisor implements SupervisedProcess {
   final Completer<int> _exitCompleter = Completer();
 
   Future<void>? _stopFuture;
+  Future<void>? _closeOutputFuture;
 
   Supervisor._({
     required Process process,
@@ -48,7 +49,16 @@ class Supervisor implements SupervisedProcess {
        _logSink = logSink,
        _outputDone = outputDone,
        _signalSubs = signalSubs {
-    unawaited(_process.exitCode.then(_exitCompleter.complete));
+    unawaited(
+      _process.exitCode
+          .then((exitCode) {
+            if (!_exitCompleter.isCompleted) {
+              _exitCompleter.complete(exitCode);
+            }
+            return _closeOutput();
+          })
+          .catchError((_) {}),
+    );
   }
 
   /// PID of the running postmaster, or null once [stop] has been called.
@@ -236,10 +246,14 @@ class Supervisor implements SupervisedProcess {
         // user's problem (they got the orphan-detection mismatch already).
       }
     }
-    await _waitWithDeadline(_outputDone, const Duration(seconds: 2));
+    await _waitWithDeadline(_closeOutput(), const Duration(seconds: 2));
+  }
+
+  Future<void> _closeOutput() => _closeOutputFuture ??= () async {
+    await _outputDone;
     await _logSink.flush();
     await _logSink.close();
-  }
+  }();
 }
 
 void _rotateLog(File logFile) {

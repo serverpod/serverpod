@@ -88,12 +88,26 @@ case "${OSTYPE:-}" in
                 -D "$SERVERPOD_DATABASE_DATA_PATH" \
                 -m fast \
                 -w \
-                -t 30
+                -t 30 || true
+        fi
+
+        # A test isolate can exit after its directly supervised postmaster but
+        # before all Windows backend processes have released their handles.
+        # Keep the cleanup assertion, but allow those children a bounded grace
+        # period to finish rather than failing on the first deletion attempt.
+        for _ in {1..50}; do
+            rm -rf "$SERVERPOD_DATABASE_DATA_PATH" 2> /dev/null && break
+            sleep 0.1
+        done
+        if [ -d "$SERVERPOD_DATABASE_DATA_PATH" ]; then
+            echo "Could not remove the embedded PostgreSQL test data directory"
+            cd "$REPO_ROOT"
+            exit 1
         fi
         ;;
+    *)
+        rm -rf "$SERVERPOD_DATABASE_DATA_PATH"
+        ;;
 esac
-
-# Remove the database data path
-rm -rf "$SERVERPOD_DATABASE_DATA_PATH"
 
 cd "$REPO_ROOT"

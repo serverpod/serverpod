@@ -19,8 +19,8 @@ void main() {
     tmpRoot = Directory.systemTemp.createTempSync('embedded_pg_attach_');
   });
 
-  tearDown(() {
-    if (tmpRoot.existsSync()) tmpRoot.deleteSync(recursive: true);
+  tearDown(() async {
+    await _deleteTemporaryDirectory(tmpRoot);
   });
 
   test(
@@ -234,4 +234,17 @@ void main() {
       );
     },
   );
+}
+
+Future<void> _deleteTemporaryDirectory(Directory directory) async {
+  final deadline = DateTime.now().add(const Duration(seconds: 5));
+  while (directory.existsSync()) {
+    try {
+      directory.deleteSync(recursive: true);
+      return;
+    } on FileSystemException {
+      if (!Platform.isWindows || DateTime.now().isAfter(deadline)) rethrow;
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+    }
+  }
 }
