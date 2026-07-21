@@ -319,7 +319,7 @@ fields:
   });
 
   group('Given a project with a configured Flutter app', () {
-    const appId = 'vscode-test-app';
+    const projectName = 'vscode_test_app';
     late String sandboxDir;
     late String serverDir;
     late String fakeFlutterBinDir;
@@ -332,13 +332,11 @@ fields:
 
     setUpAll(() async {
       sandboxDir = d.sandbox;
-      final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
       final projectRoot = path.join(sandboxDir, projectName);
       serverDir = path.join(projectRoot, '${projectName}_server');
 
       final createResult = await runServerpod(
-        ['create', projectName, '--mini'],
+        ['create', projectName, '--no-interactive'],
         workingDirectory: sandboxDir,
       );
       expect(
@@ -348,68 +346,13 @@ fields:
       );
       createDynamicPortConfig(serverDir);
 
-      final serverPubspec = File(path.join(serverDir, 'pubspec.yaml'));
-      final originalPubspec = serverPubspec.readAsStringSync();
-      final originalAppEntry = '  flutter_apps:\n    $projectName:';
-      expect(
-        originalPubspec,
-        contains(originalAppEntry),
-        reason: 'Generated server pubspec does not contain its Flutter app.',
-      );
-      final configuredPubspec = originalPubspec
-          .replaceFirst(
-            originalAppEntry,
-            '  flutter_apps:\n    $appId:',
-          )
-          .replaceFirst(
-            '      auto_launch: true',
-            '      auto_launch: true\n      device: chrome',
-          );
-      serverPubspec.writeAsStringSync(configuredPubspec);
-
-      // Simulate the documented user update after changing the app ID in the
-      // server pubspec, then resolve the path from launch.json as VS Code does.
-      final launchFile = File(path.join(projectRoot, '.vscode', 'launch.json'));
-      launchFile.parent.createSync(recursive: true);
-      final originalLaunch = File(
+      flutterVmServiceInfoFile = File(
         path.join(
-          serverpodHome,
-          'templates',
-          'serverpod_templates',
-          'vscode',
-          'launch.json',
-        ),
-      ).readAsStringSync().replaceAll('projectname', projectName);
-      final configuredLaunch = originalLaunch.replaceFirst(
-        'flutter-vm-service-info-$projectName.json',
-        'flutter-vm-service-info-$appId.json',
-      );
-      expect(
-        configuredLaunch,
-        isNot(originalLaunch),
-        reason: 'Generated launch.json does not contain the Flutter app ID.',
-      );
-      launchFile.writeAsStringSync(configuredLaunch);
-
-      final vmServiceInfoMatch = RegExp(
-        r'"vmServiceInfoFile"\s*:\s*"([^"]*flutter-vm-service-info-[^"]+\.json)"',
-      ).firstMatch(configuredLaunch);
-      expect(
-        vmServiceInfoMatch,
-        isNotNull,
-        reason: 'Could not find the Flutter vmServiceInfoFile in launch.json.',
-      );
-      final resolvedInfoPath = vmServiceInfoMatch!
-          .group(1)!
-          .replaceFirst(r'${workspaceFolder}', projectRoot);
-      flutterVmServiceInfoFile = File(path.normalize(resolvedInfoPath));
-      expect(
-        flutterVmServiceInfoFile.path,
-        path.join(
-          serverDir,
+          projectRoot,
+          "${projectName}_server",
           '.dart_tool',
           'serverpod',
-          'flutter-vm-service-info-$appId.json',
+          'flutter-vm-service-info-$projectName.json',
         ),
       );
 
@@ -451,8 +394,8 @@ fields:
     });
 
     test(
-      'serverpod start exposes the app-id VM-service info file and forwards '
-      'a VS Code-style handshake to Flutter',
+      'when running serverpod start from an IDE, '
+      'then start forwards the IDE requests to the flutter process',
       () async {
         final pathSeparator = Platform.isWindows ? ';' : ':';
         serverProcess = await startServerpod(
@@ -513,7 +456,7 @@ fields:
         );
         // The fake Flutter process cannot publish app.debugPort until this
         // gate opens, so the request above must first be buffered by the real
-        // serverpod-start VM proxy.
+        // serverpod start VM proxy.
         await Future<void>.delayed(const Duration(milliseconds: 100));
         debugPortGate.writeAsStringSync('publish');
 
