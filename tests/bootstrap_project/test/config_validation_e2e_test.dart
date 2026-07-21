@@ -60,7 +60,7 @@ void main() async {
       () async {
         final result = await runProcess(
           'dart',
-          ['bin/main.dart'],
+          ['bin/main.dart', '--apply-migrations'],
           workingDirectory: commandRoot,
           environment: {
             'SERVERPOD_WEBSOCKET_PING_INTERVAL': '-1',
@@ -84,7 +84,7 @@ void main() async {
       () async {
         final result = await runProcess(
           'dart',
-          ['bin/main.dart'],
+          ['bin/main.dart', '--apply-migrations'],
           workingDirectory: commandRoot,
           environment: {
             'SERVERPOD_WEBSOCKET_PING_INTERVAL': '0',
@@ -108,7 +108,7 @@ void main() async {
       () async {
         final result = await runProcess(
           'dart',
-          ['bin/main.dart'],
+          ['bin/main.dart', '--apply-migrations'],
           workingDirectory: commandRoot,
           environment: {
             'SERVERPOD_WEBSOCKET_PING_INTERVAL': 'invalid',
@@ -132,7 +132,7 @@ void main() async {
       () async {
         final result = await runProcess(
           'dart',
-          ['bin/main.dart', '--role', 'maintenance'],
+          ['bin/main.dart', '--apply-migrations', '--role', 'maintenance'],
           workingDirectory: commandRoot,
           environment: {
             'SERVERPOD_WEBSOCKET_PING_INTERVAL': '15',
