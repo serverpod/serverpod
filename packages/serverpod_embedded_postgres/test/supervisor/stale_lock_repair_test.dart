@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
@@ -181,7 +182,7 @@ void main() {
         serverpodPidFile: serverpodPidFile,
       );
 
-      expect(await _waitForProcessToStop(postmaster.pid), isTrue);
+      expect(await _waitForSpawnedProcessToExit(postmaster), isTrue);
       expect(serverpodPidFile.existsSync(), isFalse);
       expect(File(p.join(pgData.path, 'postmaster.pid')).existsSync(), isFalse);
       spawnedPids.remove(postmaster.pid);
@@ -221,4 +222,13 @@ Future<bool> _waitForProcessToStop(int processId) async {
     await Future<void>.delayed(const Duration(milliseconds: 50));
   }
   return !isProcessAlive(processId);
+}
+
+Future<bool> _waitForSpawnedProcessToExit(Process process) async {
+  try {
+    await process.exitCode.timeout(const Duration(seconds: 7));
+    return true;
+  } on TimeoutException {
+    return false;
+  }
 }
