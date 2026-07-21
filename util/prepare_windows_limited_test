@@ -47,6 +47,7 @@ grant_test_user_write_access "$pub_cache_msys"
 # package (including its .dart_tool directory) while bootstrapping the tool.
 if [[ -n "${FLUTTER_ROOT:-}" ]]; then
   flutter_root_msys="$(cygpath -u "$FLUTTER_ROOT")"
+  flutter_root_win="$(cygpath -m "$FLUTTER_ROOT")"
   flutter_cache_msys="$flutter_root_msys/bin/cache"
   flutter_tools_msys="$flutter_root_msys/packages/flutter_tools"
   grant_test_user_write_access "$flutter_cache_msys"
@@ -67,6 +68,17 @@ set \"PUB_CACHE=$(cygpath -m "$PUB_CACHE")\"
 set \"RUNNER_TEMP=$(cygpath -m "$RUNNER_TEMP")\"
 set \"SHARD_INDEX=${SHARD_INDEX:-}\"
 set \"TOTAL_SHARDS=${TOTAL_SHARDS:-}\""
+
+if [[ -n "${FLUTTER_ROOT:-}" ]]; then
+  # Flutter asks Git for the SDK revision before every command. The hosted SDK
+  # belongs to the runner account, so Git otherwise rejects it as an unsafe
+  # repository for the standard test account and Flutter rebuilds its tool.
+  test_environment_commands+=$'\n'"set \"GIT_CONFIG_COUNT=2\"
+set \"GIT_CONFIG_KEY_0=safe.directory\"
+set \"GIT_CONFIG_VALUE_0=$(cygpath -m "$PWD")\"
+set \"GIT_CONFIG_KEY_1=safe.directory\"
+set \"GIT_CONFIG_VALUE_1=$flutter_root_win\""
+fi
 
 append_test_environment_variable() {
   local name="$1"
