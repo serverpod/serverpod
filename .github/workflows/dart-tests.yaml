@@ -495,10 +495,10 @@ jobs:
       - name: Bootstrap
         run: melos bootstrap --scope='${{ matrix.suite.scope }}' --include-dependencies
       # windows-latest runs as runneradmin (elevated), and Postgres refuses to
-      # start under an Administrators-group token. Run the suite under a limited
-      # token via PsExec -l (same trick as serverpod_embedded_postgres_tests).
+      # start under an Administrators-group token. Run the suite as the standard
+      # test account prepared below.
       # PsExec drops the inner process's stdout in GHA. The preparation helper
-      # gives the limited process a writable temp directory and captures its
+      # gives the test process a writable temp directory and captures its
       # output in a deterministic log for the outer step to print.
       - name: Install PsExec (Windows)
         if: matrix.os == 'windows-latest'
@@ -518,7 +518,10 @@ jobs:
           TOTAL_SHARDS: ${{ matrix.suite.total-shards }}
         shell: cmd
         run: |
-          psexec -accepteula -nobanner -l cmd /c "%CD%\run-suite.cmd"
+          psexec -accepteula -nobanner ^
+            -u "%COMPUTERNAME%\%SERVERPOD_WINDOWS_TEST_USER%" ^
+            -p "%SERVERPOD_WINDOWS_TEST_PASSWORD%" ^
+            cmd /c "%CD%\run-suite.cmd"
           set "RC=%errorlevel%"
           set "TEST_LOG=%RUNNER_TEMP%\limited-test\output.log"
           if not exist "%TEST_LOG%" (
@@ -562,7 +565,7 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: choco install pstools --no-progress -y --limit-output
       - name: Prep run script (Windows)
-        # Postgres refuses to run with Administrators-group token. Strip admin via PsExec -l.
+        # Postgres refuses to run with an Administrators-group token.
         if: matrix.os == 'windows-latest'
         env:
           LIMITED_TEST_COMMAND: cd packages/serverpod_embedded_postgres && dart test --tags=integration --reporter=failures-only
@@ -572,7 +575,10 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: cmd
         run: |
-          psexec -accepteula -nobanner -l cmd /c "%CD%\run-test.cmd"
+          psexec -accepteula -nobanner ^
+            -u "%COMPUTERNAME%\%SERVERPOD_WINDOWS_TEST_USER%" ^
+            -p "%SERVERPOD_WINDOWS_TEST_PASSWORD%" ^
+            cmd /c "%CD%\run-test.cmd"
           set "RC=%errorlevel%"
           set "TEST_LOG=%RUNNER_TEMP%\limited-test\output.log"
           if not exist "%TEST_LOG%" (
@@ -966,7 +972,10 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: cmd
         run: |
-          psexec -accepteula -nobanner -l cmd /c "%CD%\run-bootstrap.cmd"
+          psexec -accepteula -nobanner ^
+            -u "%COMPUTERNAME%\%SERVERPOD_WINDOWS_TEST_USER%" ^
+            -p "%SERVERPOD_WINDOWS_TEST_PASSWORD%" ^
+            cmd /c "%CD%\run-bootstrap.cmd"
           set "RC=%errorlevel%"
           set "TEST_LOG=%RUNNER_TEMP%\limited-test\output.log"
           if not exist "%TEST_LOG%" (

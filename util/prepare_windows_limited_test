@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Adds the embedded PostgreSQL paths needed by Windows tests, then delegates
-# the PsExec -l launcher setup to prepare_windows_limited_process.
+# Prepares Windows tests to run as a standard, non-administrator account, then
+# delegates the command-wrapper setup to prepare_windows_limited_process.
 
 set -euo pipefail
 
@@ -9,29 +9,37 @@ launcher="${1:?usage: prepare_windows_limited_test <launcher.cmd>}"
 : "${LIMITED_TEST_COMMAND:?LIMITED_TEST_COMMAND must be set}"
 : "${RUNNER_TEMP:?RUNNER_TEMP must be set}"
 : "${PUB_CACHE:?PUB_CACHE must be set}"
+: "${GITHUB_ENV:?GITHUB_ENV must be set}"
+
+test_user='serverpod_ci'
+test_password="Serverpod-CI-${RANDOM}${RANDOM}!"
+# PsExec -l also forces Low Integrity, which prevents Flutter from creating
+# plugin symlinks. A normal standard account removes the Administrators group
+# without imposing that extra restriction.
+MSYS2_ARG_CONV_EXCL='*' net.exe user \
+  "$test_user" "$test_password" /add
 
 runner_temp_msys="$(cygpath -u "$RUNNER_TEMP")"
 test_work_msys="$runner_temp_msys/limited-test"
 test_work_win="$(cygpath -m "$test_work_msys")"
 
-make_low_integrity_writable() {
+grant_test_user_write_access() {
   local path="$1"
   [[ -d "$path" ]] || return 0
   MSYS2_ARG_CONV_EXCL='*' icacls.exe "$(cygpath -w "$path")" \
-    /setintegritylevel '(OI)(CI)L' /t /c /q
+    /grant "${test_user}:(OI)(CI)M" /t /c /q
 }
 
-# PsExec's Low Integrity token should otherwise behave like the developer who
-# owns a normal checkout. Tests and Dart tooling may update lockfiles, generated
-# sources, and build-hook state anywhere in this ephemeral CI checkout, so give
-# the limited process the same write access throughout it.
-make_low_integrity_writable "$PWD"
+# Tests and Dart tooling may update lockfiles, generated sources, and build-hook
+# state anywhere in this ephemeral CI checkout. Give the test account the same
+# write access as the runner account throughout it.
+grant_test_user_write_access "$PWD"
 
 # Package downloads live outside the checkout and may also be updated while
 # Dart starts a test process.
 pub_cache_msys="$(cygpath -u "$PUB_CACHE")"
 mkdir -p "$pub_cache_msys"
-make_low_integrity_writable "$pub_cache_msys"
+grant_test_user_write_access "$pub_cache_msys"
 
 # Project creation resolves generated workspaces with `flutter pub get` when
 # Flutter is available. Flutter updates both its cache and the flutter_tools
@@ -40,12 +48,11 @@ if [[ -n "${FLUTTER_ROOT:-}" ]]; then
   flutter_root_msys="$(cygpath -u "$FLUTTER_ROOT")"
   flutter_cache_msys="$flutter_root_msys/bin/cache"
   flutter_tools_msys="$flutter_root_msys/packages/flutter_tools"
-  make_low_integrity_writable "$flutter_cache_msys"
-  make_low_integrity_writable "$flutter_tools_msys"
+  grant_test_user_write_access "$flutter_cache_msys"
+  grant_test_user_write_access "$flutter_tools_msys"
 
-  # PsExec -l removes the runner administrator's symlink privilege. Flutter
-  # projects use symlinks for plugins, so allow the limited process to create
-  # them in its Low Integrity work tree without requiring elevation.
+  # Flutter projects use symlinks for plugins. Allow the standard test account
+  # to create them without requiring elevation.
   MSYS2_ARG_CONV_EXCL='*' reg.exe add \
     'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock' \
     /v AllowDevelopmentWithoutDevLicense /t REG_DWORD /d 1 /f
@@ -60,3 +67,9 @@ LIMITED_PROCESS_COMMAND="set \"APPDATA=$test_work_win\"
 set \"LOCALAPPDATA=$test_work_win\"
 $LIMITED_TEST_COMMAND" \
   "$HERE/prepare_windows_limited_process" "$launcher"
+
+grant_test_user_write_access "$test_work_msys"
+
+echo "::add-mask::$test_password"
+echo "SERVERPOD_WINDOWS_TEST_USER=$test_user" >> "$GITHUB_ENV"
+echo "SERVERPOD_WINDOWS_TEST_PASSWORD=$test_password" >> "$GITHUB_ENV"
