@@ -13,7 +13,6 @@ launcher="${1:?usage: prepare_windows_limited_test <launcher.cmd>}"
 runner_temp_msys="$(cygpath -u "$RUNNER_TEMP")"
 test_work_msys="$runner_temp_msys/limited-test"
 test_work_win="$(cygpath -m "$test_work_msys")"
-test_data_path_win="$(cygpath -m "$test_work_msys/pgdata")"
 
 make_low_integrity_writable() {
   local path="$1"
@@ -52,6 +51,5 @@ LIMITED_PROCESS_WORK_NAME=limited-test \
 LIMITED_PROCESS_LOG_NAME=output.log \
 LIMITED_PROCESS_COMMAND="set \"APPDATA=$test_work_win\"
 set \"LOCALAPPDATA=$test_work_win\"
-set \"SERVERPOD_DATABASE_DATA_PATH=$test_data_path_win\"
 $LIMITED_TEST_COMMAND" \
   "$HERE/prepare_windows_limited_process" "$launcher"
