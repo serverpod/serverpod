@@ -709,14 +709,23 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   // now. The watch session brings it up once the project is fixed.
   ServerProcess? initialServerProcess;
   if (buildOk) {
-    await log.progress('Starting server', () async {
-      final initialDill = watch
-          ? p.join(serverpodToolDir, 'server.dill')
-          : null;
-      initialServerProcess = await serverProcessFactory(initialDill);
-      return true;
-    });
-  } else {
+    initialServerProcess = await bootInitialServer(
+      initialDill: watch ? p.join(serverpodToolDir, 'server.dill') : null,
+      startServer: serverProcessFactory,
+      compiler: compiler,
+    );
+    if (initialServerProcess == null) {
+      log.error('Initial compilation failed.');
+      buildOk = false;
+      if (!keepOpenOnFailure) {
+        await compiler?.dispose();
+        await flutterManager.dispose();
+        await rollbackStartup();
+        return const WatchLoopAborted(1);
+      }
+    }
+  }
+  if (!buildOk) {
     log.warning(watch ? startBlockedByErrorsWatch : startBlockedByErrorsManual);
   }
 
@@ -857,6 +866,48 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       vmServiceInfoFile: vmServiceInfoFile,
     ),
   );
+}
+
+/// Boots the initial server process, recovering once from a corrupt cached
+/// dill (a pod that dies before publishing its VM service URI never got past
+/// kernel loading). Returns `null` if the recovery recompile fails.
+@visibleForTesting
+Future<ServerProcess?> bootInitialServer({
+  required String? initialDill,
+  required Future<ServerProcess> Function(String? dillPath) startServer,
+  required KernelCompiler? compiler,
+}) async {
+  Future<ServerProcess> boot() async {
+    late ServerProcess server;
+    await log.progress('Starting server', () async {
+      server = await startServer(initialDill);
+      return true;
+    });
+    return server;
+  }
+
+  final server = await boot();
+  if (compiler == null) return server;
+
+  // exitCode is already completed whenever isRunning is false.
+  final crashedLoadingKernel =
+      server.vmServiceUri == null &&
+      !server.isRunning &&
+      await server.exitCode != 0;
+  if (!crashedLoadingKernel) return server;
+
+  log.warning(cachedBuildCrashedOnBoot);
+  await compiler.invalidateCachedDill();
+  // Ensure a complete kernel, not an incremental delta.
+  await compiler.reset();
+  final result = await compileWithProgress(
+    'Compiling server',
+    compiler,
+    rejectOnFailure: true,
+  );
+  if (result == null) return null;
+  await compiler.accept();
+  return boot();
 }
 
 /// The paths the watch-mode [FileWatcher] observes: server/shared/client

@@ -1,10 +1,20 @@
 import 'dart:io';
 
+import 'package:cli_tools/cli_tools.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:test/test.dart';
 
 void main() {
+  setUpAll(() {
+    initializeLoggerWith(VoidLogger());
+  });
+
+  tearDownAll(() async {
+    await closeLogger();
+  });
+
   group('Given a KernelCompiler with a valid Dart project', () {
     late Directory tempDir;
     late KernelCompiler compiler;
@@ -52,6 +62,84 @@ void main() {
         expect(result.errorCount, 0);
         expect(result.dillOutput, isNotEmpty);
         expect(File(outputDill).existsSync(), isTrue);
+      },
+      timeout: const Timeout(Duration(seconds: 60)),
+    );
+
+    test(
+      'when compile completes, '
+      'then no compile marker remains',
+      () async {
+        final marker = p.join(
+          tempDir.path,
+          '.dart_tool',
+          'serverpod',
+          'server.dill.compiling',
+        );
+
+        await compiler.start();
+        await compiler.compile();
+
+        expect(File(marker).existsSync(), isFalse);
+      },
+      timeout: const Timeout(Duration(seconds: 60)),
+    );
+
+    test(
+      'when isDillUpToDate is called with a leftover compile marker, '
+      'then it returns false',
+      () async {
+        await compiler.start();
+        await compiler.compile();
+        await compiler.accept();
+        expect(await compiler.isDillUpToDate({}), isTrue);
+
+        File('${compiler.outputDill}.compiling').createSync();
+
+        expect(await compiler.isDillUpToDate({}), isFalse);
+      },
+      timeout: const Timeout(Duration(seconds: 60)),
+    );
+
+    test(
+      'when compileIfNeeded runs with a leftover compile marker, '
+      'then it discards the cached dill and recompiles',
+      () async {
+        final watchDirs = {p.join(tempDir.path, 'bin')};
+
+        await compiler.start();
+        expect(await compiler.compileIfNeeded(watchDirs), isTrue);
+
+        // Simulate a previous session killed mid-compile.
+        File('${compiler.outputDill}.compiling').createSync();
+
+        expect(await compiler.compileIfNeeded(watchDirs), isTrue);
+        expect(File('${compiler.outputDill}.compiling').existsSync(), isFalse);
+        expect(File(compiler.outputDill).existsSync(), isTrue);
+      },
+      timeout: const Timeout(Duration(seconds: 60)),
+    );
+
+    test(
+      'when invalidateCachedDill is called, '
+      'then the dill, incremental dill, and marker are deleted',
+      () async {
+        await compiler.start();
+        await compiler.compile();
+        File('${compiler.outputDill}.incremental.dill').createSync();
+        File('${compiler.outputDill}.compiling').createSync();
+
+        await compiler.invalidateCachedDill();
+
+        expect(File(compiler.outputDill).existsSync(), isFalse);
+        expect(
+          File('${compiler.outputDill}.incremental.dill').existsSync(),
+          isFalse,
+        );
+        expect(File('${compiler.outputDill}.compiling').existsSync(), isFalse);
+
+        // Absent files do not throw.
+        await compiler.invalidateCachedDill();
       },
       timeout: const Timeout(Duration(seconds: 60)),
     );
@@ -125,6 +213,23 @@ void main() {
         final result = await compiler.compile();
 
         expect(result.errorCount, greaterThan(0));
+      },
+      timeout: const Timeout(Duration(seconds: 60)),
+    );
+
+    test(
+      'when compile finishes with errors, '
+      'then the compile marker is still cleared',
+      () async {
+        await compiler.start();
+        final result = await compiler.compile();
+
+        expect(result.errorCount, greaterThan(0));
+        // The FES finished writing, so the dill state is consistent.
+        expect(
+          File('${compiler.outputDill}.compiling').existsSync(),
+          isFalse,
+        );
       },
       timeout: const Timeout(Duration(seconds: 60)),
     );
