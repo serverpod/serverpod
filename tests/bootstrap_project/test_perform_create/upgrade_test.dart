@@ -24,23 +24,30 @@ void main() {
   });
 
   group(
-    'Given a project without a database, '
+    'Given a project without migrations, '
     'when creating CreateConfigState in the upgrade path for the TUI',
     () {
       late CreateConfigStateResult result;
 
       final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
-          template: ServerpodTemplateType.mini,
-          auth: true,
-          redis: true,
-          postgres: true,
+          template: ServerpodTemplateType.fullstack,
+          auth: false,
+          redis: false,
+          postgres: false,
           webapp: true,
           ides: [TemplateIde.claude, TemplateIde.cursor, TemplateIde.vscode],
         ),
       );
 
       setUpAll(() async {
+        final migrationsDirectory = Directory(
+          p.join(project.serverDir, 'migrations'),
+        );
+        if (migrationsDirectory.existsSync()) {
+          migrationsDirectory.deleteSync(recursive: true);
+        }
+
         result = await getCreateConfigState(
           name: '.',
           force: false,

@@ -34,8 +34,6 @@ import 'copier.dart';
 import 'template_renderer.dart';
 
 enum ServerpodTemplateType {
-  mini('mini'),
-
   /// Project with a server and a Flutter app.
   fullstack('fullstack'),
 
@@ -65,7 +63,6 @@ extension ServerpodTemplateTypeExtension on ServerpodTemplateType {
       this == ServerpodTemplateType.server ||
       this == ServerpodTemplateType.fullstack;
   bool get isModule => this == ServerpodTemplateType.module;
-  bool get isMini => this == ServerpodTemplateType.mini;
 }
 
 extension TemplateIdeExtension on List<TemplateIde> {
@@ -210,7 +207,7 @@ Future<CreateResult> performCreate(
 
   final writtenPaths = <String>{};
 
-  if (template.hasServer || template.isMini) {
+  if (template.hasServer) {
     success &= await log.progress(
       'Writing project files.',
       () async {
@@ -274,7 +271,7 @@ Future<CreateResult> performCreate(
     return CommandLineTools.pubGet(serverpodDirs.projectDir);
   });
 
-  if (context.flutterApp && (template.hasServer || template.isMini)) {
+  if (context.flutterApp && template.hasServer) {
     success &= await log.progress(
       'Creating Flutter app platform files.',
       () {
@@ -318,11 +315,7 @@ Future<CreateResult> performCreate(
 
     var projectDirPath = p.basename(serverpodDirs.projectDir.path);
 
-    if (template.hasServer) {
-      logStartInstructions(projectDirPath);
-    } else if (template == ServerpodTemplateType.mini) {
-      logMiniStartInstructions(projectDirPath);
-    }
+    if (template.hasServer) logStartInstructions(projectDirPath);
 
     return CreateSuccess(
       projectDirectoryPath: projectDirPath,
@@ -614,43 +607,6 @@ Future<bool> _renderTemplates(
     await const TemplateRenderer().renderPaths(paths, context);
     return true;
   });
-}
-
-void logMiniStartInstructions(String relativeProjectPath) {
-  log.info(
-    'All setup. You are ready to rock! 🥳',
-    type: TextLogType.header,
-  );
-  log.info(
-    'If you are using VSCode or Cursor, just hit F5 to start the project.',
-    type: TextLogType.header,
-  );
-  log.info(
-    'Start your Serverpod by running:',
-    type: TextLogType.header,
-  );
-
-  if (Platform.isWindows) {
-    log.info(
-      'cd .\\$relativeProjectPath\\',
-      type: TextLogType.command,
-      newParagraph: true,
-    );
-  } else {
-    log.info(
-      'cd $relativeProjectPath',
-      type: TextLogType.command,
-      newParagraph: true,
-    );
-  }
-
-  log.info(
-    'serverpod start',
-    type: TextLogType.command,
-    newParagraph: true,
-  );
-
-  log.info(' ');
 }
 
 void logStartInstructions(String relativeProjectPath) {

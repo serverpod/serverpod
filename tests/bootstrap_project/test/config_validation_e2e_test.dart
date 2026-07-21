@@ -29,12 +29,11 @@ void main() async {
     final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
     setUpAll(() async {
-      // Create a mini serverpod project for testing
       final createProcess = await startServerpodCli(
         [
           'create',
           '--template',
-          'mini',
+          'server',
           projectName,
           '-v',
           '--no-analytics',
