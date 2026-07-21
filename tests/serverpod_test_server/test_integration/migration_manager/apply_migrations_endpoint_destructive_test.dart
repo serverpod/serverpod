@@ -1,3 +1,4 @@
+@Tags(['migration_artifacts'])
 @Timeout(Duration(minutes: 5))
 import 'dart:io';
 

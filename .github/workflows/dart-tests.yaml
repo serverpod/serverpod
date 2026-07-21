@@ -481,9 +481,15 @@ jobs:
           # runs here on every OS.
           - name: test_server (tagged)
             scope: serverpod_test_server
-            # This 437-test suite exceeds 15 minutes on ARM and macOS.
+            # This large suite exceeds 15 minutes on ARM and macOS.
             timeout_minutes: 30
-            run: bash util/run_tests_integration_embedded tests/serverpod_test_server test_integration -x timing
+            run: bash util/run_tests_integration_embedded tests/serverpod_test_server test_integration -x timing -x migration_artifacts
+          # This file creates and removes artifacts in the checked-out
+          # migrations/ and protocol directories. Keep it out of the concurrent
+          # test_server run so other isolates cannot hold those paths on Windows.
+          - name: test_server (migration artifacts)
+            scope: serverpod_test_server
+            run: bash util/run_tests_integration_embedded tests/serverpod_test_server test_integration/migration_manager/apply_migrations_endpoint_destructive_test.dart
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
