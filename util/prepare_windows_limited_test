@@ -105,6 +105,7 @@ if [[ -n "${FLUTTER_ROOT:-}" ]]; then
   # Fail with a bounded diagnostic instead of allowing a nested Flutter command
   # to consume the bootstrap test's full timeout while acquiring its SDK lock.
   flutter_preflight_commands='echo Verifying Flutter under the Windows test account
+set "MSYS2_ARG_CONV_EXCL=*"
 bash -c "timeout 60s cmd.exe /d /c flutter --version"
 if errorlevel 1 exit /b %errorlevel%'
 fi
