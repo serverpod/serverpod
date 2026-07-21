@@ -25,7 +25,7 @@ void main() {
 }
 ```
 
-Start required services before running tests. In default Docker/PostgreSQL projects this is usually `docker compose up -d`, then `dart test`; SQLite or Mini projects may not need Docker, and Redis is only needed for Redis/global-cache/message tests.
+Start required services before running tests. In default Docker/PostgreSQL projects this is usually `docker compose up -d`, then `dart test`; SQLite projects or projects without a database may not need Docker, and Redis is only needed for Redis/global-cache/message tests.
 
 ## Session builder
 

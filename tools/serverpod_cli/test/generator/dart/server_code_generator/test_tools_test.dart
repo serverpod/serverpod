@@ -216,9 +216,9 @@ void main() {
   );
 
   group(
-    'Given protocol definition without endpoints when generating test tools file for Serverpod mini',
+    'Given protocol definition without endpoints when generating test tools file without database support',
     () {
-      var serverpodMiniConfig = GeneratorConfigBuilder()
+      var databaseDisabledConfig = GeneratorConfigBuilder()
           .withName(projectName)
           .withRelativeServerTestToolsPathParts(
             [
@@ -236,7 +236,7 @@ void main() {
 
       late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
-        config: serverpodMiniConfig,
+        config: databaseDisabledConfig,
       );
 
       test('then test tools file is created.', () {

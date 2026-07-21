@@ -36,9 +36,7 @@ class TemplateContext {
   final bool webapp;
 
   /// True if companion Flutter app is enabled.
-  bool get flutterApp =>
-      template == ServerpodTemplateType.fullstack ||
-      template == ServerpodTemplateType.mini;
+  bool get flutterApp => template == ServerpodTemplateType.fullstack;
 
   /// The configured IDEs.
   final List<TemplateIde> ides;

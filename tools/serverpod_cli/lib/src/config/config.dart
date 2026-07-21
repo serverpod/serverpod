@@ -263,8 +263,8 @@ class GeneratorConfig implements ModelLoadConfig {
       ];
     }
 
-    var isServerpodMini = !isFeatureEnabled(ServerpodFeature.database);
-    if (isServerpodMini) {
+    var isDatabaseDisabled = !isFeatureEnabled(ServerpodFeature.database);
+    if (isDatabaseDisabled) {
       return [
         ...serverPackageDirectoryPathParts,
         ..._defaultRelativeServerTestToolsPathParts,

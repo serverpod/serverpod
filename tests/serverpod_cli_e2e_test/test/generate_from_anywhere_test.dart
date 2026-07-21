@@ -15,7 +15,13 @@ void main() async {
 
     setUp(() async {
       var result = await runServerpod(
-        ['create', projectName, '--mini'],
+        [
+          'create',
+          projectName,
+          '--template',
+          'server',
+          '--no-interactive',
+        ],
         workingDirectory: d.sandbox,
       );
       assert(

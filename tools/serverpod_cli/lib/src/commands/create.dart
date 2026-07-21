@@ -22,15 +22,6 @@ enum CreateOption<V> implements OptionDefinition<V> {
           'running out of the box.',
     ),
   ),
-  mini(
-    FlagOption(
-      argName: 'mini',
-      defaultsTo: false,
-      negatable: false,
-      helpText: 'Shortcut for --template mini.',
-      group: _templateGroup,
-    ),
-  ),
   template(
     EnumOption(
       enumParser: EnumParser(ServerpodTemplateType.values),
@@ -40,7 +31,6 @@ enum CreateOption<V> implements OptionDefinition<V> {
       helpText: 'Template to use when creating a new project',
       allowedValues: ServerpodTemplateType.values,
       allowedHelp: {
-        'mini': 'Mini project with minimal features and no database',
         'fullstack':
             'Fullstack project including a server and a companion Flutter app',
         'server': 'Server project with standard features including database',
@@ -94,9 +84,7 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
 
   @override
   Future<void> runWithConfig(Configuration<CreateOption> commandConfig) async {
-    var template = commandConfig.value(CreateOption.mini)
-        ? ServerpodTemplateType.mini
-        : commandConfig.value(CreateOption.template);
+    var template = commandConfig.value(CreateOption.template);
     var force = commandConfig.value(CreateOption.force);
     var name = commandConfig.value(CreateOption.name);
 
@@ -144,7 +132,7 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
 
     final useTui = (interactive ?? true) && !ci.isCI;
 
-    if (useTui && !template.isMini) {
+    if (useTui) {
       await performCreateWithTui(
         name,
         force,
