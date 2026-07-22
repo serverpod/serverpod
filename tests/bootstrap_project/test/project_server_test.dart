@@ -11,30 +11,7 @@ void main() async {
   final rootPath = path.join(Directory.current.path, '..', '..');
   final cliProjectPath = getServerpodCliProjectPath(rootPath: rootPath);
 
-  Directory? tempDirectory;
-  late final String tempPath;
-  late final String projectName;
-  late final String serverDir;
-  late final String flutterDir;
-  late final String clientDir;
-  late final String runningProjectName;
-  late final String runningCommandRoot;
-
   setUpAll(() async {
-    tempDirectory = Directory.systemTemp.createTempSync('spb_');
-    tempPath = tempDirectory!.path;
-
-    final project = createRandomProjectName(tempPath);
-    projectName = project.projectName;
-    final projectFolders = createProjectFolderPaths(projectName);
-    serverDir = projectFolders.serverDir;
-    flutterDir = projectFolders.flutterDir;
-    clientDir = projectFolders.clientDir;
-
-    final runningProject = createRandomProjectName(tempPath);
-    runningProjectName = runningProject.projectName;
-    runningCommandRoot = runningProject.commandRoot;
-
     final pubGetProcess = await startProcess('dart', [
       'pub',
       'get',
@@ -42,15 +19,34 @@ void main() async {
     assert(await pubGetProcess.exitCode == 0);
   });
 
-  tearDownAll(() async {
-    try {
-      await tempDirectory?.delete(recursive: true);
-    } catch (e) {}
-  });
-
   group(
     'Given a clean state',
     () {
+      Directory? tempDirectory;
+      late final String tempPath;
+      late final String projectName;
+      late final String serverDir;
+      late final String flutterDir;
+      late final String clientDir;
+
+      setUpAll(() {
+        tempDirectory = Directory.systemTemp.createTempSync('spb_');
+        tempPath = tempDirectory!.path;
+
+        final project = createRandomProjectName(tempPath);
+        projectName = project.projectName;
+        final projectFolders = createProjectFolderPaths(projectName);
+        serverDir = projectFolders.serverDir;
+        flutterDir = projectFolders.flutterDir;
+        clientDir = projectFolders.clientDir;
+      });
+
+      tearDownAll(() async {
+        try {
+          await tempDirectory?.delete(recursive: true);
+        } catch (e) {}
+      });
+
       group(
         'when creating a new project with the server template',
         () {
@@ -780,14 +776,17 @@ void main() async {
   group(
     'Given a created project with the server template and a running pod',
     () {
-      late Process createProcess;
-      late Process startProjectProcess;
+      Directory? tempDirectory;
+      Process? startProjectProcess;
 
       setUpAll(() async {
-        createProcess = await startServerpodCli(
+        tempDirectory = Directory.systemTemp.createTempSync('spb_');
+        final tempPath = tempDirectory!.path;
+        final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+        final createProcess = await startServerpodCli(
           [
             'create',
-            runningProjectName,
+            projectName,
             '--template',
             'server',
             '-v',
@@ -800,19 +799,25 @@ void main() async {
             'SERVERPOD_HOME': rootPath,
           },
         );
-        assert((await createProcess.exitCode) == 0);
+        expect(
+          await createProcess.exitCode,
+          0,
+          reason: 'Failed to create the server-template project.',
+        );
 
         startProjectProcess = await startProcessAndWaitForKeywords(
           'dart',
           ['bin/main.dart', '--apply-migrations'],
-          workingDirectory: runningCommandRoot,
+          workingDirectory: commandRoot,
           keywords: ['Webserver listening on'],
         );
       });
 
       tearDownAll(() async {
-        createProcess.kill();
-        startProjectProcess.kill();
+        startProjectProcess?.kill();
+        try {
+          await tempDirectory?.delete(recursive: true);
+        } catch (e) {}
       });
 
       test(
