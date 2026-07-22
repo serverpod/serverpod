@@ -15,6 +15,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod/protocol.dart' as _i2;
 import 'package:serverpod_test_shared_module_shared/serverpod_test_shared_module_shared.dart'
     as _i3;
+export 'package:serverpod_test_shared_module_shared/serverpod_test_shared_module_shared.dart'
+    hide Protocol;
 
 class Protocol extends _i1.DatabaseSerializationManager {
   Protocol._();
@@ -97,11 +99,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
     }
 
     className = _i3.Protocol().getClassNameForObject(data);
-    if (className != null) {
-      return className.contains('.')
-          ? className
-          : 'serverpod_test_shared_module_shared.$className';
-    }
+    if (className != null) return className;
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.') ? className : 'serverpod.$className';
@@ -115,10 +113,9 @@ class Protocol extends _i1.DatabaseSerializationManager {
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
-    if (dataClassName.startsWith('serverpod_test_shared_module_shared.')) {
-      data['className'] = dataClassName.substring(36);
+    try {
       return _i3.Protocol().deserializeByClassName(data);
-    }
+    } on FormatException catch (_) {}
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
       return _i2.Protocol().deserializeByClassName(data);

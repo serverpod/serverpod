@@ -55,8 +55,10 @@ import 'package:serverpod_test_client/src/protocol/object_with_dynamic.dart'
     as _i28;
 import 'package:serverpod_test_client/src/protocol/my_feature/models/my_feature_model.dart'
     as _i29;
-import 'package:http/http.dart' as _i30;
-import 'protocol.dart' as _i31;
+import 'package:serverpod_test_shared_module_client/serverpod_test_shared_module_client.dart'
+    as _i30;
+import 'package:http/http.dart' as _i31;
+import 'protocol.dart' as _i32;
 
 /// {@category Endpoint}
 class EndpointAsyncTasks extends _i1.EndpointRef {
@@ -4428,11 +4430,14 @@ class Modules {
   Modules(Client client) {
     auth = _i3.Caller(client);
     module = _i16.Caller(client);
+    shared_module = _i30.Caller(client);
   }
 
   late final _i3.Caller auth;
 
   late final _i16.Caller module;
+
+  late final _i30.Caller shared_module;
 }
 
 class Client extends _i1.ServerpodClientShared {
@@ -4453,10 +4458,10 @@ class Client extends _i1.ServerpodClientShared {
     onFailedCall,
     Function(_i1.MethodCallContext)? onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
-    _i30.Client? httpClientOverride,
+    _i31.Client? httpClientOverride,
   }) : super(
          host,
-         _i31.Protocol(),
+         _i32.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -4760,5 +4765,6 @@ class Client extends _i1.ServerpodClientShared {
   Map<String, _i1.ModuleEndpointCaller> get moduleLookup => {
     'auth': modules.auth,
     'module': modules.module,
+    'shared_module': modules.shared_module,
   };
 }

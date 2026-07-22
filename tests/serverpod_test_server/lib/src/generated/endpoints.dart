@@ -93,7 +93,9 @@ import 'package:serverpod_test_server/src/generated/object_with_dynamic.dart'
     as _i70;
 import 'package:serverpod_test_server/src/generated/module_datatype.dart'
     as _i71;
-import 'package:serverpod_test_server/src/generated/future_calls.dart' as _i72;
+import 'package:serverpod_test_shared_module_server/serverpod_test_shared_module_server.dart'
+    as _i72;
+import 'package:serverpod_test_server/src/generated/future_calls.dart' as _i73;
 export 'future_calls.dart' show ServerpodFutureCallsGetter;
 
 class Endpoints extends _i1.EndpointDispatch {
@@ -9680,10 +9682,12 @@ class Endpoints extends _i1.EndpointDispatch {
     modules['serverpod_auth'] = _i64.Endpoints()..initializeEndpoints(server);
     modules['serverpod_test_module'] = _i65.Endpoints()
       ..initializeEndpoints(server);
+    modules['serverpod_test_shared_module'] = _i72.Endpoints()
+      ..initializeEndpoints(server);
   }
 
   @override
   _i1.FutureCallDispatch? get futureCalls {
-    return _i72.FutureCalls();
+    return _i73.FutureCalls();
   }
 }

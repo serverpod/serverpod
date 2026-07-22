@@ -11,23 +11,33 @@
 // ignore_for_file: dead_code, unnecessary_type_check
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import 'package:serverpod_test_shared_module_shared/serverpod_test_shared_module_shared.dart'
     as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _i3;
+export 'package:serverpod_test_shared_module_shared/serverpod_test_shared_module_shared.dart'
+    hide Protocol;
 export 'client.dart';
 
-class Protocol extends _i1.SerializationManager {
+class Protocol extends _i1.DatabaseSerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;
 
   static final Protocol _instance = Protocol._();
 
-  final Set<_i1.SerializationManager> _hostProtocols = {};
+  static final List<_i1.TableDefinition> targetTableDefinitions = [
+    ..._i2.Protocol() is _i1.DatabaseSerializationManager
+        ? (_i2.Protocol() as _i1.DatabaseSerializationManager)
+              .getTargetTableDefinitions()
+        : [],
+  ];
+
+  final Set<_i3.SerializationManager> _hostProtocols = {};
 
   void registerHostProtocol(
     String projectName,
-    _i1.SerializationManager protocol,
+    _i3.SerializationManager protocol,
   ) {
     _hostProtocols.add(protocol);
   }
@@ -64,7 +74,7 @@ class Protocol extends _i1.SerializationManager {
 
     try {
       return _i2.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+    } on _i3.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
@@ -87,11 +97,7 @@ class Protocol extends _i1.SerializationManager {
     }
 
     className = _i2.Protocol().getClassNameForObject(data);
-    if (className != null) {
-      return className.contains('.')
-          ? className
-          : 'serverpod_test_shared_module_shared.$className';
-    }
+    if (className != null) return className;
     return null;
   }
 
@@ -101,10 +107,9 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
-    if (dataClassName.startsWith('serverpod_test_shared_module_shared.')) {
-      data['className'] = dataClassName.substring(36);
+    try {
       return _i2.Protocol().deserializeByClassName(data);
-    }
+    } on FormatException catch (_) {}
     return super.deserializeByClassName(data);
   }
 
@@ -126,8 +131,8 @@ class Protocol extends _i1.SerializationManager {
         'data': object,
       };
       return forProtocol
-          ? _i1.SerializationManager.toEncodableForProtocol(wrapped)
-          : _i1.SerializationManager.toEncodable(wrapped);
+          ? _i3.SerializationManager.toEncodableForProtocol(wrapped)
+          : _i3.SerializationManager.toEncodable(wrapped);
     }
     return super.dynamicFieldToJson(object, forProtocol: forProtocol);
   }
@@ -166,6 +171,24 @@ class Protocol extends _i1.SerializationManager {
     }
     return deserializeByClassName(value);
   }
+
+  @override
+  _i1.Table? getTableForType(Type t) {
+    {
+      var protocol = _i2.Protocol();
+      var table = protocol is _i1.DatabaseSerializationManager
+          ? (protocol as _i1.DatabaseSerializationManager).getTableForType(t)
+          : null;
+      if (table != null) {
+        return table;
+      }
+    }
+    return null;
+  }
+
+  @override
+  List<_i1.TableDefinition> getTargetTableDefinitions() =>
+      targetTableDefinitions;
 
   @override
   String getModuleName() => 'serverpod_test_shared_module';

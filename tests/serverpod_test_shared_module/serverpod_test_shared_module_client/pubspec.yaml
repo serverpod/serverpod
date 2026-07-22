@@ -13,6 +13,7 @@ environment:
 
 dependencies:
   serverpod_client: 4.0.0-beta.1
+  serverpod_database: 4.0.0-beta.1
   serverpod_test_shared_module_shared:
     path: ../serverpod_test_shared_module_shared
 
@@ -22,5 +23,7 @@ dev_dependencies:
 dependency_overrides:
   serverpod_client:
     path: ../../../packages/serverpod_client
+  serverpod_database:
+    path: ../../../packages/serverpod_database
   serverpod_serialization:
     path: ../../../packages/serverpod_serialization
