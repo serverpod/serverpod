@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart';
 import 'package:serverpod_cli/src/config/config.dart';
-import 'package:super_string/super_string.dart';
+import 'package:serverpod_cli/src/util/string_manipulation.dart';
 
 const String defaultModuleAlias = 'protocol';
 

@@ -3,7 +3,6 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
-import 'package:super_string/super_string.dart';
 
 final Random _random = Random.secure();
 
@@ -44,7 +43,9 @@ String databaseTypeToLowerCamelCase(String databaseType) {
     if (previousValue.isEmpty || element.isEmpty) {
       return '$previousValue${element.toLowerCase()}';
     } else {
-      return '$previousValue${element.capitalize()}';
+      var first = String.fromCharCode(element.runes.first).toUpperCase();
+      var rest = element.substring(1).toLowerCase();
+      return '$previousValue$first$rest';
     }
   });
 }
