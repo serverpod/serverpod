@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:meta/meta.dart' as meta;
 import 'package:path/path.dart' as p;
 import 'package:serverpod/serverpod.dart' hide LogLevel;
 import 'package:serverpod_database/embedded.dart';
@@ -1125,21 +1124,6 @@ class Serverpod {
     return insightsServer;
   }
 
-  /// Registers a [FutureCall] with the [Serverpod] and associates it with
-  /// the specified name.
-  ///
-  /// Used by the generated future calls code to register the generated
-  /// future call wrappers. This is not intended to be called directly, as
-  /// there is no public way to schedule a manually registered future call.
-  @meta.internal
-  void registerFutureCall(FutureCall call, String name) {
-    var futureCallManager = _futureCallManager;
-    if (futureCallManager == null) {
-      throw StateError('Future calls are disabled.');
-    }
-    _futureCallManager?.registerFutureCall(call, name);
-  }
-
   /// Retrieves a password for the given key. Passwords are loaded from the
   /// config/passwords.yaml file.
   String? getPassword(String key) {
@@ -1543,6 +1527,20 @@ class ExperimentalApi {
 /// Internal methods used by the Serverpod. These methods are not intended to
 /// be exposed to end users.
 extension ServerpodInternalMethods on Serverpod {
+  /// Registers a [FutureCall] with the [Serverpod] and associates it with
+  /// the specified name.
+  ///
+  /// There is no public way to schedule a manually registered future call;
+  /// generated future call wrappers register themselves through the
+  /// [FutureCallManager] instead.
+  void registerFutureCall(FutureCall call, String name) {
+    var futureCallManager = _futureCallManager;
+    if (futureCallManager == null) {
+      throw StateError('Future calls are disabled.');
+    }
+    futureCallManager.registerFutureCall(call, name);
+  }
+
   /// Retrieve the log settings manager
   LogSettingsManager get logSettingsManager => _logSettingsManager!;
 

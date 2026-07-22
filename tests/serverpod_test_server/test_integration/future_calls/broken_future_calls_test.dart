@@ -1,7 +1,3 @@
-// Registers future calls directly on the Serverpod instance to set up
-// broken/missing registration scenarios.
-// ignore_for_file: invalid_use_of_internal_member
-
 import 'dart:async';
 import 'dart:io';
 
