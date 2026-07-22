@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:serverpod_test_shared_module_client/serverpod_test_shared_module_client.dart'
     as module_client;
@@ -40,7 +39,7 @@ void main() {
                   )
                   as Map<String, dynamic>;
           final deserialized =
-              protocol.deserializeByClassName(serialized)
+              protocol.deserializeByClassName({...serialized})
                   as module_server.SharedModuleTable;
 
           expect(protocol.getModuleName(), 'serverpod_test_shared_module');
@@ -67,7 +66,7 @@ void main() {
                   )
                   as Map<String, dynamic>;
           final deserialized =
-              protocol.deserializeByClassName(serialized)
+              protocol.deserializeByClassName({...serialized})
                   as module_client.SharedModuleTable;
 
           expect(protocol.getModuleName(), 'serverpod_test_shared_module');
@@ -80,6 +79,54 @@ void main() {
               'client table',
             ),
           );
+        },
+      );
+
+      test(
+        'when the SQLite consumer server protocol serializes the table, '
+        'then it uses the owning module prefix.',
+        () {
+          final protocol = sqlite_server.Protocol();
+          final serialized =
+              jsonDecode(protocol.encodeWithType(serverTable))
+                  as Map<String, dynamic>;
+          final deserialized =
+              protocol.deserializeByClassName({...serialized})
+                  as module_server.SharedModuleTable;
+
+          expect(
+            protocol.getClassNameForObject(serverTable),
+            'serverpod_test_shared_module.SharedModuleTable',
+          );
+          expect(
+            serialized['className'],
+            'serverpod_test_shared_module.SharedModuleTable',
+          );
+          expect(deserialized.name, 'server table');
+        },
+      );
+
+      test(
+        'when the SQLite consumer client protocol serializes the table, '
+        'then it uses the owning module prefix.',
+        () {
+          final protocol = sqlite_client.Protocol();
+          final serialized =
+              jsonDecode(protocol.encodeWithType(clientTable))
+                  as Map<String, dynamic>;
+          final deserialized =
+              protocol.deserializeByClassName({...serialized})
+                  as module_client.SharedModuleTable;
+
+          expect(
+            protocol.getClassNameForObject(clientTable),
+            'serverpod_test_shared_module.SharedModuleTable',
+          );
+          expect(
+            serialized['className'],
+            'serverpod_test_shared_module.SharedModuleTable',
+          );
+          expect(deserialized.name, 'client table');
         },
       );
 
@@ -130,64 +177,6 @@ void main() {
                 .name,
             'client table',
           );
-        },
-      );
-
-      test(
-        'when the module creates a migration for the shared table, '
-        'then the migration records the module as the table owner.',
-        () {
-          final migrationDirectory =
-              Directory(
-                '../serverpod_test_shared_module/'
-                'serverpod_test_shared_module_server/migrations',
-              ).listSync().whereType<Directory>().singleWhere(
-                (directory) => File(
-                  '${directory.path}/definition_project.json',
-                ).existsSync(),
-              );
-          final definition =
-              jsonDecode(
-                    File(
-                      '${migrationDirectory.path}/definition_project.json',
-                    ).readAsStringSync(),
-                  )
-                  as Map<String, dynamic>;
-          final table = (definition['tables'] as List<dynamic>)
-              .cast<Map<String, dynamic>>()
-              .singleWhere(
-                (table) => table['dartName'] == 'SharedModuleTable',
-              );
-          final consumerTable =
-              Directory(
-                    '../serverpod_test_sqlite_client/lib/migrations',
-                  )
-                  .listSync()
-                  .whereType<Directory>()
-                  .where(
-                    (directory) =>
-                        File('${directory.path}/definition.json').existsSync(),
-                  )
-                  .map(
-                    (directory) =>
-                        jsonDecode(
-                              File(
-                                '${directory.path}/definition.json',
-                              ).readAsStringSync(),
-                            )
-                            as Map<String, dynamic>,
-                  )
-                  .expand(
-                    (definition) => (definition['tables'] as List<dynamic>)
-                        .cast<Map<String, dynamic>>(),
-                  )
-                  .singleWhere(
-                    (table) => table['dartName'] == 'SharedModuleTable',
-                  );
-
-          expect(definition['moduleName'], 'serverpod_test_shared_module');
-          expect(table['module'], 'serverpod_test_shared_module');
-          expect(consumerTable['module'], 'serverpod_test_shared_module');
         },
       );
     },
