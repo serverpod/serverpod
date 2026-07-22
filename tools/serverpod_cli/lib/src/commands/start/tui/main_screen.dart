@@ -781,7 +781,7 @@ class MainScreen extends StatelessComponent {
             enabled: actionsEnabled && onHotReload != null,
           ),
         Button(
-          name: 'Create migration',
+          name: 'Migrate',
           activationChar: 'M',
           activationKeys: const [LogicalKey.keyM],
           onActivate: (_) => onCreateMigration?.call(),
