@@ -341,6 +341,22 @@ void main() async {
             );
           });
 
+          test('then the server project has a src/cache_busting.dart file', () {
+            expect(
+              File(
+                path.join(
+                  tempPath,
+                  serverDir,
+                  'lib',
+                  'src',
+                  'cache_busting.dart',
+                ),
+              ).existsSync(),
+              isTrue,
+              reason: 'Server cache_busting.dart file does not exist.',
+            );
+          });
+
           test('then the server project has a server.dart file', () {
             expect(
               File(
@@ -362,6 +378,12 @@ void main() async {
 
               expect(
                 content,
+                contains("import 'src/cache_busting.dart';"),
+                reason: 'server.dart does not contain website configurations.',
+              );
+
+              expect(
+                content,
                 contains("import 'src/web/routes/root.dart';"),
                 reason: 'server.dart does not contain website configurations.',
               );
@@ -380,17 +402,7 @@ void main() async {
 
               expect(
                 content,
-                contains(
-                  "final root = Directory(Uri(path: 'web/static').toFilePath())",
-                ),
-                reason: 'server.dart does not contain website configurations.',
-              );
-
-              expect(
-                content,
-                contains(
-                  "pod.webServer.addRoute(StaticRoute.directory(root), '/web')",
-                ),
+                contains('StaticRoute.withCacheBusting(cacheBustingConfig)'),
                 reason: 'server.dart does not contain website configurations.',
               );
             },
