@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
@@ -6,6 +7,8 @@ import 'package:serverpod_embedded_postgres/src/supervisor/process_identity.dart
 import 'package:serverpod_embedded_postgres/src/supervisor/stale_lock_repair.dart';
 import 'package:serverpod_shared/process_io.dart';
 import 'package:test/test.dart';
+
+import 'fake_postmaster.dart' show fakePostmasterReadyMessage;
 
 /// PIDs in this range should not exist as real processes on CI / dev hosts.
 const int _unlikelyLivePid = 999999999;
@@ -205,12 +208,34 @@ void _writeNativePidFile({
 
 /// Spawns the Dart fake postmaster so verifyIdentity sees this test's
 /// Dart binary at argv[0] (POSIX) or as the live process image (Windows).
-Future<Process> _spawnFakePostmaster(Directory pgData) {
-  return Process.start(Platform.resolvedExecutable, [
+Future<Process> _spawnFakePostmaster(Directory pgData) async {
+  final process = await Process.start(Platform.resolvedExecutable, [
     _fakePostmasterScript,
     '-D',
     p.absolute(pgData.path),
   ]);
+
+  try {
+    final readyMessage = await process.stdout
+        .transform(utf8.decoder)
+        .transform(const LineSplitter())
+        .first
+        .timeout(const Duration(seconds: 5));
+    if (readyMessage != fakePostmasterReadyMessage) {
+      throw StateError(
+        'Unexpected fake postmaster readiness message: $readyMessage',
+      );
+    }
+    return process;
+  } catch (_) {
+    process.kill(ProcessSignal.sigkill);
+    try {
+      await process.exitCode.timeout(const Duration(seconds: 2));
+    } on TimeoutException {
+      // The original startup error is more useful than a cleanup timeout.
+    }
+    rethrow;
+  }
 }
 
 Future<bool> _waitForProcessToStop(int processId) async {

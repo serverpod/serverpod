@@ -9,6 +9,8 @@ library;
 
 import 'dart:io';
 
+const fakePostmasterReadyMessage = 'fake-postmaster-ready';
+
 Future<void> main(List<String> args) async {
   // POSIX only: `ProcessSignal.sigterm.watch()` throws on Windows (only SIGINT
   // and SIGHUP are watchable there - Serverpod's own server guards it the same
@@ -20,6 +22,12 @@ Future<void> main(List<String> args) async {
     ProcessSignal.sigterm.watch().listen((_) => exit(0));
     ProcessSignal.sigint.watch().listen((_) => exit(0));
   }
+
+  // Let the spawning test know that startup and signal-handler registration
+  // have completed before it attempts to identify and terminate this process.
+  stdout.writeln(fakePostmasterReadyMessage);
+  await stdout.flush();
+
   // An uncompleted Future alone does not keep every supported Dart VM's event
   // loop alive. A pending timer does, so this stand-in remains a live process
   // until the spawning test terminates it.
