@@ -106,38 +106,38 @@ void main() {
     serverQueue = [];
   });
 
-  group('Given a healthy initial boot', () {
-    test(
-      'when bootInitialServer runs, '
-      'then it returns the server without touching the compiler',
-      () async {
-        serverQueue = [_FakeServer.running()];
+  test(
+    'Given a healthy initial boot, '
+    'when bootInitialServer runs, '
+    'then it returns the server without touching the compiler',
+    () async {
+      serverQueue = [_FakeServer.running()];
 
-        final server = await bootInitialServer(
-          initialDill: '/tmp/server.dill',
-          startServer: startServer,
-          compiler: compiler,
-        );
+      final server = await bootInitialServer(
+        initialDill: '/tmp/server.dill',
+        startServer: startServer,
+        compiler: compiler,
+      );
 
-        expect(server, same(bootedServers.single));
-        expect(compiler.calls, isEmpty);
-      },
-    );
-  });
+      expect(server, same(bootedServers.single));
+      expect(compiler.calls, isEmpty);
+    },
+  );
 
   group('Given a server that dies before publishing its VM service URI', () {
     // 0xC0000409: a Windows-style abort code; the predicate must not
     // enumerate exit codes.
     const abortCode = 3221226505;
 
+    setUp(() {
+      serverQueue = [_FakeServer.crashed(abortCode)];
+    });
+
     test(
       'when bootInitialServer runs, '
       'then it invalidates the cache, recompiles, and boots again',
       () async {
-        serverQueue = [
-          _FakeServer.crashed(abortCode),
-          _FakeServer.running(),
-        ];
+        serverQueue.add(_FakeServer.running());
 
         final server = await bootInitialServer(
           initialDill: '/tmp/server.dill',
@@ -155,7 +155,6 @@ void main() {
       'when the recovery recompile fails, '
       'then it returns null and rejects the compile',
       () async {
-        serverQueue = [_FakeServer.crashed(abortCode)];
         compiler.nextCompileResult = _failResult();
 
         final server = await bootInitialServer(
@@ -174,10 +173,7 @@ void main() {
       'when the retry boot also crashes, '
       'then the dead server is returned without a second retry',
       () async {
-        serverQueue = [
-          _FakeServer.crashed(abortCode),
-          _FakeServer.crashed(abortCode),
-        ];
+        serverQueue.add(_FakeServer.crashed(abortCode));
 
         final server = await bootInitialServer(
           initialDill: '/tmp/server.dill',
@@ -194,8 +190,6 @@ void main() {
       'when no compiler is available (non-watch mode), '
       'then the dead server is returned without a retry',
       () async {
-        serverQueue = [_FakeServer.crashed(abortCode)];
-
         final server = await bootInitialServer(
           initialDill: null,
           startServer: startServer,
@@ -207,22 +201,21 @@ void main() {
     );
   });
 
-  group('Given a server that crashes after the VM service came up', () {
-    test(
-      'when bootInitialServer runs, '
-      'then the crash is not treated as a corrupt cache',
-      () async {
-        serverQueue = [_FakeServer.crashedAfterVmService(1)];
+  test(
+    'Given a server that crashes after the VM service came up, '
+    'when bootInitialServer runs, '
+    'then the crash is not treated as a corrupt cache',
+    () async {
+      serverQueue = [_FakeServer.crashedAfterVmService(1)];
 
-        final server = await bootInitialServer(
-          initialDill: '/tmp/server.dill',
-          startServer: startServer,
-          compiler: compiler,
-        );
+      final server = await bootInitialServer(
+        initialDill: '/tmp/server.dill',
+        startServer: startServer,
+        compiler: compiler,
+      );
 
-        expect(server, same(bootedServers.single));
-        expect(compiler.calls, isEmpty);
-      },
-    );
-  });
+      expect(server, same(bootedServers.single));
+      expect(compiler.calls, isEmpty);
+    },
+  );
 }

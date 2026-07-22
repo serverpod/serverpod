@@ -47,7 +47,7 @@ void main() {
 
     test(
       'when compile is called, '
-      'then it produces a .dill file with no errors',
+      'then it produces a .dill file with no errors and no compile marker',
       () async {
         final outputDill = p.join(
           tempDir.path,
@@ -62,25 +62,7 @@ void main() {
         expect(result.errorCount, 0);
         expect(result.dillOutput, isNotEmpty);
         expect(File(outputDill).existsSync(), isTrue);
-      },
-      timeout: const Timeout(Duration(seconds: 60)),
-    );
-
-    test(
-      'when compile completes, '
-      'then no compile marker remains',
-      () async {
-        final marker = p.join(
-          tempDir.path,
-          '.dart_tool',
-          'serverpod',
-          'server.dill.compiling',
-        );
-
-        await compiler.start();
-        await compiler.compile();
-
-        expect(File(marker).existsSync(), isFalse);
+        expect(File('$outputDill.compiling').existsSync(), isFalse);
       },
       timeout: const Timeout(Duration(seconds: 60)),
     );
@@ -207,19 +189,7 @@ void main() {
 
     test(
       'when compile is called, '
-      'then it reports a non-zero error count',
-      () async {
-        await compiler.start();
-        final result = await compiler.compile();
-
-        expect(result.errorCount, greaterThan(0));
-      },
-      timeout: const Timeout(Duration(seconds: 60)),
-    );
-
-    test(
-      'when compile finishes with errors, '
-      'then the compile marker is still cleared',
+      'then it reports a non-zero error count and still clears the marker',
       () async {
         await compiler.start();
         final result = await compiler.compile();
