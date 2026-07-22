@@ -3,7 +3,7 @@
 
 name: serverpod_embedded_postgres
 version: 4.0.0-beta.0
-description: Runs a real PostgreSQL server as a child process for Serverpod local dev. No Docker, no port conflicts, UDS by default.
+description: Runs a real PostgreSQL server as a child process for Serverpod local development, without Docker or fixed port conflicts.
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
