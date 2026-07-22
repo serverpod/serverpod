@@ -7,15 +7,11 @@ import 'package:test/test.dart';
 
 import '../lib/src/util.dart';
 
-const tempDirName = 'temp_project_server';
-
 void main() async {
   final rootPath = path.join(Directory.current.path, '..', '..');
   final cliProjectPath = getServerpodCliProjectPath(rootPath: rootPath);
-  final tempPath = path.join(rootPath, tempDirName);
 
   setUpAll(() async {
-    await Directory(tempPath).create();
     final pubGetProcess = await startProcess('dart', [
       'pub',
       'get',
@@ -23,19 +19,33 @@ void main() async {
     assert(await pubGetProcess.exitCode == 0);
   });
 
-  tearDownAll(() async {
-    try {
-      await Directory(tempPath).delete(recursive: true);
-    } catch (e) {}
-  });
-
   group(
     'Given a clean state',
     () {
-      final (:projectName, commandRoot: _) = createRandomProjectName(tempPath);
-      final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
-        projectName,
-      );
+      Directory? tempDirectory;
+      late final String tempPath;
+      late final String projectName;
+      late final String serverDir;
+      late final String flutterDir;
+      late final String clientDir;
+
+      setUpAll(() {
+        tempDirectory = Directory.systemTemp.createTempSync('spb_');
+        tempPath = tempDirectory!.path;
+
+        final project = createRandomProjectName(tempPath);
+        projectName = project.projectName;
+        final projectFolders = createProjectFolderPaths(projectName);
+        serverDir = projectFolders.serverDir;
+        flutterDir = projectFolders.flutterDir;
+        clientDir = projectFolders.clientDir;
+      });
+
+      tearDownAll(() async {
+        try {
+          await tempDirectory?.delete(recursive: true);
+        } catch (e) {}
+      });
 
       group(
         'when creating a new project with the server template',
@@ -248,14 +258,13 @@ void main() async {
           group(
             'then the workspace has Serverpod and Dart MCP servers configured',
             () {
-              final serverDirRelative = '${projectName}_server';
-              final genericConfig =
+              String expectedMcpConfig() =>
                   '''
 {
   "mcpServers": {
     "serverpod": {
       "command": "serverpod",
-      "args": ["mcp-server", "--server-dir", "$serverDirRelative"]
+      "args": ["mcp-server", "--server-dir", "${projectName}_server"]
     },
     "dart": {
       "command": "dart",
@@ -270,7 +279,7 @@ void main() async {
                   path.join(tempPath, projectName, '.mcp.json'),
                 );
                 expect(claude.existsSync(), isTrue);
-                expect(claude.readAsStringSync(), genericConfig);
+                expect(claude.readAsStringSync(), expectedMcpConfig());
               });
 
               test('for Cursor', () {
@@ -278,7 +287,7 @@ void main() async {
                   path.join(tempPath, projectName, '.cursor/mcp.json'),
                 );
                 expect(cursor.existsSync(), isTrue);
-                expect(cursor.readAsStringSync(), genericConfig);
+                expect(cursor.readAsStringSync(), expectedMcpConfig());
               });
 
               test('for VS Code', () {
@@ -288,7 +297,7 @@ void main() async {
                 expect(vscode.existsSync(), isTrue);
                 expect(
                   vscode.readAsStringSync(),
-                  genericConfig.replaceAll('mcpServers', 'servers'),
+                  expectedMcpConfig().replaceAll('mcpServers', 'servers'),
                 );
               });
             },
@@ -341,6 +350,22 @@ void main() async {
             );
           });
 
+          test('then the server project has a src/cache_busting.dart file', () {
+            expect(
+              File(
+                path.join(
+                  tempPath,
+                  serverDir,
+                  'lib',
+                  'src',
+                  'cache_busting.dart',
+                ),
+              ).existsSync(),
+              isTrue,
+              reason: 'Server cache_busting.dart file does not exist.',
+            );
+          });
+
           test('then the server project has a server.dart file', () {
             expect(
               File(
@@ -362,6 +387,12 @@ void main() async {
 
               expect(
                 content,
+                contains("import 'src/cache_busting.dart';"),
+                reason: 'server.dart does not contain website configurations.',
+              );
+
+              expect(
+                content,
                 contains("import 'src/web/routes/root.dart';"),
                 reason: 'server.dart does not contain website configurations.',
               );
@@ -380,17 +411,7 @@ void main() async {
 
               expect(
                 content,
-                contains(
-                  "final root = Directory(Uri(path: 'web/static').toFilePath())",
-                ),
-                reason: 'server.dart does not contain website configurations.',
-              );
-
-              expect(
-                content,
-                contains(
-                  "pod.webServer.addRoute(StaticRoute.directory(root), '/web')",
-                ),
+                contains('StaticRoute.withCacheBusting(cacheBustingConfig)'),
                 reason: 'server.dart does not contain website configurations.',
               );
             },
@@ -767,13 +788,14 @@ void main() async {
   group(
     'Given a created project with the server template and a running pod',
     () {
-      final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
-
-      late Process createProcess;
-      late Process startProjectProcess;
+      Directory? tempDirectory;
+      Process? startProjectProcess;
 
       setUpAll(() async {
-        createProcess = await startServerpodCli(
+        tempDirectory = Directory.systemTemp.createTempSync('spb_');
+        final tempPath = tempDirectory!.path;
+        final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+        final createProcess = await startServerpodCli(
           [
             'create',
             projectName,
@@ -789,7 +811,11 @@ void main() async {
             'SERVERPOD_HOME': rootPath,
           },
         );
-        assert((await createProcess.exitCode) == 0);
+        expect(
+          await createProcess.exitCode,
+          0,
+          reason: 'Failed to create the server-template project.',
+        );
 
         startProjectProcess = await startProcessAndWaitForKeywords(
           'dart',
@@ -800,8 +826,10 @@ void main() async {
       });
 
       tearDownAll(() async {
-        createProcess.kill();
-        startProjectProcess.kill();
+        startProjectProcess?.kill();
+        try {
+          await tempDirectory?.delete(recursive: true);
+        } catch (e) {}
       });
 
       test(

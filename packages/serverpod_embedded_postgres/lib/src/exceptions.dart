@@ -16,32 +16,79 @@ sealed class EmbeddedPostgresException implements Exception {
   String toString() => '$runtimeType: $message';
 }
 
-/// HTTP failure or unexpected payload while fetching the Zonky JAR or its
-/// `.sha256` sidecar from Maven Central.
+/// HTTP failure or unexpected payload while fetching the PostgreSQL bundle
+/// archive or its `.sha256` sidecar.
 final class BinaryFetchException extends EmbeddedPostgresException {
-  /// Creates a [BinaryFetchException] with [message].
-  const BinaryFetchException(super.message);
+  /// HTTP status code when the failure was a non-200 response (else `null`,
+  /// e.g. a timeout). `404` means the prebuilt bundle isn't published - the
+  /// trigger for the build-from-source fallback in [BinarySource.auto].
+  final int? statusCode;
+
+  /// The stage of the fetch that failed.
+  final BinaryFetchFailureKind kind;
+
+  /// Creates a [BinaryFetchException] with [message], optional [statusCode],
+  /// and the neutral failure classification [kind].
+  const BinaryFetchException(
+    super.message, {
+    this.statusCode,
+    this.kind = BinaryFetchFailureKind.invalidResponse,
+  });
 }
 
-/// SHA-256 mismatch on a downloaded Zonky JAR. The cached download is
-/// removed before this is thrown - retrying [EmbeddedPostgres.start] will
-/// re-fetch.
+/// Identifies which part of obtaining a binary bundle failed.
+enum BinaryFetchFailureKind {
+  /// The request could not complete, or returned a response that may be
+  /// transient.
+  download,
+
+  /// The requested bundle or checksum sidecar does not exist.
+  unavailable,
+
+  /// The server returned content that does not satisfy the bundle contract.
+  invalidResponse,
+
+  /// Coordination with another process preparing the same bundle failed.
+  coordination,
+}
+
+/// A downloaded or extracted bundle failed verification: SHA-256 mismatch
+/// against the sidecar, or an embedded manifest that disagrees with the
+/// requested artifact. Nothing is cached before this is thrown - retrying
+/// [EmbeddedPostgres.start] will re-fetch.
 final class BinaryVerificationException extends EmbeddedPostgresException {
   /// Creates a [BinaryVerificationException] with [message].
   const BinaryVerificationException(super.message);
 }
 
-/// Current `(os, arch)` tuple isn't covered by Zonky's binary distribution.
+/// Current `(os, arch)` tuple isn't covered by the binary distribution.
 final class UnsupportedPlatformException extends EmbeddedPostgresException {
   /// Creates an [UnsupportedPlatformException] with [message].
   const UnsupportedPlatformException(super.message);
 }
 
+/// The requested PostgreSQL version has no published Serverpod bundle
+/// specification. Raised before any network access; the remedy is to request
+/// one of the published versions (listed in [message]).
+final class UnsupportedVersionException extends EmbeddedPostgresException {
+  /// Creates an [UnsupportedVersionException] with [message].
+  const UnsupportedVersionException(super.message);
+}
+
+/// Building the bundle from source failed, or the build toolchain
+/// (zig/cmake/make/bison/flex/perl, plus `bash`/MSYS2 on Windows) is missing.
+/// Raised when the prebuilt bundle is unavailable and a local build was
+/// attempted (or forced via [EmbeddedPostgresOptions.binarySource]).
+final class BinaryBuildException extends EmbeddedPostgresException {
+  /// Creates a [BinaryBuildException] with [message].
+  const BinaryBuildException(super.message);
+}
+
 /// `initdb` returned a non-zero exit code. [message] embeds the captured
 /// stdout + stderr.
-final class InitdbException extends EmbeddedPostgresException {
-  /// Creates an [InitdbException] with [message].
-  const InitdbException(super.message);
+final class InitializeDatabaseException extends EmbeddedPostgresException {
+  /// Creates an [InitializeDatabaseException] with [message].
+  const InitializeDatabaseException(super.message);
 }
 
 /// `postgres` did not become ready within

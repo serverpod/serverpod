@@ -1,6 +1,5 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
-import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/test_key_manager.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
@@ -13,11 +12,11 @@ void main() {
 
   setUpAll(() async {
     server = IntegrationTestServer.create();
-    await server.start();
+    await server.startWithDatabase();
 
     authKeyManager = TestAuthKeyManager();
     client = Client(
-      serverUrl,
+      server.apiUrl,
       // ignore: deprecated_member_use
       authenticationKeyManager: authKeyManager,
     );

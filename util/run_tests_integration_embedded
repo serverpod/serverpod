@@ -1,0 +1,113 @@
+#!/bin/bash
+
+# Runs a server package's integration tests against an embedded PG
+#
+# Usage:
+#   util/run_tests_integration_embedded <server-directory> [extra dart test args]
+#
+# Any args after <server-directory> are forwarded to `dart test`, so sharding is
+# available without a dedicated <index> <total> convention: a parallel CI job
+# passes the flags straight through, e.g.
+#   util/run_tests_integration_embedded <dir> --total-shards 4 --shard-index 2
+
+if [ ! -f util/.serverpod_util_root ]; then
+    echo "Run this script from the root of the Serverpod repository"
+    echo "I.e. util/run_tests_integration_embedded <server-directory>"
+    exit 1
+fi
+
+SERVER_DIR="$1"
+if [ -z "$SERVER_DIR" ]; then
+    echo "Usage: util/run_tests_integration_embedded <server-directory>"
+    exit 1
+fi
+if [ ! -d "$SERVER_DIR" ]; then
+    echo "No such server directory: $SERVER_DIR"
+    exit 1
+fi
+
+set -e
+export SERVERPOD_SILENCE_LIFECYCLE_MESSAGES="1"
+export SERVERPOD_DATABASE_DATA_PATH="${SERVERPOD_DATABASE_DATA_PATH:-.serverpod/test/pgdata}"
+
+REPO_ROOT="$(pwd)"
+
+cd "$SERVER_DIR"
+
+# Optional whole-file sharding for a large suite fanned across parallel CI jobs
+# via SHARD_INDEX/TOTAL_SHARDS (see the auth_idp entries in
+# embedded_integration_tests). We assign whole files to a shard rather than dart
+# test's --total-shards, which case-splits coupled tests and compiles every file
+# in every shard. Default TOTAL_SHARDS=1 runs the whole suite unchanged.
+#
+# Any arguments after <server-directory> are forwarded to `dart test`, e.g.
+# `-x email` to exclude the live-service email test from a DB-focused suite.
+shard_index="${SHARD_INDEX:-0}"
+total_shards="${TOTAL_SHARDS:-1}"
+if [ "$total_shards" -gt 1 ]; then
+    shard_test_files=()
+    file_i=0
+    while IFS= read -r test_file; do
+        if [ $(( file_i % total_shards )) -eq "$shard_index" ]; then
+            shard_test_files+=("$test_file")
+        fi
+        file_i=$(( file_i + 1 ))
+    done < <(find test -name '*_test.dart' | sort)
+    if [ ${#shard_test_files[@]} -eq 0 ]; then
+        echo "### No test files assigned to shard $shard_index/$total_shards"
+        cd "$REPO_ROOT"
+        exit 0
+    fi
+    echo "### Running ${#shard_test_files[@]} files (shard $shard_index/$total_shards)"
+    dart test "${shard_test_files[@]}" -t integration "${@:2}" --reporter=failures-only
+else
+    dart test -t integration "${@:2}" --reporter=failures-only
+fi
+
+# Verify that the database data path exists
+if [ ! -d "$SERVERPOD_DATABASE_DATA_PATH" ]; then
+    echo "Test did not create the database data path: $SERVERPOD_DATABASE_DATA_PATH"
+    cd "$REPO_ROOT"
+    exit 1
+fi
+
+# The shared postmaster intentionally outlives the test isolates. Stop it
+# through PostgreSQL before deleting its data directory; otherwise it can race
+# cleanup by recreating files on POSIX, while Windows keeps files open until all
+# backend processes exit.
+if [ -f "$SERVERPOD_DATABASE_DATA_PATH/postmaster.pid" ]; then
+    pg_cache="${SERVERPOD_PG_CACHE_DIR:?}"
+    case "${OSTYPE:-}" in
+        msys*|cygwin*) pg_cache="$(cygpath -u "$pg_cache")" ;;
+    esac
+
+    pg_ctl=""
+    while IFS= read -r candidate; do
+        pg_ctl="$candidate"
+        break
+    done < <(find "$pg_cache" -type f \( -name pg_ctl -o -name pg_ctl.exe \) -print)
+    if [ -z "$pg_ctl" ]; then
+        echo "Could not find pg_ctl under $SERVERPOD_PG_CACHE_DIR"
+        cd "$REPO_ROOT"
+        exit 1
+    fi
+    "$pg_ctl" stop \
+        -D "$SERVERPOD_DATABASE_DATA_PATH" \
+        -m fast \
+        -w \
+        -t 30 || true
+fi
+
+# Allow PostgreSQL's child processes a bounded grace period to release handles
+# or finish exiting, while retaining a hard assertion that cleanup succeeded.
+for _ in {1..50}; do
+    rm -rf "$SERVERPOD_DATABASE_DATA_PATH" 2> /dev/null && break
+    sleep 0.1
+done
+if [ -d "$SERVERPOD_DATABASE_DATA_PATH" ]; then
+    echo "Could not remove the embedded PostgreSQL test data directory"
+    cd "$REPO_ROOT"
+    exit 1
+fi
+
+cd "$REPO_ROOT"

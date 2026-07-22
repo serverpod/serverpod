@@ -5,9 +5,12 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/start/flutter_app_manager.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_log_event.dart';
+import 'package:serverpod_cli/src/commands/start/package_dependency_tracker.dart';
 import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:serverpod_shared/log.dart' show LogLevel;
 import 'package:test/test.dart';
+
+import '../../test_util/file_system_entity_helpers.dart';
 
 String _shimPath(String name) => p.join(
   Directory.current.path,
@@ -202,7 +205,7 @@ dependencies:
   Future<void> dispose() async {
     await manager.dispose();
     await _fakeVmServer?.close(force: true);
-    await tempDir.delete(recursive: true);
+    await tempDir.deleteBestEffort(recursive: true);
   }
 }
 
@@ -284,7 +287,7 @@ void main() {
         () async {
           // `launch` flips the spawn-in-flight flag synchronously, before its
           // first await, so the app reads as launching the instant the call is
-          // kicked off — no fixed wait needed. The shim never publishes a URL,
+          // kicked off - no fixed wait needed. The shim never publishes a URL,
           // so it stays launching until torn down in tearDown.
           unawaited(f.manager.launch('app-a'));
 
@@ -687,4 +690,48 @@ serverpod:
       },
     );
   });
+
+  group(
+    'Given an initialized FlutterAppManager before the Flutter resolution exists,',
+    () {
+      late _ManagerFixture f;
+
+      setUp(() async {
+        f = await _ManagerFixture.create();
+      });
+
+      tearDown(() => f.dispose());
+
+      test(
+        'when dependency changes are checked after the resolution is created, '
+        'then dependency tracking is initialized.',
+        () {
+          expect(f.manager.dependencyTrackerFor('project'), isNull);
+
+          final flutterDir = f.flutterDir('project');
+          final dartToolDir = Directory(
+            p.join(flutterDir.path, '.dart_tool'),
+          )..createSync();
+          File(
+            p.join(dartToolDir.path, 'package_config.json'),
+          ).writeAsStringSync('''
+{"configVersion":2,"packages":[{"name":"project_flutter","rootUri":"../","packageUri":"lib/"}]}
+''');
+          File(
+            p.join(dartToolDir.path, 'package_graph.json'),
+          ).writeAsStringSync(
+            '''
+{"roots":["project_flutter"],"packages":[{"name":"project_flutter","version":"1.0.0","dependencies":[]}]}
+''',
+          );
+
+          expect(
+            f.manager.checkDependencyChange('project'),
+            PackageDependencyChange.none,
+          );
+          expect(f.manager.dependencyTrackerFor('project'), isNotNull);
+        },
+      );
+    },
+  );
 }

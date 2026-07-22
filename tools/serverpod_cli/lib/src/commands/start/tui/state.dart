@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/src/config/flutter_app_config.dart';
+import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_tui/serverpod_tui.dart';
 
 import 'tab_model.dart';
@@ -100,7 +101,31 @@ class ServerWatchState extends TuiState {
   ///
   /// When false, an error entry that carries a trace shows a compact
   /// affordance instead; toggled with `e` on the structured log tab.
+  /// Individual entries can deviate from this via [toggleStackTrace].
   bool expandStackTraces = false;
+
+  /// Entries whose stack-trace visibility is inverted relative to
+  /// [expandStackTraces], toggled by clicking an entry's affordance.
+  ///
+  /// Identity-keyed: [LogEntry] has no value equality and the same object
+  /// stays in [logHistory] for its lifetime.
+  final _toggledStackTraces = Set<LogEntry>.identity();
+
+  /// Whether [entry]'s stack trace is currently shown inline.
+  bool isStackTraceExpanded(LogEntry entry) =>
+      expandStackTraces != _toggledStackTraces.contains(entry);
+
+  /// Flips the stack-trace visibility of [entry] only.
+  void toggleStackTrace(LogEntry entry) {
+    if (!_toggledStackTraces.remove(entry)) _toggledStackTraces.add(entry);
+  }
+
+  /// Flips [expandStackTraces] for every entry, dropping per-entry
+  /// [toggleStackTrace] deviations so the result is uniform.
+  void toggleAllStackTraces() {
+    expandStackTraces = !expandStackTraces;
+    _toggledStackTraces.clear();
+  }
 
   /// Whether the raw server logs overlay (the "dev console") is visible.
   ///
@@ -176,6 +201,7 @@ class ServerWatchState extends TuiState {
   void clearLogs() {
     logHistory.clear();
     rawLines.clear();
+    _toggledStackTraces.clear();
     for (final tab in appsTabArea?.tabs ?? []) {
       if (tab is AppLogTab) {
         tab.lines.clear();

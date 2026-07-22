@@ -4,14 +4,12 @@ import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/firebase.dart';
 import 'package:test/test.dart';
 
-import '../test_tags.dart';
 import '../test_tools/serverpod_test_tools.dart';
 import '../test_utils/profile_image_idp_test_utils.dart';
 
 void main() {
   withServerpod(
     'Given a Firebase-backed user profile with an image,',
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late UuidValue authUserId;

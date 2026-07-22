@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:postgres/postgres.dart' as pg;
+import 'package:serverpod_database/embedded.dart';
 import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_embedded_postgres/serverpod_embedded_postgres.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -90,6 +91,81 @@ development:
             ),
           );
           expect(embeddedPostgres!.endpoint.password, databasePassword);
+
+          connection = await pg.Connection.open(
+            embeddedPostgres!.endpoint,
+            settings: const pg.ConnectionSettings(
+              sslMode: pg.SslMode.disable,
+            ),
+          );
+          var result = await connection!.execute('SELECT 1');
+          expect(result.first.first, 1);
+        },
+        timeout: const Timeout(Duration(seconds: 180)),
+      );
+    },
+  );
+
+  group(
+    'Given an embedded PostgreSQL config with an empty password,',
+    () {
+      late Directory serverDir;
+      late PostgresDatabaseConfig databaseConfig;
+      ResolvedEmbeddedPostgres? resolvedPostgres;
+      EmbeddedPostgres? embeddedPostgres;
+      pg.Connection? connection;
+
+      setUp(() {
+        serverDir = Directory.systemTemp.createTempSync(
+          'serverpod_database_empty_password_',
+        );
+        databaseConfig = PostgresDatabaseConfig.embedded(
+          dataPath: '.serverpod/pgdata',
+          name: 'serverpod_test',
+        );
+      });
+
+      tearDown(() async {
+        await connection?.close();
+        await embeddedPostgres?.stop();
+        await resolvedPostgres?.stop?.call();
+        if (serverDir.existsSync()) {
+          serverDir.deleteSync(recursive: true);
+        }
+      });
+
+      test(
+        'when the cluster is reopened over TCP, '
+        'then a generated non-empty password authenticates.',
+        () async {
+          resolvedPostgres = await startOrAttachEmbeddedPostgres(
+            databaseConfig,
+            baseDirectory: serverDir,
+          );
+          expect(
+            resolvedPostgres!.connectivity.isUnixSocket,
+            hasUnixSocketSupport(),
+          );
+          if (!hasUnixSocketSupport()) {
+            expect(resolvedPostgres!.connectivity.host, '127.0.0.1');
+            expect(resolvedPostgres!.connectivity.port, greaterThan(0));
+            expect(resolvedPostgres!.connectivity.password, isNotEmpty);
+          }
+          await resolvedPostgres!.stop?.call();
+          resolvedPostgres = null;
+
+          embeddedPostgres = await EmbeddedPostgres.start(
+            EmbeddedPostgresOptions(
+              dataDir: Directory(
+                p.join(serverDir.path, databaseConfig.dataPath!),
+              ),
+              databaseName: databaseConfig.name,
+              username: databaseConfig.user,
+              transport: const TcpTransport(),
+              detach: true,
+            ),
+          );
+          expect(embeddedPostgres!.endpoint.password, isNotEmpty);
 
           connection = await pg.Connection.open(
             embeddedPostgres!.endpoint,

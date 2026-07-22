@@ -15,6 +15,8 @@ class StatefulAnalyzer {
   final GeneratorConfig config;
   final Map<String, _ModelState> _modelStates = {};
 
+  String _modelStateKey(Uri uri) => p.canonicalize(uri.toFilePath());
+
   /// Returns true if any of the models have severe errors.
   bool get hasSevereErrors => _modelStates.values.any(
     (state) => CodeAnalysisCollector.containsSevereErrors(state.errors),
@@ -28,7 +30,7 @@ class StatefulAnalyzer {
     Function(Uri, CodeGenerationCollector)? onErrorsChangedNotifier,
   ]) {
     for (var yamlSource in sources) {
-      _modelStates[yamlSource.yamlSourceUri.path] = _ModelState(
+      _modelStates[_modelStateKey(yamlSource.yamlSourceUri)] = _ModelState(
         source: yamlSource,
       );
     }
@@ -65,19 +67,19 @@ class StatefulAnalyzer {
       source: yamlSource,
     );
 
-    _modelStates[yamlSource.yamlSourceUri.path] = modelState;
+    _modelStates[_modelStateKey(yamlSource.yamlSourceUri)] = modelState;
   }
 
   /// Checks if a model is registered in the state.
   bool isModelRegistered(Uri uri) {
-    return _modelStates.containsKey(uri.path);
+    return _modelStates.containsKey(_modelStateKey(uri));
   }
 
   /// Removes a model from the state but leaves the responsibility of validating
   /// the new state to the caller. Please note that [validateAll] should be called to
   /// guarantee that all related errors are cleared.
   void removeYamlModel(Uri modelUri) {
-    _modelStates.remove(modelUri.path);
+    _modelStates.remove(_modelStateKey(modelUri));
   }
 
   /// Runs the validation on all models in the state. If no models are
@@ -100,7 +102,7 @@ class StatefulAnalyzer {
   /// state, if not this returns the last validated state.
   /// Errors are reported through the [onErrorsChangedNotifier].
   List<SerializableModelDefinition> validateModel(String yaml, Uri uri) {
-    var state = _modelStates[uri.path];
+    var state = _modelStates[_modelStateKey(uri)];
     if (state == null) return _validProjectModels;
 
     state.source.yaml = yaml;

@@ -162,12 +162,28 @@ class FlutterAppManager {
   FlutterDependencyTracker? dependencyTrackerFor(String appId) =>
       _runtimes[appId]?.dependencyTracker;
 
+  /// The dependency graph to watch for [appId].
+  ///
+  /// Before the first Flutter run creates a resolution, this returns the
+  /// package-local path that Flutter will create. Once a tracker is available,
+  /// its resolved workspace or package-local `.dart_tool` path is used.
+  String? packageGraphPathFor(String appId) {
+    final runtime = _runtimeFor(appId);
+    if (runtime == null || !runtime.app.hasPackage) return null;
+    final dartToolDir =
+        runtime.dependencyTracker?.dartToolDir ??
+        p.join(p.joinAll(runtime.app.pathParts), '.dart_tool');
+    return p.join(dartToolDir, 'package_graph.json');
+  }
+
   /// Checks dependency changes for [appId].
   PackageDependencyChange checkDependencyChange(String appId) {
     if (dependencyChangeOverrideForTesting != null) {
       return dependencyChangeOverrideForTesting!(appId);
     }
-    return _runtimes[appId]?.dependencyTracker?.refresh() ??
+    final runtime = _runtimes[appId];
+    if (runtime?.dependencyTracker == null) _setupDependencyTracker(appId);
+    return runtime?.dependencyTracker?.refresh() ??
         PackageDependencyChange.none;
   }
 

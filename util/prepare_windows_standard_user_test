@@ -1,0 +1,132 @@
+#!/usr/bin/env bash
+# Prepares Windows tests to run as a standard, non-administrator account, then
+# delegates the command-wrapper setup to prepare_windows_psexec_process.
+
+set -euo pipefail
+
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+launcher="${1:?usage: prepare_windows_standard_user_test <launcher.cmd>}"
+: "${STANDARD_USER_TEST_COMMAND:?STANDARD_USER_TEST_COMMAND must be set}"
+: "${RUNNER_TEMP:?RUNNER_TEMP must be set}"
+: "${PUB_CACHE:?PUB_CACHE must be set}"
+: "${GITHUB_ENV:?GITHUB_ENV must be set}"
+
+test_user='serverpod_ci'
+test_password="Serverpod-CI-${RANDOM}${RANDOM}!"
+# PsExec -l also forces Low Integrity, which prevents Flutter from creating
+# plugin symlinks. A normal standard account removes the Administrators group
+# without imposing that extra restriction.
+MSYS2_ARG_CONV_EXCL='*' net.exe user \
+  "$test_user" "$test_password" /add /y
+
+runner_temp_msys="$(cygpath -u "$RUNNER_TEMP")"
+test_work_msys="$runner_temp_msys/standard-user-test"
+test_work_win="$(cygpath -m "$test_work_msys")"
+test_log_win="$(cygpath -m "$test_work_msys/output.log")"
+test_path_win="$(cygpath -mp "$PATH")"
+
+grant_test_user_write_access() {
+  local path="$1"
+  [[ -d "$path" ]] || return 0
+  MSYS2_ARG_CONV_EXCL='*' icacls.exe "$(cygpath -w "$path")" \
+    /grant "${test_user}:(OI)(CI)M" /t /c /q
+}
+
+# Tests and Dart tooling may update lockfiles, generated sources, and build-hook
+# state anywhere in this ephemeral CI checkout. Give the test account the same
+# write access as the runner account throughout it.
+grant_test_user_write_access "$PWD"
+
+# Package downloads live outside the checkout and may also be updated while
+# Dart starts a test process.
+pub_cache_msys="$(cygpath -u "$PUB_CACHE")"
+mkdir -p "$pub_cache_msys"
+grant_test_user_write_access "$pub_cache_msys"
+
+# Project creation resolves generated workspaces with `flutter pub get` when
+# Flutter is available. A Flutter command may update files across the SDK while
+# bootstrapping the tool, not only its cache and flutter_tools package.
+if [[ -n "${FLUTTER_ROOT:-}" ]]; then
+  flutter_root_msys="$(cygpath -u "$FLUTTER_ROOT")"
+  flutter_root_win="$(cygpath -m "$FLUTTER_ROOT")"
+  flutter_cache_msys="$flutter_root_msys/bin/cache"
+  grant_test_user_write_access "$flutter_root_msys"
+
+  # All earlier Flutter commands in this job have completed. Remove their
+  # disposable startup-lock files so an inherited owner-specific ACL cannot
+  # make flutter.bat retry its silent lock-acquisition loop forever.
+  rm -f \
+    "$flutter_cache_msys/flutter.bat.lock" \
+    "$flutter_cache_msys/lockfile"
+
+  # Flutter projects use symlinks for plugins. Allow the standard test account
+  # to create them without requiring elevation.
+  MSYS2_ARG_CONV_EXCL='*' reg.exe add \
+    'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock' \
+    /v AllowDevelopmentWithoutDevLicense /t REG_DWORD /d 1 /f
+fi
+
+# PsExec starts the alternate account with its own environment. Forward only
+# the tool and CI variables the test commands require; copying the complete
+# runner environment would also expose unrelated credentials.
+test_environment_commands="set \"PATH=$test_path_win\"
+set \"PUB_CACHE=$(cygpath -m "$PUB_CACHE")\"
+set \"RUNNER_TEMP=$(cygpath -m "$RUNNER_TEMP")\"
+set \"SHARD_INDEX=${SHARD_INDEX:-}\"
+set \"TOTAL_SHARDS=${TOTAL_SHARDS:-}\""
+
+if [[ -n "${FLUTTER_ROOT:-}" ]]; then
+  # Flutter asks Git for the SDK revision before every command. The hosted SDK
+  # belongs to the runner account, so Git otherwise rejects it as an unsafe
+  # repository for the standard test account and Flutter rebuilds its tool.
+  test_environment_commands+=$'\n'"set \"GIT_CONFIG_COUNT=2\"
+set \"GIT_CONFIG_KEY_0=safe.directory\"
+set \"GIT_CONFIG_VALUE_0=$(cygpath -m "$PWD")\"
+set \"GIT_CONFIG_KEY_1=safe.directory\"
+set \"GIT_CONFIG_VALUE_1=$flutter_root_win\""
+fi
+
+append_test_environment_variable() {
+  local name="$1"
+  local value="${!name:-}"
+  [[ -n "$value" ]] || return 0
+  test_environment_commands+=$'\n'"set \"$name=$value\""
+}
+
+append_test_environment_variable CI
+append_test_environment_variable DART_HOME
+append_test_environment_variable FLUTTER_ROOT
+append_test_environment_variable GITHUB_ACTIONS
+append_test_environment_variable GITHUB_WORKSPACE
+append_test_environment_variable SERVERPOD_PG_CACHE_DIR
+append_test_environment_variable SERVERPOD_CLI_EXE
+append_test_environment_variable SERVERPOD_SILENCE_LIFECYCLE_MESSAGES
+
+flutter_preflight_commands=''
+if [[ -n "${FLUTTER_ROOT:-}" ]]; then
+  # Fail with a bounded diagnostic instead of allowing a nested Flutter command
+  # to consume the bootstrap test's full timeout while acquiring its SDK lock.
+  flutter_preflight_commands='echo Verifying Flutter under the Windows test account
+set "MSYS2_ARG_CONV_EXCL=*"
+bash -c "timeout 60s cmd.exe /d /c flutter --version"
+if errorlevel 1 exit /b %errorlevel%'
+fi
+
+# Flutter and the Dart analyzer store persistent tool state in APPDATA and
+# LOCALAPPDATA. Keep that state in the isolated test work tree instead of
+# changing either account's profile.
+PSEXEC_PROCESS_WORK_NAME=standard-user-test \
+PSEXEC_PROCESS_LOG_NAME=output.log \
+PSEXEC_PROCESS_COMMAND="$test_environment_commands
+set \"APPDATA=$test_work_win\"
+set \"LOCALAPPDATA=$test_work_win\"
+$flutter_preflight_commands
+$STANDARD_USER_TEST_COMMAND" \
+  "$HERE/prepare_windows_psexec_process" "$launcher"
+
+grant_test_user_write_access "$test_work_msys"
+
+echo "::add-mask::$test_password"
+echo "SERVERPOD_WINDOWS_TEST_USER=$test_user" >> "$GITHUB_ENV"
+echo "SERVERPOD_WINDOWS_TEST_PASSWORD=$test_password" >> "$GITHUB_ENV"
+echo "SERVERPOD_WINDOWS_TEST_LOG=$test_log_win" >> "$GITHUB_ENV"
