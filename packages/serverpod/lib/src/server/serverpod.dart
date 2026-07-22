@@ -1527,19 +1527,10 @@ class ExperimentalApi {
 /// Internal methods used by the Serverpod. These methods are not intended to
 /// be exposed to end users.
 extension ServerpodInternalMethods on Serverpod {
-  /// Registers a [FutureCall] with the [Serverpod] and associates it with
-  /// the specified name.
-  ///
-  /// There is no public way to schedule a manually registered future call;
-  /// generated future call wrappers register themselves through the
-  /// [FutureCallManager] instead.
-  void registerFutureCall(FutureCall call, String name) {
-    var futureCallManager = _futureCallManager;
-    if (futureCallManager == null) {
-      throw StateError('Future calls are disabled.');
-    }
-    futureCallManager.registerFutureCall(call, name);
-  }
+  /// The [FutureCallManager] of this [Serverpod], or `null` if future calls
+  /// are disabled. Future calls are registered directly on the manager;
+  /// generated future call wrappers do this automatically at startup.
+  FutureCallManager? get futureCallManager => _futureCallManager;
 
   /// Retrieve the log settings manager
   LogSettingsManager get logSettingsManager => _logSettingsManager!;

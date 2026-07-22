@@ -46,7 +46,10 @@ void main() {
             serverId: 'default',
           );
 
-          server.registerFutureCall(_SimpleFutureCall(), name);
+          server.futureCallManager!.registerFutureCall(
+            _SimpleFutureCall(),
+            name,
+          );
           entry = await FutureCallEntry.db.insertRow(session, entry);
           futureCallEntries.add(entry);
         }
@@ -106,7 +109,11 @@ void main() {
             serverId: 'default',
           );
 
-          if (i != 0) server.registerFutureCall(_SimpleFutureCall(), name);
+          if (i != 0)
+            server.futureCallManager!.registerFutureCall(
+              _SimpleFutureCall(),
+              name,
+            );
           entry = await FutureCallEntry.db.insertRow(session, entry);
           futureCallEntries.add(entry);
         }
@@ -197,7 +204,11 @@ void main() {
             serverId: 'default',
           );
 
-          if (i != 0) server.registerFutureCall(_SimpleFutureCall(), name);
+          if (i != 0)
+            server.futureCallManager!.registerFutureCall(
+              _SimpleFutureCall(),
+              name,
+            );
           entry = await FutureCallEntry.db.insertRow(session, entry);
           futureCallEntries.add(entry);
         }
@@ -290,7 +301,11 @@ void main() {
             serverId: 'default',
           );
 
-          if (i >= 2) server.registerFutureCall(_SimpleFutureCall(), name);
+          if (i >= 2)
+            server.futureCallManager!.registerFutureCall(
+              _SimpleFutureCall(),
+              name,
+            );
           entry = await FutureCallEntry.db.insertRow(session, entry);
           futureCallEntries.add(entry);
         }
@@ -379,7 +394,11 @@ void main() {
             serverId: 'default',
           );
 
-          if (i >= 2) server.registerFutureCall(_SimpleFutureCall(), name);
+          if (i >= 2)
+            server.futureCallManager!.registerFutureCall(
+              _SimpleFutureCall(),
+              name,
+            );
           entry = await FutureCallEntry.db.insertRow(session, entry);
           futureCallEntries.add(entry);
         }
@@ -443,7 +462,11 @@ void main() {
             serverId: 'default',
           );
 
-          if (i >= 2) server.registerFutureCall(_SimpleFutureCall(), name);
+          if (i >= 2)
+            server.futureCallManager!.registerFutureCall(
+              _SimpleFutureCall(),
+              name,
+            );
           entry = await FutureCallEntry.db.insertRow(session, entry);
           futureCallEntries.add(entry);
         }
@@ -499,7 +522,11 @@ void main() {
             serverId: 'default',
           );
 
-          if (i == 2) server.registerFutureCall(_SimpleFutureCall(), name);
+          if (i == 2)
+            server.futureCallManager!.registerFutureCall(
+              _SimpleFutureCall(),
+              name,
+            );
           entry = await FutureCallEntry.db.insertRow(session, entry);
           futureCallEntries.add(entry);
         }
@@ -566,7 +593,10 @@ void main() {
             serverId: 'default',
           );
 
-          server.registerFutureCall(_SimpleFutureCall(), name);
+          server.futureCallManager!.registerFutureCall(
+            _SimpleFutureCall(),
+            name,
+          );
           entry = await FutureCallEntry.db.insertRow(session, entry);
           futureCallEntries.add(entry);
         }
