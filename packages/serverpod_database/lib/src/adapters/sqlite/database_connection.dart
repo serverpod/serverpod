@@ -1363,8 +1363,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
   ) {
     assert(orderByList == null || orderBy == null);
     if (orderBy != null) {
-      if (orderBy is Order) return [orderBy];
-      return [orderBy.asc()];
+      return [orderBy is Order ? orderBy : orderBy.asc()];
     }
     if (orderByList == null || orderByList.isEmpty) return null;
     return orderByList.asOrderBy();
