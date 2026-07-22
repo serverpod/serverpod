@@ -340,7 +340,6 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
           onHotReload: onHotReload,
           onHotRestart: onHotRestart,
           onCreateMigration: onCreateMigration,
-          onApplyMigration: onApplyMigration,
           onClearLogs: () {
             state.clearLogs();
             _rebuild();
@@ -520,6 +519,16 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
         state.serverReady &&
         !state.actionBusy) {
       onCreateRepairMigration?.call(force: event.isShiftPressed);
+      return true;
+    }
+
+    // Applying migrations remains available as a recovery action when the
+    // automatic apply following migration creation fails. Also documented
+    // on the help screen.
+    if (event.logicalKey == LogicalKey.keyA &&
+        state.serverReady &&
+        !state.actionBusy) {
+      onApplyMigration?.call();
       return true;
     }
 

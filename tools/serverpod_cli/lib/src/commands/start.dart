@@ -1384,7 +1384,13 @@ Future<void> _runTuiBackend({
           runTrackedAction(
             holder,
             force ? 'Force-creating migration' : 'Creating migration',
-            () => _runCreateMigrationForTui(config, force: force),
+            () async {
+              await _runCreateMigrationForTui(
+                config,
+                force: force,
+              );
+              await _tryApplyMigrationForTui(ctx.session.applyMigration);
+            },
           );
         };
         holder.onCreateRepairMigration = ({bool force = false}) {
@@ -1393,11 +1399,14 @@ Future<void> _runTuiBackend({
             force
                 ? 'Force-creating repair migration'
                 : 'Creating repair migration',
-            () => _runCreateRepairMigrationForTui(
-              config,
-              runMode: runModeFromServerArgs(serverArgs),
-              force: force,
-            ),
+            () async {
+              await _runCreateRepairMigrationForTui(
+                config,
+                runMode: runModeFromServerArgs(serverArgs),
+                force: force,
+              );
+              await _tryApplyMigrationForTui(ctx.session.applyMigration);
+            },
           );
         };
         holder.onApplyMigration = () {
@@ -1407,7 +1416,6 @@ Future<void> _runTuiBackend({
             ctx.session.applyMigration,
           );
         };
-
         holder.state.serverReady = ctx.session.isRunning;
         // Degraded start (no server yet): expose the manual "Start server"
         // recovery action. The watcher also auto-recovers in watch mode.
@@ -1501,6 +1509,22 @@ Future<void> _runCreateMigrationForTui(
   );
   if (result.isError) throw Exception(result.message);
   log.info(result.message);
+}
+
+/// Applies a newly created migration without changing the tracked status of
+/// the successful create operation if applying it fails.
+Future<void> _tryApplyMigrationForTui(
+  Future<void> Function() applyMigration,
+) async {
+  try {
+    await applyMigration();
+  } catch (error, stackTrace) {
+    log.error(
+      'Failed to apply migration: $error.',
+      stackTrace: stackTrace,
+    );
+    log.info('Press A to retry apply migration');
+  }
 }
 
 /// Runs `create-migration` for the MCP `create_migration` tool. Returns a
