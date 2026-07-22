@@ -1,3 +1,4 @@
+@Tags(['migration_artifacts'])
 @Timeout(Duration(minutes: 5))
 import 'dart:io';
 
@@ -26,14 +27,15 @@ fields:
   anInt: int
 ''',
         };
-        final exitCode = await MigrationTestUtils.createMigrationFromProtocols(
-          protocols: protocols,
-          tag: 'apply-migrations-endpoint-destructive',
-        );
+        final migrationCreated =
+            await MigrationTestUtils.createMigrationFromProtocolsInProcess(
+              protocols: protocols,
+              tag: 'apply-migrations-endpoint-destructive',
+            );
         expect(
-          exitCode,
-          0,
-          reason: 'Failed to create migration, exit code was not 0.',
+          migrationCreated,
+          isTrue,
+          reason: 'Failed to create migration.',
         );
       });
 

@@ -1,7 +1,7 @@
 /// Run a real PostgreSQL server as a child process for Serverpod local dev.
 ///
-/// No Docker, no port conflicts (UDS by default), persistent across
-/// restarts. See the package README for the runtime and lifecycle contract.
+/// No Docker, no fixed port conflicts, persistent across restarts. See the
+/// package README for the runtime and lifecycle contract.
 library;
 
 export 'src/binary/binary_source.dart' show BinarySource;

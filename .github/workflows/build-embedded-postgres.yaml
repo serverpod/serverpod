@@ -132,10 +132,10 @@ jobs:
       # on windows, so without this gate a windows-only miscompile (e.g. the
       # mingw halfvec backend crash) ships silently. Hosted Windows runners are
       # elevated (runneradmin) and postgres refuses an Administrators-group
-      # token, so the smoke runs under a limited token via PsExec -l - the same
-      # mechanism as the embedded-PG integration jobs in dart-tests.yaml.
-      # PsExec drops the inner process's stdout in GHA, so the wrapper logs to
-      # a file the outer step prints; the exit code still propagates.
+      # token, so the smoke runs under a limited token via PsExec -l. Its PsExec
+      # wrapper is also used by the standard-user test jobs. PsExec drops the
+      # inner process's stdout in GHA, so the wrapper logs to a file the outer
+      # step prints; the exit code still propagates.
       - name: Install PsExec (Windows)
         if: matrix.os == 'windows'
         run: choco install pstools --no-progress -y --limit-output
@@ -149,9 +149,17 @@ jobs:
       - name: Prep smoke script (Windows)
         if: matrix.os == 'windows'
         shell: msys2 {0}
-        run: >-
-          bash packages/serverpod_embedded_postgres/tool/prepare_smoke_bundle_windows.sh
-          run-smoke.cmd
+        run: |
+          runner_temp_msys="$(cygpath -u "$RUNNER_TEMP")"
+          workspace_msys="$(cygpath -u "$GITHUB_WORKSPACE")"
+          msys2_cmd_win="$(cygpath -w "$runner_temp_msys/setup-msys2/msys2.cmd")"
+          smoke_script_msys="$workspace_msys/packages/serverpod_embedded_postgres/tool/smoke_bundle_windows.sh"
+          bundle_msys="$runner_temp_msys/smoke-bundle"
+
+          PSEXEC_PROCESS_WORK_NAME=smoke-work \
+          PSEXEC_PROCESS_LOG_NAME=smoke.log \
+          PSEXEC_PROCESS_COMMAND="call \"$msys2_cmd_win\" \"$smoke_script_msys\" \"$bundle_msys\"" \
+            bash util/prepare_windows_psexec_process run-smoke.cmd
       - name: Smoke-test the bundle (Windows, non-admin)
         if: matrix.os == 'windows'
         env:

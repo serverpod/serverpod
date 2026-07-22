@@ -142,6 +142,15 @@ development:
             databaseConfig,
             baseDirectory: serverDir,
           );
+          expect(
+            resolvedPostgres!.connectivity.isUnixSocket,
+            hasUnixSocketSupport(),
+          );
+          if (!hasUnixSocketSupport()) {
+            expect(resolvedPostgres!.connectivity.host, '127.0.0.1');
+            expect(resolvedPostgres!.connectivity.port, greaterThan(0));
+            expect(resolvedPostgres!.connectivity.password, isNotEmpty);
+          }
           await resolvedPostgres!.stop?.call();
           resolvedPostgres = null;
 

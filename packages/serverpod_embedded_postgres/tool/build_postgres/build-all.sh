@@ -46,12 +46,13 @@ cd "$B/src/pgvector-$PGVECTOR_VERSION"; make clean >/dev/null 2>&1 || true
 # (-mevex512) that break on arm64. Disabling it builds one baseline that runs on
 # any CPU (still auto-vectorized via pgvector's -ftree-vectorize) - the right
 # tradeoff for a redistributable bundle.
-# mingw gcc plants ud2 traps on halfvec's soft-_Float16 conversion paths it
-# mis-proves as erroneous - backend crash 0xC000001D on the first halfvec
-# INSERT, caught by the windows smoke gate. Disable the isolation passes there.
+# MinGW defines __FLT16_MAX__, so pgvector selects its native _Float16 path.
+# MinGW's isinf macro does not support that type and deliberately emits a trap,
+# crashing the backend with 0xC000001D during halfvec index construction.
+# Undefine the feature macro so pgvector uses its portable uint16 conversion.
 case "$(uname -s)" in
   MINGW*|MSYS*|CYGWIN*)
-    PGVECTOR_COPT="-DDISABLE_DISPATCH -fno-isolate-erroneous-paths-dereference -fno-delete-null-pointer-checks"
+    PGVECTOR_COPT="-DDISABLE_DISPATCH -U__FLT16_MAX__"
     ;;
   *)
     PGVECTOR_COPT="-DDISABLE_DISPATCH"
