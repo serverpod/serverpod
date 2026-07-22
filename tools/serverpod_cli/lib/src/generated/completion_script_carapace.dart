@@ -50,10 +50,28 @@ commands:
       -f, --force: "Create the project even if there are issues that prevent it from running out of the box."
       --mini: "Shortcut for --template mini."
       -t, --template=: "Template to use when creating a new project"
+      --database: "Include a database in the project."
+      --no-database: "Include a database in the project."
+      --redis: "Include Redis caching in the project."
+      --no-redis: "Include Redis caching in the project."
+      --auth: "Include authentication in the project. Requires a database."
+      --no-auth: "Include authentication in the project. Requires a database."
+      --webapp: "Configure the server to host a Flutter web app."
+      --no-webapp: "Configure the server to host a Flutter web app."
+      --website: "Configure the server to host a website."
+      --no-website: "Configure the server to host a website."
+      --ide=*: "Configure agent skills and MCP servers for one or more IDEs. Use \"none\" to disable all IDE configuration."
       -n, --name=!: "The name of the project to create.\nCan also be specified as the first argument."
+    exclusiveFlags:
+      - [database, no-database]
+      - [redis, no-redis]
+      - [auth, no-auth]
+      - [webapp, no-webapp]
+      - [website, no-website]
     completion:
       flag:
         template: ["mini", "fullstack", "server", "module"]
+        ide: ["none", "antigravity", "codex", "claude", "cursor", "opencode", "vscode"]
 
   - name: database
 
