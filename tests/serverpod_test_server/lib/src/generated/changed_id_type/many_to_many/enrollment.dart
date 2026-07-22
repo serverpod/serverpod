@@ -123,8 +123,6 @@ abstract class EnrollmentInt
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EnrollmentIntTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EnrollmentIntTable>? orderByList,
     EnrollmentIntInclude? include,
   }) {
@@ -133,8 +131,6 @@ abstract class EnrollmentInt
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EnrollmentInt.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(EnrollmentInt.t),
       include: include,
     );
@@ -299,8 +295,6 @@ class EnrollmentIntIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -347,8 +341,6 @@ class EnrollmentIntRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EnrollmentIntTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EnrollmentIntTable>? orderByList,
     _i1.Transaction? transaction,
     EnrollmentIntInclude? include,
@@ -359,8 +351,6 @@ class EnrollmentIntRepository {
       where: where?.call(EnrollmentInt.t),
       orderBy: orderBy?.call(EnrollmentInt.t),
       orderByList: orderByList?.call(EnrollmentInt.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -392,8 +382,6 @@ class EnrollmentIntRepository {
     _i1.WhereExpressionBuilder<EnrollmentIntTable>? where,
     int? offset,
     _i1.OrderByBuilder<EnrollmentIntTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EnrollmentIntTable>? orderByList,
     _i1.Transaction? transaction,
     EnrollmentIntInclude? include,
@@ -404,8 +392,6 @@ class EnrollmentIntRepository {
       where: where?.call(EnrollmentInt.t),
       orderBy: orderBy?.call(EnrollmentInt.t),
       orderByList: orderByList?.call(EnrollmentInt.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -613,8 +599,6 @@ class EnrollmentIntRepository {
     int? offset,
     _i1.OrderByBuilder<EnrollmentIntTable>? orderBy,
     _i1.OrderByListBuilder<EnrollmentIntTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -625,8 +609,6 @@ class EnrollmentIntRepository {
       offset: offset,
       orderBy: orderBy?.call(EnrollmentInt.t),
       orderByList: orderByList?.call(EnrollmentInt.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -647,8 +629,6 @@ class EnrollmentIntRepository {
     _i1.DatabaseSession session,
     List<EnrollmentInt> rows, {
     _i1.OrderByBuilder<EnrollmentIntTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EnrollmentIntTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -657,8 +637,6 @@ class EnrollmentIntRepository {
       rows,
       orderBy: orderBy?.call(EnrollmentInt.t),
       orderByList: orderByList?.call(EnrollmentInt.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -688,8 +666,6 @@ class EnrollmentIntRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EnrollmentIntTable> where,
     _i1.OrderByBuilder<EnrollmentIntTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EnrollmentIntTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -698,8 +674,6 @@ class EnrollmentIntRepository {
       where: where(EnrollmentInt.t),
       orderBy: orderBy?.call(EnrollmentInt.t),
       orderByList: orderByList?.call(EnrollmentInt.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

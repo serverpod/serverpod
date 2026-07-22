@@ -97,8 +97,6 @@ abstract class EmailAuth
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EmailAuthTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmailAuthTable>? orderByList,
     EmailAuthInclude? include,
   }) {
@@ -107,8 +105,6 @@ abstract class EmailAuth
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EmailAuth.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(EmailAuth.t),
       include: include,
     );
@@ -227,8 +223,6 @@ class EmailAuthIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -273,8 +267,6 @@ class EmailAuthRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EmailAuthTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmailAuthTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -284,8 +276,6 @@ class EmailAuthRepository {
       where: where?.call(EmailAuth.t),
       orderBy: orderBy?.call(EmailAuth.t),
       orderByList: orderByList?.call(EmailAuth.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -316,8 +306,6 @@ class EmailAuthRepository {
     _i1.WhereExpressionBuilder<EmailAuthTable>? where,
     int? offset,
     _i1.OrderByBuilder<EmailAuthTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmailAuthTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -327,8 +315,6 @@ class EmailAuthRepository {
       where: where?.call(EmailAuth.t),
       orderBy: orderBy?.call(EmailAuth.t),
       orderByList: orderByList?.call(EmailAuth.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -533,8 +519,6 @@ class EmailAuthRepository {
     int? offset,
     _i1.OrderByBuilder<EmailAuthTable>? orderBy,
     _i1.OrderByListBuilder<EmailAuthTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -545,8 +529,6 @@ class EmailAuthRepository {
       offset: offset,
       orderBy: orderBy?.call(EmailAuth.t),
       orderByList: orderByList?.call(EmailAuth.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -567,8 +549,6 @@ class EmailAuthRepository {
     _i1.DatabaseSession session,
     List<EmailAuth> rows, {
     _i1.OrderByBuilder<EmailAuthTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmailAuthTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -577,8 +557,6 @@ class EmailAuthRepository {
       rows,
       orderBy: orderBy?.call(EmailAuth.t),
       orderByList: orderByList?.call(EmailAuth.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -608,8 +586,6 @@ class EmailAuthRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EmailAuthTable> where,
     _i1.OrderByBuilder<EmailAuthTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmailAuthTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -618,8 +594,6 @@ class EmailAuthRepository {
       where: where(EmailAuth.t),
       orderBy: orderBy?.call(EmailAuth.t),
       orderByList: orderByList?.call(EmailAuth.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

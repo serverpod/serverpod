@@ -124,8 +124,6 @@ abstract class EmailAccount
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EmailAccountTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmailAccountTable>? orderByList,
     EmailAccountInclude? include,
   }) {
@@ -134,8 +132,6 @@ abstract class EmailAccount
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EmailAccount.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(EmailAccount.t),
       include: include,
     );
@@ -311,8 +307,6 @@ class EmailAccountIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -359,8 +353,6 @@ class EmailAccountRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EmailAccountTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmailAccountTable>? orderByList,
     _i1.Transaction? transaction,
     EmailAccountInclude? include,
@@ -371,8 +363,6 @@ class EmailAccountRepository {
       where: where?.call(EmailAccount.t),
       orderBy: orderBy?.call(EmailAccount.t),
       orderByList: orderByList?.call(EmailAccount.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -404,8 +394,6 @@ class EmailAccountRepository {
     _i1.WhereExpressionBuilder<EmailAccountTable>? where,
     int? offset,
     _i1.OrderByBuilder<EmailAccountTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmailAccountTable>? orderByList,
     _i1.Transaction? transaction,
     EmailAccountInclude? include,
@@ -416,8 +404,6 @@ class EmailAccountRepository {
       where: where?.call(EmailAccount.t),
       orderBy: orderBy?.call(EmailAccount.t),
       orderByList: orderByList?.call(EmailAccount.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -625,8 +611,6 @@ class EmailAccountRepository {
     int? offset,
     _i1.OrderByBuilder<EmailAccountTable>? orderBy,
     _i1.OrderByListBuilder<EmailAccountTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -637,8 +621,6 @@ class EmailAccountRepository {
       offset: offset,
       orderBy: orderBy?.call(EmailAccount.t),
       orderByList: orderByList?.call(EmailAccount.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -659,8 +641,6 @@ class EmailAccountRepository {
     _i1.DatabaseSession session,
     List<EmailAccount> rows, {
     _i1.OrderByBuilder<EmailAccountTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmailAccountTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -669,8 +649,6 @@ class EmailAccountRepository {
       rows,
       orderBy: orderBy?.call(EmailAccount.t),
       orderByList: orderByList?.call(EmailAccount.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -700,8 +678,6 @@ class EmailAccountRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EmailAccountTable> where,
     _i1.OrderByBuilder<EmailAccountTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmailAccountTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -710,8 +686,6 @@ class EmailAccountRepository {
       where: where(EmailAccount.t),
       orderBy: orderBy?.call(EmailAccount.t),
       orderByList: orderByList?.call(EmailAccount.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

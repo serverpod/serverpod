@@ -104,8 +104,6 @@ abstract class DoubleDefaultMix
     int? limit,
     int? offset,
     _i1.OrderByBuilder<DoubleDefaultMixTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DoubleDefaultMixTable>? orderByList,
     DoubleDefaultMixInclude? include,
   }) {
@@ -114,8 +112,6 @@ abstract class DoubleDefaultMix
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DoubleDefaultMix.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(DoubleDefaultMix.t),
       include: include,
     );
@@ -245,8 +241,6 @@ class DoubleDefaultMixIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -291,8 +285,6 @@ class DoubleDefaultMixRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<DoubleDefaultMixTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DoubleDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -302,8 +294,6 @@ class DoubleDefaultMixRepository {
       where: where?.call(DoubleDefaultMix.t),
       orderBy: orderBy?.call(DoubleDefaultMix.t),
       orderByList: orderByList?.call(DoubleDefaultMix.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -334,8 +324,6 @@ class DoubleDefaultMixRepository {
     _i1.WhereExpressionBuilder<DoubleDefaultMixTable>? where,
     int? offset,
     _i1.OrderByBuilder<DoubleDefaultMixTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DoubleDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -345,8 +333,6 @@ class DoubleDefaultMixRepository {
       where: where?.call(DoubleDefaultMix.t),
       orderBy: orderBy?.call(DoubleDefaultMix.t),
       orderByList: orderByList?.call(DoubleDefaultMix.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -553,8 +539,6 @@ class DoubleDefaultMixRepository {
     int? offset,
     _i1.OrderByBuilder<DoubleDefaultMixTable>? orderBy,
     _i1.OrderByListBuilder<DoubleDefaultMixTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -565,8 +549,6 @@ class DoubleDefaultMixRepository {
       offset: offset,
       orderBy: orderBy?.call(DoubleDefaultMix.t),
       orderByList: orderByList?.call(DoubleDefaultMix.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -587,8 +569,6 @@ class DoubleDefaultMixRepository {
     _i1.DatabaseSession session,
     List<DoubleDefaultMix> rows, {
     _i1.OrderByBuilder<DoubleDefaultMixTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DoubleDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -597,8 +577,6 @@ class DoubleDefaultMixRepository {
       rows,
       orderBy: orderBy?.call(DoubleDefaultMix.t),
       orderByList: orderByList?.call(DoubleDefaultMix.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -628,8 +606,6 @@ class DoubleDefaultMixRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<DoubleDefaultMixTable> where,
     _i1.OrderByBuilder<DoubleDefaultMixTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DoubleDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -638,8 +614,6 @@ class DoubleDefaultMixRepository {
       where: where(DoubleDefaultMix.t),
       orderBy: orderBy?.call(DoubleDefaultMix.t),
       orderByList: orderByList?.call(DoubleDefaultMix.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

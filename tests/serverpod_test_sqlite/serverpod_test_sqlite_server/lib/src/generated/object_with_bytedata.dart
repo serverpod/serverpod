@@ -80,8 +80,6 @@ abstract class ObjectWithByteData
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectWithByteDataTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithByteDataTable>? orderByList,
     ObjectWithByteDataInclude? include,
   }) {
@@ -90,8 +88,6 @@ abstract class ObjectWithByteData
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithByteData.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(ObjectWithByteData.t),
       include: include,
     );
@@ -177,8 +173,6 @@ class ObjectWithByteDataIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -223,8 +217,6 @@ class ObjectWithByteDataRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectWithByteDataTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithByteDataTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -234,8 +226,6 @@ class ObjectWithByteDataRepository {
       where: where?.call(ObjectWithByteData.t),
       orderBy: orderBy?.call(ObjectWithByteData.t),
       orderByList: orderByList?.call(ObjectWithByteData.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -266,8 +256,6 @@ class ObjectWithByteDataRepository {
     _i1.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
     int? offset,
     _i1.OrderByBuilder<ObjectWithByteDataTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithByteDataTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -277,8 +265,6 @@ class ObjectWithByteDataRepository {
       where: where?.call(ObjectWithByteData.t),
       orderBy: orderBy?.call(ObjectWithByteData.t),
       orderByList: orderByList?.call(ObjectWithByteData.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -485,8 +471,6 @@ class ObjectWithByteDataRepository {
     int? offset,
     _i1.OrderByBuilder<ObjectWithByteDataTable>? orderBy,
     _i1.OrderByListBuilder<ObjectWithByteDataTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -497,8 +481,6 @@ class ObjectWithByteDataRepository {
       offset: offset,
       orderBy: orderBy?.call(ObjectWithByteData.t),
       orderByList: orderByList?.call(ObjectWithByteData.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -519,8 +501,6 @@ class ObjectWithByteDataRepository {
     _i1.DatabaseSession session,
     List<ObjectWithByteData> rows, {
     _i1.OrderByBuilder<ObjectWithByteDataTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithByteDataTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -529,8 +509,6 @@ class ObjectWithByteDataRepository {
       rows,
       orderBy: orderBy?.call(ObjectWithByteData.t),
       orderByList: orderByList?.call(ObjectWithByteData.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -560,8 +538,6 @@ class ObjectWithByteDataRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ObjectWithByteDataTable> where,
     _i1.OrderByBuilder<ObjectWithByteDataTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithByteDataTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -570,8 +546,6 @@ class ObjectWithByteDataRepository {
       where: where(ObjectWithByteData.t),
       orderBy: orderBy?.call(ObjectWithByteData.t),
       orderByList: orderByList?.call(ObjectWithByteData.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

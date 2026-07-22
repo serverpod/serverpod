@@ -153,8 +153,6 @@ abstract class FacebookAccount
     int? limit,
     int? offset,
     _i1.OrderByBuilder<FacebookAccountTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<FacebookAccountTable>? orderByList,
     FacebookAccountInclude? include,
   }) {
@@ -163,8 +161,6 @@ abstract class FacebookAccount
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(FacebookAccount.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(FacebookAccount.t),
       include: include,
     );
@@ -397,8 +393,6 @@ class FacebookAccountIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -445,8 +439,6 @@ class FacebookAccountRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<FacebookAccountTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<FacebookAccountTable>? orderByList,
     _i1.Transaction? transaction,
     FacebookAccountInclude? include,
@@ -457,8 +449,6 @@ class FacebookAccountRepository {
       where: where?.call(FacebookAccount.t),
       orderBy: orderBy?.call(FacebookAccount.t),
       orderByList: orderByList?.call(FacebookAccount.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -490,8 +480,6 @@ class FacebookAccountRepository {
     _i1.WhereExpressionBuilder<FacebookAccountTable>? where,
     int? offset,
     _i1.OrderByBuilder<FacebookAccountTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<FacebookAccountTable>? orderByList,
     _i1.Transaction? transaction,
     FacebookAccountInclude? include,
@@ -502,8 +490,6 @@ class FacebookAccountRepository {
       where: where?.call(FacebookAccount.t),
       orderBy: orderBy?.call(FacebookAccount.t),
       orderByList: orderByList?.call(FacebookAccount.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -713,8 +699,6 @@ class FacebookAccountRepository {
     int? offset,
     _i1.OrderByBuilder<FacebookAccountTable>? orderBy,
     _i1.OrderByListBuilder<FacebookAccountTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -725,8 +709,6 @@ class FacebookAccountRepository {
       offset: offset,
       orderBy: orderBy?.call(FacebookAccount.t),
       orderByList: orderByList?.call(FacebookAccount.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -747,8 +729,6 @@ class FacebookAccountRepository {
     _i1.DatabaseSession session,
     List<FacebookAccount> rows, {
     _i1.OrderByBuilder<FacebookAccountTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<FacebookAccountTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -757,8 +737,6 @@ class FacebookAccountRepository {
       rows,
       orderBy: orderBy?.call(FacebookAccount.t),
       orderByList: orderByList?.call(FacebookAccount.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -788,8 +766,6 @@ class FacebookAccountRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<FacebookAccountTable> where,
     _i1.OrderByBuilder<FacebookAccountTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<FacebookAccountTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -798,8 +774,6 @@ class FacebookAccountRepository {
       where: where(FacebookAccount.t),
       orderBy: orderBy?.call(FacebookAccount.t),
       orderByList: orderByList?.call(FacebookAccount.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

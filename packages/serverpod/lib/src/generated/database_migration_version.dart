@@ -95,8 +95,6 @@ abstract class DatabaseMigrationVersion
     int? limit,
     int? offset,
     _i2.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i2.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
     DatabaseMigrationVersionInclude? include,
   }) {
@@ -105,8 +103,6 @@ abstract class DatabaseMigrationVersion
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DatabaseMigrationVersion.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(DatabaseMigrationVersion.t),
       include: include,
     );
@@ -227,8 +223,6 @@ class DatabaseMigrationVersionIncludeList extends _i2.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -273,8 +267,6 @@ class DatabaseMigrationVersionRepository {
     int? limit,
     int? offset,
     _i2.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i2.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
     _i2.Transaction? transaction,
     _i2.LockMode? lockMode,
@@ -284,8 +276,6 @@ class DatabaseMigrationVersionRepository {
       where: where?.call(DatabaseMigrationVersion.t),
       orderBy: orderBy?.call(DatabaseMigrationVersion.t),
       orderByList: orderByList?.call(DatabaseMigrationVersion.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -316,8 +306,6 @@ class DatabaseMigrationVersionRepository {
     _i2.WhereExpressionBuilder<DatabaseMigrationVersionTable>? where,
     int? offset,
     _i2.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i2.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
     _i2.Transaction? transaction,
     _i2.LockMode? lockMode,
@@ -327,8 +315,6 @@ class DatabaseMigrationVersionRepository {
       where: where?.call(DatabaseMigrationVersion.t),
       orderBy: orderBy?.call(DatabaseMigrationVersion.t),
       orderByList: orderByList?.call(DatabaseMigrationVersion.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -537,8 +523,6 @@ class DatabaseMigrationVersionRepository {
     int? offset,
     _i2.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
     _i2.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i2.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -549,8 +533,6 @@ class DatabaseMigrationVersionRepository {
       offset: offset,
       orderBy: orderBy?.call(DatabaseMigrationVersion.t),
       orderByList: orderByList?.call(DatabaseMigrationVersion.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -571,8 +553,6 @@ class DatabaseMigrationVersionRepository {
     _i2.DatabaseSession session,
     List<DatabaseMigrationVersion> rows, {
     _i2.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i2.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
     _i2.Transaction? transaction,
     bool noReturn = false,
@@ -581,8 +561,6 @@ class DatabaseMigrationVersionRepository {
       rows,
       orderBy: orderBy?.call(DatabaseMigrationVersion.t),
       orderByList: orderByList?.call(DatabaseMigrationVersion.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -612,8 +590,6 @@ class DatabaseMigrationVersionRepository {
     _i2.DatabaseSession session, {
     required _i2.WhereExpressionBuilder<DatabaseMigrationVersionTable> where,
     _i2.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i2.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
     _i2.Transaction? transaction,
     bool noReturn = false,
@@ -622,8 +598,6 @@ class DatabaseMigrationVersionRepository {
       where: where(DatabaseMigrationVersion.t),
       orderBy: orderBy?.call(DatabaseMigrationVersion.t),
       orderByList: orderByList?.call(DatabaseMigrationVersion.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

@@ -98,8 +98,6 @@ abstract class Department
     int? limit,
     int? offset,
     _i1.OrderByBuilder<DepartmentTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DepartmentTable>? orderByList,
     DepartmentInclude? include,
   }) {
@@ -108,8 +106,6 @@ abstract class Department
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Department.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(Department.t),
       include: include,
     );
@@ -246,8 +242,6 @@ class DepartmentIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -296,8 +290,6 @@ class DepartmentRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<DepartmentTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DepartmentTable>? orderByList,
     _i1.Transaction? transaction,
     DepartmentInclude? include,
@@ -308,8 +300,6 @@ class DepartmentRepository {
       where: where?.call(Department.t),
       orderBy: orderBy?.call(Department.t),
       orderByList: orderByList?.call(Department.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -341,8 +331,6 @@ class DepartmentRepository {
     _i1.WhereExpressionBuilder<DepartmentTable>? where,
     int? offset,
     _i1.OrderByBuilder<DepartmentTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DepartmentTable>? orderByList,
     _i1.Transaction? transaction,
     DepartmentInclude? include,
@@ -353,8 +341,6 @@ class DepartmentRepository {
       where: where?.call(Department.t),
       orderBy: orderBy?.call(Department.t),
       orderByList: orderByList?.call(Department.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -562,8 +548,6 @@ class DepartmentRepository {
     int? offset,
     _i1.OrderByBuilder<DepartmentTable>? orderBy,
     _i1.OrderByListBuilder<DepartmentTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -574,8 +558,6 @@ class DepartmentRepository {
       offset: offset,
       orderBy: orderBy?.call(Department.t),
       orderByList: orderByList?.call(Department.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -596,8 +578,6 @@ class DepartmentRepository {
     _i1.DatabaseSession session,
     List<Department> rows, {
     _i1.OrderByBuilder<DepartmentTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DepartmentTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -606,8 +586,6 @@ class DepartmentRepository {
       rows,
       orderBy: orderBy?.call(Department.t),
       orderByList: orderByList?.call(Department.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -637,8 +615,6 @@ class DepartmentRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<DepartmentTable> where,
     _i1.OrderByBuilder<DepartmentTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DepartmentTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -647,8 +623,6 @@ class DepartmentRepository {
       where: where(Department.t),
       orderBy: orderBy?.call(Department.t),
       orderByList: orderByList?.call(Department.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

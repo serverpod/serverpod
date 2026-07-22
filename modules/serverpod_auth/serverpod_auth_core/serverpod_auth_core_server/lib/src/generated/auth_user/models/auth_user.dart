@@ -110,8 +110,6 @@ abstract class AuthUser
     int? limit,
     int? offset,
     _i1.OrderByBuilder<AuthUserTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<AuthUserTable>? orderByList,
     AuthUserInclude? include,
   }) {
@@ -120,8 +118,6 @@ abstract class AuthUser
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(AuthUser.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(AuthUser.t),
       include: include,
     );
@@ -242,8 +238,6 @@ class AuthUserIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -288,8 +282,6 @@ class AuthUserRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<AuthUserTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<AuthUserTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -299,8 +291,6 @@ class AuthUserRepository {
       where: where?.call(AuthUser.t),
       orderBy: orderBy?.call(AuthUser.t),
       orderByList: orderByList?.call(AuthUser.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -331,8 +321,6 @@ class AuthUserRepository {
     _i1.WhereExpressionBuilder<AuthUserTable>? where,
     int? offset,
     _i1.OrderByBuilder<AuthUserTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<AuthUserTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -342,8 +330,6 @@ class AuthUserRepository {
       where: where?.call(AuthUser.t),
       orderBy: orderBy?.call(AuthUser.t),
       orderByList: orderByList?.call(AuthUser.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -548,8 +534,6 @@ class AuthUserRepository {
     int? offset,
     _i1.OrderByBuilder<AuthUserTable>? orderBy,
     _i1.OrderByListBuilder<AuthUserTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -560,8 +544,6 @@ class AuthUserRepository {
       offset: offset,
       orderBy: orderBy?.call(AuthUser.t),
       orderByList: orderByList?.call(AuthUser.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -582,8 +564,6 @@ class AuthUserRepository {
     _i1.DatabaseSession session,
     List<AuthUser> rows, {
     _i1.OrderByBuilder<AuthUserTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<AuthUserTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -592,8 +572,6 @@ class AuthUserRepository {
       rows,
       orderBy: orderBy?.call(AuthUser.t),
       orderByList: orderByList?.call(AuthUser.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -623,8 +601,6 @@ class AuthUserRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<AuthUserTable> where,
     _i1.OrderByBuilder<AuthUserTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<AuthUserTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -633,8 +609,6 @@ class AuthUserRepository {
       where: where(AuthUser.t),
       orderBy: orderBy?.call(AuthUser.t),
       orderByList: orderByList?.call(AuthUser.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

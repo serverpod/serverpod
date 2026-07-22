@@ -122,8 +122,6 @@ abstract class RuntimeSettings
     int? limit,
     int? offset,
     _i1.OrderByBuilder<RuntimeSettingsTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
     RuntimeSettingsInclude? include,
   }) {
@@ -132,8 +130,6 @@ abstract class RuntimeSettings
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(RuntimeSettings.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(RuntimeSettings.t),
       include: include,
     );
@@ -276,8 +272,6 @@ class RuntimeSettingsIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -322,8 +316,6 @@ class RuntimeSettingsRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<RuntimeSettingsTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -333,8 +325,6 @@ class RuntimeSettingsRepository {
       where: where?.call(RuntimeSettings.t),
       orderBy: orderBy?.call(RuntimeSettings.t),
       orderByList: orderByList?.call(RuntimeSettings.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -365,8 +355,6 @@ class RuntimeSettingsRepository {
     _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
     int? offset,
     _i1.OrderByBuilder<RuntimeSettingsTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -376,8 +364,6 @@ class RuntimeSettingsRepository {
       where: where?.call(RuntimeSettings.t),
       orderBy: orderBy?.call(RuntimeSettings.t),
       orderByList: orderByList?.call(RuntimeSettings.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -584,8 +570,6 @@ class RuntimeSettingsRepository {
     int? offset,
     _i1.OrderByBuilder<RuntimeSettingsTable>? orderBy,
     _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -596,8 +580,6 @@ class RuntimeSettingsRepository {
       offset: offset,
       orderBy: orderBy?.call(RuntimeSettings.t),
       orderByList: orderByList?.call(RuntimeSettings.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -618,8 +600,6 @@ class RuntimeSettingsRepository {
     _i1.DatabaseSession session,
     List<RuntimeSettings> rows, {
     _i1.OrderByBuilder<RuntimeSettingsTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -628,8 +608,6 @@ class RuntimeSettingsRepository {
       rows,
       orderBy: orderBy?.call(RuntimeSettings.t),
       orderByList: orderByList?.call(RuntimeSettings.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -659,8 +637,6 @@ class RuntimeSettingsRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<RuntimeSettingsTable> where,
     _i1.OrderByBuilder<RuntimeSettingsTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -669,8 +645,6 @@ class RuntimeSettingsRepository {
       where: where(RuntimeSettings.t),
       orderBy: orderBy?.call(RuntimeSettings.t),
       orderByList: orderByList?.call(RuntimeSettings.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

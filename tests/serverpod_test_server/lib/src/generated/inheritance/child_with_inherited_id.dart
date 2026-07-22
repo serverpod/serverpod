@@ -118,8 +118,6 @@ abstract class ChildWithInheritedId extends _i1.ParentWithChangedId
     int? limit,
     int? offset,
     _i2.OrderByBuilder<ChildWithInheritedIdTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i2.OrderByListBuilder<ChildWithInheritedIdTable>? orderByList,
     ChildWithInheritedIdInclude? include,
   }) {
@@ -128,8 +126,6 @@ abstract class ChildWithInheritedId extends _i1.ParentWithChangedId
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ChildWithInheritedId.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(ChildWithInheritedId.t),
       include: include,
     );
@@ -299,8 +295,6 @@ class ChildWithInheritedIdIncludeList extends _i2.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -349,8 +343,6 @@ class ChildWithInheritedIdRepository {
     int? limit,
     int? offset,
     _i2.OrderByBuilder<ChildWithInheritedIdTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i2.OrderByListBuilder<ChildWithInheritedIdTable>? orderByList,
     _i2.Transaction? transaction,
     ChildWithInheritedIdInclude? include,
@@ -361,8 +353,6 @@ class ChildWithInheritedIdRepository {
       where: where?.call(ChildWithInheritedId.t),
       orderBy: orderBy?.call(ChildWithInheritedId.t),
       orderByList: orderByList?.call(ChildWithInheritedId.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -394,8 +384,6 @@ class ChildWithInheritedIdRepository {
     _i2.WhereExpressionBuilder<ChildWithInheritedIdTable>? where,
     int? offset,
     _i2.OrderByBuilder<ChildWithInheritedIdTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i2.OrderByListBuilder<ChildWithInheritedIdTable>? orderByList,
     _i2.Transaction? transaction,
     ChildWithInheritedIdInclude? include,
@@ -406,8 +394,6 @@ class ChildWithInheritedIdRepository {
       where: where?.call(ChildWithInheritedId.t),
       orderBy: orderBy?.call(ChildWithInheritedId.t),
       orderByList: orderByList?.call(ChildWithInheritedId.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -617,8 +603,6 @@ class ChildWithInheritedIdRepository {
     int? offset,
     _i2.OrderByBuilder<ChildWithInheritedIdTable>? orderBy,
     _i2.OrderByListBuilder<ChildWithInheritedIdTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i2.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -629,8 +613,6 @@ class ChildWithInheritedIdRepository {
       offset: offset,
       orderBy: orderBy?.call(ChildWithInheritedId.t),
       orderByList: orderByList?.call(ChildWithInheritedId.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -651,8 +633,6 @@ class ChildWithInheritedIdRepository {
     _i2.DatabaseSession session,
     List<ChildWithInheritedId> rows, {
     _i2.OrderByBuilder<ChildWithInheritedIdTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i2.OrderByListBuilder<ChildWithInheritedIdTable>? orderByList,
     _i2.Transaction? transaction,
     bool noReturn = false,
@@ -661,8 +641,6 @@ class ChildWithInheritedIdRepository {
       rows,
       orderBy: orderBy?.call(ChildWithInheritedId.t),
       orderByList: orderByList?.call(ChildWithInheritedId.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -692,8 +670,6 @@ class ChildWithInheritedIdRepository {
     _i2.DatabaseSession session, {
     required _i2.WhereExpressionBuilder<ChildWithInheritedIdTable> where,
     _i2.OrderByBuilder<ChildWithInheritedIdTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i2.OrderByListBuilder<ChildWithInheritedIdTable>? orderByList,
     _i2.Transaction? transaction,
     bool noReturn = false,
@@ -702,8 +678,6 @@ class ChildWithInheritedIdRepository {
       where: where(ChildWithInheritedId.t),
       orderBy: orderBy?.call(ChildWithInheritedId.t),
       orderByList: orderByList?.call(ChildWithInheritedId.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

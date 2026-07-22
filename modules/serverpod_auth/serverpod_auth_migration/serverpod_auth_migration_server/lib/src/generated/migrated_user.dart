@@ -118,8 +118,6 @@ abstract class MigratedUser
     int? limit,
     int? offset,
     _i1.OrderByBuilder<MigratedUserTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<MigratedUserTable>? orderByList,
     MigratedUserInclude? include,
   }) {
@@ -128,8 +126,6 @@ abstract class MigratedUser
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(MigratedUser.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(MigratedUser.t),
       include: include,
     );
@@ -297,8 +293,6 @@ class MigratedUserIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -345,8 +339,6 @@ class MigratedUserRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<MigratedUserTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<MigratedUserTable>? orderByList,
     _i1.Transaction? transaction,
     MigratedUserInclude? include,
@@ -357,8 +349,6 @@ class MigratedUserRepository {
       where: where?.call(MigratedUser.t),
       orderBy: orderBy?.call(MigratedUser.t),
       orderByList: orderByList?.call(MigratedUser.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -390,8 +380,6 @@ class MigratedUserRepository {
     _i1.WhereExpressionBuilder<MigratedUserTable>? where,
     int? offset,
     _i1.OrderByBuilder<MigratedUserTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<MigratedUserTable>? orderByList,
     _i1.Transaction? transaction,
     MigratedUserInclude? include,
@@ -402,8 +390,6 @@ class MigratedUserRepository {
       where: where?.call(MigratedUser.t),
       orderBy: orderBy?.call(MigratedUser.t),
       orderByList: orderByList?.call(MigratedUser.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -611,8 +597,6 @@ class MigratedUserRepository {
     int? offset,
     _i1.OrderByBuilder<MigratedUserTable>? orderBy,
     _i1.OrderByListBuilder<MigratedUserTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -623,8 +607,6 @@ class MigratedUserRepository {
       offset: offset,
       orderBy: orderBy?.call(MigratedUser.t),
       orderByList: orderByList?.call(MigratedUser.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -645,8 +627,6 @@ class MigratedUserRepository {
     _i1.DatabaseSession session,
     List<MigratedUser> rows, {
     _i1.OrderByBuilder<MigratedUserTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<MigratedUserTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -655,8 +635,6 @@ class MigratedUserRepository {
       rows,
       orderBy: orderBy?.call(MigratedUser.t),
       orderByList: orderByList?.call(MigratedUser.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -686,8 +664,6 @@ class MigratedUserRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<MigratedUserTable> where,
     _i1.OrderByBuilder<MigratedUserTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<MigratedUserTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -696,8 +672,6 @@ class MigratedUserRepository {
       where: where(MigratedUser.t),
       orderBy: orderBy?.call(MigratedUser.t),
       orderByList: orderByList?.call(MigratedUser.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

@@ -101,8 +101,6 @@ abstract class StudentUuid
     int? limit,
     int? offset,
     _i1.OrderByBuilder<StudentUuidTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<StudentUuidTable>? orderByList,
     StudentUuidInclude? include,
   }) {
@@ -111,8 +109,6 @@ abstract class StudentUuid
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(StudentUuid.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(StudentUuid.t),
       include: include,
     );
@@ -249,8 +245,6 @@ class StudentUuidIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -299,8 +293,6 @@ class StudentUuidRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<StudentUuidTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<StudentUuidTable>? orderByList,
     _i1.Transaction? transaction,
     StudentUuidInclude? include,
@@ -311,8 +303,6 @@ class StudentUuidRepository {
       where: where?.call(StudentUuid.t),
       orderBy: orderBy?.call(StudentUuid.t),
       orderByList: orderByList?.call(StudentUuid.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -344,8 +334,6 @@ class StudentUuidRepository {
     _i1.WhereExpressionBuilder<StudentUuidTable>? where,
     int? offset,
     _i1.OrderByBuilder<StudentUuidTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<StudentUuidTable>? orderByList,
     _i1.Transaction? transaction,
     StudentUuidInclude? include,
@@ -356,8 +344,6 @@ class StudentUuidRepository {
       where: where?.call(StudentUuid.t),
       orderBy: orderBy?.call(StudentUuid.t),
       orderByList: orderByList?.call(StudentUuid.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -565,8 +551,6 @@ class StudentUuidRepository {
     int? offset,
     _i1.OrderByBuilder<StudentUuidTable>? orderBy,
     _i1.OrderByListBuilder<StudentUuidTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -577,8 +561,6 @@ class StudentUuidRepository {
       offset: offset,
       orderBy: orderBy?.call(StudentUuid.t),
       orderByList: orderByList?.call(StudentUuid.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -599,8 +581,6 @@ class StudentUuidRepository {
     _i1.DatabaseSession session,
     List<StudentUuid> rows, {
     _i1.OrderByBuilder<StudentUuidTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<StudentUuidTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -609,8 +589,6 @@ class StudentUuidRepository {
       rows,
       orderBy: orderBy?.call(StudentUuid.t),
       orderByList: orderByList?.call(StudentUuid.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -640,8 +618,6 @@ class StudentUuidRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<StudentUuidTable> where,
     _i1.OrderByBuilder<StudentUuidTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<StudentUuidTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -650,8 +626,6 @@ class StudentUuidRepository {
       where: where(StudentUuid.t),
       orderBy: orderBy?.call(StudentUuid.t),
       orderByList: orderByList?.call(StudentUuid.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

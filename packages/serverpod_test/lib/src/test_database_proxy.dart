@@ -55,8 +55,6 @@ class TestDatabaseProxy implements Database {
     List<T> rows, {
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     Transaction? transaction,
     bool noReturn = false,
   }) {
@@ -65,8 +63,6 @@ class TestDatabaseProxy implements Database {
         rows,
         orderBy: orderBy,
         orderByList: orderByList,
-        // ignore: deprecated_member_use
-        orderDescending: orderDescending,
         transaction: transaction,
         noReturn: noReturn,
       ),
@@ -93,8 +89,6 @@ class TestDatabaseProxy implements Database {
     required Expression where,
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     Transaction? transaction,
     bool noReturn = false,
   }) {
@@ -103,8 +97,6 @@ class TestDatabaseProxy implements Database {
         where: where,
         orderBy: orderBy,
         orderByList: orderByList,
-        // ignore: deprecated_member_use
-        orderDescending: orderDescending,
         transaction: transaction,
         noReturn: noReturn,
       ),
@@ -119,8 +111,6 @@ class TestDatabaseProxy implements Database {
     int? offset,
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     Transaction? transaction,
     Include? include,
     LockMode? lockMode,
@@ -133,8 +123,6 @@ class TestDatabaseProxy implements Database {
         offset: offset,
         orderBy: orderBy,
         orderByList: orderByList,
-        // ignore: deprecated_member_use
-        orderDescending: orderDescending,
         transaction: transaction,
         include: include,
         lockMode: lockMode,
@@ -170,8 +158,6 @@ class TestDatabaseProxy implements Database {
     int? offset,
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     Transaction? transaction,
     Include? include,
     LockMode? lockMode,
@@ -183,8 +169,6 @@ class TestDatabaseProxy implements Database {
         offset: offset,
         orderBy: orderBy,
         orderByList: orderByList,
-        // ignore: deprecated_member_use
-        orderDescending: orderDescending,
         transaction: transaction,
         include: include,
         lockMode: lockMode,
@@ -470,8 +454,6 @@ class TestDatabaseProxy implements Database {
     int? offset,
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     Transaction? transaction,
     bool noReturn = false,
   }) {
@@ -483,8 +465,6 @@ class TestDatabaseProxy implements Database {
         offset: offset,
         orderBy: orderBy,
         orderByList: orderByList,
-        // ignore: deprecated_member_use
-        orderDescending: orderDescending,
         transaction: transaction,
         noReturn: noReturn,
       ),

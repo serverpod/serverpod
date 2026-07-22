@@ -100,8 +100,6 @@ abstract class ObjectUser
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectUserTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectUserTable>? orderByList,
     ObjectUserInclude? include,
   }) {
@@ -110,8 +108,6 @@ abstract class ObjectUser
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectUser.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(ObjectUser.t),
       include: include,
     );
@@ -243,8 +239,6 @@ class ObjectUserIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -291,8 +285,6 @@ class ObjectUserRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectUserTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectUserTable>? orderByList,
     _i1.Transaction? transaction,
     ObjectUserInclude? include,
@@ -303,8 +295,6 @@ class ObjectUserRepository {
       where: where?.call(ObjectUser.t),
       orderBy: orderBy?.call(ObjectUser.t),
       orderByList: orderByList?.call(ObjectUser.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -336,8 +326,6 @@ class ObjectUserRepository {
     _i1.WhereExpressionBuilder<ObjectUserTable>? where,
     int? offset,
     _i1.OrderByBuilder<ObjectUserTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectUserTable>? orderByList,
     _i1.Transaction? transaction,
     ObjectUserInclude? include,
@@ -348,8 +336,6 @@ class ObjectUserRepository {
       where: where?.call(ObjectUser.t),
       orderBy: orderBy?.call(ObjectUser.t),
       orderByList: orderByList?.call(ObjectUser.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -557,8 +543,6 @@ class ObjectUserRepository {
     int? offset,
     _i1.OrderByBuilder<ObjectUserTable>? orderBy,
     _i1.OrderByListBuilder<ObjectUserTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -569,8 +553,6 @@ class ObjectUserRepository {
       offset: offset,
       orderBy: orderBy?.call(ObjectUser.t),
       orderByList: orderByList?.call(ObjectUser.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -591,8 +573,6 @@ class ObjectUserRepository {
     _i1.DatabaseSession session,
     List<ObjectUser> rows, {
     _i1.OrderByBuilder<ObjectUserTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectUserTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -601,8 +581,6 @@ class ObjectUserRepository {
       rows,
       orderBy: orderBy?.call(ObjectUser.t),
       orderByList: orderByList?.call(ObjectUser.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -632,8 +610,6 @@ class ObjectUserRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ObjectUserTable> where,
     _i1.OrderByBuilder<ObjectUserTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectUserTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -642,8 +618,6 @@ class ObjectUserRepository {
       where: where(ObjectUser.t),
       orderBy: orderBy?.call(ObjectUser.t),
       orderByList: orderByList?.call(ObjectUser.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

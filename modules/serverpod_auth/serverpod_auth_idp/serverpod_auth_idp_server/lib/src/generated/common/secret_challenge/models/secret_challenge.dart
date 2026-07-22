@@ -80,8 +80,6 @@ abstract class SecretChallenge
     int? limit,
     int? offset,
     _i1.OrderByBuilder<SecretChallengeTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<SecretChallengeTable>? orderByList,
     SecretChallengeInclude? include,
   }) {
@@ -90,8 +88,6 @@ abstract class SecretChallenge
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(SecretChallenge.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(SecretChallenge.t),
       include: include,
     );
@@ -179,8 +175,6 @@ class SecretChallengeIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -225,8 +219,6 @@ class SecretChallengeRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<SecretChallengeTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<SecretChallengeTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -236,8 +228,6 @@ class SecretChallengeRepository {
       where: where?.call(SecretChallenge.t),
       orderBy: orderBy?.call(SecretChallenge.t),
       orderByList: orderByList?.call(SecretChallenge.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -268,8 +258,6 @@ class SecretChallengeRepository {
     _i1.WhereExpressionBuilder<SecretChallengeTable>? where,
     int? offset,
     _i1.OrderByBuilder<SecretChallengeTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<SecretChallengeTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -279,8 +267,6 @@ class SecretChallengeRepository {
       where: where?.call(SecretChallenge.t),
       orderBy: orderBy?.call(SecretChallenge.t),
       orderByList: orderByList?.call(SecretChallenge.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -487,8 +473,6 @@ class SecretChallengeRepository {
     int? offset,
     _i1.OrderByBuilder<SecretChallengeTable>? orderBy,
     _i1.OrderByListBuilder<SecretChallengeTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -499,8 +483,6 @@ class SecretChallengeRepository {
       offset: offset,
       orderBy: orderBy?.call(SecretChallenge.t),
       orderByList: orderByList?.call(SecretChallenge.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -521,8 +503,6 @@ class SecretChallengeRepository {
     _i1.DatabaseSession session,
     List<SecretChallenge> rows, {
     _i1.OrderByBuilder<SecretChallengeTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<SecretChallengeTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -531,8 +511,6 @@ class SecretChallengeRepository {
       rows,
       orderBy: orderBy?.call(SecretChallenge.t),
       orderByList: orderByList?.call(SecretChallenge.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -562,8 +540,6 @@ class SecretChallengeRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<SecretChallengeTable> where,
     _i1.OrderByBuilder<SecretChallengeTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<SecretChallengeTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -572,8 +548,6 @@ class SecretChallengeRepository {
       where: where(SecretChallenge.t),
       orderBy: orderBy?.call(SecretChallenge.t),
       orderByList: orderByList?.call(SecretChallenge.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
