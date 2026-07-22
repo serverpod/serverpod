@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # Prepares Windows tests to run as a standard, non-administrator account, then
-# delegates the command-wrapper setup to prepare_windows_limited_process.
+# delegates the command-wrapper setup to prepare_windows_psexec_process.
 
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-launcher="${1:?usage: prepare_windows_limited_test <launcher.cmd>}"
-: "${LIMITED_TEST_COMMAND:?LIMITED_TEST_COMMAND must be set}"
+launcher="${1:?usage: prepare_windows_standard_user_test <launcher.cmd>}"
+: "${STANDARD_USER_TEST_COMMAND:?STANDARD_USER_TEST_COMMAND must be set}"
 : "${RUNNER_TEMP:?RUNNER_TEMP must be set}"
 : "${PUB_CACHE:?PUB_CACHE must be set}"
 : "${GITHUB_ENV:?GITHUB_ENV must be set}"
@@ -20,8 +20,9 @@ MSYS2_ARG_CONV_EXCL='*' net.exe user \
   "$test_user" "$test_password" /add /y
 
 runner_temp_msys="$(cygpath -u "$RUNNER_TEMP")"
-test_work_msys="$runner_temp_msys/limited-test"
+test_work_msys="$runner_temp_msys/standard-user-test"
 test_work_win="$(cygpath -m "$test_work_msys")"
+test_log_win="$(cygpath -m "$test_work_msys/output.log")"
 test_path_win="$(cygpath -mp "$PATH")"
 
 grant_test_user_write_access() {
@@ -114,17 +115,18 @@ fi
 # Flutter and the Dart analyzer store persistent tool state in APPDATA and
 # LOCALAPPDATA. Keep that state in the isolated test work tree instead of
 # changing either account's profile.
-LIMITED_PROCESS_WORK_NAME=limited-test \
-LIMITED_PROCESS_LOG_NAME=output.log \
-LIMITED_PROCESS_COMMAND="$test_environment_commands
+PSEXEC_PROCESS_WORK_NAME=standard-user-test \
+PSEXEC_PROCESS_LOG_NAME=output.log \
+PSEXEC_PROCESS_COMMAND="$test_environment_commands
 set \"APPDATA=$test_work_win\"
 set \"LOCALAPPDATA=$test_work_win\"
 $flutter_preflight_commands
-$LIMITED_TEST_COMMAND" \
-  "$HERE/prepare_windows_limited_process" "$launcher"
+$STANDARD_USER_TEST_COMMAND" \
+  "$HERE/prepare_windows_psexec_process" "$launcher"
 
 grant_test_user_write_access "$test_work_msys"
 
 echo "::add-mask::$test_password"
 echo "SERVERPOD_WINDOWS_TEST_USER=$test_user" >> "$GITHUB_ENV"
 echo "SERVERPOD_WINDOWS_TEST_PASSWORD=$test_password" >> "$GITHUB_ENV"
+echo "SERVERPOD_WINDOWS_TEST_LOG=$test_log_win" >> "$GITHUB_ENV"

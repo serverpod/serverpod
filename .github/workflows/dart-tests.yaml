@@ -512,27 +512,15 @@ jobs:
       - name: Prep run script (Windows)
         if: matrix.os == 'windows-latest'
         env:
-          LIMITED_TEST_COMMAND: ${{ matrix.suite.run }}
+          STANDARD_USER_TEST_COMMAND: ${{ matrix.suite.run }}
           SHARD_INDEX: ${{ matrix.suite.shard-index }}
           TOTAL_SHARDS: ${{ matrix.suite.total-shards }}
         shell: bash
-        run: bash util/prepare_windows_limited_test run-suite.cmd
+        run: bash util/prepare_windows_standard_user_test run-suite.cmd
       - name: Run integration tests against embedded PG (Windows, non-admin)
         if: matrix.os == 'windows-latest'
         shell: cmd
-        run: |
-          psexec -accepteula -nobanner ^
-            -u "%COMPUTERNAME%\%SERVERPOD_WINDOWS_TEST_USER%" ^
-            -p "%SERVERPOD_WINDOWS_TEST_PASSWORD%" ^
-            cmd /c "%CD%\run-suite.cmd"
-          set "RC=%errorlevel%"
-          set "TEST_LOG=%RUNNER_TEMP%\limited-test\output.log"
-          if not exist "%TEST_LOG%" (
-            echo ::error::the limited test process produced no log at %TEST_LOG%
-            exit /b 1
-          )
-          type "%TEST_LOG%"
-          exit /b %RC%
+        run: call util\run_windows_standard_user_test.cmd run-suite.cmd
         timeout-minutes: ${{ matrix.suite.timeout_minutes || 15 }}
       - name: Run integration tests against embedded PG
         if: matrix.os != 'windows-latest'
@@ -571,25 +559,13 @@ jobs:
         # Postgres refuses to run with an Administrators-group token.
         if: matrix.os == 'windows-latest'
         env:
-          LIMITED_TEST_COMMAND: cd packages/serverpod_embedded_postgres && dart test --tags=integration --reporter=failures-only
+          STANDARD_USER_TEST_COMMAND: cd packages/serverpod_embedded_postgres && dart test --tags=integration --reporter=failures-only
         shell: bash
-        run: bash util/prepare_windows_limited_test run-test.cmd
+        run: bash util/prepare_windows_standard_user_test run-test.cmd
       - name: Run integration tests against the embedded PG bundle (Windows, non-admin)
         if: matrix.os == 'windows-latest'
         shell: cmd
-        run: |
-          psexec -accepteula -nobanner ^
-            -u "%COMPUTERNAME%\%SERVERPOD_WINDOWS_TEST_USER%" ^
-            -p "%SERVERPOD_WINDOWS_TEST_PASSWORD%" ^
-            cmd /c "%CD%\run-test.cmd"
-          set "RC=%errorlevel%"
-          set "TEST_LOG=%RUNNER_TEMP%\limited-test\output.log"
-          if not exist "%TEST_LOG%" (
-            echo ::error::the limited test process produced no log at %TEST_LOG%
-            exit /b 1
-          )
-          type "%TEST_LOG%"
-          exit /b %RC%
+        run: call util\run_windows_standard_user_test.cmd run-test.cmd
         timeout-minutes: 10
       - name: Run integration tests against the embedded PG bundle
         if: matrix.os != 'windows-latest'
@@ -969,25 +945,13 @@ jobs:
       - name: Prep run script (Windows)
         if: matrix.os == 'windows-latest'
         env:
-          LIMITED_TEST_COMMAND: bash util/run_tests_bootstrap ${{ matrix.shard }} 17
+          STANDARD_USER_TEST_COMMAND: bash util/run_tests_bootstrap ${{ matrix.shard }} 17
         shell: bash
-        run: bash util/prepare_windows_limited_test run-bootstrap.cmd
+        run: bash util/prepare_windows_standard_user_test run-bootstrap.cmd
       - name: Run unit tests (Windows, non-admin)
         if: matrix.os == 'windows-latest'
         shell: cmd
-        run: |
-          psexec -accepteula -nobanner ^
-            -u "%COMPUTERNAME%\%SERVERPOD_WINDOWS_TEST_USER%" ^
-            -p "%SERVERPOD_WINDOWS_TEST_PASSWORD%" ^
-            cmd /c "%CD%\run-bootstrap.cmd"
-          set "RC=%errorlevel%"
-          set "TEST_LOG=%RUNNER_TEMP%\limited-test\output.log"
-          if not exist "%TEST_LOG%" (
-            echo ::error::the limited test process produced no log at %TEST_LOG%
-            exit /b 1
-          )
-          type "%TEST_LOG%"
-          exit /b %RC%
+        run: call util\run_windows_standard_user_test.cmd run-bootstrap.cmd
       - name: Run unit tests
         if: matrix.os != 'windows-latest'
         shell: bash

@@ -2,6 +2,24 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
+/// A PostgreSQL shutdown mode accepted by `pg_ctl stop`.
+enum PgCtlStopMode {
+  /// Waits for all clients to disconnect before shutting down.
+  smart('smart'),
+
+  /// Disconnects clients and rolls back active transactions before shutdown.
+  fast('fast'),
+
+  /// Stops immediately and performs recovery on the next startup.
+  immediate('immediate'),
+  ;
+
+  const PgCtlStopMode(this.argument);
+
+  /// The value passed to `pg_ctl stop -m`.
+  final String argument;
+}
+
 /// Returns the `pg_ctl` executable beside a recorded `postgres` executable.
 File pgCtlForPostgresExecutable(String postgresExecutable) {
   final fileName = Platform.isWindows ? 'pg_ctl.exe' : 'pg_ctl';
@@ -17,7 +35,7 @@ Future<bool> stopWithPgCtl({
   required File pgCtl,
   required Directory dataDir,
   required Duration timeout,
-  String mode = 'fast',
+  PgCtlStopMode mode = PgCtlStopMode.fast,
 }) async {
   if (!pgCtl.existsSync()) return false;
 
@@ -35,7 +53,7 @@ Future<bool> stopWithPgCtl({
       '-D',
       dataPath,
       '-m',
-      mode,
+      mode.argument,
       '-w',
       '-t',
       '${timeoutSeconds < 1 ? 1 : timeoutSeconds}',

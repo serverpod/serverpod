@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
-# Prepares a command wrapper for a process that must run through PsExec -l on a
+# Prepares a command wrapper for a process that must run through PsExec on a
 # Windows GitHub Actions runner.
 
 set -euo pipefail
 
-launcher="${1:?usage: prepare_windows_limited_process <launcher.cmd>}"
-: "${LIMITED_PROCESS_COMMAND:?LIMITED_PROCESS_COMMAND must be set}"
+launcher="${1:?usage: prepare_windows_psexec_process <launcher.cmd>}"
+: "${PSEXEC_PROCESS_COMMAND:?PSEXEC_PROCESS_COMMAND must be set}"
 : "${RUNNER_TEMP:?RUNNER_TEMP must be set}"
 
-work_name="${LIMITED_PROCESS_WORK_NAME:-limited-process}"
-log_name="${LIMITED_PROCESS_LOG_NAME:-output.log}"
+work_name="${PSEXEC_PROCESS_WORK_NAME:-psexec-process}"
+log_name="${PSEXEC_PROCESS_LOG_NAME:-output.log}"
 if [[ "$work_name" == */* || "$work_name" == *\\* ||
       "$log_name" == */* || "$log_name" == *\\* ]]; then
   echo "Work and log names must not contain path separators" >&2
@@ -27,9 +27,9 @@ process_work_win="$(cygpath -w "$process_work_msys")"
 process_log_msys="$process_work_msys/$log_name"
 process_log_win="$(cygpath -w "$process_log_msys")"
 
-# PsExec -l uses a Low Integrity token, which cannot write to the runner's
-# regular temporary directory. Give the process one explicitly writable tree
-# for temporary files and captured output.
+# PsExec may use a Low Integrity token. Lowering this work directory's
+# integrity level keeps it writable by both limited processes and the standard
+# test account used by the Dart test jobs.
 mkdir -p "$process_work_msys"
 rm -f "$process_log_msys"
 MSYS2_ARG_CONV_EXCL='*' icacls.exe "$process_work_win" \
@@ -39,7 +39,7 @@ MSYS2_ARG_CONV_EXCL='*' icacls.exe "$process_work_win" \
 # operators such as `&&` are interpreted exactly as supplied by the caller.
 cat > "$command_msys" <<EOF
 @echo off
-$LIMITED_PROCESS_COMMAND
+$PSEXEC_PROCESS_COMMAND
 EOF
 
 cat > "$launcher_msys" <<EOF

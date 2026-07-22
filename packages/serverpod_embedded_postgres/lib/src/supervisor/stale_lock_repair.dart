@@ -85,7 +85,7 @@ Future<void> _terminateLiveOrphanPostmaster(
       pgCtl: pgCtlExecutable,
       dataDir: pgDataDir,
       timeout: const Duration(seconds: 10),
-      mode: 'immediate',
+      mode: PgCtlStopMode.immediate,
     );
   }
   if (isProcessAlive(pid)) {
