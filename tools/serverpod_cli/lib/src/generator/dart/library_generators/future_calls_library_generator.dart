@@ -270,7 +270,7 @@ extension FutureCallsLibraryGenerator on LibraryGenerator {
                     ).call([]),
             },
             refer('String'),
-            refer('FutureCall', serverpodUrl(true)),
+            refer('InvokableFutureCall', serverpodUrl(true)),
           ),
         )
         .statement;
@@ -652,6 +652,21 @@ extension FutureCallsLibraryGenerator on LibraryGenerator {
           Class((c) {
             var requiredParameters = method.parameters;
 
+            var typeArguments = <Reference>[
+              if (method.futureCallMethodParameter != null)
+                refer(
+                  method.futureCallMethodParameter!.type.className,
+                  TypeDefinition.getRef(
+                    method.futureCallMethodParameter!.toSerializableModel(),
+                  ),
+                )
+              else if (requiredParameters.isNotEmpty)
+                requiredParameters.first.type.asNonNullable.reference(
+                  true,
+                  config: config,
+                ),
+            ];
+
             c
               ..docs.add(method.documentationComment ?? '')
               ..name = futureCallClassName
@@ -659,21 +674,15 @@ extension FutureCallsLibraryGenerator on LibraryGenerator {
                 (t) => t
                   ..symbol = 'FutureCall'
                   ..url = serverpodUrl(true)
-                  ..types.addAll([
-                    if (method.futureCallMethodParameter != null)
-                      refer(
-                        method.futureCallMethodParameter!.type.className,
-                        TypeDefinition.getRef(
-                          method.futureCallMethodParameter!
-                              .toSerializableModel(),
-                        ),
-                      )
-                    else if (requiredParameters.isNotEmpty)
-                      requiredParameters.first.type.asNonNullable.reference(
-                        true,
-                        config: config,
-                      ),
-                  ]),
+                  ..types.addAll(typeArguments),
+              )
+              ..implements.add(
+                TypeReference(
+                  (t) => t
+                    ..symbol = 'InvokableFutureCall'
+                    ..url = serverpodUrl(true)
+                    ..types.addAll(typeArguments),
+                ),
               )
               ..abstract = futureCall.isAbstract;
 

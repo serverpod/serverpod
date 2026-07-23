@@ -214,18 +214,14 @@ extension on ClassElement {
   /// Whether the [ClassElement] represents a future call to be executed.
   ///
   /// A [FutureCall] declaration can either be a spec to generate a type-safe
-  /// interface or an executable [FutureCall] to be directly invoked. Executable
-  /// classes extends [FutureCall] directly and overrides only the invoke method.
-  /// These will be generated from the spec classes, but can also be manually
-  /// defined by users and we must not generate code for them.
+  /// interface or an executable [FutureCall] to be directly invoked.
+  /// Executable classes implement the `InvokableFutureCall` interface. These
+  /// are generated from the spec classes and we must not generate code for
+  /// them.
   bool get isExecutableFutureCall {
-    final extendsFutureCallDirectly = allSupertypes.any(
-      (type) => type.element.name == 'FutureCall',
+    if (name == 'InvokableFutureCall') return true;
+    return allSupertypes.any(
+      (type) => type.element.name == 'InvokableFutureCall',
     );
-
-    final onlyDeclaresInvokeMethod =
-        methods.length == 1 && methods.first.name == 'invoke';
-
-    return extendsFutureCallDirectly && onlyDeclaresInvokeMethod;
   }
 }

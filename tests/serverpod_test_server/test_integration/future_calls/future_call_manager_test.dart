@@ -10,7 +10,8 @@ import 'package:test/test.dart';
 import '../test_tools/serverpod_test_tools.dart';
 import '../utils/future_call_manager_builder.dart';
 
-class CompleterTestCall extends FutureCall<SimpleData> {
+class CompleterTestCall extends FutureCall<SimpleData>
+    implements InvokableFutureCall<SimpleData> {
   final Completer<SimpleData?> completer = Completer<SimpleData?>();
 
   @override
@@ -19,7 +20,8 @@ class CompleterTestCall extends FutureCall<SimpleData> {
   }
 }
 
-class CounterTestCall extends FutureCall<SimpleData> {
+class CounterTestCall extends FutureCall<SimpleData>
+    implements InvokableFutureCall<SimpleData> {
   int counter = 0;
 
   @override
@@ -28,7 +30,8 @@ class CounterTestCall extends FutureCall<SimpleData> {
   }
 }
 
-class ListTestCall extends FutureCall<SimpleData> {
+class ListTestCall extends FutureCall<SimpleData>
+    implements InvokableFutureCall<SimpleData> {
   List<SimpleData?> list = [];
 
   @override
@@ -37,7 +40,8 @@ class ListTestCall extends FutureCall<SimpleData> {
   }
 }
 
-class DelayedListTestCall extends FutureCall<SimpleData> {
+class DelayedListTestCall extends FutureCall<SimpleData>
+    implements InvokableFutureCall<SimpleData> {
   List<SimpleData?> completed = [];
 
   @override

@@ -11,7 +11,8 @@ import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod_shared/src/password_manager.dart';
 
-class _SimpleFutureCall extends FutureCall<SimpleData> {
+class _SimpleFutureCall extends FutureCall<SimpleData>
+    implements InvokableFutureCall<SimpleData> {
   @override
   Future<void> invoke(Session session, SimpleData? object) async {}
 }

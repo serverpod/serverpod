@@ -13,6 +13,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../endpoints/example_endpoint.dart' as _i2;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i3;
+import 'package:auth_example_server/src/generated/future_calls.dart' as _i4;
+export 'future_calls.dart' show ServerpodFutureCallsGetter;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -50,5 +52,10 @@ class Endpoints extends _i1.EndpointDispatch {
       },
     );
     modules['serverpod_auth'] = _i3.Endpoints()..initializeEndpoints(server);
+  }
+
+  @override
+  _i1.FutureCallDispatch? get futureCalls {
+    return _i4.FutureCalls();
   }
 }

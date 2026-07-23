@@ -68,7 +68,7 @@ class FutureCalls extends _i1.FutureCallDispatch<_FutureCallRef> {
     _i1.FutureCallManager futureCallManager,
     String serverId,
   ) {
-    var registeredFutureCalls = <String, _i1.FutureCall>{
+    var registeredFutureCalls = <String, _i1.InvokableFutureCall>{
       'TestCallRunFutureCall': TestCallRunFutureCall(),
       'TestExceptionCallRunFutureCall': TestExceptionCallRunFutureCall(),
       'TestGeneratedCallHelloFutureCall': TestGeneratedCallHelloFutureCall(),
@@ -291,7 +291,8 @@ class _TestGeneratedCallFutureCallDispatcher {
   }
 }
 
-class TestCallRunFutureCall extends _i1.FutureCall<_i3.SimpleData> {
+class TestCallRunFutureCall extends _i1.FutureCall<_i3.SimpleData>
+    implements _i1.InvokableFutureCall<_i3.SimpleData> {
   @override
   _i8.Future<void> invoke(
     _i1.Session session,
@@ -304,7 +305,8 @@ class TestCallRunFutureCall extends _i1.FutureCall<_i3.SimpleData> {
   }
 }
 
-class TestExceptionCallRunFutureCall extends _i1.FutureCall<_i3.SimpleData> {
+class TestExceptionCallRunFutureCall extends _i1.FutureCall<_i3.SimpleData>
+    implements _i1.InvokableFutureCall<_i3.SimpleData> {
   @override
   _i8.Future<void> invoke(
     _i1.Session session,
@@ -318,7 +320,8 @@ class TestExceptionCallRunFutureCall extends _i1.FutureCall<_i3.SimpleData> {
 }
 
 class TestGeneratedCallHelloFutureCall
-    extends _i1.FutureCall<_i4.TestGeneratedCallHelloModel> {
+    extends _i1.FutureCall<_i4.TestGeneratedCallHelloModel>
+    implements _i1.InvokableFutureCall<_i4.TestGeneratedCallHelloModel> {
   @override
   _i8.Future<void> invoke(
     _i1.Session session,
@@ -334,7 +337,8 @@ class TestGeneratedCallHelloFutureCall
 }
 
 class TestGeneratedCallByeFutureCall
-    extends _i1.FutureCall<_i5.TestGeneratedCallByeModel> {
+    extends _i1.FutureCall<_i5.TestGeneratedCallByeModel>
+    implements _i1.InvokableFutureCall<_i5.TestGeneratedCallByeModel> {
   @override
   _i8.Future<void> invoke(
     _i1.Session session,
@@ -351,8 +355,8 @@ class TestGeneratedCallByeFutureCall
 }
 
 /// A sample future call that logs data.
-class TestGeneratedCallLogDataFutureCall
-    extends _i1.FutureCall<_i3.SimpleData> {
+class TestGeneratedCallLogDataFutureCall extends _i1.FutureCall<_i3.SimpleData>
+    implements _i1.InvokableFutureCall<_i3.SimpleData> {
   @override
   _i8.Future<void> invoke(
     _i1.Session session,
@@ -365,7 +369,8 @@ class TestGeneratedCallLogDataFutureCall
   }
 }
 
-class TestGeneratedCallDoTaskFutureCall extends _i1.FutureCall {
+class TestGeneratedCallDoTaskFutureCall extends _i1.FutureCall
+    implements _i1.InvokableFutureCall {
   @override
   _i8.Future<void> invoke(
     _i1.Session session,
@@ -377,7 +382,9 @@ class TestGeneratedCallDoTaskFutureCall extends _i1.FutureCall {
 
 /// Future call with enum parameter.
 class TestGeneratedCallExecuteWithTriggerFutureCall
-    extends _i1.FutureCall<_i7.TestGeneratedCallExecuteWithTriggerModel> {
+    extends _i1.FutureCall<_i7.TestGeneratedCallExecuteWithTriggerModel>
+    implements
+        _i1.InvokableFutureCall<_i7.TestGeneratedCallExecuteWithTriggerModel> {
   @override
   _i8.Future<void> invoke(
     _i1.Session session,
