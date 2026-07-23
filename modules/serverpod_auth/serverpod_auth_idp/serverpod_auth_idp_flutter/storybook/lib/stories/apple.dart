@@ -14,28 +14,28 @@ final appleStories = [
         initial: AppleButtonStyle.black,
       );
 
-      final size = context.knobs.options<AppleButtonSize>(
+      final size = context.knobs.options<SignInButtonSize>(
         label: 'Size',
-        options: AppleButtonSize.values.asOptions(),
-        initial: AppleButtonSize.large,
+        options: SignInButtonSize.values.asOptions(),
+        initial: SignInButtonSize.large,
       );
 
-      final shape = context.knobs.options<AppleButtonShape>(
+      final shape = context.knobs.options<SignInButtonShape>(
         label: 'Shape',
-        options: AppleButtonShape.values.asOptions(),
-        initial: AppleButtonShape.pill,
+        options: SignInButtonShape.values.asOptions(),
+        initial: SignInButtonShape.pill,
       );
 
-      final type = context.knobs.options<AppleButtonText>(
+      final text = context.knobs.options<SignInButtonTextVariant>(
         label: 'Text',
-        options: AppleButtonText.values.asOptions(),
-        initial: AppleButtonText.continueWith,
+        options: SignInButtonTextVariant.values.asOptions(),
+        initial: SignInButtonTextVariant.continueWith,
       );
 
-      final logoAlignment = context.knobs.options<AppleButtonLogoAlignment>(
+      final logoAlignment = context.knobs.options<SignInButtonLogoAlignment>(
         label: 'Logo alignment',
-        options: AppleButtonLogoAlignment.values.asOptions(),
-        initial: AppleButtonLogoAlignment.left,
+        options: SignInButtonLogoAlignment.values.asOptions(),
+        initial: SignInButtonLogoAlignment.left,
       );
 
       return buildIsolatedElementsForStory(context, {
@@ -45,7 +45,7 @@ final appleStories = [
             isLoading: false,
             isDisabled: false,
             style: style,
-            type: type,
+            text: text,
             size: size,
             shape: shape,
             logoAlignment: logoAlignment,
@@ -84,9 +84,3 @@ final appleStories = [
 ];
 
 void _nullCallback() {}
-
-extension on List<AppleButtonStyle> {
-  List<Option<AppleButtonStyle>> asOptions() {
-    return map((e) => Option(label: e.name, value: e)).toList();
-  }
-}

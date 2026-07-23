@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../common/sign_in_button_base.dart';
+import '../common/sign_in_button_style.dart';
 import '../localization/sign_in_localization_provider.dart';
 import 'microsoft_sign_in_style.dart';
 
 /// A styled button for Microsoft Sign-In.
 ///
-/// This widget renders a Microsoft-branded button with proper styling,
-/// loading states, and disabled states following Microsoft's design guidelines.
+/// Renders a Microsoft-branded button on the shared [SignInButtonBase], with
+/// loading and disabled states. The [size], [text], [shape], [logoAlignment],
+/// [minimumWidth], and [textStyle] arguments fall back to the shared
+/// [SignInButtonStyle] in scope when a [SignInWidget] provides one.
 class MicrosoftSignInButton extends StatelessWidget {
   /// Callback when the button is pressed.
   final VoidCallback? onPressed;
@@ -18,174 +22,103 @@ class MicrosoftSignInButton extends StatelessWidget {
   /// Whether the button is disabled.
   final bool isDisabled;
 
-  /// The button type: icon or standard button.
-  final MicrosoftButtonType type;
-
-  /// The button style (light or dark).
+  /// The brand color preset (light or dark).
+  ///
+  /// Applies when the button is used on its own. Inside a [SignInWidget] (or any
+  /// [SignInButtonStyle] in scope) the shared common style applies instead.
   final MicrosoftButtonStyle style;
 
-  /// The button size (large or medium).
-  final MicrosoftButtonSize size;
+  /// The button size.
+  final SignInButtonSize size;
 
-  /// The button text.
-  final MicrosoftButtonText text;
+  /// The button label variant.
+  final SignInButtonTextVariant text;
 
-  /// The button shape (rectangular, pill, or rounded).
-  final MicrosoftButtonShape shape;
+  /// The button shape.
+  final SignInButtonShape shape;
 
   /// The Microsoft logo alignment: left or center.
-  final MicrosoftButtonLogoAlignment logoAlignment;
+  final SignInButtonLogoAlignment logoAlignment;
 
   /// The minimum button width, in pixels.
   ///
   /// The maximum width is 400 pixels.
   final double minimumWidth;
 
+  /// The text style applied to the button label.
+  final TextStyle? textStyle;
+
   /// Creates a Microsoft Sign-In button.
   const MicrosoftSignInButton({
     required this.onPressed,
     required this.isLoading,
     required this.isDisabled,
-    this.type = MicrosoftButtonType.standard,
     this.style = MicrosoftButtonStyle.light,
-    this.size = MicrosoftButtonSize.large,
-    this.text = MicrosoftButtonText.continueWith,
-    this.shape = MicrosoftButtonShape.pill,
-    this.logoAlignment = MicrosoftButtonLogoAlignment.center,
+    this.size = SignInButtonSize.large,
+    this.text = SignInButtonTextVariant.continueWith,
+    this.shape = SignInButtonShape.pill,
+    this.logoAlignment = SignInButtonLogoAlignment.center,
     this.minimumWidth = 240,
+    this.textStyle,
     super.key,
   }) : assert(
          minimumWidth > 0 && minimumWidth <= 400,
-         'Invalid minimumWidth. Must be between 0 and 400.',
+         'Invalid minimumWidth. Must be greater than 0 and at most 400.',
        );
 
   @override
   Widget build(BuildContext context) {
-    final texts = context.microsoftSignInTexts;
-    final buttonStyle = MicrosoftSignInStyle.fromConfiguration(
-      shape: shape,
+    final localizations = context.microsoftSignInTexts;
+    final (background, foreground) = switch (style) {
+      MicrosoftButtonStyle.light => (
+        const Color(0xFFFFFFFF),
+        const Color(0xFF5E5E5E),
+      ),
+      MicrosoftButtonStyle.dark => (const Color(0xFF2F2F2F), Colors.white),
+    };
+
+    return SignInButtonBase(
+      onPressed: onPressed,
+      isLoading: isLoading,
+      isDisabled: isDisabled,
       size: size,
-      style: style,
-      width: minimumWidth,
-    );
-
-    return ConstrainedBox(
-      constraints: BoxConstraints(
-        minWidth: minimumWidth,
-        maxWidth: 400,
-        minHeight: buttonStyle.size.height,
-        maxHeight: buttonStyle.size.height,
+      shape: shape,
+      text: text,
+      logoAlignment: logoAlignment,
+      minimumWidth: minimumWidth,
+      textStyle: textStyle,
+      config: SignInButtonConfig(
+        brandColors: SignInButtonColors(
+          background: background,
+          foreground: foreground,
+          border: background == const Color(0xFFFFFFFF)
+              ? const Color(0xFFE0E0E0)
+              : background,
+        ),
+        brandShowBorder: style == MicrosoftButtonStyle.light,
+        localizedLabel: localizations.signInButton,
+        label: _label,
+        logoBuilder: _buildLogo,
       ),
-      child: style == MicrosoftButtonStyle.light
-          ? OutlinedButton(
-              onPressed: isLoading || isDisabled ? null : onPressed,
-              style: OutlinedButton.styleFrom(
-                backgroundColor: buttonStyle.backgroundColor,
-                foregroundColor: buttonStyle.foregroundColor,
-                side: buttonStyle.borderSide,
-                shape: RoundedRectangleBorder(
-                  borderRadius: buttonStyle.borderRadius,
-                ),
-                padding: EdgeInsets.zero,
-                disabledBackgroundColor: buttonStyle.backgroundColor.withValues(
-                  alpha: 0.6,
-                ),
-                disabledForegroundColor: buttonStyle.foregroundColor.withValues(
-                  alpha: 0.6,
-                ),
-              ),
-              child: _buildButtonContent(buttonStyle, texts),
-            )
-          : ElevatedButton(
-              onPressed: isLoading || isDisabled ? null : onPressed,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: buttonStyle.backgroundColor,
-                foregroundColor: buttonStyle.foregroundColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: buttonStyle.borderRadius,
-                ),
-                padding: EdgeInsets.zero,
-                elevation: 0,
-                disabledBackgroundColor: buttonStyle.backgroundColor.withValues(
-                  alpha: 0.6,
-                ),
-                disabledForegroundColor: buttonStyle.foregroundColor.withValues(
-                  alpha: 0.6,
-                ),
-              ),
-              child: _buildButtonContent(buttonStyle, texts),
-            ),
     );
   }
 
-  Widget _buildButtonContent(
-    MicrosoftSignInStyle buttonStyle,
-    MicrosoftSignInTexts texts,
-  ) {
-    if (isLoading) {
-      return SizedBox(
-        height: 20,
-        width: 20,
-        child: CircularProgressIndicator(
-          strokeWidth: 2,
-          valueColor: AlwaysStoppedAnimation<Color>(
-            buttonStyle.foregroundColor,
-          ),
-        ),
-      );
-    }
+  // Microsoft always appends its name, so the bare "sign in" reads "with
+  // Microsoft".
+  static String _label(SignInButtonTextVariant variant) => switch (variant) {
+    SignInButtonTextVariant.signInWith => 'Sign in with Microsoft',
+    SignInButtonTextVariant.signUpWith => 'Sign up with Microsoft',
+    SignInButtonTextVariant.continueWith => 'Continue with Microsoft',
+    SignInButtonTextVariant.signIn => 'Sign in with Microsoft',
+  };
 
-    if (type == MicrosoftButtonType.icon) {
-      return _buildMicrosoftLogo(buttonStyle);
-    }
-
-    final textWidget = Text(
-      texts.signInButton ?? _getButtonText(),
-      style: TextStyle(
-        fontSize: size == MicrosoftButtonSize.large ? 16 : 14,
-        color: buttonStyle.foregroundColor,
-      ),
-    );
-
-    final logo = _buildMicrosoftLogo(buttonStyle);
-
-    if (logoAlignment == MicrosoftButtonLogoAlignment.center) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          logo,
-          const SizedBox(width: 12),
-          textWidget,
-        ],
-      );
-    }
-
-    final logoSize = size == MicrosoftButtonSize.large ? 20.0 : 16.0;
-
-    return Stack(
-      children: [
-        Positioned(
-          left: 14,
-          top: 0,
-          bottom: 0,
-          child: logo,
-        ),
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(width: logoSize + 14),
-            Center(child: textWidget),
-            const SizedBox(width: 8),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildMicrosoftLogo(MicrosoftSignInStyle buttonStyle) {
-    final logoSize = size == MicrosoftButtonSize.large ? 20.0 : 16.0;
-
+  // The Microsoft mark is multicolor, so it is never tinted to the foreground —
+  // only greyed out when disabled.
+  static Widget _buildLogo({
+    required double logoSize,
+    required Color foregroundColor,
+    required bool isDisabled,
+  }) {
     return SizedBox.square(
       dimension: logoSize,
       child: SvgPicture.asset(
@@ -197,13 +130,5 @@ class MicrosoftSignInButton extends StatelessWidget {
         fit: BoxFit.scaleDown,
       ),
     );
-  }
-
-  String _getButtonText() {
-    return switch (text) {
-      MicrosoftButtonText.signIn => 'Sign in with Microsoft',
-      MicrosoftButtonText.signUp => 'Sign up with Microsoft',
-      MicrosoftButtonText.continueWith => 'Continue with Microsoft',
-    };
   }
 }

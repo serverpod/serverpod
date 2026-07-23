@@ -14,34 +14,28 @@ final microsoftStories = [
         initial: MicrosoftButtonStyle.light,
       );
 
-      final size = context.knobs.options<MicrosoftButtonSize>(
+      final size = context.knobs.options<SignInButtonSize>(
         label: 'Size',
-        options: MicrosoftButtonSize.values.asOptions(),
-        initial: MicrosoftButtonSize.large,
+        options: SignInButtonSize.values.asOptions(),
+        initial: SignInButtonSize.large,
       );
 
-      final shape = context.knobs.options<MicrosoftButtonShape>(
+      final shape = context.knobs.options<SignInButtonShape>(
         label: 'Shape',
-        options: MicrosoftButtonShape.values.asOptions(),
-        initial: MicrosoftButtonShape.pill,
+        options: SignInButtonShape.values.asOptions(),
+        initial: SignInButtonShape.pill,
       );
 
-      final text = context.knobs.options<MicrosoftButtonText>(
+      final text = context.knobs.options<SignInButtonTextVariant>(
         label: 'Text',
-        options: MicrosoftButtonText.values.asOptions(),
-        initial: MicrosoftButtonText.continueWith,
+        options: SignInButtonTextVariant.values.asOptions(),
+        initial: SignInButtonTextVariant.continueWith,
       );
 
-      final logoAlignment = context.knobs.options<MicrosoftButtonLogoAlignment>(
+      final logoAlignment = context.knobs.options<SignInButtonLogoAlignment>(
         label: 'Logo alignment',
-        options: MicrosoftButtonLogoAlignment.values.asOptions(),
-        initial: MicrosoftButtonLogoAlignment.center,
-      );
-
-      final type = context.knobs.options<MicrosoftButtonType>(
-        label: 'Type',
-        options: MicrosoftButtonType.values.asOptions(),
-        initial: MicrosoftButtonType.standard,
+        options: SignInButtonLogoAlignment.values.asOptions(),
+        initial: SignInButtonLogoAlignment.center,
       );
 
       return buildIsolatedElementsForStory(context, {
@@ -51,7 +45,6 @@ final microsoftStories = [
             isLoading: false,
             isDisabled: false,
             style: style,
-            type: type,
             size: size,
             text: text,
             shape: shape,

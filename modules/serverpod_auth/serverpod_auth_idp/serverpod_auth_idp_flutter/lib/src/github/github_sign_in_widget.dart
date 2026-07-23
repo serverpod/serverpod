@@ -4,6 +4,7 @@ import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 import 'github_auth_controller.dart';
 import 'github_sign_in_button.dart';
 import 'github_sign_in_style.dart';
+import '../common/sign_in_button_style.dart';
 import '../common/sign_in_flow_coordinator.dart';
 
 export 'github_sign_in_button.dart';
@@ -65,28 +66,33 @@ class GitHubSignInWidget extends StatefulWidget {
   /// retrieving the user's profile data and user's emails automatically.
   final List<String> scopes;
 
-  /// The button type: icon or standard button.
-  final GitHubButtonType type;
-
-  /// The button style (black or white).
+  /// The brand color preset (black or white).
+  ///
+  /// Applies when the button is used on its own. Inside a [SignInWidget] (or any
+  /// [SignInButtonStyle] in scope) the shared common style applies instead.
   final GitHubButtonStyle style;
 
-  /// The button size (large or medium).
-  final GitHubButtonSize size;
+  /// The button size.
+  final SignInButtonSize size;
 
-  /// The button text.
-  final GitHubButtonText text;
+  /// The button label variant.
+  final SignInButtonTextVariant text;
 
-  /// The button shape (rectangular, pill, or rounded).
-  final GitHubButtonShape shape;
+  /// The button shape.
+  final SignInButtonShape shape;
 
   /// The GitHub logo alignment: left or center.
-  final GitHubButtonLogoAlignment logoAlignment;
+  final SignInButtonLogoAlignment logoAlignment;
 
   /// The minimum button width, in pixels.
   ///
   /// The maximum width is 400 pixels.
   final double minimumWidth;
+
+  /// The text style applied to the button label.
+  ///
+  /// Falls back to the shared [SignInButtonStyle] when null.
+  final TextStyle? textStyle;
 
   /// Creates a GitHub Sign-In widget.
   const GitHubSignInWidget({
@@ -95,13 +101,13 @@ class GitHubSignInWidget extends StatefulWidget {
     this.onAuthenticated,
     this.onError,
     this.scopes = GitHubAuthController.defaultScopes,
-    this.type = GitHubButtonType.standard,
     this.style = GitHubButtonStyle.black,
-    this.size = GitHubButtonSize.large,
-    this.text = GitHubButtonText.continueWith,
-    this.shape = GitHubButtonShape.pill,
-    this.logoAlignment = GitHubButtonLogoAlignment.center,
+    this.size = SignInButtonSize.large,
+    this.text = SignInButtonTextVariant.continueWith,
+    this.shape = SignInButtonShape.pill,
+    this.logoAlignment = SignInButtonLogoAlignment.center,
     this.minimumWidth = 240,
+    this.textStyle,
     super.key,
   }) : assert(
          (controller == null) != (client == null),
@@ -110,7 +116,7 @@ class GitHubSignInWidget extends StatefulWidget {
        ),
        assert(
          minimumWidth > 0 && minimumWidth <= 400,
-         'Invalid minimumWidth. Must be between 0 and 400.',
+         'Invalid minimumWidth. Must be greater than 0 and at most 400.',
        );
 
   @override
@@ -152,13 +158,13 @@ class _GitHubSignInWidgetState extends State<GitHubSignInWidget> {
       onPressed: _signIn,
       isLoading: _controller.isLoading,
       isDisabled: _controller.isLoading,
-      type: widget.type,
       style: widget.style,
       size: widget.size,
       text: widget.text,
       shape: widget.shape,
       minimumWidth: widget.minimumWidth,
       logoAlignment: widget.logoAlignment,
+      textStyle: widget.textStyle,
     );
   }
 

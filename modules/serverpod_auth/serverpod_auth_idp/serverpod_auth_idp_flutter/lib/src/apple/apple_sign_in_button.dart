@@ -1,13 +1,18 @@
-import 'package:flutter/material.dart' hide IconAlignment;
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
+import '../common/sign_in_button_base.dart';
+import '../common/sign_in_button_style.dart';
 import '../localization/sign_in_localization_provider.dart';
 import 'apple_sign_in_style.dart';
 
 /// A styled button for Apple Sign-In.
 ///
-/// This widget wraps the official Sign in with Apple button from the
-/// `sign_in_with_apple` package and adds loading and disabled states.
+/// Renders a custom Apple-branded button on the shared [SignInButtonBase], with
+/// loading and disabled states, so it matches every other provider button. The
+/// [size], [text], [shape], [logoAlignment], [minimumWidth], and [textStyle]
+/// arguments fall back to the shared [SignInButtonStyle] in scope when a
+/// [SignInWidget] provides one.
 class AppleSignInButton extends StatelessWidget {
   /// Callback when the button is pressed.
   final VoidCallback? onPressed;
@@ -18,82 +23,118 @@ class AppleSignInButton extends StatelessWidget {
   /// Whether the button is disabled.
   final bool isDisabled;
 
-  /// The button type: icon, or standard button.
-  final AppleButtonText type;
-
-  /// The button style.
+  /// The brand color preset (black, white, or white-outlined).
   ///
-  /// For example, black or white.
+  /// Applies when the button is used on its own. Inside a [SignInWidget] (or any
+  /// [SignInButtonStyle] in scope) the shared common style applies instead.
   final AppleButtonStyle style;
 
   /// The button size.
-  ///
-  /// For example, small or large.
-  final AppleButtonSize size;
+  final SignInButtonSize size;
+
+  /// The button label variant.
+  final SignInButtonTextVariant text;
 
   /// The button shape.
-  ///
-  /// For example, rectangular or pill.
-  final AppleButtonShape shape;
+  final SignInButtonShape shape;
 
   /// The Apple logo alignment: left or center.
-  final AppleButtonLogoAlignment logoAlignment;
+  final SignInButtonLogoAlignment logoAlignment;
 
   /// The minimum button width, in pixels.
   ///
   /// The maximum width is 400 pixels.
   final double minimumWidth;
 
+  /// The text style applied to the button label.
+  final TextStyle? textStyle;
+
   /// Creates an Apple Sign-In button.
   const AppleSignInButton({
     required this.onPressed,
     required this.isLoading,
     required this.isDisabled,
-    this.type = AppleButtonText.continueWith,
     this.style = AppleButtonStyle.black,
-    this.size = AppleButtonSize.large,
-    this.shape = AppleButtonShape.pill,
-    this.logoAlignment = AppleButtonLogoAlignment.center,
+    this.size = SignInButtonSize.large,
+    this.text = SignInButtonTextVariant.continueWith,
+    this.shape = SignInButtonShape.pill,
+    this.logoAlignment = SignInButtonLogoAlignment.center,
     this.minimumWidth = 240,
+    this.textStyle,
     super.key,
   }) : assert(
          minimumWidth > 0 && minimumWidth <= 400,
-         'Invalid minimumWidth. Must be between 0 and 400.',
+         'Invalid minimumWidth. Must be greater than 0 and at most 400.',
        );
 
   @override
   Widget build(BuildContext context) {
-    final texts = context.appleSignInTexts;
-    final buttonStyle = AppleSignInStyle.fromConfiguration(
-      shape: shape,
-      size: size,
-      width: minimumWidth,
-    );
-
-    return ConstrainedBox(
-      constraints: BoxConstraints(
-        minWidth: minimumWidth,
-        maxWidth: 400,
-        minHeight: buttonStyle.size.height,
-        maxHeight: buttonStyle.size.height,
+    final localizations = context.appleSignInTexts;
+    final (background, foreground, showBorder) = switch (style) {
+      AppleButtonStyle.black => (const Color(0xFF000000), Colors.white, false),
+      AppleButtonStyle.white => (
+        Colors.white,
+        const Color(0xFF000000),
+        false,
       ),
-      child: SignInWithAppleButton(
-        onPressed: isLoading || isDisabled ? null : onPressed ?? () {},
-        text: texts.signInButton ?? _getButtonText(),
-        height: buttonStyle.size.height,
-        style: style,
-        borderRadius: buttonStyle.borderRadius,
-        iconAlignment: logoAlignment,
+      AppleButtonStyle.whiteOutlined => (
+        Colors.white,
+        const Color(0xFF000000),
+        true,
+      ),
+    };
+
+    return SignInButtonBase(
+      onPressed: onPressed,
+      isLoading: isLoading,
+      isDisabled: isDisabled,
+      size: size,
+      shape: shape,
+      text: text,
+      logoAlignment: logoAlignment,
+      minimumWidth: minimumWidth,
+      textStyle: textStyle,
+      config: SignInButtonConfig(
+        brandColors: SignInButtonColors(
+          background: background,
+          foreground: foreground,
+          border: const Color(0xFF000000),
+        ),
+        brandShowBorder: showBorder,
+        localizedLabel: localizations.signInButton,
+        label: _label,
+        logoBuilder: _buildLogo,
       ),
     );
   }
 
-  String _getButtonText() {
-    return switch (type) {
-      AppleButtonText.signinWith => 'Sign in with Apple',
-      AppleButtonText.continueWith => 'Continue with Apple',
-      AppleButtonText.signupWith => 'Sign up with Apple',
-      AppleButtonText.signin => 'Sign in',
-    };
+  // Apple supports the bare "Sign in" without its name, like Facebook and
+  // Google.
+  static String _label(SignInButtonTextVariant variant) => switch (variant) {
+    SignInButtonTextVariant.signInWith => 'Sign in with Apple',
+    SignInButtonTextVariant.signUpWith => 'Sign up with Apple',
+    SignInButtonTextVariant.continueWith => 'Continue with Apple',
+    SignInButtonTextVariant.signIn => 'Sign in',
+  };
+
+  // The Apple mark is monochrome, so it tints to the foreground and greys out
+  // when disabled.
+  static Widget _buildLogo({
+    required double logoSize,
+    required Color foregroundColor,
+    required bool isDisabled,
+  }) {
+    return SizedBox.square(
+      dimension: logoSize,
+      child: SvgPicture.asset(
+        'assets/images/apple.svg',
+        package: 'serverpod_auth_idp_flutter',
+        colorFilter: ColorFilter.mode(
+          isDisabled ? const Color(0xff9c9c9c) : foregroundColor,
+          BlendMode.srcIn,
+        ),
+        fit: BoxFit.scaleDown,
+      ),
+    );
   }
 }

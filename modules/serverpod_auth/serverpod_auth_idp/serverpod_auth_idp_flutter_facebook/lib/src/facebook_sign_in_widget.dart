@@ -66,31 +66,33 @@ class FacebookSignInWidget extends StatefulWidget {
   /// access to retrieving the user's email, name, and profile picture.
   final List<String> permissions;
 
-  /// The button type: icon, continue with, or sign in.
-  final FacebookButtonText type;
+  /// The button label variant.
+  final SignInButtonTextVariant text;
 
-  /// The button style.
+  /// The brand color preset (blue or white).
   ///
-  /// For example, blue or white.
+  /// Applies when the button is used on its own. Inside a [SignInWidget] (or any
+  /// [SignInButtonStyle] in scope) the shared common style applies instead.
   final FacebookButtonStyle style;
 
   /// The button size.
-  ///
-  /// For example, small or large.
-  final FacebookButtonSize size;
+  final SignInButtonSize size;
 
   /// The button shape.
-  ///
-  /// For example, rectangular or pill.
-  final FacebookButtonShape shape;
+  final SignInButtonShape shape;
 
   /// The Facebook logo alignment: left or center.
-  final FacebookButtonLogoAlignment logoAlignment;
+  final SignInButtonLogoAlignment logoAlignment;
 
   /// The minimum button width, in pixels.
   ///
   /// The maximum width is 400 pixels.
   final double minimumWidth;
+
+  /// The text style applied to the button label.
+  ///
+  /// Falls back to the shared [SignInButtonStyle] when null.
+  final TextStyle? textStyle;
 
   /// Creates a Facebook Sign-In widget.
   const FacebookSignInWidget({
@@ -99,12 +101,13 @@ class FacebookSignInWidget extends StatefulWidget {
     this.onAuthenticated,
     this.onError,
     this.permissions = FacebookAuthController.defaultPermissions,
-    this.type = FacebookButtonText.continueWith,
+    this.text = SignInButtonTextVariant.continueWith,
     this.style = FacebookButtonStyle.blue,
-    this.size = FacebookButtonSize.large,
-    this.shape = FacebookButtonShape.pill,
-    this.logoAlignment = FacebookButtonLogoAlignment.center,
+    this.size = SignInButtonSize.large,
+    this.shape = SignInButtonShape.pill,
+    this.logoAlignment = SignInButtonLogoAlignment.center,
     this.minimumWidth = 240,
+    this.textStyle,
     super.key,
   }) : assert(
          (controller == null) != (client == null),
@@ -113,7 +116,7 @@ class FacebookSignInWidget extends StatefulWidget {
        ),
        assert(
          minimumWidth > 0 && minimumWidth <= 400,
-         'Invalid minimumWidth. Must be between 0 and 400.',
+         'Invalid minimumWidth. Must be greater than 0 and at most 400.',
        );
 
   @override
@@ -155,12 +158,13 @@ class _FacebookSignInWidgetState extends State<FacebookSignInWidget> {
       onPressed: _signIn,
       isLoading: _controller.isLoading,
       isDisabled: _controller.isLoading,
-      type: widget.type,
+      text: widget.text,
       style: widget.style,
       size: widget.size,
       shape: widget.shape,
       minimumWidth: widget.minimumWidth,
       logoAlignment: widget.logoAlignment,
+      textStyle: widget.textStyle,
     );
   }
 
