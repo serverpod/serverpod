@@ -132,6 +132,12 @@ commands:
       - [flutter, no-flutter]
 
   - name: upgrade
+    flags:
+      -c, --check: "Check for available updates without installing."
+
+  - name: upgrade
+    flags:
+      -c, --check: "Check for available updates without installing."
 
   - name: version
 
