@@ -479,17 +479,34 @@ jobs:
             shard-index: 2
             total-shards: 3
             run: bash util/run_tests_integration_embedded modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server -x email
-          # The test server's withServerpod suites: the only schema with
-          # vector/halfvec columns + hnsw indexes. The ubuntu-only
-          # integration_test_server jobs left that DDL unexecuted on
-          # windows/macos (the mingw halfvec miscompile shipped through this
-          # gap); the harness applies the project migrations per group, so it
-          # runs here on every OS.
-          - name: test_server (tagged)
+          # Split the existing tagged test_server suite by whole file. Across
+          # the four shards this is the same suite as before, including the full
+          # schema migration that loads pgvector and PostGIS on every platform.
+          - name: test_server tagged (1/4)
             scope: serverpod_test_server
-            # This large suite exceeds 15 minutes on ARM and macOS.
-            timeout_minutes: 30
+            shard-index: 0
+            total-shards: 4
             run: bash util/run_tests_integration_embedded tests/serverpod_test_server test_integration -x timing -x migration_artifacts
+          - name: test_server tagged (2/4)
+            scope: serverpod_test_server
+            shard-index: 1
+            total-shards: 4
+            run: bash util/run_tests_integration_embedded tests/serverpod_test_server test_integration -x timing -x migration_artifacts
+          - name: test_server tagged (3/4)
+            scope: serverpod_test_server
+            shard-index: 2
+            total-shards: 4
+            run: bash util/run_tests_integration_embedded tests/serverpod_test_server test_integration -x timing -x migration_artifacts
+          - name: test_server tagged (4/4)
+            scope: serverpod_test_server
+            shard-index: 3
+            total-shards: 4
+            run: bash util/run_tests_integration_embedded tests/serverpod_test_server test_integration -x timing -x migration_artifacts
+          # Exercise extension-backed operations, in addition to loading their
+          # schema above, against every published embedded PostgreSQL bundle.
+          - name: test_server extensions
+            scope: serverpod_test_server
+            run: bash util/run_tests_database_integration_embedded
           # This file creates and removes artifacts in the checked-out
           # migrations/ and protocol directories. Keep it out of the concurrent
           # test_server run so other isolates cannot hold those paths on Windows.
