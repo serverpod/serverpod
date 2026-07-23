@@ -77,6 +77,14 @@ class SignInButtonConfig {
   /// filled presets do not.
   final bool brandShowBorder;
 
+  /// Whether the button draws a background and border at all.
+  ///
+  /// `false` renders the button flat — transparent background, no border — in
+  /// every context, including inside a [SignInWidget] whose shared style would
+  /// otherwise apply them (e.g. the anonymous button). Only the label color is
+  /// taken from the resolved colors.
+  final bool hasBackground;
+
   /// The label for [variant], e.g. `signInWith` → "Sign in with GitHub".
   final String Function(SignInButtonTextVariant variant) label;
 
@@ -90,6 +98,7 @@ class SignInButtonConfig {
     required this.label,
     this.logoBuilder,
     this.localizedLabel,
+    this.hasBackground = true,
   });
 }
 
@@ -169,16 +178,20 @@ class SignInButtonBase extends StatelessWidget {
     };
 
     // Inside a SignInWidget the shared style applies the common, theme-aware
-    // colors; on its own the button uses its provider brand colors.
+    // colors; on its own the button uses its provider brand colors. A flat
+    // config (no background) only takes the label color from either.
     final SignInButtonColors colors;
     final bool showBorder;
     if (shared != null) {
       colors = shared.resolveColors(context);
-      showBorder = true;
+      showBorder = config.hasBackground;
     } else {
       colors = config.brandColors;
-      showBorder = config.brandShowBorder;
+      showBorder = config.hasBackground && config.brandShowBorder;
     }
+    final background = config.hasBackground
+        ? colors.background
+        : Colors.transparent;
 
     return ConstrainedBox(
       constraints: BoxConstraints(
@@ -190,7 +203,7 @@ class SignInButtonBase extends StatelessWidget {
       child: ElevatedButton(
         onPressed: isLoading || isDisabled ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: colors.background,
+          backgroundColor: background,
           foregroundColor: colors.foreground,
           shape: RoundedRectangleBorder(
             borderRadius: borderRadius,
@@ -204,7 +217,9 @@ class SignInButtonBase extends StatelessWidget {
           // rendered buttons (Google, Apple) that cast no shadow.
           elevation: 0,
           shadowColor: Colors.transparent,
-          disabledBackgroundColor: colors.background.withValues(alpha: 0.6),
+          disabledBackgroundColor: config.hasBackground
+              ? colors.background.withValues(alpha: 0.6)
+              : Colors.transparent,
           disabledForegroundColor: colors.foreground.withValues(alpha: 0.6),
         ),
         child: _buildContent(
