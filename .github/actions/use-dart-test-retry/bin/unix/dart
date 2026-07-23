@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+: "${SERVERPOD_REAL_DART:?The real Dart executable was not configured.}"
+
+# CI prepends this wrapper to PATH. Keep every Dart command except `dart test`
+# identical to local development.
+if [[ "${1:-}" != "test" ]]; then
+  exec "$SERVERPOD_REAL_DART" "$@"
+fi
+
+max_attempts=3
+attempt=1
+
+while true; do
+  "$SERVERPOD_REAL_DART" "$@"
+  exit_code=$?
+
+  if [[ "$exit_code" -ne 65 || "$attempt" -ge "$max_attempts" ]]; then
+    exit "$exit_code"
+  fi
+
+  attempt=$((attempt + 1))
+  echo "dart test exited with code 65; retrying in case of a transient build-hook failure (attempt $attempt/$max_attempts)."
+  sleep $((attempt - 1))
+done

@@ -1,0 +1,49 @@
+name: Use Dart test retry
+description: Wraps dart test to retry exit code 65 from transient native build-hook failures.
+
+runs:
+  using: composite
+  steps:
+    - name: Install Dart wrapper
+      shell: bash
+      run: |
+        real_dart="${SERVERPOD_REAL_DART:-}"
+        if [[ -z "$real_dart" ]]; then
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            real_dart="$(cygpath -w "$(command -v dart.exe)")"
+          else
+            real_dart="$(command -v dart)"
+          fi
+        fi
+
+        if [[ "$RUNNER_OS" == "Windows" ]]; then
+          # Native Windows shells need a .cmd wrapper; Unix shells use the
+          # executable shebang script below.
+          wrapper_directory="$GITHUB_ACTION_PATH/bin/windows"
+        else
+          wrapper_directory="$GITHUB_ACTION_PATH/bin/unix"
+        fi
+
+        echo "SERVERPOD_REAL_DART=$real_dart" >> "$GITHUB_ENV"
+        echo "$wrapper_directory" >> "$GITHUB_PATH"
+
+    - name: Verify Dart delegation from PowerShell
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        $version = & dart --version 2>&1
+        if ($LASTEXITCODE -ne 0 -or "$version" -notmatch '^Dart SDK version:') {
+          throw "The Windows Dart wrapper did not delegate correctly: $version"
+        }
+        Write-Host $version
+
+    - name: Verify Dart delegation from Bash
+      if: runner.os == 'Windows'
+      shell: bash
+      run: |
+        version="$(dart --version 2>&1)"
+        if [[ "$version" != Dart\ SDK\ version:* ]]; then
+          echo "::error::The Windows Dart wrapper did not delegate correctly: $version"
+          exit 1
+        fi
+        echo "$version"

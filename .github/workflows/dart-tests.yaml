@@ -531,6 +531,8 @@ jobs:
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: stable
+      - name: Retry transient Dart build-hook failures
+        uses: ./.github/actions/use-dart-test-retry
       - uses: ./.github/actions/use-embedded-pg
       - name: Install melos
         run: dart pub global activate melos
@@ -651,6 +653,8 @@ jobs:
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.sdk }}
+      - name: Retry transient Dart build-hook failures
+        uses: ./.github/actions/use-dart-test-retry
       - name: Run unit tests
         shell: bash
         working-directory: ${{ matrix.project }}
@@ -677,6 +681,8 @@ jobs:
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.sdk }}
+      - name: Retry transient Dart build-hook failures
+        uses: ./.github/actions/use-dart-test-retry
       - name: Run unit tests
         shell: bash
         working-directory: tools/serverpod_cli
@@ -761,6 +767,8 @@ jobs:
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.sdk }}
+      - name: Retry transient Dart build-hook failures
+        uses: ./.github/actions/use-dart-test-retry
       - uses: ./.github/actions/use-embedded-pg
       - uses: ./.github/actions/use-pod-bundle
         with:
@@ -792,6 +800,8 @@ jobs:
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.sdk }}
+      - name: Retry transient Dart build-hook failures
+        uses: ./.github/actions/use-dart-test-retry
       - uses: ./.github/actions/use-embedded-pg
       - uses: ./.github/actions/use-pod-bundle
         with:
@@ -885,6 +895,8 @@ jobs:
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.dart-version }}
+      - name: Retry transient Dart build-hook failures
+        uses: ./.github/actions/use-dart-test-retry
       - uses: ./.github/actions/use-embedded-pg
       - name: Install melos
         run: dart pub global activate melos
@@ -920,6 +932,8 @@ jobs:
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.dart-version }}
+      - name: Retry transient Dart build-hook failures
+        uses: ./.github/actions/use-dart-test-retry
       - uses: ./.github/actions/use-embedded-pg
       - name: Install melos
         run: dart pub global activate melos
@@ -952,6 +966,8 @@ jobs:
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.dart-version }}
+      - name: Retry transient Dart build-hook failures
+        uses: ./.github/actions/use-dart-test-retry
       - name: Run SQLite integration tests
         run: util/run_tests_sqlite_integration
 
@@ -974,6 +990,8 @@ jobs:
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: false
+      - name: Retry transient Dart build-hook failures
+        uses: ./.github/actions/use-dart-test-retry
       - name: Cache PUB_CACHE
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
@@ -1020,6 +1038,8 @@ jobs:
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.sdk }}
+      - name: Retry transient Dart build-hook failures
+        uses: ./.github/actions/use-dart-test-retry
       # Redis is disabled on the server (SERVERPOD_REDIS_ENABLED=false in the run
       # script), so unlike the integration suite no Redis is needed.
       - uses: ./.github/actions/use-embedded-pg
@@ -1049,6 +1069,8 @@ jobs:
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.sdk }}
+      - name: Retry transient Dart build-hook failures
+        uses: ./.github/actions/use-dart-test-retry
       - uses: ./.github/actions/use-cli-bundle
       - uses: ./.github/actions/use-pod-bundle
         with:
@@ -1073,6 +1095,8 @@ jobs:
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: false
+      - name: Retry transient Dart build-hook failures
+        uses: ./.github/actions/use-dart-test-retry
       - name: Setup docker (missing on MacOS)
         if: runner.os == 'macos'
         run: |
@@ -1150,6 +1174,8 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
+      - name: Retry transient Dart build-hook failures
+        uses: ./.github/actions/use-dart-test-retry
       - run: dart pub get
         timeout-minutes: 2
       - run: dart test test/integration --reporter=failures-only
@@ -1170,6 +1196,8 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
+      - name: Retry transient Dart build-hook failures
+        uses: ./.github/actions/use-dart-test-retry
       - run: dart pub get
         timeout-minutes: 2
       - run: dart test test/integration --reporter=failures-only
@@ -1190,6 +1218,8 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
+      - name: Retry transient Dart build-hook failures
+        uses: ./.github/actions/use-dart-test-retry
       - run: dart pub get
         timeout-minutes: 2
       - run: dart test test/integration/gcp_s3_compat_integration_test.dart --reporter=failures-only
@@ -1207,6 +1237,8 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
+      - name: Retry transient Dart build-hook failures
+        uses: ./.github/actions/use-dart-test-retry
       - run: dart pub get
         timeout-minutes: 2
       - run: dart test test/integration/native_gcp_integration_test.dart --reporter=failures-only
@@ -1227,6 +1259,8 @@ jobs:
         with:
           flutter-version: "3.38.4"
           cache: false
+      - name: Retry transient Dart build-hook failures
+        uses: ./.github/actions/use-dart-test-retry
       - name: Install melos
         run: dart pub global activate melos
         timeout-minutes: 2
