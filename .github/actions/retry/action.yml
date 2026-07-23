@@ -1,0 +1,80 @@
+name: Retry command
+description: Run a command with a per-attempt timeout and retry transient failures.
+
+inputs:
+  command:
+    description: The command to run.
+    required: true
+  working_directory:
+    description: The command's working directory, relative to the workspace.
+    required: false
+    default: .
+  shell:
+    description: Use bash instead of the platform's default shell.
+    required: false
+    default: platform
+  attempts:
+    description: Maximum number of attempts.
+    required: false
+    default: "3"
+  backoff:
+    description: Delay strategy between attempts, either linear or fixed.
+    required: false
+    default: linear
+  delay_seconds:
+    description: Base delay between attempts.
+    required: false
+    default: "1"
+  timeout_seconds:
+    description: Timeout for each attempt, or 0 to disable it.
+    required: false
+    default: "120"
+  retry_exit_codes:
+    description: Comma-separated exit codes to retry, or all to retry any failure.
+    required: false
+    default: all
+
+runs:
+  using: composite
+  steps:
+    - name: Run with retry (Unix or Bash)
+      if: runner.os != 'Windows' || inputs.shell == 'bash'
+      shell: bash
+      env:
+        RETRY_ATTEMPTS: ${{ inputs.attempts }}
+        RETRY_BACKOFF: ${{ inputs.backoff }}
+        RETRY_COMMAND: ${{ inputs.command }}
+        RETRY_DELAY_SECONDS: ${{ inputs.delay_seconds }}
+        RETRY_EXIT_CODES: ${{ inputs.retry_exit_codes }}
+        RETRY_TIMEOUT_SECONDS: ${{ inputs.timeout_seconds }}
+        RETRY_WORKING_DIRECTORY: ${{ inputs.working_directory }}
+      run: |
+        dart "$GITHUB_ACTION_PATH/run_with_retry.dart" \
+          --attempts "$RETRY_ATTEMPTS" \
+          --backoff "$RETRY_BACKOFF" \
+          --delay-seconds "$RETRY_DELAY_SECONDS" \
+          --retry-exit-codes "$RETRY_EXIT_CODES" \
+          --timeout-seconds "$RETRY_TIMEOUT_SECONDS" \
+          --working-directory "$RETRY_WORKING_DIRECTORY" \
+          -- bash -eo pipefail -c "$RETRY_COMMAND"
+
+    - name: Run with retry (Windows)
+      if: runner.os == 'Windows' && inputs.shell != 'bash'
+      shell: pwsh
+      env:
+        RETRY_ATTEMPTS: ${{ inputs.attempts }}
+        RETRY_BACKOFF: ${{ inputs.backoff }}
+        RETRY_COMMAND: ${{ inputs.command }}
+        RETRY_DELAY_SECONDS: ${{ inputs.delay_seconds }}
+        RETRY_EXIT_CODES: ${{ inputs.retry_exit_codes }}
+        RETRY_TIMEOUT_SECONDS: ${{ inputs.timeout_seconds }}
+        RETRY_WORKING_DIRECTORY: ${{ inputs.working_directory }}
+      run: |
+        dart "$env:GITHUB_ACTION_PATH/run_with_retry.dart" `
+          --attempts "$env:RETRY_ATTEMPTS" `
+          --backoff "$env:RETRY_BACKOFF" `
+          --delay-seconds "$env:RETRY_DELAY_SECONDS" `
+          --retry-exit-codes "$env:RETRY_EXIT_CODES" `
+          --timeout-seconds "$env:RETRY_TIMEOUT_SECONDS" `
+          --working-directory "$env:RETRY_WORKING_DIRECTORY" `
+          -- pwsh -NoLogo -NoProfile -NonInteractive -Command "$env:RETRY_COMMAND"

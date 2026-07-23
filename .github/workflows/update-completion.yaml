@@ -33,12 +33,14 @@ jobs:
           cache: true
 
       - name: Install melos
-        run: dart pub global activate melos
-        timeout-minutes: 2
+        uses: ./.github/actions/retry
+        with:
+          command: dart pub global activate melos
 
       - name: Bootstrap
-        run: melos bootstrap
-        timeout-minutes: 5
+        uses: ./.github/actions/retry
+        with:
+          command: melos bootstrap
 
       - name: Generate completion specs
         run: util/generate_completion

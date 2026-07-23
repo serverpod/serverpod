@@ -16,15 +16,23 @@ runs:
           fi
         fi
 
+        retry_runner="$GITHUB_ACTION_PATH/../retry/run_with_retry.dart"
+        if [[ ! -f "$retry_runner" ]]; then
+          echo "::error::Shared retry runner not found at $retry_runner"
+          exit 1
+        fi
+
         if [[ "$RUNNER_OS" == "Windows" ]]; then
           # Native Windows shells need a .cmd wrapper; Unix shells use the
           # executable shebang script below.
           wrapper_directory="$GITHUB_ACTION_PATH/bin/windows"
+          retry_runner="$(cygpath -w "$retry_runner")"
         else
           wrapper_directory="$GITHUB_ACTION_PATH/bin/unix"
         fi
 
         echo "SERVERPOD_REAL_DART=$real_dart" >> "$GITHUB_ENV"
+        echo "SERVERPOD_RETRY_RUNNER=$retry_runner" >> "$GITHUB_ENV"
         echo "$wrapper_directory" >> "$GITHUB_PATH"
 
     - name: Verify Dart delegation from PowerShell

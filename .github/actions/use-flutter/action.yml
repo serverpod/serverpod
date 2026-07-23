@@ -17,6 +17,8 @@ inputs:
 runs:
   using: composite
   steps:
+    # GitHub Actions expands `uses` steps statically, so the command retry
+    # action cannot wrap and rerun this setup action dynamically.
     - name: Set up Flutter (attempt 1/3)
       id: flutter_1
       continue-on-error: true

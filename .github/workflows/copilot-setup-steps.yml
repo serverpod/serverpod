@@ -41,21 +41,23 @@ jobs:
           echo "Dart SDK version should be >= 3.11.3"
 
       - name: Install Melos
-        run: dart pub global activate melos
-        timeout-minutes: 2
+        uses: ./.github/actions/retry
+        with:
+          command: dart pub global activate melos
 
       - name: Set SERVERPOD_HOME environment variable
         run: echo "SERVERPOD_HOME=$GITHUB_WORKSPACE" >> $GITHUB_ENV
 
       - name: Install all dependencies
-        run: melos bootstrap
-        timeout-minutes: 5
+        uses: ./.github/actions/retry
+        with:
+          command: melos bootstrap
 
       - name: Activate Serverpod CLI from source
-        run: |
-          cd tools/serverpod_cli
-          dart pub global activate --source path .
-        timeout-minutes: 2
+        uses: ./.github/actions/retry
+        with:
+          command: dart pub global activate --source path .
+          working_directory: tools/serverpod_cli
 
       - name: Verify CLI installation
         run: serverpod --version

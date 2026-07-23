@@ -6,23 +6,14 @@ if defined SERVERPOD_REAL_DART goto dispatch
 exit /b 1
 
 :dispatch
+if not defined SERVERPOD_RETRY_RUNNER (
+  >&2 echo The retry runner was not configured.
+  exit /b 1
+)
 if /I "%~1"=="test" goto run_test
 "%SERVERPOD_REAL_DART%" %*
 exit /b %ERRORLEVEL%
 
 :run_test
-set "max_attempts=3"
-set "attempt=1"
-
-:run_test_attempt
-"%SERVERPOD_REAL_DART%" %*
-set "exit_code=%ERRORLEVEL%"
-
-if not "%exit_code%"=="65" exit /b %exit_code%
-if "%attempt%"=="%max_attempts%" exit /b %exit_code%
-
-set /a "attempt+=1"
-set /a "delay=attempt-1"
-echo dart test exited with code 65; retrying in case of a transient build-hook failure ^(attempt %attempt%/%max_attempts%^).
-powershell.exe -NoLogo -NoProfile -NonInteractive -Command "Start-Sleep -Seconds %delay%"
-goto run_test_attempt
+"%SERVERPOD_REAL_DART%" "%SERVERPOD_RETRY_RUNNER%" --attempts 3 --retry-exit-codes 65 --timeout-seconds 0 -- "%SERVERPOD_REAL_DART%" %*
+exit /b %ERRORLEVEL%

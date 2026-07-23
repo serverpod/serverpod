@@ -53,10 +53,10 @@ jobs:
         uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
 
       - name: Get dependencies for CLI
-        run: |
-          cd tools/serverpod_cli
-          dart pub get
-        timeout-minutes: 2
+        uses: ./.github/actions/retry
+        with:
+          command: dart pub get
+          working_directory: tools/serverpod_cli
 
       - name: Update pubspecs
         run: |

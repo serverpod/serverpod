@@ -12,6 +12,7 @@ on:
       - "tools/serverpod_cli/lib/src/runner/**"
       - "tools/serverpod_cli/bin/**"
       - "tools/serverpod_cli/scripts/generate_command_usages.dart"
+      - ".github/actions/retry/**"
       - ".github/workflows/sync-cli-docs.yml"
   workflow_dispatch:
 
@@ -57,9 +58,10 @@ jobs:
           sdk: stable
 
       - name: Resolve serverpod_cli dependencies
-        working-directory: src/tools/serverpod_cli
-        run: dart pub get
-        timeout-minutes: 2
+        uses: ./src/.github/actions/retry
+        with:
+          command: dart pub get
+          working_directory: src/tools/serverpod_cli
 
       - name: Checkout Serverpod Docs Repo
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
