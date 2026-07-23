@@ -5,12 +5,16 @@ import 'dart:io';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/messages.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_log_event.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart'
     show vmServiceWsUri;
 import 'package:serverpod_cli/src/util/browser_launcher.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+import 'package:serverpod_cli/src/util/strip_ansi.dart';
 import 'package:serverpod_cli/src/vendored/flutter_daemon_protocol.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
+import 'package:serverpod_shared/log.dart' show LogLevel;
+import 'package:serverpod_tui/serverpod_tui.dart' show BoundedQueueList;
 import 'package:vm_service/vm_service.dart';
 import 'package:vm_service/vm_service_io.dart';
 
@@ -39,12 +43,16 @@ class FlutterNotInstalledException implements Exception {
 /// vm-service URI and the `flutter-vm-service-info.json` file);
 /// reload/restart go via [FlutterDaemonProtocol] over daemon stdin.
 class FlutterProcess {
+  static const _rawLogDeduplicationWindow = Duration(seconds: 5);
+  static const _maxRecentRawLogLines = 1000;
+
   final String _flutterPackageDir;
   final String _flutterExecutable;
   final String _device;
   final List<String> _extraArgs;
   final IOSink _stdout;
   final IOSink _stderr;
+  final void Function(FlutterLogEvent event)? _onLog;
 
   /// IDE-facing proxy. When non-null, the process binds upstream on
   /// VM-service connect and unbinds on shutdown so the IDE sees a
@@ -53,9 +61,13 @@ class FlutterProcess {
   final VmServiceProxy? _flutterProxy;
 
   /// Fires `'launching'` on spawn, `'connecting'` before VM-service
-  /// connect, `'ready'` on `app.started`, plus verbatim `app.progress`
-  /// messages in between.
+  /// connect, plus verbatim `app.progress` messages in between.
   final void Function(String stage)? _onProgress;
+
+  /// Fires on the daemon's `app.started` event, i.e. the app is fully up
+  /// on its device. This is the only launch-complete signal on non-web
+  /// devices, which never publish an `app.webLaunchUrl`.
+  final void Function()? _onStarted;
 
   /// When true, open [flutterAppUrl] in the default browser once it is
   /// published by the daemon (`app.webLaunchUrl`).
@@ -73,13 +85,20 @@ class FlutterProcess {
 
   Process? _process;
   StreamSubscription<ProcessSignal>? _sigtermSub;
-  StreamSubscription<List<int>>? _stdoutBytesSub;
-  StreamSubscription<List<int>>? _stderrBytesSub;
-  StreamSubscription<String>? _machineLinesSub;
+  StreamSubscription<String>? _stdoutLinesSub;
+  StreamSubscription<String>? _stderrLinesSub;
   StreamSubscription<Event>? _loggingSub;
   StreamSubscription<Event>? _stdoutEventSub;
   StreamSubscription<Event>? _stderrEventSub;
   Timer? _vmServiceHeartbeat;
+  Timer? _logCoalesceTimer;
+  _PendingFlutterLog? _pendingLog;
+  _Utf8LineDecoder? _vmStdoutDecoder;
+  _Utf8LineDecoder? _vmStderrDecoder;
+  final Stopwatch _logClock = Stopwatch()..start();
+  final _recentRawLogLines = BoundedQueueList<_RecentRawLogLine>(
+    _maxRecentRawLogLines,
+  );
 
   String? _appId;
   FlutterDaemonProtocol? _daemon;
@@ -103,6 +122,8 @@ class FlutterProcess {
     List<String> extraArgs = const [],
     VmServiceProxy? flutterProxy,
     void Function(String stage)? onProgress,
+    void Function()? onStarted,
+    void Function(FlutterLogEvent event)? onLog,
     IOSink? stdoutSink,
     IOSink? stderrSink,
     List<String>? machineArgsOverride,
@@ -114,6 +135,8 @@ class FlutterProcess {
        _extraArgs = extraArgs,
        _flutterProxy = flutterProxy,
        _onProgress = onProgress,
+       _onStarted = onStarted,
+       _onLog = onLog,
        _stdout = stdoutSink ?? stdout,
        _stderr = stderrSink ?? stderr,
        _launchBrowser = device == flutterDeviceWebServerWithBrowser,
@@ -187,38 +210,53 @@ class FlutterProcess {
     }
 
     // `[`-prefixed lines -> machine parser; rest -> _stdout as text.
-    final stdoutLines = StreamController<String>();
-    const lineSplitter = LineSplitter();
-    final lineBuffer = StringBuffer();
     void routeLine(String line) {
       if (line.startsWith('[')) {
-        stdoutLines.add(line);
+        handleMachineLine(line);
       } else if (line.isNotEmpty) {
-        _stdout.writeln(line);
+        final accepted = _emitLog(
+          FlutterLogEvent(
+            time: DateTime.now(),
+            level: LogLevel.info,
+            message: line,
+            source: FlutterLogSource.processStdout,
+            levelIsInferred: true,
+            timestampIsInferred: true,
+            canCoalesce: true,
+          ),
+        );
+        if (accepted) _stdout.writeln(line);
       }
     }
 
-    _stdoutBytesSub = process.stdout.listen(
-      (data) {
-        lineBuffer.write(utf8.decode(data, allowMalformed: true));
-        final bufferStr = lineBuffer.toString();
-        final lastNewline = bufferStr.lastIndexOf('\n');
-        if (lastNewline == -1) return;
-        final ready = bufferStr.substring(0, lastNewline);
-        lineBuffer.clear();
-        lineBuffer.write(bufferStr.substring(lastNewline + 1));
-        lineSplitter.convert(ready).forEach(routeLine);
-      },
-      onDone: () {
-        if (lineBuffer.isNotEmpty) {
-          lineSplitter.convert(lineBuffer.toString()).forEach(routeLine);
-          lineBuffer.clear();
-        }
-        stdoutLines.close();
-      },
-    );
-    _machineLinesSub = stdoutLines.stream.listen(handleMachineLine);
-    _stderrBytesSub = process.stderr.listen(_stderr.add);
+    _stdoutLinesSub = process.stdout
+        .transform(const Utf8Decoder(allowMalformed: true))
+        .transform(const LineSplitter())
+        .listen(routeLine);
+
+    void routeStderrLine(String line) {
+      if (line.isEmpty) {
+        _stderr.writeln();
+        return;
+      }
+      final accepted = _emitLog(
+        FlutterLogEvent(
+          time: DateTime.now(),
+          level: LogLevel.error,
+          message: line,
+          source: FlutterLogSource.processStderr,
+          levelIsInferred: true,
+          timestampIsInferred: true,
+          canCoalesce: true,
+        ),
+      );
+      if (accepted) _stderr.writeln(line);
+    }
+
+    _stderrLinesSub = process.stderr
+        .transform(const Utf8Decoder(allowMalformed: true))
+        .transform(const LineSplitter())
+        .listen(routeStderrLine);
 
     unawaited(
       process.exitCode.then((code) async {
@@ -348,46 +386,109 @@ class FlutterProcess {
     }
 
     if (await tryListen('Logging')) {
-      const severeLevel = 1000;
       _loggingSub = vmService.onLoggingEvent.listen((event) {
         final record = event.logRecord;
-        final message = record?.message?.valueAsString;
+        final message = _instanceValue(record?.message);
         if (message == null || message.isEmpty) return;
-        final name = record?.loggerName?.valueAsString ?? '';
+        final name = _instanceValue(record?.loggerName) ?? '';
         final line = name.isEmpty ? message : '[$name] $message';
-        final sink = (record?.level ?? 0) >= severeLevel ? _stderr : _stdout;
+        final vmLevel = record?.level;
+        // Level 0 is dart:developer's default "unspecified" value.
+        final hasVmLevel = vmLevel != null && vmLevel > 0;
+        final level = _logLevelFromVmLevel(
+          hasVmLevel ? vmLevel : null,
+        );
+        final sink = switch (level) {
+          LogLevel.warning || LogLevel.error || LogLevel.fatal => _stderr,
+          _ => _stdout,
+        };
+        final recordTime = record?.time;
+        final hasRecordTime = recordTime != null && recordTime >= 0;
+        _emitLog(
+          FlutterLogEvent(
+            time: hasRecordTime
+                ? DateTime.fromMillisecondsSinceEpoch(recordTime)
+                : DateTime.now(),
+            level: level,
+            message: message,
+            source: FlutterLogSource.vmLogging,
+            loggerName: name.isEmpty ? null : name,
+            error: _instanceValue(record?.error),
+            stackTrace: _instanceValue(record?.stackTrace),
+            metadata: {
+              'vmLevel': ?(hasVmLevel ? vmLevel : null),
+              'sequenceNumber': ?record?.sequenceNumber,
+              'zone': ?_instanceValue(record?.zone),
+            },
+            levelIsInferred: !hasVmLevel,
+            timestampIsInferred: !hasRecordTime,
+          ),
+        );
         sink.writeln(line);
       });
     }
 
     if (await tryListen('Stdout')) {
+      _vmStdoutDecoder = _Utf8LineDecoder(
+        (line) => _forwardVmStreamLine(
+          _stdout,
+          line,
+          level: LogLevel.info,
+          source: FlutterLogSource.vmStdout,
+        ),
+      );
       _stdoutEventSub = vmService.onStdoutEvent.listen(
-        (e) => _writeVmStreamEvent(_stdout, e),
+        (event) => _writeVmStreamEvent(_vmStdoutDecoder!, event),
       );
     }
     if (await tryListen('Stderr')) {
+      _vmStderrDecoder = _Utf8LineDecoder(
+        (line) => _forwardVmStreamLine(
+          _stderr,
+          line,
+          level: LogLevel.error,
+          source: FlutterLogSource.vmStderr,
+        ),
+      );
       _stderrEventSub = vmService.onStderrEvent.listen(
-        (e) => _writeVmStreamEvent(_stderr, e),
+        (event) => _writeVmStreamEvent(_vmStderrDecoder!, event),
       );
     }
   }
 
-  /// Decodes a VM service [event] and writes its text to [sink]
-  static void _writeVmStreamEvent(IOSink sink, Event event) {
-    final bytes = event.bytes;
-    String text;
-    if (bytes != null) {
-      try {
-        text = utf8.decode(base64.decode(bytes), allowMalformed: true);
-      } catch (_) {
-        return;
-      }
-    } else {
-      // No bytes payload on this VM build
+  /// Adds a VM service stream [event] to its UTF-8 line decoder.
+  void _writeVmStreamEvent(_Utf8LineDecoder decoder, Event event) {
+    final encodedBytes = event.bytes;
+    if (encodedBytes == null) return;
+    try {
+      decoder.add(base64.decode(encodedBytes));
+    } catch (_) {
+      // Ignore malformed VM service payloads.
+    }
+  }
+
+  void _forwardVmStreamLine(
+    IOSink sink,
+    String line, {
+    required LogLevel level,
+    required FlutterLogSource source,
+  }) {
+    if (line.isEmpty) {
+      sink.writeln();
       return;
     }
-    if (text.isEmpty) return;
-    sink.write(text);
+    final accepted = _emitLog(
+      FlutterLogEvent(
+        time: DateTime.now(),
+        level: level,
+        message: line,
+        source: source,
+        levelIsInferred: true,
+        timestampIsInferred: true,
+        canCoalesce: true,
+      ),
+    );
+    if (accepted) sink.writeln(line);
   }
 
   /// Hot reload. Daemon-reported success; never throws.
@@ -549,15 +650,246 @@ class FlutterProcess {
             _onProgress?.call(message);
           }
         case 'app.started':
-          _onProgress?.call('ready');
+          _onStarted?.call();
         case 'app.stop':
           log.debug('Flutter daemon emitted app.stop; tearing down.');
           unawaited(_onAppStop());
+        case 'app.log':
+          // Native devices report application and platform output here. Keep
+          // this alongside the VM streams, which are required for web targets.
+          _forwardMachineLog(
+            paramMap,
+            messageKey: 'log',
+            level: paramMap['error'] == true ? LogLevel.error : LogLevel.info,
+            source: FlutterLogSource.appLog,
+            levelIsInferred: true,
+          );
         case 'daemon.logMessage':
-          final message = paramMap['message'];
-          if (message is String) log.debug('flutter[daemon] $message');
+          final daemonLevel = paramMap['level'];
+          _forwardMachineLog(
+            paramMap,
+            messageKey: 'message',
+            level: _logLevelFromDaemonLevel(daemonLevel),
+            source: FlutterLogSource.daemon,
+            levelIsInferred: !_isKnownDaemonLevel(daemonLevel),
+          );
       }
     }
+  }
+
+  void _forwardMachineLog(
+    Map<dynamic, dynamic> params, {
+    required String messageKey,
+    required LogLevel level,
+    required FlutterLogSource source,
+    bool levelIsInferred = false,
+  }) {
+    final message = params[messageKey];
+    if (message is! String || message.isEmpty) return;
+
+    final stackTrace = params['stackTrace'];
+    final accepted = _emitLog(
+      FlutterLogEvent(
+        time: DateTime.now(),
+        level: level,
+        message: message,
+        source: source,
+        stackTrace: stackTrace is String && stackTrace.isNotEmpty
+            ? stackTrace
+            : null,
+        metadata: source == FlutterLogSource.daemon
+            ? {'daemonLevel': params['level']}
+            : source == FlutterLogSource.appLog
+            ? {'error': params['error'] == true}
+            : null,
+        levelIsInferred: levelIsInferred,
+        timestampIsInferred: true,
+      ),
+    );
+    if (!accepted) return;
+
+    final sink = switch (level) {
+      LogLevel.warning || LogLevel.error || LogLevel.fatal => _stderr,
+      _ => _stdout,
+    };
+    sink.write(message);
+    if (!message.endsWith('\n')) sink.writeln();
+
+    if (stackTrace is String && stackTrace.isNotEmpty) {
+      sink.write(stackTrace);
+      if (!stackTrace.endsWith('\n')) sink.writeln();
+    }
+  }
+
+  /// Returns whether [event] was accepted for structured and raw forwarding.
+  bool _emitLog(FlutterLogEvent event) {
+    if (_isDuplicateRawLog(event)) return false;
+    if (_onLog == null) return true;
+
+    final canCoalesce =
+        event.canCoalesce && event.levelIsInferred && event.timestampIsInferred;
+    if (!canCoalesce) {
+      _flushPendingLog();
+      _dispatchLog(event);
+      return true;
+    }
+
+    final pending = _pendingLog;
+    final receivedAtMilliseconds = _logClock.elapsedMilliseconds;
+    if (pending == null ||
+        !pending.canAppend(
+          event,
+          receivedAtMilliseconds: receivedAtMilliseconds,
+        )) {
+      _flushPendingLog();
+      _pendingLog = _PendingFlutterLog(
+        event,
+        receivedAtMilliseconds: receivedAtMilliseconds,
+      );
+    } else {
+      pending.append(event);
+    }
+
+    _logCoalesceTimer?.cancel();
+    _logCoalesceTimer = Timer(
+      const Duration(milliseconds: 50),
+      _flushPendingLog,
+    );
+    return true;
+  }
+
+  bool _isDuplicateRawLog(FlutterLogEvent event) {
+    final channel = _rawLogChannel(event);
+    if (channel == null) return false;
+
+    final now = _logClock.elapsedMilliseconds;
+    _recentRawLogLines.removeWhere(
+      (line) =>
+          now - line.receivedAtMilliseconds >
+          _rawLogDeduplicationWindow.inMilliseconds,
+    );
+
+    final lines = stripAnsi(event.message)
+        .split('\n')
+        .map(
+          (line) =>
+              line.endsWith('\r') ? line.substring(0, line.length - 1) : line,
+        )
+        .where((line) => line.isNotEmpty)
+        .toList();
+    if (lines.isEmpty) return false;
+
+    final matchedIndexes = <int>[];
+    final unmatchedMessages = <String>[];
+    for (final message in lines) {
+      var matchIndex = -1;
+      for (var index = 0; index < _recentRawLogLines.length; index++) {
+        final line = _recentRawLogLines[index];
+        if (!matchedIndexes.contains(index) &&
+            line.channel == channel &&
+            line.message == message &&
+            line.source != event.source &&
+            !line.duplicateSources.contains(event.source)) {
+          matchIndex = index;
+          break;
+        }
+      }
+      if (matchIndex == -1) {
+        unmatchedMessages.add(message);
+      } else {
+        matchedIndexes.add(matchIndex);
+      }
+    }
+
+    if (unmatchedMessages.isNotEmpty) {
+      for (final message in unmatchedMessages) {
+        _recentRawLogLines.add(
+          _RecentRawLogLine(
+            channel: channel,
+            message: message,
+            source: event.source,
+            receivedAtMilliseconds: now,
+          ),
+        );
+      }
+      return false;
+    }
+
+    for (final index in matchedIndexes) {
+      _recentRawLogLines[index].duplicateSources.add(event.source);
+    }
+    return true;
+  }
+
+  static _RawLogChannel? _rawLogChannel(FlutterLogEvent event) {
+    return switch (event.source) {
+      FlutterLogSource.processStdout ||
+      FlutterLogSource.vmStdout => _RawLogChannel.stdout,
+      FlutterLogSource.processStderr ||
+      FlutterLogSource.vmStderr => _RawLogChannel.stderr,
+      FlutterLogSource.appLog => switch (event.level) {
+        LogLevel.warning ||
+        LogLevel.error ||
+        LogLevel.fatal => _RawLogChannel.stderr,
+        _ => _RawLogChannel.stdout,
+      },
+      _ => null,
+    };
+  }
+
+  void _flushPendingLog() {
+    _logCoalesceTimer?.cancel();
+    _logCoalesceTimer = null;
+    final pending = _pendingLog;
+    if (pending == null) return;
+    _pendingLog = null;
+    _dispatchLog(pending.toEvent());
+  }
+
+  void _dispatchLog(FlutterLogEvent event) {
+    try {
+      _onLog?.call(event);
+    } catch (error, stackTrace) {
+      log.warning('Flutter log listener failed: $error\n$stackTrace');
+    }
+  }
+
+  static LogLevel _logLevelFromDaemonLevel(Object? level) {
+    return switch (level) {
+      'trace' || 'debug' => LogLevel.debug,
+      'status' || 'info' => LogLevel.info,
+      'warning' || 'warn' => LogLevel.warning,
+      'error' => LogLevel.error,
+      'fatal' => LogLevel.fatal,
+      _ => LogLevel.info,
+    };
+  }
+
+  static bool _isKnownDaemonLevel(Object? level) {
+    return const {
+      'trace',
+      'debug',
+      'status',
+      'info',
+      'warning',
+      'warn',
+      'error',
+      'fatal',
+    }.contains(level);
+  }
+
+  static LogLevel _logLevelFromVmLevel(int? level) {
+    final value = level ?? 800;
+    if (value >= 1200) return LogLevel.fatal;
+    if (value >= 1000) return LogLevel.error;
+    if (value >= 900) return LogLevel.warning;
+    if (value >= 800) return LogLevel.info;
+    return LogLevel.debug;
+  }
+
+  static String? _instanceValue(InstanceRef? instance) {
+    if (instance == null || instance.kind == InstanceKind.kNull) return null;
+    return instance.valueAsString;
   }
 
   Future<void> _openBrowser(Uri url) async {
@@ -602,21 +934,24 @@ class FlutterProcess {
 
     try {
       _process = null;
-      await _stdoutBytesSub?.cancel();
-      await _stderrBytesSub?.cancel();
-      await _machineLinesSub?.cancel();
+      await _stdoutLinesSub?.cancel();
+      await _stderrLinesSub?.cancel();
       await _sigtermSub?.cancel();
       await _loggingSub?.cancel();
       await _stdoutEventSub?.cancel();
       await _stderrEventSub?.cancel();
+      _vmStdoutDecoder?.close();
+      _vmStderrDecoder?.close();
+      _flushPendingLog();
       _vmServiceHeartbeat?.cancel();
-      _stdoutBytesSub = null;
-      _stderrBytesSub = null;
-      _machineLinesSub = null;
+      _stdoutLinesSub = null;
+      _stderrLinesSub = null;
       _sigtermSub = null;
       _loggingSub = null;
       _stdoutEventSub = null;
       _stderrEventSub = null;
+      _vmStdoutDecoder = null;
+      _vmStderrDecoder = null;
       _vmServiceHeartbeat = null;
 
       await _vmService?.dispose();
@@ -701,4 +1036,109 @@ class FlutterProcess {
     if (path.endsWith('/ws')) path = path.substring(0, path.length - 3);
     return uri.replace(scheme: scheme, path: path).toString();
   }
+}
+
+class _PendingFlutterLog {
+  _PendingFlutterLog(
+    this.first, {
+    required this.receivedAtMilliseconds,
+  }) : _message = StringBuffer(first.message),
+       _lineCount = _countLines(first.message);
+
+  static const maxLines = 100;
+  static const maxCharacters = 64 * 1024;
+  static const maxAge = Duration(milliseconds: 250);
+
+  final FlutterLogEvent first;
+  final int receivedAtMilliseconds;
+  final StringBuffer _message;
+  int _lineCount;
+
+  bool canAppend(
+    FlutterLogEvent event, {
+    required int receivedAtMilliseconds,
+  }) {
+    if (event.source != first.source || event.level != first.level) {
+      return false;
+    }
+    if (receivedAtMilliseconds - this.receivedAtMilliseconds >=
+        maxAge.inMilliseconds) {
+      return false;
+    }
+    final additionalLines = _countLines(event.message);
+    return _lineCount + additionalLines <= maxLines &&
+        _message.length + event.message.length + 1 <= maxCharacters;
+  }
+
+  void append(FlutterLogEvent event) {
+    if (_message.isNotEmpty) _message.writeln();
+    _message.write(event.message);
+    _lineCount += _countLines(event.message);
+  }
+
+  FlutterLogEvent toEvent() {
+    return FlutterLogEvent(
+      time: first.time,
+      level: first.level,
+      message: _message.toString(),
+      source: first.source,
+      loggerName: first.loggerName,
+      error: first.error,
+      stackTrace: first.stackTrace,
+      metadata: {
+        ...?first.metadata,
+        'coalesced': _lineCount > _countLines(first.message),
+        'lineCount': _lineCount,
+      },
+      levelIsInferred: first.levelIsInferred,
+      timestampIsInferred: first.timestampIsInferred,
+    );
+  }
+
+  static int _countLines(String message) => '\n'.allMatches(message).length + 1;
+}
+
+enum _RawLogChannel { stdout, stderr }
+
+class _RecentRawLogLine {
+  _RecentRawLogLine({
+    required this.channel,
+    required this.message,
+    required this.source,
+    required this.receivedAtMilliseconds,
+  });
+
+  final _RawLogChannel channel;
+  final String message;
+  final FlutterLogSource source;
+  final int receivedAtMilliseconds;
+  final Set<FlutterLogSource> duplicateSources = {};
+}
+
+class _Utf8LineDecoder {
+  _Utf8LineDecoder(void Function(String line) onLine) {
+    _sink = const Utf8Decoder(allowMalformed: true).startChunkedConversion(
+      const LineSplitter().startChunkedConversion(
+        _CallbackSink<String>(onLine),
+      ),
+    );
+  }
+
+  late final ByteConversionSink _sink;
+
+  void add(List<int> bytes) => _sink.add(bytes);
+
+  void close() => _sink.close();
+}
+
+class _CallbackSink<T> implements Sink<T> {
+  const _CallbackSink(this._onData);
+
+  final void Function(T data) _onData;
+
+  @override
+  void add(T data) => _onData(data);
+
+  @override
+  void close() {}
 }

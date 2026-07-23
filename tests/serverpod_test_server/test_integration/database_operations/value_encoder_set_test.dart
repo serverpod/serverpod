@@ -1,6 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/generated/protocol.dart';
 import 'package:serverpod_database/src/adapters/postgres/value_encoder.dart';
+import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -20,6 +21,9 @@ void main() {
   });
 
   group('Given a Serverpod instance with no database configured', () {
+    // A minimal server with no database: starting it must not create a pool, so
+    // the encoder stays unavailable. Start it directly rather than via
+    // startWithDatabase, which would provision a database.
     late final pod = Serverpod(
       [],
       Protocol(),
@@ -58,10 +62,7 @@ void main() {
   });
 
   group('Given a Serverpod instance with a database configured', () {
-    late final pod = Serverpod(
-      [],
-      Protocol(),
-      _EmptyEndpoints(),
+    late final pod = IntegrationTestServer.create(
       config: ServerpodConfig(
         database: DatabaseConfig(
           host: 'postgres',
@@ -80,7 +81,7 @@ void main() {
     );
 
     setUp(() async {
-      await pod.start();
+      await pod.startWithDatabase();
     });
 
     tearDown(() async {

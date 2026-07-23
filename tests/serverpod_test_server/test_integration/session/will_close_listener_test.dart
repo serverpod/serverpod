@@ -10,7 +10,7 @@ void main() async {
 
   setUp(() async {
     server = IntegrationTestServer.create();
-    await server.start();
+    await server.startWithDatabase();
     session = await server.createSession();
   });
 

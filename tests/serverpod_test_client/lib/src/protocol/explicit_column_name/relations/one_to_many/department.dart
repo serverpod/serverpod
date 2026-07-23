@@ -15,7 +15,8 @@ import '../../../explicit_column_name/relations/one_to_many/employee.dart'
     as _i2;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
-abstract class Department implements _i1.SerializableModel {
+abstract class Department
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   Department._({
     this.id,
     required this.name,
@@ -65,6 +66,19 @@ abstract class Department implements _i1.SerializableModel {
       'name': name,
       if (employees != null)
         'employees': employees?.toJson(valueToJson: (v) => v.toJson()),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Department',
+      if (id != null) 'id': id,
+      'name': name,
+      if (employees != null)
+        'employees': employees?.toJson(
+          valueToJson: (v) => v.toJsonForProtocol(),
+        ),
     };
   }
 

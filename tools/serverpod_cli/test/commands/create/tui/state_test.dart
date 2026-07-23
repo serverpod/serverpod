@@ -8,20 +8,20 @@ import 'package:test/test.dart';
 
 void main() {
   group(
-    'Given a CreateConfigState, '
+    'Given a CreateConfigState with server and app template type, '
     'when converting to template context',
     () {
       late CreateConfigState state;
 
       setUp(() {
-        state = CreateConfigState(ServerpodTemplateType.server);
+        state = CreateConfigState(ServerpodTemplateType.fullstack);
       });
 
       test(
         'then TemplateContext has correct value for template',
         () {
           var context = state.toTemplateContext();
-          expect(context.template, ServerpodTemplateType.server);
+          expect(context.template, ServerpodTemplateType.fullstack);
 
           state.form.updateSelectedOption(
             ServerpodCreateConfig.template,
@@ -30,6 +30,14 @@ void main() {
 
           context = state.toTemplateContext();
           expect(context.template, ServerpodTemplateType.module);
+
+          state.form.updateSelectedOption(
+            ServerpodCreateConfig.template,
+            TemplateTypeOption.server,
+          );
+
+          context = state.toTemplateContext();
+          expect(context.template, ServerpodTemplateType.server);
         },
       );
 
@@ -38,6 +46,42 @@ void main() {
         () {
           final context = state.toTemplateContext();
           expect(context.auth, isTrue);
+        },
+      );
+
+      test(
+        'then TemplateContext has the correct default value for flutterApp',
+        () {
+          final context = state.toTemplateContext();
+          expect(context.flutterApp, isTrue);
+        },
+      );
+
+      test(
+        'when the server template option is selected, '
+        'then flutterApp is disabled in TemplateContext',
+        () {
+          state.form.updateSelectedOption(
+            ServerpodCreateConfig.template,
+            TemplateTypeOption.server,
+          );
+
+          final context = state.toTemplateContext();
+          expect(context.flutterApp, isFalse);
+        },
+      );
+
+      test(
+        'when the server template option is selected, '
+        'then website is enabled in TemplateContext',
+        () {
+          state.form.updateSelectedOption(
+            ServerpodCreateConfig.template,
+            TemplateTypeOption.server,
+          );
+
+          final context = state.toTemplateContext();
+          expect(context.website, isTrue);
         },
       );
 
@@ -342,6 +386,42 @@ void main() {
         'when no ide is selected then the project can be created',
         () {
           expect(state.canCreate, isTrue);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a CreateConfigState with all configs except ServerpodCreateConfig.template',
+    () {
+      late CreateConfigState state;
+
+      setUp(() {
+        final configs = ServerpodCreateConfig.values.toList()
+          ..removeWhere((e) => e == ServerpodCreateConfig.template);
+        state = CreateConfigState(
+          ServerpodTemplateType.module,
+          configs: configs,
+        );
+      });
+
+      test(
+        'when getting selected option for ServerpodCreateConfig.template, '
+        'then startingTemplate option is returned',
+        () {
+          expect(
+            state.form.getSelectedOptionFor(ServerpodCreateConfig.template),
+            TemplateTypeOption.module,
+          );
+        },
+      );
+
+      test(
+        'when converting to template context, '
+        'then startingTemplate is set in the context for template field',
+        () {
+          final context = state.toTemplateContext();
+          expect(context.template, ServerpodTemplateType.module);
         },
       );
     },

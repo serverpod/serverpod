@@ -71,6 +71,11 @@ class ExceptionYamlDefinition {
                   restrictions.documentDefinition,
                 ).validate,
               ),
+              ValidateNode(
+                Keyword.tail,
+                keyRestriction: restrictions.validateTailKey,
+                valueRestriction: BooleanValueRestriction().validate,
+              ),
             },
           ),
         },

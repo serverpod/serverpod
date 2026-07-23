@@ -5,3 +5,12 @@ server_test_tools_path: test_integration/test_tools
 
 experimental_features:
   all: true
+
+shared_packages:
+  - ../serverpod_test_sqlite_shared
+
+modules:
+  serverpod_auth_core:
+    nickname: auth
+  serverpod_auth_idp:
+    nickname: auth_idp

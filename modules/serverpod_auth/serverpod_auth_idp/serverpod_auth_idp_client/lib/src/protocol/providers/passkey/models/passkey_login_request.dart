@@ -14,7 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
 
 /// Data to be sent for a Passkey login.
-abstract class PasskeyLoginRequest implements _i1.SerializableModel {
+abstract class PasskeyLoginRequest
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   PasskeyLoginRequest._({
     required this.challengeId,
     required this.keyId,
@@ -76,6 +77,18 @@ abstract class PasskeyLoginRequest implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_auth_idp.PasskeyLoginRequest',
+      'challengeId': challengeId.toJson(),
+      'keyId': keyId.toJson(),
+      'authenticatorData': authenticatorData.toJson(),
+      'clientDataJSON': clientDataJSON.toJson(),
+      'signature': signature.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_auth_idp.PasskeyLoginRequest',
       'challengeId': challengeId.toJson(),

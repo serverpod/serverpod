@@ -32,7 +32,7 @@ dependencies:
   google_fonts: ^8.1.0
   projectname_client:
     path: ../projectname_client
-  serverpod_flutter: 3.5.0-beta.10
+  serverpod_flutter: 4.0.0-beta.0
 
 dev_dependencies:
   # Used for agents to drive the app through the Dart MCP
@@ -43,7 +43,6 @@ dev_dependencies:
     sdk: flutter
 
 dependency_overrides:
-  flutter_secure_storage: ^10.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

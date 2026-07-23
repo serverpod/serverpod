@@ -9,6 +9,7 @@ import 'package:cli_tools/cli_tools.dart';
 import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
+import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:serverpod_cli/src/create/database_setup.dart';
 import 'package:serverpod_cli/src/create/generate_files.dart';
 import 'package:serverpod_cli/src/create/ide.dart';
@@ -34,7 +35,14 @@ import 'template_renderer.dart';
 
 enum ServerpodTemplateType {
   mini('mini'),
+
+  /// Project with a server and a Flutter app.
+  fullstack('fullstack'),
+
+  /// Server only project.
   server('server'),
+
+  /// Module project.
   module('module'),
   ;
 
@@ -52,7 +60,10 @@ enum ServerpodTemplateType {
 }
 
 extension ServerpodTemplateTypeExtension on ServerpodTemplateType {
-  bool get isServer => this == ServerpodTemplateType.server;
+  /// Whether the template is for a server or fullstack project
+  bool get hasServer =>
+      this == ServerpodTemplateType.server ||
+      this == ServerpodTemplateType.fullstack;
   bool get isModule => this == ServerpodTemplateType.module;
   bool get isMini => this == ServerpodTemplateType.mini;
 }
@@ -191,7 +202,7 @@ Future<CreateResult> performCreate(
   bool success = await log.progress(
     'Creating project directories.',
     () async {
-      _createProjectDirectories(template, serverpodDirs);
+      _createProjectDirectories(template, serverpodDirs, context);
       return true;
     },
     newParagraph: true,
@@ -199,8 +210,7 @@ Future<CreateResult> performCreate(
 
   final writtenPaths = <String>{};
 
-  if (template == ServerpodTemplateType.server ||
-      template == ServerpodTemplateType.mini) {
+  if (template.hasServer || template.isMini) {
     success &= await log.progress(
       'Writing project files.',
       () async {
@@ -208,13 +218,14 @@ Future<CreateResult> performCreate(
           _copyServerTemplates(
             serverpodDirs,
             name: name,
+            context: context,
             customServerpodPath: productionMode ? null : serverpodHome,
           ),
         );
         return true;
       },
     );
-  } else if (template == ServerpodTemplateType.module) {
+  } else if (template.isModule) {
     success &= await log.progress('Writing project files.', () async {
       writtenPaths.addAll(
         _copyModuleTemplates(
@@ -227,7 +238,7 @@ Future<CreateResult> performCreate(
     });
   }
 
-  if (template == ServerpodTemplateType.server) {
+  if (template.hasServer) {
     success &= await log.progress(
       'Writing additional project files.',
       () async {
@@ -236,14 +247,22 @@ Future<CreateResult> performCreate(
             serverpodDirs,
             name: name,
             isUpgrade: false,
+            context: context,
             customServerpodPath: productionMode ? null : serverpodHome,
           ),
-          ...await _copyFlutterUpgrade(
-            serverpodDirs,
-            name: name,
-            customServerpodPath: productionMode ? null : serverpodHome,
-          ),
+          if (context.flutterApp)
+            ...await _copyFlutterUpgrade(
+              serverpodDirs,
+              name: name,
+              context: context,
+              customServerpodPath: productionMode ? null : serverpodHome,
+            ),
         ]);
+        await _copyClientUpgrade(
+          serverpodDirs,
+          context: context,
+          customServerpodPath: productionMode ? null : serverpodHome,
+        );
         return true;
       },
     );
@@ -252,11 +271,10 @@ Future<CreateResult> performCreate(
   success &= await _renderTemplates(writtenPaths, context);
 
   success &= await log.progress('Getting workspace dependencies.', () {
-    return CommandLineTools.dartPubGet(serverpodDirs.projectDir);
+    return CommandLineTools.pubGet(serverpodDirs.projectDir);
   });
 
-  if (template == ServerpodTemplateType.server ||
-      template == ServerpodTemplateType.mini) {
+  if (context.flutterApp && (template.hasServer || template.isMini)) {
     success &= await log.progress(
       'Creating Flutter app platform files.',
       () {
@@ -276,8 +294,7 @@ Future<CreateResult> performCreate(
     interactive: interactive,
   );
 
-  if (template == ServerpodTemplateType.server ||
-      template == ServerpodTemplateType.module) {
+  if (template.hasServer || template.isModule) {
     success &= await log.progress('Creating default database migration.', () {
       return DatabaseSetup.createDefaultMigration(
         serverpodDirs.serverDir,
@@ -301,7 +318,7 @@ Future<CreateResult> performCreate(
 
     var projectDirPath = p.basename(serverpodDirs.projectDir.path);
 
-    if (template == ServerpodTemplateType.server) {
+    if (template.hasServer) {
       logStartInstructions(projectDirPath);
     } else if (template == ServerpodTemplateType.mini) {
       logMiniStartInstructions(projectDirPath);
@@ -480,7 +497,7 @@ Future<CreateResult> _performUpgrade({
   required bool createDefaultMigration,
   Directory? workingDirectory,
 }) async {
-  if (context.template != ServerpodTemplateType.server) {
+  if (!context.template.hasServer) {
     _logError('The upgrade command can only be used with server templates.');
     return CreateFailure();
   }
@@ -509,18 +526,34 @@ Future<CreateResult> _performUpgrade({
     );
   }
 
+  final hasFlutterProject = await serverpodDir.flutterDir.exists();
+
   final writtenPaths = <String>{};
   var success = true;
+
   success &= await log.progress(
     'Upgrading project.',
     () async {
-      writtenPaths.addAll(
-        await _copyServerUpgrade(
+      writtenPaths.addAll([
+        ...await _copyServerUpgrade(
           serverpodDir,
           name: name,
           isUpgrade: true,
+          context: context,
           customServerpodPath: productionMode ? null : serverpodHome,
         ),
+        if (hasFlutterProject)
+          ...await _copyFlutterUpgrade(
+            serverpodDir,
+            name: name,
+            context: context,
+            customServerpodPath: productionMode ? null : serverpodHome,
+          ),
+      ]);
+      await _copyClientUpgrade(
+        serverpodDir,
+        context: context,
+        customServerpodPath: productionMode ? null : serverpodHome,
       );
       return true;
     },
@@ -528,13 +561,17 @@ Future<CreateResult> _performUpgrade({
 
   success &= await _renderTemplates(writtenPaths, context);
 
+  success &= await log.progress('Getting workspace dependencies.', () {
+    return CommandLineTools.pubGet(serverpodDir.projectDir);
+  });
+
   success &= await _runGenerate(
     serverpodDir.serverDir,
     CommandLineExperimentalFeatures.instance.features,
     interactive: interactive,
   );
 
-  if (createDefaultMigration) {
+  if (createDefaultMigration && context.database) {
     success &= await log.progress('Creating default database migration.', () {
       return DatabaseSetup.createDefaultMigration(
         serverpodDir.serverDir,
@@ -672,13 +709,14 @@ class ServerpodDirectories {
 void _createProjectDirectories(
   ServerpodTemplateType template,
   ServerpodDirectories serverpodDirs,
+  TemplateContext context,
 ) {
   _createDirectory(serverpodDirs.projectDir);
   _createDirectory(serverpodDirs.serverDir);
   _createDirectory(serverpodDirs.clientDir);
 
-  if (template == ServerpodTemplateType.server) {
-    _createDirectory(serverpodDirs.flutterDir);
+  if (template.hasServer) {
+    if (context.flutterApp) _createDirectory(serverpodDirs.flutterDir);
     _createDirectory(serverpodDirs.githubDir);
     _createDirectory(serverpodDirs.vscodeDir);
   }
@@ -692,9 +730,55 @@ void _createDirectory(Directory dir) {
   dir.createSync();
 }
 
+Future<void> _copyClientUpgrade(
+  ServerpodDirectories serverpodDirs, {
+  required TemplateContext context,
+  String? customServerpodPath,
+}) async {
+  if (context.auth) {
+    log.debug('Adding auth dependencies to client pubspec', newParagraph: true);
+    _addDependenciesToPubspec(
+      pubspecFile: File(p.join(serverpodDirs.clientDir.path, 'pubspec.yaml')),
+      additions: [
+        (
+          name: 'serverpod_auth_idp_client',
+          source: DependencySource.version(
+            VersionConstraint.parse(templateVersion),
+          ),
+          type: DependencyType.normal,
+        ),
+      ],
+    );
+  }
+
+  if (customServerpodPath != null && context.auth) {
+    log.debug('Adding auth path overrides to root pubspec', newParagraph: true);
+    _addDependenciesToPubspec(
+      pubspecFile: File(p.join(serverpodDirs.projectDir.path, 'pubspec.yaml')),
+      additions: [
+        (
+          name: 'serverpod_auth_core_client',
+          source: DependencySourcePath(
+            '$customServerpodPath/modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_client',
+          ),
+          type: DependencyType.override,
+        ),
+        (
+          name: 'serverpod_auth_idp_client',
+          source: DependencySourcePath(
+            '$customServerpodPath/modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_client',
+          ),
+          type: DependencyType.override,
+        ),
+      ],
+    );
+  }
+}
+
 Future<List<String>> _copyFlutterUpgrade(
   ServerpodDirectories serverpodDirs, {
   required String name,
+  required TemplateContext context,
   String? customServerpodPath,
 }) async {
   log.debug('Copying Flutter upgrade files.', newParagraph: true);
@@ -717,35 +801,33 @@ Future<List<String>> _copyFlutterUpgrade(
   );
   final writtenPaths = [...copier.copyFiles()];
 
-  log.debug('Adding auth dependencies to Flutter pubspec', newParagraph: true);
-  _addDependenciesToPubspec(
-    pubspecFile: File(p.join(serverpodDirs.flutterDir.path, 'pubspec.yaml')),
-    additions: [
-      (
-        name: 'serverpod_auth_idp_flutter',
-        source: DependencySource.version(
-          VersionConstraint.parse(templateVersion),
+  if (context.auth) {
+    log.debug(
+      'Adding auth dependencies to Flutter pubspec',
+      newParagraph: true,
+    );
+    _addDependenciesToPubspec(
+      pubspecFile: File(p.join(serverpodDirs.flutterDir.path, 'pubspec.yaml')),
+      additions: [
+        (
+          name: 'serverpod_auth_idp_flutter',
+          source: DependencySource.version(
+            VersionConstraint.parse(templateVersion),
+          ),
+          type: DependencyType.normal,
         ),
-        type: DependencyType.normal,
-      ),
-    ],
-  );
-
-  log.debug('Adding auth dependencies to client pubspec', newParagraph: true);
-  _addDependenciesToPubspec(
-    pubspecFile: File(p.join(serverpodDirs.clientDir.path, 'pubspec.yaml')),
-    additions: [
-      (
-        name: 'serverpod_auth_idp_client',
-        source: DependencySource.version(
-          VersionConstraint.parse(templateVersion),
+        (
+          name: 'flutter_secure_storage',
+          source: DependencySource.version(
+            VersionConstraint.parse('^10.0.0'),
+          ),
+          type: DependencyType.override,
         ),
-        type: DependencyType.normal,
-      ),
-    ],
-  );
+      ],
+    );
+  }
 
-  if (customServerpodPath != null) {
+  if (customServerpodPath != null && context.auth) {
     log.debug('Adding auth path overrides to root pubspec', newParagraph: true);
     _addDependenciesToPubspec(
       pubspecFile: File(p.join(serverpodDirs.projectDir.path, 'pubspec.yaml')),
@@ -758,23 +840,9 @@ Future<List<String>> _copyFlutterUpgrade(
           type: DependencyType.override,
         ),
         (
-          name: 'serverpod_auth_core_client',
-          source: DependencySourcePath(
-            '$customServerpodPath/modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_client',
-          ),
-          type: DependencyType.override,
-        ),
-        (
           name: 'serverpod_auth_core_flutter',
           source: DependencySourcePath(
             '$customServerpodPath/modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_flutter',
-          ),
-          type: DependencyType.override,
-        ),
-        (
-          name: 'serverpod_auth_idp_client',
-          source: DependencySourcePath(
-            '$customServerpodPath/modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_client',
           ),
           type: DependencyType.override,
         ),
@@ -788,6 +856,7 @@ Future<List<String>> _copyServerUpgrade(
   ServerpodDirectories serverpodDirs, {
   required String name,
   required bool isUpgrade,
+  required TemplateContext context,
   String? customServerpodPath,
 }) async {
   var awsName = name.replaceAll('_', '-');
@@ -925,13 +994,6 @@ Future<List<String>> _copyServerUpgrade(
       ),
     ],
     fileNameReplacements: const [],
-    ignoreFileNames: [
-      if (isUpgrade) ...[
-        'server.dart',
-        'email_idp_endpoint.dart',
-        'jwt_refresh_endpoint.dart',
-      ],
-    ],
   );
   final writtenPaths = [...copier.copyFiles()];
 
@@ -991,7 +1053,7 @@ Future<List<String>> _copyServerUpgrade(
     writtenPaths.addAll(copier.copyFiles());
   }
 
-  if (!isUpgrade) {
+  if (context.auth) {
     log.debug(
       'Adding auth dependencies to server pubspec',
       newParagraph: true,
@@ -1067,6 +1129,7 @@ void _addDependenciesToPubspec({
 List<String> _copyServerTemplates(
   ServerpodDirectories serverpodDirs, {
   required String name,
+  required TemplateContext context,
   String? customServerpodPath,
 }) {
   final writtenPaths = <String>[];
@@ -1112,6 +1175,10 @@ List<String> _copyServerTemplates(
       Replacement(
         slotName: 'projectname',
         replacement: name,
+      ),
+      Replacement(
+        slotName: 'flutter_app_display_name',
+        replacement: formatFlutterAppDisplayName(name),
       ),
       if (customServerpodPath != null)
         Replacement(
@@ -1162,42 +1229,44 @@ List<String> _copyServerTemplates(
   );
   writtenPaths.addAll(copier.copyFiles());
 
-  log.debug('Copying Flutter files', newParagraph: true);
-  copier = Copier(
-    srcDir: Directory(
-      p.join(resourceManager.templateDirectory.path, 'projectname_flutter'),
-    ),
-    dstDir: serverpodDirs.flutterDir,
-    replacements: [
-      Replacement(
-        slotName: 'projectname',
-        replacement: name,
+  if (context.flutterApp) {
+    log.debug('Copying Flutter files', newParagraph: true);
+    copier = Copier(
+      srcDir: Directory(
+        p.join(resourceManager.templateDirectory.path, 'projectname_flutter'),
       ),
-      if (customServerpodPath != null)
+      dstDir: serverpodDirs.flutterDir,
+      replacements: [
         Replacement(
-          slotName: 'path: ../../../packages/',
-          replacement: 'path: $customServerpodPath/packages/',
+          slotName: 'projectname',
+          replacement: name,
         ),
-    ],
-    fileNameReplacements: [
-      Replacement(
-        slotName: 'projectname',
-        replacement: name,
-      ),
-      const Replacement(
-        slotName: 'gitignore',
-        replacement: '.gitignore',
-      ),
-    ],
-    ignoreFileNames: [
-      'ios',
-      'android',
-      'web',
-      'macos',
-      'build',
-    ],
-  );
-  writtenPaths.addAll(copier.copyFiles());
+        if (customServerpodPath != null)
+          Replacement(
+            slotName: 'path: ../../../packages/',
+            replacement: 'path: $customServerpodPath/packages/',
+          ),
+      ],
+      fileNameReplacements: [
+        Replacement(
+          slotName: 'projectname',
+          replacement: name,
+        ),
+        const Replacement(
+          slotName: 'gitignore',
+          replacement: '.gitignore',
+        ),
+      ],
+      ignoreFileNames: [
+        'ios',
+        'android',
+        'web',
+        'macos',
+        'build',
+      ],
+    );
+    writtenPaths.addAll(copier.copyFiles());
+  }
 
   log.debug('Enabling workspace configuration', newParagraph: true);
   _enableWorkspaceInRootPubspec(
@@ -1207,7 +1276,7 @@ List<String> _copyServerTemplates(
     workspaceMembers: [
       '${name}_client',
       '${name}_server',
-      '${name}_flutter',
+      if (context.flutterApp) '${name}_flutter',
     ],
   );
   return writtenPaths;

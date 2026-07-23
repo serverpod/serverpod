@@ -1064,6 +1064,18 @@ class PostgresDatabaseConnection
     if (column is ColumnHalfVector) return 'halfvec(${column.dimension})';
     if (column is ColumnSparseVector) return 'sparsevec(${column.dimension})';
     if (column is ColumnBit) return 'bit(${column.dimension})';
+    if (column is ColumnGeographyPoint) {
+      return 'geography(Point,${Geography.defaultSrid})';
+    }
+    if (column is ColumnGeographyLineString) {
+      return 'geography(LineString,${Geography.defaultSrid})';
+    }
+    if (column is ColumnGeographyPolygon) {
+      return 'geography(Polygon,${Geography.defaultSrid})';
+    }
+    if (column is ColumnGeographyGeometryCollection) {
+      return 'geography(GeometryCollection,${Geography.defaultSrid})';
+    }
     if (column is ColumnStructured) return 'jsonb';
     if (column is ColumnSerializable) return 'json';
     if (column is ColumnEnumExtended) {

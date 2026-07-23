@@ -416,6 +416,7 @@ class ModelParser {
     );
 
     var isRequired = _parseIsRequired(node);
+    var isTail = _parseIsTail(node);
     var uniquePerFieldNames = _parseUniqueField(node);
 
     return [
@@ -429,6 +430,7 @@ class ModelParser {
         defaultModelValue: defaultModelValue,
         defaultPersistValue: defaultPersistValue,
         isRequired: isRequired,
+        isTail: isTail,
         columnNameOverride: columnNameOverride,
         jsonKeyOverride: jsonKeyOverride,
         uniquePerFieldNames: uniquePerFieldNames,
@@ -563,6 +565,10 @@ class ModelParser {
     return _parseBooleanKey(node, Keyword.requiredKey);
   }
 
+  static bool _parseIsTail(YamlMap node) {
+    return _parseBooleanKey(node, Keyword.tail);
+  }
+
   static List<String>? _parseUniqueField(YamlMap node) {
     var value = node.nodes[Keyword.unique]?.value;
     return switch (value) {
@@ -690,6 +696,9 @@ class ModelParser {
         onlyJsonbFields:
             indexFieldsTypes.isNotEmpty &&
             indexFieldsTypes.every((f) => f.type.isJsonbSerialized),
+        onlyGeographyFields:
+            indexFieldsTypes.isNotEmpty &&
+            indexFieldsTypes.every((f) => f.type.isGeographyType),
       );
       var unique = _parseUniqueKey(nodeDocument);
       var operatorClass = _parseOperatorClass(
@@ -752,6 +761,7 @@ class ModelParser {
     YamlMap documentContents, {
     required bool onlyVectorFields,
     required bool onlyJsonbFields,
+    required bool onlyGeographyFields,
   }) {
     var typeNode = documentContents.nodes[Keyword.type];
     var type = typeNode?.value;
@@ -759,6 +769,7 @@ class ModelParser {
     if (type == null || type is! String) {
       if (onlyVectorFields) return 'hnsw';
       if (onlyJsonbFields) return 'gin';
+      if (onlyGeographyFields) return 'gist';
       return 'btree';
     }
 

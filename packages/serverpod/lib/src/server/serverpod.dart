@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod/serverpod.dart' hide LogLevel;
+import 'package:serverpod_database/embedded.dart';
 import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -10,7 +11,6 @@ import 'package:serverpod/src/server/log_manager/session_log.dart';
 import 'package:serverpod/src/server/log_manager/serverpod_logging.dart';
 import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
 import 'package:serverpod/src/config/version.dart';
-import 'package:serverpod/src/redis/controller.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/features.dart';
@@ -86,7 +86,7 @@ class Serverpod {
   /// program it's not recommended.
   static Serverpod get instance {
     if (_instance == null) {
-      throw Exception(
+      throw StateError(
         'Serverpod has not been initialized. You need to create '
         'the Serverpod object before calling this method.',
       );
@@ -798,8 +798,16 @@ class Serverpod {
     // Ensure the database pool manager has started.
     // The call to start() is necessary in case this method is being invoked
     // after a shutdown. Otherwise, the pool manager won't be started again.
-    _databasePoolManager?.start();
-    await _databasePoolManager?.started;
+    try {
+      _databasePoolManager?.start();
+      await _databasePoolManager?.started;
+    } on EmbeddedPostgresStartupException catch (error, stackTrace) {
+      log.error(
+        error.message,
+        stackTrace: error.includeStackTrace ? stackTrace : null,
+      );
+      throw ExitException(1);
+    }
 
     if (Features.enableMigrations) {
       int? maxAttempts = config.role == ServerpodRole.maintenance ? 6 : null;

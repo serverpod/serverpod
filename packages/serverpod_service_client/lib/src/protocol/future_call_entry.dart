@@ -15,7 +15,8 @@ import 'future_call_scheduling.dart' as _i2;
 import 'package:serverpod_service_client/src/protocol/protocol.dart' as _i3;
 
 /// A serialized future call with bindings to the database.
-abstract class FutureCallEntry implements _i1.SerializableModel {
+abstract class FutureCallEntry
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   FutureCallEntry._({
     this.id,
     required this.name,
@@ -99,6 +100,20 @@ abstract class FutureCallEntry implements _i1.SerializableModel {
       'serverId': serverId,
       if (identifier != null) 'identifier': identifier,
       if (scheduling != null) 'scheduling': scheduling?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod.FutureCallEntry',
+      if (id != null) 'id': id,
+      'name': name,
+      'time': time.toJson(),
+      if (serializedObject != null) 'serializedObject': serializedObject,
+      'serverId': serverId,
+      if (identifier != null) 'identifier': identifier,
+      if (scheduling != null) 'scheduling': scheduling?.toJsonForProtocol(),
     };
   }
 

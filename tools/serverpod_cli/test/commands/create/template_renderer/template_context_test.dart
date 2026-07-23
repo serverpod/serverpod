@@ -115,6 +115,7 @@ void main() {
           'webserver': true,
           'docker': true,
           'database': true,
+          'flutterApp': true,
         },
       );
     },

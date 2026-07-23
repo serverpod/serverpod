@@ -146,7 +146,7 @@ Future<void> performCreateWithTui(
   String? projectPath;
 
   final backend = ServerpodTerminalBackend(
-    preExit: () => _preExit(
+    preExit: (_) => _preExit(
       template: state.template,
       projectPath: projectPath,
       isUpgrade: isUpgrade,
@@ -208,7 +208,7 @@ Future<void> _preExit({
       type: TextLogType.success,
     );
 
-    if (template.isServer) logStartInstructions(projectPath);
+    if (template.hasServer) logStartInstructions(projectPath);
     if (template.isMini) logMiniStartInstructions(projectPath);
   }
 

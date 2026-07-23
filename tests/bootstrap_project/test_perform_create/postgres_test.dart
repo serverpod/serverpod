@@ -22,11 +22,11 @@ void main() {
 
   group(
     'Given a TemplateContext with postgres enabled, '
-    'when performCreate is called with the context and a server template type',
+    'when performCreate is called with the context and a fullstack template type',
     () {
       final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
-          template: ServerpodTemplateType.server,
+          template: ServerpodTemplateType.fullstack,
           postgres: true,
         ),
       );
@@ -129,11 +129,11 @@ void main() {
 
   group(
     'Given a TemplateContext with postgres disabled, '
-    'when performCreate is called with the context and a server template type',
+    'when performCreate is called with the context and a fullstack template type',
     () {
       final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
-          template: ServerpodTemplateType.server,
+          template: ServerpodTemplateType.fullstack,
           postgres: false,
         ),
       );

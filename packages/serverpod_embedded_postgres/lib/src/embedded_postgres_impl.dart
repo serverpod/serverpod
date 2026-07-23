@@ -7,9 +7,12 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_shared/process_io.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
+import 'binary/binary_source.dart';
 import 'binary/binary_store.dart';
+import 'binary/bundle_builder.dart';
+import 'binary/bundle_spec.dart';
 import 'binary/executable.dart';
-import 'binary/maven_url.dart';
+import 'binary/serverpod_bundle.dart';
 import 'cluster/cluster_store.dart';
 import 'embedded_postgres.dart';
 import 'exceptions.dart';
@@ -29,7 +32,7 @@ const int _pgDefaultPort = 5432;
 /// Concrete implementation backing [EmbeddedPostgres.start].
 ///
 /// Orchestrates:
-///   1. [BinaryStore.ensure] - download + verify + extract Zonky bundle.
+///   1. [BinaryStore.ensure] - download + verify + extract Serverpod bundle.
 ///   2. [ClusterStore.ensureInitialized] - run initdb if PG_VERSION is missing.
 ///   3. [ClusterStore.requireMajorMatch] - fail loudly on cross-major.
 ///   4. [ClusterStore.reconcilePostgresConf] - write our managed block.
@@ -54,6 +57,24 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
        _runDir = runDir,
        _resolvedTransport = resolvedTransport,
        _resolvedPassword = resolvedPassword;
+
+  /// Backs [EmbeddedPostgres.startOrAttach].
+  static Future<EmbeddedStartResult> startOrAttach(
+    EmbeddedPostgresOptions options,
+  ) async {
+    try {
+      var handle = await start(options);
+      return EmbeddedStartResult(handle: handle, launched: true);
+    } on PostmasterLockBusyException catch (exc, stackTrace) {
+      try {
+        var attached = await attach(options.dataDir);
+        return EmbeddedStartResult(handle: attached, launched: false);
+      } on AttachException {
+        // The postmaster vanished between start()'s lock check and attach().
+        Error.throwWithStackTrace(exc, stackTrace);
+      }
+    }
+  }
 
   /// Backs [EmbeddedPostgres.attach]. Public only so the abstract class
   /// can delegate.
@@ -131,13 +152,53 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
 
     ensureSecureDirectorySync(runDir.path);
 
+    // Serialize launches for this data directory: one caller initializes the
+    // cluster and starts the postmaster; the rest wait, then attach below.
+    // A held lock is heartbeated so a slow cold launch (binary download +
+    // initdb) is not mistaken for a leak; a dead holder is reclaimed by PID.
+    final launchLock = await InterProcessLock.acquire(
+      p.join(dataRoot.path, 'postgres.launch.lock'),
+      staleWhen: const StaleLockPolicy.processLiveness(
+        staleAfter: Duration(minutes: 2),
+      ),
+      timeout: const Duration(minutes: 60), // may require rebuild
+      heartbeatInterval: const Duration(seconds: 30),
+    );
+    try {
+      return await _startLocked(
+        options: options,
+        pgDataDir: pgDataDir,
+        dataRoot: dataRoot,
+        runDir: runDir,
+        pidFile: pidFile,
+        logFile: logFile,
+        pwFile: pwFile,
+      );
+    } finally {
+      await launchLock.release();
+    }
+  }
+
+  static Future<EmbeddedPostgres> _startLocked({
+    required EmbeddedPostgresOptions options,
+    required Directory pgDataDir,
+    required Directory dataRoot,
+    required Directory runDir,
+    required File pidFile,
+    required File logFile,
+    required File pwFile,
+  }) async {
     var binaryStore = BinaryStore(cacheRoot: options.binaryCache);
-    var artifact = ZonkyArtifact.forCurrentPlatform(version: options.version);
+    var artifact = ServerpodBundleArtifact.forCurrentPlatform(
+      spec: bundleSpecFor(options.version),
+    );
     Directory installDir;
     try {
       installDir = await binaryStore.ensure(
         artifact,
         onProgress: options.onProgress,
+        source: resolveBinarySource(explicit: options.binarySource),
+        builder: const BundleBuilder(),
       );
     } finally {
       binaryStore.close();
@@ -160,7 +221,10 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
         password: resolvedPassword,
       );
     }
-    cluster.reconcilePostgresConf(transport: resolvedTransport);
+    cluster.reconcilePostgresConf(
+      transport: resolvedTransport,
+      maxConnections: options.maxConnections,
+    );
 
     if (options.repairStaleLocks) {
       await repairStaleEmbeddedPostgresLocks(
@@ -182,6 +246,26 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
       );
     }
 
+    // postmaster.pid (above) is removed early in PG's shutdown, but the Unix
+    // socket lock outlives it until the postmaster has fully exited. A previous
+    // postmaster still finishing shutdown therefore reads as startable here yet
+    // would crash the launch with "lock file ... already exists". Wait for that
+    // holder to exit so the launch lands on a free socket. The socket lock uses
+    // the same first-line-PID format, so readPostmasterPidFile parses it too.
+    var socketLockPid = readPostmasterPidFile(
+      File(p.join(runDir.path, '.s.PGSQL.$_pgDefaultPort.lock')),
+    );
+    if (socketLockPid != null && isProcessAlive(socketLockPid)) {
+      var exited = await waitForPidExit(socketLockPid, options.startTimeout);
+      if (!exited) {
+        throw PostmasterLockBusyException(
+          '.s.PGSQL.$_pgDefaultPort.lock in ${runDir.path} is still held by '
+          'live PID $socketLockPid after ${options.startTimeout.inSeconds}s',
+          existingPid: socketLockPid,
+        );
+      }
+    }
+
     var supervisor = await _startSupervisorWithPortRetry(
       installDir: installDir,
       dataDir: pgDataDir,
@@ -193,7 +277,10 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
       detach: options.detach,
       onResolveTransport: (newTransport) {
         resolvedTransport = newTransport;
-        cluster.reconcilePostgresConf(transport: newTransport);
+        cluster.reconcilePostgresConf(
+          transport: newTransport,
+          maxConnections: options.maxConnections,
+        );
       },
     );
 
@@ -328,37 +415,45 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
 /// Resolves the user-supplied [transport] into a concrete one ready to
 /// pass to ClusterStore + Supervisor:
 ///
+///   - For fresh clusters, always seeds a superuser password (written to
+///     [pwFile]) so a later switch to [TcpTransport] works without re-init.
+///     Unix connections still use trust auth.
 ///   - For [TcpTransport] with `port == 0`, allocates an ephemeral port
 ///     by binding `127.0.0.1:0` and reading the kernel-assigned port.
-///   - For TCP overall, persists / reads the password sidecar so warm
-///     restarts use the same credential the cluster was init'd with.
-///   - For [UnixTransport], no resolution is needed (returns identity).
+///   - For warm TCP restarts, reads the persisted password sidecar so
+///     the endpoint matches whatever `initdb --pwfile` seeded.
 Future<(Transport, String?)> _resolveTransport(
   Transport requested, {
   required File pwFile,
   required bool hadCluster,
 }) async {
+  String? resolvedPassword;
+  if (!hadCluster || requested is TcpTransport) {
+    resolvedPassword =
+        switch (requested) {
+          TcpTransport(:final password) => password,
+          UnixTransport(:final initialPassword) => initialPassword,
+        } ??
+        (hadCluster && pwFile.existsSync()
+            ? pwFile.readAsStringSync()
+            : _generatePassword());
+
+    if (!hadCluster || !pwFile.existsSync()) {
+      pwFile.parent.createSync(recursive: true);
+      pwFile.writeAsStringSync(resolvedPassword);
+    }
+  }
+
   switch (requested) {
     case UnixTransport():
-      return (requested, null);
-    case TcpTransport(:final port, :final password):
-      String resolvedPw;
-      if (hadCluster && pwFile.existsSync()) {
-        // Warm restart: the cluster's stored hash matches whatever was
-        // initdb'd. Trust the persisted password unless the caller
-        // explicitly provides one (in which case we assume they know
-        // they aligned both sides).
-        resolvedPw = password ?? pwFile.readAsStringSync();
-      } else {
-        resolvedPw = password ?? _generatePassword();
-        pwFile.parent.createSync(recursive: true);
-        pwFile.writeAsStringSync(resolvedPw);
-      }
-
+      // Password is passed to initdb on fresh clusters only; trust auth
+      // does not use it for Unix connections.
+      return (requested, resolvedPassword);
+    case TcpTransport(:final port):
       var resolvedPort = port == 0 ? await _allocateEphemeralPort() : port;
       return (
-        TcpTransport(port: resolvedPort, password: resolvedPw),
-        resolvedPw,
+        TcpTransport(port: resolvedPort, password: resolvedPassword),
+        resolvedPassword,
       );
   }
 }

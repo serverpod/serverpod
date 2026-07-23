@@ -12,7 +12,7 @@
 part of 'sealed_parent_nullable_field.dart';
 
 abstract class SealedChildOnlyRequired extends _i1.SealedParentNullableField
-    implements _i2.SerializableModel {
+    implements _i2.SerializableModel, _i2.ProtocolSerialization {
   SealedChildOnlyRequired._({
     super.nullableField,
     required this.requiredField,
@@ -44,6 +44,15 @@ abstract class SealedChildOnlyRequired extends _i1.SealedParentNullableField
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'SealedChildOnlyRequired',
+      if (nullableField != null) 'nullableField': nullableField,
+      'requiredField': requiredField,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'SealedChildOnlyRequired',
       if (nullableField != null) 'nullableField': nullableField,

@@ -241,6 +241,11 @@ class ClassYamlDefinition {
                   ),
                 },
               ),
+              ValidateNode(
+                Keyword.tail,
+                keyRestriction: restrictions.validateTailKey,
+                valueRestriction: BooleanValueRestriction().validate,
+              ),
             },
           ),
         },

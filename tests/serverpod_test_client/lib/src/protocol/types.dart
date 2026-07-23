@@ -16,7 +16,8 @@ import 'test_enum.dart' as _i3;
 import 'test_enum_stringified.dart' as _i4;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i5;
 
-abstract class Types implements _i1.SerializableModel {
+abstract class Types
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   Types._({
     this.id,
     this.anInt,
@@ -33,6 +34,10 @@ abstract class Types implements _i1.SerializableModel {
     this.aHalfVector,
     this.aSparseVector,
     this.aBit,
+    this.aGeographyPoint,
+    this.aGeographyLineString,
+    this.aGeographyPolygon,
+    this.aGeographyGeometryCollection,
     this.anEnum,
     this.aStringifiedEnum,
     this.aList,
@@ -57,6 +62,10 @@ abstract class Types implements _i1.SerializableModel {
     _i1.HalfVector? aHalfVector,
     _i1.SparseVector? aSparseVector,
     _i1.Bit? aBit,
+    _i1.GeographyPoint? aGeographyPoint,
+    _i1.GeographyLineString? aGeographyLineString,
+    _i1.GeographyPolygon? aGeographyPolygon,
+    _i1.GeographyGeometryCollection? aGeographyGeometryCollection,
     _i3.TestEnum? anEnum,
     _i4.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
@@ -108,6 +117,27 @@ abstract class Types implements _i1.SerializableModel {
       aBit: jsonSerialization['aBit'] == null
           ? null
           : _i1.BitJsonExtension.fromJson(jsonSerialization['aBit']),
+      aGeographyPoint: jsonSerialization['aGeographyPoint'] == null
+          ? null
+          : _i1.GeographyPointJsonExtension.fromJson(
+              jsonSerialization['aGeographyPoint'],
+            ),
+      aGeographyLineString: jsonSerialization['aGeographyLineString'] == null
+          ? null
+          : _i1.GeographyLineStringJsonExtension.fromJson(
+              jsonSerialization['aGeographyLineString'],
+            ),
+      aGeographyPolygon: jsonSerialization['aGeographyPolygon'] == null
+          ? null
+          : _i1.GeographyPolygonJsonExtension.fromJson(
+              jsonSerialization['aGeographyPolygon'],
+            ),
+      aGeographyGeometryCollection:
+          jsonSerialization['aGeographyGeometryCollection'] == null
+          ? null
+          : _i1.GeographyGeometryCollectionJsonExtension.fromJson(
+              jsonSerialization['aGeographyGeometryCollection'],
+            ),
       anEnum: jsonSerialization['anEnum'] == null
           ? null
           : _i3.TestEnum.fromJson((jsonSerialization['anEnum'] as int)),
@@ -168,6 +198,14 @@ abstract class Types implements _i1.SerializableModel {
 
   _i1.Bit? aBit;
 
+  _i1.GeographyPoint? aGeographyPoint;
+
+  _i1.GeographyLineString? aGeographyLineString;
+
+  _i1.GeographyPolygon? aGeographyPolygon;
+
+  _i1.GeographyGeometryCollection? aGeographyGeometryCollection;
+
   _i3.TestEnum? anEnum;
 
   _i4.TestEnumStringified? aStringifiedEnum;
@@ -199,6 +237,10 @@ abstract class Types implements _i1.SerializableModel {
     _i1.HalfVector? aHalfVector,
     _i1.SparseVector? aSparseVector,
     _i1.Bit? aBit,
+    _i1.GeographyPoint? aGeographyPoint,
+    _i1.GeographyLineString? aGeographyLineString,
+    _i1.GeographyPolygon? aGeographyPolygon,
+    _i1.GeographyGeometryCollection? aGeographyGeometryCollection,
     _i3.TestEnum? anEnum,
     _i4.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
@@ -225,6 +267,49 @@ abstract class Types implements _i1.SerializableModel {
       if (aHalfVector != null) 'aHalfVector': aHalfVector?.toJson(),
       if (aSparseVector != null) 'aSparseVector': aSparseVector?.toJson(),
       if (aBit != null) 'aBit': aBit?.toJson(),
+      if (aGeographyPoint != null) 'aGeographyPoint': aGeographyPoint?.toJson(),
+      if (aGeographyLineString != null)
+        'aGeographyLineString': aGeographyLineString?.toJson(),
+      if (aGeographyPolygon != null)
+        'aGeographyPolygon': aGeographyPolygon?.toJson(),
+      if (aGeographyGeometryCollection != null)
+        'aGeographyGeometryCollection': aGeographyGeometryCollection?.toJson(),
+      if (anEnum != null) 'anEnum': anEnum?.toJson(),
+      if (aStringifiedEnum != null)
+        'aStringifiedEnum': aStringifiedEnum?.toJson(),
+      if (aList != null) 'aList': aList?.toJson(),
+      if (aMap != null) 'aMap': aMap?.toJson(),
+      if (aSet != null) 'aSet': aSet?.toJson(),
+      if (aRecord != null) 'aRecord': _i5.Protocol().mapRecordToJson(aRecord),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Types',
+      if (id != null) 'id': id,
+      if (anInt != null) 'anInt': anInt,
+      if (aBool != null) 'aBool': aBool,
+      if (aDouble != null) 'aDouble': aDouble,
+      if (aDateTime != null) 'aDateTime': aDateTime?.toJson(),
+      if (aString != null) 'aString': aString,
+      if (aByteData != null) 'aByteData': aByteData?.toJson(),
+      if (aDuration != null) 'aDuration': aDuration?.toJson(),
+      if (aUuid != null) 'aUuid': aUuid?.toJson(),
+      if (aUri != null) 'aUri': aUri?.toJson(),
+      if (aBigInt != null) 'aBigInt': aBigInt?.toJson(),
+      if (aVector != null) 'aVector': aVector?.toJson(),
+      if (aHalfVector != null) 'aHalfVector': aHalfVector?.toJson(),
+      if (aSparseVector != null) 'aSparseVector': aSparseVector?.toJson(),
+      if (aBit != null) 'aBit': aBit?.toJson(),
+      if (aGeographyPoint != null) 'aGeographyPoint': aGeographyPoint?.toJson(),
+      if (aGeographyLineString != null)
+        'aGeographyLineString': aGeographyLineString?.toJson(),
+      if (aGeographyPolygon != null)
+        'aGeographyPolygon': aGeographyPolygon?.toJson(),
+      if (aGeographyGeometryCollection != null)
+        'aGeographyGeometryCollection': aGeographyGeometryCollection?.toJson(),
       if (anEnum != null) 'anEnum': anEnum?.toJson(),
       if (aStringifiedEnum != null)
         'aStringifiedEnum': aStringifiedEnum?.toJson(),
@@ -260,6 +345,10 @@ class _TypesImpl extends Types {
     _i1.HalfVector? aHalfVector,
     _i1.SparseVector? aSparseVector,
     _i1.Bit? aBit,
+    _i1.GeographyPoint? aGeographyPoint,
+    _i1.GeographyLineString? aGeographyLineString,
+    _i1.GeographyPolygon? aGeographyPolygon,
+    _i1.GeographyGeometryCollection? aGeographyGeometryCollection,
     _i3.TestEnum? anEnum,
     _i4.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
@@ -282,6 +371,10 @@ class _TypesImpl extends Types {
          aHalfVector: aHalfVector,
          aSparseVector: aSparseVector,
          aBit: aBit,
+         aGeographyPoint: aGeographyPoint,
+         aGeographyLineString: aGeographyLineString,
+         aGeographyPolygon: aGeographyPolygon,
+         aGeographyGeometryCollection: aGeographyGeometryCollection,
          anEnum: anEnum,
          aStringifiedEnum: aStringifiedEnum,
          aList: aList,
@@ -310,6 +403,10 @@ class _TypesImpl extends Types {
     Object? aHalfVector = _Undefined,
     Object? aSparseVector = _Undefined,
     Object? aBit = _Undefined,
+    Object? aGeographyPoint = _Undefined,
+    Object? aGeographyLineString = _Undefined,
+    Object? aGeographyPolygon = _Undefined,
+    Object? aGeographyGeometryCollection = _Undefined,
     Object? anEnum = _Undefined,
     Object? aStringifiedEnum = _Undefined,
     Object? aList = _Undefined,
@@ -339,6 +436,19 @@ class _TypesImpl extends Types {
           ? aSparseVector
           : this.aSparseVector?.clone(),
       aBit: aBit is _i1.Bit? ? aBit : this.aBit?.clone(),
+      aGeographyPoint: aGeographyPoint is _i1.GeographyPoint?
+          ? aGeographyPoint
+          : this.aGeographyPoint,
+      aGeographyLineString: aGeographyLineString is _i1.GeographyLineString?
+          ? aGeographyLineString
+          : this.aGeographyLineString,
+      aGeographyPolygon: aGeographyPolygon is _i1.GeographyPolygon?
+          ? aGeographyPolygon
+          : this.aGeographyPolygon,
+      aGeographyGeometryCollection:
+          aGeographyGeometryCollection is _i1.GeographyGeometryCollection?
+          ? aGeographyGeometryCollection
+          : this.aGeographyGeometryCollection,
       anEnum: anEnum is _i3.TestEnum? ? anEnum : this.anEnum,
       aStringifiedEnum: aStringifiedEnum is _i4.TestEnumStringified?
           ? aStringifiedEnum

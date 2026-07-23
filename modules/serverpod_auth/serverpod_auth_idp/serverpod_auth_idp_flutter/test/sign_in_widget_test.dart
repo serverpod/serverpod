@@ -30,6 +30,7 @@ void main() {
       final surface = tester.widget<Material>(surfaceFinder.first);
 
       expect(surface.type, MaterialType.transparency);
+      expect(surface.color, Colors.transparent);
       expect(surface.borderRadius, isNull);
       expect(surface.shape, isNull);
       expect(surface.clipBehavior, Clip.none);

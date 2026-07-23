@@ -82,9 +82,9 @@ abstract class ModuleDatatype
   Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ModuleDatatype',
-      'model': model.toJsonForProtocol(),
-      'list': list.toJson(valueToJson: (v) => v.toJsonForProtocol()),
-      'map': map.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'model': model.toJson(),
+      'list': list.toJson(valueToJson: (v) => v.toJson()),
+      'map': map.toJson(valueToJson: (v) => v.toJson()),
       if (record != null) 'record': _i3.Protocol().mapRecordToJson(record),
     };
   }

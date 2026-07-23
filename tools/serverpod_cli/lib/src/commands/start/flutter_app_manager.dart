@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/start/flutter_dependency_tracker.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_log_event.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:serverpod_cli/src/commands/start/package_dependency_tracker.dart';
 import 'package:serverpod_cli/src/config/flutter_app_config.dart';
@@ -36,19 +37,24 @@ Future<VmServiceProxy> bindFlutterAppProxy({
 class FlutterAppManager {
   /// Creates a [FlutterAppManager].
   FlutterAppManager({
-    required List<FlutterAppConfig> apps,
     required this.serverpodToolDir,
     required this.runMode,
     required this.onProgress,
     required this.onReady,
     required this.onStart,
+    required this.onStop,
     required this.onLaunchFailed,
     required this.onEnsureAppTab,
+    required this.onLog,
     required this.stdoutSinkFor,
     required this.stderrSinkFor,
+    required this.serverPubspecFile,
+    required this.serverPackageDirectoryPathParts,
+    required this.projectName,
+    required this.launchFlutterApp,
     this.flutterExecutableForTesting,
     this.argsOverrideForTesting,
-  }) : _apps = apps;
+  });
 
   /// Test-only override for the `flutter` executable path.
   final String? flutterExecutableForTesting;
@@ -79,18 +85,30 @@ class FlutterAppManager {
   final String serverpodToolDir;
   final String runMode;
   final void Function(FlutterAppConfig app, String stage) onProgress;
-  final void Function(FlutterAppConfig app, String url) onReady;
-  final Future<void> Function(
-    FlutterAppConfig app,
-    FlutterProcess process,
-  )
+
+  /// Fires once per launch when the app is up: on the published web URL
+  /// for web devices, or on the daemon's `app.started` event otherwise
+  /// ([url] is null when the device publishes no URL).
+  final void Function(FlutterAppConfig app, String? url) onReady;
+  final Future<void> Function(FlutterAppConfig app, FlutterProcess process)
   onStart;
+  final void Function(FlutterAppConfig app) onStop;
   final void Function(FlutterAppConfig app) onLaunchFailed;
   final void Function(FlutterAppConfig app) onEnsureAppTab;
+  final void Function(FlutterAppConfig app, FlutterLogEvent event) onLog;
   final IOSink Function(FlutterAppConfig app) stdoutSinkFor;
   final IOSink Function(FlutterAppConfig app) stderrSinkFor;
 
-  final List<FlutterAppConfig> _apps;
+  /// The server's `pubspec.yaml`, used to fingerprint the `flutter_apps`
+  /// config and detect changes without re-parsing on every file event.
+  final File serverPubspecFile;
+  final List<String> serverPackageDirectoryPathParts;
+  final String projectName;
+  final bool launchFlutterApp;
+
+  String? _cachedFlutterAppsFingerprint;
+
+  final List<FlutterAppConfig> _apps = [];
   final Map<String, _AppRuntime> _runtimes = {};
   bool _initialized = false;
 
@@ -120,14 +138,14 @@ class FlutterAppManager {
   /// Whether [appId] has a running Flutter process.
   bool isRunning(String appId) => processFor(appId)?.isRunning ?? false;
 
-  /// Whether [appId] is starting up (spawn through URL publication).
+  /// Whether [appId] is starting up (spawn through the ready signal).
   bool isLaunching(String appId) {
     final runtime = _runtimeFor(appId);
     if (runtime == null) return false;
     if (runtime.spawnInFlight) return true;
     final process = runtime.process;
     if (process == null || !process.isRunning) return false;
-    return process.flutterAppUrl == null;
+    return !runtime.readySignaled;
   }
 
   /// Injects [process] for [appId] in tests.
@@ -144,13 +162,39 @@ class FlutterAppManager {
   FlutterDependencyTracker? dependencyTrackerFor(String appId) =>
       _runtimes[appId]?.dependencyTracker;
 
+  /// The dependency graph to watch for [appId].
+  ///
+  /// Before the first Flutter run creates a resolution, this returns the
+  /// package-local path that Flutter will create. Once a tracker is available,
+  /// its resolved workspace or package-local `.dart_tool` path is used.
+  String? packageGraphPathFor(String appId) {
+    final runtime = _runtimeFor(appId);
+    if (runtime == null || !runtime.app.hasPackage) return null;
+    final dartToolDir =
+        runtime.dependencyTracker?.dartToolDir ??
+        p.join(p.joinAll(runtime.app.pathParts), '.dart_tool');
+    return p.join(dartToolDir, 'package_graph.json');
+  }
+
   /// Checks dependency changes for [appId].
   PackageDependencyChange checkDependencyChange(String appId) {
     if (dependencyChangeOverrideForTesting != null) {
       return dependencyChangeOverrideForTesting!(appId);
     }
-    return _runtimes[appId]?.dependencyTracker?.refresh() ??
+    final runtime = _runtimes[appId];
+    if (runtime?.dependencyTracker == null) _setupDependencyTracker(appId);
+    return runtime?.dependencyTracker?.refresh() ??
         PackageDependencyChange.none;
+  }
+
+  /// Checks whether the `serverpod: flutter_apps:` section of the server's
+  /// `pubspec.yaml` has changed since the last check. Returns `true` when the
+  /// fingerprint differs, meaning the Flutter app config should be reloaded.
+  bool hasServerFlutterAppsChanged() {
+    final fingerprint = computeFlutterAppsFingerprint(serverPubspecFile);
+    final changed = fingerprint != _cachedFlutterAppsFingerprint;
+    _cachedFlutterAppsFingerprint = fingerprint;
+    return changed;
   }
 
   /// Returns running app ids whose `lib` directory contains any of [paths].
@@ -181,24 +225,7 @@ class FlutterAppManager {
   Future<void> initialize() async {
     if (_initialized) return;
     _initialized = true;
-
-    for (final app in _apps) {
-      final infoFile = _infoFileFor(app.id);
-      final proxy = await bindFlutterAppProxy(
-        infoFile: infoFile,
-        onWaitingClientArrived: () {
-          final launch = launchOnWaitingClient;
-          if (launch != null) return launch(app.id);
-          return this.launch(app.id);
-        },
-      );
-      _runtimes[app.id] = _AppRuntime(
-        app: app,
-        proxy: proxy,
-        infoFile: infoFile,
-      );
-      _setupDependencyTracker(app.id);
-    }
+    await loadApps();
   }
 
   /// Launches [appId] when not already running. No-op in non-development mode
@@ -218,6 +245,7 @@ class FlutterAppManager {
     if (runtime.spawnInFlight) return;
 
     runtime.spawnInFlight = true;
+    runtime.readySignaled = false;
     final isRelaunch = runtime.relaunchInProgress;
     runtime.relaunchInProgress = false;
 
@@ -225,7 +253,8 @@ class FlutterAppManager {
 
     final device = runtime.app.device ?? flutterDeviceWebServerWithBrowser;
 
-    final process = FlutterProcess(
+    late final FlutterProcess process;
+    process = FlutterProcess(
       flutterPackageDir: p.joinAll(runtime.app.pathParts),
       device: device,
       extraArgs: runtime.app.extraRunArgs,
@@ -234,10 +263,15 @@ class FlutterAppManager {
       machineArgsOverride: argsOverrideForTesting?.call(runtime.app),
       stdoutSink: stdoutSinkFor(runtime.app),
       stderrSink: stderrSinkFor(runtime.app),
+      onLog: (event) => onLog(runtime.app, event),
       onProgress: (stage) {
         onProgress(runtime.app, stage);
         log.info('  ${runtime.app.name}: $stage');
       },
+      // The ready signal for non-web devices, which never publish a URL. Web
+      // devices publish their URL before `app.started`, so it is carried
+      // along here when the URL path has not signaled first.
+      onStarted: () => _signalReady(runtime, process.flutterAppUrl),
     );
 
     try {
@@ -285,9 +319,70 @@ class FlutterAppManager {
   Future<void> stop(String appId) async {
     final runtime = _runtimeFor(appId);
     if (runtime == null) return;
+    final app = runtime.app;
     runtime.relaunchInProgress = false;
     await runtime.process?.stop();
     runtime.process = null;
+    onStop(app);
+  }
+
+  /// Loads configured apps from [serverPubspecFile].
+  ///
+  /// Apps present in the old config but absent in the new one are stopped and
+  /// removed. Apps present in the new config but absent in the old one are
+  /// initialized (VM-service proxy bound, dependency tracker set up) and
+  /// launched if [FlutterAppConfig.autoLaunch] is true. Apps present in both
+  /// are kept running but their config is updated.
+  Future<void> loadApps() async {
+    final newApps = loadFlutterApps(
+      serverPubspecFile: serverPubspecFile,
+      serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
+      projectName: projectName,
+    );
+
+    final oldIds = {for (final a in _apps) a.id};
+    final newIds = {for (final a in newApps) a.id};
+
+    // Stop and remove apps no longer configured.
+    for (final id in oldIds.difference(newIds)) {
+      await stop(id);
+      await _runtimes[id]?.proxy.close();
+      _runtimes.remove(id);
+    }
+
+    _apps
+      ..clear()
+      ..addAll(newApps);
+
+    _cacheFlutterAppsFingerprint();
+
+    // Add newly configured apps or update existing ones.
+    for (final app in newApps) {
+      final existing = _runtimes[app.id];
+      if (existing == null) {
+        final infoFile = _infoFileFor(app.id);
+        final proxy = await bindFlutterAppProxy(
+          infoFile: infoFile,
+          onWaitingClientArrived: () {
+            final launch = launchOnWaitingClient;
+            if (launch != null) return launch(app.id);
+            return this.launch(app.id);
+          },
+        );
+        _runtimes[app.id] = _AppRuntime(
+          app: app,
+          proxy: proxy,
+          infoFile: infoFile,
+        );
+      } else {
+        existing.app = app;
+      }
+
+      _setupDependencyTracker(app.id);
+      if (launchFlutterApp && app.autoLaunch) {
+        await launch(app.id);
+      }
+    }
   }
 
   /// Stops every running app and removes per-app VM-service info files.
@@ -346,6 +441,26 @@ class FlutterAppManager {
     }
   }
 
+  void _cacheFlutterAppsFingerprint() {
+    _cachedFlutterAppsFingerprint = computeFlutterAppsFingerprint(
+      serverPubspecFile,
+    );
+  }
+
+  /// Invokes [onReady] at most once per launch. Ready has two sources - the
+  /// published web URL (web devices) and the daemon's `app.started` event
+  /// (non-web devices) - so a second signal is swallowed here.
+  void _signalReady(_AppRuntime runtime, String? url) {
+    if (runtime.readySignaled) return;
+    runtime.readySignaled = true;
+    log.info(
+      url == null
+          ? '${runtime.app.name} is running.'
+          : '${runtime.app.name} running at $url',
+    );
+    onReady(runtime.app, url);
+  }
+
   Future<void> _connectAfterLaunch(
     _AppRuntime runtime,
     FlutterProcess process, {
@@ -377,8 +492,7 @@ class FlutterAppManager {
 
     final url = process.flutterAppUrl;
     if (url != null) {
-      log.info('${runtime.app.name} running at $url');
-      onReady(runtime.app, url);
+      _signalReady(runtime, url);
     }
 
     await log.progress(
@@ -405,11 +519,12 @@ class _AppRuntime {
     required this.infoFile,
   });
 
-  final FlutterAppConfig app;
+  FlutterAppConfig app;
   final VmServiceProxy proxy;
   final String infoFile;
   FlutterProcess? process;
   FlutterDependencyTracker? dependencyTracker;
   bool spawnInFlight = false;
   bool relaunchInProgress = false;
+  bool readySignaled = false;
 }

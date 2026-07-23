@@ -554,7 +554,7 @@ Future<(Serverpod, Session)> createTestServer(
   final settings = RuntimeSettingsBuilder().build();
   await server.updateRuntimeSettings(settings);
 
-  await server.start();
+  await server.startWithDatabase();
   final session = await server.createSession(enableLogging: false);
   await LoggingUtil.clearAllLogs(session);
 

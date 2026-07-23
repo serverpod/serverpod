@@ -1,0 +1,375 @@
+{
+  "__className__": "serverpod.DatabaseMigration",
+  "actions": [
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "createTable",
+      "createTable": {
+        "__className__": "serverpod.TableDefinition",
+        "name": "object_with_geography_geometry_collection",
+        "dartName": "ObjectWithGeographyGeometryCollection",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "id",
+            "fieldName": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "serial",
+            "dartType": "int?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "geometryCollection",
+            "fieldName": "geometryCollection",
+            "columnType": 18,
+            "isNullable": false,
+            "dartType": "GeographyGeometryCollection"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "geometryCollectionIndexedGist",
+            "fieldName": "geometryCollectionIndexedGist",
+            "columnType": 18,
+            "isNullable": false,
+            "dartType": "GeographyGeometryCollection"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "geometryCollectionIndexedSpgist",
+            "fieldName": "geometryCollectionIndexedSpgist",
+            "columnType": 18,
+            "isNullable": false,
+            "dartType": "GeographyGeometryCollection"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "__className__": "serverpod.IndexDefinition",
+            "indexName": "geography_geometry_collection_index_default",
+            "elements": [
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "geometryCollection"
+              }
+            ],
+            "type": "gist",
+            "isUnique": false,
+            "isPrimary": false
+          },
+          {
+            "__className__": "serverpod.IndexDefinition",
+            "indexName": "geography_geometry_collection_index_gist",
+            "elements": [
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "geometryCollectionIndexedGist"
+              }
+            ],
+            "type": "gist",
+            "isUnique": false,
+            "isPrimary": false
+          },
+          {
+            "__className__": "serverpod.IndexDefinition",
+            "indexName": "geography_geometry_collection_index_spgist",
+            "elements": [
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "geometryCollectionIndexedSpgist"
+              }
+            ],
+            "type": "spgist",
+            "isUnique": false,
+            "isPrimary": false
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "createTable",
+      "createTable": {
+        "__className__": "serverpod.TableDefinition",
+        "name": "object_with_geography_line_string",
+        "dartName": "ObjectWithGeographyLineString",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "id",
+            "fieldName": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "serial",
+            "dartType": "int?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "lineString",
+            "fieldName": "lineString",
+            "columnType": 16,
+            "isNullable": false,
+            "dartType": "GeographyLineString"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "lineStringIndexedGist",
+            "fieldName": "lineStringIndexedGist",
+            "columnType": 16,
+            "isNullable": false,
+            "dartType": "GeographyLineString"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "lineStringIndexedSpgist",
+            "fieldName": "lineStringIndexedSpgist",
+            "columnType": 16,
+            "isNullable": false,
+            "dartType": "GeographyLineString"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "__className__": "serverpod.IndexDefinition",
+            "indexName": "geography_line_string_index_default",
+            "elements": [
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "lineString"
+              }
+            ],
+            "type": "gist",
+            "isUnique": false,
+            "isPrimary": false
+          },
+          {
+            "__className__": "serverpod.IndexDefinition",
+            "indexName": "geography_line_string_index_gist",
+            "elements": [
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "lineStringIndexedGist"
+              }
+            ],
+            "type": "gist",
+            "isUnique": false,
+            "isPrimary": false
+          },
+          {
+            "__className__": "serverpod.IndexDefinition",
+            "indexName": "geography_line_string_index_spgist",
+            "elements": [
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "lineStringIndexedSpgist"
+              }
+            ],
+            "type": "spgist",
+            "isUnique": false,
+            "isPrimary": false
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "createTable",
+      "createTable": {
+        "__className__": "serverpod.TableDefinition",
+        "name": "object_with_geography_point",
+        "dartName": "ObjectWithGeographyPoint",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "id",
+            "fieldName": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "serial",
+            "dartType": "int?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "point",
+            "fieldName": "point",
+            "columnType": 15,
+            "isNullable": false,
+            "dartType": "GeographyPoint"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "pointIndexedGist",
+            "fieldName": "pointIndexedGist",
+            "columnType": 15,
+            "isNullable": false,
+            "dartType": "GeographyPoint"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "pointIndexedSpgist",
+            "fieldName": "pointIndexedSpgist",
+            "columnType": 15,
+            "isNullable": false,
+            "dartType": "GeographyPoint"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "__className__": "serverpod.IndexDefinition",
+            "indexName": "geography_point_index_default",
+            "elements": [
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "point"
+              }
+            ],
+            "type": "gist",
+            "isUnique": false,
+            "isPrimary": false
+          },
+          {
+            "__className__": "serverpod.IndexDefinition",
+            "indexName": "geography_point_index_gist",
+            "elements": [
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "pointIndexedGist"
+              }
+            ],
+            "type": "gist",
+            "isUnique": false,
+            "isPrimary": false
+          },
+          {
+            "__className__": "serverpod.IndexDefinition",
+            "indexName": "geography_point_index_spgist",
+            "elements": [
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "pointIndexedSpgist"
+              }
+            ],
+            "type": "spgist",
+            "isUnique": false,
+            "isPrimary": false
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "createTable",
+      "createTable": {
+        "__className__": "serverpod.TableDefinition",
+        "name": "object_with_geography_polygon",
+        "dartName": "ObjectWithGeographyPolygon",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "id",
+            "fieldName": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "serial",
+            "dartType": "int?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "polygon",
+            "fieldName": "polygon",
+            "columnType": 17,
+            "isNullable": false,
+            "dartType": "GeographyPolygon"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "polygonIndexedGist",
+            "fieldName": "polygonIndexedGist",
+            "columnType": 17,
+            "isNullable": false,
+            "dartType": "GeographyPolygon"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "polygonIndexedSpgist",
+            "fieldName": "polygonIndexedSpgist",
+            "columnType": 17,
+            "isNullable": false,
+            "dartType": "GeographyPolygon"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "__className__": "serverpod.IndexDefinition",
+            "indexName": "geography_polygon_index_default",
+            "elements": [
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "polygon"
+              }
+            ],
+            "type": "gist",
+            "isUnique": false,
+            "isPrimary": false
+          },
+          {
+            "__className__": "serverpod.IndexDefinition",
+            "indexName": "geography_polygon_index_gist",
+            "elements": [
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "polygonIndexedGist"
+              }
+            ],
+            "type": "gist",
+            "isUnique": false,
+            "isPrimary": false
+          },
+          {
+            "__className__": "serverpod.IndexDefinition",
+            "indexName": "geography_polygon_index_spgist",
+            "elements": [
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "polygonIndexedSpgist"
+              }
+            ],
+            "type": "spgist",
+            "isUnique": false,
+            "isPrimary": false
+          }
+        ],
+        "managed": true
+      }
+    }
+  ],
+  "warnings": [],
+  "migrationApiVersion": 1
+}

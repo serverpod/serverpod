@@ -16,7 +16,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i2;
 /// Represents a version of a database migration with a table.
 abstract class DatabaseMigrationVersion
     extends _i1.DatabaseMigrationVersionModel
-    implements _i2.SerializableModel {
+    implements _i2.SerializableModel, _i2.ProtocolSerialization {
   DatabaseMigrationVersion._({
     this.id,
     required super.module,
@@ -61,6 +61,17 @@ abstract class DatabaseMigrationVersion
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod.DatabaseMigrationVersion',
+      if (id != null) 'id': id,
+      'module': module,
+      'version': version,
+      if (timestamp != null) 'timestamp': timestamp?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod.DatabaseMigrationVersion',
       if (id != null) 'id': id,

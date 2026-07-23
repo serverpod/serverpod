@@ -17,7 +17,8 @@ import 'test_enum_stringified.dart' as _i4;
 import 'types.dart' as _i5;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i6;
 
-abstract class TypesList implements _i1.SerializableModel {
+abstract class TypesList
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   TypesList._({
     this.anInt,
     this.aBool,
@@ -251,6 +252,53 @@ abstract class TypesList implements _i1.SerializableModel {
       if (aList != null)
         'aList': aList?.toJson(
           valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson()),
+        ),
+      if (aRecord != null)
+        'aRecord': _i6.Protocol().mapContainerToJson(aRecord!),
+      if (aNullableRecord != null)
+        'aNullableRecord': _i6.Protocol().mapContainerToJson(aNullableRecord!),
+      if (anEnumRecord != null)
+        'anEnumRecord': _i6.Protocol().mapContainerToJson(anEnumRecord!),
+      if (anEnum2Record != null)
+        'anEnum2Record': _i6.Protocol().mapContainerToJson(anEnum2Record!),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'TypesList',
+      if (anInt != null) 'anInt': anInt?.toJson(),
+      if (aBool != null) 'aBool': aBool?.toJson(),
+      if (aDouble != null) 'aDouble': aDouble?.toJson(),
+      if (aDateTime != null)
+        'aDateTime': aDateTime?.toJson(valueToJson: (v) => v.toJson()),
+      if (aString != null) 'aString': aString?.toJson(),
+      if (aByteData != null)
+        'aByteData': aByteData?.toJson(valueToJson: (v) => v.toJson()),
+      if (aDuration != null)
+        'aDuration': aDuration?.toJson(valueToJson: (v) => v.toJson()),
+      if (aUuid != null) 'aUuid': aUuid?.toJson(valueToJson: (v) => v.toJson()),
+      if (aUri != null) 'aUri': aUri?.toJson(valueToJson: (v) => v.toJson()),
+      if (aBigInt != null)
+        'aBigInt': aBigInt?.toJson(valueToJson: (v) => v.toJson()),
+      if (anEnum != null)
+        'anEnum': anEnum?.toJson(valueToJson: (v) => v.toJson()),
+      if (aStringifiedEnum != null)
+        'aStringifiedEnum': aStringifiedEnum?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
+      if (anObject != null)
+        'anObject': anObject?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      if (aMap != null)
+        'aMap': aMap?.toJson(
+          valueToJson: (v) =>
+              v.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+        ),
+      if (aList != null)
+        'aList': aList?.toJson(
+          valueToJson: (v) =>
+              v.toJson(valueToJson: (v) => v.toJsonForProtocol()),
         ),
       if (aRecord != null)
         'aRecord': _i6.Protocol().mapContainerToJson(aRecord!),

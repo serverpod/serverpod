@@ -1,0 +1,222 @@
+#!/usr/bin/env bash
+# Assemble a relocatable bundle: postgres install tree + the shared geo deps +
+# PROJ data, named serverpod-postgres-<bom>-<os>-<arch>.tar.xz (+ .sha256).
+#
+# Per-OS layout: macOS rewrites install_names/rpaths; Windows drops the geo
+# DLLs beside postgres.exe (bin/ is on the default DLL search path, no rpath
+# needed); Linux rewrites every ELF's rpath to $ORIGIN-relative.
+set -euo pipefail
+B="${PGBUILD:-$HOME/pgzig}"; PREFIX="$B/out/pg"; DEPS="$B/deps"; OUT="$B/dist"
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Canonical spec supplies the component versions and the default identity;
+# an explicitly exported PG_VERSION / BUNDLE_REVISION (CI, BundleBuilder)
+# wins, so capture the env before sourcing.
+ENV_PG_VERSION="${PG_VERSION:-}"; ENV_BUNDLE_REVISION="${BUNDLE_REVISION:-}"
+# shellcheck source=versions.env
+. "$HERE/versions.env"
+VER="${ENV_PG_VERSION:-$PG_BOM}"
+REV="${ENV_BUNDLE_REVISION:-$BUNDLE_REVISION}"
+OS="${BUNDLE_OS:-$(uname -s | tr '[:upper:]' '[:lower:]' | sed -E 's/darwin/macos/; s/(mingw|msys|cygwin).*/windows/')}"
+ARCH="${BUNDLE_ARCH:-$(uname -m | sed 's/x86_64/x64/; s/aarch64/arm64/')}"
+NAME="serverpod-postgres-${VER}-r${REV}-${OS}-${ARCH}"
+STAGE="$OUT/$NAME"
+
+rm -rf "$STAGE"; mkdir -p "$STAGE"
+# postgres install tree (prune headers/static libs not needed at runtime)
+cp -R "$PREFIX/." "$STAGE/"
+rm -rf "$STAGE/include" "$STAGE/lib/pkgconfig" "$STAGE"/lib/*.a 2>/dev/null || true
+
+# PROJ runtime data (proj.db etc.) - OS-agnostic. The launcher sets PROJ_LIB
+# to <install>/share/proj (see supervisor.dart).
+mkdir -p "$STAGE/share/proj"; cp -R "$DEPS"/share/proj/. "$STAGE/share/proj/"
+
+# Identity manifest, validated by the Dart side after extraction: an archive
+# whose manifest doesn't match the requested artifact is refused, so a
+# mislabeled bundle can never poison the per-user cache. revision is a bare
+# int on purpose - the validator compares it as one.
+cat > "$STAGE/serverpod-bundle-manifest.json" <<EOF
+{
+  "postgres": "$VER",
+  "revision": $REV,
+  "platform": "$OS-$ARCH",
+  "postgis": "$POSTGIS_VERSION",
+  "pgvector": "$PGVECTOR_VERSION"
+}
+EOF
+
+case "$(uname -s)" in
+Darwin)
+  # Shared geo deps live in lib/ next to postgres's own dylibs.
+  cp -P "$DEPS"/lib/libgeos_c.* "$DEPS"/lib/libgeos.* "$DEPS"/lib/libproj.* "$STAGE/lib/" 2>/dev/null || true
+  # postgres bakes absolute install_names + build-tree rpaths; rewrite every
+  # Mach-O's build-prefix refs to @rpath/<leaf> and add the @loader_path rpath
+  # that resolves to the bundle's lib/. Relies on the
+  # -headerpad_max_install_names that _ccwrap adds on Darwin link steps.
+  relocate() {  # $1=file  $2=rpath-to-lib
+    local f="$1" rp="$2" dep
+    case "$f" in *.dylib) install_name_tool -id "@rpath/$(basename "$f")" "$f" 2>/dev/null || true ;; esac
+    otool -L "$f" | awk 'NR>1{print $1}' | while read -r dep; do
+      case "$dep" in
+        "$PREFIX"/*|"$DEPS"/*) install_name_tool -change "$dep" "@rpath/$(basename "$dep")" "$f" 2>/dev/null || true ;;
+      esac
+    done
+    install_name_tool -add_rpath "$rp" "$f" 2>/dev/null || true
+    # arm64 requires a (re)signature after install_name_tool; on x64 it is
+    # unnecessary (ad-hoc signing these zig-built dylibs tripped loader crashes
+    # on macOS 26).
+    [ "$(uname -m)" = arm64 ] && codesign -f -s - "$f" 2>/dev/null || true
+  }
+  for f in "$STAGE"/bin/*;                  do [ -L "$f" ] || { file "$f" | grep -q Mach-O && relocate "$f" "@loader_path/../lib"; }; done
+  for f in "$STAGE"/lib/*.dylib;            do [ -L "$f" ] || relocate "$f" "@loader_path"; done
+  for f in "$STAGE"/lib/postgresql/*.dylib; do [ -L "$f" ] || relocate "$f" "@loader_path/.."; done
+  ;;
+MINGW*|MSYS*|CYGWIN*)
+  # Windows: shared libs are .dll, installed by CMake into bin/. postgres.exe's
+  # dir (bin/) is on the default DLL search path, so DLLs that postgis-3.dll
+  # depends on resolve there - no rpath/install_name surgery.
+  cp "$DEPS"/bin/libgeos_c*.dll "$DEPS"/bin/libgeos*.dll "$DEPS"/bin/libproj*.dll "$STAGE/bin/" 2>/dev/null || true
+  # Bundle every non-system DLL the binaries import, transitively - the mingw
+  # runtime above all (libstdc++/libgcc/winpthread, needed by the C++ GEOS and
+  # PROJ).
+  mingw_bin="$(dirname "$(command -v gcc)")"
+  system_dlls='^(advapi32|api-ms-|bcrypt|comctl32|comdlg32|crypt32|dbghelp|dnsapi|gdi32|gdiplus|imm32|iphlpapi|kernel32|msvcrt|ncrypt|netapi32|ntdll|ole32|oleaut32|psapi|rpcrt4|secur32|setupapi|shell32|shlwapi|ucrtbase|user32|userenv|version|winmm|wldap32|ws2_32|wsock32)'
+  changed=1
+  while [ "$changed" -eq 1 ]; do
+    changed=0
+    for f in "$STAGE"/bin/*.exe "$STAGE"/bin/*.dll "$STAGE"/lib/*.dll "$STAGE"/lib/postgresql/*.dll; do
+      if [ ! -f "$f" ]; then continue; fi
+      for dep in $(objdump -p "$f" | awk '/DLL Name:/ {print $3}'); do
+        lower="$(echo "$dep" | tr '[:upper:]' '[:lower:]')"
+        if echo "$lower" | grep -qE "$system_dlls"; then continue; fi
+        if [ -f "$STAGE/bin/$dep" ]; then continue; fi
+        if [ -f "$mingw_bin/$dep" ]; then
+          cp "$mingw_bin/$dep" "$STAGE/bin/"
+          changed=1
+        else
+          echo "unresolved import $dep (needed by $(basename "$f"))" >&2
+          exit 1
+        fi
+      done
+    done
+  done
+  ;;
+*)
+  # Linux: shared geo deps live in lib/ next to postgres's own libs. Rewrite ELF
+  # rpaths to $ORIGIN-relative so the relocated postgis-3.so finds libgeos_c /
+  # libproj in lib/, and those find each other - the ELF analog of the macOS
+  # install_name rewrite above. patchelf (post-build) avoids $ORIGIN being
+  # mangled by make/cmake at link time.
+  cp -P "$DEPS"/lib/libgeos_c.so* "$DEPS"/lib/libgeos.so* "$DEPS"/lib/libproj.so* "$STAGE/lib/" 2>/dev/null || true
+  # patchelf is a build prerequisite (installed by setup-pg-build-toolchain in
+  # CI); installing packages from inside the build would make the recipe
+  # depend on the host's package manager state - fail with instructions
+  # instead.
+  command -v patchelf >/dev/null 2>&1 || {
+    echo "package: patchelf not found - install it first (e.g. apt-get install patchelf)" >&2; exit 1;
+  }
+  # bin/ executables reach postgres's own libs (libpq) + geo deps in lib/.
+  # Without this they keep configure's absolute build-tree rpath, which only
+  # resolves on the build host (or is masked by a system libpq elsewhere).
+  for f in "$STAGE"/bin/*; do
+    if [ -f "$f" ] && [ ! -L "$f" ] && file "$f" | grep -q ELF; then
+      patchelf --set-rpath '$ORIGIN/../lib' "$f"
+    fi
+  done
+  # shared libs in lib/ (libpq, libgeos, libproj, ...) resolve siblings via $ORIGIN
+  for f in "$STAGE"/lib/*.so*; do
+    if [ -f "$f" ] && [ ! -L "$f" ]; then patchelf --set-rpath '$ORIGIN' "$f"; fi
+  done
+  # extensions in lib/postgresql/ reach the geo deps + postgres libs in lib/
+  for f in "$STAGE"/lib/postgresql/*.so; do
+    if [ -f "$f" ] && [ ! -L "$f" ]; then patchelf --set-rpath '$ORIGIN/..' "$f"; fi
+  done
+  ;;
+esac
+
+# The bundle must BE what its name claims. Assert the packaged binaries' own
+# version strings against the declared identity, so a version bump that
+# missed a script, a stale build tree, or a mislabeled dispatch cannot ship a
+# wrongly-named bundle. (`postgres --version` prints and exits before the
+# win32 admin-token check, so this is safe on elevated CI runners too.)
+PGEXE="$STAGE/bin/postgres"; [ -x "$PGEXE" ] || PGEXE="$STAGE/bin/postgres.exe"
+actual_pg="$("$PGEXE" --version | awk '{print $NF}')"
+[ "$actual_pg" = "${VER%.*}" ] || {
+  echo "package: postgres reports $actual_pg but the bundle is labeled $VER" >&2; exit 1;
+}
+# The extension dir is share/extension or share/postgresql/extension depending
+# on whether the build prefix contains "postgres"/"pgsql" (PG's layout rule) -
+# find the control file instead of assuming.
+ctl_ver() {
+  local f
+  f="$(find "$STAGE/share" -type f -name "$1" 2>/dev/null | head -1)"
+  [ -n "$f" ] || { echo "package: $1 not found under $STAGE/share" >&2; return 1; }
+  sed -n "s/^default_version *= *'\(.*\)'.*/\1/p" "$f"
+}
+actual_vec="$(ctl_ver vector.control)"
+[ "$actual_vec" = "$PGVECTOR_VERSION" ] || {
+  echo "package: pgvector control reports ${actual_vec:-<none>}, spec says $PGVECTOR_VERSION" >&2; exit 1;
+}
+actual_gis="$(ctl_ver postgis.control)"
+[ "$actual_gis" = "$POSTGIS_VERSION" ] || {
+  echo "package: postgis control reports ${actual_gis:-<none>}, spec says $POSTGIS_VERSION" >&2; exit 1;
+}
+echo "package: identity OK (postgres $actual_pg, pgvector $actual_vec, postgis $actual_gis)"
+
+cd "$OUT"
+# Windows: PostGIS installs ~345 extension upgrade-SQL files as symlinks, and on
+# mingw their targets are bundle-root-relative (./share/...) - unresolvable from
+# the file's own dir, so tar -h can't follow them and end-user extraction
+# (Dart Link.createSync) can't recreate them without symlink privilege. A
+# Windows bundle must therefore carry no symlinks: materialize every one into
+# a real copy, failing the build on any link that can't be (shipping it would
+# defer the failure to the user's machine). macOS/Linux keep their symlinks
+# (smaller, and they extract fine).
+case "$(uname -s)" in
+  MINGW*|MSYS*|CYGWIN*)
+    bash "$HERE/materialize-symlinks.sh" "$STAGE"
+    ;;
+esac
+# Archive STAGE's *contents* (bin/ lib/ share/ at the tar root), NOT a wrapper
+# directory: BinaryStore extracts verbatim into installDir and expects
+# installDir/bin/postgres, with no leading-component strip.
+#
+# Force plain ustar and strip macOS metadata. package:archive (BinaryStore's
+# Dart extractor) can't decode PAX extended headers - it UTF-8-decodes header
+# fields and throws ("Unexpected extension byte") on the raw bytes macOS bsdtar
+# emits to carry xattrs such as com.apple.provenance. ustar suffices: every path
+# and symlink target is well under its 100-byte limit. Applied unconditionally,
+# since the failure depends on host xattrs.
+# No archive may contain HARDLINK entries: package:archive's tar decoder
+# stores a hardlink's target in ArchiveFile.symbolicLink, so the runtime
+# would recreate it as a SYMLINK - silently changing semantics on POSIX and
+# failing outright on Windows (no symlink privilege). GNU tar (Linux, MSYS2)
+# materializes them with --hard-dereference; macOS bsdtar has no equivalent,
+# so refuse a hardlinked stage there instead. Nothing in the build creates
+# hardlinks today - this pins that invariant down.
+tar_opts="--format=ustar"
+case "$(uname -s)" in
+  Darwin)
+    export COPYFILE_DISABLE=1; tar_opts="$tar_opts --no-mac-metadata"
+    hardlinked="$(find "$STAGE" -type f -links +1)"
+    [ -z "$hardlinked" ] || {
+      echo "package: stage contains hardlinked files (bsdtar would emit hardlink entries the runtime cannot extract):" >&2
+      echo "$hardlinked" >&2; exit 1;
+    }
+    ;;
+  *) tar_opts="$tar_opts --hard-dereference" ;;
+esac
+# shellcheck disable=SC2086 # intentional word-splitting of tar_opts
+tar $tar_opts -C "$STAGE" -cJf "$NAME.tar.xz" .
+
+# Inspect the finished ARTIFACT, not just the stage or the tar options: the
+# invariant is about what consumers download. Hardlink entries are forbidden
+# everywhere; symlink entries are additionally forbidden on Windows.
+case "$(uname -s)" in
+  MINGW*|MSYS*|CYGWIN*)
+    bash "$HERE/assert-archive-links.sh" "$NAME.tar.xz" --forbid-symlinks
+    ;;
+  *) bash "$HERE/assert-archive-links.sh" "$NAME.tar.xz" ;;
+esac
+( command -v shasum >/dev/null && shasum -a 256 "$NAME.tar.xz" || sha256sum "$NAME.tar.xz" ) | awk '{print $1}' > "$NAME.tar.xz.sha256"
+echo "bundle: $NAME.tar.xz  $(du -h "$NAME.tar.xz" | awk '{print $1}')"
+echo "sha256: $(cat "$NAME.tar.xz.sha256")"

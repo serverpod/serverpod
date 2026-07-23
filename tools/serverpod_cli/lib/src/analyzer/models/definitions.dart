@@ -101,11 +101,13 @@ sealed class ClassDefinition extends SerializableModelDefinition {
       parentClass?.fieldsIncludingInherited.toList() ?? [];
 
   /// Returns a list of all fields in this class, including inherited fields.
+  /// Non-tail fields are ordered top-down through the inheritance chain. Tail
+  /// fields are ordered bottom-up so that root parent tail fields appear last.
   List<SerializableModelFieldDefinition> get fieldsIncludingInherited {
-    return [
-      ...inheritedFields,
-      ...fields,
-    ];
+    return _fieldsWithTailFieldsLast(
+      inheritedFields: inheritedFields,
+      fields: fields,
+    );
   }
 
   /// Returns `true` if this class is a parent class or sealed.
@@ -255,17 +257,21 @@ final class ModelClassDefinition extends ClassDefinition {
       parentClass?.fieldsIncludingInherited.any((f) => f.name == 'id') ?? false;
 
   /// Returns a list of all fields in this class, including inherited fields.
-  /// It ensures that the 'id' field, if present, is always included at the
-  /// beginning of the list.
+  /// It ensures that the 'id' field, if present on this class, is always
+  /// included at the beginning of the list. Non-tail fields are ordered
+  /// top-down through the inheritance chain. Tail fields are ordered bottom-up
+  /// so that root parent tail fields appear last.
   @override
   List<SerializableModelFieldDefinition> get fieldsIncludingInherited {
-    bool hasIdField = fields.any((element) => element.name == 'id');
+    final idField = fields
+        .where((element) => element.name == defaultPrimaryKeyName)
+        .firstOrNull;
 
-    return [
-      if (hasIdField) fields.firstWhere((element) => element.name == 'id'),
-      ...inheritedFields,
-      ...fields.where((element) => element.name != 'id'),
-    ];
+    return _fieldsWithTailFieldsLast(
+      firstField: idField,
+      inheritedFields: inheritedFields,
+      fields: fields.where((element) => element.name != defaultPrimaryKeyName),
+    );
   }
 
   /// Returns a list of all indexes declared in the parent class.
@@ -371,6 +377,11 @@ class SerializableModelFieldDefinition {
   /// When true, nullable fields will be marked as required named parameters.
   final bool isRequired;
 
+  /// When true, this field is placed at the end of the combined field list
+  /// when inherited. Tail fields from child classes appear before tail fields
+  /// from parent classes.
+  final bool isTail;
+
   /// Name of the column in the database
   final String? _columnNameOverride;
 
@@ -412,6 +423,7 @@ class SerializableModelFieldDefinition {
     this.relation,
     this.documentation,
     this.isRequired = false,
+    this.isTail = false,
     String? columnNameOverride,
     String? jsonKeyOverride,
     this.uniquePerFieldNames,
@@ -423,7 +435,6 @@ class SerializableModelFieldDefinition {
   ///
   /// See also:
   /// - [shouldSerializeField]
-  /// - [shouldSerializeFieldForDatabase]
   bool shouldIncludeField(bool serverCode) {
     return scope == ModelFieldScopeDefinition.all ||
         (serverCode && scope == ModelFieldScopeDefinition.serverOnly);
@@ -434,37 +445,22 @@ class SerializableModelFieldDefinition {
   ///
   /// See also:
   /// - [shouldIncludeField]
-  /// - [shouldSerializeFieldForDatabase]
   bool shouldSerializeField(bool serverCode) {
     return scope == ModelFieldScopeDefinition.all;
   }
 
-  /// Returns true, if this field should be added to the serialization for the
-  /// database.
-  /// [serverCode] specifies if it's code on the server or client side.
+  /// Whether this field is persisted in the database but hidden from the
+  /// protocol (`toJsonForProtocol`) output.
   ///
-  /// See also:
-  /// - [shouldIncludeField]
-  /// - [shouldSerializeField]
-  bool shouldSerializeFieldForDatabase(bool serverCode) {
-    if (serverCode) {
-      return shouldPersist;
-    }
-    if (shouldPersist && scope == ModelFieldScopeDefinition.all) {
-      return true;
-    }
-
-    // Client: one-to-many implicit "child" FKs only.
-    final relation = this.relation;
-    return shouldPersist &&
-        scope == ModelFieldScopeDefinition.none &&
-        relation is ForeignRelationDefinition &&
-        relation.containerField == null;
-  }
-
-  /// Fields with !persist or scope [ModelFieldScopeDefinition.none] are hidden
-  /// from the wire protocol but stored in the database. On the client, implicit
-  /// one-to-many child keys are hidden.
+  /// This is only about persisted [ModelFieldScopeDefinition.none] fields, such
+  /// as the implicit relation FKs generated for object relations. Those are
+  /// stored in the database and kept in [SerializableModel.toJson], but must be
+  /// omitted from protocol serialization.
+  ///
+  /// Note this is unrelated to `!persist` (`shouldPersist == false`): a
+  /// `!persist` field with `scope: all` is *not* stored in the database but
+  /// *is* sent over the wire. On the client, only implicit one-to-many child
+  /// keys qualify as hidden.
   bool hiddenSerializableField(bool serverCode) {
     if (serverCode) {
       return shouldPersist && scope == ModelFieldScopeDefinition.none;
@@ -916,3 +912,15 @@ const ForeignKeyAction onDeleteDefault = ForeignKeyAction.noAction;
 const ForeignKeyAction onDeleteDefaultOld = ForeignKeyAction.cascade;
 
 const ForeignKeyAction onUpdateDefault = ForeignKeyAction.noAction;
+
+List<SerializableModelFieldDefinition> _fieldsWithTailFieldsLast({
+  SerializableModelFieldDefinition? firstField,
+  required Iterable<SerializableModelFieldDefinition> inheritedFields,
+  required Iterable<SerializableModelFieldDefinition> fields,
+}) => [
+  ?firstField,
+  ...inheritedFields.where((field) => !field.isTail),
+  ...fields.where((field) => !field.isTail),
+  ...fields.where((field) => field.isTail),
+  ...inheritedFields.where((field) => field.isTail),
+];

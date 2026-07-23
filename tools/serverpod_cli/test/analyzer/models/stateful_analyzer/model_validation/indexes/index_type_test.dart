@@ -753,4 +753,119 @@ void main() {
       );
     },
   );
+
+  test(
+    'Given a class with an index on a geography field and no explicit type, then default to type "gist".',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            location: GeographyPoint
+          indexes:
+            example_index:
+              fields: location
+          ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but errors were collected.',
+      );
+
+      var definition = definitions.first as ModelClassDefinition;
+      expect(definition.indexes.first.type, 'gist');
+    },
+  );
+
+  for (var indexType in ['gist', 'spgist']) {
+    test(
+      'Given a class with a geography field and an index type explicitly set to $indexType, then use that type.',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+            class: Example
+            table: example
+            fields:
+              location: GeographyPoint
+            indexes:
+              example_index:
+                fields: location
+                type: $indexType
+            ''',
+          ).build(),
+        ];
+
+        var collector = CodeGenerationCollector();
+        var analyzer = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        );
+        var definitions = analyzer.validateAll();
+
+        expect(
+          collector.errors,
+          isEmpty,
+          reason: 'Expected no errors, but errors were collected.',
+        );
+
+        var definition = definitions.first as ModelClassDefinition;
+        expect(definition.indexes.first.type, indexType);
+      },
+    );
+  }
+
+  test(
+    'Given a class with a geography field and an unsupported index type, then collect an error that only gist and spgist can be used.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            location: GeographyPoint
+          indexes:
+            example_index:
+              fields: location
+              type: btree
+          ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error, but none was collected.',
+      );
+
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        'The "type" property must be one of: gist, spgist.',
+      );
+    },
+  );
 }

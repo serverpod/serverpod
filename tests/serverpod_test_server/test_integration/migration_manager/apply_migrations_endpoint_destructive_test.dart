@@ -1,3 +1,4 @@
+@Tags(['migration_artifacts'])
 @Timeout(Duration(minutes: 5))
 import 'dart:io';
 
@@ -5,7 +6,6 @@ import 'package:path/path.dart' as path;
 import 'package:serverpod/src/endpoints/insights.dart';
 import 'package:serverpod_cli/src/migrations/generator.dart';
 import 'package:serverpod_test_server/test_util/migration_test_utils.dart';
-import 'package:serverpod_test_server/test_util/test_tags.dart';
 import 'package:test/test.dart';
 
 import '../test_tools/serverpod_test_tools.dart';
@@ -13,7 +13,6 @@ import '../test_tools/serverpod_test_tools.dart';
 void main() {
   withServerpod(
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
     'Given a pending regular migration with a new protocol model',
     (sessionBuilder, _) async {
       const tableName = 'endpoint_destructive_test_migrated_table';
@@ -28,14 +27,15 @@ fields:
   anInt: int
 ''',
         };
-        final exitCode = await MigrationTestUtils.createMigrationFromProtocols(
-          protocols: protocols,
-          tag: 'apply-migrations-endpoint-destructive',
-        );
+        final migrationCreated =
+            await MigrationTestUtils.createMigrationFromProtocolsInProcess(
+              protocols: protocols,
+              tag: 'apply-migrations-endpoint-destructive',
+            );
         expect(
-          exitCode,
-          0,
-          reason: 'Failed to create migration, exit code was not 0.',
+          migrationCreated,
+          isTrue,
+          reason: 'Failed to create migration.',
         );
       });
 
@@ -79,7 +79,6 @@ INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
 
   withServerpod(
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
     'Given a pending repair migration',
     (sessionBuilder, _) async {
       const tableName = 'endpoint_destructive_test_repair_table';

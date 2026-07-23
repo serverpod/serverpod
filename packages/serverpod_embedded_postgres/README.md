@@ -2,7 +2,7 @@
 
 Run a real PostgreSQL server as a child process for Serverpod local
 development. Same PG dialect as production, no Docker dependency, no TCP
-port conflicts by default. One Dart call boots the cluster, persistent
+fixed-port conflicts. One Dart call boots the cluster, persistent
 across restarts.
 
 ## Quickstart
@@ -30,29 +30,40 @@ Future<void> main() async {
 }
 ```
 
-The first call downloads ~30 MB of Zonky's
-[`embedded-postgres-binaries`][zonky] from Maven Central into the
-per-user cache (`~/Library/Caches/serverpod/pg-binaries` on macOS,
+The first call downloads a Serverpod PostgreSQL bundle (PostgreSQL +
+PostGIS + pgvector) from GitHub Releases into the per-user cache
+(`~/Library/Caches/serverpod/pg-binaries` on macOS,
 `$XDG_CACHE_HOME/serverpod/pg-binaries` on Linux,
 `%LOCALAPPDATA%\serverpod\Cache\pg-binaries` on Windows). Subsequent
 starts reuse the cache and reach ready in under a second on a warm
-cluster.
+cluster. The bundle ships **PostGIS 3.5.4** and **pgvector 0.8.3**, so
+`CREATE EXTENSION postgis` / `CREATE EXTENSION vector` work out of the
+box. See `tool/build_postgres/` for how the bundles are built and
+[PUBLISH.md](PUBLISH.md) for bundle versioning and publishing instructions.
 
-[zonky]: https://central.sonatype.com/artifact/io.zonky.test.postgres/embedded-postgres-binaries-bom
+Bundles are downloaded by default; a missing release asset is an error,
+not a silent multi-minute source build. Set `SERVERPOD_PG_SOURCE=build`
+(or `binarySource: BinarySource.build`) to force a local build - this
+requires the native toolchain and is intended for development and CI,
+not end users.
 
 ## Two transports
 
-**Unix Domain Socket (default).** Trust authentication; the project
-directory already gates filesystem access to the socket. PG `chdir`s to
-`PGDATA` before binding so `unix_socket_directories = '../run'` lands a
-~20-byte path in `sockaddr_un.sun_path`, well under the 104-byte macOS
-cap regardless of how deep your project lives.
+**Unix Domain Socket (default when supported).** Trust authentication; the
+project directory already gates filesystem access to the socket. PG `chdir`s
+to `PGDATA` before binding so `unix_socket_directories = '../run'` lands a
+~20-byte path in `sockaddr_un.sun_path`, well under the 104-byte macOS cap
+regardless of how deep your project lives. Fresh clusters still receive an
+initial superuser password (configured or generated) so the same cluster can
+later be reopened over TCP without reinitialization.
 
 **TCP loopback (`TcpTransport`).** scram-sha-256 against `127.0.0.1`,
-random 32-char password persisted to `<.serverpod>/postgres.password`
-for warm-restart consistency. `TcpTransport(port: 0)` (the default) gets
-an ephemeral port; explicit ports are honored. Port-race collision is
-retried up to 3 times before bubbling up.
+password via [TcpTransport.password] (Serverpod passes `config/passwords.yaml`
+`database` here) or a random dev credential when omitted. Persisted to
+`<.serverpod>/postgres.password` for warm-restart consistency. The default
+`TcpTransport(port: 0)` gets an ephemeral port; explicit ports are honored.
+Port-race collision is retried up to 3 times before bubbling up.
+Platforms without Unix domain socket support select this transport by default.
 
 ```dart
 // TCP variant:
@@ -67,6 +78,22 @@ final pg = await EmbeddedPostgres.start(
 print(pg.endpoint.port);     // some ephemeral port like 49152
 print(pg.endpoint.password); // random 32-char string
 ```
+
+## Connect with external tools
+
+From a Serverpod project configured with `database.dataPath`, run:
+
+```sh
+serverpod database start
+```
+
+The command reads `config/development.yaml` and `config/passwords.yaml`, starts
+the embedded database on the configured TCP port, and prints a connection URI
+for tools such as `psql`, DBeaver, and DataGrip. It keeps the database running
+until interrupted. If this command starts the postmaster before the Serverpod
+server, the server attaches to that existing postmaster rather than launching
+a competing one. Use `--mode` to select a different configuration or
+`--server-dir` to select a server project explicitly.
 
 ## Detach + attach for cross-VM dev DBs
 
@@ -102,23 +129,31 @@ Pre-populate the cache without booting a postmaster:
 ```sh
 dart run serverpod_embedded_postgres:prefetch
 dart run serverpod_embedded_postgres:prefetch --version 16.13.0
-dart run serverpod_embedded_postgres:prefetch --target linux-amd64
+dart run serverpod_embedded_postgres:prefetch --target linux-x64
 ```
 
 `--target` lets a CI runner warm the cache for non-host platforms, e.g.
-a macOS shared-cache job pre-extracting the `linux-amd64` bundle for
-test workers to consume.
+a macOS shared-cache job pre-extracting the `linux-x64` bundle for test
+workers to consume. Valid targets: `linux-x64`, `linux-arm64`,
+`macos-x64`, `macos-arm64`, `windows-x64`.
 
 ## What's exposed
 
 ```dart
 abstract class EmbeddedPostgres {
-  // Boot or reattach.
+  // Boot, coordinate ownership, or reattach.
   static Future<EmbeddedPostgres> start(EmbeddedPostgresOptions opts);
+  static Future<EmbeddedStartResult> startOrAttach(
+    EmbeddedPostgresOptions opts,
+  );
   static Future<EmbeddedPostgres> attach(Directory dataDir);
 
   // Cache utilities.
-  static Future<void> prefetch(Version version, {String? target});
+  static Future<void> prefetch(
+    Version version, {
+    String? target,
+    BinarySource? source,
+  });
   static Directory defaultBinaryCache();
 
   // Connection handles.
@@ -139,7 +174,10 @@ The `Transport` sealed class has two variants:
 
 ```dart
 sealed class Transport { const Transport(); }
-final class UnixTransport extends Transport { const UnixTransport(); }
+final class UnixTransport extends Transport {
+  final String? initialPassword;
+  const UnixTransport({this.initialPassword});
+}
 final class TcpTransport extends Transport {
   final int port;          // 0 = ephemeral
   final String? password;  // null = generate random
@@ -147,20 +185,16 @@ final class TcpTransport extends Transport {
 }
 ```
 
-Errors are a sealed hierarchy rooted at `EmbeddedPostgresException`:
-`BinaryFetchException`, `BinaryVerificationException`,
-`UnsupportedPlatformException`, `InitdbException`,
-`StartupTimeoutException`, `CrashedException` (carries `logTail`),
-`AttachException`, `StaleClusterException`. `switch` over them
-exhaustively.
 
 ## What's not included
 
-- **PostgreSQL extensions** beyond what Zonky's stock binaries ship.
-  Notably, the default Serverpod project template uses
-  `pgvector/pgvector:pg16`, so this package isn't yet a drop-in for
-  newly-created projects until pgvector artifacts ship - tracked
-  separately for a follow-up release.
+- **PostgreSQL extensions** beyond PostGIS and pgvector (which the bundle
+  ships) - others would need to be added to the build in
+  `tool/build_postgres/`.
+- **Full PostGIS.** The bundled PostGIS covers Serverpod's supported
+  surface (geography types + `ST_Intersects`/`ST_DWithin`/`ST_Distance`/
+  `ST_Covers`/`ST_CoveredBy`); raster, the address standardizer, and
+  protobuf-backed output are compiled out.
 - **Replication / logical decoding / hot standby** - out of scope for
   a dev-loop tool.
 - **pg_dump / pgAdmin wrappers** - use `pg_dump` directly against
@@ -168,11 +202,14 @@ exhaustively.
 - **Encryption at rest** - dev tool.
 - **Connection pooling** - delegated to `package:postgres`.
 
-## Design
+## Further documentation
 
-See `docs/design/serverpod_embedded_postgres_spec.md` for the full
-design, including the rationale for UDS-by-default, binary-source
-choice, supervisor lifecycle, error model, and verification plan.
+- [PLATFORMS.md](PLATFORMS.md): supported targets and platform-specific
+  limitations.
+- [tool/build_postgres/README.md](tool/build_postgres/README.md): native build
+  recipe and archive invariants.
+- [PUBLISH.md](PUBLISH.md): bundle revision, tagging, publication, and recovery
+  runbook for maintainers.
 
 ## Platform support
 

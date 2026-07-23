@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 @_i1.immutable
-class ImmutableObject implements _i1.SerializableModel {
+class ImmutableObject
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   const ImmutableObject({required this.variable});
 
   factory ImmutableObject.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -54,6 +55,14 @@ class ImmutableObject implements _i1.SerializableModel {
 
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'ImmutableObject',
+      'variable': variable,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ImmutableObject',
       'variable': variable,

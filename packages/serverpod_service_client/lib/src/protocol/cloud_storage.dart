@@ -14,7 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
 
 /// An entry in the database for an uploaded file.
-abstract class CloudStorageEntry implements _i1.SerializableModel {
+abstract class CloudStorageEntry
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   CloudStorageEntry._({
     this.id,
     required this.storageId,
@@ -90,6 +91,20 @@ abstract class CloudStorageEntry implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod.CloudStorageEntry',
+      if (id != null) 'id': id,
+      'storageId': storageId,
+      'path': path,
+      'addedTime': addedTime.toJson(),
+      if (expiration != null) 'expiration': expiration?.toJson(),
+      'byteData': byteData.toJson(),
+      'verified': verified,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod.CloudStorageEntry',
       if (id != null) 'id': id,

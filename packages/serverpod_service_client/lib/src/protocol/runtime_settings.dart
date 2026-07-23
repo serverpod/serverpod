@@ -16,7 +16,8 @@ import 'log_settings_override.dart' as _i3;
 import 'package:serverpod_service_client/src/protocol/protocol.dart' as _i4;
 
 /// Runtime settings of the server.
-abstract class RuntimeSettings implements _i1.SerializableModel {
+abstract class RuntimeSettings
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   RuntimeSettings._({
     this.id,
     required this.logSettings,
@@ -87,6 +88,20 @@ abstract class RuntimeSettings implements _i1.SerializableModel {
       'logSettings': logSettings.toJson(),
       'logSettingsOverrides': logSettingsOverrides.toJson(
         valueToJson: (v) => v.toJson(),
+      ),
+      'logServiceCalls': logServiceCalls,
+      'logMalformedCalls': logMalformedCalls,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod.RuntimeSettings',
+      if (id != null) 'id': id,
+      'logSettings': logSettings.toJsonForProtocol(),
+      'logSettingsOverrides': logSettingsOverrides.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
       ),
       'logServiceCalls': logServiceCalls,
       'logMalformedCalls': logMalformedCalls,

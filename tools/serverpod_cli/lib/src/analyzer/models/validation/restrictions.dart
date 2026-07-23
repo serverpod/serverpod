@@ -9,6 +9,7 @@ import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
+import 'package:serverpod_cli/src/util/type_validators.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:source_span/source_span.dart';
@@ -236,10 +237,14 @@ class Restrictions {
     String _,
     SourceSpan? span,
   ) {
-    if (documentDefinition?.isSharedModel ?? false) {
+    var definition = documentDefinition;
+    if (definition is ModelClassDefinition &&
+        definition.isSharedModel &&
+        definition.database != ModelDatabaseDefinition.all) {
       return [
         SourceSpanSeverityException(
-          'The "table" property is not allowed in shared packages.',
+          'The "table" property in shared packages requires the "database" '
+          'property to be set to "all".',
           span,
         ),
       ];
@@ -1438,7 +1443,14 @@ class Restrictions {
       return errors;
     }
 
-    if (!_isValidType(fieldType)) {
+    if (!TypeValidators.isValidType(
+      fieldType,
+      TypeValidationOptions(
+        extraClasses: config.extraClasses,
+        modelTypeValidator: _isModelType,
+        allowSerializableDartType: true,
+      ),
+    )) {
       var typeName = fieldType.className;
       errors.add(
         SourceSpanSeverityException(
@@ -1750,10 +1762,25 @@ class Restrictions {
         ),
     ];
 
+    var hasGeographyField = fields
+        .where((f) => indexFields.contains(f.name))
+        .map((f) => f.type.isGeographyType)
+        .toSet();
+
+    var geographyErrors = [
+      if (hasGeographyField.length > 1)
+        SourceSpanSeverityException(
+          'Mixing geography and non-geography fields in the same index is not '
+          'allowed.',
+          span,
+        ),
+    ];
+
     return [
       ...missingFieldErrors,
       ...duplicateFieldErrors,
       ...vectorErrors,
+      ...geographyErrors,
     ];
   }
 
@@ -1942,6 +1969,10 @@ class Restrictions {
         validIndexTypes = VectorIndexType.values.map((e) => e.name).toSet();
       }
 
+      if (indexFields.any((e) => e.type.isGeographyType)) {
+        validIndexTypes = {'gist', 'spgist'};
+      }
+
       if (content == 'gin') {
         var nonJsonbFields = indexFields
             .where((f) => !f.type.isJsonbSerialized)
@@ -2053,6 +2084,23 @@ class Restrictions {
         SourceSpanSeverityException(
           'The "required" keyword can only be used with nullable fields. '
           'Non-nullable fields are already required by default.',
+          span,
+        ),
+      ];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validateTailKey(
+    String parentNodeName,
+    String key,
+    SourceSpan? span,
+  ) {
+    if (parentNodeName == defaultPrimaryKeyName) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.tail}" keyword is not allowed on the "id" field.',
           span,
         ),
       ];
@@ -2695,13 +2743,6 @@ class Restrictions {
     return type.startsWith('package:') || type.startsWith('project:');
   }
 
-  bool _isValidType(TypeDefinition type) {
-    return type.isSerializableDartType ||
-        _isModelType(type) ||
-        _isCustomType(type) ||
-        _isRecordType(type);
-  }
-
   bool _isUnresolvedModuleType(TypeDefinition type) {
     if (!type.isModuleType) return false;
 
@@ -2732,14 +2773,6 @@ class Restrictions {
     }
 
     return true;
-  }
-
-  bool _isCustomType(TypeDefinition type) {
-    return config.extraClasses.any((c) => c.className == type.className);
-  }
-
-  bool _isRecordType(TypeDefinition type) {
-    return type.isRecordType && type.generics.every(_isValidType);
   }
 
   bool _hasTableDefined(SerializableModelDefinition classDefinition) {

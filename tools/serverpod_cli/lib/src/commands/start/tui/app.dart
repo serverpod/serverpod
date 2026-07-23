@@ -1,8 +1,10 @@
 import 'dart:async';
 
-import 'package:nocterm/nocterm.dart';
+import 'package:nocterm/nocterm.dart' hide LogEntry;
+import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_tui/serverpod_tui.dart';
 
+import 'inspectable_scroll_controller.dart';
 import 'main_screen.dart';
 
 import 'state.dart';
@@ -113,6 +115,7 @@ class ServerpodWatchApp extends TuiApp<StartAppStateHolder> {
 class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
   final rawScrollController = ScrollController();
   final helpScrollController = ScrollController();
+  final appPanelScrollController = ScrollController();
 
   /// Callbacks wired by the backend.
   VoidCallback? onHotReload;
@@ -126,6 +129,12 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
   VoidCallback? onQuit;
 
   bool _minSplashElapsed = false;
+
+  /// Auto-closes the launch panel a while after the last interaction, so a user
+  /// launching or browsing several apps keeps the panel open until they pause.
+  Timer? _launchPanelCloseTimer;
+
+  static const _launchPanelCloseDelay = Duration(seconds: 3);
 
   @override
   void initState() {
@@ -143,7 +152,11 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
 
   @override
   void dispose() {
+    _launchPanelCloseTimer?.cancel();
     component.holder.detach(this);
+    rawScrollController.dispose();
+    helpScrollController.dispose();
+    appPanelScrollController.dispose();
     super.dispose();
   }
 
@@ -166,6 +179,129 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
     setState(() {});
   }
 
+  /// Launches the [index]th app and arms the launch-panel auto-close.
+  void _launchApp(int index) {
+    onLaunchApp?.call(index);
+    _scheduleLaunchPanelClose();
+    _rebuild();
+  }
+
+  /// (Re)starts the launch-panel auto-close countdown, so any interaction while
+  /// the panel is open (launching or navigating) pushes the dismissal back.
+  void _scheduleLaunchPanelClose() {
+    _launchPanelCloseTimer?.cancel();
+    _launchPanelCloseTimer = Timer(_launchPanelCloseDelay, () {
+      final state = component.holder.state;
+      if (state.showLaunchPanel) {
+        state.showLaunchPanel = false;
+        _rebuild();
+      }
+    });
+  }
+
+  /// Pushes the auto-close back only when it is already counting down, so
+  /// navigating a panel that was opened without launching never arms it.
+  void _bumpLaunchPanelCloseTimer() {
+    if (_launchPanelCloseTimer?.isActive ?? false) {
+      _scheduleLaunchPanelClose();
+    }
+  }
+
+  /// Scrolls the log view holding [entry] so it stays in view after its
+  /// stack trace expanded or collapsed via the clickable affordance.
+  ///
+  /// Expanding grows the entry downwards (towards newer entries), which in the
+  /// bottom-anchored log view shoves the clicked line up - past the top edge
+  /// for a long trace. Collapsing does the reverse and can drop the entry
+  /// below the viewport when scrolled up. Runs after the toggle's frame so the
+  /// re-laid-out geometry is measured, then scrolls just enough to keep the
+  /// entry on screen; an entry taller than the viewport is pinned with its
+  /// message and affordance line at the top and the trace filling the rest.
+  void _keepToggledEntryInView(LogEntry entry) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      final located = _locateLogEntry(entry);
+      if (located == null) return;
+      final (items, controller) = located;
+
+      // The list renders newest-first (`reverse: true`), so builder index 0
+      // is the last history item. Resolved inside the callback: entries
+      // arriving during the toggle's frame shift the index.
+      final itemIndex = items.lastIndexOf(entry);
+      if (itemIndex < 0) return;
+      final builderIndex = items.length - 1 - itemIndex;
+
+      final geometry = controller.itemOffsetAndExtent(builderIndex);
+      if (geometry == null) return;
+      final (itemOffset, itemExtent) = geometry;
+
+      if (itemExtent > controller.viewportDimension) {
+        // In the reversed list the item's scroll-space end is its visual top.
+        controller.jumpTo(
+          itemOffset + itemExtent - controller.viewportDimension,
+        );
+      } else {
+        controller.ensureVisible(
+          itemOffset: itemOffset,
+          itemExtent: itemExtent,
+        );
+      }
+    });
+  }
+
+  /// Finds the log history and scroll controller of the view showing [entry]:
+  /// the server log or one of the app log tabs. Null when the entry has been
+  /// evicted from every history.
+  (List<Object>, InspectableScrollController)? _locateLogEntry(LogEntry entry) {
+    final state = component.holder.state;
+    if (state.logHistory.contains(entry)) {
+      return (state.logHistory, state.serverLogTab.scrollController);
+    }
+    for (final tab in state.appsTabArea?.tabs ?? const <PaneTab>[]) {
+      if (tab is AppLogTab && tab.logHistory.contains(entry)) {
+        return (tab.logHistory, tab.scrollController);
+      }
+    }
+    return null;
+  }
+
+  /// Stops [tab]'s app while it is running or launching - the tab stays so its
+  /// marker flips to stopped and it can be relaunched - and once stopped closes
+  /// the tab, refocusing the last remaining app tab. Bound to the `X` key and
+  /// the clickable `X Stop App`/`X Close Tab` status-line hint. Returns whether
+  /// it acted, so the key handler can fall through when the tab is in neither
+  /// state.
+  bool _stopOrCloseAppTab(AppLogTab tab) {
+    final state = component.holder.state;
+    final appId = tab.appId;
+    final running = state.isAppRunning?.call(appId) ?? false;
+    final launching = state.isAppLaunching?.call(appId) ?? false;
+
+    if (running || launching) {
+      final index = state.launchableApps.indexWhere((a) => a.id == appId);
+      if (index < 0) return false;
+      onStopApp?.call(index);
+      _rebuild();
+      return true;
+    }
+
+    if (tab.stopped) {
+      state.removeAppLogTab(appId);
+      final lastTab = state.appsTabArea?.tabs.whereType<AppLogTab>().lastOrNull;
+      if (lastTab == null) {
+        state.launchPanelIndex = 0;
+      } else {
+        state.tabs.focusTab(lastTab);
+        state.launchPanelIndex = state.launchableApps.indexWhere(
+          (a) => a.id == lastTab.appId,
+        );
+      }
+      _rebuild();
+      return true;
+    }
+
+    return false;
+  }
+
   @override
   void onExit() {
     final quit = onQuit;
@@ -183,32 +319,42 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
     return Focusable(
       focused: true,
       onKeyEvent: _handleKeyEvent,
-      child: MainScreen(
-        state: state,
-        showSplash: state.showSplash,
-        rawScrollController: rawScrollController,
-        helpScrollController: helpScrollController,
-        onToggleHelp: () {
-          state.showHelp = !state.showHelp;
-          _rebuild();
+      child: GestureDetector(
+        onTap: () {
+          if (state.showHelp) {
+            state.showHelp = false;
+            _rebuild();
+          }
         },
-        onTabSelected: _rebuild,
-        onHotReload: onHotReload,
-        onHotRestart: onHotRestart,
-        onCreateMigration: onCreateMigration,
-        onCreateRepairMigration: onCreateRepairMigration,
-        onApplyMigration: onApplyMigration,
-        onClearLogs: () {
-          state.clearLogs();
-          _rebuild();
-        },
-        onLaunchApp: (index) {
-          onLaunchApp?.call(index);
-          // Mirror the keyboard path: a click also dismisses the panel.
-          state.showLaunchPanel = false;
-          _rebuild();
-        },
-        onQuit: onQuit,
+        child: MainScreen(
+          state: state,
+          showSplash: state.showSplash,
+          rawScrollController: rawScrollController,
+          helpScrollController: helpScrollController,
+          appPanelScrollController: appPanelScrollController,
+          onToggleHelp: () {
+            state.showHelp = !state.showHelp;
+            _rebuild();
+          },
+          onTabSelected: _rebuild,
+          onHotReload: onHotReload,
+          onHotRestart: onHotRestart,
+          onCreateMigration: onCreateMigration,
+          onClearLogs: () {
+            state.clearLogs();
+            _rebuild();
+          },
+          onLaunchApp: _launchApp,
+          onQuit: onQuit,
+          onCopyAlert: copyAlert,
+          onDismissAlert: dismissAlert,
+          onStopOrCloseAppTab: _stopOrCloseAppTab,
+          onToggleStackTrace: (entry) {
+            state.toggleStackTrace(entry);
+            _rebuild();
+            _keepToggledEntryInView(entry);
+          },
+        ),
       ),
     );
   }
@@ -232,19 +378,12 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
       return true;
     }
 
-    if (state.showRawServerLogs) {
-      if (event.logicalKey == LogicalKey.escape ||
-          event.logicalKey == LogicalKey.backquote ||
-          event.logicalKey == LogicalKey.period) {
-        state.showRawServerLogs = false;
-        _rebuild();
+    // 'x' acts on the active Flutter app tab.
+    if (event.logicalKey == LogicalKey.keyX) {
+      final activeTab = state.appsTabArea?.selected;
+      if (activeTab is AppLogTab && _stopOrCloseAppTab(activeTab)) {
         return true;
       }
-      if (event.logicalKey == LogicalKey.keyC && event.isControlPressed) {
-        return false;
-      }
-      _handleScrollKey(rawScrollController, event);
-      return true;
     }
 
     if (state.showLaunchPanel) {
@@ -252,6 +391,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
 
       if (event.logicalKey == LogicalKey.escape ||
           (event.logicalKey == LogicalKey.keyR && event.isControlPressed)) {
+        _launchPanelCloseTimer?.cancel();
         state.showLaunchPanel = false;
         _rebuild();
         return true;
@@ -262,6 +402,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
               event.logicalKey == LogicalKey.keyK)) {
         state.launchPanelIndex =
             (state.launchPanelIndex - 1 + appCount) % appCount;
+        _bumpLaunchPanelCloseTimer();
         _rebuild();
         return true;
       }
@@ -269,37 +410,38 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
           (event.logicalKey == LogicalKey.arrowDown ||
               event.logicalKey == LogicalKey.keyJ)) {
         state.launchPanelIndex = (state.launchPanelIndex + 1) % appCount;
+        _bumpLaunchPanelCloseTimer();
         _rebuild();
         return true;
       }
       // Enter launches the focused row.
       if (event.logicalKey == LogicalKey.enter &&
           state.launchPanelIndex < appCount) {
-        onLaunchApp?.call(state.launchPanelIndex);
-        state.showLaunchPanel = false;
-        _rebuild();
-        return true;
-      }
-      // 'x' stops the focused app when it is running. The panel stays open so
-      // the row's marker flips to stopped and the app can be relaunched.
-      if (event.logicalKey == LogicalKey.keyX &&
-          state.launchPanelIndex < appCount) {
-        final app = state.launchableApps[state.launchPanelIndex];
-        if (state.isAppRunning?.call(app.id) ?? false) {
-          onStopApp?.call(state.launchPanelIndex);
-          _rebuild();
-        }
+        _launchApp(state.launchPanelIndex);
         return true;
       }
       // Number keys remain shortcuts for the first nine apps.
       final digitIndex = _digitIndex(event.logicalKey);
       if (digitIndex != null && digitIndex < appCount && digitIndex < 9) {
-        onLaunchApp?.call(digitIndex);
-        state.showLaunchPanel = false;
+        _launchApp(digitIndex);
+        return true;
+      }
+    }
+
+    if (state.showRawServerLogs) {
+      if (event.logicalKey == LogicalKey.escape ||
+          event.logicalKey == LogicalKey.backquote ||
+          event.logicalKey == LogicalKey.keyS) {
+        state.showRawServerLogs = false;
         _rebuild();
         return true;
       }
-      return true;
+      if (event.logicalKey == LogicalKey.keyC && event.isControlPressed) {
+        return false;
+      }
+      if (_handleScrollKey(rawScrollController, event)) {
+        return true;
+      }
     }
 
     // Ctrl+R: full relaunch of the selected Flutter app (kill `flutter run` and
@@ -307,18 +449,17 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
     // with `--no-flutter`). Handled here rather than as a ButtonBar entry
     // because the Button widget matches only plain/Shift keys. Always consumed
     // so it never falls through to the plain-R hot reload / restart.
-    // 0 apps inert; 1 app direct action; >1 toggle launch panel.
+    // 0 apps inert; >0 toggle launch panel.
     if (event.logicalKey == LogicalKey.keyR && event.isControlPressed) {
       if (!state.canLaunchApps) return true;
-      if (state.launchableApps.length <= 1) {
-        onRestartFlutterApp?.call();
-      } else {
-        state.showLaunchPanel = !state.showLaunchPanel;
-        if (state.showLaunchPanel) {
-          state.launchPanelIndex = state.activeLaunchableIndex;
-        }
-        _rebuild();
+      // Toggling the panel resets any pending auto-close so a freshly opened
+      // panel is never dismissed by a timer from a previous launch.
+      _launchPanelCloseTimer?.cancel();
+      state.showLaunchPanel = !state.showLaunchPanel;
+      if (state.showLaunchPanel) {
+        state.launchPanelIndex = state.activeLaunchableIndex;
       }
+      _rebuild();
       return true;
     }
 
@@ -355,16 +496,39 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
     }
 
     final focusedTab = state.tabs.focusedTab;
-    if (event.logicalKey == LogicalKey.keyE && focusedTab is ServerLogTab) {
-      state.expandStackTraces = !state.expandStackTraces;
+    if (event.logicalKey == LogicalKey.keyE &&
+        (focusedTab is ServerLogTab || focusedTab is AppLogTab)) {
+      state.toggleAllStackTraces();
       _rebuild();
       return true;
     }
 
     if (event.logicalKey == LogicalKey.backquote ||
-        event.logicalKey == LogicalKey.period) {
+        event.logicalKey == LogicalKey.keyS) {
       state.showRawServerLogs = true;
       _rebuild();
+      return true;
+    }
+
+    // Repair migration (Shift for force). Not shown in the bottom bar; it is
+    // documented on the help screen instead.
+    if (event.logicalKey == LogicalKey.keyP &&
+        !event.isControlPressed &&
+        !event.isAltPressed &&
+        !event.isMetaPressed &&
+        state.serverReady &&
+        !state.actionBusy) {
+      onCreateRepairMigration?.call(force: event.isShiftPressed);
+      return true;
+    }
+
+    // Applying migrations remains available as a recovery action when the
+    // automatic apply following migration creation fails. Also documented
+    // on the help screen.
+    if (event.logicalKey == LogicalKey.keyA &&
+        state.serverReady &&
+        !state.actionBusy) {
+      onApplyMigration?.call();
       return true;
     }
 

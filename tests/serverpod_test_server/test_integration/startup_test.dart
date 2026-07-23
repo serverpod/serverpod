@@ -6,8 +6,9 @@ void main() {
   group('Given a Serverpod server instance', () {
     late Serverpod server;
 
-    setUp(() {
+    setUp(() async {
       server = IntegrationTestServer.create();
+      await server.ensureDatabase();
     });
 
     tearDown(() async {
@@ -19,7 +20,8 @@ void main() {
       () async {
         await server.start();
       },
-      timeout: Timeout(Duration(seconds: 10)),
+      // First-use provisioning in setUp: embedded-PG launch + create + migrate.
+      timeout: Timeout(Duration(seconds: 120)),
     );
 
     test(
@@ -29,7 +31,8 @@ void main() {
         await server.shutdown(exitProcess: false);
         await server.start();
       },
-      timeout: Timeout(Duration(seconds: 10)),
+      // First-use provisioning in setUp: embedded-PG launch + create + migrate.
+      timeout: Timeout(Duration(seconds: 120)),
     );
   });
 }

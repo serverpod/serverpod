@@ -14,7 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'log_level.dart' as _i2;
 
 /// Bindings to a log entry in the database.
-abstract class LogEntry implements _i1.SerializableModel {
+abstract class LogEntry
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   LogEntry._({
     this.id,
     required this.sessionLogId,
@@ -112,6 +113,24 @@ abstract class LogEntry implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod.LogEntry',
+      if (id != null) 'id': id,
+      'sessionLogId': sessionLogId,
+      if (messageId != null) 'messageId': messageId,
+      if (reference != null) 'reference': reference,
+      'serverId': serverId,
+      'time': time.toJson(),
+      'logLevel': logLevel.toJson(),
+      'message': message,
+      if (error != null) 'error': error,
+      if (stackTrace != null) 'stackTrace': stackTrace,
+      'order': order,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod.LogEntry',
       if (id != null) 'id': id,

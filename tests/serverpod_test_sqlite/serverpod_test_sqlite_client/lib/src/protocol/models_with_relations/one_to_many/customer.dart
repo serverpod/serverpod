@@ -12,11 +12,12 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
-import '../../models_with_relations/one_to_many/order.dart' as _i2;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
-import 'package:serverpod_client/serverpod_client.dart' as _i4;
+import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import '../../models_with_relations/one_to_many/order.dart' as _i3;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
 
-abstract class Customer implements _i1.TableRow<int?> {
+abstract class Customer
+    implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   Customer._({
     this.id,
     required this.name,
@@ -26,7 +27,7 @@ abstract class Customer implements _i1.TableRow<int?> {
   factory Customer({
     int? id,
     required String name,
-    List<_i2.Order>? orders,
+    List<_i3.Order>? orders,
   }) = _CustomerImpl;
 
   factory Customer.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -35,7 +36,7 @@ abstract class Customer implements _i1.TableRow<int?> {
       name: jsonSerialization['name'] as String,
       orders: jsonSerialization['orders'] == null
           ? null
-          : _i3.Protocol().deserialize<List<_i2.Order>>(
+          : _i4.Protocol().deserialize<List<_i3.Order>>(
               jsonSerialization['orders'],
             ),
     );
@@ -50,18 +51,18 @@ abstract class Customer implements _i1.TableRow<int?> {
 
   String name;
 
-  List<_i2.Order>? orders;
+  List<_i3.Order>? orders;
 
   @override
   _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Customer]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   Customer copyWith({
     int? id,
     String? name,
-    List<_i2.Order>? orders,
+    List<_i3.Order>? orders,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -74,7 +75,18 @@ abstract class Customer implements _i1.TableRow<int?> {
     };
   }
 
-  static CustomerInclude include({_i2.OrderIncludeList? orders}) {
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Customer',
+      if (id != null) 'id': id,
+      'name': name,
+      if (orders != null)
+        'orders': orders?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+    };
+  }
+
+  static CustomerInclude include({_i3.OrderIncludeList? orders}) {
     return CustomerInclude._(orders: orders);
   }
 
@@ -102,7 +114,7 @@ abstract class Customer implements _i1.TableRow<int?> {
 
   @override
   String toString() {
-    return _i4.SerializationManager.encode(this);
+    return _i2.SerializationManager.encode(this);
   }
 }
 
@@ -112,7 +124,7 @@ class _CustomerImpl extends Customer {
   _CustomerImpl({
     int? id,
     required String name,
-    List<_i2.Order>? orders,
+    List<_i3.Order>? orders,
   }) : super._(
          id: id,
          name: name,
@@ -121,7 +133,7 @@ class _CustomerImpl extends Customer {
 
   /// Returns a shallow copy of this [Customer]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   @override
   Customer copyWith({
     Object? id = _Undefined,
@@ -131,7 +143,7 @@ class _CustomerImpl extends Customer {
     return Customer(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      orders: orders is List<_i2.Order>?
+      orders: orders is List<_i3.Order>?
           ? orders
           : this.orders?.map((e0) => e0.copyWith()).toList(),
     );
@@ -160,36 +172,36 @@ class CustomerTable extends _i1.Table<int?> {
 
   late final _i1.ColumnString name;
 
-  _i2.OrderTable? ___orders;
+  _i3.OrderTable? ___orders;
 
-  _i1.ManyRelation<_i2.OrderTable>? _orders;
+  _i1.ManyRelation<_i3.OrderTable>? _orders;
 
-  _i2.OrderTable get __orders {
+  _i3.OrderTable get __orders {
     if (___orders != null) return ___orders!;
     ___orders = _i1.createRelationTable(
       relationFieldName: '__orders',
       field: Customer.t.id,
-      foreignField: _i2.Order.t.customerId,
+      foreignField: _i3.Order.t.customerId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.OrderTable(tableRelation: foreignTableRelation),
+          _i3.OrderTable(tableRelation: foreignTableRelation),
     );
     return ___orders!;
   }
 
-  _i1.ManyRelation<_i2.OrderTable> get orders {
+  _i1.ManyRelation<_i3.OrderTable> get orders {
     if (_orders != null) return _orders!;
     var relationTable = _i1.createRelationTable(
       relationFieldName: 'orders',
       field: Customer.t.id,
-      foreignField: _i2.Order.t.customerId,
+      foreignField: _i3.Order.t.customerId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.OrderTable(tableRelation: foreignTableRelation),
+          _i3.OrderTable(tableRelation: foreignTableRelation),
     );
-    _orders = _i1.ManyRelation<_i2.OrderTable>(
+    _orders = _i1.ManyRelation<_i3.OrderTable>(
       tableWithRelations: relationTable,
-      table: _i2.OrderTable(
+      table: _i3.OrderTable(
         tableRelation: relationTable.tableRelation!.lastRelation,
       ),
     );
@@ -212,11 +224,11 @@ class CustomerTable extends _i1.Table<int?> {
 }
 
 class CustomerInclude extends _i1.IncludeObject {
-  CustomerInclude._({_i2.OrderIncludeList? orders}) {
+  CustomerInclude._({_i3.OrderIncludeList? orders}) {
     _orders = orders;
   }
 
-  _i2.OrderIncludeList? _orders;
+  _i3.OrderIncludeList? _orders;
 
   @override
   Map<String, _i1.Include?> get includes => {'orders': _orders};
@@ -683,7 +695,7 @@ class CustomerAttachRepository {
   Future<void> orders(
     _i1.DatabaseSession session,
     Customer customer,
-    List<_i2.Order> order, {
+    List<_i3.Order> order, {
     _i1.Transaction? transaction,
   }) async {
     if (order.any((e) => e.id == null)) {
@@ -694,9 +706,9 @@ class CustomerAttachRepository {
     }
 
     var $order = order.map((e) => e.copyWith(customerId: customer.id)).toList();
-    await session.db.update<_i2.Order>(
+    await session.db.update<_i3.Order>(
       $order,
-      columns: [_i2.Order.t.customerId],
+      columns: [_i3.Order.t.customerId],
       transaction: transaction,
     );
   }
@@ -710,7 +722,7 @@ class CustomerAttachRowRepository {
   Future<void> orders(
     _i1.DatabaseSession session,
     Customer customer,
-    _i2.Order order, {
+    _i3.Order order, {
     _i1.Transaction? transaction,
   }) async {
     if (order.id == null) {
@@ -721,9 +733,9 @@ class CustomerAttachRowRepository {
     }
 
     var $order = order.copyWith(customerId: customer.id);
-    await session.db.updateRow<_i2.Order>(
+    await session.db.updateRow<_i3.Order>(
       $order,
-      columns: [_i2.Order.t.customerId],
+      columns: [_i3.Order.t.customerId],
       transaction: transaction,
     );
   }
@@ -739,7 +751,7 @@ class CustomerDetachRepository {
   /// the related record.
   Future<void> orders(
     _i1.DatabaseSession session,
-    List<_i2.Order> order, {
+    List<_i3.Order> order, {
     _i1.Transaction? transaction,
   }) async {
     if (order.any((e) => e.id == null)) {
@@ -747,9 +759,9 @@ class CustomerDetachRepository {
     }
 
     var $order = order.map((e) => e.copyWith(customerId: null)).toList();
-    await session.db.update<_i2.Order>(
+    await session.db.update<_i3.Order>(
       $order,
-      columns: [_i2.Order.t.customerId],
+      columns: [_i3.Order.t.customerId],
       transaction: transaction,
     );
   }
@@ -765,7 +777,7 @@ class CustomerDetachRowRepository {
   /// the related record.
   Future<void> orders(
     _i1.DatabaseSession session,
-    _i2.Order order, {
+    _i3.Order order, {
     _i1.Transaction? transaction,
   }) async {
     if (order.id == null) {
@@ -773,9 +785,9 @@ class CustomerDetachRowRepository {
     }
 
     var $order = order.copyWith(customerId: null);
-    await session.db.updateRow<_i2.Order>(
+    await session.db.updateRow<_i3.Order>(
       $order,
-      columns: [_i2.Order.t.customerId],
+      columns: [_i3.Order.t.customerId],
       transaction: transaction,
     );
   }

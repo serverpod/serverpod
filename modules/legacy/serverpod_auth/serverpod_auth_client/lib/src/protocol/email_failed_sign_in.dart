@@ -14,7 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Database table for tracking failed email sign-ins. Saves IP-address, time,
 /// and email to be prevent brute force attacks.
-abstract class EmailFailedSignIn implements _i1.SerializableModel {
+abstract class EmailFailedSignIn
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   EmailFailedSignIn._({
     this.id,
     required this.email,
@@ -63,6 +64,17 @@ abstract class EmailFailedSignIn implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_auth.EmailFailedSignIn',
+      if (id != null) 'id': id,
+      'email': email,
+      'time': time.toJson(),
+      'ipAddress': ipAddress,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_auth.EmailFailedSignIn',
       if (id != null) 'id': id,

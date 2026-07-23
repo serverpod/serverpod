@@ -14,7 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Database mapping for a read/write test that is performed by the default
 /// health checks.
-abstract class ReadWriteTestEntry implements _i1.SerializableModel {
+abstract class ReadWriteTestEntry
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ReadWriteTestEntry._({
     this.id,
     required this.number,
@@ -49,6 +50,15 @@ abstract class ReadWriteTestEntry implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod.ReadWriteTestEntry',
+      if (id != null) 'id': id,
+      'number': number,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod.ReadWriteTestEntry',
       if (id != null) 'id': id,

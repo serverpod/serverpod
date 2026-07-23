@@ -230,9 +230,10 @@ void main() {
           CompilationUnitHelpers.hasMethodDeclaration(
             maybeClassNamedExample!,
             name: 'table',
+            isGetter: true,
           ),
           isTrue,
-          reason: 'Missing declaration for table method.',
+          reason: 'Missing declaration for table getter.',
         );
       });
 
@@ -243,6 +244,7 @@ void main() {
               CompilationUnitHelpers.tryFindMethodDeclaration(
                 maybeClassNamedExample!,
                 name: 'table',
+                isGetter: true,
               );
 
           var typeArguments = maybeTableGetter?.returnType as NamedType?;

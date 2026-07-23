@@ -94,27 +94,18 @@ class MicrosoftIdp {
 
         final imageBytes = account.details.imageBytes;
         if (account.newAccount) {
-          try {
-            await _userProfiles.createUserProfile(
-              session,
-              account.authUserId,
-              UserProfileData(
-                fullName: account.details.name?.trim(),
-                email: account.details.email,
-              ),
-              transaction: transaction,
-              imageSource: imageBytes != null
-                  ? UserImageFromBytes(imageBytes)
-                  : null,
-            );
-          } catch (e, stackTrace) {
-            session.log(
-              'Failed to create user profile for new Microsoft user.',
-              level: LogLevel.error,
-              exception: e,
-              stackTrace: stackTrace,
-            );
-          }
+          await _userProfiles.createUserProfile(
+            session,
+            account.authUserId,
+            UserProfileData(
+              fullName: account.details.name?.trim(),
+              email: account.details.email,
+            ),
+            transaction: transaction,
+            imageSource: imageBytes != null
+                ? UserImageFromBytes(imageBytes)
+                : null,
+          );
         } else if (imageBytes != null) {
           try {
             final user = await UserProfile.db.findFirstRow(
@@ -122,7 +113,7 @@ class MicrosoftIdp {
               where: (final t) => t.authUserId.equals(account.authUserId),
               transaction: transaction,
             );
-            if (user != null && user.image == null) {
+            if (user != null && user.imageId == null) {
               await _userProfiles.setUserImageFromBytes(
                 session,
                 account.authUserId,

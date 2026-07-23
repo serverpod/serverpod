@@ -8,12 +8,30 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart';
+import 'package:serverpod_shared/process_io.dart';
 import 'package:test/test.dart';
 
 void main() {
   const signalDelay = Duration(seconds: 2);
   const terminationTimeout = Duration(seconds: 10);
   const verbose = false;
+
+  setUpAll(() async {
+    // Migrate the main config database once
+    final result = await Process.run(dartExecutablePath, [
+      'run',
+      'bin/main.dart',
+      '--mode=test',
+      '--role',
+      'maintenance',
+      '--apply-migrations',
+    ]);
+    if (result.exitCode != 0) {
+      throw StateError(
+        'Pre-migrating the config database failed: ${result.stderr}',
+      );
+    }
+  });
 
   test('Given a serverpod server with db '
       'when run in maintenance mode '
@@ -266,7 +284,10 @@ Future<ProcessOutput> startProcess(
   bool verbose = false,
 }) async {
   final process = await Process.start(
-    executable,
+    // Spawn the real SDK binary (resolved through version-manager shims like
+    // puro/fvm): shell shims do not forward the signals these tests send, so
+    // the exit-code assertions would time out and leak the spawned server.
+    executable == 'dart' ? dartExecutablePath : executable,
     arguments,
     environment: environment,
   );

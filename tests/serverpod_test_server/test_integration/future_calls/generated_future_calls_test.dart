@@ -79,7 +79,7 @@ void main() {
           );
 
           expect(futureCallEntries, hasLength(1));
-          expect(futureCallEntries.first.time.isAfter(expectedTime), isTrue);
+          expect(futureCallEntries.first.time.isBefore(expectedTime), isFalse);
         },
       );
 

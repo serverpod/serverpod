@@ -6,15 +6,12 @@ import 'package:test/test.dart';
 
 import '../lib/src/util.dart';
 
-const tempDirName = 'temp';
-
 void main() async {
   final rootPath = path.join(Directory.current.path, '..', '..');
   final cliProjectPath = getServerpodCliProjectPath(rootPath: rootPath);
-  final tempPath = path.join(rootPath, tempDirName);
+  final tempPath = Directory.systemTemp.createTempSync('spb_').path;
 
   setUpAll(() async {
-    await Directory(tempPath).create();
     final pubGetProcess = await startProcess('dart', [
       'pub',
       'get',
@@ -46,6 +43,7 @@ void main() async {
                 projectName,
                 '-v',
                 '--no-analytics',
+                '--no-interactive',
               ],
               rootPath: rootPath,
               workingDirectory: tempPath,
@@ -97,6 +95,25 @@ void main() async {
                 );
               });
 
+              test(
+                'has a src/cache_busting.dart file',
+                () {
+                  expect(
+                    File(
+                      path.join(
+                        tempPath,
+                        serverDir,
+                        'lib',
+                        'src',
+                        'cache_busting.dart',
+                      ),
+                    ).existsSync(),
+                    isTrue,
+                    reason: 'Server cache_busting.dart file does not exist.',
+                  );
+                },
+              );
+
               test('has a server.dart file', () {
                 expect(
                   File(
@@ -105,6 +122,93 @@ void main() async {
                   isTrue,
                 );
               });
+
+              test(
+                'then the server.dart contains webapp configurations',
+                () {
+                  final file = File(
+                    path.join(tempPath, serverDir, 'lib', 'server.dart'),
+                  );
+
+                  final content = file.readAsStringSync();
+
+                  expect(
+                    content,
+                    contains("import 'src/cache_busting.dart';"),
+                    reason:
+                        'server.dart does not contain webapp configurations.',
+                  );
+
+                  expect(
+                    content,
+                    contains("import 'src/web/routes/app_config_route.dart';"),
+                    reason:
+                        'server.dart does not contain webapp configurations.',
+                  );
+
+                  expect(
+                    content,
+                    contains(
+                      'StaticRoute.withCacheBusting(cacheBustingConfig)',
+                    ),
+                    reason:
+                        'server.dart does not contain webapp configurations.',
+                  );
+
+                  expect(
+                    content,
+                    contains('AppConfigRoute(apiConfig: pod.config.apiServer)'),
+                    reason:
+                        'server.dart does not contain webapp configurations.',
+                  );
+
+                  expect(
+                    content,
+                    contains(
+                      "final appDir = Directory(Uri(path: 'web/app').toFilePath())",
+                    ),
+                    reason:
+                        'server.dart does not contain webapp configurations.',
+                  );
+
+                  expect(
+                    content,
+                    contains('if (appDir.existsSync()) {'),
+                    reason:
+                        'server.dart does not contain webapp configurations.',
+                  );
+
+                  expect(
+                    content,
+                    contains(
+                      "Uri(path: 'web/pages/build_flutter_app.html').toFilePath()",
+                    ),
+                    reason:
+                        'server.dart does not contain webapp configurations.',
+                  );
+
+                  expect(
+                    content,
+                    contains('pod.webServer.addMiddleware('),
+                    reason:
+                        'server.dart does not contain webapp configurations.',
+                  );
+
+                  expect(
+                    content,
+                    contains('FallbackMiddleware('),
+                    reason:
+                        'server.dart does not contain webapp configurations.',
+                  );
+
+                  expect(
+                    content,
+                    contains('on: (response) => response.statusCode == 404'),
+                    reason:
+                        'server.dart does not contain webapp configurations.',
+                  );
+                },
+              );
 
               test('has an example_endpoint file', () {
                 expect(
@@ -305,18 +409,34 @@ void main() async {
               });
 
               test(
-                'has a pubspec file with flutter_secure_storage dependency override',
+                'has a pubspec file with serverpod_auth_idp_flutter dependency',
                 () {
                   final pubspec = File(
                     path.join(tempPath, flutterDir, 'pubspec.yaml'),
                   );
-                  final content = pubspec.readAsStringSync();
 
                   expect(
                     pubspec.existsSync(),
                     isTrue,
                     reason: 'Flutter pubspec file does not exist.',
                   );
+
+                  expect(
+                    pubspec.readAsStringSync(),
+                    contains('serverpod_auth_idp_flutter:'),
+                    reason:
+                        'Flutter pubspec file does not have serverpod_auth_idp_flutter dependency.',
+                  );
+                },
+              );
+
+              test(
+                'has a pubspec file with flutter_secure_storage dependency override',
+                () {
+                  final pubspec = File(
+                    path.join(tempPath, flutterDir, 'pubspec.yaml'),
+                  );
+                  final content = pubspec.readAsStringSync();
 
                   expect(
                     content,
@@ -353,14 +473,25 @@ void main() async {
               );
             });
 
-            test('has a pubspec file', () {
-              expect(
-                File(
+            test(
+              'has a pubspec file with serverpod_auth_idp_client dependency',
+              () {
+                final pubspec = File(
                   path.join(tempPath, clientDir, 'pubspec.yaml'),
-                ).existsSync(),
-                isTrue,
-              );
-            });
+                );
+                expect(
+                  pubspec.existsSync(),
+                  isTrue,
+                  reason: 'Client pubspec file does not exist.',
+                );
+                expect(
+                  pubspec.readAsStringSync(),
+                  contains('serverpod_auth_idp_client:'),
+                  reason:
+                      'Client pubspec file does not have serverpod_auth_idp_client dependency.',
+                );
+              },
+            );
 
             test('has a project_client file', () {
               expect(

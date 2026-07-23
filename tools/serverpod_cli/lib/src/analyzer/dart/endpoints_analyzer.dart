@@ -7,6 +7,7 @@ import 'package:analyzer/dart/analysis/session.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/diagnostic/diagnostic.dart';
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_class_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_method_analyzer.dart';
@@ -32,6 +33,8 @@ class _CachedFileResult {
 
 /// Analyzes dart files for the protocol specification.
 class EndpointsAnalyzer {
+  final List<TypeDefinition> extraClasses;
+
   final AnalysisContextCollection collection;
 
   final String absoluteIncludedPaths;
@@ -42,8 +45,10 @@ class EndpointsAnalyzer {
   /// [FutureCallsAnalyzer]). Otherwise a new one is created internally.
   EndpointsAnalyzer(
     Directory directory, {
+    List<TypeDefinition>? extraClasses,
     AnalysisContextCollection? collection,
-  }) : collection = collection ?? createAnalysisContextCollection(directory),
+  }) : extraClasses = extraClasses ?? [],
+       collection = collection ?? createAnalysisContextCollection(directory),
        absoluteIncludedPaths = directory.absolute.path;
 
   /// Cached per-file analysis results for endpoint files.
@@ -54,6 +59,12 @@ class EndpointsAnalyzer {
   /// Cached template entries for files that don't contain endpoints.
   /// These are tracked separately since they don't appear in [_fileCache].
   final Map<String, DartDocTemplateRegistry> _nonEndpointTemplateCache = {};
+
+  /// The endpoint files currently cached with errors.
+  Set<String> get _erroredFiles => {
+    for (final entry in _fileCache.entries)
+      if (entry.value.hadErrors) entry.key,
+  };
 
   /// Inform the analyzer that the provided [filePaths] have been updated.
   ///
@@ -67,7 +78,7 @@ class EndpointsAnalyzer {
         .where((f) => p.isWithin(absoluteIncludedPaths, p.absolute(f)))
         .toSet();
 
-    final errorsBefore = _fileCache.values.any((r) => r.hadErrors);
+    final erroredFilesBefore = _erroredFiles;
     final keysBefore = _fileCache.keys.toSet();
 
     await analyze(
@@ -75,13 +86,19 @@ class EndpointsAnalyzer {
       changedFiles: relevantPaths,
     );
 
-    final errorsAfter = _fileCache.values.any((r) => r.hadErrors);
+    final erroredFilesAfter = _erroredFiles;
     final keysAfter = _fileCache.keys.toSet();
 
-    if (errorsBefore ||
-        errorsAfter ||
-        keysBefore.length != keysAfter.length ||
-        keysAfter.difference(keysBefore).isNotEmpty) {
+    // Regenerate when the set of endpoint files changed, or when any file's
+    // error state flipped (an error appearing or clearing changes the parsed
+    // definitions). A persistently broken file, by contrast, must not turn
+    // every unrelated change - such as watcher echoes of freshly generated
+    // files - into another generation, or generation loops forever while an
+    // error exists anywhere in the project.
+    if (keysBefore.length != keysAfter.length ||
+        keysAfter.difference(keysBefore).isNotEmpty ||
+        erroredFilesBefore.length != erroredFilesAfter.length ||
+        erroredFilesAfter.difference(erroredFilesBefore).isNotEmpty) {
       return true;
     }
 
@@ -110,6 +127,7 @@ class EndpointsAnalyzer {
   /// files).
   Future<List<EndpointDefinition>> analyze({
     required CodeAnalysisCollector collector,
+    List<SerializableModelDefinition>? models,
     Set<String>? changedFiles,
   }) async {
     changedFiles ??= {};
@@ -227,16 +245,29 @@ class EndpointsAnalyzer {
 
     // Phase 4: Validate and parse re-analyzed files, update cache.
     for (var (library, filePath, fileTemplates) in validLibraries) {
+      var failingExceptions = <String, List<SourceSpanSeverityException>>{};
+
       templateRegistry.addAll(fileTemplates);
 
-      var severityExceptions = _validateLibrary(
-        library,
-        filePath,
-        duplicateEndpointClasses,
-      );
-      collector.addErrors(severityExceptions.values.expand((e) => e).toList());
+      // Skip parameter/return type validation when models aren't available yet
+      // (e.g. when called from updateFileContexts before performGenerate
+      // provides models). Without models every custom type would look
+      // unregistered, producing false errors and filtering valid methods out
+      // of the parsed definitions. Validation runs on the next analyze() call
+      // with models.
+      if (models != null) {
+        var severityExceptions = _validateLibrary(
+          library,
+          filePath,
+          duplicateEndpointClasses,
+          models,
+        );
+        collector.addErrors(
+          severityExceptions.values.expand((e) => e).toList(),
+        );
 
-      var failingExceptions = _filterNoFailExceptions(severityExceptions);
+        failingExceptions = _filterNoFailExceptions(severityExceptions);
+      }
 
       var defs = _parseLibrary(
         library,
@@ -394,6 +425,7 @@ class EndpointsAnalyzer {
     ResolvedLibraryResult library,
     String filePath,
     Set<String> duplicatedClasses,
+    List<SerializableModelDefinition> models,
   ) {
     var endpointClasses = _getEndpointClasses(library);
 
@@ -415,9 +447,19 @@ class EndpointsAnalyzer {
         EndpointMethodAnalyzer.isEndpointMethod,
       );
       for (var method in endpointMethods) {
-        errors = EndpointMethodAnalyzer.validate(method, classElement, library);
+        errors = EndpointMethodAnalyzer.validate(
+          method,
+          classElement,
+          library,
+          extraClasses,
+          models,
+        );
         errors.addAll(
-          EndpointParameterAnalyzer.validate(method.formalParameters),
+          EndpointParameterAnalyzer.validate(
+            method.formalParameters,
+            extraClasses,
+            models,
+          ),
         );
         if (errors.isNotEmpty) {
           validationErrors[EndpointMethodAnalyzer.elementNamespace(

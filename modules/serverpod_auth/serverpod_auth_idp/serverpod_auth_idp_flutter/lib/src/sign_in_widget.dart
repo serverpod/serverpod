@@ -162,6 +162,7 @@ class _SignInWidgetState extends State<SignInWidget> {
     if (!auth.idp.hasAny) {
       return Material(
         type: MaterialType.transparency,
+        color: Colors.transparent,
         child: Center(
           child: Text(
             texts.noAuthenticationProvidersConfigured,
@@ -241,6 +242,7 @@ class _SignInWidgetState extends State<SignInWidget> {
     Widget child = SignInFlowCoordinatorWidget(
       child: Material(
         type: MaterialType.transparency,
+        color: Colors.transparent,
         child: SignInWidgetsColumn(
           spacing: 12,
           children: [

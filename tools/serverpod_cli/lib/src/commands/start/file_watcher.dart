@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:async/async.dart';
@@ -24,10 +25,10 @@ class FileChangeEvent {
   /// comparing the dependency fingerprint (see `FlutterDependencyTracker`).
   final bool flutterDependenciesChanged;
 
-  /// Whether the Flutter app's `pubspec.yaml` was modified in this batch.
-  /// Assets and fonts declared in the `pubspec.yaml` are bundled at build
-  /// time, so any change requires a full process relaunch.
-  final bool flutterPubspecChanged;
+  /// Whether any `pubspec.yaml` was modified in this batch (any watched
+  /// pubspec, including the server's and each companion Flutter app's).
+  /// Consumers use fingerprinting to decide what action, if any, is needed.
+  final bool pubspecChanged;
 
   /// Whether non-dart, non-model files changed (e.g. HTML, JS, CSS).
   ///
@@ -39,7 +40,7 @@ class FileChangeEvent {
     this.modelFiles = const {},
     this.packageConfigChanged = false,
     this.flutterDependenciesChanged = false,
-    this.flutterPubspecChanged = false,
+    this.pubspecChanged = false,
     this.staticFilesChanged = false,
   });
 }
@@ -52,6 +53,125 @@ bool _isWithinDartTool(String filePath) {
   return p.split(filePath).contains('.dart_tool');
 }
 
+/// Watches one file across initial absence, deletion, and recreation.
+///
+/// While the file exists, the platform [w.FileWatcher] provides native events.
+/// If it is absent, only that exact path is polled until it appears, avoiding a
+/// recursive watch of its potentially large and frequently changing parent.
+class _PersistentFileWatcher implements w.Watcher {
+  @override
+  final String path;
+
+  final Duration pollingDelay;
+
+  var _readyCompleter = Completer<void>();
+  StreamSubscription<w.WatchEvent>? _fileSubscription;
+  Timer? _pollTimer;
+  bool _isListening = false;
+  bool _isCheckingForFile = false;
+
+  late final StreamController<w.WatchEvent> _eventsController =
+      StreamController<w.WatchEvent>.broadcast(
+        onListen: _start,
+        onCancel: _stop,
+      );
+
+  _PersistentFileWatcher(
+    this.path, {
+    required this.pollingDelay,
+  });
+
+  @override
+  Stream<w.WatchEvent> get events => _eventsController.stream;
+
+  @override
+  bool get isReady => _readyCompleter.isCompleted;
+
+  @override
+  Future<void> get ready => _readyCompleter.future;
+
+  Future<void> _start() async {
+    _isListening = true;
+    await _watchOrPoll();
+    if (!_readyCompleter.isCompleted) _readyCompleter.complete();
+  }
+
+  Future<void> _watchOrPoll() async {
+    if (!_isListening) return;
+    final fileExists = await File(path).exists();
+    if (!_isListening) return;
+    if (!fileExists) {
+      _startPolling();
+      return;
+    }
+
+    try {
+      final fileWatcher = w.FileWatcher(path);
+      late final StreamSubscription<w.WatchEvent> subscription;
+      subscription = fileWatcher.events.listen(
+        (event) {
+          if (_isListening) _eventsController.add(event);
+        },
+        onError: (Object _, StackTrace _) {
+          if (_fileSubscription == subscription) {
+            _fileSubscription = null;
+          }
+          unawaited(subscription.cancel());
+          _startPolling();
+        },
+        onDone: () {
+          if (_fileSubscription == subscription) {
+            _fileSubscription = null;
+          }
+          _startPolling();
+        },
+      );
+      _fileSubscription = subscription;
+      await fileWatcher.ready;
+    } on FileSystemException {
+      _fileSubscription = null;
+      _startPolling();
+    }
+  }
+
+  void _startPolling() {
+    if (!_isListening || _pollTimer != null) return;
+    _pollTimer = Timer.periodic(
+      pollingDelay,
+      (_) => unawaited(_checkForFile()),
+    );
+    unawaited(_checkForFile());
+  }
+
+  Future<void> _checkForFile() async {
+    if (!_isListening || _isCheckingForFile) return;
+    _isCheckingForFile = true;
+    try {
+      final fileExists = await File(path).exists();
+      if (!_isListening || !fileExists) return;
+
+      _pollTimer?.cancel();
+      _pollTimer = null;
+
+      // The underlying watcher cannot report a creation that happened while
+      // the path was absent, so synthesize the change before reattaching it.
+      _eventsController.add(w.WatchEvent(w.ChangeType.MODIFY, path));
+      await _watchOrPoll();
+    } finally {
+      _isCheckingForFile = false;
+    }
+  }
+
+  Future<void> _stop() async {
+    _isListening = false;
+    _pollTimer?.cancel();
+    _pollTimer = null;
+    await _fileSubscription?.cancel();
+    _fileSubscription = null;
+    _readyCompleter = Completer<void>();
+  }
+}
+
 /// Merges multiple buffered [FileChangeEvent]s into a single event.
 extension FileChangeEventMerge on List<FileChangeEvent> {
   /// Combines all events into one, unioning their file sets and flags.
@@ -62,7 +182,7 @@ extension FileChangeEventMerge on List<FileChangeEvent> {
     final modelFiles = <String>{};
     var packageConfigChanged = false;
     var flutterDependenciesChanged = false;
-    var flutterPubspecChanged = false;
+    var pubspecChanged = false;
     var staticFilesChanged = false;
 
     for (final event in this) {
@@ -70,7 +190,7 @@ extension FileChangeEventMerge on List<FileChangeEvent> {
       modelFiles.addAll(event.modelFiles);
       packageConfigChanged |= event.packageConfigChanged;
       flutterDependenciesChanged |= event.flutterDependenciesChanged;
-      flutterPubspecChanged |= event.flutterPubspecChanged;
+      pubspecChanged |= event.pubspecChanged;
       staticFilesChanged |= event.staticFilesChanged;
     }
 
@@ -79,7 +199,7 @@ extension FileChangeEventMerge on List<FileChangeEvent> {
       modelFiles: modelFiles,
       packageConfigChanged: packageConfigChanged,
       flutterDependenciesChanged: flutterDependenciesChanged,
-      flutterPubspecChanged: flutterPubspecChanged,
+      pubspecChanged: pubspecChanged,
       staticFilesChanged: staticFilesChanged,
     );
   }
@@ -106,36 +226,49 @@ class FileWatcher {
   final Set<String> _packageGraphPaths;
 
   final Duration debounceDelay;
+  final Duration missingFilePollingDelay;
 
   /// Creates a file watcher.
   ///
-  /// [watchPaths] is the set of directories to watch. [packageConfigPath] and
-  /// [packageGraphPaths] are the exact pub-artifact files whose changes map to
-  /// `packageConfigChanged` / `flutterDependenciesChanged`.
+  /// [watchPaths] is the set of directories or files to watch.
+  /// [packageConfigPath] and [packageGraphPaths] are the exact pub-artifact
+  /// files whose changes map to `packageConfigChanged` / `flutterDependenciesChanged`.
+  /// Missing pub artifacts are checked every [missingFilePollingDelay] until
+  /// they appear, then watched natively.
   FileWatcher({
     required Iterable<String> watchPaths,
     String? packageConfigPath,
     Iterable<String> packageGraphPaths = const [],
     this.debounceDelay = const Duration(milliseconds: 100),
+    this.missingFilePollingDelay = const Duration(milliseconds: 500),
   }) : _watchPaths = watchPaths.map(p.canonicalize).toSet(),
        _packageConfigPath = packageConfigPath == null
            ? null
            : p.canonicalize(packageConfigPath),
        _packageGraphPaths = packageGraphPaths.map(p.canonicalize).toSet();
 
+  late final Set<String> _persistentFilePaths = {
+    ?_packageConfigPath,
+    ..._packageGraphPaths,
+  };
+
   late final List<w.Watcher> _watchers = [
-    for (final watchPath in _watchPaths) ...{
-      if (Directory(watchPath).existsSync())
+    for (final watchPath in _watchPaths)
+      if (_persistentFilePaths.contains(watchPath))
+        _PersistentFileWatcher(
+          watchPath,
+          pollingDelay: missingFilePollingDelay,
+        )
+      else if (Directory(watchPath).existsSync())
         w.DirectoryWatcher(watchPath)
       else if (File(watchPath).existsSync())
         w.FileWatcher(watchPath),
-    },
   ];
 
   /// An immutable view of the paths being watched.
   Set<String> get watchPaths => UnmodifiableSetView(_watchPaths);
 
-  /// Completes when all underlying directory watchers are initialized.
+  /// Completes when all underlying watchers are initialized.
   ///
   /// Subscribers must be listening to [onFilesChanged] before awaiting this,
   /// since watcher initialization only begins when the stream has subscribers.
@@ -158,7 +291,7 @@ class FileWatcher {
           final modelFiles = <String>{};
           var packageConfigChanged = false;
           var flutterDependenciesChanged = false;
-          var flutterPubspecChanged = false;
+          var pubspecChanged = false;
           var staticFilesChanged = false;
 
           for (final event in events) {
@@ -192,7 +325,7 @@ class FileWatcher {
             } else if (p.extension(filePath) == '.dart') {
               dartFiles.add(filePath);
             } else if (p.basename(filePath) == 'pubspec.yaml') {
-              flutterPubspecChanged = true;
+              pubspecChanged = true;
             } else {
               staticFilesChanged = true;
             }
@@ -203,7 +336,7 @@ class FileWatcher {
             modelFiles: modelFiles,
             packageConfigChanged: packageConfigChanged,
             flutterDependenciesChanged: flutterDependenciesChanged,
-            flutterPubspecChanged: flutterPubspecChanged,
+            pubspecChanged: pubspecChanged,
             staticFilesChanged: staticFilesChanged,
           );
         })
@@ -213,7 +346,7 @@ class FileWatcher {
               e.modelFiles.isNotEmpty ||
               e.packageConfigChanged ||
               e.flutterDependenciesChanged ||
-              e.flutterPubspecChanged ||
+              e.pubspecChanged ||
               e.staticFilesChanged,
         );
   }

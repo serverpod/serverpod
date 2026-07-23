@@ -7,6 +7,20 @@ const generatedCodeAlreadyUpToDate = '✓ Generated code is already up to date.'
 
 // Start command messages
 const serverRunning = 'Server running.';
+const startingDockerServices = 'Starting Docker services';
+const dockerComposeFileMissing =
+    'No Docker Compose file (e.g. docker-compose.yaml) was found in the '
+    'server project. Restore the project Docker configuration or run without '
+    '`--docker`.';
+const dockerNotInstalled =
+    'Docker does not seem to be installed. Install Docker and try again, or '
+    'pass `--no-docker` to skip starting Docker services.';
+const dockerNotRunning =
+    'Docker is not running. Start Docker and try again, or pass `--no-docker` '
+    'to skip starting Docker services.';
+const dockerComposeStartFailed =
+    'Docker Compose could not start the project services. Check the Docker '
+    'output, correct the problem, and try again.';
 
 /// Shown when `serverpod start --watch` cannot bring the server up because the
 /// project does not generate or compile. The file watcher keeps running, so a
@@ -20,6 +34,17 @@ const startBlockedByErrorsWatch =
 const startBlockedByErrorsManual =
     'Waiting for the project to build. Once the errors above are resolved, '
     'press "R" to rebuild and start the server.';
+
+/// Shown when a previous session died mid-compile, leaving the cached build
+/// suspect.
+const previousCompileInterrupted =
+    'A previous compilation was interrupted; discarding the cached build and '
+    'recompiling from scratch.';
+
+/// Shown when the server crashed booting from the cached kernel.
+const cachedBuildCrashedOnBoot =
+    'The server failed to start from the cached build (it may be corrupt); '
+    'discarding it and recompiling from scratch.';
 
 // Watch command messages
 const serverStarted = '✓ Server started.';
@@ -37,6 +62,8 @@ const flutterDependenciesChangedDart =
     'Flutter dependencies changed. Hot restarting the Flutter app...';
 const flutterAssetsFontsChanged =
     'Flutter assets or fonts changed. Relaunching the Flutter app...';
+const flutterAppsConfigChanged =
+    'Flutter apps configuration changed. Reloading apps.';
 const flutterPackageNotFound =
     'No Flutter package found; skipping --flutter. '
     'Pass --no-flutter to silence this notice.';

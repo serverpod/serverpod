@@ -2,14 +2,9 @@
 
 This is the starting point for your Serverpod server.
 
-To run your server, you first need to start Postgres and Redis. It's easiest to do with Docker.
+Start your server by running:
 
-    docker compose up --build --detach
+    cd projectname
+    serverpod start
 
-Then you can start the Serverpod server.
-
-    dart bin/main.dart
-
-When you are finished, you can shut down Serverpod with `Ctrl-C`, then stop Postgres and Redis.
-
-    docker compose stop
+When you are finished, you can shut down the running server with `Q`.

@@ -33,7 +33,15 @@ abstract interface class SerializableModel {
 }
 
 /// The [ProtocolSerialization] defines a toJsonForProtocol method which makes it
-/// possible to limit what fields are serialized
+/// possible to limit what fields are serialized when communicating over the
+/// protocol.
+///
+/// Implement this whenever protocol serialization must produce a different
+/// result than [SerializableModel.toJson] — for example to strip `serverOnly`
+/// fields, or to omit hidden persisted `scope: none` fields (such as implicit
+/// relation FKs) that belong in the database but not on the wire. If
+/// `toJsonForProtocol` would be identical to `toJson`, implementing this is not
+/// required.
 abstract interface class ProtocolSerialization {
   /// Returns a JSON structure of the model, optimized for Protocol communication.
   dynamic toJsonForProtocol();
@@ -105,6 +113,18 @@ abstract class SerializationManager {
     } else if (_isNullableType<Bit>(t)) {
       if (data == null) return null as T;
       return BitJsonExtension.fromJson(data) as T;
+    } else if (_isNullableType<GeographyPoint>(t)) {
+      if (data == null) return null as T;
+      return GeographyPointJsonExtension.fromJson(data) as T;
+    } else if (_isNullableType<GeographyLineString>(t)) {
+      if (data == null) return null as T;
+      return GeographyLineStringJsonExtension.fromJson(data) as T;
+    } else if (_isNullableType<GeographyPolygon>(t)) {
+      if (data == null) return null as T;
+      return GeographyPolygonJsonExtension.fromJson(data) as T;
+    } else if (_isNullableType<GeographyGeometryCollection>(t)) {
+      if (data == null) return null as T;
+      return GeographyGeometryCollectionJsonExtension.fromJson(data) as T;
     } else if (_isNullableType<Uri>(t)) {
       if (data == null) return null as T;
       return Uri.parse(data) as T;
@@ -150,6 +170,14 @@ abstract class SerializationManager {
       return 'SparseVector';
     } else if (data is Bit) {
       return 'Bit';
+    } else if (data is GeographyPoint) {
+      return 'GeographyPoint';
+    } else if (data is GeographyLineString) {
+      return 'GeographyLineString';
+    } else if (data is GeographyPolygon) {
+      return 'GeographyPolygon';
+    } else if (data is GeographyGeometryCollection) {
+      return 'GeographyGeometryCollection';
     }
 
     return null;
@@ -190,6 +218,14 @@ abstract class SerializationManager {
         return deserialize<SparseVector>(raw);
       case 'Bit':
         return deserialize<Bit>(raw);
+      case 'GeographyPoint':
+        return deserialize<GeographyPoint>(raw);
+      case 'GeographyLineString':
+        return deserialize<GeographyLineString>(raw);
+      case 'GeographyPolygon':
+        return deserialize<GeographyPolygon>(raw);
+      case 'GeographyGeometryCollection':
+        return deserialize<GeographyGeometryCollection>(raw);
       case 'List' when raw is List:
         return raw.map(deserializeDynamicFieldValue).toList();
       case 'Set' when raw is List:
@@ -423,6 +459,10 @@ const extensionSerializedTypes = [
   'HalfVector',
   'SparseVector',
   'Bit',
+  'GeographyPoint',
+  'GeographyLineString',
+  'GeographyPolygon',
+  'GeographyGeometryCollection',
   'Map',
   'List',
   'Set',

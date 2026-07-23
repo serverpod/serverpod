@@ -22,11 +22,11 @@ void main() {
 
   group(
     'Given a TemplateContext with sqlite enabled, '
-    'when performCreate is called with the context and a server template type',
+    'when performCreate is called with the context and a fullstack template type',
     () {
       final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
-          template: ServerpodTemplateType.server,
+          template: ServerpodTemplateType.fullstack,
           sqlite: true,
         ),
       );
@@ -77,11 +77,11 @@ void main() {
 
   group(
     'Given a TemplateContext with sqlite disabled, '
-    'when performCreate is called with the context and a server template type',
+    'when performCreate is called with the context and a fullstack template type',
     () {
       final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
-          template: ServerpodTemplateType.server,
+          template: ServerpodTemplateType.fullstack,
           sqlite: false,
         ),
       );

@@ -6,15 +6,12 @@ import 'package:test/test.dart';
 
 import '../lib/src/util.dart';
 
-const tempDirName = 'temp-mini';
-
 void main() async {
   final rootPath = path.join(Directory.current.path, '..', '..');
   final cliProjectPath = getServerpodCliProjectPath(rootPath: rootPath);
-  final tempPath = path.join(rootPath, tempDirName);
+  final tempPath = Directory.systemTemp.createTempSync('spb_').path;
 
   setUpAll(() async {
-    await Directory(tempPath).create();
     final pubGetProcess = await startProcess('dart', [
       'pub',
       'get',
@@ -453,15 +450,6 @@ void main() async {
       );
     });
 
-    tearDown(() async {
-      await runProcess(
-        'docker',
-        ['compose', 'down', '-v'],
-        workingDirectory: commandRoot,
-        skipBatExtentionOnWindows: true,
-      );
-    });
-
     test(
       'when upgrading the project to a full project '
       'then the project is created successfully and can be booted in maintenance mode with the apply-migrations flag.',
@@ -490,21 +478,6 @@ void main() async {
           reason: 'Failed to create the serverpod project.',
         );
 
-        final docker = await startProcess(
-          'docker',
-          ['compose', 'up', '--build', '--detach'],
-          workingDirectory: commandRoot,
-          ignorePlatform: true,
-        );
-
-        var dockerExitCode = await docker.exitCode;
-
-        expect(
-          dockerExitCode,
-          0,
-          reason: 'Docker with postgres failed to start.',
-        );
-
         var startProjectProcess = await startProcess(
           'dart',
           ['bin/main.dart', '--apply-migrations', '--role', 'maintenance'],
@@ -514,9 +487,6 @@ void main() async {
         var startProjectExitCode = await startProjectProcess.exitCode;
         expect(startProjectExitCode, 0);
       },
-      skip: Platform.isWindows
-          ? 'Windows does not support postgres docker image in github actions'
-          : null,
     );
   });
 
@@ -671,31 +641,43 @@ void main() async {
           );
         });
 
-        test('then the server pubspec does not contain auth dependencies', () {
-          final pubspec = File(
-            path.join(tempPath, serverDir, 'pubspec.yaml'),
-          );
-          final content = pubspec.readAsStringSync();
-          expect(content, isNot(contains('serverpod_auth_idp_server')));
-        });
+        test(
+          'then the server pubspec does not contain auth dependencies',
+          () {
+            final pubspec = File(
+              path.join(tempPath, serverDir, 'pubspec.yaml'),
+            );
+            final content = pubspec.readAsStringSync();
+            expect(content, isNot(contains('serverpod_auth_idp_server')));
+          },
+          skip:
+              'serverpod_auth_idp_server dependency is now added '
+              'and mini template type is planned for removal',
+        );
 
-        test('then the server server.dart does not contain auth imports', () {
+        test('then the server server.dart contains auth imports', () {
           final serverFile = File(
             path.join(tempPath, serverDir, 'lib', 'server.dart'),
           );
           final content = serverFile.readAsStringSync();
-          expect(content, isNot(contains('serverpod_auth_idp_server')));
+          expect(content, contains('serverpod_auth_idp_server'));
         });
 
-        test('then the flutter pubspec does not contain auth dependencies', () {
-          final (:serverDir, :flutterDir, :clientDir) =
-              createProjectFolderPaths(projectName);
-          final pubspec = File(
-            path.join(tempPath, flutterDir, 'pubspec.yaml'),
-          );
-          final content = pubspec.readAsStringSync();
-          expect(content, isNot(contains('serverpod_auth_idp_flutter')));
-        });
+        test(
+          'then the flutter pubspec does not contain auth dependencies',
+          () {
+            final (:serverDir, :flutterDir, :clientDir) =
+                createProjectFolderPaths(projectName);
+            final pubspec = File(
+              path.join(tempPath, flutterDir, 'pubspec.yaml'),
+            );
+            final content = pubspec.readAsStringSync();
+            expect(content, isNot(contains('serverpod_auth_idp_flutter')));
+          },
+          skip:
+              'serverpod_auth_idp_flutter dependency is now added '
+              'and mini template type is planned for removal',
+        );
 
         test(
           'then the flutter pubspec does not contain override for flutter secure storage',
@@ -713,14 +695,14 @@ void main() async {
               'and mini template type is planned for removal',
         );
 
-        test('then the flutter main.dart does not contain auth imports', () {
+        test('then the flutter main.dart contains auth imports', () {
           final (:serverDir, :flutterDir, :clientDir) =
               createProjectFolderPaths(projectName);
           final mainFile = File(
             path.join(tempPath, flutterDir, 'lib', 'main.dart'),
           );
           final content = mainFile.readAsStringSync();
-          expect(content, isNot(contains('serverpod_auth_idp_flutter')));
+          expect(content, contains('serverpod_auth_idp_flutter'));
         });
 
         test('then the email_idp_endpoint.dart does not exist', () {
@@ -758,17 +740,8 @@ void main() async {
     final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
     final serverDir = createServerFolderPath(projectName);
     late Process createProcess;
-    tearDown(() async {
+    tearDown(() {
       createProcess.kill();
-
-      await runProcess(
-        'docker',
-        ['compose', 'down', '-v'],
-        workingDirectory: commandRoot,
-        skipBatExtentionOnWindows: true,
-      );
-
-      while (!await isNetworkPortAvailable(8090)) ;
     });
 
     test(
@@ -822,21 +795,6 @@ void main() async {
           reason: 'Failed to upgrade the serverpod project.',
         );
 
-        final docker = await startProcess(
-          'docker',
-          ['compose', 'up', '--build', '--detach'],
-          workingDirectory: commandRoot,
-          ignorePlatform: true,
-        );
-
-        var dockerExitCode = await docker.exitCode;
-
-        expect(
-          dockerExitCode,
-          0,
-          reason: 'Docker with postgres failed to start.',
-        );
-
         var startProjectProcess = await startProcess(
           'dart',
           ['bin/main.dart', '--apply-migrations', '--role', 'maintenance'],
@@ -863,9 +821,6 @@ void main() async {
 
         expect(testProcess.exitCode, 0, reason: 'Tests are failing.');
       },
-      skip: Platform.isWindows
-          ? 'Windows does not support postgres docker image in github actions'
-          : null,
     );
   });
 

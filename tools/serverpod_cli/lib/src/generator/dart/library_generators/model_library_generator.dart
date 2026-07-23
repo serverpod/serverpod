@@ -293,11 +293,9 @@ class SerializableModelLibraryGenerator {
         refer('SerializableModel', serverpodUrl(serverCode)),
       );
 
-      if (serverCode) {
-        classBuilder.implements.add(
-          refer('ProtocolSerialization', serverpodUrl(serverCode)),
-        );
-      }
+      classBuilder.implements.add(
+        refer('ProtocolSerialization', serverpodUrl(serverCode)),
+      );
 
       classBuilder.fields.addAll(
         _buildModelClassFields(
@@ -386,18 +384,16 @@ class SerializableModelLibraryGenerator {
       }
 
       // Serialization for database and everything
-      if (serverCode) {
-        if (!classDefinition.isSealed) {
-          classBuilder.methods.add(
-            _buildModelClassToJsonForProtocolMethod(
-              fields,
-              classDefinition.serverOnly,
-              className,
-              classDefinition.sharedPackageName,
-              null,
-            ),
-          );
-        }
+      if (!classDefinition.isSealed) {
+        classBuilder.methods.add(
+          _buildModelClassToJsonForProtocolMethod(
+            fields,
+            classDefinition.serverOnly,
+            className,
+            classDefinition.sharedPackageName,
+            null,
+          ),
+        );
       }
       if (!classDefinition.isSealed) {
         classBuilder.methods.add(
@@ -491,11 +487,13 @@ class SerializableModelLibraryGenerator {
         );
       }
 
-      if (serverCode) {
-        classBuilder.implements.add(
-          refer('ProtocolSerialization', serverpodUrl(serverCode)),
-        );
-      }
+      // Every model implements ProtocolSerialization on every side so that
+      // protocol encoding can recurse through `toJsonForProtocol` at any nesting
+      // level, stripping hidden fields even when a table model is nested inside
+      // a model that has none of its own.
+      classBuilder.implements.add(
+        refer('ProtocolSerialization', serverpodUrl(serverCode)),
+      );
 
       classBuilder.fields.addAll(
         _buildModelClassFields(
@@ -596,18 +594,16 @@ class SerializableModelLibraryGenerator {
       }
 
       // Serialization for database and everything
-      if (serverCode) {
-        if (!classDefinition.isSealed) {
-          classBuilder.methods.add(
-            _buildModelClassToJsonForProtocolMethod(
-              fields,
-              classDefinition.serverOnly,
-              className,
-              classDefinition.sharedPackageName,
-              tableName,
-            ),
-          );
-        }
+      if (!classDefinition.isSealed) {
+        classBuilder.methods.add(
+          _buildModelClassToJsonForProtocolMethod(
+            fields,
+            classDefinition.serverOnly,
+            className,
+            classDefinition.sharedPackageName,
+            tableName,
+          ),
+        );
       }
       if (classDefinition.isTableOwner(serverCode)) {
         if (_shouldGenerateTableCode(classDefinition)) {
@@ -1088,7 +1084,7 @@ class SerializableModelLibraryGenerator {
             var otherProperty = refer('other').property(name);
 
             if (field.type.isCollectionType) {
-              return refer('DeepCollectionEquality', serverpodUrl(serverCode))
+              return refer('DeepCollectionEquality', serverpodSerializationUrl)
                   .constInstance([])
                   .property('equals')
                   .call([otherProperty, thisProperty]);
@@ -1140,7 +1136,7 @@ class SerializableModelLibraryGenerator {
             if (field.type.isCollectionType) {
               return refer(
                 'DeepCollectionEquality',
-                serverpodUrl(serverCode),
+                serverpodSerializationUrl,
               ).constInstance([]).property('hash').call([refer(field.name)]);
             }
 
@@ -1747,14 +1743,14 @@ class SerializableModelLibraryGenerator {
       return fieldExpression;
     }
 
-    // Shared models implement SerializableModel but not ProtocolSerialization
-    // because they can not have `serverOnly` fields.
-    var isSharedClass =
-        fieldType.projectModelDefinition?.isSharedModel ?? false;
+    // Every generated model and exception implements ProtocolSerialization on
+    // every side, so a nested model/exception field mirrors the parent's
+    // serialization method (e.g. `toJsonForProtocol`). Enums have no protocol
+    // form and are always serialized with `toJson`.
     var toJson =
         fieldType.isSerializedByExtension ||
             fieldType.isEnumType ||
-            isSharedClass
+            fieldType.projectModelDefinition is! ClassDefinition
         ? _toJsonMethodName
         : methodName;
 
@@ -2277,9 +2273,7 @@ class SerializableModelLibraryGenerator {
     ModelClassDefinition classDefinition,
     TypeReference idTypeReference,
   ) {
-    var serializedFields = fields
-        .where((f) => f.shouldSerializeFieldForDatabase(serverCode))
-        .toSet();
+    var serializedFields = fields.where((f) => f.shouldPersist).toSet();
     // Omit scope-none persisted columns from [managedColumns] on server and
     // client (e.g. implicit foreign keys).
     var hiddenSerializedFields = serializedFields
@@ -2358,7 +2352,7 @@ class SerializableModelLibraryGenerator {
     ModelClassDefinition classDefinition,
   ) {
     var serializedFields = fields
-        .where((f) => f.shouldSerializeFieldForDatabase(serverCode))
+        .where((f) => f.shouldPersist)
         .where(
           (f) => !(f.name == 'id' && classDefinition.isTableOwner(serverCode)),
         );
@@ -2417,7 +2411,7 @@ class SerializableModelLibraryGenerator {
                   );
 
             m
-              ..name = createFieldName(serverCode, field)
+              ..name = _createDatabaseFieldName(field)
               ..returns = TypeReference(
                 (t) => t
                   ..symbol = 'ColumnValue'
@@ -2530,7 +2524,7 @@ class SerializableModelLibraryGenerator {
         ..lambda = true
         ..type = MethodType.getter
         ..body = literalList(
-          fields.map((f) => refer(createFieldName(serverCode, f))),
+          fields.map((f) => refer(_createDatabaseFieldName(f))),
         ).code,
     );
   }
@@ -2544,14 +2538,13 @@ class SerializableModelLibraryGenerator {
 
     for (var field in fields) {
       // Simple column field
-      if (field.shouldSerializeFieldForDatabase(serverCode) &&
-          !(field.name == 'id' && isTableOwner)) {
+      if (field.shouldPersist && !(field.name == 'id' && isTableOwner)) {
         tableFields.add(
           Field(
             (f) => f
               ..late = true
               ..modifier = FieldModifier.final$
-              ..name = createFieldName(serverCode, field)
+              ..name = _createDatabaseFieldName(field)
               ..docs.addAll(field.documentation ?? [])
               ..type = TypeReference(
                 (t) => t
@@ -2909,10 +2902,10 @@ class SerializableModelLibraryGenerator {
             )
             .statement,
         for (var field in fields.where(
-          (field) => field.shouldSerializeFieldForDatabase(serverCode),
+          (field) => field.shouldPersist,
         ))
           if (!(field.name == 'id' && classDefinition.isTableOwner(serverCode)))
-            refer(createFieldName(serverCode, field))
+            refer(_createDatabaseFieldName(field))
                 .assign(
                   field.type.isEnumType
                       ? _buildModelTableEnumFieldTypeReference(field)
@@ -3627,6 +3620,18 @@ class SerializableModelLibraryGenerator {
     }
 
     return field.name;
+  }
+
+  bool _isHiddenDatabaseField(SerializableModelFieldDefinition field) {
+    return field.shouldPersist && field.scope == ModelFieldScopeDefinition.none;
+  }
+
+  String _createDatabaseFieldName(SerializableModelFieldDefinition field) {
+    if (_isHiddenDatabaseField(field)) {
+      return createImplicitFieldName(field.name);
+    }
+
+    return createFieldName(serverCode, field);
   }
 
   Code _buildDefaultSwitchCase(

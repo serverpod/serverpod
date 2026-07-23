@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// DTO for transferring user profile information.
-abstract class UserProfileModel implements _i1.SerializableModel {
+abstract class UserProfileModel
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   UserProfileModel._({
     required this.authUserId,
     this.userName,
@@ -73,6 +74,18 @@ abstract class UserProfileModel implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_auth_core.UserProfileModel',
+      'authUserId': authUserId.toJson(),
+      if (userName != null) 'userName': userName,
+      if (fullName != null) 'fullName': fullName,
+      if (email != null) 'email': email,
+      if (imageUrl != null) 'imageUrl': imageUrl?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_auth_core.UserProfileModel',
       'authUserId': authUserId.toJson(),

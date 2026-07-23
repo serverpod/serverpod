@@ -10,7 +10,7 @@ Client _createServiceClient() {
   MigrationTestUtils.setDatabaseDialect(DatabaseDialect.sqlite);
 
   return Client(
-    'http://serverpod_test_sqlite_server:8081/',
+    'http://localhost:8081/',
     // ignore: deprecated_member_use
     authenticationKeyManager: TestServiceKeyManager(
       '0',

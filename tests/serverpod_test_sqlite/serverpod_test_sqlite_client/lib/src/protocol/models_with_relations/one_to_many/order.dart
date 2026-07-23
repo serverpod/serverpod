@@ -12,12 +12,12 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
-import '../../models_with_relations/one_to_many/customer.dart' as _i2;
-import '../../models_with_relations/one_to_many/comment.dart' as _i3;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
-import 'package:serverpod_client/serverpod_client.dart' as _i5;
+import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import '../../models_with_relations/one_to_many/customer.dart' as _i3;
+import '../../models_with_relations/one_to_many/comment.dart' as _i4;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i5;
 
-abstract class Order implements _i1.TableRow<int?> {
+abstract class Order implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   Order._({
     this.id,
     required this.description,
@@ -30,8 +30,8 @@ abstract class Order implements _i1.TableRow<int?> {
     int? id,
     required String description,
     required int customerId,
-    _i2.Customer? customer,
-    List<_i3.Comment>? comments,
+    _i3.Customer? customer,
+    List<_i4.Comment>? comments,
   }) = _OrderImpl;
 
   factory Order.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -41,12 +41,12 @@ abstract class Order implements _i1.TableRow<int?> {
       customerId: jsonSerialization['customerId'] as int,
       customer: jsonSerialization['customer'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.Customer>(
+          : _i5.Protocol().deserialize<_i3.Customer>(
               jsonSerialization['customer'],
             ),
       comments: jsonSerialization['comments'] == null
           ? null
-          : _i4.Protocol().deserialize<List<_i3.Comment>>(
+          : _i5.Protocol().deserialize<List<_i4.Comment>>(
               jsonSerialization['comments'],
             ),
     );
@@ -63,22 +63,22 @@ abstract class Order implements _i1.TableRow<int?> {
 
   int customerId;
 
-  _i2.Customer? customer;
+  _i3.Customer? customer;
 
-  List<_i3.Comment>? comments;
+  List<_i4.Comment>? comments;
 
   @override
   _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Order]
   /// with some or all fields replaced by the given arguments.
-  @_i5.useResult
+  @_i2.useResult
   Order copyWith({
     int? id,
     String? description,
     int? customerId,
-    _i2.Customer? customer,
-    List<_i3.Comment>? comments,
+    _i3.Customer? customer,
+    List<_i4.Comment>? comments,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -93,9 +93,22 @@ abstract class Order implements _i1.TableRow<int?> {
     };
   }
 
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Order',
+      if (id != null) 'id': id,
+      'description': description,
+      'customerId': customerId,
+      if (customer != null) 'customer': customer?.toJsonForProtocol(),
+      if (comments != null)
+        'comments': comments?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+    };
+  }
+
   static OrderInclude include({
-    _i2.CustomerInclude? customer,
-    _i3.CommentIncludeList? comments,
+    _i3.CustomerInclude? customer,
+    _i4.CommentIncludeList? comments,
   }) {
     return OrderInclude._(
       customer: customer,
@@ -127,7 +140,7 @@ abstract class Order implements _i1.TableRow<int?> {
 
   @override
   String toString() {
-    return _i5.SerializationManager.encode(this);
+    return _i2.SerializationManager.encode(this);
   }
 }
 
@@ -138,8 +151,8 @@ class _OrderImpl extends Order {
     int? id,
     required String description,
     required int customerId,
-    _i2.Customer? customer,
-    List<_i3.Comment>? comments,
+    _i3.Customer? customer,
+    List<_i4.Comment>? comments,
   }) : super._(
          id: id,
          description: description,
@@ -150,7 +163,7 @@ class _OrderImpl extends Order {
 
   /// Returns a shallow copy of this [Order]
   /// with some or all fields replaced by the given arguments.
-  @_i5.useResult
+  @_i2.useResult
   @override
   Order copyWith({
     Object? id = _Undefined,
@@ -163,10 +176,10 @@ class _OrderImpl extends Order {
       id: id is int? ? id : this.id,
       description: description ?? this.description,
       customerId: customerId ?? this.customerId,
-      customer: customer is _i2.Customer?
+      customer: customer is _i3.Customer?
           ? customer
           : this.customer?.copyWith(),
-      comments: comments is List<_i3.Comment>?
+      comments: comments is List<_i4.Comment>?
           ? comments
           : this.comments?.map((e0) => e0.copyWith()).toList(),
     );
@@ -206,51 +219,51 @@ class OrderTable extends _i1.Table<int?> {
 
   late final _i1.ColumnInt customerId;
 
-  _i2.CustomerTable? _customer;
+  _i3.CustomerTable? _customer;
 
-  _i3.CommentTable? ___comments;
+  _i4.CommentTable? ___comments;
 
-  _i1.ManyRelation<_i3.CommentTable>? _comments;
+  _i1.ManyRelation<_i4.CommentTable>? _comments;
 
-  _i2.CustomerTable get customer {
+  _i3.CustomerTable get customer {
     if (_customer != null) return _customer!;
     _customer = _i1.createRelationTable(
       relationFieldName: 'customer',
       field: Order.t.customerId,
-      foreignField: _i2.Customer.t.id,
+      foreignField: _i3.Customer.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.CustomerTable(tableRelation: foreignTableRelation),
+          _i3.CustomerTable(tableRelation: foreignTableRelation),
     );
     return _customer!;
   }
 
-  _i3.CommentTable get __comments {
+  _i4.CommentTable get __comments {
     if (___comments != null) return ___comments!;
     ___comments = _i1.createRelationTable(
       relationFieldName: '__comments',
       field: Order.t.id,
-      foreignField: _i3.Comment.t.orderId,
+      foreignField: _i4.Comment.t.orderId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.CommentTable(tableRelation: foreignTableRelation),
+          _i4.CommentTable(tableRelation: foreignTableRelation),
     );
     return ___comments!;
   }
 
-  _i1.ManyRelation<_i3.CommentTable> get comments {
+  _i1.ManyRelation<_i4.CommentTable> get comments {
     if (_comments != null) return _comments!;
     var relationTable = _i1.createRelationTable(
       relationFieldName: 'comments',
       field: Order.t.id,
-      foreignField: _i3.Comment.t.orderId,
+      foreignField: _i4.Comment.t.orderId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.CommentTable(tableRelation: foreignTableRelation),
+          _i4.CommentTable(tableRelation: foreignTableRelation),
     );
-    _comments = _i1.ManyRelation<_i3.CommentTable>(
+    _comments = _i1.ManyRelation<_i4.CommentTable>(
       tableWithRelations: relationTable,
-      table: _i3.CommentTable(
+      table: _i4.CommentTable(
         tableRelation: relationTable.tableRelation!.lastRelation,
       ),
     );
@@ -278,16 +291,16 @@ class OrderTable extends _i1.Table<int?> {
 
 class OrderInclude extends _i1.IncludeObject {
   OrderInclude._({
-    _i2.CustomerInclude? customer,
-    _i3.CommentIncludeList? comments,
+    _i3.CustomerInclude? customer,
+    _i4.CommentIncludeList? comments,
   }) {
     _customer = customer;
     _comments = comments;
   }
 
-  _i2.CustomerInclude? _customer;
+  _i3.CustomerInclude? _customer;
 
-  _i3.CommentIncludeList? _comments;
+  _i4.CommentIncludeList? _comments;
 
   @override
   Map<String, _i1.Include?> get includes => {
@@ -753,7 +766,7 @@ class OrderAttachRepository {
   Future<void> comments(
     _i1.DatabaseSession session,
     Order order,
-    List<_i3.Comment> comment, {
+    List<_i4.Comment> comment, {
     _i1.Transaction? transaction,
   }) async {
     if (comment.any((e) => e.id == null)) {
@@ -764,9 +777,9 @@ class OrderAttachRepository {
     }
 
     var $comment = comment.map((e) => e.copyWith(orderId: order.id)).toList();
-    await session.db.update<_i3.Comment>(
+    await session.db.update<_i4.Comment>(
       $comment,
-      columns: [_i3.Comment.t.orderId],
+      columns: [_i4.Comment.t.orderId],
       transaction: transaction,
     );
   }
@@ -780,7 +793,7 @@ class OrderAttachRowRepository {
   Future<void> customer(
     _i1.DatabaseSession session,
     Order order,
-    _i2.Customer customer, {
+    _i3.Customer customer, {
     _i1.Transaction? transaction,
   }) async {
     if (order.id == null) {
@@ -803,7 +816,7 @@ class OrderAttachRowRepository {
   Future<void> comments(
     _i1.DatabaseSession session,
     Order order,
-    _i3.Comment comment, {
+    _i4.Comment comment, {
     _i1.Transaction? transaction,
   }) async {
     if (comment.id == null) {
@@ -814,9 +827,9 @@ class OrderAttachRowRepository {
     }
 
     var $comment = comment.copyWith(orderId: order.id);
-    await session.db.updateRow<_i3.Comment>(
+    await session.db.updateRow<_i4.Comment>(
       $comment,
-      columns: [_i3.Comment.t.orderId],
+      columns: [_i4.Comment.t.orderId],
       transaction: transaction,
     );
   }

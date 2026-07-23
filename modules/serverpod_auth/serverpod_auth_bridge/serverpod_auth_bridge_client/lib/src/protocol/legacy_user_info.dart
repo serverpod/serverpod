@@ -14,7 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_auth_bridge_client/src/protocol/protocol.dart' as _i2;
 
 /// Legacy-compatible user profile returned to older clients.
-abstract class LegacyUserInfo implements _i1.SerializableModel {
+abstract class LegacyUserInfo
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   LegacyUserInfo._({
     this.id,
     required this.userIdentifier,
@@ -98,6 +99,22 @@ abstract class LegacyUserInfo implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_auth_bridge.LegacyUserInfo',
+      if (id != null) 'id': id,
+      'userIdentifier': userIdentifier,
+      if (userName != null) 'userName': userName,
+      if (fullName != null) 'fullName': fullName,
+      if (email != null) 'email': email,
+      'created': created.toJson(),
+      if (imageUrl != null) 'imageUrl': imageUrl,
+      'scopeNames': scopeNames.toJson(),
+      'blocked': blocked,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_auth_bridge.LegacyUserInfo',
       if (id != null) 'id': id,

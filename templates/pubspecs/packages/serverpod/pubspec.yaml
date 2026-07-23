@@ -25,7 +25,6 @@ dependencies:
   crypto: ^3.0.2
   http: '>=1.1.0 <2.0.0'
   meta: ^1.15.0
-  mustache_template: ^2.0.0
   path: ^1.8.3
   postgres: ^3.4.0
   redis: ^4.0.0
@@ -39,6 +38,7 @@ dependencies:
   uuid: ^4.5.3
   vm_service: '>=13.0.0 <16.0.0'
   web_socket: ^1.0.1
+  whiskers: ^0.1.1
   yaml: ^3.1.2
 
 dev_dependencies:

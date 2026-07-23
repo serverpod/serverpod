@@ -36,11 +36,13 @@ enum CreateOption<V> implements OptionDefinition<V> {
       enumParser: EnumParser(ServerpodTemplateType.values),
       argName: 'template',
       argAbbrev: 't',
-      defaultsTo: ServerpodTemplateType.server,
+      defaultsTo: ServerpodTemplateType.fullstack,
       helpText: 'Template to use when creating a new project',
       allowedValues: ServerpodTemplateType.values,
       allowedHelp: {
         'mini': 'Mini project with minimal features and no database',
+        'fullstack':
+            'Fullstack project including a server and a companion Flutter app',
         'server': 'Server project with standard features including database',
         'module': 'Serverpod Module project',
       },
@@ -135,7 +137,8 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
       auth: true,
       redis: true,
       postgres: true,
-      webapp: true,
+      website: template == ServerpodTemplateType.server,
+      webapp: template != ServerpodTemplateType.server,
       ides: [TemplateIde.claude, TemplateIde.cursor, TemplateIde.vscode],
     );
 

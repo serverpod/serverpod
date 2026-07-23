@@ -12,7 +12,7 @@ import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_app_manager.dart';
-import 'package:serverpod_cli/src/commands/start/flutter_dependency_tracker.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_log_event.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_server.dart';
@@ -72,11 +72,12 @@ enum StartOption<V> implements OptionDefinition<V> {
   docker(
     FlagOption(
       argName: 'docker',
-      defaultsTo: false,
       helpText:
-          'Start Docker Compose services if a docker-compose.yaml exists. '
-          'Default off; pass --docker to opt in to compose-managed services '
-          '(typically Redis when running PostgreSQL separately).',
+          'Start Docker Compose services if a Docker Compose file exists. '
+          'Defaults to on if the project has a Docker Compose file and the '
+          'database is configured to PostgreSQL without a dataPath. Otherwise, '
+          'defaults to off. Pass --docker or --no-docker to override the '
+          'default behavior.',
     ),
   ),
   tui(
@@ -111,12 +112,10 @@ class StartCommand extends ServerpodCommand<StartOption> {
   final name = 'start';
 
   @override
-  bool get hidden => true;
-
-  @override
   final description =
-      'EXPERIMENTAL! Generate code and start the server. '
-      'Use --watch to watch for changes and hot reload.';
+      'Start the full development stack with hot reload: generates code, '
+      'runs the server, and launches the companion Flutter apps in an '
+      'interactive terminal UI.';
 
   @override
   String get invocation => 'serverpod start [-- <server-args>]';
@@ -154,7 +153,6 @@ class StartCommand extends ServerpodCommand<StartOption> {
           GlobalOption.interactive,
         ),
       );
-      final flutterApps = _loadFlutterApps(config);
 
       // Bail before the TUI takes over the terminal
       if (await _detectExistingInstance(config)) return;
@@ -165,7 +163,6 @@ class StartCommand extends ServerpodCommand<StartOption> {
         launchFlutterApp: launchFlutterApp,
         serverArgs: argResults?.rest ?? [],
         config: config,
-        flutterApps: flutterApps,
       );
       if (exitCode != 0) throw ExitException(exitCode);
       return;
@@ -196,8 +193,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
     if (await _detectExistingInstance(config)) return;
 
     final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
-    final flutterApps = _loadFlutterApps(config);
-    final docker = commandConfig.value(StartOption.docker);
+    final docker = commandConfig.optionalValue(StartOption.docker);
 
     // Listen for termination signals before starting any services so that
     // a SIGINT at any point triggers graceful shutdown (including Docker
@@ -212,7 +208,6 @@ class StartCommand extends ServerpodCommand<StartOption> {
 
       final result = await _setupWatchLoop(
         config: config,
-        flutterApps: flutterApps,
         serverDir: serverDir,
         serverArgs: serverArgs,
         watch: watch,
@@ -278,57 +273,122 @@ Future<bool> _runHooksFor(
   }
 }
 
+/// Compose file names Docker Compose resolves by default, in its own lookup
+/// order.
+const _composeFileNames = [
+  'compose.yaml',
+  'compose.yml',
+  'docker-compose.yaml',
+  'docker-compose.yml',
+];
+
+File? _findComposeFile(String serverDir) {
+  for (final name in _composeFileNames) {
+    final file = File(p.join(serverDir, name));
+    if (file.existsSync()) return file;
+  }
+  return null;
+}
+
+bool _resolveStartDocker({
+  required bool? dockerFlag,
+  required String serverDir,
+  required String runMode,
+}) {
+  if (dockerFlag != null) return dockerFlag;
+
+  // Projects without a compose file (e.g. using a remote or natively
+  // installed database) have nothing for Docker Compose to start. Only an
+  // explicit --docker treats a missing compose file as an error.
+  if (_findComposeFile(serverDir) == null) return false;
+
+  try {
+    final passwords = PasswordManager(runMode: runMode).loadPasswords(
+      serverDir: serverDir,
+    );
+    final serverConfig = ServerpodConfig.load(
+      runMode,
+      null,
+      passwords,
+      serverDir: serverDir,
+    );
+    final database = serverConfig.database;
+    return database is PostgresDatabaseConfig && database.dataPath == null;
+  } catch (_) {
+    // Config may be incomplete during early project setup; do not start
+    // Docker automatically. Users can still pass --docker explicitly.
+    return false;
+  }
+}
+
 /// Ensures Docker Compose services are running.
 ///
 /// Returns `true` if this method started the containers (meaning we should
-/// stop them on shutdown). Returns `false` if no action was taken.
-Future<bool> _ensureDockerServices(String serverDir) async {
-  final composeFile = File(p.join(serverDir, 'docker-compose.yaml'));
-  if (!await composeFile.exists()) return false;
+/// stop them on shutdown), `false` if they were already running, and `null`
+/// when Docker cannot be used.
+Future<bool?> _ensureDockerServices(String serverDir) async {
+  if (_findComposeFile(serverDir) == null) {
+    log.error(dockerComposeFileMissing);
+    return null;
+  }
 
   // Check if containers are already running.
-  final ps = await Process.run(
-    'docker',
+  final ps = await _runDocker(
     ['compose', 'ps', '--status', 'running', '-q'],
-    workingDirectory: serverDir,
+    serverDir,
   );
 
+  if (ps == null) {
+    log.error(dockerNotInstalled);
+    return null;
+  }
+
   if (ps.exitCode != 0) {
-    log.warning(
-      'Docker does not appear to be running. '
-      'Start Docker or use --no-docker to skip.',
-    );
-    return false;
+    log.error(dockerNotRunning);
+    return null;
   }
 
   final running = (ps.stdout as String).trim();
   if (running.isNotEmpty) return false;
 
   // Start containers.
-  log.info('Starting Docker Compose services...');
-  final up = await Process.run(
-    'docker',
-    ['compose', 'up', '-d'],
-    workingDirectory: serverDir,
-  );
+  final up = await _runDocker(['compose', 'up', '-d'], serverDir);
+
+  if (up == null) {
+    log.error(dockerNotInstalled);
+    return null;
+  }
 
   if (up.exitCode != 0) {
     final error = (up.stderr as String).trim();
-    log.warning('Failed to start Docker Compose services: $error');
-    return false;
+    log.error('$dockerComposeStartFailed\n\n$error');
+    return null;
   }
 
   log.info('Docker Compose services started.');
   return true;
 }
 
+/// Runs `docker` with [arguments] in [serverDir]. Returns `null` when the
+/// binary cannot be launched (Docker not installed or not on PATH).
+Future<ProcessResult?> _runDocker(
+  List<String> arguments,
+  String serverDir,
+) async {
+  try {
+    return await Process.run(
+      'docker',
+      arguments,
+      workingDirectory: serverDir,
+    );
+  } on ProcessException {
+    return null;
+  }
+}
+
 Future<void> _stopDockerServices(String serverDir) async {
   log.info('Stopping Docker Compose services...');
-  await Process.run(
-    'docker',
-    ['compose', 'stop'],
-    workingDirectory: serverDir,
-  );
+  await _runDocker(['compose', 'stop'], serverDir);
 }
 
 /// Prepends `--apply-migrations` to [serverArgs] unless it is already present.
@@ -363,25 +423,12 @@ Future<void> _applyMigrationsForSession({
   }
 }
 
-/// Runs the unified watch-loop setup shared by the TUI and non-TUI flows.
-/// Loads the companion Flutter apps from the server pubspec for the resolved
-/// project. A `serverpod start`-only concern, kept off [GeneratorConfig].
-List<FlutterAppConfig> _loadFlutterApps(GeneratorConfig config) {
-  final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
-  return loadFlutterApps(
-    serverPubspecFile: File(p.join(serverDir, 'pubspec.yaml')),
-    serverPackageDirectoryPathParts: config.serverPackageDirectoryPathParts,
-    projectName: config.name,
-  );
-}
-
 Future<WatchLoopSetupResult> _setupWatchLoop({
   required GeneratorConfig config,
-  required List<FlutterAppConfig> flutterApps,
   required String serverDir,
   required ServerArgsRef serverArgs,
   required bool watch,
-  required bool docker,
+  required bool? docker,
   // When the project fails to generate or compile: if `true`, keep the session
   // open with no server running and recover later (the file watcher auto-boots
   // in watch mode; [WatchSession.retryStart] boots on demand otherwise). If
@@ -395,13 +442,15 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   IOSink Function(FlutterAppConfig app)? flutterStderrSinkFor,
   void Function(FlutterAppConfig app)? onEnsureFlutterAppTab,
   void Function(FlutterAppConfig app, String stage)? onFlutterProgress,
-  void Function(FlutterAppConfig app, String url)? onFlutterReady,
+  void Function(FlutterAppConfig app, FlutterLogEvent event)? onFlutterLog,
+  void Function(FlutterAppConfig app, String? url)? onFlutterReady,
   void Function(FlutterAppConfig app)? onFlutterLaunchFailed,
+  void Function(FlutterAppConfig app)? onFlutterStop,
   Future<void> Function(ServerProcess server)? onServerStart,
   Future<void> Function(FlutterAppConfig app, FlutterProcess flutter)?
   onFlutterStart,
+  void Function(List<FlutterAppConfig>)? onFlutterAppsLoaded,
   List<Object> Function()? mcpGetLogHistory,
-  List<String> Function()? mcpGetFlutterAppIds,
   List<String> Function(String appId)? mcpGetFlutterLogHistory,
 }) async {
   log.info(watch ? 'Starting server in watch mode...' : 'Starting server...');
@@ -424,12 +473,21 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     return const WatchLoopAborted(0);
   }
 
+  final startDocker = _resolveStartDocker(
+    dockerFlag: docker,
+    serverDir: serverDir,
+    runMode: runModeFromServerArgs(serverArgs.value),
+  );
+
   var startedDocker = false;
-  if (docker) {
-    await log.progress('Starting Docker services', () async {
-      startedDocker = await _ensureDockerServices(serverDir);
-      return true;
+  if (startDocker) {
+    bool? dockerStarted;
+    await log.progress(startingDockerServices, () async {
+      dockerStarted = await _ensureDockerServices(serverDir);
+      return dockerStarted != null;
     });
+    if (dockerStarted == null) return const WatchLoopAborted(1);
+    startedDocker = dockerStarted!;
   }
 
   Future<void> stopDockerIfStarted() async {
@@ -594,21 +652,32 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   // IDE-facing Flutter VM-service proxies. Bound now so info files exist at
   // session start regardless of whether `--flutter` was passed.
   final runMode = runModeFromServerArgs(serverArgs.value);
+  final serverPubspecFile = File(p.join(serverDir, 'pubspec.yaml'));
   final flutterManager = FlutterAppManager(
-    apps: flutterApps,
-    serverpodToolDir: serverpodToolDir,
     runMode: runMode,
+    projectName: config.name,
+    // Whether to auto-launch every app flagged with `auto_launch`
+    // (the synthesized default sibling app is flagged, preserving
+    // the historical single-app behavior). When no app opts in, none
+    // launch - the user starts them with Ctrl+R.
+    launchFlutterApp: launchFlutterApp,
+    serverpodToolDir: serverpodToolDir,
+    serverPubspecFile: serverPubspecFile,
+    serverPackageDirectoryPathParts: config.serverPackageDirectoryPathParts,
     onProgress: (app, stage) => onFlutterProgress?.call(app, stage),
     onReady: (app, url) => onFlutterReady?.call(app, url),
     onStart: (app, process) async {
       if (onFlutterStart != null) await onFlutterStart(app, process);
     },
+    onStop: (app) => onFlutterStop?.call(app),
     onLaunchFailed: (app) => onFlutterLaunchFailed?.call(app),
     onEnsureAppTab: (app) => onEnsureFlutterAppTab?.call(app),
+    onLog: (app, event) => onFlutterLog?.call(app, event),
     stdoutSinkFor: (app) => flutterStdoutSinkFor?.call(app) ?? stdout,
     stderrSinkFor: (app) => flutterStderrSinkFor?.call(app) ?? stderr,
   );
   await flutterManager.initialize();
+  onFlutterAppsLoaded?.call(flutterManager.apps.toList());
 
   // Server process factory. Invoked for the initial start and for each
   // subsequent restart driven by the WatchSession
@@ -640,15 +709,59 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   // now. The watch session brings it up once the project is fixed.
   ServerProcess? initialServerProcess;
   if (buildOk) {
-    await log.progress('Starting server', () async {
-      final initialDill = watch
-          ? p.join(serverpodToolDir, 'server.dill')
-          : null;
-      initialServerProcess = await serverProcessFactory(initialDill);
-      return true;
-    });
-  } else {
+    initialServerProcess = await bootInitialServer(
+      initialDill: watch ? p.join(serverpodToolDir, 'server.dill') : null,
+      startServer: serverProcessFactory,
+      compiler: compiler,
+    );
+    if (initialServerProcess == null) {
+      log.error('Initial compilation failed.');
+      buildOk = false;
+      if (!keepOpenOnFailure) {
+        await compiler?.dispose();
+        await flutterManager.dispose();
+        await rollbackStartup();
+        return const WatchLoopAborted(1);
+      }
+    }
+  }
+  if (!buildOk) {
     log.warning(watch ? startBlockedByErrorsWatch : startBlockedByErrorsManual);
+  }
+
+  StreamSubscription<void>? fileChangeSub;
+
+  /// Sets up single watcher across server/shared/client/web/flutter.
+  /// Changes serialize through session.handleFileChange via WatchSession._chain.
+  void setupFileWatcher() {
+    fileChangeSub?.cancel();
+    if (!watch) return;
+    final currentApps = flutterManager.apps.toList();
+    final flutterPackageGraphPaths = [
+      for (final app in currentApps)
+        ?flutterManager.packageGraphPathFor(app.id),
+    ];
+    final watcher = FileWatcher(
+      watchPaths: buildWatchPaths(
+        config: config,
+        flutterApps: currentApps,
+        serverDartToolDir: serverDartToolDir,
+        flutterPackageGraphPaths: flutterPackageGraphPaths,
+      ),
+      // Exact files so a change to one resolution's artifact never triggers the
+      // other's action (matters only in a non-workspace layout). The server has
+      // a single package_config.json; each Flutter app contributes its own
+      // package_graph.json (they collapse to one entry in a workspace layout).
+      packageConfigPath: serverDartToolDir == null
+          ? null
+          : p.join(serverDartToolDir, 'package_config.json'),
+      packageGraphPaths: {
+        ...flutterPackageGraphPaths,
+      },
+    );
+    fileChangeSub = watcher.onFilesChanged
+        .asyncMapBuffer((events) => session.handleFileChange(events.merge()))
+        .listen((_) {});
   }
 
   // Construct the watch session.
@@ -682,6 +795,11 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     generatedDirPaths: config.generatedDirPaths,
     serverDependencyTracker: serverDependencyTracker,
     flutterManager: flutterManager,
+    flutterAppsLoader: () async {
+      await flutterManager.loadApps();
+      onFlutterAppsLoaded?.call(flutterManager.apps.toList());
+      setupFileWatcher();
+    },
     applyMigrationsAction: () => _applyMigrationsForSession(
       serverDir: serverDir,
       runMode: runMode,
@@ -691,16 +809,6 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   // Route IDE attach auto-launch through the session so it serializes with
   // reload/restart cycles.
   flutterManager.launchOnWaitingClient = session.spawnFlutterApp;
-
-  // Auto-launch every app flagged with `auto_launch` (the synthesized default
-  // sibling app is flagged, preserving the historical single-app behavior).
-  // When no app opts in, none launch - the user starts them with Ctrl+R.
-  if (launchFlutterApp) {
-    await Future.wait([
-      for (final app in flutterApps.where((app) => app.autoLaunch))
-        session.spawnFlutterApp(app.id),
-    ]);
-  }
 
   // Forward server exit into the shutdown signal so the wait-for-exit
   // point only ever has to await [shutdown.future]
@@ -731,7 +839,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       onHotReload: session.forceReload,
       onHotRestart: session.forceRestart,
       getLogHistory: mcpGetLogHistory,
-      getFlutterAppIds: mcpGetFlutterAppIds,
+      getFlutterAppIds: () => [for (final app in flutterManager.apps) app.id],
       getFlutterLogHistory: mcpGetFlutterLogHistory,
       onSpawnFlutterApp: session.spawnFlutterApp,
       getVmServiceUri: () => proxy?.httpUri.toString(),
@@ -744,40 +852,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     mcpSocket = null;
   }
 
-  // Single watcher across server/shared/client/web/flutter. Changes
-  // serialize through session.handleFileChange via WatchSession._chain.
-  StreamSubscription<void>? fileChangeSub;
-  if (watch) {
-    // One tracker per Flutter app that has a resolved dependency closure. Reused
-    // both to widen the watched directories and to pin the exact pub artifacts
-    // below.
-    final flutterDependencyTrackers = [
-      for (final app in flutterApps)
-        ?flutterManager.dependencyTrackerFor(app.id),
-    ];
-    final watcher = FileWatcher(
-      watchPaths: buildWatchPaths(
-        config: config,
-        flutterApps: flutterApps,
-        serverDartToolDir: serverDartToolDir,
-        flutterDependencyTrackers: flutterDependencyTrackers,
-      ),
-      // Exact files so a change to one resolution's artifact never triggers the
-      // other's action (matters only in a non-workspace layout). The server has
-      // a single package_config.json; each Flutter app contributes its own
-      // package_graph.json (they collapse to one entry in a workspace layout).
-      packageConfigPath: serverDartToolDir == null
-          ? null
-          : p.join(serverDartToolDir, 'package_config.json'),
-      packageGraphPaths: {
-        for (final tracker in flutterDependencyTrackers)
-          p.join(tracker.dartToolDir, 'package_graph.json'),
-      },
-    );
-    fileChangeSub = watcher.onFilesChanged
-        .asyncMapBuffer((events) => session.handleFileChange(events.merge()))
-        .listen((_) {});
-  }
+  setupFileWatcher();
 
   return WatchLoopReady(
     WatchLoopContext(
@@ -785,35 +860,87 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       proxy: () => proxy,
       flutterManager: flutterManager,
       mcpSocket: mcpSocket,
-      fileChangeSub: fileChangeSub,
       closeAnalyzers: closeAnalyzers,
+      stopFileWatcher: () => fileChangeSub?.cancel(),
       stopDocker: startedDocker ? () => _stopDockerServices(serverDir) : null,
       vmServiceInfoFile: vmServiceInfoFile,
     ),
   );
 }
 
-/// The directories the watch-mode [FileWatcher] observes: server/shared/client
+/// Boots the initial server process, recovering once from a corrupt cached
+/// dill (a pod that dies before publishing its VM service URI never got past
+/// kernel loading). Returns `null` if the recovery recompile fails.
+@visibleForTesting
+Future<ServerProcess?> bootInitialServer({
+  required String? initialDill,
+  required Future<ServerProcess> Function(String? dillPath) startServer,
+  required KernelCompiler? compiler,
+}) async {
+  Future<ServerProcess> boot() async {
+    late ServerProcess server;
+    await log.progress('Starting server', () async {
+      server = await startServer(initialDill);
+      return true;
+    });
+    return server;
+  }
+
+  final server = await boot();
+  if (compiler == null) return server;
+
+  // exitCode is already completed whenever isRunning is false.
+  final crashedLoadingKernel =
+      server.vmServiceUri == null &&
+      !server.isRunning &&
+      await server.exitCode != 0;
+  if (!crashedLoadingKernel) return server;
+
+  log.warning(cachedBuildCrashedOnBoot);
+  await compiler.invalidateCachedDill();
+  // Ensure a complete kernel, not an incremental delta.
+  await compiler.reset();
+  final result = await compileWithProgress(
+    'Compiling server',
+    compiler,
+    rejectOnFailure: true,
+  );
+  if (result == null) return null;
+  await compiler.accept();
+  return boot();
+}
+
+/// The paths the watch-mode [FileWatcher] observes: server/shared/client
 /// source, the server's web dir, each Flutter app's lib and pubspec.yaml, and
-/// the resolution `.dart_tool`(s) carrying `package_config.json` /
-/// `package_graph.json`.
+/// the exact `package_config.json` / `package_graph.json` files of the
+/// resolution `.dart_tool`(s).
 ///
 /// [serverDartToolDir] is the server's resolution `.dart_tool` (workspace root
-/// or the package itself); watching it is what makes a dependency change reload
-/// the server in place. In a workspace it equals each Flutter app's
-/// [FlutterDependencyTracker.dartToolDir] and dedupes to a single watch.
+/// or the package itself); watching its `package_config.json` is what makes a
+/// dependency change reload the server in place. [flutterPackageGraphPaths]
+/// contains the resolved or expected graph path for every Flutter app.
+///
+/// The pub artifacts are watched as exact files rather than their `.dart_tool`
+/// directories: those directories also hold large, churning build state (e.g.
+/// `flutter_build` intermediates when a Flutter app builds, or the server's
+/// dill), and a recursive directory watch has to scan and re-list that tree on
+/// every build - heavy disk I/O for events that would all be discarded anyway.
 @visibleForTesting
 Set<String> buildWatchPaths({
   required GeneratorConfig config,
   List<FlutterAppConfig> flutterApps = const [],
   String? serverDartToolDir,
-  Iterable<FlutterDependencyTracker> flutterDependencyTrackers = const [],
+  Iterable<String> flutterPackageGraphPaths = const [],
 }) {
   return {
     p.absolute(p.joinAll(config.libSourcePathParts)),
     ...config.sharedModelsLibSourcePaths.map(p.absolute),
     p.absolute(p.joinAll([...config.clientPackagePathParts, 'lib'])),
     p.absolute(p.joinAll([...config.serverPackageDirectoryPathParts, 'web'])),
+    // The server's pubspec.yaml watched for changes to the flutter_apps config.
+    p.absolute(
+      p.joinAll([...config.serverPackageDirectoryPathParts, 'pubspec.yaml']),
+    ),
     for (final app in flutterApps) ...[
       p.absolute(p.joinAll([...app.pathParts, 'lib'])),
       // The app's pubspec.yaml, watched as an exact file (it lives in the app
@@ -821,16 +948,15 @@ Set<String> buildWatchPaths({
       // full Flutter relaunch.
       p.absolute(p.joinAll([...app.pathParts, 'pubspec.yaml'])),
     ],
-    // The server's resolution .dart_tool, watched for package_config.json
-    // (reloaded into the FES in place) and, in a workspace, the shared
-    // package_graph.json. Dedupes against the Flutter trackers' dirs in a
-    // workspace layout.
-    if (serverDartToolDir != null) p.absolute(serverDartToolDir),
-    // Each Flutter resolution's .dart_tool holds package_graph.json, watched to
-    // detect Flutter dependency changes (workspace root or, in a non-workspace
-    // project, the Flutter package's own .dart_tool).
-    for (final tracker in flutterDependencyTrackers)
-      p.absolute(tracker.dartToolDir),
+    // The server resolution's package_config.json, reloaded into the FES in
+    // place on dependency changes. The exact-file watcher persists across an
+    // initial absence or deletion without scanning the rest of .dart_tool.
+    if (serverDartToolDir != null)
+      p.absolute(p.join(serverDartToolDir, 'package_config.json')),
+    // Each Flutter resolution's package_graph.json, watched to detect Flutter
+    // dependency changes (workspace root or, in a non-workspace project, the
+    // Flutter package's own .dart_tool).
+    ...flutterPackageGraphPaths.map(p.absolute),
   };
 }
 
@@ -996,11 +1122,9 @@ Future<int> _runWithTui({
   required bool launchFlutterApp,
   required List<String> serverArgs,
   required GeneratorConfig config,
-  required List<FlutterAppConfig> flutterApps,
 }) async {
   final holder = StartAppStateHolder(
-    ServerWatchState(hasConfiguredApps: flutterApps.isNotEmpty)
-      ..watchModeEnabled = watch,
+    ServerWatchState()..watchModeEnabled = watch,
   );
   var backendStarted = false;
 
@@ -1034,32 +1158,41 @@ Future<int> _runWithTui({
       launchFlutterApp: launchFlutterApp,
       serverArgs: serverArgs,
       config: config,
-      flutterApps: flutterApps,
       shutdown: shutdown,
       onFatalError: recordFatalCrash,
     ).catchError((Object e, StackTrace st) => recordFatalCrash(e, st));
   }
 
   // Runs after the TUI tears down (alternate screen restored) but before the
-  // process exits. Restores the stdout logger and replays any captured crash
-  // so it survives in the user's scrollback - mirrors how `serverpod create`
+  // process exits. Replays any captured crash and server process errors
+  // so they survive in the user's scrollback - mirrors how `serverpod create`
   // flushes its errors to the terminal on exit.
-  Future<void> preExit() async {
+  Future<void> preExit(int exitCode) async {
+    var shouldFlushLogs = false;
+
     final crash = fatalCrash;
-    if (crash == null) return;
-    // Swap the TUI-backed logger (whose output went to the now-gone alternate
-    // screen) for a fresh stdout-backed one, so the replayed crash actually
-    // reaches the terminal.
-    await closeLogger();
-    initializeLogger();
-    printInternalError(crash.error, crash.stackTrace);
-    await log.flush();
+    if (crash != null) {
+      printInternalError(crash.error, crash.stackTrace);
+      shouldFlushLogs = true;
+    }
+
+    if (exitCode != 0 && _serverProcessErrorBuffer.isNotEmpty) {
+      log.error(_serverProcessErrorBuffer.toString());
+      shouldFlushLogs = true;
+    }
+
+    if (shouldFlushLogs) await log.flush();
   }
 
   // Wait for the backend's dispose to finish before calling shutdownTuiApp
   unawaited(
     shutdown.future.then((code) async {
       await backendFuture;
+      // Swap the TUI-backed logger (whose output went to the now-gone alternate
+      // screen) for a fresh stdout-backed one, so the replayed errors actually
+      // reach the terminal.
+      await closeLogger();
+      initializeLogger();
       shutdownTuiApp(code);
     }),
   );
@@ -1075,6 +1208,11 @@ Future<int> _runWithTui({
   return shutdown.future;
 }
 
+/// Buffer for errors from [ServerProcess] stderr
+/// which will be flushed to the terminal if the TUI
+/// exits with a non-zero exit code.
+final _serverProcessErrorBuffer = StringBuffer();
+
 /// Backend logic that runs after the TUI is mounted and ready.
 Future<void> _runTuiBackend({
   required StartAppStateHolder holder,
@@ -1083,7 +1221,6 @@ Future<void> _runTuiBackend({
   required bool launchFlutterApp,
   required List<String> serverArgs,
   required GeneratorConfig config,
-  required List<FlutterAppConfig> flutterApps,
   required _ShutdownSignal shutdown,
   required void Function(Object error, StackTrace stackTrace) onFatalError,
 }) async {
@@ -1094,16 +1231,21 @@ Future<void> _runTuiBackend({
     tuiWriter.attach(holder);
 
     final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
-    final docker = commandConfig.value(StartOption.docker);
+    final docker = commandConfig.optionalValue(StartOption.docker);
 
     final argsRef = ServerArgsRef(serverArgs);
 
     final stdoutSink = TuiLogSink(holder, addLine: holder.state.rawLines.add);
-    final stderrSink = TuiLogSink(holder, addLine: holder.state.rawLines.add);
+    final stderrSink = TuiLogSink(
+      holder,
+      addLine: (line) {
+        _serverProcessErrorBuffer.writeln(line);
+        holder.state.rawLines.add(line);
+      },
+    );
 
     final result = await _setupWatchLoop(
       config: config,
-      flutterApps: flutterApps,
       serverDir: serverDir,
       serverArgs: argsRef,
       watch: watch,
@@ -1117,56 +1259,59 @@ Future<void> _runTuiBackend({
       serverStderrSink: stderrSink,
       flutterStdoutSinkFor: (app) => TuiLogSink(
         holder,
-        addLine: (line) => holder.state
-            .getOrCreateAppLogTab(appId: app.id, label: app.name)
-            .lines
-            .add(line),
+        addLine: (line) => handleFlutterOutput(holder, app.id, line),
       ),
       flutterStderrSinkFor: (app) => TuiLogSink(
         holder,
-        addLine: (line) => holder.state
-            .getOrCreateAppLogTab(appId: app.id, label: app.name)
-            .lines
-            .add(line),
+        addLine: (line) => handleFlutterOutput(holder, app.id, line),
       ),
+      onFlutterLog: (app, event) =>
+          handleFlutterLogEvent(holder, app.id, event),
       onEnsureFlutterAppTab: (app) {
         final tab = holder.state.getOrCreateAppLogTab(
           appId: app.id,
           label: app.name,
         );
         tab.ready = false;
+        tab.stopped = false;
         tab.url = null;
-        holder.state.tabs.focusTab(tab);
+        // Refreshed per launch; the configured device may have changed.
+        tab.device = app.device;
+        // Focus the tab only when the launch was initiated from the launch
+        // panel (which is open at that point). Apps auto-started by
+        // `serverpod start` launch with the panel closed, so the Server logs
+        // tab stays active for them.
+        if (holder.state.showLaunchPanel) {
+          holder.state.tabs.focusTab(tab);
+        }
         holder.markDirty();
       },
       onFlutterProgress: (app, stage) {
-        final tab = holder.state.getOrCreateAppLogTab(
-          appId: app.id,
-          label: app.name,
-        );
-        tab.startupStage = stage;
-        holder.markDirty();
+        final tab = holder.state.appLogTabFor(app.id);
+        if (tab != null) {
+          tab.startupStage = stage;
+          holder.markDirty();
+        }
       },
       onFlutterReady: (app, url) {
-        final tab = holder.state.getOrCreateAppLogTab(
-          appId: app.id,
-          label: app.name,
-        );
-        tab.url = url;
-        tab.ready = true;
-        holder.markDirty();
+        final tab = holder.state.appLogTabFor(app.id);
+        if (tab != null) {
+          // Null on non-web devices, which publish no URL; the status line
+          // then falls back to its generic running label.
+          tab.url = url;
+          tab.ready = true;
+          tab.stopped = false;
+          holder.markDirty();
+        }
       },
       onFlutterLaunchFailed: (app) {
-        final tab = holder.state.getOrCreateAppLogTab(
-          appId: app.id,
-          label: app.name,
-        );
-        tab.ready = false;
-        tab.url = null;
-        // Replace the breadcrumb's spinner-y "connecting" with a terminal
-        // state so it doesn't hang; the build error is in the app's log.
-        tab.startupStage = 'launch failed - see log';
-        holder.markDirty();
+        final tab = holder.state.appLogTabFor(app.id);
+        if (tab != null) {
+          tab.ready = false;
+          tab.stopped = true;
+          tab.url = null;
+          holder.markDirty();
+        }
       },
       onServerStart: (server) async {
         // Fires on every server boot - the initial start, a restart, and the
@@ -1187,11 +1332,34 @@ Future<void> _runTuiBackend({
         if (vmService == null) return;
         await vmService.streamListen('Extension');
         vmService.onExtensionEvent.listen(
-          (event) => handleServerLogEvent(holder, event),
+          (event) => handleFlutterExtensionEvent(holder, app.id, event),
         );
       },
+      onFlutterStop: (app) {
+        final tab = holder.state.appLogTabFor(app.id);
+        if (tab != null) {
+          tab.ready = false;
+          tab.stopped = true;
+          holder.markDirty();
+        }
+      },
+      onFlutterAppsLoaded: (newApps) {
+        // Remove tabs for gone apps and update state.
+        final oldApps = holder.state.launchableApps;
+        for (final app in oldApps) {
+          late final tab = holder.state.appLogTabFor(app.id);
+          if (!newApps.any((a) => a.id == app.id) && tab != null) {
+            holder.state.tabs.removeTab(tab);
+          }
+        }
+        holder.state.createAppsTabAreaIfNeeded();
+        holder.state.launchableApps = newApps;
+        holder.state.canLaunchApps =
+            newApps.isNotEmpty &&
+            runModeFromServerArgs(serverArgs) == 'development';
+        holder.markDirty();
+      },
       mcpGetLogHistory: () => holder.state.logHistory.toList(),
-      mcpGetFlutterAppIds: () => [for (final app in flutterApps) app.id],
       mcpGetFlutterLogHistory: (appId) =>
           holder.state.appLogTabFor(appId)?.lines.toList() ?? <String>[],
     );
@@ -1203,15 +1371,17 @@ Future<void> _runTuiBackend({
       case WatchLoopReady(:final ctx):
         // Offer Ctrl+R whenever a Flutter app could run here - even after a
         // `--no-flutter` start, where it acts as a "launch the app" button.
+        final apps = ctx.flutterManager.apps.toList();
         holder.state.canLaunchApps =
-            flutterApps.isNotEmpty &&
+            apps.isNotEmpty &&
             runModeFromServerArgs(serverArgs) == 'development';
-        holder.state.launchableApps = flutterApps;
+        holder.state.launchableApps = apps;
         holder.state.isAppRunning = (appId) =>
             ctx.flutterManager.isRunning(appId);
         holder.state.isAppLaunching = (appId) =>
             ctx.flutterManager.isLaunching(appId);
         holder.onLaunchApp = (index) {
+          final flutterApps = ctx.flutterManager.apps.toList();
           if (index < 0 || index >= flutterApps.length) return;
           final app = flutterApps[index];
           // Selecting an already-running app relaunches it; a stopped one is
@@ -1224,6 +1394,7 @@ Future<void> _runTuiBackend({
           );
         };
         holder.onStopApp = (index) {
+          final flutterApps = ctx.flutterManager.apps.toList();
           if (index < 0 || index >= flutterApps.length) return;
           final app = flutterApps[index];
           if (!ctx.flutterManager.isRunning(app.id)) return;
@@ -1264,7 +1435,13 @@ Future<void> _runTuiBackend({
           runTrackedAction(
             holder,
             force ? 'Force-creating migration' : 'Creating migration',
-            () => _runCreateMigrationForTui(config, force: force),
+            () async {
+              await _runCreateMigrationForTui(
+                config,
+                force: force,
+              );
+              await _tryApplyMigrationForTui(ctx.session.applyMigration);
+            },
           );
         };
         holder.onCreateRepairMigration = ({bool force = false}) {
@@ -1273,11 +1450,14 @@ Future<void> _runTuiBackend({
             force
                 ? 'Force-creating repair migration'
                 : 'Creating repair migration',
-            () => _runCreateRepairMigrationForTui(
-              config,
-              runMode: runModeFromServerArgs(serverArgs),
-              force: force,
-            ),
+            () async {
+              await _runCreateRepairMigrationForTui(
+                config,
+                runMode: runModeFromServerArgs(serverArgs),
+                force: force,
+              );
+              await _tryApplyMigrationForTui(ctx.session.applyMigration);
+            },
           );
         };
         holder.onApplyMigration = () {
@@ -1287,7 +1467,6 @@ Future<void> _runTuiBackend({
             ctx.session.applyMigration,
           );
         };
-
         holder.state.serverReady = ctx.session.isRunning;
         // Degraded start (no server yet): expose the manual "Start server"
         // recovery action. The watcher also auto-recovers in watch mode.
@@ -1381,6 +1560,22 @@ Future<void> _runCreateMigrationForTui(
   );
   if (result.isError) throw Exception(result.message);
   log.info(result.message);
+}
+
+/// Applies a newly created migration without changing the tracked status of
+/// the successful create operation if applying it fails.
+Future<void> _tryApplyMigrationForTui(
+  Future<void> Function() applyMigration,
+) async {
+  try {
+    await applyMigration();
+  } catch (error, stackTrace) {
+    log.error(
+      'Failed to apply migration: $error.',
+      stackTrace: stackTrace,
+    );
+    log.info('Press A to retry apply migration');
+  }
 }
 
 /// Runs `create-migration` for the MCP `create_migration` tool. Returns a

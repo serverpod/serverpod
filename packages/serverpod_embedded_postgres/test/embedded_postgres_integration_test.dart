@@ -24,15 +24,9 @@ void main() {
     if (tmpRoot.existsSync()) tmpRoot.deleteSync(recursive: true);
   });
 
-  // Default transport is UnixTransport. Skip on platforms without Dart UDS
-  // support (Windows < Dart 3.11).
-  var udsSkip = hasUnixSocketSupport()
-      ? null
-      : 'Unix domain sockets not available on this Dart/platform';
-
-  group('Given a fresh project layout', skip: udsSkip, () {
+  group('Given a fresh project layout', () {
     test(
-      'when EmbeddedPostgres.start runs with UnixTransport defaults '
+      'when EmbeddedPostgres.start runs with transport defaults '
       'then endpoint connects, SELECT 1 returns 1, and stop() releases the pidfile.',
       () async {
         var pgDataDir = Directory(p.join(tmpRoot.path, '.serverpod', 'pgdata'));
@@ -47,6 +41,7 @@ void main() {
 
         expect(pg_.isRunning, isTrue);
         expect(pg_.pid, isNotNull);
+        expect(pg_.endpoint.isUnixSocket, hasUnixSocketSupport());
 
         var conn = await pg.Connection.open(
           pg_.endpoint,
@@ -68,8 +63,98 @@ void main() {
           isFalse,
           reason: 'pidfile should be removed after stop()',
         );
+
+        expect(
+          File(
+            p.join(tmpRoot.path, '.serverpod', 'postgres.password'),
+          ).existsSync(),
+          isTrue,
+          reason: 'fresh clusters persist a password for TCP connections',
+        );
       },
       timeout: const Timeout(Duration(seconds: 120)),
+    );
+
+    test(
+      'when a default cluster is restarted with TcpTransport '
+      'then TCP auth succeeds using its generated password.',
+      () async {
+        var pgDataDir = Directory(p.join(tmpRoot.path, '.serverpod', 'pgdata'));
+
+        var unix = await EmbeddedPostgres.start(
+          EmbeddedPostgresOptions(
+            dataDir: pgDataDir,
+            databaseName: 'projectname',
+            detach: true,
+          ),
+        );
+        await unix.stop();
+
+        var tcp = await EmbeddedPostgres.start(
+          EmbeddedPostgresOptions(
+            dataDir: pgDataDir,
+            databaseName: 'projectname',
+            transport: const TcpTransport(),
+            detach: true,
+          ),
+        );
+        var conn = await pg.Connection.open(
+          tcp.endpoint,
+          settings: const pg.ConnectionSettings(sslMode: pg.SslMode.disable),
+        );
+        var rs = await conn.execute('SELECT 1');
+        expect(rs.first.first, 1);
+        await conn.close();
+        await tcp.stop();
+      },
+      timeout: const Timeout(Duration(seconds: 180)),
+    );
+
+    test(
+      'when a cluster created with a configured password is restarted with TcpTransport '
+      'then TCP auth succeeds using the configured password.',
+      () async {
+        var pgDataDir = Directory(p.join(tmpRoot.path, '.serverpod', 'pgdata'));
+        var pwFile = File(
+          p.join(tmpRoot.path, '.serverpod', 'postgres.password'),
+        );
+        const configuredPassword = 'dev-db-password';
+
+        var unix = await EmbeddedPostgres.start(
+          EmbeddedPostgresOptions(
+            dataDir: pgDataDir,
+            databaseName: 'projectname',
+            transport: const UnixTransport(
+              initialPassword: configuredPassword,
+            ),
+            detach: true,
+          ),
+        );
+        expect(pwFile.existsSync(), isTrue);
+        expect(pwFile.readAsStringSync(), configuredPassword);
+        await unix.stop();
+
+        var tcp = await EmbeddedPostgres.start(
+          EmbeddedPostgresOptions(
+            dataDir: pgDataDir,
+            databaseName: 'projectname',
+            transport: const TcpTransport(password: configuredPassword),
+            detach: true,
+          ),
+        );
+        expect(tcp.endpoint.password, configuredPassword);
+
+        var conn = await pg.Connection.open(
+          tcp.endpoint,
+          settings: const pg.ConnectionSettings(sslMode: pg.SslMode.disable),
+        );
+        var rs = await conn.execute('SELECT 1');
+        expect(rs.first.first, 1);
+        await conn.close();
+
+        await tcp.stop();
+      },
+      timeout: const Timeout(Duration(seconds: 180)),
     );
 
     test(

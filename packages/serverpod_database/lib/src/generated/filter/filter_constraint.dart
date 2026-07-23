@@ -13,7 +13,8 @@
 import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 import 'package:serverpod_database/serverpod_database.dart' as _i2;
 
-abstract class FilterConstraint implements _i1.SerializableModel {
+abstract class FilterConstraint
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   FilterConstraint._({
     required this.type,
     required this.column,
@@ -58,6 +59,17 @@ abstract class FilterConstraint implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod.FilterConstraint',
+      'type': type.toJson(),
+      'column': column,
+      'value': value,
+      if (value2 != null) 'value2': value2,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod.FilterConstraint',
       'type': type.toJson(),

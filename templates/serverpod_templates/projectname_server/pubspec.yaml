@@ -9,18 +9,16 @@ environment:
 #resolution: workspace #--UNCOMMENT_LINE--#
 
 dependencies:
-  serverpod: 3.5.0-beta.10
+  serverpod: 4.0.0-beta.0
 
 dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
-  serverpod_test: 3.5.0-beta.10
+  serverpod_test: 4.0.0-beta.0
   test: ^1.25.5
 
+# {{#flutterApp}}
 serverpod:
   scripts:
-    # Starts the server and applies migrations
-    start: dart bin/main.dart --apply-migrations
-
     # Build the Flutter web app and copy it to the server's web directory.
     # Windows uses xcopy since flutter's --output flag doesn't work there.
     # See: https://github.com/flutter/flutter/issues/157886
@@ -28,12 +26,22 @@ serverpod:
       windows: >-
         (if exist web\app rmdir /S /Q web\app)
         & cd /D ..\projectname_flutter
+        # {{#website}}
         && flutter build web --base-href /app/
+        # {{/website}}
+        # {{^website}}
+        && flutter build web --base-href /
+        # {{/website}}
         && xcopy /E /I /Y build\web ..\projectname_server\web\app
       posix: |
         cd ../projectname_flutter
+        # {{#website}}
         flutter build web --base-href /app/ --output ../projectname_server/web/app
-
+        # {{/website}}
+        # {{^website}}
+        flutter build web --base-href / --output ../projectname_server/web/app
+        # {{/website}}
+  
   # Companion Flutter apps that `serverpod start` can launch (Ctrl+R), keyed
   # by a display alias. The default device is the web server, opening the
   # machine's default browser when ready. All non-reserved properties are
@@ -41,6 +49,7 @@ serverpod:
   #
   # Admin:
   #   path: ../apps/admin_flutter
+  #   displayName: "Admin app"
   #   auto_launch: true
   #   device: chrome
   #   target: lib/main.dart
@@ -54,5 +63,7 @@ serverpod:
   flutter_apps:
     projectname:
       path: ../projectname_flutter
+      displayName: "flutter_app_display_name"
       auto_launch: true
       target: lib/driver.dart
+# {{/flutterApp}}

@@ -4,7 +4,7 @@ import 'package:serverpod_cli/src/create/ide.dart';
 /// Context containing values for rendering templates.
 class TemplateContext {
   TemplateContext({
-    this.template = ServerpodTemplateType.server,
+    this.template = ServerpodTemplateType.fullstack,
     this.auth = false,
     this.redis = false,
     this.postgres = false,
@@ -35,6 +35,11 @@ class TemplateContext {
   /// True if web app is enabled.
   final bool webapp;
 
+  /// True if companion Flutter app is enabled.
+  bool get flutterApp =>
+      template == ServerpodTemplateType.fullstack ||
+      template == ServerpodTemplateType.mini;
+
   /// The configured IDEs.
   final List<TemplateIde> ides;
 
@@ -58,6 +63,7 @@ class TemplateContext {
       'webapp': webapp,
       'webserver': webserver,
       'website': website,
+      'flutterApp': flutterApp,
     };
   }
 }
