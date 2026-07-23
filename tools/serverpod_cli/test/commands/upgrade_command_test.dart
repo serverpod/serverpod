@@ -20,13 +20,16 @@ void main() {
       expect(command.aliases, contains('update'));
     });
 
-    test('when parsing configuration with no args, then there are no errors', () {
-      final argResults = command.argParser.parse([]);
-      final config = command.resolveConfiguration(argResults);
+    test(
+      'when parsing configuration with no args, then there are no errors',
+      () {
+        final argResults = command.argParser.parse([]);
+        final config = command.resolveConfiguration(argResults);
 
-      expect(config.errors, isEmpty);
-      expect(config.value(UpgradeOption.check), isFalse);
-    });
+        expect(config.errors, isEmpty);
+        expect(config.value(UpgradeOption.check), isFalse);
+      },
+    );
 
     test('when parsing configuration with --check, then check is true', () {
       final argResults = command.argParser.parse(['--check']);
