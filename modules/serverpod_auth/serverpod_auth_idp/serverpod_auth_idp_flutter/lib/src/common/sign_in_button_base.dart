@@ -7,7 +7,7 @@ import 'sign_in_button_style.dart';
 /// The same table applies to every provider, so buttons stay the same height
 /// and their logos and labels stay in proportion regardless of brand.
 @immutable
-class SignInButtonMetrics {
+class SignInButtonDimensions {
   /// The button height, in pixels.
   final double height;
 
@@ -17,26 +17,26 @@ class SignInButtonMetrics {
   /// The label font size, in pixels.
   final double labelFontSize;
 
-  /// Creates a set of resolved button metrics.
-  const SignInButtonMetrics({
+  /// Creates a set of resolved button dimensions.
+  const SignInButtonDimensions({
     required this.height,
     required this.logoSize,
     required this.labelFontSize,
   });
 
-  /// The metrics for [size], shared by every provider.
-  factory SignInButtonMetrics.of(SignInButtonSize size) => switch (size) {
-    SignInButtonSize.large => const SignInButtonMetrics(
+  /// The dimensions for [size], shared by every provider.
+  factory SignInButtonDimensions.of(SignInButtonSize size) => switch (size) {
+    SignInButtonSize.large => const SignInButtonDimensions(
       height: 40,
       logoSize: 20,
       labelFontSize: 16,
     ),
-    SignInButtonSize.medium => const SignInButtonMetrics(
+    SignInButtonSize.medium => const SignInButtonDimensions(
       height: 32,
       logoSize: 16,
       labelFontSize: 14,
     ),
-    SignInButtonSize.small => const SignInButtonMetrics(
+    SignInButtonSize.small => const SignInButtonDimensions(
       height: 20,
       logoSize: 12,
       labelFontSize: 12,
@@ -170,11 +170,11 @@ class SignInButtonBase extends StatelessWidget {
     final minimumWidth = shared?.minimumWidth ?? this.minimumWidth;
     final textStyle = shared?.textStyle ?? this.textStyle;
 
-    final metrics = SignInButtonMetrics.of(size);
+    final dimensions = SignInButtonDimensions.of(size);
     final borderRadius = switch (shape) {
       SignInButtonShape.rectangular => BorderRadius.circular(4),
       SignInButtonShape.rounded => BorderRadius.circular(8),
-      SignInButtonShape.pill => BorderRadius.circular(metrics.height / 2),
+      SignInButtonShape.pill => BorderRadius.circular(dimensions.height / 2),
     };
 
     // Inside a SignInWidget the shared style applies the common, theme-aware
@@ -197,8 +197,8 @@ class SignInButtonBase extends StatelessWidget {
       constraints: BoxConstraints(
         minWidth: minimumWidth,
         maxWidth: 400,
-        minHeight: metrics.height,
-        maxHeight: metrics.height,
+        minHeight: dimensions.height,
+        maxHeight: dimensions.height,
       ),
       child: ElevatedButton(
         onPressed: isLoading || isDisabled ? null : onPressed,
@@ -223,7 +223,7 @@ class SignInButtonBase extends StatelessWidget {
           disabledForegroundColor: colors.foreground.withValues(alpha: 0.6),
         ),
         child: _buildContent(
-          metrics: metrics,
+          dimensions: dimensions,
           text: text,
           logoAlignment: logoAlignment,
           textStyle: textStyle,
@@ -234,7 +234,7 @@ class SignInButtonBase extends StatelessWidget {
   }
 
   Widget _buildContent({
-    required SignInButtonMetrics metrics,
+    required SignInButtonDimensions dimensions,
     required SignInButtonTextVariant text,
     required SignInButtonLogoAlignment logoAlignment,
     required TextStyle? textStyle,
@@ -252,7 +252,7 @@ class SignInButtonBase extends StatelessWidget {
     }
 
     final logo = config.logoBuilder?.call(
-      logoSize: metrics.logoSize,
+      logoSize: dimensions.logoSize,
       foregroundColor: foreground,
       isDisabled: isDisabled,
     );
@@ -260,7 +260,7 @@ class SignInButtonBase extends StatelessWidget {
     // No explicit color: the label inherits the button's foreground, so it dims
     // to the disabled foreground (60%) when the button is disabled, matching the
     // faded background and greyed logo.
-    final baseTextStyle = TextStyle(fontSize: metrics.labelFontSize);
+    final baseTextStyle = TextStyle(fontSize: dimensions.labelFontSize);
     final textWidget = Text(
       config.localizedLabel ?? config.label(text),
       style: textStyle != null ? baseTextStyle.merge(textStyle) : baseTextStyle,
@@ -295,7 +295,7 @@ class SignInButtonBase extends StatelessWidget {
         const SizedBox(width: signInLeftLogoIndent),
         logo,
         Expanded(child: textWidget),
-        SizedBox(width: signInLeftLogoIndent + metrics.logoSize),
+        SizedBox(width: signInLeftLogoIndent + dimensions.logoSize),
       ],
     );
   }

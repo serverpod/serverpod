@@ -41,8 +41,7 @@ void main() {
   );
 
   testWidgets(
-    'Given an AnonymousSignInButton inside a shared SignInButtonStyle scope '
-    'with a background color, '
+    'Given an AnonymousSignInButton inside a shared SignInButtonStyle scope with a background color, '
     'when building the button, '
     'then it stays flat with a transparent background and no border.',
     (tester) async {
