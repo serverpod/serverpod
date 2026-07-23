@@ -44,7 +44,7 @@ jobs:
           echo "insights_devtools_version=$(cat INSIGHTS_DEVTOOLS_VERSION)" >> $GITHUB_OUTPUT
 
       - name: Set up Flutter
-        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        uses: ./.github/actions/use-flutter
         with:
           flutter-version: ${{ steps.versions.outputs.flutter_version_clean }}
           channel: 'stable'
@@ -53,9 +53,10 @@ jobs:
         uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
 
       - name: Get dependencies for CLI
-        run: |
-          cd tools/serverpod_cli
-          dart pub get
+        uses: ./.github/actions/retry
+        with:
+          command: dart pub get
+          working_directory: tools/serverpod_cli
 
       - name: Update pubspecs
         run: |

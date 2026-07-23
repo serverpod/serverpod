@@ -1,0 +1,70 @@
+name: Use Flutter
+description: Sets up Flutter with retries for transient infrastructure failures.
+
+inputs:
+  flutter-version:
+    description: The Flutter version to install.
+    required: true
+  channel:
+    description: The Flutter release channel.
+    required: false
+    default: stable
+  cache:
+    description: Whether to cache the Flutter SDK and pub dependencies.
+    required: false
+    default: "false"
+
+runs:
+  using: composite
+  steps:
+    # GitHub Actions expands `uses` steps statically, so the command retry
+    # action cannot wrap and rerun this setup action dynamically.
+    - name: Set up Flutter (attempt 1/3)
+      id: flutter_1
+      continue-on-error: true
+      uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      with:
+        flutter-version: ${{ inputs.flutter-version }}
+        channel: ${{ inputs.channel }}
+        cache: ${{ inputs.cache }}
+
+    - name: Wait before retrying Flutter setup
+      if: steps.flutter_1.outcome == 'failure'
+      shell: bash
+      run: |
+        echo "Flutter setup failed; retrying the complete action (attempt 2/3)."
+        sleep 1
+
+    - name: Set up Flutter (attempt 2/3)
+      id: flutter_2
+      if: steps.flutter_1.outcome == 'failure'
+      continue-on-error: true
+      uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      with:
+        flutter-version: ${{ inputs.flutter-version }}
+        channel: ${{ inputs.channel }}
+        cache: ${{ inputs.cache }}
+
+    - name: Wait before retrying Flutter setup
+      if: steps.flutter_2.outcome == 'failure'
+      shell: bash
+      run: |
+        echo "Flutter setup failed; retrying the complete action (attempt 3/3)."
+        sleep 2
+
+    - name: Set up Flutter (attempt 3/3)
+      id: flutter_3
+      if: steps.flutter_2.outcome == 'failure'
+      continue-on-error: true
+      uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      with:
+        flutter-version: ${{ inputs.flutter-version }}
+        channel: ${{ inputs.channel }}
+        cache: ${{ inputs.cache }}
+
+    - name: Fail after three Flutter setup attempts
+      if: steps.flutter_3.outcome == 'failure'
+      shell: bash
+      run: |
+        echo "::error::Flutter setup failed after three attempts."
+        exit 1

@@ -187,6 +187,7 @@ names start with `run_tests`. Common test scripts include:
 | `run_tests_integration`              | Run all non concurrent integration tests in the test project.     |
 | `run_tests_integration_concurrently` | Run all concurrent integration tests in the test project.         |
 | `run_tests_integration_embedded`     | Run a single server package's integration tests against embedded PostgreSQL (also `run_tests_{auth,module,nonvector}_integration_embedded`). |
+| `run_tests_database_integration_embedded` | Run the focused pgvector/PostGIS extension contract against embedded PostgreSQL. |
 | `run_tests_integration_embedded_pg_build` | Build the host PostgreSQL bundle and run the embedded PostgreSQL and host integration suites against it. |
 | `run_tests_sqlite_integration`       | Run the SQLite test project's integration tests.                  |
 | `run_tests_flutter_integration`      | Run all Flutter integration tests in the flutter test project.    |
