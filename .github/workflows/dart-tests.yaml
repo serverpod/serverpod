@@ -40,7 +40,7 @@ jobs:
         flutter-version: ["3.38.4"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      - uses: ./.github/actions/use-flutter
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: false
@@ -76,7 +76,7 @@ jobs:
             lint: lint_loose
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      - uses: ./.github/actions/use-flutter
         with:
           flutter-version: ${{ matrix.check.flutter-version }}
           cache: false
@@ -260,7 +260,7 @@ jobs:
         flutter-version: ["3.38.4", "3.44.4"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      - uses: ./.github/actions/use-flutter
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: false
@@ -722,7 +722,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      - uses: ./.github/actions/use-flutter
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: false
@@ -745,7 +745,7 @@ jobs:
         path: ["packages/serverpod_flutter"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      - uses: ./.github/actions/use-flutter
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: false
@@ -850,7 +850,7 @@ jobs:
             client: tests/serverpod_auth_test/serverpod_auth_test_flutter
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      - uses: ./.github/actions/use-flutter
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: false
@@ -986,7 +986,7 @@ jobs:
         shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      - uses: ./.github/actions/use-flutter
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: false
@@ -1091,7 +1091,7 @@ jobs:
         path: ["tests/serverpod_cli_e2e_test"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      - uses: ./.github/actions/use-flutter
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: false
@@ -1131,7 +1131,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      - uses: ./.github/actions/use-flutter
         with:
           flutter-version: "3.38.4"
           cache: false
@@ -1255,7 +1255,7 @@ jobs:
       SERVERPOD_TEST_SCLOUD_EMAIL_BASE_URL: ${{ secrets.SERVERPOD_TEST_SCLOUD_EMAIL_BASE_URL }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      - uses: ./.github/actions/use-flutter
         with:
           flutter-version: "3.38.4"
           cache: false
@@ -1276,7 +1276,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      - uses: ./.github/actions/use-flutter
         with:
           flutter-version: "3.38.4"
           cache: false
