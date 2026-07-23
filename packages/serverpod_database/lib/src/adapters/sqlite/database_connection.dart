@@ -56,15 +56,13 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     int? offset,
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     Include? include,
     Transaction? transaction,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'find');
-    var orderByCols = _resolveOrderBy(orderByList, orderBy, orderDescending);
+    var orderByCols = _resolveOrderBy(orderByList, orderBy);
 
     await _warnIfSqliteIgnoresLockBehavior(
       session,
@@ -98,8 +96,6 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     int? offset,
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     Transaction? transaction,
     Include? include,
     LockMode? lockMode,
@@ -112,8 +108,6 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       offset: offset,
       orderBy: orderBy,
       orderByList: orderByList,
-      // ignore: deprecated_member_use_from_same_package
-      orderDescending: orderDescending,
       limit: 1,
       transaction: transaction,
       include: include,
@@ -554,8 +548,6 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     int? offset,
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -573,7 +565,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
 
     String selectQuery;
     if (requiresFilteredSubquery) {
-      var orders = _resolveOrderBy(orderByList, orderBy, orderDescending);
+      var orders = _resolveOrderBy(orderByList, orderBy);
       // SQLite requires LIMIT if using OFFSET. In this case, use a large limit.
       var effectiveLimit = limit ?? (offset != null ? 0x7fffffff : null);
       selectQuery = SelectQueryBuilder(table: table)
@@ -638,8 +630,6 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     List<T> rows, {
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -654,8 +644,6 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       table.id.inSet(rows.map((row) => row.id!).castToIdType().toSet()),
       orderBy: orderBy,
       orderByList: orderByList,
-      // ignore: deprecated_member_use_from_same_package
-      orderDescending: orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -684,17 +672,13 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     Expression where, {
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     Transaction? transaction,
     bool noReturn = false,
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'deleteWhere');
     // Ordering applies to the returned deleted rows, so it is irrelevant when
     // nothing is returned.
-    var orderByCols = noReturn
-        ? null
-        : _resolveOrderBy(orderByList, orderBy, orderDescending);
+    var orderByCols = noReturn ? null : _resolveOrderBy(orderByList, orderBy);
 
     // SQLite does not support DELETE ... USING. Use subquery to get ids first.
     var selectIdsQuery = SelectQueryBuilder(table: table)
@@ -1293,8 +1277,6 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
         var orderBy = _resolveOrderBy(
           nestedInclude.orderByList,
           nestedInclude.orderBy,
-          // ignore: deprecated_member_use_from_same_package
-          nestedInclude.orderDescending,
         );
 
         var query = SelectQueryBuilder(table: relationTable)
@@ -1378,12 +1360,10 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
   List<Order>? _resolveOrderBy(
     List<Column>? orderByList,
     Column<dynamic>? orderBy,
-    bool orderDescending,
   ) {
     assert(orderByList == null || orderBy == null);
     if (orderBy != null) {
-      if (orderBy is Order) return [orderBy];
-      return [orderDescending ? orderBy.desc() : orderBy.asc()];
+      return [orderBy is Order ? orderBy : orderBy.asc()];
     }
     if (orderByList == null || orderByList.isEmpty) return null;
     return orderByList.asOrderBy();

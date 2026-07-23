@@ -261,8 +261,6 @@ abstract class SessionLogEntry
     int? limit,
     int? offset,
     _i1.OrderByBuilder<SessionLogEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<SessionLogEntryTable>? orderByList,
     SessionLogEntryInclude? include,
   }) {
@@ -271,8 +269,6 @@ abstract class SessionLogEntry
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(SessionLogEntry.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(SessionLogEntry.t),
       include: include,
     );
@@ -749,8 +745,6 @@ class SessionLogEntryIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -799,8 +793,6 @@ class SessionLogEntryRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<SessionLogEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<SessionLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
     SessionLogEntryInclude? include,
@@ -811,8 +803,6 @@ class SessionLogEntryRepository {
       where: where?.call(SessionLogEntry.t),
       orderBy: orderBy?.call(SessionLogEntry.t),
       orderByList: orderByList?.call(SessionLogEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -844,8 +834,6 @@ class SessionLogEntryRepository {
     _i1.WhereExpressionBuilder<SessionLogEntryTable>? where,
     int? offset,
     _i1.OrderByBuilder<SessionLogEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<SessionLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
     SessionLogEntryInclude? include,
@@ -856,8 +844,6 @@ class SessionLogEntryRepository {
       where: where?.call(SessionLogEntry.t),
       orderBy: orderBy?.call(SessionLogEntry.t),
       orderByList: orderByList?.call(SessionLogEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -1067,8 +1053,6 @@ class SessionLogEntryRepository {
     int? offset,
     _i1.OrderByBuilder<SessionLogEntryTable>? orderBy,
     _i1.OrderByListBuilder<SessionLogEntryTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -1079,8 +1063,6 @@ class SessionLogEntryRepository {
       offset: offset,
       orderBy: orderBy?.call(SessionLogEntry.t),
       orderByList: orderByList?.call(SessionLogEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -1101,8 +1083,6 @@ class SessionLogEntryRepository {
     _i1.DatabaseSession session,
     List<SessionLogEntry> rows, {
     _i1.OrderByBuilder<SessionLogEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<SessionLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -1111,8 +1091,6 @@ class SessionLogEntryRepository {
       rows,
       orderBy: orderBy?.call(SessionLogEntry.t),
       orderByList: orderByList?.call(SessionLogEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -1142,8 +1120,6 @@ class SessionLogEntryRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<SessionLogEntryTable> where,
     _i1.OrderByBuilder<SessionLogEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<SessionLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -1152,8 +1128,6 @@ class SessionLogEntryRepository {
       where: where(SessionLogEntry.t),
       orderBy: orderBy?.call(SessionLogEntry.t),
       orderByList: orderByList?.call(SessionLogEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

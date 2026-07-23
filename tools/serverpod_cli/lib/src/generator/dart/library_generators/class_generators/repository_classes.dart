@@ -339,14 +339,6 @@ class BuildRepositoryClass {
           ),
           Parameter(
             (p) => p
-              ..type = refer('bool')
-              ..name = 'orderDescending'
-              ..annotations.add(deprecatedOrderDescendingAnnotation())
-              ..defaultTo = const Code('false')
-              ..named = true,
-          ),
-          Parameter(
-            (p) => p
               ..type = typeOrderByListBuilder(className, serverCode)
               ..name = 'orderByList'
               ..named = true,
@@ -414,9 +406,6 @@ class BuildRepositoryClass {
                     .call(
                       [refer(className).property('t')],
                     ),
-                'orderDescending': const CodeExpression(
-                  Code('// ignore: deprecated_member_use\norderDescending'),
-                ),
                 'limit': refer('limit'),
                 'offset': refer('offset'),
                 'transaction': refer('transaction'),
@@ -503,14 +492,6 @@ class BuildRepositoryClass {
           ),
           Parameter(
             (p) => p
-              ..type = refer('bool')
-              ..name = 'orderDescending'
-              ..annotations.add(deprecatedOrderDescendingAnnotation())
-              ..defaultTo = const Code('false')
-              ..named = true,
-          ),
-          Parameter(
-            (p) => p
               ..type = typeOrderByListBuilder(className, serverCode)
               ..name = 'orderByList'
               ..named = true,
@@ -578,9 +559,6 @@ class BuildRepositoryClass {
                     .call(
                       [refer(className).property('t')],
                     ),
-                'orderDescending': const CodeExpression(
-                  Code('// ignore: deprecated_member_use\norderDescending'),
-                ),
                 'offset': refer('offset'),
                 'transaction': refer('transaction'),
                 if (objectRelationFields.isNotEmpty)
@@ -1358,14 +1336,6 @@ class BuildRepositoryClass {
           ),
           Parameter(
             (p) => p
-              ..name = 'orderDescending'
-              ..annotations.add(deprecatedOrderDescendingAnnotation())
-              ..named = true
-              ..defaultTo = const Code('false')
-              ..type = refer('bool'),
-          ),
-          Parameter(
-            (p) => p
               ..type = TypeReference(
                 (b) => b
                   ..isNullable = true
@@ -1404,9 +1374,6 @@ class BuildRepositoryClass {
                 'orderByList': refer('orderByList')
                     .nullSafeProperty('call')
                     .call([refer(className).property('t')]),
-                'orderDescending': const CodeExpression(
-                  Code('// ignore: deprecated_member_use\norderDescending'),
-                ),
                 'transaction': refer('transaction'),
                 'noReturn': refer('noReturn'),
               },
@@ -1469,14 +1436,6 @@ class BuildRepositoryClass {
           ),
           Parameter(
             (p) => p
-              ..type = refer('bool')
-              ..name = 'orderDescending'
-              ..annotations.add(deprecatedOrderDescendingAnnotation())
-              ..defaultTo = const Code('false')
-              ..named = true,
-          ),
-          Parameter(
-            (p) => p
               ..type = typeOrderByListBuilder(className, serverCode)
               ..name = 'orderByList'
               ..named = true,
@@ -1515,9 +1474,6 @@ class BuildRepositoryClass {
                     .call(
                       [refer(className).property('t')],
                     ),
-                'orderDescending': const CodeExpression(
-                  Code('// ignore: deprecated_member_use\norderDescending'),
-                ),
                 'transaction': refer('transaction'),
                 'noReturn': refer('noReturn'),
               },
@@ -1638,14 +1594,6 @@ class BuildRepositoryClass {
           ),
           Parameter(
             (p) => p
-              ..type = refer('bool')
-              ..name = 'orderDescending'
-              ..annotations.add(deprecatedOrderDescendingAnnotation())
-              ..defaultTo = const Code('false')
-              ..named = true,
-          ),
-          Parameter(
-            (p) => p
               ..type = typeOrderByListBuilder(className, serverCode)
               ..name = 'orderByList'
               ..named = true,
@@ -1685,9 +1633,6 @@ class BuildRepositoryClass {
                     .call(
                       [refer(className).property('t')],
                     ),
-                'orderDescending': const CodeExpression(
-                  Code('// ignore: deprecated_member_use\norderDescending'),
-                ),
                 'transaction': refer('transaction'),
                 'noReturn': refer('noReturn'),
               },

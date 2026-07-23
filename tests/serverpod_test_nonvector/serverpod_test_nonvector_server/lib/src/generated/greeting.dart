@@ -99,8 +99,6 @@ abstract class Greeting
     int? limit,
     int? offset,
     _i1.OrderByBuilder<GreetingTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<GreetingTable>? orderByList,
     GreetingInclude? include,
   }) {
@@ -109,8 +107,6 @@ abstract class Greeting
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Greeting.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(Greeting.t),
       include: include,
     );
@@ -229,8 +225,6 @@ class GreetingIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -275,8 +269,6 @@ class GreetingRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<GreetingTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<GreetingTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -286,8 +278,6 @@ class GreetingRepository {
       where: where?.call(Greeting.t),
       orderBy: orderBy?.call(Greeting.t),
       orderByList: orderByList?.call(Greeting.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -318,8 +308,6 @@ class GreetingRepository {
     _i1.WhereExpressionBuilder<GreetingTable>? where,
     int? offset,
     _i1.OrderByBuilder<GreetingTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<GreetingTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -329,8 +317,6 @@ class GreetingRepository {
       where: where?.call(Greeting.t),
       orderBy: orderBy?.call(Greeting.t),
       orderByList: orderByList?.call(Greeting.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -535,8 +521,6 @@ class GreetingRepository {
     int? offset,
     _i1.OrderByBuilder<GreetingTable>? orderBy,
     _i1.OrderByListBuilder<GreetingTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -547,8 +531,6 @@ class GreetingRepository {
       offset: offset,
       orderBy: orderBy?.call(Greeting.t),
       orderByList: orderByList?.call(Greeting.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -569,8 +551,6 @@ class GreetingRepository {
     _i1.DatabaseSession session,
     List<Greeting> rows, {
     _i1.OrderByBuilder<GreetingTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<GreetingTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -579,8 +559,6 @@ class GreetingRepository {
       rows,
       orderBy: orderBy?.call(Greeting.t),
       orderByList: orderByList?.call(Greeting.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -610,8 +588,6 @@ class GreetingRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<GreetingTable> where,
     _i1.OrderByBuilder<GreetingTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<GreetingTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -620,8 +596,6 @@ class GreetingRepository {
       where: where(Greeting.t),
       orderBy: orderBy?.call(Greeting.t),
       orderByList: orderByList?.call(Greeting.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

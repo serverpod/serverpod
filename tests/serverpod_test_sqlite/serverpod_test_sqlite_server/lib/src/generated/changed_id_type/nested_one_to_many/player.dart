@@ -101,8 +101,6 @@ abstract class PlayerUuid
     int? limit,
     int? offset,
     _i1.OrderByBuilder<PlayerUuidTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<PlayerUuidTable>? orderByList,
     PlayerUuidInclude? include,
   }) {
@@ -111,8 +109,6 @@ abstract class PlayerUuid
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(PlayerUuid.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(PlayerUuid.t),
       include: include,
     );
@@ -242,8 +238,6 @@ class PlayerUuidIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -292,8 +286,6 @@ class PlayerUuidRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<PlayerUuidTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<PlayerUuidTable>? orderByList,
     _i1.Transaction? transaction,
     PlayerUuidInclude? include,
@@ -304,8 +296,6 @@ class PlayerUuidRepository {
       where: where?.call(PlayerUuid.t),
       orderBy: orderBy?.call(PlayerUuid.t),
       orderByList: orderByList?.call(PlayerUuid.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -337,8 +327,6 @@ class PlayerUuidRepository {
     _i1.WhereExpressionBuilder<PlayerUuidTable>? where,
     int? offset,
     _i1.OrderByBuilder<PlayerUuidTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<PlayerUuidTable>? orderByList,
     _i1.Transaction? transaction,
     PlayerUuidInclude? include,
@@ -349,8 +337,6 @@ class PlayerUuidRepository {
       where: where?.call(PlayerUuid.t),
       orderBy: orderBy?.call(PlayerUuid.t),
       orderByList: orderByList?.call(PlayerUuid.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -558,8 +544,6 @@ class PlayerUuidRepository {
     int? offset,
     _i1.OrderByBuilder<PlayerUuidTable>? orderBy,
     _i1.OrderByListBuilder<PlayerUuidTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -570,8 +554,6 @@ class PlayerUuidRepository {
       offset: offset,
       orderBy: orderBy?.call(PlayerUuid.t),
       orderByList: orderByList?.call(PlayerUuid.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -592,8 +574,6 @@ class PlayerUuidRepository {
     _i1.DatabaseSession session,
     List<PlayerUuid> rows, {
     _i1.OrderByBuilder<PlayerUuidTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<PlayerUuidTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -602,8 +582,6 @@ class PlayerUuidRepository {
       rows,
       orderBy: orderBy?.call(PlayerUuid.t),
       orderByList: orderByList?.call(PlayerUuid.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -633,8 +611,6 @@ class PlayerUuidRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<PlayerUuidTable> where,
     _i1.OrderByBuilder<PlayerUuidTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<PlayerUuidTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -643,8 +619,6 @@ class PlayerUuidRepository {
       where: where(PlayerUuid.t),
       orderBy: orderBy?.call(PlayerUuid.t),
       orderByList: orderByList?.call(PlayerUuid.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

@@ -106,8 +106,6 @@ abstract class ObjectWithGeographyGeometryCollection
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectWithGeographyGeometryCollectionTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithGeographyGeometryCollectionTable>?
     orderByList,
     ObjectWithGeographyGeometryCollectionInclude? include,
@@ -117,8 +115,6 @@ abstract class ObjectWithGeographyGeometryCollection
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithGeographyGeometryCollection.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(ObjectWithGeographyGeometryCollection.t),
       include: include,
     );
@@ -256,8 +252,6 @@ class ObjectWithGeographyGeometryCollectionIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -303,8 +297,6 @@ class ObjectWithGeographyGeometryCollectionRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectWithGeographyGeometryCollectionTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithGeographyGeometryCollectionTable>?
     orderByList,
     _i1.Transaction? transaction,
@@ -315,8 +307,6 @@ class ObjectWithGeographyGeometryCollectionRepository {
       where: where?.call(ObjectWithGeographyGeometryCollection.t),
       orderBy: orderBy?.call(ObjectWithGeographyGeometryCollection.t),
       orderByList: orderByList?.call(ObjectWithGeographyGeometryCollection.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -348,8 +338,6 @@ class ObjectWithGeographyGeometryCollectionRepository {
     where,
     int? offset,
     _i1.OrderByBuilder<ObjectWithGeographyGeometryCollectionTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithGeographyGeometryCollectionTable>?
     orderByList,
     _i1.Transaction? transaction,
@@ -360,8 +348,6 @@ class ObjectWithGeographyGeometryCollectionRepository {
       where: where?.call(ObjectWithGeographyGeometryCollection.t),
       orderBy: orderBy?.call(ObjectWithGeographyGeometryCollection.t),
       orderByList: orderByList?.call(ObjectWithGeographyGeometryCollection.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -588,8 +574,6 @@ class ObjectWithGeographyGeometryCollectionRepository {
     _i1.OrderByBuilder<ObjectWithGeographyGeometryCollectionTable>? orderBy,
     _i1.OrderByListBuilder<ObjectWithGeographyGeometryCollectionTable>?
     orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -602,8 +586,6 @@ class ObjectWithGeographyGeometryCollectionRepository {
       offset: offset,
       orderBy: orderBy?.call(ObjectWithGeographyGeometryCollection.t),
       orderByList: orderByList?.call(ObjectWithGeographyGeometryCollection.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -624,8 +606,6 @@ class ObjectWithGeographyGeometryCollectionRepository {
     _i1.DatabaseSession session,
     List<ObjectWithGeographyGeometryCollection> rows, {
     _i1.OrderByBuilder<ObjectWithGeographyGeometryCollectionTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithGeographyGeometryCollectionTable>?
     orderByList,
     _i1.Transaction? transaction,
@@ -635,8 +615,6 @@ class ObjectWithGeographyGeometryCollectionRepository {
       rows,
       orderBy: orderBy?.call(ObjectWithGeographyGeometryCollection.t),
       orderByList: orderByList?.call(ObjectWithGeographyGeometryCollection.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -669,8 +647,6 @@ class ObjectWithGeographyGeometryCollectionRepository {
     >
     where,
     _i1.OrderByBuilder<ObjectWithGeographyGeometryCollectionTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithGeographyGeometryCollectionTable>?
     orderByList,
     _i1.Transaction? transaction,
@@ -680,8 +656,6 @@ class ObjectWithGeographyGeometryCollectionRepository {
       where: where(ObjectWithGeographyGeometryCollection.t),
       orderBy: orderBy?.call(ObjectWithGeographyGeometryCollection.t),
       orderByList: orderByList?.call(ObjectWithGeographyGeometryCollection.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

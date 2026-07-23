@@ -221,8 +221,6 @@ abstract class ObjectWithObject
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectWithObjectTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithObjectTable>? orderByList,
     ObjectWithObjectInclude? include,
   }) {
@@ -231,8 +229,6 @@ abstract class ObjectWithObject
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithObject.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(ObjectWithObject.t),
       include: include,
     );
@@ -537,8 +533,6 @@ class ObjectWithObjectIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -583,8 +577,6 @@ class ObjectWithObjectRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectWithObjectTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithObjectTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -594,8 +586,6 @@ class ObjectWithObjectRepository {
       where: where?.call(ObjectWithObject.t),
       orderBy: orderBy?.call(ObjectWithObject.t),
       orderByList: orderByList?.call(ObjectWithObject.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -626,8 +616,6 @@ class ObjectWithObjectRepository {
     _i1.WhereExpressionBuilder<ObjectWithObjectTable>? where,
     int? offset,
     _i1.OrderByBuilder<ObjectWithObjectTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithObjectTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -637,8 +625,6 @@ class ObjectWithObjectRepository {
       where: where?.call(ObjectWithObject.t),
       orderBy: orderBy?.call(ObjectWithObject.t),
       orderByList: orderByList?.call(ObjectWithObject.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -845,8 +831,6 @@ class ObjectWithObjectRepository {
     int? offset,
     _i1.OrderByBuilder<ObjectWithObjectTable>? orderBy,
     _i1.OrderByListBuilder<ObjectWithObjectTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -857,8 +841,6 @@ class ObjectWithObjectRepository {
       offset: offset,
       orderBy: orderBy?.call(ObjectWithObject.t),
       orderByList: orderByList?.call(ObjectWithObject.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -879,8 +861,6 @@ class ObjectWithObjectRepository {
     _i1.DatabaseSession session,
     List<ObjectWithObject> rows, {
     _i1.OrderByBuilder<ObjectWithObjectTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithObjectTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -889,8 +869,6 @@ class ObjectWithObjectRepository {
       rows,
       orderBy: orderBy?.call(ObjectWithObject.t),
       orderByList: orderByList?.call(ObjectWithObject.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -920,8 +898,6 @@ class ObjectWithObjectRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ObjectWithObjectTable> where,
     _i1.OrderByBuilder<ObjectWithObjectTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithObjectTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -930,8 +906,6 @@ class ObjectWithObjectRepository {
       where: where(ObjectWithObject.t),
       orderBy: orderBy?.call(ObjectWithObject.t),
       orderByList: orderByList?.call(ObjectWithObject.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

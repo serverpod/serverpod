@@ -100,8 +100,6 @@ abstract class ObjectWithJsonbClassLevel
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectWithJsonbClassLevelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithJsonbClassLevelTable>? orderByList,
     ObjectWithJsonbClassLevelInclude? include,
   }) {
@@ -110,8 +108,6 @@ abstract class ObjectWithJsonbClassLevel
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithJsonbClassLevel.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(ObjectWithJsonbClassLevel.t),
       include: include,
     );
@@ -235,8 +231,6 @@ class ObjectWithJsonbClassLevelIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -281,8 +275,6 @@ class ObjectWithJsonbClassLevelRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectWithJsonbClassLevelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithJsonbClassLevelTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -292,8 +284,6 @@ class ObjectWithJsonbClassLevelRepository {
       where: where?.call(ObjectWithJsonbClassLevel.t),
       orderBy: orderBy?.call(ObjectWithJsonbClassLevel.t),
       orderByList: orderByList?.call(ObjectWithJsonbClassLevel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -324,8 +314,6 @@ class ObjectWithJsonbClassLevelRepository {
     _i1.WhereExpressionBuilder<ObjectWithJsonbClassLevelTable>? where,
     int? offset,
     _i1.OrderByBuilder<ObjectWithJsonbClassLevelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithJsonbClassLevelTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -335,8 +323,6 @@ class ObjectWithJsonbClassLevelRepository {
       where: where?.call(ObjectWithJsonbClassLevel.t),
       orderBy: orderBy?.call(ObjectWithJsonbClassLevel.t),
       orderByList: orderByList?.call(ObjectWithJsonbClassLevel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -545,8 +531,6 @@ class ObjectWithJsonbClassLevelRepository {
     int? offset,
     _i1.OrderByBuilder<ObjectWithJsonbClassLevelTable>? orderBy,
     _i1.OrderByListBuilder<ObjectWithJsonbClassLevelTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -557,8 +541,6 @@ class ObjectWithJsonbClassLevelRepository {
       offset: offset,
       orderBy: orderBy?.call(ObjectWithJsonbClassLevel.t),
       orderByList: orderByList?.call(ObjectWithJsonbClassLevel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -579,8 +561,6 @@ class ObjectWithJsonbClassLevelRepository {
     _i1.DatabaseSession session,
     List<ObjectWithJsonbClassLevel> rows, {
     _i1.OrderByBuilder<ObjectWithJsonbClassLevelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithJsonbClassLevelTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -589,8 +569,6 @@ class ObjectWithJsonbClassLevelRepository {
       rows,
       orderBy: orderBy?.call(ObjectWithJsonbClassLevel.t),
       orderByList: orderByList?.call(ObjectWithJsonbClassLevel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -620,8 +598,6 @@ class ObjectWithJsonbClassLevelRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ObjectWithJsonbClassLevelTable> where,
     _i1.OrderByBuilder<ObjectWithJsonbClassLevelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithJsonbClassLevelTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -630,8 +606,6 @@ class ObjectWithJsonbClassLevelRepository {
       where: where(ObjectWithJsonbClassLevel.t),
       orderBy: orderBy?.call(ObjectWithJsonbClassLevel.t),
       orderByList: orderByList?.call(ObjectWithJsonbClassLevel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

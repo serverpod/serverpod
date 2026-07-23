@@ -101,8 +101,6 @@ abstract class ObjectWithGeographyLineString
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectWithGeographyLineStringTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithGeographyLineStringTable>? orderByList,
     ObjectWithGeographyLineStringInclude? include,
   }) {
@@ -111,8 +109,6 @@ abstract class ObjectWithGeographyLineString
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithGeographyLineString.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(ObjectWithGeographyLineString.t),
       include: include,
     );
@@ -235,8 +231,6 @@ class ObjectWithGeographyLineStringIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -281,8 +275,6 @@ class ObjectWithGeographyLineStringRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectWithGeographyLineStringTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithGeographyLineStringTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -292,8 +284,6 @@ class ObjectWithGeographyLineStringRepository {
       where: where?.call(ObjectWithGeographyLineString.t),
       orderBy: orderBy?.call(ObjectWithGeographyLineString.t),
       orderByList: orderByList?.call(ObjectWithGeographyLineString.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -324,8 +314,6 @@ class ObjectWithGeographyLineStringRepository {
     _i1.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>? where,
     int? offset,
     _i1.OrderByBuilder<ObjectWithGeographyLineStringTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithGeographyLineStringTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -335,8 +323,6 @@ class ObjectWithGeographyLineStringRepository {
       where: where?.call(ObjectWithGeographyLineString.t),
       orderBy: orderBy?.call(ObjectWithGeographyLineString.t),
       orderByList: orderByList?.call(ObjectWithGeographyLineString.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -550,8 +536,6 @@ class ObjectWithGeographyLineStringRepository {
     int? offset,
     _i1.OrderByBuilder<ObjectWithGeographyLineStringTable>? orderBy,
     _i1.OrderByListBuilder<ObjectWithGeographyLineStringTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -562,8 +546,6 @@ class ObjectWithGeographyLineStringRepository {
       offset: offset,
       orderBy: orderBy?.call(ObjectWithGeographyLineString.t),
       orderByList: orderByList?.call(ObjectWithGeographyLineString.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -584,8 +566,6 @@ class ObjectWithGeographyLineStringRepository {
     _i1.DatabaseSession session,
     List<ObjectWithGeographyLineString> rows, {
     _i1.OrderByBuilder<ObjectWithGeographyLineStringTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithGeographyLineStringTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -594,8 +574,6 @@ class ObjectWithGeographyLineStringRepository {
       rows,
       orderBy: orderBy?.call(ObjectWithGeographyLineString.t),
       orderByList: orderByList?.call(ObjectWithGeographyLineString.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -626,8 +604,6 @@ class ObjectWithGeographyLineStringRepository {
     required _i1.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>
     where,
     _i1.OrderByBuilder<ObjectWithGeographyLineStringTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithGeographyLineStringTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -636,8 +612,6 @@ class ObjectWithGeographyLineStringRepository {
       where: where(ObjectWithGeographyLineString.t),
       orderBy: orderBy?.call(ObjectWithGeographyLineString.t),
       orderByList: orderByList?.call(ObjectWithGeographyLineString.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

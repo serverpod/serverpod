@@ -111,8 +111,6 @@ abstract class ChallengeTracker
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ChallengeTrackerTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
     ChallengeTrackerInclude? include,
   }) {
@@ -121,8 +119,6 @@ abstract class ChallengeTracker
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ChallengeTracker.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(ChallengeTracker.t),
       include: include,
     );
@@ -280,8 +276,6 @@ class ChallengeTrackerIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -328,8 +322,6 @@ class ChallengeTrackerRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ChallengeTrackerTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
     _i1.Transaction? transaction,
     ChallengeTrackerInclude? include,
@@ -340,8 +332,6 @@ class ChallengeTrackerRepository {
       where: where?.call(ChallengeTracker.t),
       orderBy: orderBy?.call(ChallengeTracker.t),
       orderByList: orderByList?.call(ChallengeTracker.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -373,8 +363,6 @@ class ChallengeTrackerRepository {
     _i1.WhereExpressionBuilder<ChallengeTrackerTable>? where,
     int? offset,
     _i1.OrderByBuilder<ChallengeTrackerTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
     _i1.Transaction? transaction,
     ChallengeTrackerInclude? include,
@@ -385,8 +373,6 @@ class ChallengeTrackerRepository {
       where: where?.call(ChallengeTracker.t),
       orderBy: orderBy?.call(ChallengeTracker.t),
       orderByList: orderByList?.call(ChallengeTracker.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -596,8 +582,6 @@ class ChallengeTrackerRepository {
     int? offset,
     _i1.OrderByBuilder<ChallengeTrackerTable>? orderBy,
     _i1.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -608,8 +592,6 @@ class ChallengeTrackerRepository {
       offset: offset,
       orderBy: orderBy?.call(ChallengeTracker.t),
       orderByList: orderByList?.call(ChallengeTracker.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -630,8 +612,6 @@ class ChallengeTrackerRepository {
     _i1.DatabaseSession session,
     List<ChallengeTracker> rows, {
     _i1.OrderByBuilder<ChallengeTrackerTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -640,8 +620,6 @@ class ChallengeTrackerRepository {
       rows,
       orderBy: orderBy?.call(ChallengeTracker.t),
       orderByList: orderByList?.call(ChallengeTracker.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -671,8 +649,6 @@ class ChallengeTrackerRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ChallengeTrackerTable> where,
     _i1.OrderByBuilder<ChallengeTrackerTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -681,8 +657,6 @@ class ChallengeTrackerRepository {
       where: where(ChallengeTracker.t),
       orderBy: orderBy?.call(ChallengeTracker.t),
       orderByList: orderByList?.call(ChallengeTracker.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

@@ -141,8 +141,6 @@ abstract class Citizen
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CitizenTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CitizenTable>? orderByList,
     CitizenInclude? include,
   }) {
@@ -151,8 +149,6 @@ abstract class Citizen
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Citizen.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(Citizen.t),
       include: include,
     );
@@ -358,8 +354,6 @@ class CitizenIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -408,8 +402,6 @@ class CitizenRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CitizenTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CitizenTable>? orderByList,
     _i1.Transaction? transaction,
     CitizenInclude? include,
@@ -420,8 +412,6 @@ class CitizenRepository {
       where: where?.call(Citizen.t),
       orderBy: orderBy?.call(Citizen.t),
       orderByList: orderByList?.call(Citizen.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -453,8 +443,6 @@ class CitizenRepository {
     _i1.WhereExpressionBuilder<CitizenTable>? where,
     int? offset,
     _i1.OrderByBuilder<CitizenTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CitizenTable>? orderByList,
     _i1.Transaction? transaction,
     CitizenInclude? include,
@@ -465,8 +453,6 @@ class CitizenRepository {
       where: where?.call(Citizen.t),
       orderBy: orderBy?.call(Citizen.t),
       orderByList: orderByList?.call(Citizen.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -674,8 +660,6 @@ class CitizenRepository {
     int? offset,
     _i1.OrderByBuilder<CitizenTable>? orderBy,
     _i1.OrderByListBuilder<CitizenTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -686,8 +670,6 @@ class CitizenRepository {
       offset: offset,
       orderBy: orderBy?.call(Citizen.t),
       orderByList: orderByList?.call(Citizen.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -708,8 +690,6 @@ class CitizenRepository {
     _i1.DatabaseSession session,
     List<Citizen> rows, {
     _i1.OrderByBuilder<CitizenTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CitizenTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -718,8 +698,6 @@ class CitizenRepository {
       rows,
       orderBy: orderBy?.call(Citizen.t),
       orderByList: orderByList?.call(Citizen.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -749,8 +727,6 @@ class CitizenRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CitizenTable> where,
     _i1.OrderByBuilder<CitizenTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CitizenTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -759,8 +735,6 @@ class CitizenRepository {
       where: where(Citizen.t),
       orderBy: orderBy?.call(Citizen.t),
       orderByList: orderByList?.call(Citizen.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

@@ -89,8 +89,6 @@ abstract class ObjectWithUuid
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectWithUuidTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithUuidTable>? orderByList,
     ObjectWithUuidInclude? include,
   }) {
@@ -99,8 +97,6 @@ abstract class ObjectWithUuid
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithUuid.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(ObjectWithUuid.t),
       include: include,
     );
@@ -205,8 +201,6 @@ class ObjectWithUuidIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -251,8 +245,6 @@ class ObjectWithUuidRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectWithUuidTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithUuidTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -262,8 +254,6 @@ class ObjectWithUuidRepository {
       where: where?.call(ObjectWithUuid.t),
       orderBy: orderBy?.call(ObjectWithUuid.t),
       orderByList: orderByList?.call(ObjectWithUuid.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -294,8 +284,6 @@ class ObjectWithUuidRepository {
     _i1.WhereExpressionBuilder<ObjectWithUuidTable>? where,
     int? offset,
     _i1.OrderByBuilder<ObjectWithUuidTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithUuidTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -305,8 +293,6 @@ class ObjectWithUuidRepository {
       where: where?.call(ObjectWithUuid.t),
       orderBy: orderBy?.call(ObjectWithUuid.t),
       orderByList: orderByList?.call(ObjectWithUuid.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -511,8 +497,6 @@ class ObjectWithUuidRepository {
     int? offset,
     _i1.OrderByBuilder<ObjectWithUuidTable>? orderBy,
     _i1.OrderByListBuilder<ObjectWithUuidTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -523,8 +507,6 @@ class ObjectWithUuidRepository {
       offset: offset,
       orderBy: orderBy?.call(ObjectWithUuid.t),
       orderByList: orderByList?.call(ObjectWithUuid.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -545,8 +527,6 @@ class ObjectWithUuidRepository {
     _i1.DatabaseSession session,
     List<ObjectWithUuid> rows, {
     _i1.OrderByBuilder<ObjectWithUuidTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithUuidTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -555,8 +535,6 @@ class ObjectWithUuidRepository {
       rows,
       orderBy: orderBy?.call(ObjectWithUuid.t),
       orderByList: orderByList?.call(ObjectWithUuid.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -586,8 +564,6 @@ class ObjectWithUuidRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ObjectWithUuidTable> where,
     _i1.OrderByBuilder<ObjectWithUuidTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithUuidTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -596,8 +572,6 @@ class ObjectWithUuidRepository {
       where: where(ObjectWithUuid.t),
       orderBy: orderBy?.call(ObjectWithUuid.t),
       orderByList: orderByList?.call(ObjectWithUuid.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

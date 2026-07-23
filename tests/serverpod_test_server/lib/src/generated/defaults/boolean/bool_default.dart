@@ -109,8 +109,6 @@ abstract class BoolDefault
     int? limit,
     int? offset,
     _i1.OrderByBuilder<BoolDefaultTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<BoolDefaultTable>? orderByList,
     BoolDefaultInclude? include,
   }) {
@@ -119,8 +117,6 @@ abstract class BoolDefault
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(BoolDefault.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(BoolDefault.t),
       include: include,
     );
@@ -241,8 +237,6 @@ class BoolDefaultIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -287,8 +281,6 @@ class BoolDefaultRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<BoolDefaultTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<BoolDefaultTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -298,8 +290,6 @@ class BoolDefaultRepository {
       where: where?.call(BoolDefault.t),
       orderBy: orderBy?.call(BoolDefault.t),
       orderByList: orderByList?.call(BoolDefault.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -330,8 +320,6 @@ class BoolDefaultRepository {
     _i1.WhereExpressionBuilder<BoolDefaultTable>? where,
     int? offset,
     _i1.OrderByBuilder<BoolDefaultTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<BoolDefaultTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -341,8 +329,6 @@ class BoolDefaultRepository {
       where: where?.call(BoolDefault.t),
       orderBy: orderBy?.call(BoolDefault.t),
       orderByList: orderByList?.call(BoolDefault.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -547,8 +533,6 @@ class BoolDefaultRepository {
     int? offset,
     _i1.OrderByBuilder<BoolDefaultTable>? orderBy,
     _i1.OrderByListBuilder<BoolDefaultTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -559,8 +543,6 @@ class BoolDefaultRepository {
       offset: offset,
       orderBy: orderBy?.call(BoolDefault.t),
       orderByList: orderByList?.call(BoolDefault.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -581,8 +563,6 @@ class BoolDefaultRepository {
     _i1.DatabaseSession session,
     List<BoolDefault> rows, {
     _i1.OrderByBuilder<BoolDefaultTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<BoolDefaultTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -591,8 +571,6 @@ class BoolDefaultRepository {
       rows,
       orderBy: orderBy?.call(BoolDefault.t),
       orderByList: orderByList?.call(BoolDefault.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -622,8 +600,6 @@ class BoolDefaultRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<BoolDefaultTable> where,
     _i1.OrderByBuilder<BoolDefaultTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<BoolDefaultTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -632,8 +608,6 @@ class BoolDefaultRepository {
       where: where(BoolDefault.t),
       orderBy: orderBy?.call(BoolDefault.t),
       orderByList: orderByList?.call(BoolDefault.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

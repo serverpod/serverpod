@@ -105,8 +105,6 @@ abstract class RelationToMultipleMaxFieldName
     int? limit,
     int? offset,
     _i1.OrderByBuilder<RelationToMultipleMaxFieldNameTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<RelationToMultipleMaxFieldNameTable>? orderByList,
     RelationToMultipleMaxFieldNameInclude? include,
   }) {
@@ -115,8 +113,6 @@ abstract class RelationToMultipleMaxFieldName
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(RelationToMultipleMaxFieldName.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(RelationToMultipleMaxFieldName.t),
       include: include,
     );
@@ -267,8 +263,6 @@ class RelationToMultipleMaxFieldNameIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -321,8 +315,6 @@ class RelationToMultipleMaxFieldNameRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<RelationToMultipleMaxFieldNameTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<RelationToMultipleMaxFieldNameTable>? orderByList,
     _i1.Transaction? transaction,
     RelationToMultipleMaxFieldNameInclude? include,
@@ -333,8 +325,6 @@ class RelationToMultipleMaxFieldNameRepository {
       where: where?.call(RelationToMultipleMaxFieldName.t),
       orderBy: orderBy?.call(RelationToMultipleMaxFieldName.t),
       orderByList: orderByList?.call(RelationToMultipleMaxFieldName.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -366,8 +356,6 @@ class RelationToMultipleMaxFieldNameRepository {
     _i1.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>? where,
     int? offset,
     _i1.OrderByBuilder<RelationToMultipleMaxFieldNameTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<RelationToMultipleMaxFieldNameTable>? orderByList,
     _i1.Transaction? transaction,
     RelationToMultipleMaxFieldNameInclude? include,
@@ -378,8 +366,6 @@ class RelationToMultipleMaxFieldNameRepository {
       where: where?.call(RelationToMultipleMaxFieldName.t),
       orderBy: orderBy?.call(RelationToMultipleMaxFieldName.t),
       orderByList: orderByList?.call(RelationToMultipleMaxFieldName.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -598,8 +584,6 @@ class RelationToMultipleMaxFieldNameRepository {
     int? offset,
     _i1.OrderByBuilder<RelationToMultipleMaxFieldNameTable>? orderBy,
     _i1.OrderByListBuilder<RelationToMultipleMaxFieldNameTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -610,8 +594,6 @@ class RelationToMultipleMaxFieldNameRepository {
       offset: offset,
       orderBy: orderBy?.call(RelationToMultipleMaxFieldName.t),
       orderByList: orderByList?.call(RelationToMultipleMaxFieldName.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -632,8 +614,6 @@ class RelationToMultipleMaxFieldNameRepository {
     _i1.DatabaseSession session,
     List<RelationToMultipleMaxFieldName> rows, {
     _i1.OrderByBuilder<RelationToMultipleMaxFieldNameTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<RelationToMultipleMaxFieldNameTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -642,8 +622,6 @@ class RelationToMultipleMaxFieldNameRepository {
       rows,
       orderBy: orderBy?.call(RelationToMultipleMaxFieldName.t),
       orderByList: orderByList?.call(RelationToMultipleMaxFieldName.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -674,8 +652,6 @@ class RelationToMultipleMaxFieldNameRepository {
     required _i1.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>
     where,
     _i1.OrderByBuilder<RelationToMultipleMaxFieldNameTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<RelationToMultipleMaxFieldNameTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -684,8 +660,6 @@ class RelationToMultipleMaxFieldNameRepository {
       where: where(RelationToMultipleMaxFieldName.t),
       orderBy: orderBy?.call(RelationToMultipleMaxFieldName.t),
       orderByList: orderByList?.call(RelationToMultipleMaxFieldName.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

@@ -146,13 +146,6 @@ void main() {
           );
         });
 
-        test('that takes the orderDescending bool as an optional param', () {
-          expect(
-            findMethod?.parameters?.toSource(),
-            contains('bool orderDescending'),
-          );
-        });
-
         test('that takes the orderByList as an optional param', () {
           expect(
             findMethod?.parameters?.toSource(),
@@ -247,17 +240,6 @@ void main() {
             contains('OrderByListBuilder<ExampleTable>? orderByList'),
           );
         });
-
-        test(
-          'that takes the orderDescending as a named param with the default value false',
-          () {
-            var params = findRowMethod?.parameters?.toSource();
-            expect(
-              params,
-              contains('bool orderDescending = false'),
-            );
-          },
-        );
 
         test('that takes the transaction object as an optional param', () {
           expect(
@@ -959,13 +941,6 @@ void main() {
             contains(
               'OrderByListBuilder<${testClassName}Table>? orderByList',
             ),
-          );
-        });
-
-        test('that takes the orderDescending bool as an optional param', () {
-          expect(
-            updateWhereMethod?.parameters?.toSource(),
-            contains('bool orderDescending'),
           );
         });
 

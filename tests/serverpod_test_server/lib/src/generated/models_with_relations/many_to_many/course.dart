@@ -95,8 +95,6 @@ abstract class Course implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CourseTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CourseTable>? orderByList,
     CourseInclude? include,
   }) {
@@ -105,8 +103,6 @@ abstract class Course implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Course.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(Course.t),
       include: include,
     );
@@ -243,8 +239,6 @@ class CourseIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -297,8 +291,6 @@ class CourseRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CourseTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CourseTable>? orderByList,
     _i1.Transaction? transaction,
     CourseInclude? include,
@@ -309,8 +301,6 @@ class CourseRepository {
       where: where?.call(Course.t),
       orderBy: orderBy?.call(Course.t),
       orderByList: orderByList?.call(Course.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -342,8 +332,6 @@ class CourseRepository {
     _i1.WhereExpressionBuilder<CourseTable>? where,
     int? offset,
     _i1.OrderByBuilder<CourseTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CourseTable>? orderByList,
     _i1.Transaction? transaction,
     CourseInclude? include,
@@ -354,8 +342,6 @@ class CourseRepository {
       where: where?.call(Course.t),
       orderBy: orderBy?.call(Course.t),
       orderByList: orderByList?.call(Course.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -563,8 +549,6 @@ class CourseRepository {
     int? offset,
     _i1.OrderByBuilder<CourseTable>? orderBy,
     _i1.OrderByListBuilder<CourseTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -575,8 +559,6 @@ class CourseRepository {
       offset: offset,
       orderBy: orderBy?.call(Course.t),
       orderByList: orderByList?.call(Course.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -597,8 +579,6 @@ class CourseRepository {
     _i1.DatabaseSession session,
     List<Course> rows, {
     _i1.OrderByBuilder<CourseTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CourseTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -607,8 +587,6 @@ class CourseRepository {
       rows,
       orderBy: orderBy?.call(Course.t),
       orderByList: orderByList?.call(Course.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -638,8 +616,6 @@ class CourseRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CourseTable> where,
     _i1.OrderByBuilder<CourseTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CourseTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -648,8 +624,6 @@ class CourseRepository {
       where: where(Course.t),
       orderBy: orderBy?.call(Course.t),
       orderByList: orderByList?.call(Course.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

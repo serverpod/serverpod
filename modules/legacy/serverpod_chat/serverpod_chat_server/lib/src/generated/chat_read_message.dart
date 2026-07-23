@@ -97,8 +97,6 @@ abstract class ChatReadMessage
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ChatReadMessageTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChatReadMessageTable>? orderByList,
     ChatReadMessageInclude? include,
   }) {
@@ -107,8 +105,6 @@ abstract class ChatReadMessage
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ChatReadMessage.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(ChatReadMessage.t),
       include: include,
     );
@@ -227,8 +223,6 @@ class ChatReadMessageIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -273,8 +267,6 @@ class ChatReadMessageRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ChatReadMessageTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChatReadMessageTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -284,8 +276,6 @@ class ChatReadMessageRepository {
       where: where?.call(ChatReadMessage.t),
       orderBy: orderBy?.call(ChatReadMessage.t),
       orderByList: orderByList?.call(ChatReadMessage.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -316,8 +306,6 @@ class ChatReadMessageRepository {
     _i1.WhereExpressionBuilder<ChatReadMessageTable>? where,
     int? offset,
     _i1.OrderByBuilder<ChatReadMessageTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChatReadMessageTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -327,8 +315,6 @@ class ChatReadMessageRepository {
       where: where?.call(ChatReadMessage.t),
       orderBy: orderBy?.call(ChatReadMessage.t),
       orderByList: orderByList?.call(ChatReadMessage.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -535,8 +521,6 @@ class ChatReadMessageRepository {
     int? offset,
     _i1.OrderByBuilder<ChatReadMessageTable>? orderBy,
     _i1.OrderByListBuilder<ChatReadMessageTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -547,8 +531,6 @@ class ChatReadMessageRepository {
       offset: offset,
       orderBy: orderBy?.call(ChatReadMessage.t),
       orderByList: orderByList?.call(ChatReadMessage.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -569,8 +551,6 @@ class ChatReadMessageRepository {
     _i1.DatabaseSession session,
     List<ChatReadMessage> rows, {
     _i1.OrderByBuilder<ChatReadMessageTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChatReadMessageTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -579,8 +559,6 @@ class ChatReadMessageRepository {
       rows,
       orderBy: orderBy?.call(ChatReadMessage.t),
       orderByList: orderByList?.call(ChatReadMessage.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -610,8 +588,6 @@ class ChatReadMessageRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ChatReadMessageTable> where,
     _i1.OrderByBuilder<ChatReadMessageTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChatReadMessageTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -620,8 +596,6 @@ class ChatReadMessageRepository {
       where: where(ChatReadMessage.t),
       orderBy: orderBy?.call(ChatReadMessage.t),
       orderByList: orderByList?.call(ChatReadMessage.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

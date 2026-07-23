@@ -81,8 +81,6 @@ abstract class SimpleDateTime
     int? limit,
     int? offset,
     _i1.OrderByBuilder<SimpleDateTimeTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<SimpleDateTimeTable>? orderByList,
     SimpleDateTimeInclude? include,
   }) {
@@ -91,8 +89,6 @@ abstract class SimpleDateTime
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(SimpleDateTime.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(SimpleDateTime.t),
       include: include,
     );
@@ -178,8 +174,6 @@ class SimpleDateTimeIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -224,8 +218,6 @@ class SimpleDateTimeRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<SimpleDateTimeTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<SimpleDateTimeTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -235,8 +227,6 @@ class SimpleDateTimeRepository {
       where: where?.call(SimpleDateTime.t),
       orderBy: orderBy?.call(SimpleDateTime.t),
       orderByList: orderByList?.call(SimpleDateTime.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -267,8 +257,6 @@ class SimpleDateTimeRepository {
     _i1.WhereExpressionBuilder<SimpleDateTimeTable>? where,
     int? offset,
     _i1.OrderByBuilder<SimpleDateTimeTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<SimpleDateTimeTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -278,8 +266,6 @@ class SimpleDateTimeRepository {
       where: where?.call(SimpleDateTime.t),
       orderBy: orderBy?.call(SimpleDateTime.t),
       orderByList: orderByList?.call(SimpleDateTime.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -484,8 +470,6 @@ class SimpleDateTimeRepository {
     int? offset,
     _i1.OrderByBuilder<SimpleDateTimeTable>? orderBy,
     _i1.OrderByListBuilder<SimpleDateTimeTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -496,8 +480,6 @@ class SimpleDateTimeRepository {
       offset: offset,
       orderBy: orderBy?.call(SimpleDateTime.t),
       orderByList: orderByList?.call(SimpleDateTime.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -518,8 +500,6 @@ class SimpleDateTimeRepository {
     _i1.DatabaseSession session,
     List<SimpleDateTime> rows, {
     _i1.OrderByBuilder<SimpleDateTimeTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<SimpleDateTimeTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -528,8 +508,6 @@ class SimpleDateTimeRepository {
       rows,
       orderBy: orderBy?.call(SimpleDateTime.t),
       orderByList: orderByList?.call(SimpleDateTime.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -559,8 +537,6 @@ class SimpleDateTimeRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<SimpleDateTimeTable> where,
     _i1.OrderByBuilder<SimpleDateTimeTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<SimpleDateTimeTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -569,8 +545,6 @@ class SimpleDateTimeRepository {
       where: where(SimpleDateTime.t),
       orderBy: orderBy?.call(SimpleDateTime.t),
       orderByList: orderByList?.call(SimpleDateTime.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
