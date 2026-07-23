@@ -1,0 +1,66 @@
+name: Use Redis
+description: Installs and starts Redis with retries for transient APT failures.
+
+inputs:
+  password:
+    description: The password required by the Redis test server.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Install Redis
+      shell: bash
+      run: |
+        max_attempts=3
+
+        for attempt in $(seq 1 "$max_attempts"); do
+          if sudo timeout --kill-after=10s 60s \
+              apt-get \
+              -o Acquire::Retries=2 \
+              -o Acquire::http::Timeout=20 \
+              -o Acquire::https::Timeout=20 \
+              update &&
+            sudo timeout --kill-after=10s 60s \
+              env DEBIAN_FRONTEND=noninteractive \
+              apt-get \
+              -o Acquire::Retries=2 \
+              -o Acquire::http::Timeout=20 \
+              -o Acquire::https::Timeout=20 \
+              -o DPkg::Lock::Timeout=10 \
+              install -y redis-server; then
+            break
+          fi
+
+          if [[ "$attempt" -eq "$max_attempts" ]]; then
+            echo "::error::Redis installation failed after $max_attempts attempts."
+            exit 1
+          fi
+
+          next_attempt=$((attempt + 1))
+          echo "Redis installation failed; retrying the complete APT setup (attempt $next_attempt/$max_attempts)."
+          sleep "$attempt"
+        done
+
+    - name: Start Redis
+      shell: bash
+      env:
+        REDIS_PASSWORD: ${{ inputs.password }}
+      run: |
+        # serverpod_test_server's config uses redis host 'redis'.
+        echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
+
+        # APT auto-starts a password-less Redis. Replace it with the
+        # password-protected test instance.
+        sudo systemctl stop redis-server 2>/dev/null || true
+        redis-server --daemonize yes --requirepass "$REDIS_PASSWORD"
+
+        for _ in $(seq 1 10); do
+          if REDISCLI_AUTH="$REDIS_PASSWORD" redis-cli ping | grep -q '^PONG$'; then
+            exit 0
+          fi
+          sleep 1
+        done
+
+        echo "::error::Redis did not become ready."
+        exit 1

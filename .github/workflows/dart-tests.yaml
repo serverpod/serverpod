@@ -905,15 +905,9 @@ jobs:
         run: melos bootstrap --scope='serverpod_test_server' --include-dependencies
         timeout-minutes: 5
       - name: Start Redis
-        run: |
-          # serverpod_test_server's config uses redis host 'redis'
-          echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
-          sudo apt-get update
-          sudo apt-get install -y redis-server
-          # apt auto-starts a password-less redis on 6379; stop it so our
-          # password-protected instance can bind the port.
-          sudo systemctl stop redis-server 2>/dev/null || true
-          redis-server --daemonize yes --requirepass password
+        uses: ./.github/actions/use-redis
+        with:
+          password: password
       - name: Run integration tests
         run: util/run_tests_integration ${{ matrix.shard }} 10
         timeout-minutes: 15
@@ -942,15 +936,9 @@ jobs:
         run: melos bootstrap --scope='serverpod_test_server' --include-dependencies
         timeout-minutes: 5
       - name: Start Redis
-        run: |
-          # serverpod_test_server's config uses redis host 'redis'
-          echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
-          sudo apt-get update
-          sudo apt-get install -y redis-server
-          # apt auto-starts a password-less redis on 6379; stop it so our
-          # password-protected instance can bind the port.
-          sudo systemctl stop redis-server 2>/dev/null || true
-          redis-server --daemonize yes --requirepass password
+        uses: ./.github/actions/use-redis
+        with:
+          password: password
       - name: Run integration tests
         run: util/run_tests_integration_concurrently ${{ matrix.shard }} 10
         timeout-minutes: 15
