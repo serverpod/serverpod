@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:test/test.dart';
 
 import '../../serverpod_test_tools.dart';
 import 'fakes/fakes.dart';
+
+const _adminScopeBackfillTimeout = Duration(seconds: 5);
 
 void main() {
   withServerpod(
@@ -334,4 +338,128 @@ void main() {
       });
     },
   );
+
+  withServerpod(
+    'Given admin emails are configured before auth services initialization',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late FakeTokenStorage fakeTokenStorage;
+
+      setUp(() {
+        session = sessionBuilder.build();
+        fakeTokenStorage = FakeTokenStorage();
+
+        session.passwords['adminEmails'] = jsonEncode([
+          'admin@serverpod.dev',
+        ]);
+
+        session.serverpod.initializeAuthServices(
+          tokenManagerBuilders: [
+            FakeTokenManagerBuilder(tokenStorage: fakeTokenStorage),
+          ],
+        );
+      });
+
+      test(
+        'when creating a matching user profile then the auth user receives admin scope.',
+        () async {
+          final authUser = await AuthServices.instance.authUsers.create(
+            session,
+          );
+
+          await AuthServices.instance.userProfiles.createUserProfile(
+            session,
+            authUser.id,
+            UserProfileData(
+              email: 'Admin@Serverpod.dev',
+            ),
+          );
+
+          final updatedAuthUser = await AuthServices.instance.authUsers.get(
+            session,
+            authUserId: authUser.id,
+          );
+
+          expect(updatedAuthUser.scopes, contains(Scope.admin));
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given admin emails are configured after a matching user profile already exists',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late FakeTokenStorage fakeTokenStorage;
+
+      setUp(() {
+        session = sessionBuilder.build();
+        fakeTokenStorage = FakeTokenStorage();
+      });
+
+      test(
+        'when auth services are initialized then the existing auth user eventually receives admin scope.',
+        () async {
+          late UuidValue authUserId;
+
+          final setupSession = await session.serverpod.createSession(
+            enableLogging: false,
+          );
+          try {
+            final authUser = await const AuthUsers().create(setupSession);
+            authUserId = authUser.id;
+
+            await const UserProfiles().createUserProfile(
+              setupSession,
+              authUserId,
+              UserProfileData(
+                email: 'Admin@Serverpod.dev',
+              ),
+            );
+          } finally {
+            await setupSession.close();
+          }
+
+          session.passwords['adminEmails'] = jsonEncode([
+            'admin@serverpod.dev',
+          ]);
+
+          session.serverpod.initializeAuthServices(
+            tokenManagerBuilders: [
+              FakeTokenManagerBuilder(tokenStorage: fakeTokenStorage),
+            ],
+          );
+
+          await _waitForAdminScope(session.serverpod, authUserId);
+        },
+      );
+    },
+  );
+}
+
+Future<void> _waitForAdminScope(
+  final Serverpod serverpod,
+  final UuidValue authUserId,
+) async {
+  final deadline = DateTime.now().add(_adminScopeBackfillTimeout);
+
+  while (DateTime.now().isBefore(deadline)) {
+    final session = await serverpod.createSession(enableLogging: false);
+    try {
+      final authUser = await const AuthUsers().get(
+        session,
+        authUserId: authUserId,
+      );
+
+      if (authUser.scopes.contains(Scope.admin)) {
+        return;
+      }
+    } finally {
+      await session.close();
+    }
+
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+  }
+
+  fail('Timed out waiting for admin scope to be assigned.');
 }
