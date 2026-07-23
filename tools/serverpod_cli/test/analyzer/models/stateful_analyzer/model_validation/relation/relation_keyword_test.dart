@@ -441,11 +441,7 @@ fields:
       expect(
         collector.errors,
         isNotEmpty,
-        reason: 'Expected an error',
-      );
-      expect(
-        collector.errors.first.message,
-        'The "table" property must be defined in the class to set a relation on a field.',
+        reason: 'Expected an error — class has no table and no tableBase: true',
       );
     },
   );

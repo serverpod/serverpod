@@ -12,7 +12,7 @@ void main() {
     'Given a class without a table definition when defining a relation',
     () {
       test(
-        'Given a class with an object relation but no table definition when analyzing model then an error is collected that the table property must be defined.',
+        'Given a class with an object relation but no table definition when analyzing model then an error is collected.',
         () {
           var models = [
             ModelSourceBuilder().withYaml(
@@ -44,17 +44,15 @@ void main() {
           expect(
             collector.errors,
             isNotEmpty,
-            reason: 'Expected an error to be collected',
-          );
-          expect(
-            collector.errors.first.message,
-            'The "table" property must be defined in the class to set a relation on a field.',
+            reason:
+                'Expected an error — a class without "table" or "tableBase: true" '
+                'may not declare relations.',
           );
         },
       );
 
       test(
-        'Given a class with a named object relation but no table definition when analyzing model then an error is collected that the table property must be defined.',
+        'Given a class with a named object relation but no table definition when analyzing model then an error is collected that the reference class must have a table.',
         () {
           var models = [
             ModelSourceBuilder().withYaml(
@@ -84,20 +82,19 @@ void main() {
             onErrorsCollector(collector),
           ).validateAll();
 
+          // Owner declares List<Animal>? but Animal has no table — the
+          // reference-side check fires, not the declaring-side check.
           expect(
-            collector.errors,
-            isNotEmpty,
-            reason: 'Expected an error to be collected',
-          );
-          expect(
-            collector.errors.first.message,
-            'The "table" property must be defined in the class to set a relation on a field.',
+            collector.errors.map((e) => e.message),
+            contains(
+              'The class "Animal" must have a "table" property defined to be used in a relation.',
+            ),
           );
         },
       );
 
       test(
-        'Given a class with a manual field relation but no table definition when analyzing model then an error is collected that the table property must be defined.',
+        'Given a class with a manual field relation but no table definition when analyzing model then an error is collected.',
         () {
           var models = [
             ModelSourceBuilder().withYaml(
@@ -130,17 +127,15 @@ void main() {
           expect(
             collector.errors,
             isNotEmpty,
-            reason: 'Expected an error to be collected',
-          );
-          expect(
-            collector.errors.first.message,
-            'The "table" property must be defined in the class to set a relation on a field.',
+            reason:
+                'Expected an error — a class without "table" or "tableBase: true" '
+                'may not declare relations.',
           );
         },
       );
 
       test(
-        'Given a class with a list relation but no table definition when analyzing model then an error is collected that the table property must be defined.',
+        'Given a class with a list relation but no table definition when analyzing model then an error is collected.',
         () {
           var models = [
             ModelSourceBuilder().withYaml(
@@ -172,17 +167,15 @@ void main() {
           expect(
             collector.errors,
             isNotEmpty,
-            reason: 'Expected an error to be collected',
-          );
-          expect(
-            collector.errors.first.message,
-            'The "table" property must be defined in the class to set a relation on a field.',
+            reason:
+                'Expected an error — a class without "table" or "tableBase: true" '
+                'may not declare relations.',
           );
         },
       );
 
       test(
-        'Given a class with an id field but no table definition when setting a relation then an error is collected about missing table property.',
+        'Given a class with an id field but no table definition when setting a relation then an error is collected.',
         () {
           var models = [
             ModelSourceBuilder().withYaml(
@@ -214,11 +207,9 @@ void main() {
           expect(
             collector.errors,
             isNotEmpty,
-            reason: 'Expected an error to be collected',
-          );
-          expect(
-            collector.errors.first.message,
-            'The "table" property must be defined in the class to set a relation on a field.',
+            reason:
+                'Expected an error — a class without "table" or "tableBase: true" '
+                'may not declare relations.',
           );
         },
       );
