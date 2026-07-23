@@ -42,17 +42,20 @@ jobs:
 
       - name: Install Melos
         run: dart pub global activate melos
+        timeout-minutes: 2
 
       - name: Set SERVERPOD_HOME environment variable
         run: echo "SERVERPOD_HOME=$GITHUB_WORKSPACE" >> $GITHUB_ENV
 
       - name: Install all dependencies
         run: melos bootstrap
+        timeout-minutes: 5
 
       - name: Activate Serverpod CLI from source
         run: |
           cd tools/serverpod_cli
           dart pub global activate --source path .
+        timeout-minutes: 2
 
       - name: Verify CLI installation
         run: serverpod --version

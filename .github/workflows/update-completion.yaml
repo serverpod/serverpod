@@ -34,9 +34,11 @@ jobs:
 
       - name: Install melos
         run: dart pub global activate melos
+        timeout-minutes: 2
 
       - name: Bootstrap
         run: melos bootstrap
+        timeout-minutes: 5
 
       - name: Generate completion specs
         run: util/generate_completion

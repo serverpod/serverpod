@@ -59,6 +59,7 @@ jobs:
       - name: Resolve serverpod_cli dependencies
         working-directory: src/tools/serverpod_cli
         run: dart pub get
+        timeout-minutes: 2
 
       - name: Checkout Serverpod Docs Repo
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
