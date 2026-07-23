@@ -317,6 +317,199 @@ fields:
       );
     });
   });
+
+  group('Given a project with a configured Flutter app', () {
+    const projectName = 'vscode_test_app';
+    late String sandboxDir;
+    late String serverDir;
+    late String fakeFlutterBinDir;
+    late File debugPortGate;
+    late File flutterVmServiceInfoFile;
+    Process? serverProcess;
+    StreamSubscription<String>? stdoutSubscription;
+    StreamSubscription<String>? stderrSubscription;
+    final processOutput = StringBuffer();
+
+    setUpAll(() async {
+      sandboxDir = d.sandbox;
+      final projectRoot = path.join(sandboxDir, projectName);
+      serverDir = path.join(projectRoot, '${projectName}_server');
+
+      final createResult = await runServerpod(
+        ['create', projectName, '--no-interactive'],
+        workingDirectory: sandboxDir,
+      );
+      expect(
+        createResult.exitCode,
+        0,
+        reason: 'Failed to create the serverpod project.',
+      );
+      createDynamicPortConfig(serverDir);
+
+      flutterVmServiceInfoFile = File(
+        path.join(
+          projectRoot,
+          "${projectName}_server",
+          '.dart_tool',
+          'serverpod',
+          'flutter-vm-service-info-$projectName.json',
+        ),
+      );
+
+      fakeFlutterBinDir = path.join(projectRoot, 'fake_flutter_bin');
+      Directory(fakeFlutterBinDir).createSync(recursive: true);
+      debugPortGate = File(path.join(projectRoot, 'publish_debug_port.gate'));
+      final fakeFlutterExecutable = path.join(
+        fakeFlutterBinDir,
+        Platform.isWindows ? 'flutter.exe' : 'flutter',
+      );
+      final fakeFlutterSource = path.join(
+        Directory.current.path,
+        'test',
+        'test_assets',
+        'fake_flutter_vm_service.dart',
+      );
+      final compileResult = await Process.run(
+        Platform.resolvedExecutable,
+        ['compile', 'exe', fakeFlutterSource, '-o', fakeFlutterExecutable],
+      );
+      expect(
+        compileResult.exitCode,
+        0,
+        reason:
+            'Could not compile fake Flutter executable:\n'
+            '${compileResult.stdout}\n${compileResult.stderr}',
+      );
+    });
+
+    tearDown(() async {
+      await serverProcess?.killAndWaitForExit();
+      await stdoutSubscription?.cancel();
+      await stderrSubscription?.cancel();
+      serverProcess = null;
+      stdoutSubscription = null;
+      stderrSubscription = null;
+      processOutput.clear();
+      if (debugPortGate.existsSync()) debugPortGate.deleteSync();
+    });
+
+    test(
+      'when running serverpod start from an IDE, '
+      'then start forwards the IDE requests to the flutter process',
+      () async {
+        final pathSeparator = Platform.isWindows ? ';' : ':';
+        serverProcess = await startServerpod(
+          ['start', '--no-watch', '--no-tui'],
+          workingDirectory: serverDir,
+          environment: {
+            'PATH':
+                '$fakeFlutterBinDir$pathSeparator'
+                '${Platform.environment['PATH'] ?? ''}',
+            // Ensure the IDE request reaches the proxy before Flutter has
+            // published an upstream VM service, matching VS Code's attach
+            // behavior during `serverpod start`.
+            'FAKE_FLUTTER_DEBUG_PORT_GATE': debugPortGate.path,
+          },
+        );
+
+        stdoutSubscription = serverProcess!.stdout
+            .transform(const Utf8Decoder())
+            .transform(const LineSplitter())
+            .listen(processOutput.writeln);
+        stderrSubscription = serverProcess!.stderr
+            .transform(const Utf8Decoder())
+            .transform(const LineSplitter())
+            .listen(processOutput.writeln);
+
+        final proxyHttpUri = await _waitForVmServiceInfo(
+          flutterVmServiceInfoFile,
+          diagnostics: processOutput,
+          processExitCode: serverProcess!.exitCode,
+        );
+
+        final proxyWsUri = proxyHttpUri.replace(
+          scheme: proxyHttpUri.scheme == 'https' ? 'wss' : 'ws',
+          path: '${proxyHttpUri.path}ws',
+        );
+        final ideSocket = await WebSocket.connect(proxyWsUri.toString());
+        addTearDown(ideSocket.close);
+
+        final responses = StreamController<Map<String, Object?>>();
+        addTearDown(responses.close);
+        ideSocket.listen((data) {
+          if (data is String) {
+            responses.add(
+              Map<String, Object?>.from(jsonDecode(data) as Map),
+            );
+          }
+        });
+
+        // getVersion is the first VM Service Protocol request sent by Dart's
+        // debug adapter after VS Code reads a vmServiceInfoFile.
+        ideSocket.add(
+          jsonEncode({
+            'jsonrpc': '2.0',
+            'id': 'vscode-handshake',
+            'method': 'getVersion',
+            'params': <String, Object?>{},
+          }),
+        );
+        // The fake Flutter process cannot publish app.debugPort until this
+        // gate opens, so the request above must first be buffered by the real
+        // serverpod start VM proxy.
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+        debugPortGate.writeAsStringSync('publish');
+
+        final response = await responses.stream
+            .firstWhere((message) => message['id'] == 'vscode-handshake')
+            .timeout(
+              const Duration(seconds: 30),
+              onTimeout: () => throw TimeoutException(
+                'VS Code-style VM-service request did not round-trip.\n'
+                '$processOutput',
+              ),
+            );
+        final result = Map<String, Object?>.from(response['result']! as Map);
+
+        expect(result['type'], 'Version');
+        expect(result['major'], 4);
+        expect(result['servedBy'], 'fake-flutter-vm-service');
+      },
+    );
+  });
+}
+
+Future<Uri> _waitForVmServiceInfo(
+  File file, {
+  required StringBuffer diagnostics,
+  required Future<int> processExitCode,
+}) async {
+  int? exitedWith;
+  unawaited(processExitCode.then((exitCode) => exitedWith = exitCode));
+  final deadline = DateTime.now().add(const Duration(seconds: 90));
+  while (DateTime.now().isBefore(deadline)) {
+    if (exitedWith case final exitCode?) {
+      throw StateError(
+        '`serverpod start` exited with code $exitCode before writing '
+        '${file.path}.\n$diagnostics',
+      );
+    }
+    if (file.existsSync()) {
+      try {
+        final json = jsonDecode(file.readAsStringSync());
+        if (json is Map && json['uri'] is String) {
+          return Uri.parse(json['uri']! as String);
+        }
+      } on FormatException {
+        // The file may have been observed between creation and its awaited
+        // write. Retry until it contains the complete service-info document.
+      }
+    }
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+  }
+  throw TimeoutException(
+    'VM-service info file was not written at ${file.path}.\n$diagnostics',
+  );
 }
 
 extension on Process {
