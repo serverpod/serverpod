@@ -36,7 +36,7 @@ typedef GoogleWebSignInResult = ({
 ///
 /// ```dart
 /// // Initialize once during app startup (web only)
-/// await client.auth.initializeGoogleWebSignIn(
+/// await client.auth.initializeGoogleSignIn(
 ///   clientId: 'your-client-id.apps.googleusercontent.com',
 ///   redirectUri: 'https://yourdomain.com/auth.html',
 /// );
@@ -71,8 +71,8 @@ class GoogleWebSignInService {
   /// When `true`, the OAuth2 PKCE web flow is active and [GoogleSignInWidget]
   /// will show a Flutter-rendered button that triggers [signIn].
   ///
-  /// When `false`, [GoogleSignInWidget] falls back to the Google-hosted iFrame
-  /// button or the native `google_sign_in` flow.
+  /// When `false`, there is no Google sign-in path on web and
+  /// [GoogleSignInWidget] renders nothing.
   bool get isInitialized => _config != null;
 
   /// Default OAuth scopes for Google sign-in.
@@ -155,7 +155,7 @@ class GoogleWebSignInService {
     if (_config == null) {
       throw StateError(
         'GoogleWebSignInService is not initialized. '
-        'Call ensureInitialized() or initializeGoogleWebSignIn() first.',
+        'Call ensureInitialized() or initializeGoogleSignIn() first.',
       );
     }
 
