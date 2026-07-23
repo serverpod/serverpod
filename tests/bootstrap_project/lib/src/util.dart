@@ -162,6 +162,41 @@ Future<ProcessResult> runServerpodCli(
   );
 }
 
+/// Runs `serverpod create` non-interactively for [projectName] and throws if
+/// the command does not exit successfully.
+///
+/// Pass [template] to select a non-default project template (e.g. `server`).
+Future<void> createProject({
+  required String rootPath,
+  required String tempPath,
+  required String projectName,
+  required List<String> options,
+  String? template,
+}) async {
+  final createProcess = await startServerpodCli(
+    [
+      'create',
+      projectName,
+      if (template != null) ...['--template', template],
+      ...options,
+      '--no-analytics',
+      '--no-interactive',
+    ],
+    rootPath: rootPath,
+    workingDirectory: tempPath,
+    environment: {'SERVERPOD_HOME': rootPath},
+  );
+
+  final exitCode = await createProcess.exitCode;
+  if (exitCode != 0) {
+    throw StateError(
+      'Failed to create project $projectName '
+      '(template: ${template ?? 'default'}) with options $options '
+      '(exit code $exitCode).',
+    );
+  }
+}
+
 Future<String>? _compiledServerpodCli;
 
 /// Path to the compiled in-repo serverpod CLI, built once per `dart test` run.

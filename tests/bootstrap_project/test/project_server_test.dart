@@ -24,21 +24,10 @@ void main() async {
     () {
       Directory? tempDirectory;
       late final String tempPath;
-      late final String projectName;
-      late final String serverDir;
-      late final String flutterDir;
-      late final String clientDir;
 
       setUpAll(() {
         tempDirectory = Directory.systemTemp.createTempSync('spb_');
         tempPath = tempDirectory!.path;
-
-        final project = createRandomProjectName(tempPath);
-        projectName = project.projectName;
-        final projectFolders = createProjectFolderPaths(projectName);
-        serverDir = projectFolders.serverDir;
-        flutterDir = projectFolders.flutterDir;
-        clientDir = projectFolders.clientDir;
       });
 
       tearDownAll(() async {
@@ -50,7 +39,19 @@ void main() async {
       group(
         'when creating a new project with the server template',
         () {
+          late final String projectName;
+          late final String serverDir;
+          late final String flutterDir;
+          late final String clientDir;
+
           setUpAll(() async {
+            final project = createRandomProjectName(tempPath);
+            projectName = project.projectName;
+            final projectFolders = createProjectFolderPaths(projectName);
+            serverDir = projectFolders.serverDir;
+            flutterDir = projectFolders.flutterDir;
+            clientDir = projectFolders.clientDir;
+
             var createProcess = await startServerpodCli(
               [
                 'create',
