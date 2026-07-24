@@ -71,18 +71,12 @@ class UpgradeCommand extends ServerpodCommand {
       }
 
       final output = result.stdout.toString().trim();
-      final nonEmptyLines = output.split('\n').where(
-        (line) => line.trim().isNotEmpty,
-      );
-      final versionLine = nonEmptyLines.lastOrNull;
-      if (versionLine == null) {
-        log.debug('`serverpod version` returned no output.');
-        return null;
-      }
-
       const prefix = 'Serverpod version: ';
-      if (!versionLine.startsWith(prefix)) {
-        log.debug('Unexpected output from `serverpod version`: $output');
+      final versionLine = output.split('\n').where(
+        (line) => line.trim().startsWith(prefix),
+      ).firstOrNull;
+      if (versionLine == null) {
+        log.debug('`serverpod version` returned no version line.');
         return null;
       }
 
@@ -97,13 +91,18 @@ class UpgradeCommand extends ServerpodCommand {
     }
   }
 
-  /// Resolves the path to the `serverpod` executable installed by `Dart install`.
+  /// Resolves the path to the `serverpod` executable installed by `dart install`.
   ///
-  /// Falls back to invoking `serverpod` from PATH if the Dart install directory
+  /// The `getDartDataHome('install')` directory is Dart's global package
+  /// installation directory, where `dart install` places package executables.
+  ///
+  /// Falls back to invoking `serverpod` from PATH if the dart install directory
   /// does not contain the executable.
   String _resolveServerpodExecutablePath() {
     final name = Platform.isWindows ? 'serverpod.bat' : 'serverpod';
 
+    // Resolve the Dart global install directory, which is where `dart install`
+    // places executables such as `serverpod`.
     final dartInstallPath = p.join(getDartDataHome('install'), 'bin', name);
     if (File(dartInstallPath).existsSync()) {
       return dartInstallPath;
