@@ -148,7 +148,7 @@ class ExampleFutureCall extends FutureCall {
   });
 
   group(
-    'Given a future call class that has only the overriden invoke method',
+    'Given a future call class that implements InvokableFutureCall',
     () {
       var collector = CodeGenerationCollector();
       late Directory testDirectory;
@@ -165,7 +165,7 @@ class ExampleFutureCall extends FutureCall {
         futureCallFile.writeAsStringSync('''
 import 'package:serverpod/serverpod.dart';
 
-class ExampleFutureCall extends FutureCall {
+class ExampleFutureCall extends FutureCall implements InvokableFutureCall {
   @override
   Future<void> invoke(Session session, SerializableModel? object) async {
     session.log('\$object');

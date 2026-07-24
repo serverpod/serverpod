@@ -114,6 +114,117 @@ class MyFutureCall extends FutureCall {
     },
   );
 
+  group(
+    'Given a future call and an endpoint importing the generated future '
+    'calls file with no generated files',
+    () {
+      late Directory projectDir;
+      late Directory generatedDir;
+      late GeneratorConfig config;
+      late Analyzers analyzers;
+
+      tearDownAll(() => projectDir.deleteIfExists(recursive: true));
+
+      setUpAll(() async {
+        (projectDir, generatedDir) = await _buildProject();
+
+        var modelFile = File(
+          path.join(
+            projectDir.path,
+            'lib',
+            'src',
+            'protocol',
+            'greeting.spy.yaml',
+          ),
+        );
+        modelFile.createSync(recursive: true);
+        modelFile.writeAsStringSync('''
+class: Greeting
+fields:
+  message: String
+''');
+
+        var futureCallFile = File(
+          path.join(
+            projectDir.path,
+            'lib',
+            'src',
+            'greeting_call.dart',
+          ),
+        );
+        futureCallFile.createSync(recursive: true);
+        futureCallFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+import 'package:test_server/src/generated/protocol.dart';
+
+class GreetingCall extends FutureCall {
+  Future<void> send(Session session, Greeting greeting) async {}
+}
+''');
+
+        // Endpoint that imports the generated future calls file to schedule
+        // a future call. With no generated files on disk, the future calls
+        // file is written before endpoint analysis so the import resolves.
+        var endpointFile = File(
+          path.join(
+            projectDir.path,
+            'lib',
+            'src',
+            'endpoints',
+            'greeting_endpoint.dart',
+          ),
+        );
+        endpointFile.createSync(recursive: true);
+        endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+import 'package:test_server/src/generated/future_calls.dart';
+import 'package:test_server/src/generated/protocol.dart';
+
+class GreetingEndpoint extends Endpoint {
+  Future<void> scheduleGreeting(Session session, Greeting greeting) async {
+    await session.serverpod.futureCalls
+        .callWithDelay(const Duration(seconds: 1))
+        .greetingCall
+        .send(greeting);
+  }
+}
+''');
+
+        config = buildTestServerConfig(projectDir);
+        analyzers = await Analyzers.create(config);
+      });
+
+      group('when generating', () {
+        late GenerateResult result;
+
+        tearDown(() => generatedDir.deleteIfExists(recursive: true));
+        setUp(() async {
+          result = await analyzers.performGenerate(
+            config: config,
+          );
+        });
+
+        test('then generation succeeds on first run.', () {
+          expect(result.success, isTrue);
+        });
+
+        test('then future calls file is generated.', () {
+          expect(
+            result.generatedFiles.any((f) => f.contains('future_calls')),
+            isTrue,
+          );
+        });
+
+        test('then endpoint file is generated.', () {
+          expect(
+            result.generatedFiles.any((f) => f.contains('endpoints')),
+            isTrue,
+          );
+        });
+      });
+    },
+  );
+
   group('Given a model and an endpoint using it with no generated files', () {
     late Directory projectDir;
     late Directory generatedDir;

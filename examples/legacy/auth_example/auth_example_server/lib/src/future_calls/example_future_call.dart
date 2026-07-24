@@ -5,15 +5,14 @@ import 'package:serverpod/serverpod.dart';
 // schedule a future call for a day, a week, or a month. The calls are stored in
 // the database, so they will persist even if the server is restarted.
 //
-//  To add a future call to your server, you need to register it in the
-//  `server.dart` file. Schedule the call using the
-//  `session.serverpod.futureCallWithDelay` or `session.serverpod.futureCallAtTime`
-//  methods. You can optionally pass a serializable object together with the
-//  call.
+//  Declare a class that extends `FutureCall` with public `Future<void>`
+//  methods that take a `Session` as their first parameter. Type-safe methods
+//  for scheduling the calls are generated when running `serverpod generate`.
+//  Schedule a call using the `session.serverpod.futureCalls.callWithDelay`
+//  or `session.serverpod.futureCalls.callAtTime` methods.
 
 class ExampleFutureCall extends FutureCall {
-  @override
-  Future<void> invoke(Session session, SerializableModel? object) async {
+  Future<void> doSomething(Session session) async {
     // Do something interesting in the future here.
   }
 }

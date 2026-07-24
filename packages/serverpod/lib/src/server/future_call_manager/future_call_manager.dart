@@ -39,7 +39,7 @@ class FutureCallManager {
   final FutureCallConfig _config;
   final SerializationManager _serializationManager;
 
-  final _futureCalls = <String, FutureCall>{};
+  final _futureCalls = <String, InvokableFutureCall>{};
   final FutureCallDiagnosticsService _diagnosticsService;
 
   late final ServerpodTaskScheduler _scheduler;
@@ -112,7 +112,7 @@ class FutureCallManager {
   /// If [start] has been called previously but the scanner hasn't started yet
   /// (because there were no registered future calls), this will trigger the
   /// scanner to begin scanning for overdue future calls.
-  void registerFutureCall(FutureCall futureCall, String name) {
+  void registerFutureCall(InvokableFutureCall futureCall, String name) {
     if (_futureCalls.containsKey(name)) {
       throw Exception('Added future call with duplicate name ($name)');
     }
@@ -221,8 +221,7 @@ class FutureCallManager {
         _logSession.log(
           'Attempted to run a FutureCall that was not registered. This is likely due '
           'to changing a FutureCall method after it was scheduled, leading to an '
-          'entry that no longer has a matching method. For legacy future calls, '
-          'make sure they are registered in the server start. Entry: $entry',
+          'entry that no longer has a matching method. Entry: $entry',
           level: LogLevel.error,
         );
         return null;
@@ -341,7 +340,7 @@ class FutureCallManager {
   /// Runs a [FutureCallEntry] and completes when the future call is completed.
   Future<void> _runFutureCall({
     required FutureCallEntry futureCallEntry,
-    required FutureCall<SerializableModel> futureCall,
+    required InvokableFutureCall<SerializableModel> futureCall,
   }) async {
     final heartbeatTimer = await _claimFutureCallAndStartHeartbeatTimer(
       futureCallEntry,

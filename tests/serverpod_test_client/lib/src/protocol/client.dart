@@ -1416,17 +1416,10 @@ class EndpointTestFutureCalls extends _i1.EndpointRef {
   @override
   String get name => 'testFutureCalls';
 
-  _i2.Future<void> makeFutureCall(_i9.SimpleData? data) =>
+  _i2.Future<void> makeFutureCall(_i9.SimpleData data) =>
       caller.callServerEndpoint<void>(
         'testFutureCalls',
         'makeFutureCall',
-        {'data': data},
-      );
-
-  _i2.Future<void> makeFutureCallThatThrows(_i9.SimpleData? data) =>
-      caller.callServerEndpoint<void>(
-        'testFutureCalls',
-        'makeFutureCallThatThrows',
         {'data': data},
       );
 }

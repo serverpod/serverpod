@@ -13,10 +13,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:clock/clock.dart' as _i2;
-import 'package:serverpod_test_sqlite_server/src/generated/simple_data.dart'
-    as _i3;
-import 'dart:async' as _i4;
-import '../futureCalls/insert_simple_data_call.dart' as _i5;
+import 'dart:async' as _i3;
+import '../future_calls/example_future_call.dart' as _i4;
 
 /// Invokes a future call.
 typedef _InvokeFutureCall =
@@ -60,8 +58,7 @@ class FutureCalls extends _i1.FutureCallDispatch<_FutureCallRef> {
     String serverId,
   ) {
     var registeredFutureCalls = <String, _i1.InvokableFutureCall>{
-      'InsertSimpleDataCallPersistIncrementedSimpleDataFutureCall':
-          InsertSimpleDataCallPersistIncrementedSimpleDataFutureCall(),
+      'ExampleDoSomethingFutureCall': ExampleDoSomethingFutureCall(),
     };
     _futureCallManager = futureCallManager;
     _serverId = serverId;
@@ -182,35 +179,29 @@ class _FutureCallRef {
 
   final _InvokeFutureCall _invokeFutureCall;
 
-  late final insertSimpleDataCall = _InsertSimpleDataCallFutureCallDispatcher(
-    _invokeFutureCall,
-  );
+  late final example = _ExampleFutureCallDispatcher(_invokeFutureCall);
 }
 
-class _InsertSimpleDataCallFutureCallDispatcher {
-  _InsertSimpleDataCallFutureCallDispatcher(this._invokeFutureCall);
+class _ExampleFutureCallDispatcher {
+  _ExampleFutureCallDispatcher(this._invokeFutureCall);
 
   final _InvokeFutureCall _invokeFutureCall;
 
-  Future<void> persistIncrementedSimpleData(_i3.SimpleData data) {
+  Future<void> doSomething() {
     return _invokeFutureCall(
-      'InsertSimpleDataCallPersistIncrementedSimpleDataFutureCall',
-      data,
+      'ExampleDoSomethingFutureCall',
+      null,
     );
   }
 }
 
-class InsertSimpleDataCallPersistIncrementedSimpleDataFutureCall
-    extends _i1.FutureCall<_i3.SimpleData>
-    implements _i1.InvokableFutureCall<_i3.SimpleData> {
+class ExampleDoSomethingFutureCall extends _i1.FutureCall
+    implements _i1.InvokableFutureCall {
   @override
-  _i4.Future<void> invoke(
+  _i3.Future<void> invoke(
     _i1.Session session,
-    _i3.SimpleData? data,
+    _i1.SerializableModel? object,
   ) async {
-    await _i5.InsertSimpleDataCall().persistIncrementedSimpleData(
-      session,
-      data!,
-    );
+    await _i4.ExampleFutureCall().doSomething(session);
   }
 }

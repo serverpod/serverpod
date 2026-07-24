@@ -262,6 +262,31 @@ class Analyzers {
           ? {...?affectedPaths, ...generatedModelFiles}
           : {...?affectedPaths};
 
+      log.debug('Analyzing the future calls.');
+      var futureCallsAnalyzerCollector = CodeGenerationCollector();
+      var futureCalls = await _futureCalls.analyze(
+        collector: futureCallsAnalyzerCollector,
+        changedFiles: changedFiles,
+      );
+
+      success &= !futureCallsAnalyzerCollector.hasSevereErrors;
+      futureCallsAnalyzerCollector.printErrors();
+
+      // Generate the future calls file before analyzing endpoints, so that
+      // endpoints importing the generated future calls file can resolve it
+      // on a clean tree. Future call generation does not depend on endpoints.
+      log.debug('Generating the future calls.');
+      var generatedFutureCallFiles =
+          await ServerpodCodeGenerator.generateFutureCalls(
+            protocolDefinition: ProtocolDefinition(
+              endpoints: const [],
+              models: allModels,
+              futureCalls: futureCalls,
+            ),
+            config: config,
+          );
+      changedFiles.addAll(generatedFutureCallFiles);
+
       log.debug('Analyzing the endpoints.');
       final endpointAnalyzerCollector = CodeGenerationCollector();
       final endpoints = await _endpoints.analyze(
@@ -272,16 +297,6 @@ class Analyzers {
 
       success &= !endpointAnalyzerCollector.hasSevereErrors;
       endpointAnalyzerCollector.printErrors();
-
-      log.debug('Analyzing the future calls.');
-      var futureCallsAnalyzerCollector = CodeGenerationCollector();
-      var futureCalls = await _futureCalls.analyze(
-        collector: futureCallsAnalyzerCollector,
-        changedFiles: changedFiles,
-      );
-
-      success &= !futureCallsAnalyzerCollector.hasSevereErrors;
-      futureCallsAnalyzerCollector.printErrors();
 
       log.debug('Generating the protocol.');
       var protocolDefinition = ProtocolDefinition(
