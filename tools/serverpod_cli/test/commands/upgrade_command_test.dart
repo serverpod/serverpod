@@ -46,11 +46,6 @@ class _UpgradeCommandWithMockedVersion extends UpgradeCommand {
 void main() {
   late _MockLogger mockLogger;
 
-  setUpAll(() {
-    mockLogger = _MockLogger();
-    initializeLoggerWith(mockLogger);
-  });
-
   tearDownAll(() async {
     await closeLogger();
   });

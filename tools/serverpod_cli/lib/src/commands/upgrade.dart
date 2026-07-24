@@ -64,6 +64,7 @@ class UpgradeCommand extends ServerpodCommand {
         serverpodExecutable,
         ['version'],
         stdoutEncoding: utf8,
+        stderrEncoding: utf8,
       );
 
       if (result.exitCode != 0) {
