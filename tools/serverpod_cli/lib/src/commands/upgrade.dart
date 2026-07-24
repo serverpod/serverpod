@@ -59,7 +59,7 @@ class UpgradeCommand extends ServerpodCommand {
     final serverpodExecutable = _resolveServerpodExecutablePath();
 
     try {
-      var result = await Process.run(
+      final result = await Process.run(
         serverpodExecutable,
         ['version'],
         stdoutEncoding: utf8,
@@ -74,12 +74,12 @@ class UpgradeCommand extends ServerpodCommand {
       final nonEmptyLines = output.split('\n').where(
         (line) => line.trim().isNotEmpty,
       );
-      if (nonEmptyLines.isEmpty) {
+      final versionLine = nonEmptyLines.lastOrNull;
+      if (versionLine == null) {
         log.debug('`serverpod version` returned no output.');
         return null;
       }
 
-      final versionLine = nonEmptyLines.last;
       const prefix = 'Serverpod version: ';
       if (!versionLine.startsWith(prefix)) {
         log.debug('Unexpected output from `serverpod version`: $output');
@@ -97,9 +97,9 @@ class UpgradeCommand extends ServerpodCommand {
     }
   }
 
-  /// Resolves the path to the `serverpod` executable installed by `dart install`.
+  /// Resolves the path to the `serverpod` executable installed by `Dart install`.
   ///
-  /// Falls back to invoking `serverpod` from PATH if the dart install directory
+  /// Falls back to invoking `serverpod` from PATH if the Dart install directory
   /// does not contain the executable.
   String _resolveServerpodExecutablePath() {
     final name = Platform.isWindows ? 'serverpod.bat' : 'serverpod';
