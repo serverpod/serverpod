@@ -72,8 +72,10 @@ class UpgradeCommand extends ServerpodCommand {
 
       final output = result.stdout.toString().trim();
       const prefix = 'Serverpod version: ';
-      final versionLine = output.split('\n').where(
-        (line) => line.trim().startsWith(prefix),
+      final versionLine = output.split('\n').map(
+        (line) => line.trim(),
+      ).where(
+        (line) => line.startsWith(prefix),
       ).firstOrNull;
       if (versionLine == null) {
         log.debug('`serverpod version` returned no version line.');

@@ -44,9 +44,10 @@ class _UpgradeCommandWithMockedVersion extends UpgradeCommand {
 }
 
 void main() {
-  final mockLogger = _MockLogger();
+  late _MockLogger mockLogger;
 
   setUpAll(() {
+    mockLogger = _MockLogger();
     initializeLoggerWith(mockLogger);
   });
 
@@ -55,10 +56,8 @@ void main() {
   });
 
   setUp(() {
-    mockLogger
-      ..infoMessages.clear()
-      ..debugMessages.clear()
-      ..errorMessages.clear();
+    mockLogger = _MockLogger();
+    initializeLoggerWith(mockLogger);
   });
 
   group('Given an UpgradeCommand', () {
