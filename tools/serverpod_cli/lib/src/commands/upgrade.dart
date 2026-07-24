@@ -74,7 +74,7 @@ class UpgradeCommand extends ServerpodCommand {
       final output = result.stdout.toString().trim();
       const prefix = 'Serverpod version: ';
       final versionLine = output
-          .split('\n')
+          .split(RegExp(r'\r?\n'))
           .map((line) => line.trim())
           .firstWhereOrNull((line) => line.startsWith(prefix));
       if (versionLine == null) {
@@ -82,11 +82,13 @@ class UpgradeCommand extends ServerpodCommand {
         return null;
       }
 
-      final versionString = versionLine.substring(prefix.length).trim();
-      return Version.parse(versionString);
-    } on FormatException catch (e) {
-      log.debug('Failed to parse installed Serverpod version: $e');
-      return null;
+      try {
+        final versionString = versionLine.substring(prefix.length).trim();
+        return Version.parse(versionString);
+      } on FormatException catch (e) {
+        log.debug('Failed to parse installed Serverpod version: $e');
+        return null;
+      }
     } on ProcessException catch (e) {
       log.debug('Failed to run `serverpod version`: $e');
       return null;
