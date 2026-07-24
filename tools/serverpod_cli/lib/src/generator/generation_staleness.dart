@@ -167,5 +167,17 @@ Future<Map<String, FileStamp>> enumerateSourceFiles(
     await walk(Directory(path));
   }
 
+  var extraClassesSourcePaths = config.extraClasses
+      .map((e) => e.sourcePath)
+      .whereType<String>();
+
+  for (final path in extraClassesSourcePaths) {
+    final absolutePath = p.absolute(path);
+    final file = File(absolutePath);
+    if (await file.exists()) {
+      sources[absolutePath] = FileStamp(await file.stat());
+    }
+  }
+
   return sources;
 }

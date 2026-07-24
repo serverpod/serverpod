@@ -244,6 +244,7 @@ class GeneratorConfig implements ModelLoadConfig {
         'pubspec.lock',
       ]),
     ],
+    ...extraClasses.map((e) => e.sourcePath).whereType<String>(),
   ];
 
   final List<String>? _relativeServerTestToolsPathParts;
@@ -473,11 +474,12 @@ class GeneratorConfig implements ModelLoadConfig {
     if (configExtraClasses != null) {
       try {
         for (var extraClassConfig in configExtraClasses) {
+          var type = parseType(
+            extraClassConfig,
+            extraClasses: null,
+          );
           extraClasses.add(
-            parseType(
-              extraClassConfig,
-              extraClasses: null,
-            ),
+            _resolveExtraClassSource(type, packageConfig),
           );
         }
       } on SourceSpanException catch (_) {
@@ -670,6 +672,36 @@ generatedServerModel: ${p.joinAll(generatedServeModelPathParts)}
     }
     return str;
   }
+}
+
+TypeDefinition _resolveExtraClassSource(
+  TypeDefinition type,
+  PackageConfig packageConfig,
+) {
+  var url = type.url;
+  if (url == null) {
+    return type;
+  }
+
+  var uri = Uri.tryParse(url);
+  if (uri == null) {
+    return type;
+  }
+
+  var resolvedUri = packageConfig.resolve(uri);
+  if (resolvedUri == null || !resolvedUri.isScheme('file')) {
+    return type;
+  }
+
+  var package = packageConfig.packageOf(resolvedUri);
+  if (package == null) {
+    return type;
+  }
+
+  return type.withSourcePathAndPackageRoot(
+    sourcePath: p.normalize(resolvedUri.toFilePath()),
+    packageRoot: p.normalize(package.root.toFilePath()),
+  );
 }
 
 Map<String, List<String>> _extractSharedPackages(
