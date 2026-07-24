@@ -2,11 +2,16 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cli_tools/cli_tools.dart';
+import 'package:collection/collection.dart';
 import 'package:config/config.dart';
+import 'package:dart_data_home/dart_data_home.dart';
+import 'package:meta/meta.dart' show visibleForTesting;
+import 'package:path/path.dart' as p;
+import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
-import '../generated/version.dart';
+const _serverpodVersionPrefix = 'Serverpod version: ';
 
 class UpgradeCommand extends ServerpodCommand {
   @override
@@ -35,6 +40,85 @@ class UpgradeCommand extends ServerpodCommand {
       throw ExitException.error();
     }
 
-    log.info('Serverpod is up to date: $templateVersion version.');
+    final installedVersion = await fetchInstalledCliVersion();
+    if (installedVersion == null) {
+      log.info(
+        'Serverpod was upgraded, but the installed version could not be determined.',
+      );
+      return;
+    }
+
+    log.info('Serverpod is up to date: $installedVersion version.');
+  }
+
+  /// Fetches the version of the installed `serverpod_cli` by running
+  /// `serverpod version` and parsing the output.
+  ///
+  /// Returns `null` if the version cannot be determined.
+  @visibleForTesting
+  Future<Version?> fetchInstalledCliVersion() async {
+    log.debug('Running `serverpod version` to determine installed version...');
+
+    final serverpodExecutable = resolveServerpodExecutablePath();
+
+    try {
+      final result = await Process.run(
+        serverpodExecutable,
+        ['version'],
+        stdoutEncoding: utf8,
+        stderrEncoding: utf8,
+      );
+
+      if (result.exitCode != 0) {
+        log.debug('`serverpod version` failed with exit code ${result.exitCode}.');
+        return null;
+      }
+
+      final output = result.stdout.toString().trim();
+      final versionLine = output
+          .split(RegExp(r'\r?\n'))
+          .map((line) => line.trim())
+          .firstWhereOrNull(
+            (line) => line.startsWith(_serverpodVersionPrefix),
+          );
+      if (versionLine == null) {
+        log.debug('`serverpod version` returned no version line.');
+        return null;
+      }
+
+      try {
+        final versionString = versionLine
+            .substring(_serverpodVersionPrefix.length)
+            .trim();
+        return Version.parse(versionString);
+      } on FormatException catch (e) {
+        log.debug('Failed to parse installed Serverpod version: $e');
+        return null;
+      }
+    } on ProcessException catch (e) {
+      log.debug('Failed to run `serverpod version`: $e');
+      return null;
+    }
+  }
+
+  /// Resolves the path to the `serverpod` executable installed by `dart install`.
+  ///
+  /// The `getDartDataHome('install')` directory is Dart's global package
+  /// installation directory, where `dart install` places package executables.
+  ///
+  /// Falls back to invoking `serverpod` from PATH if the dart install directory
+  /// does not contain the executable.
+  @visibleForTesting
+  String resolveServerpodExecutablePath() {
+    final name = Platform.isWindows ? 'serverpod.bat' : 'serverpod';
+
+    // Resolve the Dart global install directory, which is where `dart install`
+    // places executables such as `serverpod`.
+    final dartInstallPath = p.join(getDartDataHome('install'), 'bin', name);
+    if (File(dartInstallPath).existsSync()) {
+      return dartInstallPath;
+    }
+
+    return name;
   }
 }
