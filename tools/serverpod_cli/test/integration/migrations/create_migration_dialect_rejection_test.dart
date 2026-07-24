@@ -14,10 +14,9 @@ import '../../test_util/builders/database/index_definition_builder.dart';
 import '../../test_util/builders/database/table_definition_builder.dart';
 import '../../test_util/builders/generator_config_builder.dart';
 
-/// A model can declare an index that only some dialects can express, and it
-/// reaches every dialect the project migrates to. `nulls_distinct: false` is
-/// one such index: PostgreSQL has `NULLS NOT DISTINCT`, SQLite has no
-/// equivalent and the constraint cannot be dropped without widening the index.
+/// A model can declare database behavior that only some dialects can express,
+/// and it reaches every dialect the project migrates to. Examples include a
+/// null-not-distinct index or a non-ID serial column reaching SQLite.
 ///
 /// These tests drive the real action against an on-disk project to lock that
 /// hard dialect rejection returns a single top-level [CreateMigrationFailed],
@@ -64,6 +63,19 @@ indexes:
     fields: name
     unique: true
     nulls_distinct: $nullsDistinct
+''');
+  }
+
+  void writeClientTableModelWithSerial({required bool includeSerial}) {
+    var hostModelsDir = Directory(
+      path.join(serverDirectory.path, 'lib', 'src', 'models'),
+    )..createSync(recursive: true);
+    File(path.join(hostModelsDir.path, 'example.yaml')).writeAsStringSync('''
+class: Example
+table: example
+database: all
+fields:
+  name: String${includeSerial ? '\n  syncVersion: int?, defaultPersist=serial' : ''}
 ''');
   }
 
@@ -228,6 +240,61 @@ fields:
 
       expect(result, isA<CreateMigrationServerClientCreated>());
       expect(result.success, isTrue);
+    },
+  );
+
+  group(
+    'Given a PostgreSQL server and SQLite client migration adding a non-ID serial column,',
+    () {
+      late GeneratorConfig config;
+      late String serverRegistryBeforeRejection;
+      late String clientRegistryBeforeRejection;
+      late List<String> serverVersionsBeforeRejection;
+      late List<String> clientVersionsBeforeRejection;
+
+      setUp(() async {
+        writeClientTableModelWithSerial(includeSerial: false);
+        config = buildConfig();
+        await createMigrationAction(config: config);
+        writeClientTableModelWithSerial(includeSerial: true);
+        serverRegistryBeforeRejection = readServerRegistry();
+        clientRegistryBeforeRejection = readClientRegistry(config);
+        serverVersionsBeforeRejection = listMigrationVersions(
+          serverMigrationsDirectory(),
+        );
+        clientVersionsBeforeRejection = listMigrationVersions(
+          clientMigrationsDirectory(config),
+        );
+      });
+
+      test(
+        'when creating a migration, '
+        'then it rejects the SQLite migration and persists neither side.',
+        () async {
+          var result = await createMigrationAction(config: config);
+
+          expect(result, isA<CreateMigrationFailed>());
+          expect(
+            (result as CreateMigrationFailed).message,
+            'Unable to create migration for the "sqlite" database. The '
+            'following is not supported by this database:\n'
+            '  • Column "syncVersion" on table "example" uses "serial" as its '
+            'default value, but "sqlite" only supports auto-increment on the '
+            '"id" column.',
+          );
+          expect(result.success, isFalse);
+          expect(readServerRegistry(), serverRegistryBeforeRejection);
+          expect(readClientRegistry(config), clientRegistryBeforeRejection);
+          expect(
+            listMigrationVersions(serverMigrationsDirectory()),
+            serverVersionsBeforeRejection,
+          );
+          expect(
+            listMigrationVersions(clientMigrationsDirectory(config)),
+            clientVersionsBeforeRejection,
+          );
+        },
+      );
     },
   );
 
