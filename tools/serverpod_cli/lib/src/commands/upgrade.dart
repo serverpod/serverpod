@@ -37,7 +37,9 @@ class UpgradeCommand extends ServerpodCommand {
 
     var installedVersion = await fetchInstalledCliVersion();
     if (installedVersion == null) {
-      log.info('Serverpod was upgraded, but the installed version could not be determined.');
+      log.info(
+        'Serverpod was upgraded, but the installed version could not be determined.',
+      );
       return;
     }
 
