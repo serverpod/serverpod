@@ -11,6 +11,8 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
+const _serverpodVersionPrefix = 'Serverpod version: ';
+
 class UpgradeCommand extends ServerpodCommand {
   @override
   final name = 'upgrade';
@@ -57,7 +59,7 @@ class UpgradeCommand extends ServerpodCommand {
   Future<Version?> fetchInstalledCliVersion() async {
     log.debug('Running `serverpod version` to determine installed version...');
 
-    final serverpodExecutable = _resolveServerpodExecutablePath();
+    final serverpodExecutable = resolveServerpodExecutablePath();
 
     try {
       final result = await Process.run(
@@ -73,18 +75,21 @@ class UpgradeCommand extends ServerpodCommand {
       }
 
       final output = result.stdout.toString().trim();
-      const prefix = 'Serverpod version: ';
       final versionLine = output
           .split(RegExp(r'\r?\n'))
           .map((line) => line.trim())
-          .firstWhereOrNull((line) => line.startsWith(prefix));
+          .firstWhereOrNull(
+            (line) => line.startsWith(_serverpodVersionPrefix),
+          );
       if (versionLine == null) {
         log.debug('`serverpod version` returned no version line.');
         return null;
       }
 
       try {
-        final versionString = versionLine.substring(prefix.length).trim();
+        final versionString = versionLine
+            .substring(_serverpodVersionPrefix.length)
+            .trim();
         return Version.parse(versionString);
       } on FormatException catch (e) {
         log.debug('Failed to parse installed Serverpod version: $e');
@@ -103,7 +108,8 @@ class UpgradeCommand extends ServerpodCommand {
   ///
   /// Falls back to invoking `serverpod` from PATH if the dart install directory
   /// does not contain the executable.
-  String _resolveServerpodExecutablePath() {
+  @visibleForTesting
+  String resolveServerpodExecutablePath() {
     final name = Platform.isWindows ? 'serverpod.bat' : 'serverpod';
 
     // Resolve the Dart global install directory, which is where `dart install`
