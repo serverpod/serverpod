@@ -18,7 +18,7 @@ import 'email_idp_utils.dart';
 ///
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
-class EmailIdp {
+class EmailIdp implements AccountMergeHandlerProvider {
   /// The method used when authenticating with the Email identity provider.
   static const String method = 'email';
 
@@ -303,6 +303,26 @@ class EmailIdp {
   /// Determines whether the current session has an associated email account.
   Future<bool> hasAccount(final Session session) async =>
       await utils.getAccount(session) != null;
+
+  @override
+  AccountMergeHandler get accountMergeHook => migrate;
+
+  /// Migrates the email account from [userToRemove] into [userToKeep].
+  static Future<void> migrate(
+    final Session session, {
+    required final UuidValue userToKeepId,
+    required final UuidValue userToRemoveId,
+    required final Transaction transaction,
+  }) async {
+    await EmailAccount.db.updateWhere(
+      session,
+      where: (final t) => t.authUserId.equals(userToRemoveId),
+      columnValues: (final t) => [
+        t.authUserId(userToKeepId),
+      ],
+      transaction: transaction,
+    );
+  }
 }
 
 /// Extension to get the EmailIdp instance from the AuthServices.

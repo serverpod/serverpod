@@ -17,7 +17,7 @@ import 'facebook_idp_utils.dart';
 ///
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
-class FacebookIdp {
+class FacebookIdp implements AccountMergeHandlerProvider {
   /// The method used when authenticating with the Facebook identity provider.
   static const String method = 'facebook';
 
@@ -33,6 +33,29 @@ class FacebookIdp {
   final TokenIssuer _tokenIssuer;
 
   final UserProfiles _userProfiles;
+
+  @override
+  AccountMergeHandler get accountMergeHook => migrate;
+
+  /// Migrates [FacebookAccount]s from [userToRemoveId] to [userToKeepId].
+  ///
+  /// If the [userToKeepId] already has an associated [FacebookAccount], the
+  /// account for [userToRemoveId] is deleted.
+  static Future<void> migrate(
+    final Session session, {
+    required final UuidValue userToKeepId,
+    required final UuidValue userToRemoveId,
+    required final Transaction transaction,
+  }) async {
+    await FacebookAccount.db.updateWhere(
+      session,
+      where: (final t) => t.authUserId.equals(userToRemoveId),
+      columnValues: (final t) => [
+        t.authUserId(userToKeepId),
+      ],
+      transaction: transaction,
+    );
+  }
 
   FacebookIdp._(
     this.config,
