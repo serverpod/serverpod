@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cli_tools/cli_tools.dart';
+import 'package:collection/collection.dart';
 import 'package:config/config.dart';
 import 'package:dart_data_home/dart_data_home.dart';
 import 'package:meta/meta.dart' show visibleForTesting;
@@ -72,11 +73,10 @@ class UpgradeCommand extends ServerpodCommand {
 
       final output = result.stdout.toString().trim();
       const prefix = 'Serverpod version: ';
-      final versionLine = output.split('\n').map(
-        (line) => line.trim(),
-      ).where(
-        (line) => line.startsWith(prefix),
-      ).firstOrNull;
+      final versionLine = output
+          .split('\n')
+          .map((line) => line.trim())
+          .firstWhereOrNull((line) => line.startsWith(prefix));
       if (versionLine == null) {
         log.debug('`serverpod version` returned no version line.');
         return null;
