@@ -55,9 +55,10 @@ void main() {
   });
 
   setUp(() {
-    mockLogger.infoMessages.clear();
-    mockLogger.debugMessages.clear();
-    mockLogger.errorMessages.clear();
+    mockLogger
+      ..infoMessages.clear()
+      ..debugMessages.clear()
+      ..errorMessages.clear();
   });
 
   group('Given an UpgradeCommand', () {

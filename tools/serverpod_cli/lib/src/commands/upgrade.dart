@@ -3,7 +3,9 @@ import 'dart:io';
 
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
+import 'package:dart_data_home/dart_data_home.dart';
 import 'package:meta/meta.dart' show visibleForTesting;
+import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -54,9 +56,11 @@ class UpgradeCommand extends ServerpodCommand {
   Future<Version?> fetchInstalledCliVersion() async {
     log.debug('Running `serverpod version` to determine installed version...');
 
+    var serverpodExecutable = _resolveServerpodExecutablePath();
+
     try {
       var result = await Process.run(
-        'serverpod',
+        serverpodExecutable,
         ['version'],
         stdoutEncoding: utf8,
       );
@@ -67,11 +71,15 @@ class UpgradeCommand extends ServerpodCommand {
       }
 
       var output = result.stdout.toString().trim();
-      var versionLine = output.split('\n').lastWhere(
+      var nonEmptyLines = output.split('\n').where(
         (line) => line.trim().isNotEmpty,
-        orElse: () => '',
       );
+      if (nonEmptyLines.isEmpty) {
+        log.debug('`serverpod version` returned no output.');
+        return null;
+      }
 
+      var versionLine = nonEmptyLines.last;
       const prefix = 'Serverpod version: ';
       if (!versionLine.startsWith(prefix)) {
         log.debug('Unexpected output from `serverpod version`: $output');
@@ -87,5 +95,20 @@ class UpgradeCommand extends ServerpodCommand {
       log.debug('Failed to run `serverpod version`: $e');
       return null;
     }
+  }
+
+  /// Resolves the path to the `serverpod` executable installed by `dart install`.
+  ///
+  /// Falls back to invoking `serverpod` from PATH if the dart install directory
+  /// does not contain the executable.
+  String _resolveServerpodExecutablePath() {
+    final name = Platform.isWindows ? 'serverpod.bat' : 'serverpod';
+
+    final dartInstallPath = p.join(getDartDataHome('install'), 'bin', name);
+    if (File(dartInstallPath).existsSync()) {
+      return dartInstallPath;
+    }
+
+    return name;
   }
 }
