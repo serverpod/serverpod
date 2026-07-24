@@ -55,9 +55,8 @@ void main() {
     initializeLoggerWith(mockLogger);
   });
 
-  group('Given an UpgradeCommand', () {
+  group('Given an UpgradeCommand when the installed version can be determined', () {
     test(
-      'when the installed version can be determined '
       'then the completion message contains that version.',
       () async {
         final upgradeCommand = _UpgradeCommandWithMockedVersion(Version(2, 3, 4));
@@ -71,23 +70,27 @@ void main() {
         );
       },
     );
-
-    test(
-      'when the installed version cannot be determined '
-      'then a fallback message is logged.',
-      () async {
-        final upgradeCommand = _UpgradeCommandWithMockedVersion(null);
-        await upgradeCommand.runWithConfig(
-          Configuration<OptionDefinition>.resolveNoExcept(options: []),
-        );
-
-        expect(
-          mockLogger.infoMessages,
-          contains(
-            'Serverpod was upgraded, but the installed version could not be determined.',
-          ),
-        );
-      },
-    );
   });
+
+  group(
+    'Given an UpgradeCommand when the installed version cannot be determined',
+    () {
+      test(
+        'then a fallback message is logged.',
+        () async {
+          final upgradeCommand = _UpgradeCommandWithMockedVersion(null);
+          await upgradeCommand.runWithConfig(
+            Configuration<OptionDefinition>.resolveNoExcept(options: []),
+          );
+
+          expect(
+            mockLogger.infoMessages,
+            contains(
+              'Serverpod was upgraded, but the installed version could not be determined.',
+            ),
+          );
+        },
+      );
+    },
+  );
 }
