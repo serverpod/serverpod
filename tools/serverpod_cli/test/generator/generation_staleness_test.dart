@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:serverpod_cli/src/config/config.dart';
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:test/fake.dart';
@@ -12,9 +12,14 @@ import '../test_util/mtime_helpers.dart';
 class _FakeConfig extends Fake implements GeneratorConfig {
   final String serverDir;
   final Map<String, List<String>> _sharedModels;
+  final List<TypeDefinition> _extraClasses;
 
-  _FakeConfig(this.serverDir, {Map<String, List<String>>? sharedModels})
-    : _sharedModels = sharedModels ?? {};
+  _FakeConfig(
+    this.serverDir, {
+    Map<String, List<String>>? sharedModels,
+    List<TypeDefinition>? extraClasses,
+  }) : _sharedModels = sharedModels ?? {},
+       _extraClasses = extraClasses ?? [];
 
   @override
   List<String> get serverPackageDirectoryPathParts => [serverDir];
@@ -57,6 +62,9 @@ class _FakeConfig extends Fake implements GeneratorConfig {
     for (final pathParts in _sharedModels.values)
       p.joinAll([serverDir, ...pathParts, 'lib', 'src', 'generated']),
   ];
+
+  @override
+  List<TypeDefinition> get extraClasses => _extraClasses;
 }
 
 void main() {
@@ -498,4 +506,66 @@ void main() {
       expect(files, contains('/tmp/models/c.dart'));
     },
   );
+
+  group('Given an extra class source file', () {
+    late File extraClassFile;
+    late _FakeConfig extraClassConfig;
+
+    setUp(() async {
+      extraClassFile = File(
+        p.join(tempDir.path, 'external_pkg', 'lib', 'user_id.dart'),
+      );
+      await extraClassFile.create(recursive: true);
+      await extraClassFile.writeAsString('class UserId {}');
+
+      extraClassConfig = _FakeConfig(
+        tempDir.path,
+        extraClasses: [
+          TypeDefinition(
+            className: 'UserId',
+            nullable: false,
+            url: 'package:external_pkg/user_id.dart',
+            sourcePath: extraClassFile.path,
+          ),
+        ],
+      );
+    });
+
+    test(
+      'when enumerateSourceFiles is called, '
+      'then it includes the extra class source path',
+      () async {
+        final sources = await enumerateSourceFiles(extraClassConfig);
+
+        expect(sources.keys, contains(extraClassFile.path));
+      },
+    );
+
+    test(
+      'when the extra class source file is newer than the stamp, '
+      'then isGenerationUpToDate returns false',
+      () async {
+        await writeGenerationStamp(extraClassConfig, generatedFiles: {});
+        final stampMtime = stampFile.statSync().modified;
+
+        await waitForMtimeAfter(stampMtime, tempDir);
+        await extraClassFile.writeAsString('class UserId { /* updated */ }');
+
+        final sources = await enumerateSourceFiles(extraClassConfig);
+        expect(await isGenerationUpToDate(extraClassConfig, sources), isFalse);
+      },
+    );
+
+    test(
+      'when the extra class source file is deleted, '
+      'then isGenerationUpToDate returns false',
+      () async {
+        await writeGenerationStamp(extraClassConfig, generatedFiles: {});
+        await extraClassFile.delete();
+
+        final sources = await enumerateSourceFiles(extraClassConfig);
+        expect(await isGenerationUpToDate(extraClassConfig, sources), isFalse);
+      },
+    );
+  });
 }

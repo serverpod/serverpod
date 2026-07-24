@@ -308,6 +308,9 @@ class FutureCallsAnalyzer {
       var analyzedFiles = context.contextRoot.analyzedFiles().toList();
       analyzedFiles.sort();
       yield* analyzedFiles
+          // Limit discovery to the server's lib directory to avoid scanning
+          // extra class packages or other roots in the shared [AnalysisContextCollection].
+          .where((path) => p.isWithin(absoluteIncludedPaths, path))
           .where((path) => path.endsWith('.dart'))
           .where((path) => !path.endsWith('_test.dart'));
     }
@@ -315,13 +318,16 @@ class FutureCallsAnalyzer {
 
   /// Resolves a single file to a [ResolvedLibraryResult].
   Future<ResolvedLibraryResult?> _resolveLibrary(String filePath) async {
-    for (var context in collection.contexts) {
-      var result = await context.currentSession.getResolvedLibrary(
-        p.normalize(filePath),
-      );
-      if (result is ResolvedLibraryResult) {
-        return result;
-      }
+    final normalizedFilePath = p.normalize(filePath);
+    final context = findContextFor(collection, normalizedFilePath);
+    if (context == null) return null;
+
+    final result = await context.currentSession.getResolvedLibrary(
+      normalizedFilePath,
+    );
+
+    if (result is ResolvedLibraryResult) {
+      return result;
     }
 
     return null;
