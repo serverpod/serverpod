@@ -75,11 +75,12 @@ class GoogleSignInWidget extends StatefulWidget {
   /// `attemptLightweightAuthentication` method after the widget is initialized.
   ///
   /// The amount of allowable UI is up to the platform to determine, but it
-  /// should be minimal. Possible examples include FedCM on the web, and One Tap
-  /// on Android. Platforms may even show no UI, and only sign in if a previous
-  /// sign-in is being restored. This method is intended to be called as soon
-  /// as the application needs to know if the user is signed in, often at
-  /// initial launch.
+  /// should be minimal. Possible examples include One Tap on Android.
+  /// Platforms may even show no UI, and only sign in if a previous sign-in is
+  /// being restored. This method is intended to be called as soon as the
+  /// application needs to know if the user is signed in, often at initial
+  /// launch. Has no effect on web, where only the OAuth2 PKCE redirect flow
+  /// is supported.
   final bool attemptLightweightSignIn;
 
   /// Scopes to request from Google.
@@ -183,12 +184,11 @@ class _GoogleSignInWidgetState extends State<GoogleSignInWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // Native platforms (iOS, Android, macOS, etc.) and web with the OAuth2 flow
-    // initialized. Without a supported path (e.g. web without OAuth2), there is
-    // no Google button to show.
-    final hasSignInPath =
-        (kIsWeb && GoogleWebSignInService.instance.isInitialized) ||
-        GoogleSignIn.instance.supportsAuthenticate();
+    // Web requires the OAuth2 PKCE flow to be initialized; native platforms
+    // require google_sign_in support. Without a path there is no button.
+    final hasSignInPath = kIsWeb
+        ? GoogleWebSignInService.instance.isInitialized
+        : GoogleSignIn.instance.supportsAuthenticate();
     if (!hasSignInPath) return const SizedBox.shrink();
 
     return GoogleSignInNativeButton(
