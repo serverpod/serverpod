@@ -37,7 +37,7 @@ class UpgradeCommand extends ServerpodCommand {
       throw ExitException.error();
     }
 
-    var installedVersion = await fetchInstalledCliVersion();
+    final installedVersion = await fetchInstalledCliVersion();
     if (installedVersion == null) {
       log.info(
         'Serverpod was upgraded, but the installed version could not be determined.',
@@ -56,7 +56,7 @@ class UpgradeCommand extends ServerpodCommand {
   Future<Version?> fetchInstalledCliVersion() async {
     log.debug('Running `serverpod version` to determine installed version...');
 
-    var serverpodExecutable = _resolveServerpodExecutablePath();
+    final serverpodExecutable = _resolveServerpodExecutablePath();
 
     try {
       var result = await Process.run(
@@ -70,8 +70,8 @@ class UpgradeCommand extends ServerpodCommand {
         return null;
       }
 
-      var output = result.stdout.toString().trim();
-      var nonEmptyLines = output.split('\n').where(
+      final output = result.stdout.toString().trim();
+      final nonEmptyLines = output.split('\n').where(
         (line) => line.trim().isNotEmpty,
       );
       if (nonEmptyLines.isEmpty) {
@@ -79,14 +79,14 @@ class UpgradeCommand extends ServerpodCommand {
         return null;
       }
 
-      var versionLine = nonEmptyLines.last;
+      final versionLine = nonEmptyLines.last;
       const prefix = 'Serverpod version: ';
       if (!versionLine.startsWith(prefix)) {
         log.debug('Unexpected output from `serverpod version`: $output');
         return null;
       }
 
-      var versionString = versionLine.substring(prefix.length).trim();
+      final versionString = versionLine.substring(prefix.length).trim();
       return Version.parse(versionString);
     } on FormatException catch (e) {
       log.debug('Failed to parse installed Serverpod version: $e');
