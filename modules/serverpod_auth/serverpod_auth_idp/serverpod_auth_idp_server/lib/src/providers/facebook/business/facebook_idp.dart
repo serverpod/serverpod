@@ -35,24 +35,6 @@ class FacebookIdp implements IdentityProvider {
 
   final UserProfiles _userProfiles;
 
-  /// Migrates [FacebookAccount]s from [userToRemoveId] to [userToKeepId].
-  @override
-  Future<void> mergeAuthUsers(
-    final Session session, {
-    required final UuidValue userToKeepId,
-    required final UuidValue userToRemoveId,
-    required final Transaction transaction,
-  }) async {
-    await FacebookAccount.db.updateWhere(
-      session,
-      where: (final t) => t.authUserId.equals(userToRemoveId),
-      columnValues: (final t) => [
-        t.authUserId(userToKeepId),
-      ],
-      transaction: transaction,
-    );
-  }
-
   FacebookIdp._(
     this.config,
     this._tokenIssuer,
@@ -151,6 +133,24 @@ class FacebookIdp implements IdentityProvider {
   /// Determines whether the current session has an associated Facebook account.
   Future<bool> hasAccount(final Session session) async =>
       await utils.getAccount(session) != null;
+
+  /// Migrates [FacebookAccount]s from [userToRemoveId] to [userToKeepId].
+  @override
+  Future<void> mergeAuthUsers(
+    final Session session, {
+    required final UuidValue userToKeepId,
+    required final UuidValue userToRemoveId,
+    required final Transaction transaction,
+  }) async {
+    await FacebookAccount.db.updateWhere(
+      session,
+      where: (final t) => t.authUserId.equals(userToRemoveId),
+      columnValues: (final t) => [
+        t.authUserId(userToKeepId),
+      ],
+      transaction: transaction,
+    );
+  }
 }
 
 /// Extension to get the FacebookIdp instance from the AuthServices.

@@ -50,8 +50,8 @@ class AuthServices {
     required final List<TokenManagerBuilder> tokenManagerBuilders,
     final List<IdentityProviderBuilder> identityProviderBuilders = const [],
     final AuthUsersConfig authUsersConfig = const AuthUsersConfig(),
-    final AccountMergeConfig accountMergeConfig = const AccountMergeConfig(),
     final UserProfileConfig userProfileConfig = const UserProfileConfig(),
+    final AccountMergeConfig accountMergeConfig = const AccountMergeConfig(),
   }) {
     final instance = AuthServices(
       primaryTokenManagerBuilder: tokenManagerBuilders.first,
