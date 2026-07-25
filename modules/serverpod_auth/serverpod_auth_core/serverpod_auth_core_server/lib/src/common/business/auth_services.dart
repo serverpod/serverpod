@@ -44,6 +44,9 @@ class AuthServices {
   /// [userProfileConfig] is the configuration for the user profiles manager
   /// that will be used to create the user profiles manager.
   ///
+  /// [accountMergeConfig] is the configuration for the account merger that
+  /// will resolve conflicts when merging accounts.
+  ///
   /// These are passed to the [AuthServices] constructor to create the instance.
   /// {@endtemplate}
   static void set({

@@ -25,7 +25,9 @@ class AccountMergeConfig {
   ///
   /// Use this constructor if you need fine-grained control over the ordering
   /// of merge hooks or if you want to override some of the default handlers
-  /// while keeping others.
+  /// while keeping others. Beware that no automatic merge will be performed if
+  /// this constructor is used. Make sure to add the default merge hooks to your
+  /// custom list of merge hooks.
   ///
   /// See [AccountMergeConfig] for more information about merge hooks and
   /// how they are ordered.
