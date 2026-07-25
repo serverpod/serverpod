@@ -214,7 +214,6 @@ void main() {
             expect(params, contains('super.limit'));
             expect(params, contains('super.offset'));
             expect(params, contains('super.orderBy'));
-            expect(params, contains('super.orderDescending'));
             expect(params, contains('super.orderByList'));
             expect(params, contains('super.include'));
           });

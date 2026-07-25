@@ -4,8 +4,10 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/messages.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_log_event.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
+import 'package:serverpod_shared/log.dart' show LogLevel;
 import 'package:test/test.dart';
 
 /// Path of a Dart shim under `test/commands/start/flutter_shims/`.
@@ -31,6 +33,115 @@ Future<({HttpServer server, String wsUri})> _startFakeVmService() async {
       (data) {},
       onDone: () => socket.close(),
     );
+  });
+  return (
+    server: server,
+    wsUri: 'ws://127.0.0.1:${server.port}/ws',
+  );
+}
+
+Future<({HttpServer server, String wsUri})> _startFakeLoggingVmService({
+  int? loggingLevel = 800,
+  List<List<int>> stdoutChunks = const [],
+  Duration stdoutChunkInterval = Duration.zero,
+}) async {
+  final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+  server.transform(WebSocketTransformer()).listen((socket) {
+    socket.listen((data) {
+      if (data is! String) return;
+      final request = jsonDecode(data);
+      if (request is! Map<String, dynamic>) return;
+
+      final id = request['id'];
+      if (id == null) return;
+      socket.add(
+        jsonEncode({
+          'jsonrpc': '2.0',
+          'id': id,
+          'result': {'type': 'Success'},
+        }),
+      );
+
+      final params = request['params'];
+      if (request['method'] != 'streamListen' ||
+          params is! Map<String, dynamic>) {
+        return;
+      }
+
+      final streamId = params['streamId'];
+      Timer(const Duration(milliseconds: 20), () async {
+        if (socket.readyState != WebSocket.open) return;
+        if (streamId == 'Logging' && loggingLevel != null) {
+          socket.add(
+            jsonEncode({
+              'jsonrpc': '2.0',
+              'method': 'streamNotify',
+              'params': {
+                'streamId': 'Logging',
+                'event': {
+                  'type': 'Event',
+                  'kind': 'Logging',
+                  'timestamp': 1783997898247,
+                  'logRecord': {
+                    'type': 'LogRecord',
+                    'message': {
+                      'type': '@Instance',
+                      'kind': 'String',
+                      'valueAsString': 'Using WidgetsApp configuration',
+                    },
+                    'time': 1783997898247,
+                    'level': loggingLevel,
+                    'sequenceNumber': 1,
+                    'loggerName': {
+                      'type': '@Instance',
+                      'kind': 'String',
+                      'valueAsString': 'GoRouter',
+                    },
+                    'zone': {
+                      'type': '@Instance',
+                      'kind': 'Null',
+                      'valueAsString': 'null',
+                    },
+                    'error': {
+                      'type': '@Instance',
+                      'kind': 'Null',
+                      'valueAsString': 'null',
+                    },
+                    'stackTrace': {
+                      'type': '@Instance',
+                      'kind': 'Null',
+                      'valueAsString': 'null',
+                    },
+                  },
+                },
+              },
+            }),
+          );
+        } else if (streamId == 'Stdout') {
+          for (var index = 0; index < stdoutChunks.length; index++) {
+            final chunk = stdoutChunks[index];
+            socket.add(
+              jsonEncode({
+                'jsonrpc': '2.0',
+                'method': 'streamNotify',
+                'params': {
+                  'streamId': 'Stdout',
+                  'event': {
+                    'type': 'Event',
+                    'kind': 'WriteEvent',
+                    'bytes': base64Encode(chunk),
+                  },
+                },
+              }),
+            );
+            if (index < stdoutChunks.length - 1 &&
+                stdoutChunkInterval > Duration.zero) {
+              await Future<void>.delayed(stdoutChunkInterval);
+            }
+          }
+        }
+      });
+    }, onDone: socket.close);
   });
   return (
     server: server,
@@ -347,9 +458,29 @@ void main() {
   group('Given a FlutterProcess receiving machine protocol lines', () {
     late FlutterProcess fp;
     late List<String> progressMessages;
+    late StringBuffer stdoutBuffer;
+    late StringBuffer stderrBuffer;
+    late StreamController<List<int>> stdoutController;
+    late StreamController<List<int>> stderrController;
+    late IOSink stdoutSink;
+    late IOSink stderrSink;
+    late List<FlutterLogEvent> logEvents;
 
     setUp(() async {
       progressMessages = <String>[];
+      stdoutBuffer = StringBuffer();
+      stderrBuffer = StringBuffer();
+      stdoutController = StreamController<List<int>>();
+      stderrController = StreamController<List<int>>();
+      stdoutController.stream
+          .transform(utf8.decoder)
+          .listen(stdoutBuffer.write);
+      stderrController.stream
+          .transform(utf8.decoder)
+          .listen(stderrBuffer.write);
+      stdoutSink = IOSink(stdoutController.sink);
+      stderrSink = IOSink(stderrController.sink);
+      logEvents = [];
 
       /// FlutterProcess wired only enough to push synthetic lines through
       /// `handleMachineLine` and assert side effects.
@@ -357,8 +488,130 @@ void main() {
         flutterPackageDir: Directory.systemTemp.path,
         device: 'web-server',
         onProgress: progressMessages.add,
+        stdoutSink: stdoutSink,
+        stderrSink: stderrSink,
+        onLog: logEvents.add,
       );
     });
+
+    tearDown(() async {
+      await stdoutSink.close();
+      await stderrSink.close();
+    });
+
+    test(
+      'when a Flutter application log event contains a framework exception, '
+      'then the complete exception is forwarded to stdout.',
+      () async {
+        const exception = '''
+══╡ EXCEPTION CAUGHT BY WIDGETS LIBRARY ╞══
+Multiple widgets used the same GlobalKey.
+The key [GlobalKey#1d408] was used by multiple widgets.''';
+
+        fp.handleMachineLine(
+          jsonEncode([
+            {
+              'event': 'app.log',
+              'params': {'log': exception, 'error': false},
+            },
+          ]),
+        );
+        await stdoutSink.flush();
+        await Future<void>.delayed(Duration.zero);
+
+        expect(stdoutBuffer.toString(), '$exception\n');
+        expect(stderrBuffer.toString(), isEmpty);
+        expect(logEvents, hasLength(1));
+        expect(logEvents.single.level, LogLevel.info);
+        expect(logEvents.single.source, FlutterLogSource.appLog);
+        expect(logEvents.single.message, exception);
+        expect(logEvents.single.levelIsInferred, isTrue);
+      },
+    );
+
+    test(
+      'when a Flutter application log event is marked as an error, '
+      'then the complete log is forwarded to stderr.',
+      () async {
+        const warning =
+            '** (serverpod_app:564071): WARNING **: '
+            'Timed out waiting for OpenGL frame';
+
+        fp.handleMachineLine(
+          jsonEncode([
+            {
+              'event': 'app.log',
+              'params': {'log': warning, 'error': true},
+            },
+          ]),
+        );
+        await stderrSink.flush();
+        await Future<void>.delayed(Duration.zero);
+
+        expect(stderrBuffer.toString(), '$warning\n');
+        expect(stdoutBuffer.toString(), isEmpty);
+        expect(logEvents.single.level, LogLevel.error);
+        expect(logEvents.single.source, FlutterLogSource.appLog);
+        expect(logEvents.single.levelIsInferred, isTrue);
+      },
+    );
+
+    test(
+      'when a Flutter tool warning contains a stack trace, '
+      'then the message and stack trace are forwarded to stderr.',
+      () async {
+        fp.handleMachineLine(
+          jsonEncode([
+            {
+              'event': 'daemon.logMessage',
+              'params': {
+                'level': 'warning',
+                'message': 'Flutter tool warning',
+                'stackTrace': 'first frame\nsecond frame\n',
+              },
+            },
+          ]),
+        );
+        await stderrSink.flush();
+        await Future<void>.delayed(Duration.zero);
+
+        expect(
+          stderrBuffer.toString(),
+          'Flutter tool warning\nfirst frame\nsecond frame\n',
+        );
+        expect(stdoutBuffer.toString(), isEmpty);
+        expect(logEvents.single.level, LogLevel.warning);
+        expect(logEvents.single.source, FlutterLogSource.daemon);
+        expect(logEvents.single.stackTrace, 'first frame\nsecond frame\n');
+        expect(logEvents.single.levelIsInferred, isFalse);
+      },
+    );
+
+    test(
+      'when a Flutter tool status message is received, '
+      'then the message is forwarded to stdout.',
+      () async {
+        fp.handleMachineLine(
+          jsonEncode([
+            {
+              'event': 'daemon.logMessage',
+              'params': {
+                'level': 'status',
+                'message': 'Building Linux application...',
+              },
+            },
+          ]),
+        );
+        await stdoutSink.flush();
+        await Future<void>.delayed(Duration.zero);
+
+        expect(stdoutBuffer.toString(), 'Building Linux application...\n');
+        expect(stderrBuffer.toString(), isEmpty);
+        expect(logEvents.single.level, LogLevel.info);
+        expect(logEvents.single.source, FlutterLogSource.daemon);
+        expect(logEvents.single.levelIsInferred, isFalse);
+      },
+    );
 
     test(
       'when given a line that does not start with [ '
@@ -551,4 +804,641 @@ void main() {
       },
     );
   });
+
+  group(
+    'Given a VM Logging record whose optional values are Null instances, '
+    'when the record is received,',
+    () {
+      late FlutterProcess fp;
+      late ({HttpServer server, String wsUri}) fake;
+      late FlutterLogEvent receivedEvent;
+
+      setUp(() async {
+        fake = await _startFakeLoggingVmService();
+        final eventCompleter = Completer<FlutterLogEvent>();
+        fp = FlutterProcess(
+          flutterPackageDir: Directory.current.path,
+          device: 'web-server',
+          flutterExecutable: _dartExecutable(),
+          argsOverrideForTesting: [
+            _shimPath('emits_machine_events.dart'),
+            '--ws=${fake.wsUri}',
+          ],
+          onLog: (event) {
+            if (event.source == FlutterLogSource.vmLogging &&
+                !eventCompleter.isCompleted) {
+              eventCompleter.complete(event);
+            }
+          },
+        );
+
+        await fp.start();
+        await fp.launched;
+        await fp.connectToVmService();
+        receivedEvent = await eventCompleter.future.timeout(
+          const Duration(seconds: 5),
+        );
+      });
+
+      tearDown(() async {
+        await fp.stop(timeout: const Duration(milliseconds: 100));
+        await fake.server.close(force: true);
+      });
+
+      test(
+        'then no error, stack trace, or null-valued metadata is emitted.',
+        () {
+          expect(receivedEvent.error, isNull);
+          expect(receivedEvent.stackTrace, isNull);
+          expect(receivedEvent.metadata, {
+            'vmLevel': 800,
+            'sequenceNumber': 1,
+          });
+        },
+      );
+    },
+  );
+
+  group(
+    'Given VM logging with an unspecified level, '
+    'when the record is forwarded,',
+    () {
+      late FlutterProcess fp;
+      late ({HttpServer server, String wsUri}) fake;
+      late FlutterLogEvent loggingEvent;
+
+      setUp(() async {
+        fake = await _startFakeLoggingVmService(loggingLevel: 0);
+        final loggingCompleter = Completer<FlutterLogEvent>();
+        fp = FlutterProcess(
+          flutterPackageDir: Directory.current.path,
+          device: 'web-server',
+          flutterExecutable: _dartExecutable(),
+          argsOverrideForTesting: [
+            _shimPath('emits_machine_events.dart'),
+            '--ws=${fake.wsUri}',
+          ],
+          onLog: (event) {
+            if (event.source == FlutterLogSource.vmLogging &&
+                !loggingCompleter.isCompleted) {
+              loggingCompleter.complete(event);
+            }
+          },
+        );
+
+        await fp.start();
+        await fp.launched;
+        await fp.connectToVmService();
+        loggingEvent = await loggingCompleter.future.timeout(
+          const Duration(seconds: 5),
+        );
+      });
+
+      tearDown(() async {
+        await fp.stop(timeout: const Duration(milliseconds: 100));
+        await fake.server.close(force: true);
+      });
+
+      test(
+        'then it is represented as inferred info.',
+        () {
+          expect(loggingEvent.level, LogLevel.info);
+          expect(loggingEvent.levelIsInferred, isTrue);
+          expect(loggingEvent.metadata, {'sequenceNumber': 1});
+        },
+      );
+    },
+  );
+
+  group(
+    'Given VM stdout split across partial writes, '
+    'when the stream is forwarded,',
+    () {
+      late FlutterProcess fp;
+      late ({HttpServer server, String wsUri}) fake;
+      late FlutterLogEvent stdoutEvent;
+
+      setUp(() async {
+        fake = await _startFakeLoggingVmService(
+          loggingLevel: null,
+          stdoutChunks: [utf8.encode('Progress: '), utf8.encode('50%\n')],
+        );
+        final stdoutCompleter = Completer<FlutterLogEvent>();
+        fp = FlutterProcess(
+          flutterPackageDir: Directory.current.path,
+          device: 'web-server',
+          flutterExecutable: _dartExecutable(),
+          argsOverrideForTesting: [
+            _shimPath('emits_machine_events.dart'),
+            '--ws=${fake.wsUri}',
+          ],
+          onLog: (event) {
+            if (event.source == FlutterLogSource.vmStdout &&
+                !stdoutCompleter.isCompleted) {
+              stdoutCompleter.complete(event);
+            }
+          },
+        );
+
+        await fp.start();
+        await fp.launched;
+        await fp.connectToVmService();
+        stdoutEvent = await stdoutCompleter.future.timeout(
+          const Duration(seconds: 5),
+        );
+      });
+
+      tearDown(() async {
+        await fp.stop(timeout: const Duration(milliseconds: 100));
+        await fake.server.close(force: true);
+      });
+
+      test(
+        'then one complete structured line is emitted.',
+        () {
+          expect(stdoutEvent.message, 'Progress: 50%');
+          expect(stdoutEvent.metadata, {
+            'coalesced': false,
+            'lineCount': 1,
+          });
+        },
+      );
+    },
+  );
+
+  group(
+    'Given the same app line from a VM stream and delayed app.log, '
+    'when both transports forward it,',
+    () {
+      late FlutterProcess fp;
+      late ({HttpServer server, String wsUri}) fake;
+      late List<FlutterLogEvent> receivedEvents;
+      late StringBuffer stdoutBuffer;
+      late StreamController<List<int>> stdoutController;
+      late IOSink stdoutSink;
+
+      setUp(() async {
+        const message = 'A native application message';
+        fake = await _startFakeLoggingVmService(
+          loggingLevel: null,
+          stdoutChunks: [utf8.encode('$message\n')],
+        );
+        receivedEvents = [];
+        stdoutBuffer = StringBuffer();
+        stdoutController = StreamController<List<int>>();
+        stdoutController.stream
+            .transform(utf8.decoder)
+            .listen(stdoutBuffer.write);
+        stdoutSink = IOSink(stdoutController.sink);
+        final vmEvent = Completer<void>();
+        fp = FlutterProcess(
+          flutterPackageDir: Directory.current.path,
+          device: 'linux',
+          flutterExecutable: _dartExecutable(),
+          argsOverrideForTesting: [
+            _shimPath('emits_machine_events.dart'),
+            '--ws=${fake.wsUri}',
+          ],
+          stdoutSink: stdoutSink,
+          onLog: (event) {
+            receivedEvents.add(event);
+            if (event.source == FlutterLogSource.vmStdout &&
+                !vmEvent.isCompleted) {
+              vmEvent.complete();
+            }
+          },
+        );
+
+        await fp.start();
+        await fp.launched;
+        await fp.connectToVmService();
+        await vmEvent.future.timeout(const Duration(seconds: 5));
+        await Future<void>.delayed(const Duration(milliseconds: 1250));
+        fp.handleMachineLine(
+          jsonEncode([
+            {
+              'event': 'app.log',
+              'params': {'log': message, 'error': false},
+            },
+          ]),
+        );
+        await stdoutSink.flush();
+        await Future<void>.delayed(Duration.zero);
+      });
+
+      tearDown(() async {
+        await fp.stop(timeout: const Duration(milliseconds: 100));
+        await fake.server.close(force: true);
+        await stdoutSink.close();
+      });
+
+      test(
+        'then one structured entry and one raw line are retained.',
+        () {
+          expect(receivedEvents, hasLength(1));
+          expect(receivedEvents.single.source, FlutterLogSource.vmStdout);
+          expect(stdoutBuffer.toString(), 'A native application message\n');
+        },
+      );
+    },
+  );
+
+  group(
+    'Given two identical VM lines with app.log mirrors and one additional app.log line, '
+    'when both transports forward them,',
+    () {
+      late FlutterProcess fp;
+      late ({HttpServer server, String wsUri}) fake;
+      late List<FlutterLogEvent> receivedEvents;
+      late StringBuffer stdoutBuffer;
+      late StreamController<List<int>> stdoutController;
+      late IOSink stdoutSink;
+
+      setUp(() async {
+        fake = await _startFakeLoggingVmService(
+          loggingLevel: null,
+          stdoutChunks: [utf8.encode('hello\n'), utf8.encode('hello\n')],
+          stdoutChunkInterval: const Duration(milliseconds: 75),
+        );
+        receivedEvents = [];
+        stdoutBuffer = StringBuffer();
+        stdoutController = StreamController<List<int>>();
+        stdoutController.stream
+            .transform(utf8.decoder)
+            .listen(stdoutBuffer.write);
+        stdoutSink = IOSink(stdoutController.sink);
+        final twoVmEvents = Completer<void>();
+        final additionalAppLogEvent = Completer<void>();
+        fp = FlutterProcess(
+          flutterPackageDir: Directory.current.path,
+          device: 'linux',
+          flutterExecutable: _dartExecutable(),
+          argsOverrideForTesting: [
+            _shimPath('emits_machine_events.dart'),
+            '--ws=${fake.wsUri}',
+          ],
+          stdoutSink: stdoutSink,
+          onLog: (event) {
+            receivedEvents.add(event);
+            if (receivedEvents.length == 2 && !twoVmEvents.isCompleted) {
+              twoVmEvents.complete();
+            }
+            if (receivedEvents.length == 3 &&
+                !additionalAppLogEvent.isCompleted) {
+              additionalAppLogEvent.complete();
+            }
+          },
+        );
+
+        await fp.start();
+        await fp.launched;
+        await fp.connectToVmService();
+        await twoVmEvents.future.timeout(const Duration(seconds: 5));
+        for (var index = 0; index < 3; index++) {
+          fp.handleMachineLine(
+            jsonEncode([
+              {
+                'event': 'app.log',
+                'params': {'log': 'hello', 'error': false},
+              },
+            ]),
+          );
+        }
+        await additionalAppLogEvent.future.timeout(const Duration(seconds: 5));
+        await stdoutSink.flush();
+        await Future<void>.delayed(Duration.zero);
+      });
+
+      tearDown(() async {
+        await fp.stop(timeout: const Duration(milliseconds: 100));
+        await fake.server.close(force: true);
+        await stdoutSink.close();
+      });
+
+      test(
+        'then the mirrors are suppressed and the additional line is retained.',
+        () {
+          expect(
+            receivedEvents.map((event) => event.source),
+            [
+              FlutterLogSource.vmStdout,
+              FlutterLogSource.vmStdout,
+              FlutterLogSource.appLog,
+            ],
+          );
+          expect(
+            receivedEvents.map((event) => event.message),
+            everyElement('hello'),
+          );
+          expect(stdoutBuffer.toString(), 'hello\nhello\nhello\n');
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a partially mirrored multi-line app log followed by a repeated line, '
+    'when both transports forward the output,',
+    () {
+      late FlutterProcess fp;
+      late ({HttpServer server, String wsUri}) fake;
+      late List<FlutterLogEvent> receivedEvents;
+      late StringBuffer stdoutBuffer;
+      late StreamController<List<int>> stdoutController;
+      late IOSink stdoutSink;
+
+      setUp(() async {
+        fake = await _startFakeLoggingVmService(
+          loggingLevel: null,
+          stdoutChunks: [utf8.encode('A\n'), utf8.encode('A\n')],
+          stdoutChunkInterval: const Duration(milliseconds: 150),
+        );
+        receivedEvents = [];
+        stdoutBuffer = StringBuffer();
+        stdoutController = StreamController<List<int>>();
+        stdoutController.stream
+            .transform(utf8.decoder)
+            .listen(stdoutBuffer.write);
+        stdoutSink = IOSink(stdoutController.sink);
+        final firstVmEvent = Completer<void>();
+        fp = FlutterProcess(
+          flutterPackageDir: Directory.current.path,
+          device: 'linux',
+          flutterExecutable: _dartExecutable(),
+          argsOverrideForTesting: [
+            _shimPath('emits_machine_events.dart'),
+            '--ws=${fake.wsUri}',
+          ],
+          stdoutSink: stdoutSink,
+          onLog: (event) {
+            receivedEvents.add(event);
+            if (event.source == FlutterLogSource.vmStdout &&
+                !firstVmEvent.isCompleted) {
+              firstVmEvent.complete();
+            }
+          },
+        );
+
+        await fp.start();
+        await fp.launched;
+        await fp.connectToVmService();
+        await firstVmEvent.future.timeout(const Duration(seconds: 5));
+        fp.handleMachineLine(
+          jsonEncode([
+            {
+              'event': 'app.log',
+              'params': {'log': 'A\nB', 'error': false},
+            },
+          ]),
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 250));
+        fp.handleMachineLine(
+          jsonEncode([
+            {
+              'event': 'app.log',
+              'params': {'log': 'A', 'error': false},
+            },
+          ]),
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+        await stdoutSink.flush();
+        await Future<void>.delayed(Duration.zero);
+      });
+
+      tearDown(() async {
+        await fp.stop(timeout: const Duration(milliseconds: 100));
+        await fake.server.close(force: true);
+        await stdoutSink.close();
+      });
+
+      test(
+        'then the repeated line is retained once.',
+        () {
+          expect(
+            receivedEvents.map((event) => event.message),
+            ['A', 'A\nB', 'A'],
+          );
+          expect(stdoutBuffer.toString(), 'A\nA\nB\nA\n');
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a Flutter process whose UTF-8 stderr character spans byte chunks, '
+    'when stderr is forwarded,',
+    () {
+      late FlutterProcess fp;
+      late FlutterLogEvent receivedEvent;
+      late StringBuffer stderrBuffer;
+      late StreamController<List<int>> stderrController;
+      late IOSink stderrSink;
+
+      setUp(() async {
+        final eventCompleter = Completer<FlutterLogEvent>();
+        stderrBuffer = StringBuffer();
+        stderrController = StreamController<List<int>>();
+        stderrController.stream
+            .transform(utf8.decoder)
+            .listen(stderrBuffer.write);
+        stderrSink = IOSink(stderrController.sink);
+        fp = FlutterProcess(
+          flutterPackageDir: Directory.current.path,
+          device: 'web-server',
+          flutterExecutable: _dartExecutable(),
+          argsOverrideForTesting: [
+            _shimPath('emits_split_utf8_stderr.dart'),
+          ],
+          stderrSink: stderrSink,
+          onLog: (event) {
+            if (event.source == FlutterLogSource.processStderr &&
+                !eventCompleter.isCompleted) {
+              eventCompleter.complete(event);
+            }
+          },
+        );
+
+        await fp.start();
+        await fp.exitCode;
+        receivedEvent = await eventCompleter.future.timeout(
+          const Duration(seconds: 5),
+        );
+        await stderrSink.flush();
+        await Future<void>.delayed(Duration.zero);
+      });
+
+      tearDown(() async {
+        await fp.stop();
+        await stderrSink.close();
+      });
+
+      test(
+        'then the structured entry and raw line preserve the character.',
+        () {
+          expect(receivedEvent.message, 'Falha: conexão');
+          expect(stderrBuffer.toString(), 'Falha: conexão\n');
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a Flutter process emitting inferred stderr lines in two bursts, '
+    'when its log events are forwarded,',
+    () {
+      late FlutterProcess fp;
+      late List<FlutterLogEvent> receivedEvents;
+
+      setUp(() async {
+        receivedEvents = [];
+        final twoEvents = Completer<void>();
+        fp = FlutterProcess(
+          flutterPackageDir: Directory.current.path,
+          device: 'web-server',
+          flutterExecutable: _dartExecutable(),
+          argsOverrideForTesting: [
+            _shimPath('emits_raw_log_bursts.dart'),
+          ],
+          onLog: (event) {
+            receivedEvents.add(event);
+            if (receivedEvents.length == 2 && !twoEvents.isCompleted) {
+              twoEvents.complete();
+            }
+          },
+        );
+
+        await fp.start();
+        await fp.exitCode;
+        await twoEvents.future.timeout(const Duration(seconds: 5));
+      });
+
+      tearDown(() async {
+        await fp.stop();
+      });
+
+      test(
+        'then adjacent lines are grouped and the idle boundary starts a new entry.',
+        () {
+          expect(receivedEvents, hasLength(2));
+          expect(
+            receivedEvents.first.message,
+            'First line of one diagnostic.\n'
+            'Second line of one diagnostic.',
+          );
+          expect(receivedEvents.first.metadata, {
+            'coalesced': true,
+            'lineCount': 2,
+          });
+          expect(receivedEvents.first.levelIsInferred, isTrue);
+          expect(receivedEvents.first.timestampIsInferred, isTrue);
+          expect(receivedEvents.last.message, 'A later diagnostic.');
+          expect(receivedEvents.last.metadata, {
+            'coalesced': false,
+            'lineCount': 1,
+          });
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a Flutter process continuously emitting inferred stderr lines, '
+    'when its log events are forwarded,',
+    () {
+      late FlutterProcess fp;
+      late List<FlutterLogEvent> receivedEvents;
+
+      setUp(() async {
+        receivedEvents = [];
+        final allLinesForwarded = Completer<void>();
+        fp = FlutterProcess(
+          flutterPackageDir: Directory.current.path,
+          device: 'web-server',
+          flutterExecutable: _dartExecutable(),
+          argsOverrideForTesting: [
+            _shimPath('emits_raw_log_trickle.dart'),
+          ],
+          onLog: (event) {
+            receivedEvents.add(event);
+            final lineCount = receivedEvents.fold<int>(
+              0,
+              (count, event) => count + event.message.split('\n').length,
+            );
+            if (lineCount == 20 && !allLinesForwarded.isCompleted) {
+              allLinesForwarded.complete();
+            }
+          },
+        );
+
+        await fp.start();
+        await fp.exitCode;
+        await allLinesForwarded.future.timeout(const Duration(seconds: 5));
+      });
+
+      tearDown(() async {
+        await fp.stop();
+      });
+
+      test(
+        'then the pending entry is flushed before the output becomes idle.',
+        () {
+          expect(receivedEvents, hasLength(greaterThan(1)));
+          expect(
+            receivedEvents.expand((event) => event.message.split('\n')),
+            [for (var index = 1; index <= 20; index++) 'Line $index'],
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a Flutter process rapidly emitting identical inferred stderr lines, '
+    'when its log events are forwarded,',
+    () {
+      late FlutterProcess fp;
+      late FlutterLogEvent receivedEvent;
+
+      setUp(() async {
+        final eventCompleter = Completer<FlutterLogEvent>();
+        fp = FlutterProcess(
+          flutterPackageDir: Directory.current.path,
+          device: 'web-server',
+          flutterExecutable: _dartExecutable(),
+          argsOverrideForTesting: [
+            _shimPath('emits_identical_raw_log_burst.dart'),
+          ],
+          onLog: (event) {
+            if (!eventCompleter.isCompleted) eventCompleter.complete(event);
+          },
+        );
+
+        await fp.start();
+        await fp.exitCode;
+        receivedEvent = await eventCompleter.future.timeout(
+          const Duration(seconds: 5),
+        );
+      });
+
+      tearDown(() async {
+        await fp.stop();
+      });
+
+      test(
+        'then they are grouped into one structured entry.',
+        () {
+          expect(
+            receivedEvent.message,
+            'Repeated diagnostic.\n'
+            'Repeated diagnostic.\n'
+            'Repeated diagnostic.',
+          );
+          expect(receivedEvent.metadata, {
+            'coalesced': true,
+            'lineCount': 3,
+          });
+        },
+      );
+    },
+  );
 }

@@ -26,6 +26,106 @@ scripts:
     run: melos analyze --no-fatal-warnings --category="noTemplates"
   lint_strict:
     run: melos analyze --fatal-infos --fatal-warnings --category="noTemplates"
+  test:
+    description: >-
+      Run the primary host test suites via `dart test`. Embedded PostgreSQL is
+      provisioned by the tests and the serverpod CLI is run from source. The
+      bootstrap group includes Dockerfile and Compose checks on non-Windows
+      hosts, and Redis-tagged integration tests require Redis at redis:6379.
+      Stops at the first failing suite. The e2e and Dockerized Flutter suites
+      are excluded.
+    steps:
+      - test_unit
+      - test_bootstrap
+      - test_integration
+  test_unit:
+    description: Unit tests across all Dart-only packages.
+    run: dart test -x integration --reporter=failures-only
+    exec:
+      concurrency: 1
+    packageFilters:
+      flutter: false
+      dirExists: test
+      ignore:
+        - serverpod_cli_e2e_test
+        - bootstrap_project
+        - serverpod_templates
+        - "modulename*"
+        - "projectname*"
+    env:
+      SERVERPOD_SILENCE_LIFECYCLE_MESSAGES: "1"
+  test_bootstrap:
+    description: Project-bootstrap tests (create + perform-create).
+    run: >-
+      SERVERPOD_HOME="$MELOS_ROOT_PATH" dart test --reporter=failures-only &&
+      SERVERPOD_HOME="$MELOS_ROOT_PATH" dart test test_perform_create --reporter=failures-only
+    exec:
+      concurrency: 1
+    packageFilters:
+      scope: bootstrap_project
+    env:
+      SERVERPOD_SILENCE_LIFECYCLE_MESSAGES: "1"
+  test_integration:
+    description: >-
+      Integration tests (no Docker). The PostgreSQL server and module suites
+      provision their own database on the shared embedded postmaster on demand;
+      the SQLite server suite runs against on-disk SQLite.
+    steps:
+      - test_integration_server
+      - test_integration_modules
+      - test_integration_sqlite_server
+  test_integration_embedded_pg_build:
+    description: >-
+      Build the embedded PostgreSQL bundle from source in an isolated cache,
+      then run its package integration tests and the host integration suite.
+      Requires the native PostgreSQL bundle build toolchain.
+    run: bash util/run_tests_integration_embedded_pg_build
+  test_integration_server:
+    description: serverpod_test_server integration tests (real-server-boot + withServerpod).
+    run: |
+      set -e
+      # Pre-warm: launch the embedded postmaster and apply migrations once
+      dart run bin/main.dart -m production -r maintenance --apply-migrations > /dev/null
+      dart test test_integration -x integration --reporter=failures-only
+      # Warm libsqlite3's native-asset build hooks so start_timeout_test's spawned
+      # dart test does not recompile them inside its 4s start budget.
+      dart test test_integration/test_tools/start_timeout_test/test_that_will_not_timeout.dart --name "__warmup_no_match__" > /dev/null 2>&1 || true
+      INTEGRATION_TEST_SERVERPOD_MODE=test dart test test_integration -t integration --reporter=failures-only
+    exec:
+      concurrency: 1
+    packageFilters:
+      scope: serverpod_test_server
+    env:
+      SERVERPOD_SILENCE_LIFECYCLE_MESSAGES: "1"
+      SERVERPOD_DATABASE_DATA_PATH: ".serverpod/test/pgdata"
+      TZ: "UTC"
+  test_integration_modules:
+    description: auth/module/nonvector server integration tests.
+    run: dart test -t integration --reporter=failures-only
+    exec:
+      concurrency: 1
+    packageFilters:
+      scope:
+        - serverpod_auth_test_server
+        - serverpod_test_module_server
+        - serverpod_test_nonvector_server
+    env:
+      SERVERPOD_SILENCE_LIFECYCLE_MESSAGES: "1"
+      SERVERPOD_DATABASE_DATA_PATH: ".serverpod/test/pgdata"
+      TZ: "UTC"
+  test_integration_sqlite_server:
+    description: serverpod_test_sqlite_server integration tests (SQLite, on host).
+    run: |
+      set -e
+      rm -f sqlite_data/*.db*
+      dart run bin/main.dart -m production -r maintenance --apply-migrations
+      dart test test_integration --concurrency=1 --reporter=failures-only
+    exec:
+      concurrency: 1
+    packageFilters:
+      scope: serverpod_test_sqlite_server
+    env:
+      SERVERPOD_SILENCE_LIFECYCLE_MESSAGES: "1"
   upgrade_flutter:
     run: melos exec --flutter --category="noTemplates" -- flutter pub upgrade
   upgrade_dart:

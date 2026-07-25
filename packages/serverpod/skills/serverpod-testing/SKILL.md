@@ -1,11 +1,11 @@
 ---
 name: serverpod-testing
-description: Test Serverpod endpoints and business logic — withServerpod, sessionBuilder, authentication, DB seeding, rollback, streams, running tests. Use when writing server tests or working with serverpod_test.
+description: Test Serverpod endpoints and business logic - withServerpod, sessionBuilder, authentication, DB seeding, rollback, streams, running tests. Use when writing server tests or working with serverpod_test.
 ---
 
 # Serverpod Testing
 
-Generated test tools let you call endpoints in tests with full server context (DB, caching, etc.). Import the **generated** test tools file, not `serverpod_test` directly — it re-exports everything needed. The import path comes from `config/generator.yaml` (`server_test_tools_path`); the examples below use the common `test_tools/serverpod_test_tools.dart` output.
+Generated test tools let you call endpoints in tests with full server context (DB, caching, etc.). Import the **generated** test tools file, not `serverpod_test` directly - it re-exports everything needed. The import path comes from `config/generator.yaml` (`server_test_tools_path`); the examples below use the common `test_tools/serverpod_test_tools.dart` output.
 
 Prefer Given/when/then descriptions. Across nested groups plus the test name, there should be one clear Given, one when, and one then that can explain a failure without reading the code.
 
@@ -83,24 +83,19 @@ withServerpod('Given Products endpoint', (sessionBuilder, endpoints) {
 });
 ```
 
-No manual tearDown needed — by default each test runs in a transaction that is rolled back.
+No manual tearDown needed - by default each test runs in a transaction that is rolled back.
 
 ## Rollback behavior
 
-Default: `RollbackDatabase.afterEach` — each test in a rolled-back transaction.
+Default: `RollbackDatabase.afterEach` - each test in a rolled-back transaction.
 
-- `afterAll` — roll back after all tests in the group. Useful for scenario tests where consecutive tests depend on each other and setup is expensive.
-- `disabled` — no automatic rollback. Required when endpoint code uses concurrent `session.db.transaction(...)` calls (nested transactions would throw `InvalidConfigurationException`). Clean up manually in `tearDownAll`; consider `--concurrency=1`.
+- `afterAll` - roll back after all tests in the group. Useful for scenario tests where consecutive tests depend on each other and setup is expensive.
+- `disabled` - no automatic rollback. Required when endpoint code uses concurrent `session.db.transaction(...)` calls (nested transactions would throw `InvalidConfigurationException`). Each `withServerpod` group gets its own database, so committed data never leaks into other groups and no manual cleanup or `--concurrency=1` is needed; clean up in `tearDown` only if later tests in the same group need a clean slate.
 
 ```dart
 withServerpod(
   'Given concurrent transactions',
   (sessionBuilder, endpoints) {
-    tearDownAll(() async {
-      var session = sessionBuilder.build();
-      await Product.db.deleteWhere(session, where: (_) => Constant.bool(true));
-    });
-
     test('then should commit all', () async {
       await endpoints.products.concurrentTransactionCalls(sessionBuilder);
     });
@@ -158,7 +153,7 @@ withServerpod('Given shared stream', (sessionBuilder, endpoints) {
 | Option | Default | Description |
 | ------ | ------- | ----------- |
 | `applyMigrations` | `true` | Apply pending migrations on start |
-| `configOverride` | — | Override loaded server config for tests |
+| `configOverride` | - | Override loaded server config for tests |
 | `enableSessionLogging` | `false` | Enable session logging |
 | `experimentalFeatures` | `null` | Experimental features to enable for the tests |
 | `rollbackDatabase` | `afterEach` | When to rollback (afterEach, afterAll, disabled) |
@@ -172,11 +167,10 @@ withServerpod('Given shared stream', (sessionBuilder, endpoints) {
 ## Running tests
 
 ```bash
-docker compose up -d          # Start DB and Redis
+docker compose up -d          # Start DB and Redis (not needed for embedded PostgreSQL/SQLite)
 dart test                     # All tests
 dart test -t integration      # Only integration tests
 dart test -x integration      # Only unit tests
-dart test -t integration --concurrency=1  # Sequential (for rollback disabled)
 ```
 
 ## DB connection limits
@@ -195,7 +189,7 @@ withServerpod('Given example', (sessionBuilder, endpoints) {
 
 Keep tests organized:
 
-- `test/unit/` — unit tests (no Serverpod dependency)
-- `test/integration/` — tests using `withServerpod`
+- `test/unit/` - unit tests (no Serverpod dependency)
+- `test/integration/` - tests using `withServerpod`
 
-Always call endpoints via the `endpoints` parameter, not by instantiating endpoint classes directly — the test tools handle lifecycle and validation to match production behavior.
+Always call endpoints via the `endpoints` parameter, not by instantiating endpoint classes directly - the test tools handle lifecycle and validation to match production behavior.

@@ -21,7 +21,6 @@ abstract class IncludeList extends Include {
     this.limit,
     this.offset,
     this.orderBy,
-    this.orderDescending = false,
     this.orderByList,
     this.include,
   });
@@ -37,10 +36,6 @@ abstract class IncludeList extends Include {
 
   /// The column to order by.
   Column? orderBy;
-
-  /// Whether the column should be ordered descending or ascending.
-  @Deprecated('Use desc() on the orderBy column instead.')
-  bool orderDescending = false;
 
   /// The columns to order by.
   List<Column>? orderByList;

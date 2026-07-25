@@ -72,6 +72,22 @@ Future<void> waitForServerRunning(KeywordSearchInStream streamSearch) async {
   await Future.delayed(const Duration(seconds: 1));
 }
 
+Future<void> waitForGeneratedOutput(
+  bool Function() isReady, {
+  Duration timeout = const Duration(seconds: 30),
+}) async {
+  var stopwatch = Stopwatch()..start();
+  while (stopwatch.elapsed < timeout) {
+    try {
+      if (isReady()) return;
+    } on FileSystemException {
+      // The generator may be replacing the file between the existence check
+      // and the read. Retry until the output settles.
+    }
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+  }
+}
+
 void main() async {
   group('Given a mini project', () {
     late String sandboxDir;
@@ -200,6 +216,11 @@ fields:
               'test_entity.dart',
             ),
           );
+          await waitForGeneratedOutput(
+            () =>
+                entityFile.existsSync() &&
+                entityFile.readAsStringSync().contains('class TestEntity'),
+          );
           expect(
             entityFile.existsSync(),
             isTrue,
@@ -226,6 +247,11 @@ fields:
             reason: 'Server was not reloaded after model file was modified.',
           );
 
+          await waitForGeneratedOutput(
+            () =>
+                entityFile.existsSync() &&
+                entityFile.readAsStringSync().contains('int age'),
+          );
           expect(
             entityFile.readAsStringSync(),
             contains('int age'),
@@ -242,6 +268,7 @@ fields:
             reason: 'Server was not reloaded after model file was deleted.',
           );
 
+          await waitForGeneratedOutput(() => !entityFile.existsSync());
           expect(
             entityFile.existsSync(),
             isFalse,

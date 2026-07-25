@@ -42,7 +42,7 @@ When working with pull requests in this repository, **ALWAYS**:
 
 **REQUIRES DART/FLUTTER** (cannot validate without network access):
 
-- ⚠️ `util/run_tests_unit` - Requires Dart SDK
+- ⚠️ `melos test_unit` - Requires Dart SDK
 - ⚠️ `util/run_tests_analyze` - Requires Dart SDK
 - ⚠️ `melos` commands - Requires Dart SDK and Melos package
 - ⚠️ `dart pub get` operations - Require network access
@@ -144,7 +144,7 @@ melos bootstrap
 **CRITICAL TIMING NOTES** (Based on CI Analysis):
 
 - **Repository setup**: `melos bootstrap` - 10-15 minutes - Set timeout to 30+ minutes
-- **Unit tests**: `util/run_tests_unit` - 5-15 minutes - Set timeout to 30+ minutes
+- **Unit tests**: `melos test_unit` - 5-15 minutes - Set timeout to 30+ minutes
 - **Integration tests**: `util/run_tests_integration` - 15-30 minutes - Set timeout to 45+ minutes
 - **E2E tests**: `util/run_tests_e2e` - 20-45 minutes - Set timeout to 60+ minutes
 - **Bootstrap tests**: `util/run_tests_bootstrap` - 30-60 minutes - Set timeout to 90+ minutes
@@ -155,7 +155,7 @@ melos bootstrap
 
 ```bash
 # Unit tests (Dart-only packages)
-util/run_tests_unit
+melos test_unit
 # NEVER CANCEL - Takes 5-10 minutes
 
 # Integration tests (requires Docker)
@@ -382,7 +382,7 @@ dart format .
 util/run_tests_analyze
 
 # 2. Run unit tests (5-15 minutes)
-util/run_tests_unit
+melos test_unit
 
 # 3. Test example project still works
 cd examples/legacy/auth_example/auth_example_server
@@ -404,7 +404,7 @@ dart test --reporter=failures-only
 util/run_tests_integration
 
 # Always run full CI suite before major PRs
-util/run_tests_unit && util/run_tests_integration
+melos test_unit && util/run_tests_integration
 ```
 
 ### Working on CLI
@@ -450,7 +450,7 @@ dart test -t integration --reporter=failures-only
 
    ```bash
    # For core changes
-   util/run_tests_unit
+   melos test_unit
 
    # For integration changes
    util/run_tests_integration

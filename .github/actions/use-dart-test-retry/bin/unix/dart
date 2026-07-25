@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+: "${SERVERPOD_REAL_DART:?The real Dart executable was not configured.}"
+: "${SERVERPOD_RETRY_RUNNER:?The retry runner was not configured.}"
+
+# CI prepends this wrapper to PATH. Keep every Dart command except `dart test`
+# identical to local development.
+if [[ "${1:-}" != "test" ]]; then
+  exec "$SERVERPOD_REAL_DART" "$@"
+fi
+
+exec "$SERVERPOD_REAL_DART" "$SERVERPOD_RETRY_RUNNER" \
+  --attempts 3 \
+  --retry-exit-codes 65 \
+  --timeout-seconds 0 \
+  -- "$SERVERPOD_REAL_DART" "$@"

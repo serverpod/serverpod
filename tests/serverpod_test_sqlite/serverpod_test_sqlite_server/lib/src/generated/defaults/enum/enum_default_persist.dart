@@ -101,8 +101,6 @@ abstract class EnumDefaultPersist
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EnumDefaultPersistTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EnumDefaultPersistTable>? orderByList,
     EnumDefaultPersistInclude? include,
   }) {
@@ -111,8 +109,6 @@ abstract class EnumDefaultPersist
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EnumDefaultPersist.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(EnumDefaultPersist.t),
       include: include,
     );
@@ -225,8 +221,6 @@ class EnumDefaultPersistIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -271,8 +265,6 @@ class EnumDefaultPersistRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EnumDefaultPersistTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EnumDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -282,8 +274,6 @@ class EnumDefaultPersistRepository {
       where: where?.call(EnumDefaultPersist.t),
       orderBy: orderBy?.call(EnumDefaultPersist.t),
       orderByList: orderByList?.call(EnumDefaultPersist.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -314,8 +304,6 @@ class EnumDefaultPersistRepository {
     _i1.WhereExpressionBuilder<EnumDefaultPersistTable>? where,
     int? offset,
     _i1.OrderByBuilder<EnumDefaultPersistTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EnumDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -325,8 +313,6 @@ class EnumDefaultPersistRepository {
       where: where?.call(EnumDefaultPersist.t),
       orderBy: orderBy?.call(EnumDefaultPersist.t),
       orderByList: orderByList?.call(EnumDefaultPersist.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -533,8 +519,6 @@ class EnumDefaultPersistRepository {
     int? offset,
     _i1.OrderByBuilder<EnumDefaultPersistTable>? orderBy,
     _i1.OrderByListBuilder<EnumDefaultPersistTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -545,8 +529,6 @@ class EnumDefaultPersistRepository {
       offset: offset,
       orderBy: orderBy?.call(EnumDefaultPersist.t),
       orderByList: orderByList?.call(EnumDefaultPersist.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -567,8 +549,6 @@ class EnumDefaultPersistRepository {
     _i1.DatabaseSession session,
     List<EnumDefaultPersist> rows, {
     _i1.OrderByBuilder<EnumDefaultPersistTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EnumDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -577,8 +557,6 @@ class EnumDefaultPersistRepository {
       rows,
       orderBy: orderBy?.call(EnumDefaultPersist.t),
       orderByList: orderByList?.call(EnumDefaultPersist.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -608,8 +586,6 @@ class EnumDefaultPersistRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EnumDefaultPersistTable> where,
     _i1.OrderByBuilder<EnumDefaultPersistTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EnumDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -618,8 +594,6 @@ class EnumDefaultPersistRepository {
       where: where(EnumDefaultPersist.t),
       orderBy: orderBy?.call(EnumDefaultPersist.t),
       orderByList: orderByList?.call(EnumDefaultPersist.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

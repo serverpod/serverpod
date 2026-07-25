@@ -3,7 +3,6 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
 
-import '../../test_tags.dart';
 import '../../test_tools/serverpod_test_tools.dart';
 import '../test_utils/email_idp_test_fixture.dart';
 
@@ -11,7 +10,6 @@ void main() {
   withServerpod(
     'Given account request created',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
@@ -150,7 +148,6 @@ void main() {
   withServerpod(
     'Given verified expired account request',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
@@ -247,7 +244,6 @@ void main() {
   withServerpod(
     'Given no account request created',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;

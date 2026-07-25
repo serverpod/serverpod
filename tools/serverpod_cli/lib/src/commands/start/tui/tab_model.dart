@@ -1,4 +1,5 @@
 import 'package:nocterm/nocterm.dart';
+import 'package:serverpod_cli/src/commands/start/tui/inspectable_scroll_controller.dart';
 import 'package:serverpod_tui/serverpod_tui.dart';
 
 /// Identifier for the primary (server log) area.
@@ -23,8 +24,8 @@ abstract class PaneTab {
 /// Structured server log view pinned to [kMainArea].
 class ServerLogTab implements PaneTab {
   /// Creates a [ServerLogTab].
-  ServerLogTab({ScrollController? scrollController})
-    : scrollController = scrollController ?? ScrollController();
+  ServerLogTab({InspectableScrollController? scrollController})
+    : scrollController = scrollController ?? InspectableScrollController();
 
   @override
   String get areaId => kMainArea;
@@ -33,7 +34,7 @@ class ServerLogTab implements PaneTab {
   String get label => 'Server logs';
 
   @override
-  final ScrollController scrollController;
+  final InspectableScrollController scrollController;
 }
 
 /// Flutter app log view pinned to [kAppsArea].
@@ -43,16 +44,19 @@ class AppLogTab implements PaneTab {
     required this.appId,
     required this.label,
     BoundedQueueList<String>? lines,
-    ScrollController? scrollController,
+    BoundedQueueList<Object>? logHistory,
+    InspectableScrollController? scrollController,
     this.ready = false,
     this.stopped = false,
     this.url,
+    this.device,
     this.startupStage,
-  }) : lines = lines ?? BoundedQueueList<String>(maxRawLines),
-       scrollController = scrollController ?? ScrollController();
+  }) : lines = lines ?? BoundedQueueList<String>(maxLogEntries),
+       logHistory = logHistory ?? BoundedQueueList<Object>(maxLogEntries),
+       scrollController = scrollController ?? InspectableScrollController();
 
-  /// Maximum number of raw lines to keep.
-  static const maxRawLines = 10000;
+  /// Maximum number of raw lines and structured entries to keep.
+  static const maxLogEntries = 10000;
 
   /// Stable app identifier from [FlutterAppConfig.id].
   final String appId;
@@ -71,6 +75,10 @@ class AppLogTab implements PaneTab {
   /// HTTP URL the Flutter app is served at.
   String? url;
 
+  /// Configured launch device from [FlutterAppConfig.device], or null for
+  /// the default web device.
+  String? device;
+
   /// Latest `app.progress` message from the Flutter daemon.
   String? startupStage;
 
@@ -80,8 +88,11 @@ class AppLogTab implements PaneTab {
   /// Raw stdout/stderr lines for this app.
   final BoundedQueueList<String> lines;
 
+  /// Structured entries rendered in this app's log tab.
+  final BoundedQueueList<Object> logHistory;
+
   @override
-  final ScrollController scrollController;
+  final InspectableScrollController scrollController;
 }
 
 /// A layout region with its own tab strip.

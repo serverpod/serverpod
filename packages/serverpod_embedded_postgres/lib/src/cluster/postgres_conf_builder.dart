@@ -15,15 +15,25 @@ const String confBlockBeginMarker =
 /// [confBlockBeginMarker].
 const String confBlockEndMarker = '# <<< serverpod_embedded_postgres END';
 
+/// Default `max_connections` for the embedded cluster.
+///
+/// One postmaster is shared by every test isolate, each with its own pool, so
+/// this sits well above PostgreSQL's default of 100 to avoid starving parallel
+/// suites.
+const int defaultMaxConnections = 500;
+
 /// Builds the body of our managed `postgresql.conf` block for [transport].
 ///
 /// [pgDataDir] is the absolute PGDATA path, used to compute the relative
 /// socket directory for [UnixTransport]: PG `chdir`s to PGDATA before
 /// binding, so a relative path keeps `sun_path` ~20 bytes regardless of
 /// project depth.
+///
+/// [maxConnections] sets the cluster's `max_connections`.
 String buildPostgresConfBody({
   required Transport transport,
   required Directory pgDataDir,
+  int maxConnections = defaultMaxConnections,
 }) {
   var transportSection = switch (transport) {
     UnixTransport() => _udsTransportSection(pgDataDir: pgDataDir),
@@ -57,7 +67,7 @@ autovacuum = on
 autovacuum_naptime = 60s
 
 # Misc
-max_connections = 100
+max_connections = $maxConnections
 shared_preload_libraries = ''
 
 # Transport ($transport)

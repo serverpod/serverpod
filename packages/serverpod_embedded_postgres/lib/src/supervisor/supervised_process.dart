@@ -15,7 +15,7 @@ abstract interface class SupervisedProcess {
   /// For attached supervisors this is a tail of the persisted log file.
   List<String> get logTail;
 
-  /// Smart shutdown: SIGINT -> after `timeout/2` SIGTERM -> after `timeout`
-  /// SIGKILL. Removes the supervisor pidfile.
+  /// Smart shutdown: `pg_ctl stop` on Windows; SIGINT -> SIGTERM -> SIGKILL
+  /// escalation on POSIX. Removes the supervisor pidfile.
   Future<void> stop({Duration timeout = const Duration(seconds: 10)});
 }

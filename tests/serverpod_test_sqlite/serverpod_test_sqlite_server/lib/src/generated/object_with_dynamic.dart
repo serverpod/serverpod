@@ -171,8 +171,6 @@ abstract class ObjectWithDynamic
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectWithDynamicTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithDynamicTable>? orderByList,
     ObjectWithDynamicInclude? include,
   }) {
@@ -181,8 +179,6 @@ abstract class ObjectWithDynamic
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithDynamic.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(ObjectWithDynamic.t),
       include: include,
     );
@@ -377,8 +373,6 @@ class ObjectWithDynamicIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -423,8 +417,6 @@ class ObjectWithDynamicRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectWithDynamicTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithDynamicTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -434,8 +426,6 @@ class ObjectWithDynamicRepository {
       where: where?.call(ObjectWithDynamic.t),
       orderBy: orderBy?.call(ObjectWithDynamic.t),
       orderByList: orderByList?.call(ObjectWithDynamic.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -466,8 +456,6 @@ class ObjectWithDynamicRepository {
     _i1.WhereExpressionBuilder<ObjectWithDynamicTable>? where,
     int? offset,
     _i1.OrderByBuilder<ObjectWithDynamicTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithDynamicTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -477,8 +465,6 @@ class ObjectWithDynamicRepository {
       where: where?.call(ObjectWithDynamic.t),
       orderBy: orderBy?.call(ObjectWithDynamic.t),
       orderByList: orderByList?.call(ObjectWithDynamic.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -685,8 +671,6 @@ class ObjectWithDynamicRepository {
     int? offset,
     _i1.OrderByBuilder<ObjectWithDynamicTable>? orderBy,
     _i1.OrderByListBuilder<ObjectWithDynamicTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -697,8 +681,6 @@ class ObjectWithDynamicRepository {
       offset: offset,
       orderBy: orderBy?.call(ObjectWithDynamic.t),
       orderByList: orderByList?.call(ObjectWithDynamic.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -719,8 +701,6 @@ class ObjectWithDynamicRepository {
     _i1.DatabaseSession session,
     List<ObjectWithDynamic> rows, {
     _i1.OrderByBuilder<ObjectWithDynamicTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithDynamicTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -729,8 +709,6 @@ class ObjectWithDynamicRepository {
       rows,
       orderBy: orderBy?.call(ObjectWithDynamic.t),
       orderByList: orderByList?.call(ObjectWithDynamic.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -760,8 +738,6 @@ class ObjectWithDynamicRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ObjectWithDynamicTable> where,
     _i1.OrderByBuilder<ObjectWithDynamicTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithDynamicTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -770,8 +746,6 @@ class ObjectWithDynamicRepository {
       where: where(ObjectWithDynamic.t),
       orderBy: orderBy?.call(ObjectWithDynamic.t),
       orderByList: orderByList?.call(ObjectWithDynamic.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

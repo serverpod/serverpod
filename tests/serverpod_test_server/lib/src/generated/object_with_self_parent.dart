@@ -79,8 +79,6 @@ abstract class ObjectWithSelfParent
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectWithSelfParentTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithSelfParentTable>? orderByList,
     ObjectWithSelfParentInclude? include,
   }) {
@@ -89,8 +87,6 @@ abstract class ObjectWithSelfParent
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithSelfParent.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(ObjectWithSelfParent.t),
       include: include,
     );
@@ -175,8 +171,6 @@ class ObjectWithSelfParentIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -221,8 +215,6 @@ class ObjectWithSelfParentRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectWithSelfParentTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithSelfParentTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -232,8 +224,6 @@ class ObjectWithSelfParentRepository {
       where: where?.call(ObjectWithSelfParent.t),
       orderBy: orderBy?.call(ObjectWithSelfParent.t),
       orderByList: orderByList?.call(ObjectWithSelfParent.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -264,8 +254,6 @@ class ObjectWithSelfParentRepository {
     _i1.WhereExpressionBuilder<ObjectWithSelfParentTable>? where,
     int? offset,
     _i1.OrderByBuilder<ObjectWithSelfParentTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithSelfParentTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -275,8 +263,6 @@ class ObjectWithSelfParentRepository {
       where: where?.call(ObjectWithSelfParent.t),
       orderBy: orderBy?.call(ObjectWithSelfParent.t),
       orderByList: orderByList?.call(ObjectWithSelfParent.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -483,8 +469,6 @@ class ObjectWithSelfParentRepository {
     int? offset,
     _i1.OrderByBuilder<ObjectWithSelfParentTable>? orderBy,
     _i1.OrderByListBuilder<ObjectWithSelfParentTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -495,8 +479,6 @@ class ObjectWithSelfParentRepository {
       offset: offset,
       orderBy: orderBy?.call(ObjectWithSelfParent.t),
       orderByList: orderByList?.call(ObjectWithSelfParent.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -517,8 +499,6 @@ class ObjectWithSelfParentRepository {
     _i1.DatabaseSession session,
     List<ObjectWithSelfParent> rows, {
     _i1.OrderByBuilder<ObjectWithSelfParentTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithSelfParentTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -527,8 +507,6 @@ class ObjectWithSelfParentRepository {
       rows,
       orderBy: orderBy?.call(ObjectWithSelfParent.t),
       orderByList: orderByList?.call(ObjectWithSelfParent.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -558,8 +536,6 @@ class ObjectWithSelfParentRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ObjectWithSelfParentTable> where,
     _i1.OrderByBuilder<ObjectWithSelfParentTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithSelfParentTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -568,8 +544,6 @@ class ObjectWithSelfParentRepository {
       where: where(ObjectWithSelfParent.t),
       orderBy: orderBy?.call(ObjectWithSelfParent.t),
       orderByList: orderByList?.call(ObjectWithSelfParent.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

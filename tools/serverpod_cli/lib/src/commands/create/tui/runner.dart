@@ -146,7 +146,7 @@ Future<void> performCreateWithTui(
   String? projectPath;
 
   final backend = ServerpodTerminalBackend(
-    preExit: () => _preExit(
+    preExit: (_) => _preExit(
       template: state.template,
       projectPath: projectPath,
       isUpgrade: isUpgrade,

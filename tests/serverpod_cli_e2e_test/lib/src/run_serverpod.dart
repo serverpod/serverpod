@@ -1,13 +1,10 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-
-import 'shared_test_dir.dart';
+import 'package:serverpod_shared/process_io.dart';
 
 /// Path to the serverpod root (for SERVERPOD_HOME).
-final serverpodHome = p.canonicalize(
-  p.join(Directory.current.path, '..', '..'),
-);
+final serverpodHome = findServerpodHome();
 
 final _cliRoot = p.join(
   serverpodHome,
@@ -22,52 +19,10 @@ final _cliPath = p.join(
 );
 
 /// Path to the compiled serverpod executable.
-final compiledServerpodCliExe = _compileServerpodCli();
-Future<String> _compileServerpodCli() async {
-  // Compile the CLI once for all tests
-  const exeName = 'serverpod_cli_test.exe';
-  final exePath = p.join(sharedTestDir.path, exeName);
-  final lockPath = p.join(sharedTestDir.path, '$exeName.lock');
-  final lockFile = File(lockPath);
-
-  // If executable exists, we're done
-  if (File(exePath).existsSync()) {
-    return exePath;
-  }
-
-  // Try to create lock file exclusively - only one isolate succeeds
-  try {
-    lockFile.createSync(exclusive: true);
-  } on FileSystemException {
-    // Another isolate is compiling, wait for lock to be released
-    while (lockFile.existsSync()) {
-      await Future<void>.delayed(const Duration(milliseconds: 100));
-    }
-    return exePath;
-  }
-
-  try {
-    var result = await Process.run(
-      'dart',
-      ['pub', 'get', '--directory', _cliRoot],
-    );
-    if (result.exitCode != 0) {
-      throw StateError('Failed to resolve dependencies:\n${result.stderr}');
-    }
-
-    result = await Process.run(
-      'dart',
-      ['compile', 'exe', _cliPath, '-o', exePath],
-    );
-    if (result.exitCode != 0) {
-      throw StateError('Failed to compile serverpod_cli:\n${result.stderr}');
-    }
-  } finally {
-    lockFile.deleteSync();
-  }
-
-  return exePath;
-}
+final compiledServerpodCliExe = buildServerpodCli(
+  buildRoot: p.join(sharedTestDir.path, 'serverpod_cli_build'),
+  serverpodHome: serverpodHome,
+);
 
 final _activatedServerpodCliExe = _activateServerpodCli();
 Future<String> _activateServerpodCli() async {

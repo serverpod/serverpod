@@ -83,8 +83,6 @@ abstract class Chapter
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ChapterTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChapterTable>? orderByList,
     ChapterInclude? include,
   }) {
@@ -93,8 +91,6 @@ abstract class Chapter
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Chapter.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(Chapter.t),
       include: include,
     );
@@ -222,8 +218,6 @@ class ChapterIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -268,8 +262,6 @@ class ChapterRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ChapterTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChapterTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -279,8 +271,6 @@ class ChapterRepository {
       where: where?.call(Chapter.t),
       orderBy: orderBy?.call(Chapter.t),
       orderByList: orderByList?.call(Chapter.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -311,8 +301,6 @@ class ChapterRepository {
     _i1.WhereExpressionBuilder<ChapterTable>? where,
     int? offset,
     _i1.OrderByBuilder<ChapterTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChapterTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -322,8 +310,6 @@ class ChapterRepository {
       where: where?.call(Chapter.t),
       orderBy: orderBy?.call(Chapter.t),
       orderByList: orderByList?.call(Chapter.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -528,8 +514,6 @@ class ChapterRepository {
     int? offset,
     _i1.OrderByBuilder<ChapterTable>? orderBy,
     _i1.OrderByListBuilder<ChapterTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -540,8 +524,6 @@ class ChapterRepository {
       offset: offset,
       orderBy: orderBy?.call(Chapter.t),
       orderByList: orderByList?.call(Chapter.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -562,8 +544,6 @@ class ChapterRepository {
     _i1.DatabaseSession session,
     List<Chapter> rows, {
     _i1.OrderByBuilder<ChapterTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChapterTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -572,8 +552,6 @@ class ChapterRepository {
       rows,
       orderBy: orderBy?.call(Chapter.t),
       orderByList: orderByList?.call(Chapter.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -603,8 +581,6 @@ class ChapterRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ChapterTable> where,
     _i1.OrderByBuilder<ChapterTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChapterTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -613,8 +589,6 @@ class ChapterRepository {
       where: where(Chapter.t),
       orderBy: orderBy?.call(Chapter.t),
       orderByList: orderByList?.call(Chapter.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

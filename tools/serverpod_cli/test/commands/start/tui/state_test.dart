@@ -33,6 +33,7 @@ void main() {
       state.logHistory.add('server entry');
       state.rawLines.add('raw server line');
       appTab.lines.add('raw flutter line');
+      appTab.logHistory.add('structured flutter entry');
     });
 
     test('when clearLogs is called then every log buffer is emptied', () {
@@ -41,6 +42,7 @@ void main() {
       expect(state.logHistory, isEmpty);
       expect(state.rawLines, isEmpty);
       expect(appTab.lines, isEmpty);
+      expect(appTab.logHistory, isEmpty);
     });
   });
 

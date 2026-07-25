@@ -96,6 +96,9 @@ class RedisController {
     return Socket.connect(host, port, timeout: timeout);
   }
 
+  /// Whether the last connect attempt failed and has been logged.
+  bool _connectFailureLogged = false;
+
   /// Shared helper to create and authenticate a Redis Command connection.
   Future<Command?> _createAndAuthCommand({
     bool Function(Exception e)? handleError,
@@ -114,16 +117,16 @@ class RedisController {
 
         if (result != 'OK') return null;
       }
+      _connectFailureLogged = false;
       return command;
-    } catch (e, stackTrace) {
+    } catch (e) {
       if (handleError != null && e is Exception && handleError(e)) {
         return null;
       }
-      log.error(
-        'Internal server error. Failed to connect to Redis.',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      if (!_connectFailureLogged) {
+        _connectFailureLogged = true;
+        log.warning('Failed to connect to Redis at $host:$port ($e).');
+      }
       return null;
     }
   }

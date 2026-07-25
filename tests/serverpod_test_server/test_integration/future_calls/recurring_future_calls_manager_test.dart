@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:serverpod/protocol.dart' show FutureCallEntry;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
-import 'package:serverpod_test_server/test_util/test_tags.dart';
 import 'package:test/test.dart';
 
 import '../test_tools/serverpod_test_tools.dart';
@@ -21,7 +20,6 @@ class CompleterTestCall extends FutureCall<SimpleData> {
 void main() async {
   withServerpod(
     'Given FutureCallManager with registered recurring cron FutureCall that is due',
-    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, _) {
       late FutureCallManager futureCallManager;
@@ -178,7 +176,6 @@ void main() async {
 
   withServerpod(
     'Given FutureCallManager with registered recurring interval FutureCall that is due',
-    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, _) {
       late FutureCallManager futureCallManager;
@@ -338,7 +335,6 @@ void main() async {
 
   withServerpod(
     'Given FutureCallManager with non-recurring FutureCall',
-    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, _) {
       late FutureCallManager futureCallManager;

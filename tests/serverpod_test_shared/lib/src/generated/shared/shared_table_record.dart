@@ -110,8 +110,6 @@ abstract class SharedTableRecord
     int? limit,
     int? offset,
     _i1.OrderByBuilder<SharedTableRecordTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<SharedTableRecordTable>? orderByList,
     SharedTableRecordInclude? include,
   }) {
@@ -120,8 +118,6 @@ abstract class SharedTableRecord
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(SharedTableRecord.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(SharedTableRecord.t),
       include: include,
     );
@@ -262,8 +258,6 @@ class SharedTableRecordIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -308,8 +302,6 @@ class SharedTableRecordRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<SharedTableRecordTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<SharedTableRecordTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -319,8 +311,6 @@ class SharedTableRecordRepository {
       where: where?.call(SharedTableRecord.t),
       orderBy: orderBy?.call(SharedTableRecord.t),
       orderByList: orderByList?.call(SharedTableRecord.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -351,8 +341,6 @@ class SharedTableRecordRepository {
     _i1.WhereExpressionBuilder<SharedTableRecordTable>? where,
     int? offset,
     _i1.OrderByBuilder<SharedTableRecordTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<SharedTableRecordTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -362,8 +350,6 @@ class SharedTableRecordRepository {
       where: where?.call(SharedTableRecord.t),
       orderBy: orderBy?.call(SharedTableRecord.t),
       orderByList: orderByList?.call(SharedTableRecord.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -570,8 +556,6 @@ class SharedTableRecordRepository {
     int? offset,
     _i1.OrderByBuilder<SharedTableRecordTable>? orderBy,
     _i1.OrderByListBuilder<SharedTableRecordTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -582,8 +566,6 @@ class SharedTableRecordRepository {
       offset: offset,
       orderBy: orderBy?.call(SharedTableRecord.t),
       orderByList: orderByList?.call(SharedTableRecord.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -604,8 +586,6 @@ class SharedTableRecordRepository {
     _i1.DatabaseSession session,
     List<SharedTableRecord> rows, {
     _i1.OrderByBuilder<SharedTableRecordTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<SharedTableRecordTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -614,8 +594,6 @@ class SharedTableRecordRepository {
       rows,
       orderBy: orderBy?.call(SharedTableRecord.t),
       orderByList: orderByList?.call(SharedTableRecord.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -645,8 +623,6 @@ class SharedTableRecordRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<SharedTableRecordTable> where,
     _i1.OrderByBuilder<SharedTableRecordTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<SharedTableRecordTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -655,8 +631,6 @@ class SharedTableRecordRepository {
       where: where(SharedTableRecord.t),
       orderBy: orderBy?.call(SharedTableRecord.t),
       orderByList: orderByList?.call(SharedTableRecord.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

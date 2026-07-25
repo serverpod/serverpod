@@ -1,6 +1,6 @@
-// {{#webserver}}
+// {{#webapp}}
 import 'dart:io';
-// {{/webserver}}
+// {{/webapp}}
 
 import 'package:serverpod/serverpod.dart';
 // {{#auth}}
@@ -8,6 +8,9 @@ import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 // {{/auth}}
 
+// {{#webserver}}
+import 'src/cache_busting.dart';
+// {{/webserver}}
 import 'src/generated/endpoints.dart';
 import 'src/generated/protocol.dart';
 // {{#webapp}}
@@ -55,8 +58,10 @@ void run(List<String> args) async {
   // {{#webserver}}
   // Serve all files in the web/static relative directory under /web.
   // These are used by the default web page.
-  final root = Directory(Uri(path: 'web/static').toFilePath());
-  pod.webServer.addRoute(StaticRoute.directory(root), '/web');
+  pod.webServer.addRoute(
+    StaticRoute.withCacheBusting(cacheBustingConfig),
+    cacheBustingConfig.mountPrefix,
+  );
   // {{/webserver}}
 
   // {{#webapp}}

@@ -90,8 +90,6 @@ abstract class PasskeyChallenge
     int? limit,
     int? offset,
     _i1.OrderByBuilder<PasskeyChallengeTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<PasskeyChallengeTable>? orderByList,
     PasskeyChallengeInclude? include,
   }) {
@@ -100,8 +98,6 @@ abstract class PasskeyChallenge
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(PasskeyChallenge.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(PasskeyChallenge.t),
       include: include,
     );
@@ -206,8 +202,6 @@ class PasskeyChallengeIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -252,8 +246,6 @@ class PasskeyChallengeRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<PasskeyChallengeTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<PasskeyChallengeTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -263,8 +255,6 @@ class PasskeyChallengeRepository {
       where: where?.call(PasskeyChallenge.t),
       orderBy: orderBy?.call(PasskeyChallenge.t),
       orderByList: orderByList?.call(PasskeyChallenge.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -295,8 +285,6 @@ class PasskeyChallengeRepository {
     _i1.WhereExpressionBuilder<PasskeyChallengeTable>? where,
     int? offset,
     _i1.OrderByBuilder<PasskeyChallengeTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<PasskeyChallengeTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -306,8 +294,6 @@ class PasskeyChallengeRepository {
       where: where?.call(PasskeyChallenge.t),
       orderBy: orderBy?.call(PasskeyChallenge.t),
       orderByList: orderByList?.call(PasskeyChallenge.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -514,8 +500,6 @@ class PasskeyChallengeRepository {
     int? offset,
     _i1.OrderByBuilder<PasskeyChallengeTable>? orderBy,
     _i1.OrderByListBuilder<PasskeyChallengeTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -526,8 +510,6 @@ class PasskeyChallengeRepository {
       offset: offset,
       orderBy: orderBy?.call(PasskeyChallenge.t),
       orderByList: orderByList?.call(PasskeyChallenge.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -548,8 +530,6 @@ class PasskeyChallengeRepository {
     _i1.DatabaseSession session,
     List<PasskeyChallenge> rows, {
     _i1.OrderByBuilder<PasskeyChallengeTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<PasskeyChallengeTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -558,8 +538,6 @@ class PasskeyChallengeRepository {
       rows,
       orderBy: orderBy?.call(PasskeyChallenge.t),
       orderByList: orderByList?.call(PasskeyChallenge.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -589,8 +567,6 @@ class PasskeyChallengeRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<PasskeyChallengeTable> where,
     _i1.OrderByBuilder<PasskeyChallengeTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<PasskeyChallengeTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -599,8 +575,6 @@ class PasskeyChallengeRepository {
       where: where(PasskeyChallenge.t),
       orderBy: orderBy?.call(PasskeyChallenge.t),
       orderByList: orderByList?.call(PasskeyChallenge.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

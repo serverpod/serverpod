@@ -88,8 +88,6 @@ abstract class GoogleRefreshToken
     int? limit,
     int? offset,
     _i1.OrderByBuilder<GoogleRefreshTokenTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
     GoogleRefreshTokenInclude? include,
   }) {
@@ -98,8 +96,6 @@ abstract class GoogleRefreshToken
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(GoogleRefreshToken.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(GoogleRefreshToken.t),
       include: include,
     );
@@ -202,8 +198,6 @@ class GoogleRefreshTokenIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -248,8 +242,6 @@ class GoogleRefreshTokenRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<GoogleRefreshTokenTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -259,8 +251,6 @@ class GoogleRefreshTokenRepository {
       where: where?.call(GoogleRefreshToken.t),
       orderBy: orderBy?.call(GoogleRefreshToken.t),
       orderByList: orderByList?.call(GoogleRefreshToken.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -291,8 +281,6 @@ class GoogleRefreshTokenRepository {
     _i1.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
     int? offset,
     _i1.OrderByBuilder<GoogleRefreshTokenTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -302,8 +290,6 @@ class GoogleRefreshTokenRepository {
       where: where?.call(GoogleRefreshToken.t),
       orderBy: orderBy?.call(GoogleRefreshToken.t),
       orderByList: orderByList?.call(GoogleRefreshToken.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -510,8 +496,6 @@ class GoogleRefreshTokenRepository {
     int? offset,
     _i1.OrderByBuilder<GoogleRefreshTokenTable>? orderBy,
     _i1.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -522,8 +506,6 @@ class GoogleRefreshTokenRepository {
       offset: offset,
       orderBy: orderBy?.call(GoogleRefreshToken.t),
       orderByList: orderByList?.call(GoogleRefreshToken.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -544,8 +526,6 @@ class GoogleRefreshTokenRepository {
     _i1.DatabaseSession session,
     List<GoogleRefreshToken> rows, {
     _i1.OrderByBuilder<GoogleRefreshTokenTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -554,8 +534,6 @@ class GoogleRefreshTokenRepository {
       rows,
       orderBy: orderBy?.call(GoogleRefreshToken.t),
       orderByList: orderByList?.call(GoogleRefreshToken.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -585,8 +563,6 @@ class GoogleRefreshTokenRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<GoogleRefreshTokenTable> where,
     _i1.OrderByBuilder<GoogleRefreshTokenTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -595,8 +571,6 @@ class GoogleRefreshTokenRepository {
       where: where(GoogleRefreshToken.t),
       orderBy: orderBy?.call(GoogleRefreshToken.t),
       orderByList: orderByList?.call(GoogleRefreshToken.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

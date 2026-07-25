@@ -8,6 +8,8 @@ import 'package:serverpod/serverpod.dart';
 
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_server/src/futureCalls/test_exception_call.dart';
+import 'package:serverpod_test_server/src/generated/endpoints.dart' as e;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as p;
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 
 import 'test_exception_handler.dart';
@@ -31,21 +33,32 @@ void main() {
     setUpAll(() async {
       exceptionHandler = TestExceptionHandler();
 
+      // Fixed port distinct from other suites' (8080 is held by the
+      // startup/shutdown subprocess) so it is the web server that collides,
+      // deterministically, even when run concurrently.
+      const sharedPort = 8077;
       final config = ServerpodConfig(
         apiServer: ServerConfig(
-          port: 8080,
+          port: sharedPort,
           publicHost: 'localhost',
-          publicPort: 8080,
+          publicPort: sharedPort,
           publicScheme: 'http',
         ),
         webServer: ServerConfig(
-          port: 8080,
+          port: sharedPort,
           publicHost: 'localhost',
           publicPort: 8081,
           publicScheme: 'http',
         ),
       );
-      pod = IntegrationTestServer.create(
+      // Built directly rather than via IntegrationTestServer.create so the
+      // configured ports are kept: this suite binds the api and web servers to
+      // the same port on purpose, to force a bind collision. It has no
+      // database, so it needs none of the per-suite harness.
+      pod = Serverpod(
+        ['-m', 'production'],
+        p.Protocol(),
+        e.Endpoints(),
         config: config,
         experimentalFeatures: ExperimentalFeatures(
           diagnosticEventHandlers: [exceptionHandler],
@@ -107,7 +120,7 @@ void main() {
   group(
     'Given a serverpod server with future calls and a diagnostic event handler',
     () {
-      var client = Client('http://localhost:8080/');
+      late Client client;
       var exceptionHandler = TestExceptionHandler();
       late Serverpod pod;
 
@@ -119,7 +132,8 @@ void main() {
           ),
         );
         pod.registerFutureCall(TestExceptionCall(), 'testExceptionCall');
-        await pod.start();
+        await pod.startWithDatabase();
+        client = Client(pod.apiUrl);
       });
 
       tearDown(() async {
@@ -147,7 +161,7 @@ void main() {
   );
 
   group('Given a serverpod server with a diagnostic event handler', () {
-    var client = Client('http://localhost:8080/');
+    late Client client;
     var exceptionHandler = TestExceptionHandler();
     late Serverpod pod;
 
@@ -158,7 +172,8 @@ void main() {
           diagnosticEventHandlers: [exceptionHandler],
         ),
       );
-      await pod.start();
+      await pod.startWithDatabase();
+      client = Client(pod.apiUrl);
     });
 
     tearDown(() async {
@@ -187,7 +202,7 @@ void main() {
           contains('remoteInfo'),
           containsPair(
             'uri',
-            'http://localhost:8080/exceptionTest/throwNormalException',
+            '${pod.apiUrl}exceptionTest/throwNormalException',
           ),
           containsPair('endpoint', 'exceptionTest'),
           containsPair('methodName', 'throwNormalException'),
@@ -252,7 +267,7 @@ void main() {
     test('when a client calls method url with malformed json '
         'then the diagnostic event handler gets called', () async {
       var response = http.post(
-        Uri.parse('http://localhost:8080/simple/hello'),
+        Uri.parse('${pod.apiUrl}simple/hello'),
         body: '{"name": [42]}',
       );
       await response;
@@ -277,7 +292,7 @@ void main() {
           ),
         );
         pod.webServer.addRoute(ExceptionRoute(), '/exception');
-        await pod.start();
+        await pod.startWithDatabase();
       });
 
       tearDown(() async {
@@ -288,7 +303,7 @@ void main() {
       test('when a client calls web url with malformed json '
           'then the diagnostic event handler gets called', () async {
         var response = http.get(
-          Uri.parse('http://localhost:8082/exception'),
+          Uri.parse('${pod.webUrl}exception'),
         );
         await response;
 
@@ -332,6 +347,7 @@ void main() {
             diagnosticEventHandlers: [exceptionHandler],
           ),
         );
+        await pod.ensureDatabase();
         final result = pod
             .start(runInGuardedZone: false)
             .timeout(const Duration(seconds: 2));

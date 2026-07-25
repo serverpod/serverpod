@@ -271,7 +271,7 @@ Future<CreateResult> performCreate(
   success &= await _renderTemplates(writtenPaths, context);
 
   success &= await log.progress('Getting workspace dependencies.', () {
-    return CommandLineTools.dartPubGet(serverpodDirs.projectDir);
+    return CommandLineTools.pubGet(serverpodDirs.projectDir);
   });
 
   if (context.flutterApp && (template.hasServer || template.isMini)) {
@@ -562,7 +562,7 @@ Future<CreateResult> _performUpgrade({
   success &= await _renderTemplates(writtenPaths, context);
 
   success &= await log.progress('Getting workspace dependencies.', () {
-    return CommandLineTools.dartPubGet(serverpodDir.projectDir);
+    return CommandLineTools.pubGet(serverpodDir.projectDir);
   });
 
   success &= await _runGenerate(

@@ -5,7 +5,6 @@ import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:test/test.dart';
 
 import '../../serverpod_test_tools.dart';
-import '../../test_tags.dart';
 
 void main() {
   final jwt = Jwt(
@@ -123,7 +122,6 @@ void main() {
   withServerpod(
     'Given a valid `TokenPair` for a refresh token with scopes and extra claims,',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (
       final sessionBuilder,
       final endpoints,
@@ -991,7 +989,6 @@ void main() {
   withServerpod(
     'Given an auth user with a valid refresh token,',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late UuidValue authUserId;

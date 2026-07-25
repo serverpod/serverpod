@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
@@ -102,6 +103,91 @@ void main() {
       );
     },
   );
+
+  group('Given a FileWatcher tracking a missing pub artifact,', () {
+    late File packageGraph;
+    late FileWatcher watcher;
+
+    setUp(() async {
+      final dartToolDir = p.join(tempDir.path, '.dart_tool');
+      await Directory(dartToolDir).create();
+      packageGraph = File(p.join(dartToolDir, 'package_graph.json'));
+      watcher = FileWatcher(
+        watchPaths: [packageGraph.path],
+        packageGraphPaths: [packageGraph.path],
+        debounceDelay: const Duration(milliseconds: 50),
+        missingFilePollingDelay: const Duration(milliseconds: 20),
+      );
+    });
+
+    test(
+      'when the artifact is created, '
+      'then it emits a Flutter dependency change.',
+      () async {
+        final firstEvent = watcher.onFilesChanged.first;
+        await watcher.ready;
+
+        await packageGraph.writeAsString('{"roots":[],"packages":[]}');
+
+        final event = await firstEvent.timeout(const Duration(seconds: 3));
+        expect(event.flutterDependenciesChanged, isTrue);
+      },
+    );
+  });
+
+  group('Given a FileWatcher tracking an existing pub artifact,', () {
+    late File packageGraph;
+    late FileWatcher watcher;
+
+    setUp(() async {
+      final dartToolDir = p.join(tempDir.path, '.dart_tool');
+      await Directory(dartToolDir).create();
+      packageGraph = File(p.join(dartToolDir, 'package_graph.json'));
+      await packageGraph.writeAsString('{"roots":[],"packages":[]}');
+      watcher = FileWatcher(
+        watchPaths: [packageGraph.path],
+        packageGraphPaths: [packageGraph.path],
+        debounceDelay: const Duration(milliseconds: 50),
+        missingFilePollingDelay: const Duration(milliseconds: 20),
+      );
+    });
+
+    test(
+      'when the artifact is deleted and recreated, '
+      'then subsequent changes continue to emit Flutter dependency changes.',
+      () async {
+        final events = StreamIterator(watcher.onFilesChanged);
+        addTearDown(events.cancel);
+        var nextEvent = events.moveNext();
+        await watcher.ready;
+
+        await packageGraph.delete();
+        expect(
+          await nextEvent.timeout(const Duration(seconds: 3)),
+          isTrue,
+        );
+        expect(events.current.flutterDependenciesChanged, isTrue);
+
+        nextEvent = events.moveNext();
+        await packageGraph.writeAsString('{"roots":[],"packages":[]}');
+        expect(
+          await nextEvent.timeout(const Duration(seconds: 3)),
+          isTrue,
+        );
+        expect(events.current.flutterDependenciesChanged, isTrue);
+
+        nextEvent = events.moveNext();
+        await packageGraph.writeAsString(
+          '{"roots":[],"packages":[{"name":"new_dependency"}]}',
+        );
+        expect(
+          await nextEvent.timeout(const Duration(seconds: 3)),
+          isTrue,
+        );
+        expect(events.current.flutterDependenciesChanged, isTrue);
+      },
+    );
+  });
 
   group('Given a FileWatcher watching a .dart_tool directory', () {
     late FileWatcher watcher;

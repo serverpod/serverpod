@@ -35,8 +35,6 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     int? offset,
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     Include? include,
     Transaction? transaction,
     LockMode? lockMode,
@@ -50,8 +48,6 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     int? offset,
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     Transaction? transaction,
     Include? include,
     LockMode? lockMode,
@@ -149,7 +145,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
   /// Returns a list of all updated rows. Returns an empty list if no rows match.
   /// Throws [ArgumentError] if [columnValues] is empty.
   ///
-  /// When [limit], [offset], [orderBy], [orderByList], or [orderDescending] are provided,
+  /// When [limit], [offset], [orderBy], or [orderByList] are provided,
   /// only the rows selected by these parameters will be updated.
   ///
   /// For most cases use the corresponding method in [Database] instead.
@@ -161,8 +157,6 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     int? offset,
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     Transaction? transaction,
     bool noReturn = false,
   });
@@ -173,8 +167,6 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     List<T> rows, {
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     Transaction? transaction,
     bool noReturn = false,
   });
@@ -192,8 +184,6 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     Expression where, {
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     Transaction? transaction,
     bool noReturn = false,
   });

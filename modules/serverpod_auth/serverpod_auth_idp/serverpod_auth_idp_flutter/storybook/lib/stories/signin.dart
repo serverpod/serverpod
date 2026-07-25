@@ -5,6 +5,7 @@ import 'package:storybook_toolkit/storybook_toolkit.dart';
 
 import '../utils/client.dart';
 import '../utils/notification.dart';
+import '../utils/story.dart';
 
 final List<Story> signInStories = [
   Story(
@@ -80,8 +81,15 @@ Widget _signInWidgetStory(
   bool disableMicrosoftSignInWidget = false,
   bool disableFacebookSignInWidget = false,
 }) {
+  final width = context.knobs.sliderInt(
+    label: 'Column width',
+    initial: 400,
+    min: 270,
+    max: 400,
+  );
+
   return SizedBox(
-    width: 400,
+    width: width.toDouble(),
     child: SignInWidget(
       client: context.read<Client>(),
       onAuthenticated: () {
@@ -90,6 +98,7 @@ Widget _signInWidgetStory(
       onError: (error) {
         context.showErrorSnackBar(error.toString());
       },
+      buttonStyle: _signInButtonStyleFromKnobs(context),
       disableAnonymousSignInWidget: disableAnonymousSignInWidget,
       disableEmailSignInWidget: disableEmailSignInWidget,
       disableGoogleSignInWidget: disableGoogleSignInWidget,
@@ -100,3 +109,77 @@ Widget _signInWidgetStory(
     ),
   );
 }
+
+SignInButtonStyle _signInButtonStyleFromKnobs(BuildContext context) {
+  final size = context.knobs.nullable.options<SignInButtonSize>(
+    label: 'Size',
+    options: SignInButtonSize.values.asOptions(),
+    initial: SignInButtonSize.large,
+  );
+
+  final shape = context.knobs.nullable.options<SignInButtonShape>(
+    label: 'Shape',
+    options: SignInButtonShape.values.asOptions(),
+    initial: SignInButtonShape.pill,
+  );
+
+  final logoAlignment = context.knobs.nullable
+      .options<SignInButtonLogoAlignment>(
+        label: 'Logo alignment',
+        options: SignInButtonLogoAlignment.values.asOptions(),
+        initial: SignInButtonLogoAlignment.left,
+      );
+
+  final text = context.knobs.nullable.options<SignInButtonTextVariant>(
+    label: 'Text',
+    options: SignInButtonTextVariant.values.asOptions(),
+    initial: SignInButtonTextVariant.continueWith,
+  );
+
+  final minimumWidth = context.knobs.nullable
+      .sliderInt(
+        label: 'Minimum width',
+        initial: 300,
+        min: 100,
+        max: 400,
+      )
+      ?.toDouble();
+
+  final backgroundColor = context.knobs.nullable.options<Color>(
+    label: 'Background color',
+    options: _signInButtonColorOptions,
+    initial: const Color(0xFFFFFFFF),
+  );
+
+  final foregroundColor = context.knobs.nullable.options<Color>(
+    label: 'Foreground color',
+    options: _signInButtonColorOptions,
+    initial: const Color(0xFF1F1F1F),
+  );
+
+  final borderColor = context.knobs.nullable.options<Color>(
+    label: 'Border color',
+    options: _signInButtonColorOptions,
+    initial: const Color(0xFFDADCE0),
+  );
+
+  return SignInButtonStyle(
+    size: size,
+    shape: shape,
+    logoAlignment: logoAlignment,
+    text: text,
+    minimumWidth: minimumWidth,
+    backgroundColor: backgroundColor,
+    foregroundColor: foregroundColor,
+    borderColor: borderColor,
+  );
+}
+
+const _signInButtonColorOptions = [
+  Option(label: 'White', value: Color(0xFFFFFFFF)),
+  Option(label: 'Off-black', value: Color(0xFF1F1F1F)),
+  Option(label: 'Light gray border', value: Color(0xFFDADCE0)),
+  Option(label: 'Dark gray border', value: Color(0xFF5F6368)),
+  Option(label: 'Blue', value: Colors.blue),
+  Option(label: 'Google blue', value: Color(0xFF4285F4)),
+];

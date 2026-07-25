@@ -65,8 +65,8 @@ void main() {
             p.join(project.serverDir, 'lib', 'server.dart'),
           );
           final content = await serverFile.readAsString();
-          expect(content, contains('dart:io'));
           expect(content, contains('src/web/routes/root.dart'));
+          expect(content, contains('src/cache_busting.dart'));
         },
       );
 
@@ -80,9 +80,7 @@ void main() {
           expect(content, contains('pod.webServer.addRoute(RootRoute()'));
           expect(
             content,
-            contains(
-              "pod.webServer.addRoute(StaticRoute.directory(root), '/web')",
-            ),
+            contains('StaticRoute.withCacheBusting(cacheBustingConfig)'),
           );
         },
       );
@@ -205,6 +203,7 @@ void main() {
           final content = await serverFile.readAsString();
           expect(content, contains('dart:io'));
           expect(content, contains('src/web/routes/app_config_route.dart'));
+          expect(content, contains('src/cache_busting.dart'));
         },
       );
 
@@ -217,15 +216,7 @@ void main() {
           final content = await serverFile.readAsString();
           expect(
             content,
-            contains(
-              "final root = Directory(Uri(path: 'web/static').toFilePath());",
-            ),
-          );
-          expect(
-            content,
-            contains(
-              "pod.webServer.addRoute(StaticRoute.directory(root), '/web')",
-            ),
+            contains('StaticRoute.withCacheBusting(cacheBustingConfig)'),
           );
           expect(
             content,
@@ -479,6 +470,16 @@ void main() {
         },
       );
 
+      test('then the server does not have a src/cache_busting.dart file', () {
+        expect(
+          File(
+            p.join(project.serverDir, 'lib', 'src', 'cache_busting.dart'),
+          ).existsSync(),
+          isFalse,
+          reason: 'Server cache_busting.dart file exists but should not.',
+        );
+      });
+
       test(
         'then the server server.dart does not contain web imports',
         () async {
@@ -491,6 +492,7 @@ void main() {
             isNot(contains('src/web/routes/app_config_route.dart')),
           );
           expect(content, isNot(contains('src/web/routes/root.dart')));
+          expect(content, isNot(contains('src/cache_busting.dart')));
         },
       );
 

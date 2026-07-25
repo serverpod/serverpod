@@ -95,8 +95,6 @@ abstract class Customer
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CustomerTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CustomerTable>? orderByList,
     CustomerInclude? include,
   }) {
@@ -105,8 +103,6 @@ abstract class Customer
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Customer.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(Customer.t),
       include: include,
     );
@@ -243,8 +239,6 @@ class CustomerIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -297,8 +291,6 @@ class CustomerRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CustomerTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CustomerTable>? orderByList,
     _i1.Transaction? transaction,
     CustomerInclude? include,
@@ -309,8 +301,6 @@ class CustomerRepository {
       where: where?.call(Customer.t),
       orderBy: orderBy?.call(Customer.t),
       orderByList: orderByList?.call(Customer.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -342,8 +332,6 @@ class CustomerRepository {
     _i1.WhereExpressionBuilder<CustomerTable>? where,
     int? offset,
     _i1.OrderByBuilder<CustomerTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CustomerTable>? orderByList,
     _i1.Transaction? transaction,
     CustomerInclude? include,
@@ -354,8 +342,6 @@ class CustomerRepository {
       where: where?.call(Customer.t),
       orderBy: orderBy?.call(Customer.t),
       orderByList: orderByList?.call(Customer.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -563,8 +549,6 @@ class CustomerRepository {
     int? offset,
     _i1.OrderByBuilder<CustomerTable>? orderBy,
     _i1.OrderByListBuilder<CustomerTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -575,8 +559,6 @@ class CustomerRepository {
       offset: offset,
       orderBy: orderBy?.call(Customer.t),
       orderByList: orderByList?.call(Customer.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -597,8 +579,6 @@ class CustomerRepository {
     _i1.DatabaseSession session,
     List<Customer> rows, {
     _i1.OrderByBuilder<CustomerTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CustomerTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -607,8 +587,6 @@ class CustomerRepository {
       rows,
       orderBy: orderBy?.call(Customer.t),
       orderByList: orderByList?.call(Customer.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -638,8 +616,6 @@ class CustomerRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CustomerTable> where,
     _i1.OrderByBuilder<CustomerTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CustomerTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -648,8 +624,6 @@ class CustomerRepository {
       where: where(Customer.t),
       orderBy: orderBy?.call(Customer.t),
       orderByList: orderByList?.call(Customer.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

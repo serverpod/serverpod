@@ -133,8 +133,6 @@ abstract class RateLimitedRequestAttempt
     int? limit,
     int? offset,
     _i1.OrderByBuilder<RateLimitedRequestAttemptTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
     RateLimitedRequestAttemptInclude? include,
   }) {
@@ -143,8 +141,6 @@ abstract class RateLimitedRequestAttempt
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(RateLimitedRequestAttempt.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(RateLimitedRequestAttempt.t),
       include: include,
     );
@@ -332,8 +328,6 @@ class RateLimitedRequestAttemptIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -378,8 +372,6 @@ class RateLimitedRequestAttemptRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<RateLimitedRequestAttemptTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -389,8 +381,6 @@ class RateLimitedRequestAttemptRepository {
       where: where?.call(RateLimitedRequestAttempt.t),
       orderBy: orderBy?.call(RateLimitedRequestAttempt.t),
       orderByList: orderByList?.call(RateLimitedRequestAttempt.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -421,8 +411,6 @@ class RateLimitedRequestAttemptRepository {
     _i1.WhereExpressionBuilder<RateLimitedRequestAttemptTable>? where,
     int? offset,
     _i1.OrderByBuilder<RateLimitedRequestAttemptTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -432,8 +420,6 @@ class RateLimitedRequestAttemptRepository {
       where: where?.call(RateLimitedRequestAttempt.t),
       orderBy: orderBy?.call(RateLimitedRequestAttempt.t),
       orderByList: orderByList?.call(RateLimitedRequestAttempt.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -642,8 +628,6 @@ class RateLimitedRequestAttemptRepository {
     int? offset,
     _i1.OrderByBuilder<RateLimitedRequestAttemptTable>? orderBy,
     _i1.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -654,8 +638,6 @@ class RateLimitedRequestAttemptRepository {
       offset: offset,
       orderBy: orderBy?.call(RateLimitedRequestAttempt.t),
       orderByList: orderByList?.call(RateLimitedRequestAttempt.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -676,8 +658,6 @@ class RateLimitedRequestAttemptRepository {
     _i1.DatabaseSession session,
     List<RateLimitedRequestAttempt> rows, {
     _i1.OrderByBuilder<RateLimitedRequestAttemptTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -686,8 +666,6 @@ class RateLimitedRequestAttemptRepository {
       rows,
       orderBy: orderBy?.call(RateLimitedRequestAttempt.t),
       orderByList: orderByList?.call(RateLimitedRequestAttempt.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -717,8 +695,6 @@ class RateLimitedRequestAttemptRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<RateLimitedRequestAttemptTable> where,
     _i1.OrderByBuilder<RateLimitedRequestAttemptTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -727,8 +703,6 @@ class RateLimitedRequestAttemptRepository {
       where: where(RateLimitedRequestAttempt.t),
       orderBy: orderBy?.call(RateLimitedRequestAttempt.t),
       orderByList: orderByList?.call(RateLimitedRequestAttempt.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
