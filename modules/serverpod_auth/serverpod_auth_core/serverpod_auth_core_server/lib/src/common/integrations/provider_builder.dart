@@ -39,9 +39,6 @@ class PreBuiltIdpBuilder<T extends IdentityProvider>
   const PreBuiltIdpBuilder(this.idp);
 
   @override
-  Type get type => idp.runtimeType;
-
-  @override
   T build({
     required final TokenManager tokenManager,
     required final AuthUsers authUsers,

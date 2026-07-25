@@ -514,9 +514,7 @@ class UserProfiles {
       throw ArgumentError.value(
         userProfile,
         'userProfile',
-        '`image.id` and `imageId` do not match. To update a profile in the '
-            'database and get the fully hydrated object, both need to be set '
-            'accordingly.',
+        '`image.id` and `imageId` do not match. To update a profile in the database and get the fully hydrated object, both need to be set accordingly.',
       );
     }
     if (userProfile.image != null &&
@@ -524,8 +522,7 @@ class UserProfiles {
       throw ArgumentError.value(
         userProfile,
         'userProfile',
-        'The given image belongs to user ${userProfile.image!.userProfileId} '
-            'and thus can not be used on the profile of user ${userProfile.id}',
+        'The given image belongs to user ${userProfile.image!.userProfileId} and thus can not be used on the profile of user ${userProfile.id}',
       );
     }
 

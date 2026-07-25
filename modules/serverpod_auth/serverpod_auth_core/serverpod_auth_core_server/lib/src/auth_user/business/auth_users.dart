@@ -1,5 +1,7 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
+
+import '../../generated/protocol.dart';
+import 'auth_users_config.dart';
 
 /// Management functions for auth users.
 class AuthUsers {
