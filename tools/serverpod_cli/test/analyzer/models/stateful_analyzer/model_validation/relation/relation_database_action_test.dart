@@ -10,6 +10,16 @@ import '../../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
+  CodeGenerationCollector analyzeSingleModel(String yaml) {
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer(
+      config,
+      [ModelSourceBuilder().withYaml(yaml).build()],
+      onErrorsCollector(collector),
+    ).validateAll();
+    return collector;
+  }
+
   var databaseActions = [
     'Cascade',
     'NoAction',
@@ -28,7 +38,8 @@ void main() {
         class: Example
         table: example
         fields:
-          example: Example?, relation(onUpdate=$action)
+          exampleId: int?, default=1
+          example: Example?, relation(field=exampleId, onUpdate=$action)
         ''',
           ).build(),
         ];
@@ -72,7 +83,8 @@ void main() {
         class: Example
         table: example
         fields:
-          example: Example?, relation(onDelete=$action)
+          exampleId: int?, default=1
+          example: Example?, relation(field=exampleId, onDelete=$action)
         ''',
           ).build(),
         ];
@@ -103,6 +115,226 @@ void main() {
         }, skip: noneFieldRelation);
       },
     );
+  }
+
+  for (var actionKey in ['onDelete', 'onUpdate']) {
+    group('Given $actionKey=SetNull', () {
+      test('then a non-nullable explicit foreign key is rejected.', () {
+        var collector = analyzeSingleModel(
+          '''
+class: Example
+table: example
+fields:
+  exampleId: int
+  example: Example?, relation(field=exampleId, $actionKey=SetNull)
+''',
+        );
+
+        expect(collector.errors, hasLength(1));
+        expect(
+          collector.errors.single.message,
+          'The foreign key field "exampleId" must be nullable in the database '
+          'when "$actionKey" is set to "SetNull".',
+        );
+        expect(collector.errors.single.span?.text, actionKey);
+      });
+
+      test('then a nullable explicit foreign key is accepted.', () {
+        var collector = analyzeSingleModel(
+          '''
+class: Example
+table: example
+fields:
+  exampleId: int?
+  example: Example?, relation(field=exampleId, $actionKey=SetNull)
+''',
+        );
+
+        expect(collector.errors, isEmpty);
+      });
+
+      test('then a non-optional implicit foreign key is rejected.', () {
+        var collector = analyzeSingleModel(
+          '''
+class: Example
+table: example
+fields:
+  example: Example?, relation($actionKey=SetNull)
+''',
+        );
+
+        expect(collector.errors, hasLength(1));
+        expect(
+          collector.errors.single.message,
+          'The foreign key field "exampleId" must be nullable in the database '
+          'when "$actionKey" is set to "SetNull".',
+        );
+      });
+
+      test('then an optional implicit foreign key is accepted.', () {
+        var collector = analyzeSingleModel(
+          '''
+class: Example
+table: example
+fields:
+  example: Example?, relation($actionKey=SetNull, optional)
+''',
+        );
+
+        expect(collector.errors, isEmpty);
+      });
+    });
+
+    group('Given $actionKey=SetDefault', () {
+      test('then a foreign key without a database default is rejected.', () {
+        var collector = analyzeSingleModel(
+          '''
+class: Example
+table: example
+fields:
+  exampleId: int
+  example: Example?, relation(field=exampleId, $actionKey=SetDefault)
+''',
+        );
+
+        expect(collector.errors, hasLength(1));
+        expect(
+          collector.errors.single.message,
+          'The foreign key field "exampleId" must define a database default '
+          'using "default" or "defaultPersist" when "$actionKey" is set to '
+          '"SetDefault". "defaultModel" only initializes Dart objects and is '
+          'not applied by the database.',
+        );
+        expect(collector.errors.single.span?.text, actionKey);
+      });
+
+      test('then defaultModel alone is rejected.', () {
+        var collector = analyzeSingleModel(
+          '''
+class: Example
+table: example
+fields:
+  exampleId: int, defaultModel=1
+  example: Example?, relation(field=exampleId, $actionKey=SetDefault)
+''',
+        );
+
+        expect(collector.errors, hasLength(1));
+        expect(
+          collector.errors.single.message,
+          contains('"defaultModel" only initializes Dart objects'),
+        );
+      });
+
+      test('then defaultPersist is accepted.', () {
+        var collector = analyzeSingleModel(
+          '''
+class: Example
+table: example
+fields:
+  exampleId: int?, defaultPersist=1
+  example: Example?, relation(field=exampleId, $actionKey=SetDefault)
+''',
+        );
+
+        expect(collector.errors, isEmpty);
+      });
+
+      test('then a shared default is accepted.', () {
+        var collector = analyzeSingleModel(
+          '''
+class: Example
+table: example
+fields:
+  exampleId: int, default=1
+  example: Example?, relation(field=exampleId, $actionKey=SetDefault)
+''',
+        );
+
+        expect(collector.errors, isEmpty);
+      });
+
+      test('then defaultPersist on a direct id relation is accepted.', () {
+        var collector = analyzeSingleModel(
+          '''
+class: Example
+table: example
+fields:
+  exampleId: int?, defaultPersist=1, relation(parent=example, $actionKey=SetDefault)
+''',
+        );
+
+        expect(collector.errors, isEmpty);
+      });
+
+      test('then a shared default on a direct id relation is accepted.', () {
+        var collector = analyzeSingleModel(
+          '''
+class: Example
+table: example
+fields:
+  exampleId: int, default=1, relation(parent=example, $actionKey=SetDefault)
+''',
+        );
+
+        expect(collector.errors, isEmpty);
+      });
+
+      test('then a default on an object relation field is rejected.', () {
+        var collector = analyzeSingleModel(
+          '''
+class: Example
+table: example
+fields:
+  example: Example?, default=1, relation($actionKey=SetDefault, optional)
+''',
+        );
+
+        expect(
+          collector.errors.map((error) => error.message),
+          contains(
+            'The "default" property can only be used on persisted fields or on '
+            'id fields that define the foreign key relation.',
+          ),
+        );
+      });
+
+      test('then defaultPersist on an object relation field is rejected.', () {
+        var collector = analyzeSingleModel(
+          '''
+class: Example
+table: example
+fields:
+  example: Example?, defaultPersist=1, relation($actionKey=SetDefault, optional)
+''',
+        );
+
+        expect(
+          collector.errors.map((error) => error.message),
+          contains(
+            'The "defaultPersist" property can only be used on persisted fields '
+            'or on id fields that define the foreign key relation.',
+          ),
+        );
+      });
+
+      test('then an implicit foreign key is rejected.', () {
+        var collector = analyzeSingleModel(
+          '''
+class: Example
+table: example
+fields:
+  example: Example?, relation($actionKey=SetDefault)
+''',
+        );
+
+        expect(collector.errors, hasLength(1));
+        expect(
+          collector.errors.single.message,
+          contains('must define a database default'),
+        );
+      });
+    });
   }
 
   group('Given a class with no database action explicitly set', () {

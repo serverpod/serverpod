@@ -99,11 +99,7 @@ class ClassYamlDefinition {
                 valueRestriction:
                     restrictions.validateRelationInterdependencies,
                 allowEmptyNestedValue: true,
-                mutuallyExclusiveKeys: {
-                  Keyword.defaultKey,
-                  Keyword.defaultModelKey,
-                  Keyword.defaultPersistKey,
-                },
+                mutuallyExclusiveKeys: {Keyword.defaultModelKey},
                 nested: {
                   ValidateNode(
                     Keyword.parent,
@@ -196,9 +192,6 @@ class ClassYamlDefinition {
                   Keyword.defaultKey,
                   restrictions.documentDefinition,
                 ).validate,
-                mutuallyExclusiveKeys: {
-                  Keyword.relation,
-                },
               ),
               ValidateNode(
                 Keyword.defaultModelKey,
@@ -218,9 +211,6 @@ class ClassYamlDefinition {
                   Keyword.defaultPersistKey,
                   restrictions.documentDefinition,
                 ).validate,
-                mutuallyExclusiveKeys: {
-                  Keyword.relation,
-                },
               ),
               ValidateNode(
                 Keyword.columnKey,
