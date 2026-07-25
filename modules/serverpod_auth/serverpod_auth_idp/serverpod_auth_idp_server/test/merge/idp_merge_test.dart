@@ -14,7 +14,6 @@ import 'package:serverpod_auth_idp_server/providers/passkey.dart';
 
 import 'package:test/test.dart';
 
-import '../test_tags.dart';
 import '../test_tools/serverpod_test_tools.dart';
 
 void main() {
@@ -123,7 +122,6 @@ void main() {
 
   withServerpod(
     'Given an EmailAccount for userToRemove,',
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
@@ -169,7 +167,6 @@ void main() {
 
   withServerpod(
     'Given EmailAccounts for userToKeep and userToRemove,',
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
@@ -249,7 +246,6 @@ void main() {
 
   withServerpod(
     'Given a GoogleAccount for userToRemove,',
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
@@ -295,7 +291,6 @@ void main() {
 
   withServerpod(
     'Given GoogleAccounts for userToKeep and userToRemove,',
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
@@ -375,7 +370,6 @@ void main() {
 
   withServerpod(
     'Given an AppleAccount for userToRemove,',
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
@@ -422,7 +416,6 @@ void main() {
 
   withServerpod(
     'Given AppleAccounts for userToKeep and userToRemove,',
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
@@ -504,7 +497,6 @@ void main() {
 
   withServerpod(
     'Given a FirebaseAccount for userToRemove,',
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
@@ -549,7 +541,6 @@ void main() {
 
   withServerpod(
     'Given FirebaseAccounts for userToKeep and userToRemove,',
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
@@ -627,7 +618,6 @@ void main() {
 
   withServerpod(
     'Given a GitHubAccount for userToRemove,',
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
@@ -672,7 +662,6 @@ void main() {
 
   withServerpod(
     'Given GitHubAccounts for userToKeep and userToRemove,',
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
@@ -750,7 +739,6 @@ void main() {
 
   withServerpod(
     'Given a FacebookAccount for userToRemove,',
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
@@ -795,7 +783,6 @@ void main() {
 
   withServerpod(
     'Given FacebookAccounts for userToKeep and userToRemove,',
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
@@ -873,7 +860,6 @@ void main() {
 
   withServerpod(
     'Given a MicrosoftAccount for userToRemove,',
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
@@ -918,7 +904,6 @@ void main() {
 
   withServerpod(
     'Given MicrosoftAccounts for userToKeep and userToRemove,',
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
@@ -999,7 +984,6 @@ void main() {
 
   withServerpod(
     'Given a PasskeyAccount for userToRemove,',
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
@@ -1048,7 +1032,6 @@ void main() {
 
   withServerpod(
     'Given PasskeyAccounts for userToKeep and userToRemove,',
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
@@ -1134,7 +1117,6 @@ void main() {
 
   withServerpod(
     'Given an AnonymousAccount for userToRemove,',
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
@@ -1175,7 +1157,6 @@ void main() {
 
   withServerpod(
     'Given an account merger with a no-op application merge handler, all identity providers registered, and account data for userToRemove,',
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late AccountMerger accountMerger;
