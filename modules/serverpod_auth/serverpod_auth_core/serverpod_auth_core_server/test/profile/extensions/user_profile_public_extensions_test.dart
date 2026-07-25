@@ -6,8 +6,6 @@ import '../../common/business/fakes/fakes.dart';
 import '../../serverpod_test_tools.dart';
 
 void main() {
-  const authUsers = AuthUsers();
-
   test(
     'Given a user profile entity, '
     'when converting it to a user profile model, '
@@ -50,19 +48,20 @@ void main() {
     },
   );
 
-  setUpAll(() {
-    AuthServices.set(
-      tokenManagerBuilders: [
-        FakeTokenManagerBuilder(tokenStorage: FakeTokenStorage()),
-      ],
-    );
-  });
-
   withServerpod(
     'Given authentication information for a user with a profile,',
     (final sessionBuilder, final endpoints) {
+      const authUsers = AuthUsers();
       late Session session;
       late AuthenticationInfo authenticationInfo;
+
+      setUpAll(() {
+        AuthServices.set(
+          tokenManagerBuilders: [
+            FakeTokenManagerBuilder(tokenStorage: FakeTokenStorage()),
+          ],
+        );
+      });
 
       setUp(() async {
         session = sessionBuilder.build();

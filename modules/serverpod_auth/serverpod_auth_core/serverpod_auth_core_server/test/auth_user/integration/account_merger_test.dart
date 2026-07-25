@@ -8,7 +8,9 @@ import '../../common/business/fakes/fakes.dart';
 import '../../serverpod_test_tools.dart';
 
 void main() {
-  setUpAll(() {
+  const authUsers = AuthUsers();
+
+  setUp(() {
     AuthServices.set(
       tokenManagerBuilders: [
         FakeTokenManagerBuilder(tokenStorage: FakeTokenStorage()),
@@ -17,293 +19,389 @@ void main() {
     );
   });
 
-  const authUsers = AuthUsers();
-
   withServerpod(
-    'Given an account merger with an application hook that captures the merged users,',
+    'Given an account merger with the default merge hooks and an application merge handler that captures the merged user ids, and two auth users,',
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late AuthUsers authUsers;
-      late AccountMerger defaultAccountMerger;
-      late UuidValue? userIdToKeepFromCallback;
-      late UuidValue? userIdToRemoveFromCallback;
+      late AccountMerger accountMerger;
+      late AuthUserModel userToKeep;
+      late AuthUserModel userToRemove;
+      UuidValue? capturedUserToKeepId;
+      UuidValue? capturedUserToRemoveId;
 
       setUp(() async {
         session = sessionBuilder.build();
-        authUsers = const AuthUsers();
-        userIdToKeepFromCallback = null;
-        userIdToRemoveFromCallback = null;
+        capturedUserToKeepId = null;
+        capturedUserToRemoveId = null;
 
-        defaultAccountMerger = AccountMerger(
+        accountMerger = AccountMerger(
           config: AccountMergeConfig(
             applicationMergeHandler:
                 (
                   final session, {
-                  required final UuidValue userToKeepId,
-                  required final UuidValue userToRemoveId,
+                  required final userToKeepId,
+                  required final userToRemoveId,
                   required final transaction,
                 }) {
-                  userIdToKeepFromCallback = userToKeepId;
-                  userIdToRemoveFromCallback = userToRemoveId;
+                  capturedUserToKeepId = userToKeepId;
+                  capturedUserToRemoveId = userToRemoveId;
                 },
           ),
         );
+
+        userToKeep = await authUsers.create(session);
+        userToRemove = await authUsers.create(session);
       });
 
-      test(
-        'when merging with the default cleanup handler, '
-        'then the application hook is invoked and userToRemove is deleted.',
-        () async {
-          final userToKeep = await authUsers.create(session);
-          final userToRemove = await authUsers.create(session);
-
-          await defaultAccountMerger.merge(
-            session,
-            userToKeepId: userToKeep.id,
-            userToRemoveId: userToRemove.id,
-          );
-
-          expect(userIdToKeepFromCallback, userToKeep.id);
-          expect(userIdToRemoveFromCallback, userToRemove.id);
-
-          // Verify userToRemove IS deleted
-          final retainedUser = await AuthUser.db.findById(
-            session,
-            userToRemove.id,
-          );
-          expect(retainedUser, isNull);
-        },
-      );
-
-      test(
-        'when merging with a custom non-deleting cleanup handler, '
-        'then the application hook is invoked and userToRemove remains.',
-        () async {
-          bool cleanUpCalled = false;
-          final accountMerger = AccountMerger(
-            config: AccountMergeConfig.custom(
-              mergeHooks: [
-                AccountMergeConfig.defaultIdpMergeHandler,
-                AccountMergeConfig.defaultCoreDataMergeHandler,
-                (
-                  final session, {
-                  required final UuidValue userToKeepId,
-                  required final UuidValue userToRemoveId,
-                  required final transaction,
-                }) {
-                  userIdToKeepFromCallback = userToKeepId;
-                  userIdToRemoveFromCallback = userToRemoveId;
-                },
-                (
-                  final session, {
-                  required final UuidValue userToKeepId,
-                  required final UuidValue userToRemoveId,
-                  required final transaction,
-                }) {
-                  cleanUpCalled = true;
-                },
-              ],
-            ),
-          );
-
-          final userToKeep = await authUsers.create(session);
-          final userToRemove = await authUsers.create(session);
-
+      group('when the accounts are merged,', () {
+        setUp(() async {
           await accountMerger.merge(
             session,
             userToKeepId: userToKeep.id,
             userToRemoveId: userToRemove.id,
           );
+        });
 
-          expect(userIdToKeepFromCallback, userToKeep.id);
-          expect(userIdToRemoveFromCallback, userToRemove.id);
-          expect(cleanUpCalled, isTrue);
+        test('then the application merge handler receives both user ids.', () {
+          expect(capturedUserToKeepId, userToKeep.id);
+          expect(capturedUserToRemoveId, userToRemove.id);
+        });
 
-          // Verify userToRemove is NOT deleted
-          final retainedUser = await AuthUser.db.findById(
-            session,
-            userToRemove.id,
-          );
-          expect(retainedUser, isNotNull);
-        },
-      );
+        test('then the user to remove is deleted.', () async {
+          expect(await AuthUser.db.findById(session, userToRemove.id), isNull);
+        });
+      });
+    },
+  );
 
-      test(
-        'when merging with the default core data merge handler, then scopes '
-        'are merged and core data is moved.',
-        () async {
-          // Setup User to Keep (Scope A)
-          final userToKeep = await authUsers.create(
-            session,
-            scopes: {Scope.admin},
-          );
+  withServerpod(
+    'Given an account merger with custom merge hooks that capture the merged user ids and replace the cleanup handler with one that keeps the user to remove, and two auth users,',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late AccountMerger accountMerger;
+      late AuthUserModel userToKeep;
+      late AuthUserModel userToRemove;
+      UuidValue? capturedUserToKeepId;
+      UuidValue? capturedUserToRemoveId;
+      var cleanUpInvoked = false;
 
-          // Setup User to Remove (Scope B)
-          final userToRemove = await authUsers.create(
-            session,
-            scopes: {const Scope('test')},
-          );
-          // Add core data for userToRemove
-          // 1. Refresh Token
-          await RefreshToken.db.insertRow(
-            session,
-            RefreshToken(
-              authUserId: userToRemove.id,
-              scopeNames: {},
-              method: 'test',
-              fixedSecret: ByteData(16),
-              rotatingSecretHash: 'hash',
-            ),
-          );
-          // 2. User Profile
-          await UserProfile.db.insertRow(
-            session,
-            UserProfile(authUserId: userToRemove.id),
-          );
+      setUp(() async {
+        session = sessionBuilder.build();
+        capturedUserToKeepId = null;
+        capturedUserToRemoveId = null;
+        cleanUpInvoked = false;
 
-          await defaultAccountMerger.merge(
+        accountMerger = AccountMerger(
+          config: AccountMergeConfig.custom(
+            mergeHooks: [
+              AccountMergeConfig.defaultIdpMergeHandler,
+              AccountMergeConfig.defaultCoreDataMergeHandler,
+              (
+                final session, {
+                required final userToKeepId,
+                required final userToRemoveId,
+                required final transaction,
+              }) {
+                capturedUserToKeepId = userToKeepId;
+                capturedUserToRemoveId = userToRemoveId;
+              },
+              (
+                final session, {
+                required final userToKeepId,
+                required final userToRemoveId,
+                required final transaction,
+              }) {
+                cleanUpInvoked = true;
+              },
+            ],
+          ),
+        );
+
+        userToKeep = await authUsers.create(session);
+        userToRemove = await authUsers.create(session);
+      });
+
+      group('when the accounts are merged,', () {
+        setUp(() async {
+          await accountMerger.merge(
             session,
             userToKeepId: userToKeep.id,
             userToRemoveId: userToRemove.id,
           );
+        });
 
-          // Verify Scopes Merged
+        test('then the capturing merge hook receives both user ids.', () {
+          expect(capturedUserToKeepId, userToKeep.id);
+          expect(capturedUserToRemoveId, userToRemove.id);
+        });
+
+        test('then the custom cleanup handler is invoked.', () {
+          expect(cleanUpInvoked, isTrue);
+        });
+
+        test('then the user to remove is not deleted.', () async {
+          expect(
+            await AuthUser.db.findById(session, userToRemove.id),
+            isNotNull,
+          );
+        });
+      });
+    },
+  );
+
+  withServerpod(
+    'Given an account merger with a no-op application merge handler, a user to keep with the admin scope, and a user to remove with the test scope that owns a refresh token and a profile,',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late AccountMerger accountMerger;
+      late AuthUserModel userToKeep;
+      late AuthUserModel userToRemove;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        accountMerger = const AccountMerger(
+          config: AccountMergeConfig(
+            applicationMergeHandler: _noOpApplicationMergeHandler,
+          ),
+        );
+
+        userToKeep = await authUsers.create(session, scopes: {Scope.admin});
+        userToRemove = await authUsers.create(
+          session,
+          scopes: {const Scope('test')},
+        );
+
+        await RefreshToken.db.insertRow(
+          session,
+          RefreshToken(
+            authUserId: userToRemove.id,
+            scopeNames: {},
+            method: 'test',
+            fixedSecret: ByteData(16),
+            rotatingSecretHash: 'hash',
+          ),
+        );
+
+        await UserProfile.db.insertRow(
+          session,
+          UserProfile(authUserId: userToRemove.id),
+        );
+      });
+
+      group('when the accounts are merged,', () {
+        setUp(() async {
+          await accountMerger.merge(
+            session,
+            userToKeepId: userToKeep.id,
+            userToRemoveId: userToRemove.id,
+          );
+        });
+
+        test('then the scopes are merged into the user to keep.', () async {
           final updatedUserToKeep = await AuthUser.db.findById(
             session,
             userToKeep.id,
           );
+
           expect(
             updatedUserToKeep!.scopeNames,
             containsAll([Scope.admin.name!, 'test']),
           );
+        });
 
-          // Verify Refresh Token Moved
+        test('then the refresh token is moved to the user to keep.', () async {
           final refreshToken = await RefreshToken.db.findFirstRow(session);
+
           expect(refreshToken?.authUserId, userToKeep.id);
+        });
 
-          // Verify User Profile Moved
+        test('then the profile is moved to the user to keep.', () async {
           final profile = await UserProfile.db.findFirstRow(session);
+
           expect(profile?.authUserId, userToKeep.id);
-        },
-      );
+        });
+      });
+    },
+  );
 
-      test(
-        'when merging users that both have profiles, '
-        'then missing userToKeep profile fields are filled from userToRemove.',
-        () async {
-          // Setup User to Keep await (Has Profile with only fullName)
-          final userToKeep = await authUsers.create(
-            session,
-            scopes: {Scope.admin},
-          );
-          await UserProfile.db.insertRow(
-            session,
-            UserProfile(
-              authUserId: userToKeep.id,
-              fullName: 'Keep Name',
-              // userName and email are null
-            ),
-          );
+  withServerpod(
+    'Given an account merger with a no-op application merge handler and two auth users with a profile each, where only the user to remove has a user name and an email,',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late AccountMerger accountMerger;
+      late AuthUserModel userToKeep;
+      late AuthUserModel userToRemove;
 
-          // Setup User to Remove (Has Profile with userName and email)
-          final userToRemove = await authUsers.create(
-            session,
-            scopes: {const Scope('test')},
-          );
-          await UserProfile.db.insertRow(
-            session,
-            UserProfile(
-              authUserId: userToRemove.id,
-              fullName: 'Remove Name', // Should NOT overwrite 'Keep Name'
-              userName: 'remove_user', // Should fill null
-              email: 'remove@example.com', // Should fill null
-            ),
-          );
+      setUp(() async {
+        session = sessionBuilder.build();
+        accountMerger = const AccountMerger(
+          config: AccountMergeConfig(
+            applicationMergeHandler: _noOpApplicationMergeHandler,
+          ),
+        );
 
-          await defaultAccountMerger.merge(
-            session,
-            userToKeepId: userToKeep.id,
-            userToRemoveId: userToRemove.id,
-          );
+        userToKeep = await authUsers.create(session, scopes: {Scope.admin});
+        await UserProfile.db.insertRow(
+          session,
+          UserProfile(
+            authUserId: userToKeep.id,
+            fullName: 'Keep Name',
+          ),
+        );
 
-          // Verify User Profile Merged
-          final profile = await UserProfile.db.findFirstRow(
-            session,
-            where: (final t) => t.authUserId.equals(userToKeep.id),
-          );
-          expect(profile, isNotNull);
-          expect(profile!.fullName, 'Keep Name'); // Original kept
-          expect(profile.userName, 'remove_user'); // Merged
-          expect(profile.email, 'remove@example.com'); // Merged
-        },
-      );
-      test(
-        'when merging with custom merge hooks, '
-        'then the custom hooks receive both users.',
-        () async {
-          // Setup User to Keep
-          final userToKeep = await authUsers.create(
-            session,
-            scopes: {Scope.admin},
-          );
-          // Setup User to Remove
-          final userToRemove = await authUsers.create(
-            session,
-            scopes: {const Scope('test')},
-          );
+        userToRemove = await authUsers.create(
+          session,
+          scopes: {const Scope('test')},
+        );
+        await UserProfile.db.insertRow(
+          session,
+          UserProfile(
+            authUserId: userToRemove.id,
+            fullName: 'Remove Name',
+            userName: 'remove_user',
+            email: 'remove@example.com',
+          ),
+        );
+      });
 
-          var handlerInvoked = false;
-          AuthUserModel? handlerUserToKeep;
-          AuthUserModel? handlerUserToRemove;
-
-          final accountMerger = AccountMerger(
-            config: AccountMergeConfig.custom(
-              mergeHooks: [
-                AccountMergeConfig.defaultIdpMergeHandler,
-                AccountMergeConfig.defaultCoreDataMergeHandler,
-                (
-                  final session, {
-                  required final UuidValue userToKeepId,
-                  required final UuidValue userToRemoveId,
-                  required final transaction,
-                }) async {
-                  handlerInvoked = true;
-                  handlerUserToKeep = userToKeep;
-                  handlerUserToRemove = userToRemove;
-                },
-                (
-                  final session, {
-                  required final UuidValue userToKeepId,
-                  required final UuidValue userToRemoveId,
-                  required final transaction,
-                }) {
-                  userIdToKeepFromCallback = userToKeepId;
-                  userIdToRemoveFromCallback = userToRemoveId;
-                },
-                AccountMergeConfig.defaultMergeCleanupHandler,
-              ],
-            ),
-          );
-
+      group('when the accounts are merged,', () {
+        setUp(() async {
           await accountMerger.merge(
             session,
             userToKeepId: userToKeep.id,
             userToRemoveId: userToRemove.id,
           );
+        });
 
-          expect(handlerInvoked, isTrue);
-          expect(handlerUserToKeep?.id, userToKeep.id);
-          expect(handlerUserToRemove?.id, userToRemove.id);
-        },
-      );
+        test(
+          'then the full name of the user to keep is not overwritten.',
+          () async {
+            final profile = await UserProfile.db.findFirstRow(
+              session,
+              where: (final t) => t.authUserId.equals(userToKeep.id),
+            );
+
+            expect(profile?.fullName, 'Keep Name');
+          },
+        );
+
+        test(
+          'then the user name and email are filled from the user to remove.',
+          () async {
+            final profile = await UserProfile.db.findFirstRow(
+              session,
+              where: (final t) => t.authUserId.equals(userToKeep.id),
+            );
+
+            expect(profile, isNotNull);
+            expect(profile!.userName, 'remove_user');
+            expect(profile.email, 'remove@example.com');
+          },
+        );
+      });
+    },
+  );
+
+  withServerpod(
+    'Given an account merger with custom merge hooks that run two application hooks before the default cleanup handler, and two auth users,',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late AccountMerger accountMerger;
+      late AuthUserModel userToKeep;
+      late AuthUserModel userToRemove;
+      UuidValue? firstHookUserToKeepId;
+      UuidValue? firstHookUserToRemoveId;
+      UuidValue? secondHookUserToKeepId;
+      UuidValue? secondHookUserToRemoveId;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        firstHookUserToKeepId = null;
+        firstHookUserToRemoveId = null;
+        secondHookUserToKeepId = null;
+        secondHookUserToRemoveId = null;
+
+        accountMerger = AccountMerger(
+          config: AccountMergeConfig.custom(
+            mergeHooks: [
+              AccountMergeConfig.defaultIdpMergeHandler,
+              AccountMergeConfig.defaultCoreDataMergeHandler,
+              (
+                final session, {
+                required final userToKeepId,
+                required final userToRemoveId,
+                required final transaction,
+              }) async {
+                firstHookUserToKeepId = userToKeepId;
+                firstHookUserToRemoveId = userToRemoveId;
+              },
+              (
+                final session, {
+                required final userToKeepId,
+                required final userToRemoveId,
+                required final transaction,
+              }) {
+                secondHookUserToKeepId = userToKeepId;
+                secondHookUserToRemoveId = userToRemoveId;
+              },
+              AccountMergeConfig.defaultMergeCleanupHandler,
+            ],
+          ),
+        );
+
+        userToKeep = await authUsers.create(session, scopes: {Scope.admin});
+        userToRemove = await authUsers.create(
+          session,
+          scopes: {const Scope('test')},
+        );
+      });
+
+      group('when the accounts are merged,', () {
+        setUp(() async {
+          await accountMerger.merge(
+            session,
+            userToKeepId: userToKeep.id,
+            userToRemoveId: userToRemove.id,
+          );
+        });
+
+        test('then the first application hook receives both user ids.', () {
+          expect(firstHookUserToKeepId, userToKeep.id);
+          expect(firstHookUserToRemoveId, userToRemove.id);
+        });
+
+        test('then the second application hook receives both user ids.', () {
+          expect(secondHookUserToKeepId, userToKeep.id);
+          expect(secondHookUserToRemoveId, userToRemove.id);
+        });
+      });
+    },
+  );
+
+  withServerpod(
+    'Given an account merger with a no-op application merge handler and a user to keep that does not exist,',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late AccountMerger accountMerger;
+      late AuthUserModel userToRemove;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        accountMerger = const AccountMerger(
+          config: AccountMergeConfig(
+            applicationMergeHandler: _noOpApplicationMergeHandler,
+          ),
+        );
+
+        userToRemove = await authUsers.create(session);
+      });
 
       test(
-        'when merging with a non-existent userToKeep, then it throws AuthUserNotFoundException.',
+        'when the accounts are merged, '
+        'then it throws AuthUserNotFoundException.',
         () async {
-          final userToRemove = await authUsers.create(session);
-
           await expectLater(
-            () => defaultAccountMerger.merge(
+            () => accountMerger.merge(
               session,
               userToKeepId: const Uuid().v4obj(),
               userToRemoveId: userToRemove.id,
@@ -312,14 +410,33 @@ void main() {
           );
         },
       );
+    },
+  );
+
+  withServerpod(
+    'Given an account merger with a no-op application merge handler and a user to remove that does not exist,',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late AccountMerger accountMerger;
+      late AuthUserModel userToKeep;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        accountMerger = const AccountMerger(
+          config: AccountMergeConfig(
+            applicationMergeHandler: _noOpApplicationMergeHandler,
+          ),
+        );
+
+        userToKeep = await authUsers.create(session);
+      });
 
       test(
-        'when merging with a non-existent userToRemove, then it throws AuthUserNotFoundException.',
+        'when the accounts are merged, '
+        'then it throws AuthUserNotFoundException.',
         () async {
-          final userToKeep = await authUsers.create(session);
-
           await expectLater(
-            () => defaultAccountMerger.merge(
+            () => accountMerger.merge(
               session,
               userToKeepId: userToKeep.id,
               userToRemoveId: const Uuid().v4obj(),
@@ -332,32 +449,27 @@ void main() {
   );
 
   withServerpod(
-    'Given a single auth user,',
+    'Given an account merger with a no-op application merge handler and a single auth user,',
     (final sessionBuilder, final endpoints) {
       late Session session;
+      late AccountMerger accountMerger;
       late AuthUserModel authUser;
 
       setUp(() async {
         session = sessionBuilder.build();
+        accountMerger = const AccountMerger(
+          config: AccountMergeConfig(
+            applicationMergeHandler: _noOpApplicationMergeHandler,
+          ),
+        );
+
         authUser = await authUsers.create(session);
       });
 
       test(
-        'when attempting to merge the user with itself, '
-        'then the merge is rejected without deleting the user.',
+        'when merging the user with itself, '
+        'then it throws an ArgumentError for the user to remove.',
         () async {
-          final accountMerger = AccountMerger(
-            config: AccountMergeConfig(
-              applicationMergeHandler:
-                  (
-                    final session, {
-                    required final userToKeepId,
-                    required final userToRemoveId,
-                    required final transaction,
-                  }) {},
-            ),
-          );
-
           await expectLater(
             () => accountMerger.merge(
               session,
@@ -378,6 +490,22 @@ void main() {
                   ),
             ),
           );
+        },
+      );
+
+      test(
+        'when merging the user with itself, '
+        'then the user is not deleted.',
+        () async {
+          await expectLater(
+            () => accountMerger.merge(
+              session,
+              userToKeepId: authUser.id,
+              userToRemoveId: authUser.id,
+            ),
+            throwsA(isA<ArgumentError>()),
+          );
+
           expect(await AuthUser.db.findById(session, authUser.id), isNotNull);
         },
       );
@@ -385,25 +513,25 @@ void main() {
   );
 
   withServerpod(
-    'Given the default application data merge hook,',
+    'Given an account merger with the default application merge handler and two auth users,',
     (final sessionBuilder, final endpoints) {
       late Session session;
-      const authUsers = AuthUsers();
+      late AccountMerger accountMerger;
+      late AuthUserModel userToKeep;
+      late AuthUserModel userToRemove;
 
       setUp(() async {
         session = sessionBuilder.build();
+        accountMerger = const AccountMerger(config: AccountMergeConfig());
+
+        userToKeep = await authUsers.create(session);
+        userToRemove = await authUsers.create(session);
       });
 
       test(
-        'when merging two auth users, then it throws.',
+        'when the accounts are merged, '
+        'then it throws an exception.',
         () async {
-          final userToKeep = await authUsers.create(session);
-          final userToRemove = await authUsers.create(session);
-
-          const accountMerger = AccountMerger(
-            config: AccountMergeConfig(),
-          );
-
           await expectLater(
             () => accountMerger.merge(
               session,
@@ -418,11 +546,14 @@ void main() {
   );
 
   withServerpod(
-    'Given two registered identity providers where the second fails after the first mutates data,',
+    'Given two registered identity providers where the first one blocks the user to remove and the second one fails, and two auth users,',
     (final sessionBuilder, final endpoints) {
       late Session session;
+      late AccountMerger accountMerger;
+      late AuthUserModel userToKeep;
+      late AuthUserModel userToRemove;
 
-      setUp(() {
+      setUp(() async {
         session = sessionBuilder.build();
         AuthServices.set(
           tokenManagerBuilders: [
@@ -432,27 +563,22 @@ void main() {
             PreBuiltIdpBuilder(_BlockingMergeIdentityProvider()),
             PreBuiltIdpBuilder(_ThrowingMergeIdentityProvider()),
           ],
-          accountMergeConfig: AccountMergeConfig(
-            applicationMergeHandler:
-                (
-                  final session, {
-                  required final userToKeepId,
-                  required final userToRemoveId,
-                  required final transaction,
-                }) {},
+          accountMergeConfig: const AccountMergeConfig(
+            applicationMergeHandler: _noOpApplicationMergeHandler,
           ),
         );
+        accountMerger = AuthServices.instance.accountMerger;
+
+        userToKeep = await authUsers.create(session);
+        userToRemove = await authUsers.create(session);
       });
 
       test(
-        'when merging the users, '
-        'then every provider mutation is rolled back and both users remain.',
+        'when the accounts are merged, '
+        'then it throws the StateError raised by the failing identity provider.',
         () async {
-          final userToKeep = await authUsers.create(session);
-          final userToRemove = await authUsers.create(session);
-
           await expectLater(
-            () => AuthServices.instance.accountMerger.merge(
+            () => accountMerger.merge(
               session,
               userToKeepId: userToKeep.id,
               userToRemoveId: userToRemove.id,
@@ -465,25 +591,63 @@ void main() {
               ),
             ),
           );
+        },
+      );
+
+      test(
+        'when the accounts are merged, '
+        'then the mutation of the first identity provider is rolled back.',
+        () async {
+          await expectLater(
+            () => accountMerger.merge(
+              session,
+              userToKeepId: userToKeep.id,
+              userToRemoveId: userToRemove.id,
+            ),
+            throwsA(isA<StateError>()),
+          );
 
           final unchangedUserToRemove = await AuthUser.db.findById(
             session,
             userToRemove.id,
           );
           expect(unchangedUserToRemove?.blocked, isFalse);
+        },
+      );
+
+      test(
+        'when the accounts are merged, '
+        'then both users remain.',
+        () async {
+          await expectLater(
+            () => accountMerger.merge(
+              session,
+              userToKeepId: userToKeep.id,
+              userToRemoveId: userToRemove.id,
+            ),
+            throwsA(isA<StateError>()),
+          );
+
           expect(await AuthUser.db.findById(session, userToKeep.id), isNotNull);
+          expect(
+            await AuthUser.db.findById(session, userToRemove.id),
+            isNotNull,
+          );
         },
       );
     },
   );
 
   withServerpod(
-    'Given an account merger whose application handler fails after core migration,',
+    'Given an account merger whose application merge handler fails after core migration, a user to keep with the admin scope, and a user to remove with the source scope that owns a refresh token,',
     (final sessionBuilder, final endpoints) {
       late Session session;
       late AccountMerger accountMerger;
+      late AuthUserModel userToKeep;
+      late AuthUserModel userToRemove;
+      late RefreshToken refreshToken;
 
-      setUp(() {
+      setUp(() async {
         session = sessionBuilder.build();
         AuthServices.set(
           tokenManagerBuilders: [
@@ -500,31 +664,28 @@ void main() {
           ),
         );
         accountMerger = AuthServices.instance.accountMerger;
+
+        userToKeep = await authUsers.create(session, scopes: {Scope.admin});
+        userToRemove = await authUsers.create(
+          session,
+          scopes: {const Scope('source')},
+        );
+        refreshToken = await RefreshToken.db.insertRow(
+          session,
+          RefreshToken(
+            authUserId: userToRemove.id,
+            scopeNames: {},
+            method: 'test',
+            fixedSecret: ByteData(16),
+            rotatingSecretHash: 'hash',
+          ),
+        );
       });
 
       test(
         'when merging within an existing transaction, '
         'then the core migration is rolled back to its savepoint.',
         () async {
-          final userToKeep = await authUsers.create(
-            session,
-            scopes: {Scope.admin},
-          );
-          final userToRemove = await authUsers.create(
-            session,
-            scopes: {const Scope('source')},
-          );
-          final refreshToken = await RefreshToken.db.insertRow(
-            session,
-            RefreshToken(
-              authUserId: userToRemove.id,
-              scopeNames: {},
-              method: 'test',
-              fixedSecret: ByteData(16),
-              rotatingSecretHash: 'hash',
-            ),
-          );
-
           await session.db.transaction((final transaction) async {
             await expectLater(
               () => accountMerger.merge(
@@ -568,6 +729,15 @@ void main() {
     },
   );
 }
+
+/// Application merge handler which leaves the merged users untouched, so that
+/// only the default merge hooks affect the outcome of a merge.
+void _noOpApplicationMergeHandler(
+  final Session session, {
+  required final UuidValue userToKeepId,
+  required final UuidValue userToRemoveId,
+  required final Transaction transaction,
+}) {}
 
 class _BlockingMergeIdentityProvider implements IdentityProvider {
   @override

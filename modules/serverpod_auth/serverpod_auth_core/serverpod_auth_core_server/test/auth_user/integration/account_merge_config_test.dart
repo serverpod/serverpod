@@ -7,22 +7,23 @@ import 'package:test/test.dart';
 import '../../serverpod_test_tools.dart';
 
 void main() {
+  const authUsers = AuthUsers();
+
   withServerpod(
-    'Given the default core data merge handler,',
+    'Given userToKeep does not exist,',
     (final sessionBuilder, final endpoints) {
       late Session session;
-      const authUsers = AuthUsers();
+      late AuthUserModel userToRemove;
 
       setUp(() async {
         session = sessionBuilder.build();
+        userToRemove = await authUsers.create(session);
       });
 
       test(
-        'when userToKeep does not exist, then it throws '
-        'AuthUserNotFoundException.',
+        'when the default core data merge handler is called, '
+        'then it throws AuthUserNotFoundException.',
         () async {
-          final userToRemove = await authUsers.create(session);
-
           await expectLater(
             () => session.db.transaction(
               (final transaction) async =>
@@ -37,13 +38,24 @@ void main() {
           );
         },
       );
+    },
+  );
+
+  withServerpod(
+    'Given userToRemove does not exist,',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late AuthUserModel userToKeep;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        userToKeep = await authUsers.create(session);
+      });
 
       test(
-        'when userToRemove does not exist, then it throws '
-        'AuthUserNotFoundException.',
+        'when the default core data merge handler is called, '
+        'then it throws AuthUserNotFoundException.',
         () async {
-          final userToKeep = await authUsers.create(session);
-
           await expectLater(
             () => session.db.transaction(
               (final transaction) async =>
@@ -58,19 +70,34 @@ void main() {
           );
         },
       );
+    },
+  );
+
+  withServerpod(
+    'Given both users exist with different scopes,',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late AuthUserModel userToKeep;
+      late AuthUserModel userToRemove;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        userToKeep = await authUsers.create(
+          session,
+          scopes: {Scope.admin},
+        );
+
+        userToRemove = await authUsers.create(
+          session,
+          scopes: {const Scope('test')},
+        );
+      });
 
       test(
-        'when both users exist, then scopes are merged effectively.',
+        'when the default core data merge handler is called, '
+        'then scopes are merged into userToKeep.',
         () async {
-          final userToKeep = await authUsers.create(
-            session,
-            scopes: {Scope.admin},
-          );
-          final userToRemove = await authUsers.create(
-            session,
-            scopes: {const Scope('test')},
-          );
-
           await session.db.transaction(
             (final transaction) async =>
                 AccountMergeConfig.defaultCoreDataMergeHandler(
@@ -91,17 +118,26 @@ void main() {
           );
         },
       );
+    },
+  );
+
+  withServerpod(
+    'Given userToRemove is blocked,',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late AuthUserModel userToKeep;
+      late AuthUserModel userToRemove;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        userToKeep = await authUsers.create(session);
+        userToRemove = await authUsers.create(session, blocked: true);
+      });
 
       test(
-        'when userToRemove is blocked, '
+        'when the default core data merge handler is called, '
         'then userToKeep becomes blocked.',
         () async {
-          final userToKeep = await authUsers.create(session);
-          final userToRemove = await authUsers.create(
-            session,
-            blocked: true,
-          );
-
           await session.db.transaction(
             (final transaction) async =>
                 AccountMergeConfig.defaultCoreDataMergeHandler(
@@ -119,17 +155,26 @@ void main() {
           expect(updatedUserToKeep?.blocked, isTrue);
         },
       );
+    },
+  );
+
+  withServerpod(
+    'Given userToKeep is blocked and userToRemove is not blocked,',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late AuthUserModel userToKeep;
+      late AuthUserModel userToRemove;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        userToKeep = await authUsers.create(session, blocked: true);
+        userToRemove = await authUsers.create(session);
+      });
 
       test(
-        'when userToKeep is blocked and userToRemove is not blocked, '
+        'when the default core data merge handler is called, '
         'then userToKeep remains blocked.',
         () async {
-          final userToKeep = await authUsers.create(
-            session,
-            blocked: true,
-          );
-          final userToRemove = await authUsers.create(session);
-
           await session.db.transaction(
             (final transaction) async =>
                 AccountMergeConfig.defaultCoreDataMergeHandler(
@@ -147,24 +192,37 @@ void main() {
           expect(updatedUserToKeep?.blocked, isTrue);
         },
       );
+    },
+  );
+
+  withServerpod(
+    'Given userToRemove has refresh tokens,',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late AuthUserModel userToKeep;
+      late AuthUserModel userToRemove;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        userToKeep = await authUsers.create(session);
+        userToRemove = await authUsers.create(session);
+
+        await RefreshToken.db.insertRow(
+          session,
+          RefreshToken(
+            authUserId: userToRemove.id,
+            scopeNames: {},
+            method: 'test',
+            fixedSecret: ByteData(16),
+            rotatingSecretHash: 'hash',
+          ),
+        );
+      });
 
       test(
-        'when userToRemove has refresh tokens, then they are moved to userToKeep.',
+        'when the default core data merge handler is called, '
+        'then refresh tokens are moved to userToKeep.',
         () async {
-          final userToKeep = await authUsers.create(session);
-          final userToRemove = await authUsers.create(session);
-
-          await RefreshToken.db.insertRow(
-            session,
-            RefreshToken(
-              authUserId: userToRemove.id,
-              scopeNames: {},
-              method: 'test',
-              fixedSecret: ByteData(16),
-              rotatingSecretHash: 'hash',
-            ),
-          );
-
           await session.db.transaction(
             (final transaction) async =>
                 AccountMergeConfig.defaultCoreDataMergeHandler(
@@ -179,24 +237,37 @@ void main() {
           expect(refreshToken?.authUserId, userToKeep.id);
         },
       );
+    },
+  );
+
+  withServerpod(
+    'Given userToRemove has server side sessions,',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late AuthUserModel userToKeep;
+      late AuthUserModel userToRemove;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        userToKeep = await authUsers.create(session);
+        userToRemove = await authUsers.create(session);
+
+        await ServerSideSession.db.insertRow(
+          session,
+          ServerSideSession(
+            authUserId: userToRemove.id,
+            scopeNames: {},
+            sessionKeyHash: ByteData(16),
+            sessionKeySalt: ByteData(16),
+            method: 'test',
+          ),
+        );
+      });
 
       test(
-        'when userToRemove has server side sessions, then they are moved to userToKeep.',
+        'when the default core data merge handler is called, '
+        'then server side sessions are moved to userToKeep.',
         () async {
-          final userToKeep = await authUsers.create(session);
-          final userToRemove = await authUsers.create(session);
-
-          await ServerSideSession.db.insertRow(
-            session,
-            ServerSideSession(
-              authUserId: userToRemove.id,
-              scopeNames: {},
-              sessionKeyHash: ByteData(16),
-              sessionKeySalt: ByteData(16),
-              method: 'test',
-            ),
-          );
-
           await session.db.transaction(
             (final transaction) async =>
                 AccountMergeConfig.defaultCoreDataMergeHandler(
@@ -213,18 +284,31 @@ void main() {
           expect(serverSideSession?.authUserId, userToKeep.id);
         },
       );
+    },
+  );
+
+  withServerpod(
+    'Given userToRemove has a profile and userToKeep does not,',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late AuthUserModel userToKeep;
+      late AuthUserModel userToRemove;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        userToKeep = await authUsers.create(session);
+        userToRemove = await authUsers.create(session);
+
+        await UserProfile.db.insertRow(
+          session,
+          UserProfile(authUserId: userToRemove.id, fullName: 'Remove Name'),
+        );
+      });
 
       test(
-        'when userToRemove has a profile and userToKeep does not, then the profile is moved to userToKeep.',
+        'when the default core data merge handler is called, '
+        'then the profile is moved to userToKeep.',
         () async {
-          final userToKeep = await authUsers.create(session);
-          final userToRemove = await authUsers.create(session);
-
-          await UserProfile.db.insertRow(
-            session,
-            UserProfile(authUserId: userToRemove.id, fullName: 'Remove Name'),
-          );
-
           await session.db.transaction(
             (final transaction) async =>
                 AccountMergeConfig.defaultCoreDataMergeHandler(
@@ -241,31 +325,44 @@ void main() {
           expect(profiles.first.fullName, 'Remove Name');
         },
       );
+    },
+  );
+
+  withServerpod(
+    'Given both users have profiles,',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late AuthUserModel userToKeep;
+      late AuthUserModel userToRemove;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        userToKeep = await authUsers.create(session);
+        userToRemove = await authUsers.create(session);
+
+        await UserProfile.db.insertRow(
+          session,
+          UserProfile(
+            authUserId: userToKeep.id,
+            fullName: 'Keep Name',
+          ),
+        );
+
+        await UserProfile.db.insertRow(
+          session,
+          UserProfile(
+            authUserId: userToRemove.id,
+            fullName: 'Remove Name', // Should NOT overwrite 'Keep Name'
+            userName: 'remove_user', // Should merge
+            email: 'remove@example.com', // Should merge
+          ),
+        );
+      });
 
       test(
-        'when both users have profiles, then fields are merged into userToKeep profile.',
+        'when the default core data merge handler is called, '
+        'then fields are merged into userToKeep profile.',
         () async {
-          final userToKeep = await authUsers.create(session);
-          final userToRemove = await authUsers.create(session);
-
-          await UserProfile.db.insertRow(
-            session,
-            UserProfile(
-              authUserId: userToKeep.id,
-              fullName: 'Keep Name',
-            ),
-          );
-
-          await UserProfile.db.insertRow(
-            session,
-            UserProfile(
-              authUserId: userToRemove.id,
-              fullName: 'Remove Name', // Should NOT overwrite 'Keep Name'
-              userName: 'remove_user', // Should merge
-              email: 'remove@example.com', // Should merge
-            ),
-          );
-
           await session.db.transaction(
             (final transaction) async =>
                 AccountMergeConfig.defaultCoreDataMergeHandler(
@@ -294,36 +391,55 @@ void main() {
           expect(removeProfile, isNotNull);
         },
       );
+    },
+  );
+
+  withServerpod(
+    'Given only the userToRemove profile has an image,',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late AuthUserModel userToKeep;
+      late AuthUserModel userToRemove;
+      late UserProfile keepProfile;
+      late UserProfile removeProfile;
+      late UserProfileImage sourceImage;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        userToKeep = await authUsers.create(session);
+        userToRemove = await authUsers.create(session);
+
+        keepProfile = await UserProfile.db.insertRow(
+          session,
+          UserProfile(authUserId: userToKeep.id),
+        );
+
+        removeProfile = await UserProfile.db.insertRow(
+          session,
+          UserProfile(authUserId: userToRemove.id),
+        );
+
+        sourceImage = await UserProfileImage.db.insertRow(
+          session,
+          UserProfileImage(
+            userProfileId: removeProfile.id!,
+            storageId: 'public',
+            path: 'source-image.png',
+            url: Uri.parse('https://example.com/source-image.png'),
+          ),
+        );
+
+        await UserProfile.db.updateRow(
+          session,
+          removeProfile.copyWith(imageId: sourceImage.id),
+          columns: (final t) => [t.imageId],
+        );
+      });
 
       test(
-        'when only the userToRemove profile has an image, '
+        'when the default core data merge handler and cleanup handler are called, '
         'then the image is moved to the userToKeep profile and survives cleanup.',
         () async {
-          final userToKeep = await authUsers.create(session);
-          final userToRemove = await authUsers.create(session);
-          final keepProfile = await UserProfile.db.insertRow(
-            session,
-            UserProfile(authUserId: userToKeep.id),
-          );
-          final removeProfile = await UserProfile.db.insertRow(
-            session,
-            UserProfile(authUserId: userToRemove.id),
-          );
-          final sourceImage = await UserProfileImage.db.insertRow(
-            session,
-            UserProfileImage(
-              userProfileId: removeProfile.id!,
-              storageId: 'public',
-              path: 'source-image.png',
-              url: Uri.parse('https://example.com/source-image.png'),
-            ),
-          );
-          await UserProfile.db.updateRow(
-            session,
-            removeProfile.copyWith(imageId: sourceImage.id),
-            columns: (final t) => [t.imageId],
-          );
-
           await session.db.transaction((final transaction) async {
             await AccountMergeConfig.defaultCoreDataMergeHandler(
               session,
