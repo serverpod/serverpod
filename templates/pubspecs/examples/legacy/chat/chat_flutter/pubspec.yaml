@@ -1,5 +1,8 @@
 # TEMPLATE
 
+# Frozen at Serverpod 3.5.0-beta.12 together with the legacy chat module, see
+# issue #5443. The chat packages are unpublished, hence the path overrides.
+
 name: chat_flutter
 description: Demo project for the chat module.
 
@@ -20,8 +23,8 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: DART_VERSION
-  flutter: FLUTTER_VERSION
+  sdk: '^3.10.3'
+  flutter: '^3.38.4'
 
 dependencies:
   chat_client:
@@ -32,11 +35,11 @@ dependencies:
   flutter:
     sdk: flutter
   made_with_serverpod: ^1.0.0
-  serverpod_auth_email_flutter: SERVERPOD_VERSION
-  serverpod_auth_shared_flutter: SERVERPOD_VERSION
-  serverpod_chat_flutter: SERVERPOD_VERSION
-  serverpod_client: SERVERPOD_VERSION
-  serverpod_flutter: SERVERPOD_VERSION
+  serverpod_auth_email_flutter: 3.5.0-beta.12
+  serverpod_auth_shared_flutter: 3.5.0-beta.12
+  serverpod_chat_flutter: 3.5.0-beta.12
+  serverpod_client: 3.5.0-beta.12
+  serverpod_flutter: 3.5.0-beta.12
 
 dev_dependencies:
   flutter_lints: '>=3.0.0 <7.0.0'
@@ -44,22 +47,10 @@ dev_dependencies:
     sdk: flutter
 
 dependency_overrides:
-  serverpod_auth_client:
-    path: ../../../../modules/legacy/serverpod_auth/serverpod_auth_client
-  serverpod_auth_email_flutter:
-    path: ../../../../modules/legacy/serverpod_auth/serverpod_auth_email_flutter
-  serverpod_auth_shared_flutter:
-    path: ../../../../modules/legacy/serverpod_auth/serverpod_auth_shared_flutter
   serverpod_chat_client:
     path: ../../../../modules/legacy/serverpod_chat/serverpod_chat_client
   serverpod_chat_flutter:
     path: ../../../../modules/legacy/serverpod_chat/serverpod_chat_flutter
-  serverpod_client:
-    path: ../../../../packages/serverpod_client
-  serverpod_flutter:
-    path: ../../../../packages/serverpod_flutter
-  serverpod_serialization:
-    path: ../../../../packages/serverpod_serialization
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
