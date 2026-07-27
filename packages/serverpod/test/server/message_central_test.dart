@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/generated/protocol.dart' as internal;
+import 'package:serverpod/src/server/message_central.dart'
+    show MessageCentralInternalMethods;
 import 'package:test/test.dart';
 
 import 'test_helpers/empty_endpoints.dart';

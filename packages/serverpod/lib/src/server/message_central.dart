@@ -246,6 +246,10 @@ class MessageCentral {
     }
   }
 
+}
+
+/// Internal methods for [MessageCentral].
+extension MessageCentralInternalMethods on MessageCentral {
   /// Whether [session] is still referenced by any internal lookup.
   @visibleForTesting
   bool hasSessionReferences(Session session) =>
