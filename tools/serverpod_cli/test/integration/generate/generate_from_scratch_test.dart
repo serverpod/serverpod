@@ -114,17 +114,25 @@ class MyFutureCall extends FutureCall {
     },
   );
 
-  group('Given a model and an endpoint using it with no generated files', () {
+  group('Given a model and endpoints using it with no generated files', () {
     late Directory projectDir;
     late Directory generatedDir;
+    late Directory generatedClientDir;
     late GeneratorConfig config;
     late Analyzers analyzers;
 
     tearDownAll(() => projectDir.deleteIfExists(recursive: true));
-    tearDown(() => generatedDir.deleteIfExists(recursive: true));
+    tearDown(() {
+      generatedDir.deleteIfExists(recursive: true);
+      generatedClientDir.deleteIfExists(recursive: true);
+    });
 
     setUpAll(() async {
       (projectDir, generatedDir) = await _buildProject();
+      await _createClientPackage(projectDir);
+      generatedClientDir = Directory(
+        path.join(projectDir.path, 'test_client', 'lib', 'src', 'protocol'),
+      );
 
       var modelFile = File(
         path.join(
@@ -161,6 +169,27 @@ import 'package:serverpod/serverpod.dart';
 import 'package:test_server/src/generated/protocol.dart';
 
 class ItemEndpoint extends Endpoint {
+  Future<Item> getItem(Session session, String name) async {
+    return Item(name: name);
+  }
+}
+''');
+
+      File(
+          path.join(
+            projectDir.path,
+            'lib',
+            'src',
+            'endpoints',
+            'client_item_endpoint.dart',
+          ),
+        )
+        ..createSync(recursive: true)
+        ..writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+import 'package:test_client/test_client.dart';
+
+class ClientItemEndpoint extends Endpoint {
   Future<Item> getItem(Session session, String name) async {
     return Item(name: name);
   }
@@ -265,4 +294,158 @@ fields:
       );
     },
   );
+
+  group(
+    'Given server and client imports of a shared model with no generated files',
+    () {
+      late Directory projectDir;
+      late GeneratorConfig config;
+      late Analyzers analyzers;
+
+      tearDownAll(() => projectDir.deleteIfExists(recursive: true));
+
+      setUpAll(() async {
+        (projectDir, _) = await _buildProject();
+        await _createSharedPackage(projectDir);
+        await _createClientPackage(projectDir, dependsOnSharedPackage: true);
+
+        for (final package in ['test_server', 'test_client']) {
+          File(
+              path.join(
+                projectDir.path,
+                'lib',
+                'src',
+                'endpoints',
+                '${package}_shared_model_endpoint.dart',
+              ),
+            )
+            ..createSync(recursive: true)
+            ..writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+import '${package == 'test_server' ? 'package:test_shared/test_shared.dart' : 'package:test_client/test_client.dart'}';
+
+class ${package == 'test_server' ? 'Server' : 'Client'}SharedModelEndpoint extends Endpoint {
+  Future<SharedModel> getItem(Session session, SharedModel item) async {
+    return item;
+  }
+}
+''');
+        }
+
+        config = buildTestServerConfig(
+          projectDir,
+          sharedModelsSourcePathsParts: {
+            'test_shared': ['test_shared'],
+          },
+        );
+        analyzers = await Analyzers.create(config);
+      });
+
+      test(
+        'when generating, '
+        'then generation succeeds on first run.',
+        () async {
+          final result = await analyzers.performGenerate(config: config);
+
+          expect(result.success, isTrue);
+        },
+      );
+    },
+  );
+}
+
+Future<void> _createClientPackage(
+  Directory projectDir, {
+  bool dependsOnSharedPackage = false,
+}) async {
+  final pathToServerpodRoot = await resolveServerpodRoot();
+  final clientDir = Directory(path.join(projectDir.path, 'test_client'));
+  final sharedDependency = dependsOnSharedPackage
+      ? '''
+  test_shared:
+    path: ../test_shared
+'''
+      : '';
+
+  File(path.join(clientDir.path, 'pubspec.yaml'))
+    ..createSync(recursive: true)
+    ..writeAsStringSync('''
+name: test_client
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  serverpod_client:
+    path: $pathToServerpodRoot/packages/serverpod_client
+$sharedDependency
+''');
+
+  File(
+      path.join(clientDir.path, 'lib', 'test_client.dart'),
+    )
+    ..createSync(recursive: true)
+    ..writeAsStringSync('''
+export 'src/protocol/protocol.dart';
+${dependsOnSharedPackage ? "export 'package:test_shared/test_shared.dart';" : ''}
+''');
+
+  final serverPubspec = File(path.join(projectDir.path, 'pubspec.yaml'));
+  serverPubspec.writeAsStringSync(
+    serverPubspec.readAsStringSync().replaceFirst(
+      'dependencies:\n',
+      'dependencies:\n'
+          '  test_client:\n'
+          '    path: test_client\n'
+          '${dependsOnSharedPackage ? '  test_shared:\n    path: test_shared\n' : ''}',
+    ),
+  );
+
+  final serverPubGet = await Process.run(
+    'dart',
+    ['pub', 'get'],
+    workingDirectory: projectDir.absolute.path,
+  );
+  assert(
+    serverPubGet.exitCode == 0,
+    'Failed to add the test client dependency: ${serverPubGet.stderr}',
+  );
+}
+
+Future<void> _createSharedPackage(Directory projectDir) async {
+  final pathToServerpodRoot = await resolveServerpodRoot();
+  final sharedDir = Directory(path.join(projectDir.path, 'test_shared'));
+
+  File(path.join(sharedDir.path, 'pubspec.yaml'))
+    ..createSync(recursive: true)
+    ..writeAsStringSync('''
+name: test_shared
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  serverpod_serialization:
+    path: $pathToServerpodRoot/packages/serverpod_serialization
+''');
+
+  File(path.join(sharedDir.path, 'lib', 'test_shared.dart'))
+    ..createSync(recursive: true)
+    ..writeAsStringSync("export 'src/generated/protocol.dart';\n");
+
+  File(
+      path.join(
+        sharedDir.path,
+        'lib',
+        'src',
+        'models',
+        'shared_model.spy.yaml',
+      ),
+    )
+    ..createSync(recursive: true)
+    ..writeAsStringSync('''
+class: SharedModel
+fields:
+  name: String
+''');
 }
