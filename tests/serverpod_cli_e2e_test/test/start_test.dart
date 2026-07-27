@@ -28,6 +28,12 @@ apiServer:
   publicHost: localhost
   publicPort: 0
   publicScheme: http
+
+webServer:
+  port: 0
+  publicHost: localhost
+  publicPort: 0
+  publicScheme: http
 ''');
 }
 
