@@ -32,12 +32,11 @@ void main() async {
       final createProcess = await startServerpodCli(
         [
           'create',
-          '--template',
-          'server',
           projectName,
           '-v',
           '--no-analytics',
           '--no-interactive',
+          '--no-database',
         ],
         rootPath: rootPath,
         workingDirectory: tempPath,
@@ -60,7 +59,7 @@ void main() async {
       () async {
         final result = await runProcess(
           'dart',
-          ['bin/main.dart', '--apply-migrations'],
+          ['bin/main.dart'],
           workingDirectory: commandRoot,
           environment: {
             'SERVERPOD_WEBSOCKET_PING_INTERVAL': '-1',
@@ -84,7 +83,7 @@ void main() async {
       () async {
         final result = await runProcess(
           'dart',
-          ['bin/main.dart', '--apply-migrations'],
+          ['bin/main.dart'],
           workingDirectory: commandRoot,
           environment: {
             'SERVERPOD_WEBSOCKET_PING_INTERVAL': '0',
@@ -108,7 +107,7 @@ void main() async {
       () async {
         final result = await runProcess(
           'dart',
-          ['bin/main.dart', '--apply-migrations'],
+          ['bin/main.dart'],
           workingDirectory: commandRoot,
           environment: {
             'SERVERPOD_WEBSOCKET_PING_INTERVAL': 'invalid',
@@ -132,7 +131,7 @@ void main() async {
       () async {
         final result = await runProcess(
           'dart',
-          ['bin/main.dart', '--apply-migrations', '--role', 'maintenance'],
+          ['bin/main.dart', '--role', 'maintenance'],
           workingDirectory: commandRoot,
           environment: {
             'SERVERPOD_WEBSOCKET_PING_INTERVAL': '15',
