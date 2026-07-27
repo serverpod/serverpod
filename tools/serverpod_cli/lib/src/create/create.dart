@@ -291,7 +291,7 @@ Future<CreateResult> performCreate(
     interactive: interactive,
   );
 
-  if (template.hasServer || template.isModule) {
+  if ((template.hasServer || template.isModule) && context.database) {
     success &= await log.progress('Creating default database migration.', () {
       return DatabaseSetup.createDefaultMigration(
         serverpodDirs.serverDir,

@@ -24,7 +24,7 @@ void main() {
   });
 
   group(
-    'Given a project without migrations, '
+    'Given a project without a database, '
     'when creating CreateConfigState in the upgrade path for the TUI',
     () {
       late CreateConfigStateResult result;
@@ -41,13 +41,6 @@ void main() {
       );
 
       setUpAll(() async {
-        final migrationsDirectory = Directory(
-          p.join(project.serverDir, 'migrations'),
-        );
-        if (migrationsDirectory.existsSync()) {
-          migrationsDirectory.deleteSync(recursive: true);
-        }
-
         result = await getCreateConfigState(
           name: '.',
           force: false,
