@@ -245,7 +245,6 @@ class MessageCentral {
       callback();
     }
   }
-
 }
 
 /// Internal methods for [MessageCentral].
