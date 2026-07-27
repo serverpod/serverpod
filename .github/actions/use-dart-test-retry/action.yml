@@ -39,6 +39,14 @@ runs:
       if: runner.os == 'Windows'
       shell: pwsh
       run: |
+        $resolvedDart = (Resolve-Path (Get-Command dart).Source).Path
+        $expectedDart = (Resolve-Path (
+          Join-Path $env:GITHUB_ACTION_PATH 'bin\windows\dart.cmd'
+        )).Path
+        if ($resolvedDart -ne $expectedDart) {
+          throw "PowerShell resolved Dart to '$resolvedDart' instead of '$expectedDart'."
+        }
+
         $version = & dart --version 2>&1
         if ($LASTEXITCODE -ne 0 -or "$version" -notmatch '^Dart SDK version:') {
           throw "The Windows Dart wrapper did not delegate correctly: $version"
@@ -49,6 +57,13 @@ runs:
       if: runner.os == 'Windows'
       shell: bash
       run: |
+        resolved_dart="$(command -v dart)"
+        expected_dart="$GITHUB_ACTION_PATH/bin/windows/dart"
+        if [[ ! "$resolved_dart" -ef "$expected_dart" ]]; then
+          echo "::error::Bash resolved Dart to '$resolved_dart' instead of '$expected_dart'."
+          exit 1
+        fi
+
         version="$(dart --version 2>&1)"
         if [[ "$version" != Dart\ SDK\ version:* ]]; then
           echo "::error::The Windows Dart wrapper did not delegate correctly: $version"
