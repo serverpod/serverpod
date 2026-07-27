@@ -35,7 +35,7 @@ Future<bool> pubspecDependenciesMatch({
     ignorePaths: [
       p.join('templates', 'pubspecs'),
       'test_assets',
-      // Frozen at Serverpod 3.5.0-beta.12, see issue #5443.
+      // Frozen at Serverpod 4.0.0-beta.0, see issue #5443.
       p.join('modules', 'legacy', 'serverpod_chat'),
       p.join('examples', 'legacy', 'chat'),
     ],
