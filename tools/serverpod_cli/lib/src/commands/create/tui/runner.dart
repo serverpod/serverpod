@@ -68,8 +68,7 @@ Future<CreateConfigStateResult> getCreateConfigState({
   // All form configurations are not shown in the TUI
   // for upgrade path. If the project already has migrations
   // then the TUI should only allow for IDEs to be selected.
-  // Otherwise, assume we're dealing with a mini to server upgrade.
-  // In that case, the TUI should show all configurations except
+  // Otherwise, the TUI should show all configurations except
   // for project type which will always be Server and cannot be changed.
   if (name == '.') {
     isUpgrade = true;
@@ -209,7 +208,6 @@ Future<void> _preExit({
     );
 
     if (template.hasServer) logStartInstructions(projectPath);
-    if (template.isMini) logMiniStartInstructions(projectPath);
   }
 
   await log.flush();

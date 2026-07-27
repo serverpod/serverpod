@@ -48,7 +48,6 @@ commands:
   - name: create
     flags:
       -f, --force: "Create the project even if there are issues that prevent it from running out of the box."
-      --mini: "Shortcut for --template mini."
       -t, --template=: "Template to use when creating a new project"
       --database: "Include a database in the project."
       --no-database: "Include a database in the project."
@@ -70,7 +69,7 @@ commands:
       - [website, no-website]
     completion:
       flag:
-        template: ["mini", "fullstack", "server", "module"]
+        template: ["fullstack", "server", "module"]
         ide: ["none", "antigravity", "codex", "claude", "cursor", "opencode", "vscode"]
 
   - name: database

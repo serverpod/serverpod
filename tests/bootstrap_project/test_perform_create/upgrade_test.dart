@@ -31,10 +31,10 @@ void main() {
 
       final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
-          template: ServerpodTemplateType.mini,
-          auth: true,
-          redis: true,
-          postgres: true,
+          template: ServerpodTemplateType.fullstack,
+          auth: false,
+          redis: false,
+          postgres: false,
           webapp: true,
           ides: [TemplateIde.claude, TemplateIde.cursor, TemplateIde.vscode],
         ),

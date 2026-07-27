@@ -28,6 +28,12 @@ apiServer:
   publicHost: localhost
   publicPort: 0
   publicScheme: http
+
+webServer:
+  port: 0
+  publicHost: localhost
+  publicPort: 0
+  publicScheme: http
 ''');
 }
 
@@ -89,7 +95,7 @@ Future<void> waitForGeneratedOutput(
 }
 
 void main() async {
-  group('Given a mini project', () {
+  group('Given a server project', () {
     late String sandboxDir;
     var projectName =
         'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
@@ -101,7 +107,13 @@ void main() async {
     setUpAll(() async {
       sandboxDir = d.sandbox;
       var result = await runServerpod(
-        ['create', projectName, '--mini'],
+        [
+          'create',
+          projectName,
+          '--template',
+          'server',
+          '--no-interactive',
+        ],
         workingDirectory: sandboxDir,
       );
       assert(
