@@ -45,7 +45,8 @@ serverpod:
   # Companion Flutter apps that `serverpod start` can launch (Ctrl+R), keyed
   # by a display alias. The default device is the web server, opening the
   # machine's default browser when ready. All non-reserved properties are
-  # forwarded to `flutter run`. See the example below:
+  # forwarded to `flutter run`. For the best IDE debugging experience, use
+  # `chrome` or a native target as the device. See the example below:
   #
   # Admin:
   #   path: ../apps/admin_flutter
