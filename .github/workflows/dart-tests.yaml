@@ -52,6 +52,13 @@ jobs:
         uses: ./.github/actions/retry
         with:
           command: dart run melos bootstrap
+      # The frozen chat module is not part of the melos workspace; without
+      # package resolution, dart format cannot read the package includes in
+      # its analysis_options.yaml files and would apply default settings.
+      - name: Resolve frozen legacy chat packages
+        uses: ./.github/actions/retry
+        with:
+          command: for d in modules/legacy/serverpod_chat/* examples/legacy/chat/*; do if [ -d "$d" ]; then (cd "$d" && flutter pub get); fi; done
       - name: Verify formatting
         run: dart format --output=none --set-exit-if-changed .
 
