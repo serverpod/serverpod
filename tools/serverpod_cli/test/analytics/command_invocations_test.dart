@@ -30,6 +30,36 @@ class _SilentAnalytics extends Analytics {
 
 void main() {
   group('Given every registered Serverpod command, ', () {
+    late Iterable<String> commandNames;
+
+    setUp(() {
+      final version = Version.parse('1.0.0');
+      final runner =
+          ServerpodCommandRunner.createCommandRunner(
+            _SilentAnalytics(),
+            true,
+            version,
+          )..addCommands([
+            AnalyzePubspecsCommand(),
+            CloudCommand(),
+            CreateCommand(),
+            DatabaseCommand(),
+            QuickstartCommand(),
+            GenerateCommand(),
+            GeneratePubspecsCommand(),
+            LanguageServerCommand(),
+            McpCommand(),
+            CreateMigrationCommand(),
+            CreateRepairMigrationCommand(),
+            MigrateCommand(),
+            RunCommand(),
+            StartCommand(),
+            UpgradeCommand(),
+            VersionCommand(version),
+          ]);
+      commandNames = runner.commands.keys;
+    });
+
     test(
       'when its name is checked against the analytics command pattern, '
       'then it is accepted.',
@@ -37,33 +67,8 @@ void main() {
         // `command_invocations` keys are subcommand names taken straight from
         // the runner. If a command is ever named outside this shape it would be
         // silently dropped from the histogram, so pin the two together.
-        final version = Version.parse('1.0.0');
-        final runner =
-            ServerpodCommandRunner.createCommandRunner(
-              _SilentAnalytics(),
-              true,
-              version,
-            )..addCommands([
-              AnalyzePubspecsCommand(),
-              CloudCommand(),
-              CreateCommand(),
-              DatabaseCommand(),
-              QuickstartCommand(),
-              GenerateCommand(),
-              GeneratePubspecsCommand(),
-              LanguageServerCommand(),
-              McpCommand(),
-              CreateMigrationCommand(),
-              CreateRepairMigrationCommand(),
-              MigrateCommand(),
-              RunCommand(),
-              StartCommand(),
-              UpgradeCommand(),
-              VersionCommand(version),
-            ]);
-
-        expect(runner.commands.keys, isNotEmpty);
-        for (final name in runner.commands.keys) {
+        expect(commandNames, isNotEmpty);
+        for (final name in commandNames) {
           expect(
             AnalyticsPayloadBuilder.commandNamePattern.hasMatch(name),
             isTrue,

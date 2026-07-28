@@ -8,67 +8,69 @@ const _created = CreateMigrationCreated(
 );
 
 void main() {
-  group('Given migration outcomes, ', () {
-    test(
-      'when an unwrapped migration is created, '
-      'then only the server flag is true.',
-      () {
-        // `createMigrationAction` only returns a bare outcome when the project
-        // has no client-side tables, so it is always the server side.
-        final flags = MigrationCreatedFlags.fromOutcome(_created);
+  test(
+    'Given an unwrapped migration outcome, '
+    'when its creation flags are derived, '
+    'then only the server flag is true.',
+    () {
+      // `createMigrationAction` only returns a bare outcome when the project
+      // has no client-side tables, so it is always the server side.
+      final flags = MigrationCreatedFlags.fromOutcome(_created);
 
-        expect(flags.serverMigrationCreated, isTrue);
-        expect(flags.clientMigrationCreated, isFalse);
-      },
-    );
+      expect(flags.serverMigrationCreated, isTrue);
+      expect(flags.clientMigrationCreated, isFalse);
+    },
+  );
 
-    test(
-      'when both server and client migrations are created, '
-      'then both flags are true.',
-      () {
-        final flags = MigrationCreatedFlags.fromOutcome(
-          const CreateMigrationServerClientCreated(
-            serverResult: _created,
-            clientResult: _created,
-          ),
-        );
+  test(
+    'Given an outcome with server and client migrations, '
+    'when its creation flags are derived, '
+    'then both flags are true.',
+    () {
+      final flags = MigrationCreatedFlags.fromOutcome(
+        const CreateMigrationServerClientCreated(
+          serverResult: _created,
+          clientResult: _created,
+        ),
+      );
 
-        expect(flags.serverMigrationCreated, isTrue);
-        expect(flags.clientMigrationCreated, isTrue);
-      },
-    );
+      expect(flags.serverMigrationCreated, isTrue);
+      expect(flags.clientMigrationCreated, isTrue);
+    },
+  );
 
-    test(
-      'when the client side had no changes, '
-      'then only the server flag is true.',
-      () {
-        final flags = MigrationCreatedFlags.fromOutcome(
-          const CreateMigrationServerClientCreated(
-            serverResult: _created,
-            clientResult: CreateMigrationNoChanges(),
-          ),
-        );
+  test(
+    'Given an outcome where the client side had no changes, '
+    'when its creation flags are derived, '
+    'then only the server flag is true.',
+    () {
+      final flags = MigrationCreatedFlags.fromOutcome(
+        const CreateMigrationServerClientCreated(
+          serverResult: _created,
+          clientResult: CreateMigrationNoChanges(),
+        ),
+      );
 
-        expect(flags.serverMigrationCreated, isTrue);
-        expect(flags.clientMigrationCreated, isFalse);
-      },
-    );
+      expect(flags.serverMigrationCreated, isTrue);
+      expect(flags.clientMigrationCreated, isFalse);
+    },
+  );
 
-    test(
-      'when nothing was written, '
-      'then no flag is true.',
-      () {
-        for (final outcome in const <CreateMigrationOutcome>[
-          CreateMigrationNoChanges(),
-          CreateMigrationAborted(),
-          CreateMigrationFailed('boom'),
-        ]) {
-          final flags = MigrationCreatedFlags.fromOutcome(outcome);
+  test(
+    'Given outcomes where nothing was written, '
+    'when their creation flags are derived, '
+    'then no flag is true.',
+    () {
+      for (final outcome in const <CreateMigrationOutcome>[
+        CreateMigrationNoChanges(),
+        CreateMigrationAborted(),
+        CreateMigrationFailed('boom'),
+      ]) {
+        final flags = MigrationCreatedFlags.fromOutcome(outcome);
 
-          expect(flags.serverMigrationCreated, isFalse, reason: '$outcome');
-          expect(flags.clientMigrationCreated, isFalse, reason: '$outcome');
-        }
-      },
-    );
-  });
+        expect(flags.serverMigrationCreated, isFalse, reason: '$outcome');
+        expect(flags.clientMigrationCreated, isFalse, reason: '$outcome');
+      }
+    },
+  );
 }

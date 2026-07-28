@@ -1,6 +1,6 @@
 # Design: CLI lifecycle analytics (PostHog)
 
-This document describes four rich analytics events for the Serverpod CLI. The goal is to understand how developers use Serverpod (project creation choices, code generation patterns, migration cadence, and dev-session setup) without collecting project identifiers, paths, or user-generated names.
+This document describes six rich analytics events for the Serverpod CLI. The goal is to understand how developers use Serverpod (project creation choices, code generation patterns, migration cadence, and dev-session setup) without collecting raw project identifiers, paths, or user-generated names.
 
 Related: [GitHub issue #1274](https://github.com/serverpod/serverpod/issues/1274) (generate debouncing).
 
@@ -8,7 +8,7 @@ Related: [GitHub issue #1274](https://github.com/serverpod/serverpod/issues/1274
 
 The CLI already sends a coarse event per invocation (command name plus masked flags). That tells us *which* commands run, but not *how* projects evolve: template choices, protocol complexity, migration frequency, or typical `start` configurations.
 
-These four lifecycle events add structured, privacy-safe properties at meaningful command boundaries. They complement — and do not replace — the existing per-command events from `BetterCommandRunner`.
+These six lifecycle events add structured, privacy-safe properties at meaningful command boundaries. They complement — and do not replace — the existing per-command events from `BetterCommandRunner`.
 
 ## Implementation status
 
@@ -192,7 +192,7 @@ Attached automatically by `PostHogAnalytics` — do **not** duplicate in event s
 
 | Property | Source |
 |---|---|
-| `schema_version` | `int` analytics schema version, **independent of the CLI version**. Bumped only when a `cli.*` event shape changes (property added/removed/retyped), so dashboards can distinguish "absent because old CLI" from "absent because removed". Currently `3`. |
+| `schema_version` | `int` analytics schema version, **independent of the CLI version**. Bumped only when a `cli.*` event shape changes (property added/removed/retyped), so dashboards can distinguish "absent because old CLI" from "absent because removed". Currently `1`. |
 | `checkout_id` | per-clone UUID (see [Project identity](#project-identity)) |
 
 Rich events include `$groups: { "project": "<project_id>" }` (the durable remote-derived id) so project-scoped funnels work across checkouts without sending directory paths or URLs.
@@ -269,7 +269,7 @@ Custom or third-party modules are counted in `counts.module_count` but omitted f
 | `enum_count` | models that are enum definitions |
 | `exception_count` | models that are exception definitions |
 | `relation_count` | model fields with a `RelationDefinition` |
-| `index_count` | declared indexes plus `unique(per=…)` shorthand indexes |
+| `index_count` | parsed indexes, including indexes created by `unique` and `unique(per=…)` |
 | `future_call_count` | `protocolDefinition.futureCalls.length` |
 | `module_count` | `GeneratorConfig.modulesDependent.length` (all modules, including custom) |
 
@@ -290,11 +290,15 @@ Output: sorted list of canonical capability tags from a closed vocabulary:
 | Enums | `enhanced_enum` |
 | Fields | `server_only_field`, `tail_field`, `vector_field`, `geography_field` |
 | Relations | `list_relation`, `object_relation`, `foreign_relation` |
-| Indexes | `unique_index`, `unique_per_index`, `index_<type>` |
+| Indexes | `unique_field`, `unique_index`, `unique_per_index`, `index_<type>` |
 
 Exception tags are separate from the model ones: `sealed`/`extends` became available on exceptions later than on models, so merging them would hide which of the two is actually being adopted.
 
 Configuration tags are presence-only and never appear in `feature_counts`; everything derived from models, endpoints and fields is counted.
+
+`unique_field` identifies the one-column `unique` field shorthand from its
+generated btree index shape and automatic index name. `unique_index` counts all
+unique indexes, including explicit indexes and both unique shorthands.
 
 No endpoint, model, or module **names** appear in `features` — only capability tags.
 
@@ -427,7 +431,10 @@ between them.
 
 Integration (real command, real project on disk):
 
-- `integration/analytics/generate_analytics_test.dart` — writes a project whose models exercise relations, indexes, vectors, geography, `tail`, `unique(per=)`, sealed/`extends` on both models and exceptions, enhanced enums and server-only scopes, then runs `performOneShotGenerate` and asserts the emitted payload. Also asserts the staleness skip sends nothing, that the counter advances across runs, and that no path, class or index name appears anywhere in the payload.
+- `integration/analytics/generate_feature_analytics_test.dart` — writes a project that exercises every protocol/config tag except SQLite and future calls, then runs `performOneShotGenerate` and asserts the emitted payload, occurrence counts, project totals, and privacy boundary.
+- `integration/analytics/generate_future_call_analytics_test.dart` — runs real generation over a Dart future call and asserts its tag and count.
+- `integration/analytics/generate_sqlite_analytics_test.dart` — runs real generation with the SQLite dialect and asserts the database tag.
+- `integration/analytics/generate_staleness_analytics_test.dart` — asserts that a staleness skip sends no second event.
 - `integration/analytics/migration_analytics_test.dart` — runs `createMigrationAction` against real projects for the server-only, server+client, and no-changes cases. Because the hook lives in the action, this covers the CLI command, the start TUI's Migrate action and the `create_migration` MCP tool at once.
 
 Unit (no generated data to drive):
@@ -439,7 +446,9 @@ Unit (no generated data to drive):
 - `command_invocations_test.dart` — every registered command name matches the analytics command pattern.
 - `generate_tracker_test.dart` — timer coalescing and burst reset between flushes.
 - `migration_metrics_test.dart` — outcome-to-flag mapping.
-- `cli_analytics_test.dart` — session/upgrade/launch payload shapes, that an upgrade does not restamp the project age, and that a disabled sink neither sends nor reads metadata.
+- `project_analytics_test.dart` — project creation/upgrade payload shapes, that an upgrade does not restamp the project age, and the disabled project-event path.
+- `session_analytics_test.dart` — session/launch payload shapes, command invocation counts, and the disabled session-event path.
+- `session_metrics_test.dart` — every Flutter device category and platform tag.
 
 `performCreate` is not integration-tested: it shells out to `pub get`, `flutter
 create` and a nested generate, so a real run needs Flutter plus network access

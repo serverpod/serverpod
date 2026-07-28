@@ -6,7 +6,6 @@ import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 
 import '../test_util/analytics_helpers.dart';
-import 'cli_analytics_test.dart' show buildTestConfig;
 
 const _snapshot = ProtocolAnalyticsSnapshot(
   features: ['postgres', 'table_model'],
@@ -17,10 +16,12 @@ const _snapshot = ProtocolAnalyticsSnapshot(
 
 void main() {
   group('Given a GenerateTracker, ', () {
+    late GenerateTracker tracker;
     late RecordingAnalytics recording;
     late String serverDir;
 
     setUp(() async {
+      tracker = GenerateTracker(debounceDuration: Duration.zero);
       recording = RecordingAnalytics();
       initializeCliAnalytics(
         CliAnalytics(analytics: recording)..enabled = true,
@@ -42,8 +43,7 @@ void main() {
       'when two incremental runs are debounced, '
       'then one cli.generate event carries the run count and mean duration.',
       () async {
-        final tracker = GenerateTracker(debounceDuration: Duration.zero);
-        final config = buildTestConfig(serverDir);
+        final config = buildAnalyticsTestConfig(serverDir);
 
         tracker.recordIncrementalRun(
           config: config,
@@ -78,8 +78,7 @@ void main() {
       'when a new burst follows a flushed one, '
       'then the second event counts only the new runs.',
       () async {
-        final tracker = GenerateTracker(debounceDuration: Duration.zero);
-        final config = buildTestConfig(serverDir);
+        final config = buildAnalyticsTestConfig(serverDir);
 
         tracker.recordIncrementalRun(
           config: config,
