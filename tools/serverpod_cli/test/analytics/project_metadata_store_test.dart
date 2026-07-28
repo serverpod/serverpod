@@ -12,6 +12,9 @@ void main() {
       'then it persists metadata derived from generator.yaml.',
       () async {
         await _deleteIfExists(d.path('metadata_project_a'));
+        // Anchor git-dir resolution inside the sandbox so metadata never
+        // escapes to an ambient repo (e.g. a stray /tmp/.git).
+        await d.dir('.git', [d.file('config', '')]).create();
         await d.dir('metadata_project_a', [
           d.dir('myapp_server', [
             d.dir('config', [
@@ -28,7 +31,7 @@ void main() {
         );
         final metadata = await ProjectMetadataStore.loadOrCreate(serverDir);
 
-        expect(metadata.projectId, isNotEmpty);
+        expect(metadata.checkoutId, isNotEmpty);
         expect(metadata.generateCallCount, 0);
         expect(
           metadata.projectCreatedAt.isBefore(DateTime.now().toUtc()),
@@ -41,7 +44,7 @@ void main() {
         );
 
         final loaded = await ProjectMetadataStore.loadOrCreate(serverDir);
-        expect(loaded.projectId, metadata.projectId);
+        expect(loaded.checkoutId, metadata.checkoutId);
       },
     );
   });
@@ -52,6 +55,7 @@ void main() {
       'then the counter increases.',
       () async {
         await _deleteIfExists(d.path('metadata_project_b'));
+        await d.dir('.git', [d.file('config', '')]).create();
         await d.dir('metadata_project_b', [
           d.dir('myapp_server', [
             d.file('pubspec.yaml', 'name: myapp_server\n'),

@@ -7,6 +7,7 @@ void main() {
       final payload = AnalyticsPayloadBuilder.build(
         event: 'cli.project_created',
         projectId: '00000000-0000-4000-8000-000000000001',
+        checkoutId: '00000000-0000-4000-8000-000000000002',
         properties: {
           'method': 'create',
           'template': 'server',
@@ -25,6 +26,8 @@ void main() {
         payload[r'$groups'],
         {'project': '00000000-0000-4000-8000-000000000001'},
       );
+      expect(payload['checkout_id'], '00000000-0000-4000-8000-000000000002');
+      expect(payload['schema_version'], AnalyticsPayloadBuilder.schemaVersion);
     });
 
     test('when method is invalid, then it throws.', () {
@@ -32,6 +35,7 @@ void main() {
         () => AnalyticsPayloadBuilder.build(
           event: 'cli.project_created',
           projectId: '00000000-0000-4000-8000-000000000001',
+          checkoutId: '00000000-0000-4000-8000-000000000002',
           properties: {
             'method': 'upgrade',
             'template': 'server',
@@ -55,6 +59,7 @@ void main() {
         final payload = AnalyticsPayloadBuilder.build(
           event: 'cli.generate',
           projectId: '00000000-0000-4000-8000-000000000001',
+          checkoutId: '00000000-0000-4000-8000-000000000002',
           properties: {
             'features': ['postgres'],
             'serverpod_modules': ['serverpod_auth'],
@@ -82,6 +87,7 @@ void main() {
           () => AnalyticsPayloadBuilder.build(
             event: 'cli.generate',
             projectId: '00000000-0000-4000-8000-000000000001',
+            checkoutId: '00000000-0000-4000-8000-000000000002',
             properties: {
               'features': ['raw_endpoint_name'],
               'serverpod_modules': ['serverpod_auth'],
@@ -107,6 +113,7 @@ void main() {
           () => AnalyticsPayloadBuilder.build(
             event: 'cli.generate',
             projectId: '00000000-0000-4000-8000-000000000001',
+            checkoutId: '00000000-0000-4000-8000-000000000002',
             properties: {
               'features': ['postgres'],
               'serverpod_modules': ['my_custom_module'],
@@ -131,6 +138,7 @@ void main() {
       final payload = AnalyticsPayloadBuilder.build(
         event: 'cli.migration_created',
         projectId: '00000000-0000-4000-8000-000000000001',
+        checkoutId: '00000000-0000-4000-8000-000000000002',
         properties: {
           'server_migration_created': true,
           'client_migration_created': true,

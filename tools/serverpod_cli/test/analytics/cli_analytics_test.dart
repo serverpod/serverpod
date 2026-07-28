@@ -57,6 +57,9 @@ void main() {
       'when project-created analytics is captured, '
       'then PostHog receives cli.project_created.',
       () async {
+        // Anchor git-dir resolution inside the sandbox so metadata never
+        // escapes to an ambient repo (e.g. a stray /tmp/.git).
+        await d.dir('.git', [d.file('config', '')]).create();
         await d.dir('cli_analytics_project', [
           d.dir('myapp_server', [
             d.file('pubspec.yaml', 'name: myapp_server\n'),

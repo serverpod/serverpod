@@ -32,6 +32,9 @@ void main() {
       recording = RecordingAnalytics();
       initializeCliAnalytics(CliAnalytics(analytics: recording));
 
+      // Anchor git-dir resolution inside the sandbox so metadata never escapes
+      // to an ambient repo (e.g. a stray /tmp/.git).
+      await d.dir('.git', [d.file('config', '')]).create();
       await d.dir('tracker_project', [
         d.dir('myapp_server', [
           d.file('pubspec.yaml', 'name: myapp_server\n'),

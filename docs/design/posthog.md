@@ -19,6 +19,7 @@ These four lifecycle events add structured, privacy-safe properties at meaningfu
 - Opt-out is available globally via `--no-analytics`.
 - User identity uses a UUID persisted at `~/.serverpod/uuid` (`ResourceManager.uniqueUserId`), sent as PostHog `distinct_id` for all events.
 - `PostHogAnalytics` already attaches `$lib`, `$lib_version`, `platform`, `dart_version`, and `is_ci` to every event.
+- Delivery is **best-effort**: events are flushed on exit but capped by PostHog's request timeout. A slow or offline connection drops a few events rather than delaying the CLI — acceptable for trend analytics.
 
 ## Architecture
 
@@ -65,13 +66,31 @@ Implement by holding a dedicated `PostHogAnalytics` reference for `CliAnalytics`
 
 Rich events are gated by `serverpodRunner.analyticsEnabled()` (`--no-analytics`).
 
+### Project identity
+
+Two anonymous identifiers, with distinct scopes:
+
+| Id | Scope | Derivation |
+|---|---|---|
+| `project_id` | **Durable**, shared by every clone/checkout/CI of the same repo | `UUIDv5(Namespace.url, <normalized remote URL>)` |
+| `checkout_id` | **Per clone**, shared across that clone's worktrees | Random UUID v4, persisted in metadata |
+
+**`project_id` (durable).** Derived deterministically from the first git remote URL (prefer `origin`). The raw URL is **normalized then hashed with UUIDv5** — it is never stored or sent. Normalization makes SSH and HTTPS forms of the same repo collapse to one id: strip scheme, strip `user[:pass]@` credentials, rewrite `git@host:org/repo` → `host/org/repo`, lowercase, drop a trailing `.git` and trailing slashes. Sent to PostHog as the `project` group, so funnels aggregate one logical project across all developers without sending any URL or name.
+
+**`checkout_id` (per clone).** Random v4 minted once per clone. Distinguishes individual working copies under the same `project_id` (e.g. each developer, each CI runner). Sent as a `checkout_id` property.
+
+**Fallback (no git remote / not a repo):** `project_id` falls back to `checkout_id` (the random v4). A project with no remote is simply its own single anonymous unit.
+
 ### Local metadata file
 
-Path: `<serverDir>/.dart_tool/serverpod/metadata.json` (same directory tree as `generation.stamp` and MCP sockets).
+Stored per clone, **centralized so all git worktrees of a clone share one file**:
+
+- In a git checkout: `<gitCommonDir>/serverpod/metadata.json` (the shared `.git` common dir — resolved by reading `.git`/`commondir`, never spawning `git`). Worktrees resolve to the same common dir, so the leaves never each keep their own copy. This location is inherently never committed.
+- Outside a repo: `<serverDir>/.dart_tool/serverpod/metadata.json` (gitignored, same tree as `generation.stamp`).
 
 ```json
 {
-  "project_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "checkout_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
   "project_created_at": "2026-05-20T14:32:00.000Z",
   "generate_call_count": 47,
   "command_invocations": {
@@ -85,7 +104,7 @@ Path: `<serverDir>/.dart_tool/serverpod/metadata.json` (same directory tree as `
 
 | Field | Purpose |
 |---|---|
-| `project_id` | Random UUID v4, generated once per project on first metadata write. Used locally and sent to PostHog as an anonymous project correlation key (`$groups.project` or equivalent). Never derived from path, name, or repo identity. |
+| `checkout_id` | Random UUID v4, generated once per clone on first metadata write. Never derived from path, name, or repo identity. (`project_id` is *not* stored — it is recomputed from the remote each send.) |
 | `project_created_at` | ISO-8601 UTC; see resolution rules below |
 | `generate_call_count` | Monotonic counter for `cli.generate` |
 | `command_invocations` | Per-command histogram for `cli.session_start` |
@@ -95,8 +114,11 @@ Path: `<serverDir>/.dart_tool/serverpod/metadata.json` (same directory tree as `
 - Created on the first tracked command inside a project.
 - Updated atomically (write temp file, rename) after each tracked command.
 - Contains UUIDs, timestamps, and integers only — no paths, package names, or user-chosen identifiers.
+- Counters are **best-effort**: in-process writes are serialized, but two concurrent CLI processes (or two monorepo packages sharing one common dir) are last-writer-wins and may undercount. Treat them as trend signal, not exact totals.
 
 `command_invocations` is incremented in `ServerpodCommandRunner.runCommand` for every executed subcommand (including commands that do not emit rich events).
+
+> **Watch mode:** `generate_call_count` increments once per *emitted* `cli.generate` event, so under watch-mode debouncing `num_generate_calls` counts coalesced events, not individual incremental runs.
 
 #### `project_created_at` resolution
 
@@ -112,12 +134,12 @@ Do not use git history, `.dart_tool/` artifacts (regenerated), or migration dire
 
 `AnalyticsPayloadBuilder` enforces a runtime allowlist:
 
-- **Allowed:** integers, doubles, booleans, enums (serialized by name), UUIDs from metadata (`project_id`), and lists of canonical tag strings from fixed vocabularies (`features`, `serverpod_modules`).
+- **Allowed:** integers, doubles, booleans, enums (serialized by name), the anonymous UUIDs (`project_id`, `checkout_id`), and lists of canonical tag strings from fixed vocabularies (`features`, `serverpod_modules`).
 - **Rejected:** free-form strings (class names, paths, package names, migration tags, device names beyond a coarse category), nested maps with dynamic keys, and any property not declared for an event.
 
 Feature and module tags must come from closed sets maintained in code. Never emit raw `EndpointDefinition.name`, model class names, custom module nicknames, or migration directory names.
 
-PostHog receives only allowlisted payloads. The `serverDir` argument to `CliAnalytics` is used locally for metadata lookup and must never appear in event properties.
+The git **remote URL is never sent** — only its irreversible UUIDv5 derivative (`project_id`). The URL is read locally to compute the hash and immediately discarded. PostHog receives only allowlisted payloads. The `serverDir` argument to `CliAnalytics` is used locally for metadata lookup and must never appear in event properties.
 
 ## Shared event properties
 
@@ -131,7 +153,14 @@ Attached automatically by `PostHogAnalytics` — do **not** duplicate in event s
 | `dart_version` | `Platform.version` |
 | `is_ci` | `ci.isCI` |
 
-Rich events should include `$groups: { "project": "<project_id>" }` (or PostHog's current group syntax) so project-scoped funnels work without sending directory paths.
+`CliAnalytics` additionally stamps every `cli.*` payload with:
+
+| Property | Source |
+|---|---|
+| `schema_version` | `int` analytics schema version, **independent of the CLI version**. Bumped only when a `cli.*` event shape changes (property added/removed/retyped), so dashboards can distinguish "absent because old CLI" from "absent because removed". |
+| `checkout_id` | per-clone UUID (see [Project identity](#project-identity)) |
+
+Rich events include `$groups: { "project": "<project_id>" }` (the durable remote-derived id, or PostHog's current group syntax) so project-scoped funnels work across checkouts without sending directory paths or URLs.
 
 ---
 

@@ -1,19 +1,22 @@
-/// Local per-project analytics state persisted in `.dart_tool/serverpod/metadata.json`.
+/// Local per-clone analytics state persisted in the metadata file
+/// (see [ProjectMetadataStore] for its location).
 class ProjectMetadata {
   ProjectMetadata({
-    required this.projectId,
+    required this.checkoutId,
     required this.projectCreatedAt,
     this.generateCallCount = 0,
     Map<String, int>? commandInvocations,
   }) : commandInvocations = Map<String, int>.from(commandInvocations ?? {});
 
-  final String projectId;
+  /// Random per-clone id. The durable, remote-derived `project_id` is computed
+  /// on the fly (see `ProjectIdentity`) and is intentionally not stored here.
+  final String checkoutId;
   final DateTime projectCreatedAt;
   int generateCallCount;
   final Map<String, int> commandInvocations;
 
   Map<String, dynamic> toJson() => {
-    'project_id': projectId,
+    'checkout_id': checkoutId,
     'project_created_at': projectCreatedAt.toUtc().toIso8601String(),
     'generate_call_count': generateCallCount,
     'command_invocations': commandInvocations,
@@ -32,7 +35,8 @@ class ProjectMetadata {
     }
 
     return ProjectMetadata(
-      projectId: json['project_id'] as String,
+      // Accept the legacy `project_id` key written by earlier CLI versions.
+      checkoutId: (json['checkout_id'] ?? json['project_id']) as String,
       projectCreatedAt: DateTime.parse(json['project_created_at'] as String),
       generateCallCount: json['generate_call_count'] as int? ?? 0,
       commandInvocations: invocations,

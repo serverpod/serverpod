@@ -5,9 +5,14 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:uuid/uuid.dart';
 
+import 'project_identity.dart';
 import 'project_metadata.dart';
 
-/// Reads and writes `<serverDir>/.dart_tool/serverpod/metadata.json`.
+/// Reads and writes the per-clone analytics metadata file.
+///
+/// Its directory is resolved by [ProjectIdentity.metadataDirectory] — the
+/// shared git common dir inside a repo (so worktrees share one file), or
+/// `<serverDir>/.dart_tool/serverpod` outside a repo.
 class ProjectMetadataStore {
   static const metadataFileName = 'metadata.json';
 
@@ -26,7 +31,7 @@ class ProjectMetadataStore {
   }
 
   static String metadataDirectory(String serverDir) =>
-      p.join(serverDir, '.dart_tool', 'serverpod');
+      ProjectIdentity.metadataDirectory(serverDir);
 
   static String metadataFilePath(String serverDir) =>
       p.join(metadataDirectory(serverDir), metadataFileName);
@@ -44,7 +49,7 @@ class ProjectMetadataStore {
 
     final createdAt = await _resolveProjectCreatedAt(serverDir);
     final metadata = ProjectMetadata(
-      projectId: const Uuid().v4(),
+      checkoutId: const Uuid().v4(),
       projectCreatedAt: createdAt,
     );
     if (await Directory(serverDir).exists()) {
@@ -125,7 +130,7 @@ class ProjectMetadataStore {
   }) {
     return _synchronized(() async {
       final metadata = ProjectMetadata(
-        projectId: const Uuid().v4(),
+        checkoutId: const Uuid().v4(),
         projectCreatedAt: projectCreatedAt.toUtc(),
       );
       await _save(serverDir, metadata);

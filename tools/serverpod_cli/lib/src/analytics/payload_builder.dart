@@ -2,6 +2,12 @@ import 'protocol_feature_analyzer.dart';
 
 /// Runtime allowlist for PostHog event payloads.
 class AnalyticsPayloadBuilder {
+  /// Schema version for `cli.*` events. Independent of the CLI version — bump
+  /// only when an event's shape changes (property added / removed / retyped),
+  /// so dashboards can tell "absent because old CLI" from "absent because
+  /// removed".
+  static const schemaVersion = 1;
+
   static const projectCreatedMethods = {'create', 'quickstart'};
   static const projectCreatedTemplates = {'mini', 'server', 'module'};
   static const flutterDeviceCategories = {
@@ -40,9 +46,12 @@ class AnalyticsPayloadBuilder {
     required String event,
     required Map<String, Object?> properties,
     required String projectId,
+    required String checkoutId,
   }) {
     final payload = <String, dynamic>{
       '\$groups': {'project': projectId},
+      'checkout_id': checkoutId,
+      'schema_version': schemaVersion,
     };
 
     switch (event) {

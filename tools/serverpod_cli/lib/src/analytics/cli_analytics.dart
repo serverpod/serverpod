@@ -8,6 +8,7 @@ import 'package:serverpod_cli/src/create/template_context.dart';
 
 import 'migration_metrics.dart';
 import 'payload_builder.dart';
+import 'project_identity.dart';
 import 'project_metadata.dart';
 import 'project_metadata_store.dart';
 import 'protocol_feature_analyzer.dart';
@@ -28,10 +29,15 @@ class CliAnalytics {
 
     try {
       final metadata = await ProjectMetadataStore.loadOrCreate(serverDir);
+      // Durable id from the git remote; falls back to the per-clone checkout id
+      // for projects without a remote.
+      final projectId =
+          ProjectIdentity.durableProjectId(serverDir) ?? metadata.checkoutId;
       final payload = AnalyticsPayloadBuilder.build(
         event: event,
         properties: properties,
-        projectId: metadata.projectId,
+        projectId: projectId,
+        checkoutId: metadata.checkoutId,
       );
       _analytics.track(event: event, properties: payload);
     } catch (_) {
