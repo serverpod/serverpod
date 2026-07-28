@@ -818,7 +818,9 @@ class TypeDefinition {
           .toList(),
       serializationDataType: serializationDataType,
       enumDefinition: enumDefinition,
-      url: isProjectModel ? defaultModuleAlias : url,
+      url: isProjectModel
+          ? defaultModuleAlias
+          : sharedModelDefinition?.type.moduleAlias ?? url,
       recordFieldName: recordFieldName,
       vectorDimension: vectorDimension,
     );
