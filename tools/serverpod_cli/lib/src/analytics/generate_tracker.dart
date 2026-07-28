@@ -7,92 +7,90 @@ import 'cli_analytics.dart';
 import 'protocol_feature_analyzer.dart';
 
 /// Debounces watch-mode generate analytics bursts per server directory.
+///
+/// A save storm produces one `cli.generate` event carrying the run count and
+/// the mean per-run duration, instead of one event per keystroke-triggered run.
 class GenerateTracker {
-  GenerateTracker({
-    this.debounceDuration = const Duration(seconds: 30),
-  });
+  GenerateTracker({this.debounceDuration = const Duration(seconds: 30)});
 
   final Duration debounceDuration;
-  final _trackers = <String, _PendingGenerateBurst>{};
+  final _bursts = <String, _PendingGenerateBurst>{};
 
   void recordIncrementalRun({
     required GeneratorConfig config,
     required bool success,
     required Duration duration,
-    ProtocolDefinition? protocolDefinition,
-    required bool enabled,
-    Set<String>? serverPubspecDependencies,
+    required ProtocolAnalyticsSnapshot snapshot,
   }) {
-    if (!enabled) return;
-
     try {
-      final snapshot = protocolDefinition == null
-          ? null
-          : ProtocolFeatureAnalyzer.analyze(
-              protocolDefinition: protocolDefinition,
-              config: config,
-              serverPubspecDependencies: serverPubspecDependencies,
-            );
-
       final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
-      final tracker = _trackers.putIfAbsent(
-        serverDir,
-        _PendingGenerateBurst.new,
-      );
-      tracker.pendingSuccess = success;
-      tracker.totalDurationMs += duration.inMilliseconds;
-      tracker.runCount += 1;
-      if (snapshot != null) {
-        tracker.latestSnapshot = snapshot;
-      }
+      final burst = _bursts.putIfAbsent(serverDir, _PendingGenerateBurst.new);
+      burst
+        ..latestSuccess = success
+        ..totalDurationMs += duration.inMilliseconds
+        ..runCount += 1
+        ..latestSnapshot = snapshot;
 
-      tracker.debounceTimer?.cancel();
-      tracker.debounceTimer = Timer(debounceDuration, () {
-        unawaited(
-          _flush(
-            serverDir: serverDir,
-            config: config,
-            tracker: tracker,
-            enabled: enabled,
-          ),
-        );
-      });
+      burst.debounceTimer?.cancel();
+      burst.debounceTimer = Timer(
+        debounceDuration,
+        () => unawaited(_flush(serverDir: serverDir, burst: burst)),
+      );
     } catch (_) {
       // Analytics must never disrupt watch-mode generation.
     }
   }
 
+  /// Emits any burst still waiting on its debounce timer.
+  ///
+  /// Called on CLI exit: a watch session is usually ended mid-burst, so without
+  /// this the last — and typically longest — run of every session is lost.
+  Future<void> flushPending() async {
+    try {
+      final pending = _bursts.entries.toList();
+      for (final entry in pending) {
+        entry.value.debounceTimer?.cancel();
+        await _flush(serverDir: entry.key, burst: entry.value);
+      }
+    } catch (_) {
+      // Runs on the CLI exit path; it must never change the exit code.
+    }
+  }
+
   Future<void> _flush({
     required String serverDir,
-    required GeneratorConfig config,
-    required _PendingGenerateBurst tracker,
-    required bool enabled,
+    required _PendingGenerateBurst burst,
   }) async {
-    if (tracker.runCount == 0 || tracker.latestSnapshot == null) return;
+    final snapshot = burst.latestSnapshot;
+    final runCount = burst.runCount;
+    final totalDurationMs = burst.totalDurationMs;
+    final success = burst.latestSuccess;
 
-    final averageDurationMs = tracker.totalDurationMs ~/ tracker.runCount;
-    await cliAnalytics.captureGenerate(
-      serverDir: serverDir,
-      config: config,
-      snapshot: tracker.latestSnapshot!,
-      success: tracker.pendingSuccess,
-      isWatchMode: true,
-      incrementalRunCount: tracker.runCount,
-      incrementalAvgDurationMs: averageDurationMs,
-      enabled: enabled,
-    );
-
-    tracker
+    // Reset before awaiting so runs arriving during the send start a new burst
+    // instead of being double counted.
+    burst
       ..runCount = 0
       ..totalDurationMs = 0
+      ..latestSnapshot = null
       ..debounceTimer = null;
+
+    if (runCount == 0 || snapshot == null) return;
+
+    await cliAnalytics.captureGenerate(
+      serverDir: serverDir,
+      snapshot: snapshot,
+      success: success,
+      isWatchMode: true,
+      incrementalRunCount: runCount,
+      incrementalAvgDurationMs: totalDurationMs ~/ runCount,
+    );
   }
 }
 
 class _PendingGenerateBurst {
   int runCount = 0;
   int totalDurationMs = 0;
-  bool pendingSuccess = true;
+  bool latestSuccess = true;
   ProtocolAnalyticsSnapshot? latestSnapshot;
   Timer? debounceTimer;
 }

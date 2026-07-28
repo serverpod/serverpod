@@ -82,6 +82,46 @@ void main() {
       },
     );
   });
+
+  group('Given metadata already accumulated in a checkout, ', () {
+    test(
+      'when a new project is scaffolded in the same checkout, '
+      'then the checkout id and counters survive.',
+      () async {
+        await _deleteIfExists(d.path('metadata_project_reuse'));
+        await d.dir('.git', [d.file('config', '')]).create();
+        await d.dir('metadata_project_reuse', [
+          d.dir('myapp_server', [d.file('pubspec.yaml', 'name: myapp_server')]),
+        ]).create();
+
+        final serverDir = p.join(
+          d.sandbox,
+          'metadata_project_reuse',
+          'myapp_server',
+        );
+
+        final before = await ProjectMetadataStore.incrementCommandInvocation(
+          serverDir,
+          'generate',
+        );
+
+        // The metadata file is keyed by git clone, so a second project created
+        // in the same checkout must not wipe the first project's history.
+        final after = await ProjectMetadataStore.initializeNewProject(
+          serverDir,
+          projectCreatedAt: DateTime.utc(2026, 1, 1),
+        );
+
+        expect(after.checkoutId, before.checkoutId);
+        expect(after.commandInvocations, {'generate': 1});
+        expect(after.projectCreatedAt, DateTime.utc(2026, 1, 1));
+
+        final reloaded = await ProjectMetadataStore.loadOrCreate(serverDir);
+        expect(reloaded.checkoutId, before.checkoutId);
+        expect(reloaded.commandInvocations, {'generate': 1});
+      },
+    );
+  });
 }
 
 Future<void> _deleteIfExists(String path) async {

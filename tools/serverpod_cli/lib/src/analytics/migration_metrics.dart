@@ -106,41 +106,30 @@ class MigrationCreatedFlags {
   final bool serverMigrationCreated;
   final bool clientMigrationCreated;
 
+  /// Maps a [CreateMigrationOutcome] onto which sides were written.
+  ///
+  /// `createMigrationAction` only returns a bare [CreateMigrationCreated] when
+  /// the project has no client-side tables, so an unwrapped outcome is always
+  /// the server side; the client side only ever appears inside a
+  /// [CreateMigrationServerClientCreated].
   static MigrationCreatedFlags fromOutcome(CreateMigrationOutcome outcome) {
-    switch (outcome) {
-      case CreateMigrationCreated():
-        final isClient = outcome.migrationDirectory.contains(
-          '${Platform.pathSeparator}lib${Platform.pathSeparator}migrations${Platform.pathSeparator}',
-        );
-        return MigrationCreatedFlags(
-          serverMigrationCreated: !isClient,
-          clientMigrationCreated: isClient,
-        );
-      case CreateMigrationServerClientCreated(
-        :final serverResult,
-        :final clientResult,
-      ):
-        return MigrationCreatedFlags(
-          serverMigrationCreated: _createdMigration(serverResult),
-          clientMigrationCreated: _createdMigration(clientResult),
-        );
-      default:
-        return const MigrationCreatedFlags(
-          serverMigrationCreated: false,
-          clientMigrationCreated: false,
-        );
-    }
-  }
-
-  static bool _createdMigration(CreateMigrationOutcome outcome) {
     return switch (outcome) {
-      CreateMigrationCreated() => true,
+      CreateMigrationCreated() => const MigrationCreatedFlags(
+        serverMigrationCreated: true,
+        clientMigrationCreated: false,
+      ),
       CreateMigrationServerClientCreated(
         :final serverResult,
         :final clientResult,
       ) =>
-        _createdMigration(serverResult) || _createdMigration(clientResult),
-      _ => false,
+        MigrationCreatedFlags(
+          serverMigrationCreated: serverResult is CreateMigrationCreated,
+          clientMigrationCreated: clientResult is CreateMigrationCreated,
+        ),
+      _ => const MigrationCreatedFlags(
+        serverMigrationCreated: false,
+        clientMigrationCreated: false,
+      ),
     };
   }
 }

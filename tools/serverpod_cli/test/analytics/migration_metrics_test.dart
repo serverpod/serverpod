@@ -1,19 +1,51 @@
-import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/analytics/migration_metrics.dart';
 import 'package:serverpod_cli/src/migrations/create_migration_action.dart';
 import 'package:test/test.dart';
 
+const _created = CreateMigrationCreated(
+  versionName: '20260101120000000',
+  migrationDirectory: '/tmp/myapp_server/migrations/20260101120000000',
+);
+
 void main() {
   group('Given migration outcomes, ', () {
     test(
-      'when only a server migration is created, '
-      'then the client flag is false.',
+      'when an unwrapped migration is created, '
+      'then only the server flag is true.',
+      () {
+        // `createMigrationAction` only returns a bare outcome when the project
+        // has no client-side tables, so it is always the server side.
+        final flags = MigrationCreatedFlags.fromOutcome(_created);
+
+        expect(flags.serverMigrationCreated, isTrue);
+        expect(flags.clientMigrationCreated, isFalse);
+      },
+    );
+
+    test(
+      'when both server and client migrations are created, '
+      'then both flags are true.',
       () {
         final flags = MigrationCreatedFlags.fromOutcome(
-          const CreateMigrationCreated(
-            versionName: '20260101120000000',
-            migrationDirectory:
-                '/tmp/myapp_server/migrations/20260101120000000',
+          const CreateMigrationServerClientCreated(
+            serverResult: _created,
+            clientResult: _created,
+          ),
+        );
+
+        expect(flags.serverMigrationCreated, isTrue);
+        expect(flags.clientMigrationCreated, isTrue);
+      },
+    );
+
+    test(
+      'when the client side had no changes, '
+      'then only the server flag is true.',
+      () {
+        final flags = MigrationCreatedFlags.fromOutcome(
+          const CreateMigrationServerClientCreated(
+            serverResult: _created,
+            clientResult: CreateMigrationNoChanges(),
           ),
         );
 
@@ -23,23 +55,19 @@ void main() {
     );
 
     test(
-      'when a client migration path is used, '
-      'then the client flag is true.',
+      'when nothing was written, '
+      'then no flag is true.',
       () {
-        final flags = MigrationCreatedFlags.fromOutcome(
-          CreateMigrationCreated(
-            versionName: '20260101120000000',
-            migrationDirectory: p.join(
-              'myapp_client',
-              'lib',
-              'migrations',
-              '20260101120000000',
-            ),
-          ),
-        );
+        for (final outcome in const <CreateMigrationOutcome>[
+          CreateMigrationNoChanges(),
+          CreateMigrationAborted(),
+          CreateMigrationFailed('boom'),
+        ]) {
+          final flags = MigrationCreatedFlags.fromOutcome(outcome);
 
-        expect(flags.serverMigrationCreated, isFalse);
-        expect(flags.clientMigrationCreated, isTrue);
+          expect(flags.serverMigrationCreated, isFalse, reason: '$outcome');
+          expect(flags.clientMigrationCreated, isFalse, reason: '$outcome');
+        }
       },
     );
   });

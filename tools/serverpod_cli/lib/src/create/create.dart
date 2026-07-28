@@ -124,11 +124,13 @@ Future<CreateResult> performCreate(
   required bool? interactive,
   required TemplateContext context,
   Directory? workingDirectory,
-  String? analyticsMethod,
-  bool analyticsEnabled = false,
 
   /// Whether to create default migration for the upgrade path.
   bool createDefaultMigrationForUpgrade = true,
+
+  /// Identifies which command scaffolded the project (`create` or `quickstart`)
+  /// for the `cli.project_created` event. Omit to skip the event.
+  String? analyticsMethod,
 }) async {
   _errorBuffer.clear();
   // Resolve where the project will be created relative to [workingDirectory]
@@ -153,6 +155,7 @@ Future<CreateResult> performCreate(
         context: context,
         createDefaultMigration: createDefaultMigrationForUpgrade,
         workingDirectory: cwd,
+        reportAnalytics: analyticsMethod != null,
       );
     }
 
@@ -320,14 +323,13 @@ Future<CreateResult> performCreate(
 
     if (template.hasServer) logStartInstructions(projectDirPath);
 
-    if (analyticsMethod != null && analyticsEnabled) {
+    if (analyticsMethod != null) {
       await cliAnalytics.captureProjectCreated(
         serverDir: serverpodDirs.serverDir.path,
         method: analyticsMethod,
         template: template,
         context: context,
         force: force,
-        enabled: true,
       );
     }
 
@@ -503,6 +505,7 @@ Future<CreateResult> _performUpgrade({
   required TemplateContext context,
   required bool createDefaultMigration,
   Directory? workingDirectory,
+  bool reportAnalytics = false,
 }) async {
   if (!context.template.hasServer) {
     _logError('The upgrade command can only be used with server templates.');
@@ -603,6 +606,16 @@ Future<CreateResult> _performUpgrade({
     );
 
     logStartInstructions(name);
+
+    if (reportAnalytics) {
+      await cliAnalytics.captureProjectUpgraded(
+        serverDir: serverpodDir.serverDir.path,
+        template: context.template,
+        context: context,
+        createdDefaultMigration: createDefaultMigration && context.database,
+      );
+    }
+
     return CreateSuccess(
       projectDirectoryPath: name,
       serverDirectoryPath: serverpodDir.serverDir.path,

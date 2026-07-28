@@ -68,6 +68,12 @@ class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {
 
   @override
   Future<void> runCommand(ArgResults topLevelResults) async {
+    // `--no-analytics` is resolved by [BetterCommandRunner.run] before this
+    // point, so this is the one place the opt-out state is final. Every `cli.*`
+    // call site reads it from the singleton instead of taking a flag. Set
+    // before the `--version` early return so the state is never stale.
+    cliAnalytics.enabled = analyticsEnabled();
+
     if (globalConfiguration.value(GlobalOption.version)) {
       await commands['version']?.run();
       return; // Exit early to prevent showing help text
@@ -82,16 +88,18 @@ class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {
     }
     CommandLineExperimentalFeatures.initialize(experimentalFeatures);
 
+    // Counted straight off the registered command list, so a renamed or newly
+    // added command is picked up without touching the analytics code.
     final commandName = topLevelResults.command?.name;
-    final richAnalytics = cliAnalyticsOrNull;
-    if (commandName != null && analyticsEnabled() && richAnalytics != null) {
+    if (commandName != null &&
+        commands.containsKey(commandName) &&
+        cliAnalytics.enabled) {
       final serverDir = findServerDirectory(Directory.current);
       if (serverDir != null) {
         unawaited(
-          richAnalytics.recordCommandInvocation(
+          cliAnalytics.recordCommandInvocation(
             serverDir: serverDir.path,
             commandName: commandName,
-            enabled: true,
           ),
         );
       }

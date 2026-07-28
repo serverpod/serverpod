@@ -156,17 +156,9 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
 
     late final bool success;
     if (watch) {
-      success = await _performGenerateWatch(
-        config: config,
-        force: force,
-        analyticsEnabled: serverpodRunner.analyticsEnabled(),
-      );
+      success = await _performGenerateWatch(config: config, force: force);
     } else {
-      success = await performOneShotGenerate(
-        config: config,
-        force: force,
-        analyticsEnabled: serverpodRunner.analyticsEnabled(),
-      );
+      success = await performOneShotGenerate(config: config, force: force);
     }
 
     if (!success) {
@@ -194,8 +186,6 @@ Future<({bool upToDate, bool success})> generateIfStale({
   required Future<Analyzers> Function() createAnalyzers,
   bool keepPrimedWhenFresh = false,
   bool force = false,
-  bool analyticsEnabled = false,
-  GenerateAnalyticsTiming analyticsTiming = GenerateAnalyticsTiming.none,
 }) async {
   final allSources = await enumerateSourceFiles(config);
   if (!force &&
@@ -214,8 +204,6 @@ Future<({bool upToDate, bool success})> generateIfStale({
     affectedPaths: allSources.keys.toSet(),
     verifyStaleness: keepPrimedWhenFresh && !force,
     sourceStats: allSources,
-    analyticsEnabled: analyticsEnabled,
-    analyticsTiming: analyticsTiming,
   );
   // A full run only returns an empty file set when it skipped generation
   // because the output was already up to date.
@@ -228,14 +216,11 @@ Future<({bool upToDate, bool success})> generateIfStale({
 Future<bool> performOneShotGenerate({
   required GeneratorConfig config,
   bool force = false,
-  bool analyticsEnabled = false,
 }) async {
   final result = await generateIfStale(
     config: config,
     createAnalyzers: () => Analyzers.create(config),
     force: force,
-    analyticsEnabled: analyticsEnabled,
-    analyticsTiming: GenerateAnalyticsTiming.oneshot,
   );
   if (result.upToDate) {
     log.info(generatedCodeAlreadyUpToDate, type: TextLogType.success);
@@ -268,8 +253,6 @@ Future<GenerateResult> analyzeAndGenerate({
   bool verifyStaleness = true,
   Map<String, FileStamp>? sourceStats,
   GenerationRequirements requirements = GenerationRequirements.full,
-  bool analyticsEnabled = false,
-  GenerateAnalyticsTiming analyticsTiming = GenerateAnalyticsTiming.none,
 }) async {
   bool needsGenerate = false;
   await log.progress('Analyzing changes', () async {
@@ -320,17 +303,11 @@ Future<GenerateResult> analyzeAndGenerate({
     log.debug(incrementalCodeGenerationComplete);
   }
 
-  final effectiveTiming = analyticsTiming == GenerateAnalyticsTiming.none
-      ? (incremental
-            ? GenerateAnalyticsTiming.watchIncremental
-            : GenerateAnalyticsTiming.oneshot)
-      : analyticsTiming;
   await reportGenerateAnalytics(
     config: config,
     success: result.success,
     duration: stopwatch.elapsed,
-    timing: effectiveTiming,
-    enabled: analyticsEnabled,
+    incremental: incremental,
     protocolDefinition: result.protocolDefinition,
   );
 
@@ -341,7 +318,6 @@ Future<GenerateResult> analyzeAndGenerate({
 Future<bool> _performGenerateWatch({
   required GeneratorConfig config,
   bool force = false,
-  required bool analyticsEnabled,
 }) async {
   // keepPrimedWhenFresh: the incremental loop only updates changed files, so
   // the analyzer must be primed up front even when nothing needs regenerating.
@@ -352,8 +328,6 @@ Future<bool> _performGenerateWatch({
     createAnalyzers: () async => analyzers,
     keepPrimedWhenFresh: true,
     force: force,
-    analyticsEnabled: analyticsEnabled,
-    analyticsTiming: GenerateAnalyticsTiming.oneshot,
   );
   if (!initialResult.success) {
     await analyzers.close();
@@ -402,8 +376,6 @@ Future<bool> _performGenerateWatch({
         analyzers: analyzers,
         affectedPaths: affectedPaths,
         incremental: true,
-        analyticsEnabled: analyticsEnabled,
-        analyticsTiming: GenerateAnalyticsTiming.watchIncremental,
       );
     } catch (e, stackTrace) {
       log.error(e.toString(), stackTrace: stackTrace);

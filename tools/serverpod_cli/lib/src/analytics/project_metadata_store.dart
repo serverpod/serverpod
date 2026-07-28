@@ -25,9 +25,7 @@ class ProjectMetadataStore {
     final completer = Completer<void>();
     final previous = _lock;
     _lock = completer.future;
-    return previous
-        .then((_) => action())
-        .whenComplete(completer.complete);
+    return previous.then((_) => action()).whenComplete(completer.complete);
   }
 
   static String metadataDirectory(String serverDir) =>
@@ -124,14 +122,23 @@ class ProjectMetadataStore {
     });
   }
 
+  /// Stamps [projectCreatedAt] for a freshly scaffolded project.
+  ///
+  /// Metadata is keyed by git clone, not by project, so creating a project
+  /// inside an existing checkout (a monorepo, or `create --force`) must not
+  /// discard the checkout id or the counters already accumulated there — only
+  /// the creation date is authoritative here.
   static Future<ProjectMetadata> initializeNewProject(
     String serverDir, {
     required DateTime projectCreatedAt,
   }) {
     return _synchronized(() async {
+      final existing = await _loadOrCreate(serverDir);
       final metadata = ProjectMetadata(
-        checkoutId: const Uuid().v4(),
+        checkoutId: existing.checkoutId,
         projectCreatedAt: projectCreatedAt.toUtc(),
+        generateCallCount: existing.generateCallCount,
+        commandInvocations: existing.commandInvocations,
       );
       await _save(serverDir, metadata);
       return metadata;

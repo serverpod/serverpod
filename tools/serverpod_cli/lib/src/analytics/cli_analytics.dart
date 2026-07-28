@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:cli_tools/cli_tools.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
@@ -12,18 +10,33 @@ import 'project_identity.dart';
 import 'project_metadata.dart';
 import 'project_metadata_store.dart';
 import 'protocol_feature_analyzer.dart';
+import 'session_metrics.dart';
 
 /// Rich lifecycle analytics sent to PostHog only (`cli.*` events).
+///
+/// Call sites never pass an enabled flag: the singleton starts disabled and is
+/// switched on once, from [ServerpodCommandRunner.runCommand], after
+/// `BetterCommandRunner` has resolved `--no-analytics`. Every capture method is
+/// a no-op while disabled, so commands can call them unconditionally.
 class CliAnalytics {
   CliAnalytics({required Analytics analytics}) : _analytics = analytics;
 
+  /// A permanently disabled instance, used until [initializeCliAnalytics]
+  /// installs the real one. Keeps `cliAnalytics` safe to call from code paths
+  /// that run outside the CLI entry point (tests, MCP tools, embedders).
+  CliAnalytics.disabled() : _analytics = _NoopAnalytics();
+
   final Analytics _analytics;
+
+  /// Whether rich `cli.*` events are being sent. Set once by
+  /// [ServerpodCommandRunner.runCommand] from the resolved `--no-analytics`
+  /// state.
+  bool enabled = false;
 
   Future<void> capture({
     required String event,
     required String serverDir,
     required Map<String, Object?> properties,
-    required bool enabled,
   }) async {
     if (!enabled) return;
 
@@ -45,13 +58,19 @@ class CliAnalytics {
     }
   }
 
+  /// Increments the per-command counter reported by `cli.session_start`.
+  ///
+  /// [commandName] must be a subcommand the CLI registered; callers pass it
+  /// straight from the command runner so the counted set follows the real
+  /// command list instead of a copy that drifts.
   Future<void> recordCommandInvocation({
     required String serverDir,
     required String commandName,
-    required bool enabled,
   }) async {
     if (!enabled) return;
-    if (!AnalyticsPayloadBuilder.trackedCommands.contains(commandName)) return;
+    if (!AnalyticsPayloadBuilder.commandNamePattern.hasMatch(commandName)) {
+      return;
+    }
 
     try {
       await ProjectMetadataStore.incrementCommandInvocation(
@@ -69,7 +88,6 @@ class CliAnalytics {
     required ServerpodTemplateType template,
     required TemplateContext context,
     required bool force,
-    required bool enabled,
   }) async {
     if (!enabled) return;
 
@@ -85,26 +103,71 @@ class CliAnalytics {
     await capture(
       event: 'cli.project_created',
       serverDir: serverDir,
-      enabled: enabled,
       properties: {
         'method': method,
-        'template': template.name,
-        'with_flutter': template.isServer,
-        'with_docker': context.docker,
-        'with_auth': context.auth && context.postgres,
-        'with_database': context.database,
+        ..._templateProperties(template, context),
         'force': force,
       },
     );
   }
 
+  /// Records `serverpod create .` run against an existing project, which
+  /// upgrades it in place instead of scaffolding a new one.
+  ///
+  /// A separate event rather than a `method` on `cli.project_created`: an
+  /// upgrade must not stamp `project_created_at`, which would reset the
+  /// project's age on every upgrade.
+  Future<void> captureProjectUpgraded({
+    required String serverDir,
+    required ServerpodTemplateType template,
+    required TemplateContext context,
+    required bool createdDefaultMigration,
+  }) async {
+    if (!enabled) return;
+
+    ProjectMetadata? metadata;
+    try {
+      metadata = await ProjectMetadataStore.loadOrCreate(serverDir);
+    } catch (_) {
+      // Fall through; project age is simply unavailable.
+    }
+
+    await capture(
+      event: 'cli.project_upgraded',
+      serverDir: serverDir,
+      properties: {
+        ..._templateProperties(template, context),
+        'created_default_migration': createdDefaultMigration,
+        'project_age_days': metadata == null
+            ? null
+            : ProjectMetadataStore.projectAgeDays(metadata),
+      },
+    );
+  }
+
+  Map<String, Object?> _templateProperties(
+    ServerpodTemplateType template,
+    TemplateContext context,
+  ) {
+    return {
+      'template': template.name,
+      'with_flutter': context.flutterApp,
+      'with_docker': context.docker,
+      'with_auth': context.auth && context.postgres,
+      'with_database': context.database,
+      'database_dialect': _createDatabaseDialect(context),
+      'with_redis': context.redis,
+      'with_website': context.website,
+      'with_webapp': context.webapp,
+      'ides': context.ides.map((ide) => ide.name).toSet().toList()..sort(),
+    };
+  }
+
   Future<void> captureGenerate({
     required String serverDir,
-    required GeneratorConfig config,
     required ProtocolAnalyticsSnapshot snapshot,
     required bool success,
     required bool isWatchMode,
-    required bool enabled,
     int? oneshotDurationMs,
     int? incrementalRunCount,
     int? incrementalAvgDurationMs,
@@ -120,24 +183,22 @@ class CliAnalytics {
       return;
     }
 
-    final properties = <String, Object?>{
-      'features': snapshot.features,
-      'serverpod_modules': snapshot.serverpodModules,
-      'counts': snapshot.counts,
-      'num_generate_calls': metadata.generateCallCount,
-      'project_age_days': ProjectMetadataStore.projectAgeDays(metadata),
-      'is_watch_mode': isWatchMode,
-      'generation_succeeded': success,
-      'oneshot_duration_ms': oneshotDurationMs,
-      'incremental_avg_duration_ms': incrementalAvgDurationMs,
-      'incremental_run_count': incrementalRunCount,
-    };
-
     await capture(
       event: 'cli.generate',
       serverDir: serverDir,
-      enabled: enabled,
-      properties: properties,
+      properties: {
+        'features': snapshot.features,
+        'feature_counts': snapshot.featureCounts,
+        'serverpod_modules': snapshot.serverpodModules,
+        'counts': snapshot.counts,
+        'num_generate_calls': metadata.generateCallCount,
+        'project_age_days': ProjectMetadataStore.projectAgeDays(metadata),
+        'is_watch_mode': isWatchMode,
+        'generation_succeeded': success,
+        'oneshot_duration_ms': oneshotDurationMs,
+        'incremental_avg_duration_ms': incrementalAvgDurationMs,
+        'incremental_run_count': incrementalRunCount,
+      },
     );
   }
 
@@ -145,7 +206,6 @@ class CliAnalytics {
     required GeneratorConfig config,
     required MigrationCreatedFlags flags,
     required bool isRepairMigration,
-    required bool enabled,
   }) async {
     if (!enabled) return;
     if (!flags.serverMigrationCreated && !flags.clientMigrationCreated) return;
@@ -157,7 +217,6 @@ class CliAnalytics {
       await capture(
         event: 'cli.migration_created',
         serverDir: serverDir,
-        enabled: enabled,
         properties: {
           'server_migration_created': flags.serverMigrationCreated,
           'client_migration_created': flags.clientMigrationCreated,
@@ -178,28 +237,28 @@ class CliAnalytics {
     required bool watchMode,
     required bool tuiEnabled,
     required bool flutterEnabled,
-    required String flutterDevice,
-    required bool dockerFlag,
+    required DockerStartMode dockerMode,
     required bool dockerComposePresent,
-    required bool enabled,
   }) async {
     if (!enabled) return;
 
     try {
       final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
       final metadata = await ProjectMetadataStore.loadOrCreate(serverDir);
-      final category = categorizeFlutterDevice(flutterDevice);
+      final flutter = FlutterAppMetrics.load(config);
 
       await capture(
         event: 'cli.session_start',
         serverDir: serverDir,
-        enabled: enabled,
         properties: {
           'watch_mode': watchMode,
           'tui_enabled': tuiEnabled,
           'flutter_enabled': flutterEnabled,
-          'flutter_device_category': ?category,
-          'docker_flag': dockerFlag,
+          'flutter_app_count': flutter.appCount,
+          'flutter_auto_launch_count': flutter.autoLaunchCount,
+          'flutter_device_categories': flutter.deviceCategories,
+          'flutter_device_platforms': flutter.devicePlatforms,
+          'docker_mode': dockerMode.name,
           'docker_compose_present': dockerComposePresent,
           'num_tool_calls': metadata.commandInvocations.values.fold<int>(
             0,
@@ -214,55 +273,59 @@ class CliAnalytics {
       // Analytics must never disrupt CLI execution.
     }
   }
-}
 
-String? categorizeFlutterDevice(String device) {
-  const allowed = AnalyticsPayloadBuilder.flutterDeviceCategories;
-  if (allowed.contains(device)) return device;
-  if (device.contains('headless')) return 'headless';
-  if (RegExp(r'ios|iphone|android').hasMatch(device)) return 'mobile';
-  if (RegExp(r'macos|windows|linux').hasMatch(device)) return 'desktop';
-  return null;
-}
+  /// Records one companion Flutter app actually starting.
+  ///
+  /// `cli.session_start` reports which targets a project *configures*; this
+  /// reports which it *runs*. Without it a target declared once in a pubspec
+  /// and never launched would weigh the same as the one used every day.
+  Future<void> captureFlutterLaunch({
+    required String serverDir,
+    required String? device,
+    required bool isRelaunch,
+  }) async {
+    if (!enabled) return;
 
-CliAnalytics? _cliAnalytics;
-
-CliAnalytics get cliAnalytics {
-  final analytics = _cliAnalytics;
-  if (analytics == null) {
-    throw StateError('CliAnalytics has not been initialized.');
+    try {
+      final buckets = categorizeFlutterDevice(device);
+      await capture(
+        event: 'cli.flutter_launch',
+        serverDir: serverDir,
+        properties: {
+          'device_category': buckets.category,
+          'device_platform': buckets.platform,
+          'is_relaunch': isRelaunch,
+        },
+      );
+    } catch (_) {
+      // Analytics must never disrupt launching an app.
+    }
   }
-  return analytics;
 }
 
-CliAnalytics? get cliAnalyticsOrNull => _cliAnalytics;
+String _createDatabaseDialect(TemplateContext context) {
+  if (context.postgres) return 'postgres';
+  if (context.sqlite) return 'sqlite';
+  return 'none';
+}
+
+/// Swallows every event. Backs [CliAnalytics.disabled].
+class _NoopAnalytics extends Analytics {
+  @override
+  Future<void> sendEvent({
+    required String event,
+    Map<String, dynamic> properties = const {},
+  }) async {}
+}
+
+CliAnalytics _cliAnalytics = CliAnalytics.disabled();
+
+/// The process-wide rich analytics sink.
+///
+/// Always safe to call: it is disabled until [initializeCliAnalytics] runs and
+/// the command runner enables it.
+CliAnalytics get cliAnalytics => _cliAnalytics;
 
 void initializeCliAnalytics(CliAnalytics analytics) {
   _cliAnalytics = analytics;
-}
-
-Future<Set<String>> readServerPubspecDependencies(
-  GeneratorConfig config,
-) async {
-  final pubspecFile = File(
-    p.joinAll([...config.serverPackageDirectoryPathParts, 'pubspec.yaml']),
-  );
-  if (!await pubspecFile.exists()) return {};
-
-  final lines = await pubspecFile.readAsLines();
-  final dependencies = <String>{};
-  var inDependencies = false;
-  for (final line in lines) {
-    if (line.trim() == 'dependencies:') {
-      inDependencies = true;
-      continue;
-    }
-    if (!inDependencies) continue;
-    if (line.isNotEmpty && !line.startsWith(' ')) break;
-    final match = RegExp(r'^\s{2}([\w_]+):').firstMatch(line);
-    if (match != null) {
-      dependencies.add(match.group(1)!);
-    }
-  }
-  return dependencies;
 }

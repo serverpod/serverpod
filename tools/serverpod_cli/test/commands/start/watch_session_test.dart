@@ -2666,7 +2666,11 @@ class Counter {
         initialServer: null,
         fullGenerate: () async {
           fullGenerateCalls++;
-          return (success: fullGenerateSuccess, generatedFiles: <String>{});
+          return (
+            success: fullGenerateSuccess,
+            generatedFiles: <String>{},
+            protocolDefinition: null,
+          );
         },
       );
     });
@@ -2806,7 +2810,11 @@ class Counter {
         initialServer: null,
         fullGenerate: () async {
           fullGenerateCalls++;
-          return (success: true, generatedFiles: <String>{});
+          return (
+            success: true,
+            generatedFiles: <String>{},
+            protocolDefinition: null,
+          );
         },
       );
     });

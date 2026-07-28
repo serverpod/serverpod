@@ -10,18 +10,25 @@ void main() {
         checkoutId: '00000000-0000-4000-8000-000000000002',
         properties: {
           'method': 'create',
-          'template': 'server',
+          'template': 'fullstack',
           'with_flutter': true,
           'with_docker': true,
           'with_auth': true,
           'with_database': true,
+          'database_dialect': 'postgres',
+          'with_redis': true,
+          'with_website': false,
+          'with_webapp': true,
+          'ides': ['claude'],
           'force': false,
         },
       );
 
       expect(payload['method'], 'create');
-      expect(payload['template'], 'server');
+      expect(payload['template'], 'fullstack');
       expect(payload['with_flutter'], isTrue);
+      expect(payload['database_dialect'], 'postgres');
+      expect(payload['ides'], ['claude']);
       expect(
         payload[r'$groups'],
         {'project': '00000000-0000-4000-8000-000000000001'},
@@ -43,6 +50,11 @@ void main() {
             'with_docker': true,
             'with_auth': true,
             'with_database': true,
+            'database_dialect': 'postgres',
+            'with_redis': false,
+            'with_website': false,
+            'with_webapp': false,
+            'ides': <String>[],
             'force': false,
           },
         ),
@@ -61,7 +73,8 @@ void main() {
           projectId: '00000000-0000-4000-8000-000000000001',
           checkoutId: '00000000-0000-4000-8000-000000000002',
           properties: {
-            'features': ['postgres'],
+            'features': ['postgres', 'index_hnsw'],
+            'feature_counts': {'index_hnsw': 2},
             'serverpod_modules': ['serverpod_auth'],
             'counts': {'model_count': 1},
             'num_generate_calls': 2,
@@ -77,6 +90,12 @@ void main() {
         expect(payload['oneshot_duration_ms'], 120);
         expect(payload.containsKey('incremental_avg_duration_ms'), isFalse);
         expect(payload['counts'], containsPair('endpoint_count', 0));
+        expect(
+          payload['features'],
+          contains('index_hnsw'),
+          reason: 'Index types are accepted by shape, not by a copied list.',
+        );
+        expect(payload['feature_counts'], containsPair('index_hnsw', 2));
       },
     );
 
@@ -90,6 +109,7 @@ void main() {
             checkoutId: '00000000-0000-4000-8000-000000000002',
             properties: {
               'features': ['raw_endpoint_name'],
+              'feature_counts': <String, int>{},
               'serverpod_modules': ['serverpod_auth'],
               'counts': {'model_count': 1},
               'num_generate_calls': 2,
@@ -116,6 +136,7 @@ void main() {
             checkoutId: '00000000-0000-4000-8000-000000000002',
             properties: {
               'features': ['postgres'],
+              'feature_counts': <String, int>{},
               'serverpod_modules': ['my_custom_module'],
               'counts': {'model_count': 1},
               'num_generate_calls': 2,

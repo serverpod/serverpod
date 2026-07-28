@@ -9,19 +9,27 @@ void main() {
         'then they collapse to one canonical string.', () {
       const canonical = 'github.com/serverpod/serverpod';
       expect(
-        ProjectIdentity.normalizeRemoteUrl('git@github.com:serverpod/serverpod.git'),
+        ProjectIdentity.normalizeRemoteUrl(
+          'git@github.com:serverpod/serverpod.git',
+        ),
         canonical,
       );
       expect(
-        ProjectIdentity.normalizeRemoteUrl('https://github.com/serverpod/serverpod.git'),
+        ProjectIdentity.normalizeRemoteUrl(
+          'https://github.com/serverpod/serverpod.git',
+        ),
         canonical,
       );
       expect(
-        ProjectIdentity.normalizeRemoteUrl('ssh://git@github.com/serverpod/serverpod'),
+        ProjectIdentity.normalizeRemoteUrl(
+          'ssh://git@github.com/serverpod/serverpod',
+        ),
         canonical,
       );
       expect(
-        ProjectIdentity.normalizeRemoteUrl('https://GitHub.com/Serverpod/Serverpod/'),
+        ProjectIdentity.normalizeRemoteUrl(
+          'https://GitHub.com/Serverpod/Serverpod/',
+        ),
         canonical,
       );
     });
@@ -47,7 +55,10 @@ void main() {
       () async {
         await d.dir('repo_main', [
           d.dir('.git', [
-            d.file('config', '[remote "origin"]\n  url = git@github.com:org/app.git\n'),
+            d.file(
+              'config',
+              '[remote "origin"]\n  url = git@github.com:org/app.git\n',
+            ),
           ]),
           d.dir('app_server', [d.file('pubspec.yaml', 'name: app_server\n')]),
         ]).create();
@@ -67,14 +78,23 @@ void main() {
         // Main repo with a registered worktree "wt".
         await d.dir('repo', [
           d.dir('.git', [
-            d.file('config', '[remote "origin"]\n  url = git@github.com:org/app.git\n'),
+            d.file(
+              'config',
+              '[remote "origin"]\n  url = git@github.com:org/app.git\n',
+            ),
             d.dir('worktrees', [
               d.dir('wt', [d.file('commondir', '../..\n')]),
             ]),
           ]),
         ]).create();
         // The linked worktree: its `.git` is a file pointing at the gitdir.
-        final worktreeGitDir = p.join(d.sandbox, 'repo', '.git', 'worktrees', 'wt');
+        final worktreeGitDir = p.join(
+          d.sandbox,
+          'repo',
+          '.git',
+          'worktrees',
+          'wt',
+        );
         await d.dir('wt', [
           d.file('.git', 'gitdir: $worktreeGitDir\n'),
           d.dir('app_server', [d.file('pubspec.yaml', 'name: app_server\n')]),
@@ -102,13 +122,19 @@ void main() {
       () async {
         await d.dir('clone_ssh', [
           d.dir('.git', [
-            d.file('config', '[remote "origin"]\n  url = git@github.com:org/app.git\n'),
+            d.file(
+              'config',
+              '[remote "origin"]\n  url = git@github.com:org/app.git\n',
+            ),
           ]),
           d.dir('app_server', [d.file('pubspec.yaml', '')]),
         ]).create();
         await d.dir('clone_https', [
           d.dir('.git', [
-            d.file('config', '[remote "origin"]\n  url = https://github.com/org/app.git\n'),
+            d.file(
+              'config',
+              '[remote "origin"]\n  url = https://github.com/org/app.git\n',
+            ),
           ]),
           d.dir('app_server', [d.file('pubspec.yaml', '')]),
         ]).create();
