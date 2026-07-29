@@ -82,18 +82,18 @@ import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i63;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i64;
 import 'package:serverpod_test_module_server/serverpod_test_module_server.dart'
     as _i65;
-import 'package:serverpod_test_server/src/generated/inheritance/polymorphism/parent.dart'
-    as _i66;
-import 'package:serverpod_test_server/src/generated/inheritance/polymorphism/container.dart'
-    as _i67;
-import 'package:serverpod_test_server/src/generated/inheritance/polymorphism/container_module.dart'
-    as _i68;
-import 'package:serverpod_test_server/src/generated/types_record.dart' as _i69;
-import 'package:serverpod_test_server/src/generated/object_with_dynamic.dart'
-    as _i70;
-import 'package:serverpod_test_server/src/generated/module_datatype.dart'
-    as _i71;
 import 'package:serverpod_test_shared_module_server/serverpod_test_shared_module_server.dart'
+    as _i66;
+import 'package:serverpod_test_server/src/generated/inheritance/polymorphism/parent.dart'
+    as _i67;
+import 'package:serverpod_test_server/src/generated/inheritance/polymorphism/container.dart'
+    as _i68;
+import 'package:serverpod_test_server/src/generated/inheritance/polymorphism/container_module.dart'
+    as _i69;
+import 'package:serverpod_test_server/src/generated/types_record.dart' as _i70;
+import 'package:serverpod_test_server/src/generated/object_with_dynamic.dart'
+    as _i71;
+import 'package:serverpod_test_server/src/generated/module_datatype.dart'
     as _i72;
 import 'package:serverpod_test_server/src/generated/future_calls.dart' as _i73;
 export 'future_calls.dart' show ServerpodFutureCallsGetter;
@@ -6163,6 +6163,27 @@ class Endpoints extends _i1.EndpointDispatch {
                         params['object'],
                       ),
         ),
+        'modifySharedModuleTable': _i1.MethodConnector(
+          name: 'modifySharedModuleTable',
+          params: {
+            'object': _i1.ParameterDescription(
+              name: 'object',
+              type: _i1.getType<_i66.SharedModuleTable>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['moduleSerialization']
+                          as _i30.ModuleSerializationEndpoint)
+                      .modifySharedModuleTable(
+                        session,
+                        params['object'],
+                      ),
+        ),
         'serializeNestedModuleObject': _i1.MethodConnector(
           name: 'serializeNestedModuleObject',
           params: {},
@@ -6284,7 +6305,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'parent': _i1.ParameterDescription(
               name: 'parent',
-              type: _i1.getType<_i66.PolymorphicParent>(),
+              type: _i1.getType<_i67.PolymorphicParent>(),
               nullable: false,
             ),
           },
@@ -6308,7 +6329,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'container': _i1.ParameterDescription(
               name: 'container',
-              type: _i1.getType<_i67.PolymorphicChildContainer>(),
+              type: _i1.getType<_i68.PolymorphicChildContainer>(),
               nullable: false,
             ),
           },
@@ -6329,7 +6350,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'container': _i1.ParameterDescription(
               name: 'container',
-              type: _i1.getType<_i68.ModulePolymorphicChildContainer>(),
+              type: _i1.getType<_i69.ModulePolymorphicChildContainer>(),
               nullable: false,
             ),
           },
@@ -6349,7 +6370,7 @@ class Endpoints extends _i1.EndpointDispatch {
           name: 'polymorphicStreamingRoundtrip',
           params: {},
           streamParams: {
-            'stream': _i1.StreamParameterDescription<_i66.PolymorphicParent>(
+            'stream': _i1.StreamParameterDescription<_i67.PolymorphicParent>(
               name: 'stream',
               nullable: false,
             ),
@@ -6365,7 +6386,7 @@ class Endpoints extends _i1.EndpointDispatch {
                           as _i33.InheritancePolymorphismTestEndpoint)
                       .polymorphicStreamingRoundtrip(
                         session,
-                        streamParams['stream']!.cast<_i66.PolymorphicParent>(),
+                        streamParams['stream']!.cast<_i67.PolymorphicParent>(),
                       ),
         ),
       },
@@ -7221,7 +7242,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'value': _i1.ParameterDescription(
               name: 'value',
-              type: _i1.getType<_i69.TypesRecord>(),
+              type: _i1.getType<_i70.TypesRecord>(),
               nullable: false,
             ),
           },
@@ -7242,7 +7263,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'value': _i1.ParameterDescription(
               name: 'value',
-              type: _i1.getType<_i69.TypesRecord?>(),
+              type: _i1.getType<_i70.TypesRecord?>(),
               nullable: true,
             ),
           },
@@ -7391,12 +7412,12 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'initialValue': _i1.ParameterDescription(
               name: 'initialValue',
-              type: _i1.getType<_i69.TypesRecord>(),
+              type: _i1.getType<_i70.TypesRecord>(),
               nullable: false,
             ),
           },
           streamParams: {
-            'values': _i1.StreamParameterDescription<_i69.TypesRecord>(
+            'values': _i1.StreamParameterDescription<_i70.TypesRecord>(
               name: 'values',
               nullable: false,
             ),
@@ -7413,7 +7434,7 @@ class Endpoints extends _i1.EndpointDispatch {
                       .streamOfModelClassWithRecordField(
                         session,
                         params['initialValue'],
-                        streamParams['values']!.cast<_i69.TypesRecord>(),
+                        streamParams['values']!.cast<_i70.TypesRecord>(),
                       ),
         ),
         'streamOfNullableModelClassWithRecordField': _i1.MethodStreamConnector(
@@ -7421,12 +7442,12 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'initialValue': _i1.ParameterDescription(
               name: 'initialValue',
-              type: _i1.getType<_i69.TypesRecord?>(),
+              type: _i1.getType<_i70.TypesRecord?>(),
               nullable: true,
             ),
           },
           streamParams: {
-            'values': _i1.StreamParameterDescription<_i69.TypesRecord?>(
+            'values': _i1.StreamParameterDescription<_i70.TypesRecord?>(
               name: 'values',
               nullable: false,
             ),
@@ -7443,7 +7464,7 @@ class Endpoints extends _i1.EndpointDispatch {
                       .streamOfNullableModelClassWithRecordField(
                         session,
                         params['initialValue'],
-                        streamParams['values']!.cast<_i69.TypesRecord?>(),
+                        streamParams['values']!.cast<_i70.TypesRecord?>(),
                       ),
         ),
         'streamOfNullableModelClassWithRecordFieldFromExternalModule':
@@ -8596,7 +8617,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'objectWithDynamic': _i1.ParameterDescription(
               name: 'objectWithDynamic',
-              type: _i1.getType<_i70.ObjectWithDynamic>(),
+              type: _i1.getType<_i71.ObjectWithDynamic>(),
               nullable: false,
             ),
           },
@@ -8653,7 +8674,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'moduleDatatype': _i1.ParameterDescription(
               name: 'moduleDatatype',
-              type: _i1.getType<_i71.ModuleDatatype>(),
+              type: _i1.getType<_i72.ModuleDatatype>(),
               nullable: false,
             ),
           },
@@ -9110,12 +9131,12 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'initialValue': _i1.ParameterDescription(
               name: 'initialValue',
-              type: _i1.getType<_i71.ModuleDatatype?>(),
+              type: _i1.getType<_i72.ModuleDatatype?>(),
               nullable: true,
             ),
           },
           streamParams: {
-            'values': _i1.StreamParameterDescription<_i71.ModuleDatatype?>(
+            'values': _i1.StreamParameterDescription<_i72.ModuleDatatype?>(
               name: 'values',
               nullable: false,
             ),
@@ -9130,7 +9151,7 @@ class Endpoints extends _i1.EndpointDispatch {
                   .streamModuleDatatype(
                     session,
                     params['initialValue'],
-                    streamParams['values']!.cast<_i71.ModuleDatatype?>(),
+                    streamParams['values']!.cast<_i72.ModuleDatatype?>(),
                   ),
         ),
         'streamModuleClass': _i1.MethodStreamConnector(
@@ -9330,12 +9351,12 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'initialValue': _i1.ParameterDescription(
               name: 'initialValue',
-              type: _i1.getType<_i69.TypesRecord?>(),
+              type: _i1.getType<_i70.TypesRecord?>(),
               nullable: true,
             ),
           },
           streamParams: {
-            'stream': _i1.StreamParameterDescription<_i69.TypesRecord?>(
+            'stream': _i1.StreamParameterDescription<_i70.TypesRecord?>(
               name: 'stream',
               nullable: false,
             ),
@@ -9350,7 +9371,7 @@ class Endpoints extends _i1.EndpointDispatch {
                   .modelWithRecordsEchoStream(
                     session,
                     params['initialValue'],
-                    streamParams['stream']!.cast<_i69.TypesRecord?>(),
+                    streamParams['stream']!.cast<_i70.TypesRecord?>(),
                   ),
         ),
         'addWillCloseListenerToSessionIntStreamMethodAndThrow':
@@ -9682,7 +9703,7 @@ class Endpoints extends _i1.EndpointDispatch {
     modules['serverpod_auth'] = _i64.Endpoints()..initializeEndpoints(server);
     modules['serverpod_test_module'] = _i65.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_test_shared_module'] = _i72.Endpoints()
+    modules['serverpod_test_shared_module'] = _i66.Endpoints()
       ..initializeEndpoints(server);
   }
 

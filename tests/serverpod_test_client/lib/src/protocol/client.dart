@@ -36,26 +36,26 @@ import 'package:serverpod_test_client/src/protocol/object_field_scopes.dart'
     as _i17;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i18;
 import 'package:serverpod_test_client/src/protocol/test_enum.dart' as _i19;
-import 'package:serverpod_test_client/src/protocol/module_datatype.dart'
-    as _i20;
-import 'package:serverpod_test_client/src/protocol/inheritance/polymorphism/parent.dart'
-    as _i21;
-import 'package:serverpod_test_client/src/protocol/inheritance/polymorphism/container.dart'
-    as _i22;
-import 'package:serverpod_test_client/src/protocol/inheritance/polymorphism/container_module.dart'
-    as _i23;
-import 'package:serverpod_test_client/src/protocol/types_record.dart' as _i24;
-import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_field.dart'
-    as _i25;
-import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_field_child.dart'
-    as _i26;
-import 'package:serverpod_test_client/src/protocol/session_auth_info.dart'
-    as _i27;
-import 'package:serverpod_test_client/src/protocol/object_with_dynamic.dart'
-    as _i28;
-import 'package:serverpod_test_client/src/protocol/my_feature/models/my_feature_model.dart'
-    as _i29;
 import 'package:serverpod_test_shared_module_client/serverpod_test_shared_module_client.dart'
+    as _i20;
+import 'package:serverpod_test_client/src/protocol/module_datatype.dart'
+    as _i21;
+import 'package:serverpod_test_client/src/protocol/inheritance/polymorphism/parent.dart'
+    as _i22;
+import 'package:serverpod_test_client/src/protocol/inheritance/polymorphism/container.dart'
+    as _i23;
+import 'package:serverpod_test_client/src/protocol/inheritance/polymorphism/container_module.dart'
+    as _i24;
+import 'package:serverpod_test_client/src/protocol/types_record.dart' as _i25;
+import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_field.dart'
+    as _i26;
+import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_field_child.dart'
+    as _i27;
+import 'package:serverpod_test_client/src/protocol/session_auth_info.dart'
+    as _i28;
+import 'package:serverpod_test_client/src/protocol/object_with_dynamic.dart'
+    as _i29;
+import 'package:serverpod_test_client/src/protocol/my_feature/models/my_feature_model.dart'
     as _i30;
 import 'package:http/http.dart' as _i31;
 import 'protocol.dart' as _i32;
@@ -2770,8 +2770,16 @@ class EndpointModuleSerialization extends _i1.EndpointRef {
         {'object': object},
       );
 
-  _i2.Future<_i20.ModuleDatatype> serializeNestedModuleObject() =>
-      caller.callServerEndpoint<_i20.ModuleDatatype>(
+  _i2.Future<_i20.SharedModuleTable> modifySharedModuleTable(
+    _i20.SharedModuleTable object,
+  ) => caller.callServerEndpoint<_i20.SharedModuleTable>(
+    'moduleSerialization',
+    'modifySharedModuleTable',
+    {'object': object},
+  );
+
+  _i2.Future<_i21.ModuleDatatype> serializeNestedModuleObject() =>
+      caller.callServerEndpoint<_i21.ModuleDatatype>(
         'moduleSerialization',
         'serializeNestedModuleObject',
         {},
@@ -2842,9 +2850,9 @@ class EndpointInheritancePolymorphismTest extends _i1.EndpointRef {
   ///
   /// Returns the runtime type and the object itself. The object must retain
   /// its class when received by the client.
-  _i2.Future<(String, _i21.PolymorphicParent)> polymorphicRoundtrip(
-    _i21.PolymorphicParent parent,
-  ) => caller.callServerEndpoint<(String, _i21.PolymorphicParent)>(
+  _i2.Future<(String, _i22.PolymorphicParent)> polymorphicRoundtrip(
+    _i22.PolymorphicParent parent,
+  ) => caller.callServerEndpoint<(String, _i22.PolymorphicParent)>(
     'inheritancePolymorphismTest',
     'polymorphicRoundtrip',
     {'parent': parent},
@@ -2854,12 +2862,12 @@ class EndpointInheritancePolymorphismTest extends _i1.EndpointRef {
   ///
   /// Yields the runtime type and the object itself. The object must retain its
   /// class when received by the client.
-  _i2.Stream<(String, _i21.PolymorphicParent)> polymorphicStreamingRoundtrip(
-    _i2.Stream<_i21.PolymorphicParent> stream,
+  _i2.Stream<(String, _i22.PolymorphicParent)> polymorphicStreamingRoundtrip(
+    _i2.Stream<_i22.PolymorphicParent> stream,
   ) =>
       caller.callStreamingServerEndpoint<
-        _i2.Stream<(String, _i21.PolymorphicParent)>,
-        (String, _i21.PolymorphicParent)
+        _i2.Stream<(String, _i22.PolymorphicParent)>,
+        (String, _i22.PolymorphicParent)
       >(
         'inheritancePolymorphismTest',
         'polymorphicStreamingRoundtrip',
@@ -2871,9 +2879,9 @@ class EndpointInheritancePolymorphismTest extends _i1.EndpointRef {
   ///
   /// Returns the container object itself. All nested polymorphic objects must
   /// retain their runtime types when received by the client.
-  _i2.Future<_i22.PolymorphicChildContainer> polymorphicContainerRoundtrip(
-    _i22.PolymorphicChildContainer container,
-  ) => caller.callServerEndpoint<_i22.PolymorphicChildContainer>(
+  _i2.Future<_i23.PolymorphicChildContainer> polymorphicContainerRoundtrip(
+    _i23.PolymorphicChildContainer container,
+  ) => caller.callServerEndpoint<_i23.PolymorphicChildContainer>(
     'inheritancePolymorphismTest',
     'polymorphicContainerRoundtrip',
     {'container': container},
@@ -2883,10 +2891,10 @@ class EndpointInheritancePolymorphismTest extends _i1.EndpointRef {
   ///
   /// Returns the container object itself. All nested polymorphic objects must
   /// retain their runtime types when received by the client.
-  _i2.Future<_i23.ModulePolymorphicChildContainer>
+  _i2.Future<_i24.ModulePolymorphicChildContainer>
   polymorphicModuleContainerRoundtrip(
-    _i23.ModulePolymorphicChildContainer container,
-  ) => caller.callServerEndpoint<_i23.ModulePolymorphicChildContainer>(
+    _i24.ModulePolymorphicChildContainer container,
+  ) => caller.callServerEndpoint<_i24.ModulePolymorphicChildContainer>(
     'inheritancePolymorphismTest',
     'polymorphicModuleContainerRoundtrip',
     {'container': container},
@@ -3219,17 +3227,17 @@ class EndpointRecordParameters extends _i1.EndpointRef {
         {'values': values},
       );
 
-  _i2.Future<_i24.TypesRecord> echoModelClassWithRecordField(
-    _i24.TypesRecord value,
-  ) => caller.callServerEndpoint<_i24.TypesRecord>(
+  _i2.Future<_i25.TypesRecord> echoModelClassWithRecordField(
+    _i25.TypesRecord value,
+  ) => caller.callServerEndpoint<_i25.TypesRecord>(
     'recordParameters',
     'echoModelClassWithRecordField',
     {'value': value},
   );
 
-  _i2.Future<_i24.TypesRecord?> echoNullableModelClassWithRecordField(
-    _i24.TypesRecord? value,
-  ) => caller.callServerEndpoint<_i24.TypesRecord?>(
+  _i2.Future<_i25.TypesRecord?> echoNullableModelClassWithRecordField(
+    _i25.TypesRecord? value,
+  ) => caller.callServerEndpoint<_i25.TypesRecord?>(
     'recordParameters',
     'echoNullableModelClassWithRecordField',
     {'value': value},
@@ -3244,13 +3252,13 @@ class EndpointRecordParameters extends _i1.EndpointRef {
     {'value': value},
   );
 
-  _i2.Stream<_i24.TypesRecord> streamOfModelClassWithRecordField(
-    _i24.TypesRecord initialValue,
-    _i2.Stream<_i24.TypesRecord> values,
+  _i2.Stream<_i25.TypesRecord> streamOfModelClassWithRecordField(
+    _i25.TypesRecord initialValue,
+    _i2.Stream<_i25.TypesRecord> values,
   ) =>
       caller.callStreamingServerEndpoint<
-        _i2.Stream<_i24.TypesRecord>,
-        _i24.TypesRecord
+        _i2.Stream<_i25.TypesRecord>,
+        _i25.TypesRecord
       >(
         'recordParameters',
         'streamOfModelClassWithRecordField',
@@ -3258,13 +3266,13 @@ class EndpointRecordParameters extends _i1.EndpointRef {
         {'values': values},
       );
 
-  _i2.Stream<_i24.TypesRecord?> streamOfNullableModelClassWithRecordField(
-    _i24.TypesRecord? initialValue,
-    _i2.Stream<_i24.TypesRecord?> values,
+  _i2.Stream<_i25.TypesRecord?> streamOfNullableModelClassWithRecordField(
+    _i25.TypesRecord? initialValue,
+    _i2.Stream<_i25.TypesRecord?> values,
   ) =>
       caller.callStreamingServerEndpoint<
-        _i2.Stream<_i24.TypesRecord?>,
-        _i24.TypesRecord?
+        _i2.Stream<_i25.TypesRecord?>,
+        _i25.TypesRecord?
       >(
         'recordParameters',
         'streamOfNullableModelClassWithRecordField',
@@ -3398,8 +3406,8 @@ class EndpointServerOnlyScopedFieldModel extends _i1.EndpointRef {
   @override
   String get name => 'serverOnlyScopedFieldModel';
 
-  _i2.Future<_i25.ScopeServerOnlyField> getScopeServerOnlyField() =>
-      caller.callServerEndpoint<_i25.ScopeServerOnlyField>(
+  _i2.Future<_i26.ScopeServerOnlyField> getScopeServerOnlyField() =>
+      caller.callServerEndpoint<_i26.ScopeServerOnlyField>(
         'serverOnlyScopedFieldModel',
         'getScopeServerOnlyField',
         {},
@@ -3414,8 +3422,8 @@ class EndpointServerOnlyScopedFieldChildModel extends _i1.EndpointRef {
   @override
   String get name => 'serverOnlyScopedFieldChildModel';
 
-  _i2.Future<_i26.ScopeServerOnlyFieldChild> getProtocolField() =>
-      caller.callServerEndpoint<_i26.ScopeServerOnlyFieldChild>(
+  _i2.Future<_i27.ScopeServerOnlyFieldChild> getProtocolField() =>
+      caller.callServerEndpoint<_i27.ScopeServerOnlyFieldChild>(
         'serverOnlyScopedFieldChildModel',
         'getProtocolField',
         {},
@@ -3454,8 +3462,8 @@ class EndpointSessionAuthentication extends _i1.EndpointRef {
       );
 
   /// Returns full authentication info
-  _i2.Future<_i27.SessionAuthInfo> getAuthenticationInfo() =>
-      caller.callServerEndpoint<_i27.SessionAuthInfo>(
+  _i2.Future<_i28.SessionAuthInfo> getAuthenticationInfo() =>
+      caller.callServerEndpoint<_i28.SessionAuthInfo>(
         'sessionAuthentication',
         'getAuthenticationInfo',
         {},
@@ -3949,9 +3957,9 @@ class EndpointTestTools extends _i1.EndpointRef {
     {'simpleDatas': simpleDatas},
   );
 
-  _i2.Future<_i28.ObjectWithDynamic> echoObjectWithDynamic(
-    _i28.ObjectWithDynamic objectWithDynamic,
-  ) => caller.callServerEndpoint<_i28.ObjectWithDynamic>(
+  _i2.Future<_i29.ObjectWithDynamic> echoObjectWithDynamic(
+    _i29.ObjectWithDynamic objectWithDynamic,
+  ) => caller.callServerEndpoint<_i29.ObjectWithDynamic>(
     'testTools',
     'echoObjectWithDynamic',
     {'objectWithDynamic': objectWithDynamic},
@@ -3972,21 +3980,21 @@ class EndpointTestTools extends _i1.EndpointRef {
       );
 
   /// Returns a model class which fields reference `ModuleClass` defined in another module
-  _i2.Future<_i20.ModuleDatatype> echoModuleDatatype(
-    _i20.ModuleDatatype moduleDatatype,
-  ) => caller.callServerEndpoint<_i20.ModuleDatatype>(
+  _i2.Future<_i21.ModuleDatatype> echoModuleDatatype(
+    _i21.ModuleDatatype moduleDatatype,
+  ) => caller.callServerEndpoint<_i21.ModuleDatatype>(
     'testTools',
     'echoModuleDatatype',
     {'moduleDatatype': moduleDatatype},
   );
 
-  _i2.Stream<_i20.ModuleDatatype?> streamModuleDatatype(
-    _i20.ModuleDatatype? initialValue,
-    _i2.Stream<_i20.ModuleDatatype?> values,
+  _i2.Stream<_i21.ModuleDatatype?> streamModuleDatatype(
+    _i21.ModuleDatatype? initialValue,
+    _i2.Stream<_i21.ModuleDatatype?> values,
   ) =>
       caller.callStreamingServerEndpoint<
-        _i2.Stream<_i20.ModuleDatatype?>,
-        _i20.ModuleDatatype?
+        _i2.Stream<_i21.ModuleDatatype?>,
+        _i21.ModuleDatatype?
       >(
         'testTools',
         'streamModuleDatatype',
@@ -4119,13 +4127,13 @@ class EndpointTestTools extends _i1.EndpointRef {
         {'stream': stream},
       );
 
-  _i2.Stream<_i24.TypesRecord?> modelWithRecordsEchoStream(
-    _i24.TypesRecord? initialValue,
-    _i2.Stream<_i24.TypesRecord?> stream,
+  _i2.Stream<_i25.TypesRecord?> modelWithRecordsEchoStream(
+    _i25.TypesRecord? initialValue,
+    _i2.Stream<_i25.TypesRecord?> stream,
   ) =>
       caller.callStreamingServerEndpoint<
-        _i2.Stream<_i24.TypesRecord?>,
-        _i24.TypesRecord?
+        _i2.Stream<_i25.TypesRecord?>,
+        _i25.TypesRecord?
       >(
         'testTools',
         'modelWithRecordsEchoStream',
@@ -4418,8 +4426,8 @@ class EndpointMyFeature extends _i1.EndpointRef {
     {},
   );
 
-  _i2.Future<_i29.MyFeatureModel> myFeatureModel() =>
-      caller.callServerEndpoint<_i29.MyFeatureModel>(
+  _i2.Future<_i30.MyFeatureModel> myFeatureModel() =>
+      caller.callServerEndpoint<_i30.MyFeatureModel>(
         'myFeature',
         'myFeatureModel',
         {},
@@ -4430,14 +4438,14 @@ class Modules {
   Modules(Client client) {
     auth = _i3.Caller(client);
     module = _i16.Caller(client);
-    shared_module = _i30.Caller(client);
+    shared_module = _i20.Caller(client);
   }
 
   late final _i3.Caller auth;
 
   late final _i16.Caller module;
 
-  late final _i30.Caller shared_module;
+  late final _i20.Caller shared_module;
 }
 
 class Client extends _i1.ServerpodClientShared {

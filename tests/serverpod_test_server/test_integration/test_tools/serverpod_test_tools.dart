@@ -39,35 +39,37 @@ import 'package:serverpod_test_server/src/generated/protocol.dart' as _i19;
 import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i20;
 import 'package:serverpod_test_module_server/serverpod_test_module_server.dart'
     as _i21;
-import 'package:serverpod_test_server/src/generated/module_datatype.dart'
+import 'package:serverpod_test_shared_module_server/serverpod_test_shared_module_server.dart'
     as _i22;
-import 'package:serverpod_test_server/src/generated/inheritance/polymorphism/parent.dart'
+import 'package:serverpod_test_server/src/generated/module_datatype.dart'
     as _i23;
-import 'package:serverpod_test_server/src/generated/inheritance/polymorphism/container.dart'
+import 'package:serverpod_test_server/src/generated/inheritance/polymorphism/parent.dart'
     as _i24;
-import 'package:serverpod_test_server/src/generated/inheritance/polymorphism/container_module.dart'
+import 'package:serverpod_test_server/src/generated/inheritance/polymorphism/container.dart'
     as _i25;
-import 'dart:convert' as _i26;
-import 'package:serverpod_test_server/src/generated/types_record.dart' as _i27;
+import 'package:serverpod_test_server/src/generated/inheritance/polymorphism/container_module.dart'
+    as _i26;
+import 'dart:convert' as _i27;
+import 'package:serverpod_test_server/src/generated/types_record.dart' as _i28;
 import 'package:serverpod_test_server/src/generated/scopes/scope_server_only_field.dart'
-    as _i28;
-import 'package:serverpod_test_server/src/generated/scopes/scope_server_only_field_child.dart'
     as _i29;
-import 'package:serverpod_test_server/src/generated/session_auth_info.dart'
+import 'package:serverpod_test_server/src/generated/scopes/scope_server_only_field_child.dart'
     as _i30;
-import 'package:serverpod_test_server/src/generated/object_with_dynamic.dart'
+import 'package:serverpod_test_server/src/generated/session_auth_info.dart'
     as _i31;
-import 'package:serverpod_test_server/src/generated/my_feature/models/my_feature_model.dart'
+import 'package:serverpod_test_server/src/generated/object_with_dynamic.dart'
     as _i32;
-import 'package:serverpod_test_server/src/generated/future_calls_generated_models/test_generated_call_hello_model.dart'
+import 'package:serverpod_test_server/src/generated/my_feature/models/my_feature_model.dart'
     as _i33;
-import 'package:serverpod_test_server/src/generated/future_calls.dart' as _i34;
+import 'package:serverpod_test_server/src/generated/future_calls_generated_models/test_generated_call_hello_model.dart'
+    as _i34;
+import 'package:serverpod_test_server/src/generated/future_calls.dart' as _i35;
 import 'package:serverpod_test_server/src/generated/future_calls_generated_models/test_generated_call_bye_model.dart'
-    as _i35;
-import 'package:serverpod_test_server/src/generated/my_trigger_type.dart'
     as _i36;
-import 'package:serverpod_test_server/src/generated/future_calls_generated_models/test_generated_call_execute_with_trigger_model.dart'
+import 'package:serverpod_test_server/src/generated/my_trigger_type.dart'
     as _i37;
+import 'package:serverpod_test_server/src/generated/future_calls_generated_models/test_generated_call_execute_with_trigger_model.dart'
+    as _i38;
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -10016,7 +10018,38 @@ class _ModuleSerializationEndpoint {
     });
   }
 
-  _i4.Future<_i22.ModuleDatatype> serializeNestedModuleObject(
+  _i4.Future<_i22.SharedModuleTable> modifySharedModuleTable(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i22.SharedModuleTable object,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'moduleSerialization',
+            method: 'modifySharedModuleTable',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'moduleSerialization',
+          methodName: 'modifySharedModuleTable',
+          parameters: _i1.testObjectToJson({'object': object}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i4.Future<_i22.SharedModuleTable>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i4.Future<_i23.ModuleDatatype> serializeNestedModuleObject(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -10038,7 +10071,7 @@ class _ModuleSerializationEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i22.ModuleDatatype>);
+                as _i4.Future<_i23.ModuleDatatype>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -10184,9 +10217,9 @@ class _InheritancePolymorphismTestEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i4.Future<(String, _i23.PolymorphicParent)> polymorphicRoundtrip(
+  _i4.Future<(String, _i24.PolymorphicParent)> polymorphicRoundtrip(
     _i1.TestSessionBuilder sessionBuilder,
-    _i23.PolymorphicParent parent,
+    _i24.PolymorphicParent parent,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -10209,7 +10242,7 @@ class _InheritancePolymorphismTestEndpoint {
             )
             .then(
               (record) => _i19.Protocol()
-                  .deserialize<(String, _i23.PolymorphicParent)>(record),
+                  .deserialize<(String, _i24.PolymorphicParent)>(record),
             );
         return _localReturnValue;
       } finally {
@@ -10218,12 +10251,12 @@ class _InheritancePolymorphismTestEndpoint {
     });
   }
 
-  _i4.Stream<(String, _i23.PolymorphicParent)> polymorphicStreamingRoundtrip(
+  _i4.Stream<(String, _i24.PolymorphicParent)> polymorphicStreamingRoundtrip(
     _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<_i23.PolymorphicParent> stream,
+    _i4.Stream<_i24.PolymorphicParent> stream,
   ) {
     var _localTestStreamManager =
-        _i1.TestStreamManager<(String, _i23.PolymorphicParent)>();
+        _i1.TestStreamManager<(String, _i24.PolymorphicParent)>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
@@ -10251,9 +10284,9 @@ class _InheritancePolymorphismTestEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Future<_i24.PolymorphicChildContainer> polymorphicContainerRoundtrip(
+  _i4.Future<_i25.PolymorphicChildContainer> polymorphicContainerRoundtrip(
     _i1.TestSessionBuilder sessionBuilder,
-    _i24.PolymorphicChildContainer container,
+    _i25.PolymorphicChildContainer container,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -10274,7 +10307,7 @@ class _InheritancePolymorphismTestEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i24.PolymorphicChildContainer>);
+                as _i4.Future<_i25.PolymorphicChildContainer>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -10282,10 +10315,10 @@ class _InheritancePolymorphismTestEndpoint {
     });
   }
 
-  _i4.Future<_i25.ModulePolymorphicChildContainer>
+  _i4.Future<_i26.ModulePolymorphicChildContainer>
   polymorphicModuleContainerRoundtrip(
     _i1.TestSessionBuilder sessionBuilder,
-    _i25.ModulePolymorphicChildContainer container,
+    _i26.ModulePolymorphicChildContainer container,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -10306,7 +10339,7 @@ class _InheritancePolymorphismTestEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i25.ModulePolymorphicChildContainer>);
+                as _i4.Future<_i26.ModulePolymorphicChildContainer>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -11634,7 +11667,7 @@ class _RecordParametersEndpoint {
               arguments: {
                 'initialValue': initialValue == null
                     ? null
-                    : _i26.jsonDecode(
+                    : _i27.jsonDecode(
                         _i2.SerializationManager.encode(
                           _i19.Protocol().mapContainerToJson(initialValue),
                         ),
@@ -11654,9 +11687,9 @@ class _RecordParametersEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Future<_i27.TypesRecord> echoModelClassWithRecordField(
+  _i4.Future<_i28.TypesRecord> echoModelClassWithRecordField(
     _i1.TestSessionBuilder sessionBuilder,
-    _i27.TypesRecord value,
+    _i28.TypesRecord value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -11677,7 +11710,7 @@ class _RecordParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i27.TypesRecord>);
+                as _i4.Future<_i28.TypesRecord>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -11685,9 +11718,9 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Future<_i27.TypesRecord?> echoNullableModelClassWithRecordField(
+  _i4.Future<_i28.TypesRecord?> echoNullableModelClassWithRecordField(
     _i1.TestSessionBuilder sessionBuilder,
-    _i27.TypesRecord? value,
+    _i28.TypesRecord? value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -11708,7 +11741,7 @@ class _RecordParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i27.TypesRecord?>);
+                as _i4.Future<_i28.TypesRecord?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -11748,12 +11781,12 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Stream<_i27.TypesRecord> streamOfModelClassWithRecordField(
+  _i4.Stream<_i28.TypesRecord> streamOfModelClassWithRecordField(
     _i1.TestSessionBuilder sessionBuilder,
-    _i27.TypesRecord initialValue,
-    _i4.Stream<_i27.TypesRecord> values,
+    _i28.TypesRecord initialValue,
+    _i4.Stream<_i28.TypesRecord> values,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<_i27.TypesRecord>();
+    var _localTestStreamManager = _i1.TestStreamManager<_i28.TypesRecord>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
@@ -11767,7 +11800,7 @@ class _RecordParametersEndpoint {
               endpointPath: 'recordParameters',
               methodName: 'streamOfModelClassWithRecordField',
               arguments: {
-                'initialValue': _i26.jsonDecode(
+                'initialValue': _i27.jsonDecode(
                   _i2.SerializationManager.encode(initialValue),
                 ),
               },
@@ -11785,12 +11818,12 @@ class _RecordParametersEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<_i27.TypesRecord?> streamOfNullableModelClassWithRecordField(
+  _i4.Stream<_i28.TypesRecord?> streamOfNullableModelClassWithRecordField(
     _i1.TestSessionBuilder sessionBuilder,
-    _i27.TypesRecord? initialValue,
-    _i4.Stream<_i27.TypesRecord?> values,
+    _i28.TypesRecord? initialValue,
+    _i4.Stream<_i28.TypesRecord?> values,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<_i27.TypesRecord?>();
+    var _localTestStreamManager = _i1.TestStreamManager<_i28.TypesRecord?>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
@@ -11804,7 +11837,7 @@ class _RecordParametersEndpoint {
               endpointPath: 'recordParameters',
               methodName: 'streamOfNullableModelClassWithRecordField',
               arguments: {
-                'initialValue': _i26.jsonDecode(
+                'initialValue': _i27.jsonDecode(
                   _i2.SerializationManager.encode(initialValue),
                 ),
               },
@@ -11844,7 +11877,7 @@ class _RecordParametersEndpoint {
               methodName:
                   'streamOfNullableModelClassWithRecordFieldFromExternalModule',
               arguments: {
-                'initialValue': _i26.jsonDecode(
+                'initialValue': _i27.jsonDecode(
                   _i2.SerializationManager.encode(initialValue),
                 ),
               },
@@ -12213,7 +12246,7 @@ class _ServerOnlyScopedFieldModelEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i4.Future<_i28.ScopeServerOnlyField> getScopeServerOnlyField(
+  _i4.Future<_i29.ScopeServerOnlyField> getScopeServerOnlyField(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -12235,7 +12268,7 @@ class _ServerOnlyScopedFieldModelEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i28.ScopeServerOnlyField>);
+                as _i4.Future<_i29.ScopeServerOnlyField>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -12254,7 +12287,7 @@ class _ServerOnlyScopedFieldChildModelEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i4.Future<_i29.ScopeServerOnlyFieldChild> getProtocolField(
+  _i4.Future<_i30.ScopeServerOnlyFieldChild> getProtocolField(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -12276,7 +12309,7 @@ class _ServerOnlyScopedFieldChildModelEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i29.ScopeServerOnlyFieldChild>);
+                as _i4.Future<_i30.ScopeServerOnlyFieldChild>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -12385,7 +12418,7 @@ class _SessionAuthenticationEndpoint {
     });
   }
 
-  _i4.Future<_i30.SessionAuthInfo> getAuthenticationInfo(
+  _i4.Future<_i31.SessionAuthInfo> getAuthenticationInfo(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -12407,7 +12440,7 @@ class _SessionAuthenticationEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i30.SessionAuthInfo>);
+                as _i4.Future<_i31.SessionAuthInfo>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -14171,9 +14204,9 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Future<_i31.ObjectWithDynamic> echoObjectWithDynamic(
+  _i4.Future<_i32.ObjectWithDynamic> echoObjectWithDynamic(
     _i1.TestSessionBuilder sessionBuilder,
-    _i31.ObjectWithDynamic objectWithDynamic,
+    _i32.ObjectWithDynamic objectWithDynamic,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -14196,7 +14229,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i31.ObjectWithDynamic>);
+                as _i4.Future<_i32.ObjectWithDynamic>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -14266,9 +14299,9 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Future<_i22.ModuleDatatype> echoModuleDatatype(
+  _i4.Future<_i23.ModuleDatatype> echoModuleDatatype(
     _i1.TestSessionBuilder sessionBuilder,
-    _i22.ModuleDatatype moduleDatatype,
+    _i23.ModuleDatatype moduleDatatype,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -14289,7 +14322,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i22.ModuleDatatype>);
+                as _i4.Future<_i23.ModuleDatatype>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -14297,12 +14330,12 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Stream<_i22.ModuleDatatype?> streamModuleDatatype(
+  _i4.Stream<_i23.ModuleDatatype?> streamModuleDatatype(
     _i1.TestSessionBuilder sessionBuilder,
-    _i22.ModuleDatatype? initialValue,
-    _i4.Stream<_i22.ModuleDatatype?> values,
+    _i23.ModuleDatatype? initialValue,
+    _i4.Stream<_i23.ModuleDatatype?> values,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<_i22.ModuleDatatype?>();
+    var _localTestStreamManager = _i1.TestStreamManager<_i23.ModuleDatatype?>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
@@ -14316,7 +14349,7 @@ class _TestToolsEndpoint {
               endpointPath: 'testTools',
               methodName: 'streamModuleDatatype',
               arguments: {
-                'initialValue': _i26.jsonDecode(
+                'initialValue': _i27.jsonDecode(
                   _i2.SerializationManager.encode(initialValue),
                 ),
               },
@@ -14384,7 +14417,7 @@ class _TestToolsEndpoint {
               endpointPath: 'testTools',
               methodName: 'streamModuleClass',
               arguments: {
-                'initialValue': _i26.jsonDecode(
+                'initialValue': _i27.jsonDecode(
                   _i2.SerializationManager.encode(initialValue),
                 ),
               },
@@ -14541,7 +14574,7 @@ class _TestToolsEndpoint {
               endpointPath: 'testTools',
               methodName: 'recordEchoStream',
               arguments: {
-                'initialValue': _i26.jsonDecode(
+                'initialValue': _i27.jsonDecode(
                   _i2.SerializationManager.encode(
                     _i19.Protocol().mapRecordToJson(initialValue),
                   ),
@@ -14580,7 +14613,7 @@ class _TestToolsEndpoint {
               endpointPath: 'testTools',
               methodName: 'listOfRecordEchoStream',
               arguments: {
-                'initialValue': _i26.jsonDecode(
+                'initialValue': _i27.jsonDecode(
                   _i2.SerializationManager.encode(
                     _i19.Protocol().mapContainerToJson(initialValue),
                   ),
@@ -14629,7 +14662,7 @@ class _TestToolsEndpoint {
               endpointPath: 'testTools',
               methodName: 'nullableRecordEchoStream',
               arguments: {
-                'initialValue': _i26.jsonDecode(
+                'initialValue': _i27.jsonDecode(
                   _i2.SerializationManager.encode(
                     _i19.Protocol().mapRecordToJson(initialValue),
                   ),
@@ -14670,7 +14703,7 @@ class _TestToolsEndpoint {
               arguments: {
                 'initialValue': initialValue == null
                     ? null
-                    : _i26.jsonDecode(
+                    : _i27.jsonDecode(
                         _i2.SerializationManager.encode(
                           _i19.Protocol().mapContainerToJson(initialValue),
                         ),
@@ -14690,12 +14723,12 @@ class _TestToolsEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<_i27.TypesRecord?> modelWithRecordsEchoStream(
+  _i4.Stream<_i28.TypesRecord?> modelWithRecordsEchoStream(
     _i1.TestSessionBuilder sessionBuilder,
-    _i27.TypesRecord? initialValue,
-    _i4.Stream<_i27.TypesRecord?> stream,
+    _i28.TypesRecord? initialValue,
+    _i4.Stream<_i28.TypesRecord?> stream,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<_i27.TypesRecord?>();
+    var _localTestStreamManager = _i1.TestStreamManager<_i28.TypesRecord?>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
@@ -14709,7 +14742,7 @@ class _TestToolsEndpoint {
               endpointPath: 'testTools',
               methodName: 'modelWithRecordsEchoStream',
               arguments: {
-                'initialValue': _i26.jsonDecode(
+                'initialValue': _i27.jsonDecode(
                   _i2.SerializationManager.encode(initialValue),
                 ),
               },
@@ -15625,7 +15658,7 @@ class _MyFeatureEndpoint {
     });
   }
 
-  _i4.Future<_i32.MyFeatureModel> myFeatureModel(
+  _i4.Future<_i33.MyFeatureModel> myFeatureModel(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -15647,7 +15680,7 @@ class _MyFeatureEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i32.MyFeatureModel>);
+                as _i4.Future<_i33.MyFeatureModel>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -15661,11 +15694,11 @@ class _TestGeneratedCallFutureCall {
     _i1.TestSessionBuilder sessionBuilder,
     String name,
   ) async {
-    var object = _i33.TestGeneratedCallHelloModel(name: name);
+    var object = _i34.TestGeneratedCallHelloModel(name: name);
     var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
         .internalBuild();
     try {
-      await _i34.TestGeneratedCallHelloFutureCall().invoke(
+      await _i35.TestGeneratedCallHelloFutureCall().invoke(
         _localUniqueSession,
         object,
       );
@@ -15679,14 +15712,14 @@ class _TestGeneratedCallFutureCall {
     String name, {
     int code = 0,
   }) async {
-    var object = _i35.TestGeneratedCallByeModel(
+    var object = _i36.TestGeneratedCallByeModel(
       name: name,
       code: code,
     );
     var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
         .internalBuild();
     try {
-      await _i34.TestGeneratedCallByeFutureCall().invoke(
+      await _i35.TestGeneratedCallByeFutureCall().invoke(
         _localUniqueSession,
         object,
       );
@@ -15702,7 +15735,7 @@ class _TestGeneratedCallFutureCall {
     var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
         .internalBuild();
     try {
-      await _i34.TestGeneratedCallLogDataFutureCall().invoke(
+      await _i35.TestGeneratedCallLogDataFutureCall().invoke(
         _localUniqueSession,
         data,
       );
@@ -15715,7 +15748,7 @@ class _TestGeneratedCallFutureCall {
     var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
         .internalBuild();
     try {
-      await _i34.TestGeneratedCallDoTaskFutureCall().invoke(
+      await _i35.TestGeneratedCallDoTaskFutureCall().invoke(
         _localUniqueSession,
         null,
       );
@@ -15727,16 +15760,16 @@ class _TestGeneratedCallFutureCall {
   Future<void> executeWithTrigger(
     _i1.TestSessionBuilder sessionBuilder,
     String entityId, {
-    required _i36.MyTriggerType triggerType,
+    required _i37.MyTriggerType triggerType,
   }) async {
-    var object = _i37.TestGeneratedCallExecuteWithTriggerModel(
+    var object = _i38.TestGeneratedCallExecuteWithTriggerModel(
       entityId: entityId,
       triggerType: triggerType,
     );
     var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
         .internalBuild();
     try {
-      await _i34.TestGeneratedCallExecuteWithTriggerFutureCall().invoke(
+      await _i35.TestGeneratedCallExecuteWithTriggerFutureCall().invoke(
         _localUniqueSession,
         object,
       );
