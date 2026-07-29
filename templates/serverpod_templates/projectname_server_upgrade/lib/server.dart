@@ -85,6 +85,13 @@ void run(List<String> args) async {
     pod.webServer.addRoute(
       FlutterRoute(
         appDir,
+        // Cache Flutter assets in the browser for one minute and in shared
+        // caches, such as the Serverpod Cloud CDN, for one day.
+        cacheControlFactory: (_, _) => CacheControlHeader(
+          publicCache: true,
+          maxAge: 60,
+          sMaxAge: 86400,
+        ),
         // If building the Flutter app with WASM, set the below parameter to
         // true and add the --wasm flag to the flutter build command.
         enableWasmHeaders: false,

@@ -268,6 +268,24 @@ void main() {
       );
 
       test(
+        'then the server server.dart configures cache control for Flutter assets',
+        () async {
+          final serverFile = File(
+            p.join(project.serverDir, 'lib', 'server.dart'),
+          );
+          final content = await serverFile.readAsString();
+
+          expect(
+            content,
+            contains('cacheControlFactory: (_, _) => CacheControlHeader('),
+          );
+          expect(content, contains('publicCache: true'));
+          expect(content, contains('maxAge: 60'));
+          expect(content, contains('sMaxAge: 86400'));
+        },
+      );
+
+      test(
         'then the server pubspec contains a Flutter build script without WASM',
         () async {
           final pubspec = File(p.join(project.serverDir, 'pubspec.yaml'));
