@@ -268,7 +268,7 @@ Future<GenerateResult> analyzeAndGenerate({
       return (
         success: true,
         generatedFiles: <String>{},
-        protocolDefinition: null,
+        protocolAnalyticsSnapshot: null,
       );
     }
   } else if (verifyStaleness &&
@@ -278,7 +278,7 @@ Future<GenerateResult> analyzeAndGenerate({
     return (
       success: true,
       generatedFiles: <String>{},
-      protocolDefinition: null,
+      protocolAnalyticsSnapshot: null,
     );
   }
   final stopwatch = Stopwatch()..start();
@@ -308,7 +308,7 @@ Future<GenerateResult> analyzeAndGenerate({
     success: result.success,
     duration: stopwatch.elapsed,
     incremental: incremental,
-    protocolDefinition: result.protocolDefinition,
+    protocolAnalyticsSnapshot: result.protocolAnalyticsSnapshot,
   );
 
   return result;

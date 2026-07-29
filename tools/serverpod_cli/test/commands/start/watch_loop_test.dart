@@ -96,7 +96,7 @@ WatchSession _buildSession(_FakeCompiler compiler, _FakeServer server) {
     generate: (_, _) async => (
       success: true,
       generatedFiles: const <String>{},
-      protocolDefinition: null,
+      protocolAnalyticsSnapshot: null,
     ),
     createServer: (_) async => server,
     initialServer: server,

@@ -1,5 +1,5 @@
 import 'package:path/path.dart' as p;
-import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/config/config.dart';
 
 import 'cli_analytics.dart';
 import 'generate_tracker.dart';
@@ -11,37 +11,32 @@ import 'protocol_feature_analyzer.dart';
 /// are handed to [generateTracker], which coalesces a burst of saves into a
 /// single event.
 ///
-/// [protocolDefinition] is `null` for models-only incremental runs, which carry
-/// no protocol snapshot to report.
+/// [protocolAnalyticsSnapshot] is `null` for models-only incremental runs,
+/// which carry no protocol snapshot to report.
 Future<void> reportGenerateAnalytics({
   required GeneratorConfig config,
   required bool success,
   required Duration duration,
   required bool incremental,
-  ProtocolDefinition? protocolDefinition,
+  required ProtocolAnalyticsSnapshot? protocolAnalyticsSnapshot,
 }) async {
   if (!cliAnalytics.enabled) return;
-  if (protocolDefinition == null) return;
+  if (protocolAnalyticsSnapshot == null) return;
 
   try {
-    final snapshot = ProtocolFeatureAnalyzer.analyze(
-      protocolDefinition: protocolDefinition,
-      config: config,
-    );
-
     if (incremental) {
       generateTracker.recordIncrementalRun(
         config: config,
         success: success,
         duration: duration,
-        snapshot: snapshot,
+        snapshot: protocolAnalyticsSnapshot,
       );
       return;
     }
 
     await cliAnalytics.captureGenerate(
       serverDir: p.joinAll(config.serverPackageDirectoryPathParts),
-      snapshot: snapshot,
+      snapshot: protocolAnalyticsSnapshot,
       success: success,
       isWatchMode: false,
       oneshotDurationMs: duration.inMilliseconds,

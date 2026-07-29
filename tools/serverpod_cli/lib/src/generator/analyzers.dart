@@ -4,6 +4,7 @@ import 'package:analyzer/file_system/overlay_file_system.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analytics/protocol_feature_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/util/analysis_helpers.dart';
@@ -19,7 +20,7 @@ import 'serverpod_code_generator.dart';
 typedef GenerateResult = ({
   bool success,
   Set<String> generatedFiles,
-  ProtocolDefinition? protocolDefinition,
+  ProtocolAnalyticsSnapshot? protocolAnalyticsSnapshot,
 });
 
 /// Holds the set of analyzers needed for code generation.
@@ -259,7 +260,7 @@ class Analyzers {
         return (
           success: success,
           generatedFiles: generatedModelFiles.toSet(),
-          protocolDefinition: null,
+          protocolAnalyticsSnapshot: null,
         );
       }
 
@@ -351,7 +352,10 @@ class Analyzers {
       return (
         success: success,
         generatedFiles: allGeneratedFiles,
-        protocolDefinition: protocolDefinition,
+        protocolAnalyticsSnapshot: _createProtocolAnalyticsSnapshot(
+          protocolDefinition: protocolDefinition,
+          config: config,
+        ),
       );
     } finally {
       // Retire still-active stubs after an interrupted, models-only, or failed
@@ -375,6 +379,21 @@ class Analyzers {
         }
       }
     }
+  }
+}
+
+ProtocolAnalyticsSnapshot? _createProtocolAnalyticsSnapshot({
+  required ProtocolDefinition protocolDefinition,
+  required GeneratorConfig config,
+}) {
+  try {
+    return ProtocolFeatureAnalyzer.analyze(
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+  } catch (_) {
+    // Analytics must never disrupt generation.
+    return null;
   }
 }
 

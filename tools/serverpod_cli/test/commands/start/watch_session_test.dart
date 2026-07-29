@@ -371,7 +371,7 @@ void main() {
             return (
               success: generateSuccess,
               generatedFiles: generatedFiles,
-              protocolDefinition: null,
+              protocolAnalyticsSnapshot: null,
             );
           },
       fullGenerate: fullGenerate,
@@ -2284,7 +2284,7 @@ serverpod:
             return (
               success: true,
               generatedFiles: <String>{},
-              protocolDefinition: null,
+              protocolAnalyticsSnapshot: null,
             );
           },
           createServer: (String? dillPath) async => classifierServer,
@@ -2354,7 +2354,7 @@ serverpod:
             return (
               success: true,
               generatedFiles: <String>{},
-              protocolDefinition: null,
+              protocolAnalyticsSnapshot: null,
             );
           },
           createServer: (String? dillPath) async => classifierServer,
@@ -2494,7 +2494,7 @@ class Counter {
           return (
             success: true,
             generatedFiles: noCompilerGeneratedFiles,
-            protocolDefinition: null,
+            protocolAnalyticsSnapshot: null,
           );
         },
         createServer: (String? dillPath) async {
@@ -2626,7 +2626,7 @@ class Counter {
         generate: (affectedPaths, requirements) async => (
           success: true,
           generatedFiles: <String>{},
-          protocolDefinition: null,
+          protocolAnalyticsSnapshot: null,
         ),
         initialServer: noFactoryServer,
         generatedDirPaths: {'/generated'},
@@ -2669,7 +2669,7 @@ class Counter {
           return (
             success: fullGenerateSuccess,
             generatedFiles: <String>{},
-            protocolDefinition: null,
+            protocolAnalyticsSnapshot: null,
           );
         },
       );
@@ -2813,7 +2813,7 @@ class Counter {
           return (
             success: true,
             generatedFiles: <String>{},
-            protocolDefinition: null,
+            protocolAnalyticsSnapshot: null,
           );
         },
       );
