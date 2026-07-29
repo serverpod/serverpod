@@ -2,6 +2,8 @@ import 'dart:collection';
 
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart'
+    show Geography;
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../../../serverpod_database.dart';
@@ -620,6 +622,306 @@ UNION ALL
 SELECT * FROM insertWithIdNotNull
 ''';
   }
+}
+
+/// Builds SQL queries for updating rows or selected column values.
+/// This is typically only used internally by the serverpod framework.
+@internal
+class UpdateQueryBuilder {
+  final Table _table;
+  final DatabaseDialect _dialect;
+  final List<TableRow>? _rows;
+  final Set<Column>? _columns;
+  final List<ColumnValue>? _columnValues;
+
+  Expression? _where;
+  Object? _id;
+  List<Object>? _ids;
+  String? _filteredSelection;
+  List<Order>? _filteredSelectionOrderBy;
+  Returning _returning = Returning.all;
+
+  /// Creates a builder for updating one or more complete rows.
+  UpdateQueryBuilder.forRows({
+    required Table table,
+    required DatabaseDialect dialect,
+    required List<TableRow> rows,
+    required Set<Column> columns,
+  }) : _table = table,
+       _dialect = dialect,
+       _rows = rows,
+       _columns = columns,
+       _columnValues = null {
+    if (rows.isEmpty) {
+      throw ArgumentError.value(rows, 'rows', 'Cannot be empty');
+    }
+    if (columns.isEmpty) {
+      throw ArgumentError.value(columns, 'columns', 'Cannot be empty');
+    }
+    if (dialect == DatabaseDialect.sqlite && rows.length != 1) {
+      throw ArgumentError.value(
+        rows,
+        'rows',
+        'SQLite row updates must be built one row at a time',
+      );
+    }
+  }
+
+  /// Creates a builder for updating a fixed set of column values.
+  UpdateQueryBuilder.forColumnValues({
+    required Table table,
+    required DatabaseDialect dialect,
+    required List<ColumnValue> columnValues,
+  }) : _table = table,
+       _dialect = dialect,
+       _rows = null,
+       _columns = null,
+       _columnValues = columnValues {
+    if (columnValues.isEmpty) {
+      throw ArgumentError.value(
+        columnValues,
+        'columnValues',
+        'Cannot be empty',
+      );
+    }
+  }
+
+  /// Restricts the update to rows matching [where].
+  UpdateQueryBuilder withWhere(Expression where) {
+    _where = where;
+    return this;
+  }
+
+  /// Restricts the update to the row matching [id].
+  UpdateQueryBuilder withId(Object id) {
+    _id = id;
+    return this;
+  }
+
+  /// Restricts the update to rows matching [ids].
+  UpdateQueryBuilder withIds(Iterable<Object> ids) {
+    _ids = ids.toList();
+    if (_ids!.isEmpty) {
+      throw ArgumentError.value(ids, 'ids', 'Cannot be empty');
+    }
+    return this;
+  }
+
+  /// Restricts a PostgreSQL update to ids produced by [query].
+  ///
+  /// If rows are returned, [orderBy] is used to order the final result in the
+  /// same way as the filtered selection.
+  UpdateQueryBuilder withFilteredSelection(
+    String query, {
+    List<Order>? orderBy,
+  }) {
+    if (_dialect != DatabaseDialect.postgres) {
+      throw UnsupportedError(
+        'Filtered update selections are only supported for PostgreSQL.',
+      );
+    }
+    _filteredSelection = query;
+    _filteredSelectionOrderBy = orderBy;
+    return this;
+  }
+
+  /// Configures which columns the query returns.
+  UpdateQueryBuilder withReturn(Returning returning) {
+    _returning = returning;
+    return this;
+  }
+
+  /// Builds the SQL query.
+  String build() {
+    if (_rows != null) return _buildRowsUpdate();
+    return _buildColumnValuesUpdate();
+  }
+
+  String _buildRowsUpdate() {
+    return switch (_dialect) {
+      DatabaseDialect.postgres => _buildPostgresRowsUpdate(),
+      DatabaseDialect.sqlite => _buildSqliteRowUpdate(),
+    };
+  }
+
+  String _buildPostgresRowsUpdate() {
+    var columns = _columns!;
+    var columnNames = columns.map((column) => column.columnName).toList();
+    var quotedColumnNames = columnNames
+        .map((columnName) => '"$columnName"')
+        .join(', ');
+    var values = _rows!
+        .map((row) => row.toJsonForDatabase() as Map<String, dynamic>)
+        .map((row) {
+          var encodedValues = columns
+              .map((column) {
+                var value = ValueEncoder.instance.encodeColumnValue(
+                  column,
+                  row[column.columnName],
+                );
+                return '$value::${_postgresTypeForColumn(column)}';
+              })
+              .join(', ');
+          return '($encodedValues)';
+        })
+        .join(', ');
+    var setClause = columnNames
+        .map((columnName) => '"$columnName" = data."$columnName"')
+        .join(', ');
+
+    const tableAlias = 't';
+    var query =
+        'UPDATE "${_table.tableName}" AS $tableAlias SET $setClause '
+        'FROM (VALUES $values) AS data($quotedColumnNames) '
+        'WHERE data.id = $tableAlias.id';
+    return query + _buildReturningClause(tableAlias: tableAlias);
+  }
+
+  String _buildSqliteRowUpdate() {
+    var row = _rows!.single;
+    var rowJson = row.toJsonForDatabase() as Map<String, dynamic>;
+    var setParts = _columns!
+        .where((column) => column.columnName != _table.id.columnName)
+        .map(
+          (column) =>
+              _buildColumnAssignment(column, rowJson[column.columnName]),
+        )
+        .toList();
+    var encodedId = ValueEncoder.instance.convert(row.id);
+    if (setParts.isEmpty) {
+      setParts.add('"${_table.id.columnName}" = $encodedId');
+    }
+
+    return 'UPDATE "${_table.tableName}" SET ${setParts.join(', ')} '
+        'WHERE "${_table.id.columnName}" = $encodedId'
+        '${_buildReturningClause()}';
+  }
+
+  String _buildColumnValuesUpdate() {
+    var setClause = _columnValues!
+        .map((columnValue) {
+          return _buildColumnAssignment(columnValue.column, columnValue.value);
+        })
+        .join(', ');
+
+    var filteredSelection = _filteredSelection;
+    if (filteredSelection != null) {
+      return _buildFilteredPostgresUpdate(setClause, filteredSelection);
+    }
+
+    var query = 'UPDATE "${_table.tableName}" SET $setClause';
+    var where = _buildPredicate();
+    if (where != null) query += ' WHERE $where';
+    return query + _buildReturningClause();
+  }
+
+  String _buildFilteredPostgresUpdate(
+    String setClause,
+    String filteredSelection,
+  ) {
+    var idAlias = '${_table.tableName}.${_table.id.columnName}';
+    var update =
+        'UPDATE "${_table.tableName}" SET $setClause '
+        'WHERE "${_table.id.columnName}" IN '
+        '(SELECT "$idAlias" FROM rows_to_update)';
+
+    if (_returning == Returning.none) {
+      return 'WITH rows_to_update AS ($filteredSelection) $update';
+    }
+
+    var orderBy = _filteredSelectionOrderBy;
+    if (_returning == Returning.id &&
+        orderBy != null &&
+        orderBy.any(
+          (order) =>
+              order.column.table.tableName != _table.tableName ||
+              order.column.columnName != _table.id.columnName,
+        )) {
+      throw const FormatException(
+        'Filtered updates returning only the id can only be ordered by the id '
+        'column.',
+      );
+    }
+    var orderByClause = switch (orderBy) {
+      != null when orderBy.isNotEmpty =>
+        ' ORDER BY '
+            '${orderBy.map((order) => order.toString().replaceAll('"${_table.tableName}".', '')).join(', ')}',
+      _ => '',
+    };
+    return 'WITH rows_to_update AS ($filteredSelection), '
+        'updated AS ($update${_buildReturningClause()}) '
+        'SELECT * FROM updated$orderByClause';
+  }
+
+  String? _buildPredicate() {
+    if (_id != null) {
+      return '"${_table.id.columnName}" = '
+          '${ValueEncoder.instance.convert(_id)}';
+    }
+    if (_ids != null) {
+      var ids = _ids!.map(ValueEncoder.instance.convert).join(', ');
+      return '"${_table.id.columnName}" IN ($ids)';
+    }
+    return _where?.toString();
+  }
+
+  String _buildColumnAssignment(Column column, dynamic value) {
+    var encoded = ValueEncoder.instance.encodeColumnValue(column, value);
+    var cast = _dialect == DatabaseDialect.postgres
+        ? '::${_postgresTypeForColumn(column)}'
+        : '';
+    return '"${column.columnName}" = $encoded$cast';
+  }
+
+  String _buildReturningClause({String? tableAlias}) {
+    return switch (_returning) {
+      Returning.none => '',
+      Returning.id when tableAlias != null =>
+        ' RETURNING "$tableAlias"."${_table.id.columnName}"',
+      Returning.id => ' RETURNING "${_table.id.columnName}"',
+      Returning.all when tableAlias != null =>
+        ' RETURNING ${buildReturningClause(_table, tableAlias: tableAlias)}',
+      Returning.all => ' RETURNING *',
+    };
+  }
+}
+
+String _postgresTypeForColumn(Column column) {
+  if (column is ColumnString) return 'text';
+  if (column is ColumnBool) return 'boolean';
+  if (column is ColumnInt) return 'bigint';
+  if (column is ColumnDouble) return 'double precision';
+  if (column is ColumnDateTime) return 'timestamp without time zone';
+  if (column is ColumnByteData) return 'bytea';
+  if (column is ColumnDuration) return 'bigint';
+  if (column is ColumnUuid) return 'uuid';
+  if (column is ColumnUri) return 'text';
+  if (column is ColumnBigInt) return 'text';
+  if (column is ColumnVector) return 'vector(${column.dimension})';
+  if (column is ColumnHalfVector) return 'halfvec(${column.dimension})';
+  if (column is ColumnSparseVector) return 'sparsevec(${column.dimension})';
+  if (column is ColumnBit) return 'bit(${column.dimension})';
+  if (column is ColumnGeographyPoint) {
+    return 'geography(Point,${Geography.defaultSrid})';
+  }
+  if (column is ColumnGeographyLineString) {
+    return 'geography(LineString,${Geography.defaultSrid})';
+  }
+  if (column is ColumnGeographyPolygon) {
+    return 'geography(Polygon,${Geography.defaultSrid})';
+  }
+  if (column is ColumnGeographyGeometryCollection) {
+    return 'geography(GeometryCollection,${Geography.defaultSrid})';
+  }
+  if (column is ColumnStructured) return 'jsonb';
+  if (column is ColumnSerializable) return 'json';
+  if (column is ColumnEnumExtended) {
+    return switch (column.serialized) {
+      EnumSerialization.byIndex => 'bigint',
+      EnumSerialization.byName => 'text',
+    };
+  }
+  return 'json';
 }
 
 /// Builds a SQL query for a count statement.
