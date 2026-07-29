@@ -296,6 +296,18 @@ class TypeDefinition {
     return model.fileRef();
   }
 
+  /// The name of the shared package in [sharedPackageNames] that declares the
+  /// library [url] points at, or `null` if [url] is not inside any of them.
+  static String? _sharedPackageNameOfUrl(
+    Iterable<String> sharedPackageNames,
+    String? url,
+  ) {
+    if (url == null) return null;
+    return sharedPackageNames
+        .where((packageName) => url.startsWith('package:$packageName/'))
+        .firstOrNull;
+  }
+
   /// Generate a [Reference] from this definition.
   ///
   /// For classes this will be a [TypeReference],
@@ -413,6 +425,15 @@ class TypeDefinition {
               reference,
             ]);
           }
+        } else if (_sharedPackageNameOfUrl(
+              config.sharedModelsSourcePathsParts.keys,
+              url,
+            )
+            case var packageName?) {
+          // endpoint definition references a model from a shared package the
+          // project owns; import it through the package's public library
+          // instead of reaching into its implementation.
+          t.url = 'package:$packageName/$packageName.dart';
         } else if (!serverCode &&
             (url?.startsWith('package:${config.serverPackage}/') ?? false)) {
           // import from the server package
@@ -440,19 +461,20 @@ class TypeDefinition {
                   'package:${module.serverPackage}/',
                   'package:${module.dartClientPackage}/',
                 );
-        } else if (config.modules.any(
-          (m) => m.sharedModelsSourcePathsParts.keys.any(
-            (pkg) => url?.startsWith('package:$pkg/') ?? false,
-          ),
-        )) {
+        } else if (config.modules
+                .where(
+                  (m) =>
+                      _sharedPackageNameOfUrl(
+                        m.sharedModelsSourcePathsParts.keys,
+                        url,
+                      ) !=
+                      null,
+                )
+                .firstOrNull
+            case var module?) {
           // endpoint definition references a model from a module's shared
           // package; import it through the module package that re-exports it
           // instead of reaching into the shared package's implementation.
-          var module = config.modules.firstWhere(
-            (m) => m.sharedModelsSourcePathsParts.keys.any(
-              (pkg) => url?.startsWith('package:$pkg/') ?? false,
-            ),
-          );
           var packageName = serverCode
               ? module.serverPackage
               : module.dartClientPackage;
