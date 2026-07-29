@@ -1,5 +1,4 @@
 import 'package:path/path.dart' as path;
-import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/protocol_definition.dart';
 import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
