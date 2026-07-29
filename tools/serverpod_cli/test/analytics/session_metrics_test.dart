@@ -8,42 +8,18 @@ void main() {
     'then every device category and platform tag is produced.',
     () {
       final cases = <({String? device, String category, String platform})>[
-        (
-          device: null,
-          category: 'default',
-          platform: 'default',
-        ),
+        (device: null, category: 'default', platform: 'default'),
         (device: 'ios', category: 'mobile', platform: 'ios'),
         (device: 'ipad-pro', category: 'mobile', platform: 'ipad'),
-        (
-          device: 'android-emulator',
-          category: 'mobile',
-          platform: 'android',
-        ),
+        (device: 'android-emulator', category: 'mobile', platform: 'android'),
         (device: 'macos', category: 'desktop', platform: 'macos'),
-        (
-          device: 'windows',
-          category: 'desktop',
-          platform: 'windows',
-        ),
+        (device: 'windows', category: 'desktop', platform: 'windows'),
         (device: 'linux', category: 'desktop', platform: 'linux'),
         (device: 'chrome', category: 'web', platform: 'chrome'),
         (device: 'edge', category: 'web', platform: 'edge'),
-        (
-          device: 'web-server',
-          category: 'web',
-          platform: 'web-server',
-        ),
-        (
-          device: 'headless-runner',
-          category: 'headless',
-          platform: 'other',
-        ),
-        (
-          device: 'custom-device',
-          category: 'other',
-          platform: 'other',
-        ),
+        (device: 'web-server', category: 'web', platform: 'web-server'),
+        (device: 'headless-runner', category: 'headless', platform: 'other'),
+        (device: 'custom-device', category: 'other', platform: 'other'),
       ];
 
       final categories = <String>{};

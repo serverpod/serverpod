@@ -4,7 +4,6 @@ import 'package:serverpod_cli/src/analytics/server_config_features.dart';
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:test/test.dart';
 
-import '../../test_util/analytics/generate_analytics_fixture.dart';
 import '../../test_util/analytics_helpers.dart';
 
 void main() {

@@ -2,7 +2,7 @@ import 'package:serverpod_cli/src/generator/analyzers.dart';
 import 'package:serverpod_cli/src/generator/isolated_analyzers.dart';
 import 'package:test/test.dart';
 
-import '../../test_util/analytics/generate_analytics_fixture.dart';
+import '../../test_util/analytics_helpers.dart';
 
 void main() {
   group(

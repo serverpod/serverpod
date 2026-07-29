@@ -3,9 +3,9 @@ import 'package:test/test.dart';
 
 void main() {
   test(
-    'Given a cli.project_created payload, '
-    'when properties are allowlisted, '
-    'then they are included.',
+    'Given allowlisted project-creation analytics properties, '
+    'when building the payload, '
+    'then the properties and anonymous project identifiers are included.',
     () {
       final payload = AnalyticsPayloadBuilder.build(
         event: 'cli.project_created',
@@ -45,39 +45,36 @@ void main() {
   );
 
   test(
-    'Given a cli.project_created payload, '
-    'when method is invalid, '
-    'then it throws.',
+    'Given analytics properties for server and client migrations, '
+    'when building the payload, '
+    'then both migrations are reported as created.',
     () {
-      expect(
-        () => AnalyticsPayloadBuilder.build(
-          event: 'cli.project_created',
-          projectId: '00000000-0000-4000-8000-000000000001',
-          checkoutId: '00000000-0000-4000-8000-000000000002',
-          properties: {
-            'method': 'upgrade',
-            'template': 'server',
-            'with_flutter': true,
-            'with_docker': true,
-            'with_auth': true,
-            'with_database': true,
-            'database_dialect': 'postgres',
-            'with_redis': false,
-            'with_website': false,
-            'with_webapp': false,
-            'ides': <String>[],
-            'force': false,
-          },
-        ),
-        throwsArgumentError,
+      final payload = AnalyticsPayloadBuilder.build(
+        event: 'cli.migration_created',
+        projectId: '00000000-0000-4000-8000-000000000001',
+        checkoutId: '00000000-0000-4000-8000-000000000002',
+        properties: {
+          'server_migration_created': true,
+          'client_migration_created': true,
+          'server_migration_count': 2,
+          'client_migration_count': 1,
+          'days_since_first_migration': 5,
+          'average_interval_days': 2.5,
+          'is_repair_migration': false,
+        },
       );
+
+      expect(payload['server_migration_created'], isTrue);
+      expect(payload['client_migration_created'], isTrue);
+      expect(payload['server_migration_count'], 2);
+      expect(payload['client_migration_count'], 1);
     },
   );
 
   test(
-    'Given a cli.generate payload, '
-    'when one-shot timing is provided, '
-    'then incremental fields are omitted.',
+    'Given generation analytics properties with one-shot timing, '
+    'when building the payload, '
+    'then incremental timing properties are omitted.',
     () {
       final payload = AnalyticsPayloadBuilder.build(
         event: 'cli.generate',
@@ -111,9 +108,39 @@ void main() {
   );
 
   test(
-    'Given a cli.generate payload, '
-    'when a feature is not allowlisted, '
-    'then it throws.',
+    'Given project-creation analytics properties with an invalid method, '
+    'when building the payload, '
+    'then an ArgumentError is thrown.',
+    () {
+      expect(
+        () => AnalyticsPayloadBuilder.build(
+          event: 'cli.project_created',
+          projectId: '00000000-0000-4000-8000-000000000001',
+          checkoutId: '00000000-0000-4000-8000-000000000002',
+          properties: {
+            'method': 'upgrade',
+            'template': 'server',
+            'with_flutter': true,
+            'with_docker': true,
+            'with_auth': true,
+            'with_database': true,
+            'database_dialect': 'postgres',
+            'with_redis': false,
+            'with_website': false,
+            'with_webapp': false,
+            'ides': <String>[],
+            'force': false,
+          },
+        ),
+        throwsArgumentError,
+      );
+    },
+  );
+
+  test(
+    'Given generation analytics properties with an unrecognized feature, '
+    'when building the payload, '
+    'then an ArgumentError is thrown.',
     () {
       expect(
         () => AnalyticsPayloadBuilder.build(
@@ -140,9 +167,9 @@ void main() {
   );
 
   test(
-    'Given a cli.generate payload, '
-    'when a Serverpod module is not allowlisted, '
-    'then it throws.',
+    'Given generation analytics properties with an unrecognized Serverpod module, '
+    'when building the payload, '
+    'then an ArgumentError is thrown.',
     () {
       expect(
         () => AnalyticsPayloadBuilder.build(
@@ -165,33 +192,6 @@ void main() {
         ),
         throwsArgumentError,
       );
-    },
-  );
-
-  test(
-    'Given a cli.migration_created payload, '
-    'when both sides are created, '
-    'then both flags are true.',
-    () {
-      final payload = AnalyticsPayloadBuilder.build(
-        event: 'cli.migration_created',
-        projectId: '00000000-0000-4000-8000-000000000001',
-        checkoutId: '00000000-0000-4000-8000-000000000002',
-        properties: {
-          'server_migration_created': true,
-          'client_migration_created': true,
-          'server_migration_count': 2,
-          'client_migration_count': 1,
-          'days_since_first_migration': 5,
-          'average_interval_days': 2.5,
-          'is_repair_migration': false,
-        },
-      );
-
-      expect(payload['server_migration_created'], isTrue);
-      expect(payload['client_migration_created'], isTrue);
-      expect(payload['server_migration_count'], 2);
-      expect(payload['client_migration_count'], 1);
     },
   );
 }

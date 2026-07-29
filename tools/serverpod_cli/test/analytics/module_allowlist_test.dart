@@ -11,35 +11,44 @@ import '../test_util/builders/module_config_builder.dart';
 /// against real parsed sources in
 /// `test/integration/analytics/generate_feature_analytics_test.dart`.
 void main() {
-  test(
+  group(
     'Given a project depending on official and custom modules, '
-    'when its protocol features are analyzed, '
-    'then only official modules are named while every module is counted.',
+    'when its protocol features are analyzed, ',
     () {
-      final officialModules = officialServerpodModules.toList()..sort();
-      final snapshot = ProtocolFeatureAnalyzer.analyze(
-        protocolDefinition: const ProtocolDefinition(
-          endpoints: [],
-          models: [],
-          futureCalls: [],
-        ),
-        config: GeneratorConfigBuilder().withModules([
-          for (final module in officialModules)
-            ModuleConfigBuilder(module).build(),
-          ModuleConfigBuilder('my_private_module').build(),
-        ]).build(),
-      );
+      late List<String> officialModules;
+      late ProtocolAnalyticsSnapshot snapshot;
 
-      expect(
-        snapshot.serverpodModules,
-        officialModules,
-        reason: 'Custom module names must never be sent.',
-      );
-      expect(
-        snapshot.counts['module_count'],
-        officialModules.length + 1,
-        reason: 'Custom modules still count towards the total.',
-      );
+      setUp(() {
+        officialModules = officialServerpodModules.toList()..sort();
+        snapshot = ProtocolFeatureAnalyzer.analyze(
+          protocolDefinition: const ProtocolDefinition(
+            endpoints: [],
+            models: [],
+            futureCalls: [],
+          ),
+          config: GeneratorConfigBuilder().withModules([
+            for (final module in officialModules)
+              ModuleConfigBuilder(module).build(),
+            ModuleConfigBuilder('my_private_module').build(),
+          ]).build(),
+        );
+      });
+
+      test('then only official modules are named.', () {
+        expect(
+          snapshot.serverpodModules,
+          officialModules,
+          reason: 'Custom module names must never be sent.',
+        );
+      });
+
+      test('then every module is counted.', () {
+        expect(
+          snapshot.counts['module_count'],
+          officialModules.length + 1,
+          reason: 'Custom modules still count towards the total.',
+        );
+      });
     },
   );
 
