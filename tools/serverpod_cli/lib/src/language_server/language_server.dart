@@ -142,16 +142,13 @@ Future<void> runLanguageServer({
       return;
     }
 
+    // Resolves the correct module alias and sub directory for both server and
+    // shared package models.
     project.analyzer.addYamlModel(
-      ModelSource(
-        defaultModuleAlias,
+      ModelHelper.createModelSourceForPath(
+        project.config,
+        params.textDocument.uri.toFilePath(),
         params.textDocument.text,
-        params.textDocument.uri,
-        ModelHelper.extractPathFromConfig(
-          project.config,
-          params.textDocument.uri,
-        ),
-        isSharedModel,
       ),
     );
 
