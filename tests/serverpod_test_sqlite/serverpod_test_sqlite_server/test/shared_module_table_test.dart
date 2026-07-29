@@ -179,6 +179,42 @@ void main() {
           );
         },
       );
+
+      test(
+        'when the SQLite consumer server protocol serializes the table with a model nested in its dynamic field, '
+        'then the nested model survives the round trip under the module prefix.',
+        () {
+          final protocol = sqlite_server.Protocol();
+          final table = module_server.SharedModuleTable(
+            name: 'outer table',
+            data: module_server.SharedModuleTable(
+              name: 'nested table',
+              data: null,
+            ),
+          );
+
+          final serialized =
+              jsonDecode(protocol.encodeWithType(table))
+                  as Map<String, dynamic>;
+          final deserialized =
+              protocol.deserializeByClassName({...serialized})
+                  as module_server.SharedModuleTable;
+
+          expect(
+            serialized['className'],
+            'serverpod_test_shared_module.SharedModuleTable',
+          );
+          expect(deserialized.name, 'outer table');
+          expect(
+            deserialized.data,
+            isA<module_server.SharedModuleTable>().having(
+              (nested) => nested.name,
+              'name',
+              'nested table',
+            ),
+          );
+        },
+      );
     },
   );
 }
