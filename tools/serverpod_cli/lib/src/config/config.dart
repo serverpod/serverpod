@@ -735,6 +735,18 @@ class ModuleConfig implements ModelLoadConfig {
   /// Might be relative.
   final List<String> serverPackageDirectoryPathParts;
 
+  /// The shared packages the module owns, mapping each package name to its
+  /// path parts relative to the module's server package (from the module's
+  /// `shared_packages` config).
+  final Map<String, List<String>> sharedModelsSourcePathsParts;
+
+  /// The path parts pointing at each shared package the module owns, resolved
+  /// against the module's server package directory.
+  List<List<String>> get sharedPackageSourcePathParts => [
+    for (var parts in sharedModelsSourcePathsParts.values)
+      [...serverPackageDirectoryPathParts, ...parts],
+  ];
+
   @override
   List<String> get libSourcePathParts => [
     ...serverPackageDirectoryPathParts,
@@ -775,6 +787,7 @@ class ModuleConfig implements ModelLoadConfig {
     required this.nickname,
     required this.migrationVersions,
     required this.serverPackageDirectoryPathParts,
+    this.sharedModelsSourcePathsParts = const {},
   }) : dartClientPackage = '${name}_client',
        serverPackage = '${name}_server';
 

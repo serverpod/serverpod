@@ -1184,4 +1184,62 @@ fields:
       });
     });
   });
+
+  group('Given a module that owns a shared package with a model,', () {
+    late Directory moduleProject;
+    late Directory sharedPackage;
+    late List<ModelSource> models;
+
+    setUp(() async {
+      moduleProject = Directory(join(testDirectory.path, const Uuid().v4()));
+      moduleProject.createSync(recursive: true);
+      sharedPackage = Directory(join(testDirectory.path, const Uuid().v4()));
+      sharedPackage.createSync(recursive: true);
+
+      var config = GeneratorConfigBuilder()
+          .withServerPackageDirectoryPathParts(testProjectPathParts)
+          .withModules([
+            ModuleConfigBuilder('test_module')
+                .withServerPackageDirectoryPathParts(split(moduleProject.path))
+                .withSharedModelsSourcePathsParts({
+                  'test_module_shared': split(
+                    relative(sharedPackage.path, from: moduleProject.path),
+                  ),
+                })
+                .build(),
+          ])
+          .build();
+
+      var modelFile = File(
+        join(sharedPackage.path, 'lib', 'src', 'models', 'example.spy.yaml'),
+      );
+      modelFile.createSync(recursive: true);
+      modelFile.writeAsStringSync('''
+class: SharedExample
+fields:
+  name: String
+''');
+
+      models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
+    });
+
+    tearDown(() {
+      moduleProject.deleteSync(recursive: true);
+      sharedPackage.deleteSync(recursive: true);
+    });
+
+    test(
+      'when loading the project models, '
+      'then the model from the module shared package is loaded under the module identity.',
+      () {
+        var sharedExamples = models
+            .where((model) => model.yaml.contains('class: SharedExample'))
+            .toList();
+
+        expect(sharedExamples, hasLength(1));
+        expect(sharedExamples.first.moduleAlias, 'test_module');
+        expect(sharedExamples.first.isSharedModel, isFalse);
+      },
+    );
+  });
 }

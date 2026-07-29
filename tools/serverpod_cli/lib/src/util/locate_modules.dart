@@ -128,6 +128,10 @@ List<ModuleConfig> _loadModuleConfigs({
           nickname: nickname,
           migrationVersions: migrationVersions,
           serverPackageDirectoryPathParts: packageSrcRoot.pathSegments,
+          sharedModelsSourcePathsParts: _sharedPackages(
+            packageSrcRoot,
+            moduleInfo,
+          ),
         ),
       );
     } catch (e) {
@@ -141,6 +145,37 @@ List<ModuleConfig> _loadModuleConfigs({
 Map<dynamic, dynamic> loadConfigFile(File file) {
   var yaml = file.readAsStringSync();
   return loadYaml(yaml) as Map;
+}
+
+/// Reads the shared packages a module owns from its config, mapping each
+/// package name to its path parts relative to the module's server package.
+/// Entries that cannot be resolved are skipped; a dependency's own config is
+/// validated when the dependency itself is generated.
+Map<String, List<String>> _sharedPackages(
+  Uri packageSrcRoot,
+  Map<dynamic, dynamic> moduleInfo,
+) {
+  var sharedPackages = moduleInfo['shared_packages'];
+  if (sharedPackages is! YamlList) {
+    return const {};
+  }
+
+  var result = <String, List<String>>{};
+  for (var sharedPath in sharedPackages) {
+    if (sharedPath is! String || path.isAbsolute(sharedPath)) {
+      continue;
+    }
+    try {
+      var pubspecFile = File.fromUri(
+        packageSrcRoot.resolve('$sharedPath/pubspec.yaml'),
+      );
+      var pubspec = parsePubspec(pubspecFile);
+      result[pubspec.name] = path.split(sharedPath);
+    } catch (_) {
+      continue;
+    }
+  }
+  return result;
 }
 
 List<String> findAllMigrationVersionsSync({

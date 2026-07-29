@@ -6,13 +6,15 @@ class ModuleConfigBuilder {
   String _nickname;
   List<String> _migrationVersions;
   List<String> _serverPackageDirectoryPathParts;
+  Map<String, List<String>> _sharedModelsSourcePathsParts;
 
   ModuleConfigBuilder(String name, [String? nickname])
     : _name = name,
       _nickname = nickname ?? name,
       _migrationVersions = [],
       _type = PackageType.module,
-      _serverPackageDirectoryPathParts = [];
+      _serverPackageDirectoryPathParts = [],
+      _sharedModelsSourcePathsParts = {};
 
   ModuleConfigBuilder withType(PackageType type) {
     _type = type;
@@ -41,6 +43,13 @@ class ModuleConfigBuilder {
     return this;
   }
 
+  ModuleConfigBuilder withSharedModelsSourcePathsParts(
+    Map<String, List<String>> sharedModelsSourcePathsParts,
+  ) {
+    _sharedModelsSourcePathsParts = sharedModelsSourcePathsParts;
+    return this;
+  }
+
   ModuleConfig build() {
     return ModuleConfig(
       type: _type,
@@ -48,6 +57,7 @@ class ModuleConfigBuilder {
       nickname: _nickname,
       migrationVersions: _migrationVersions,
       serverPackageDirectoryPathParts: _serverPackageDirectoryPathParts,
+      sharedModelsSourcePathsParts: _sharedModelsSourcePathsParts,
     );
   }
 }
