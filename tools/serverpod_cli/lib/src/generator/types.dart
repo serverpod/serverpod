@@ -440,6 +440,23 @@ class TypeDefinition {
                   'package:${module.serverPackage}/',
                   'package:${module.dartClientPackage}/',
                 );
+        } else if (config.modules.any(
+          (m) => m.sharedModelsSourcePathsParts.keys.any(
+            (pkg) => url?.startsWith('package:$pkg/') ?? false,
+          ),
+        )) {
+          // endpoint definition references a model from a module's shared
+          // package; import it through the module package that re-exports it
+          // instead of reaching into the shared package's implementation.
+          var module = config.modules.firstWhere(
+            (m) => m.sharedModelsSourcePathsParts.keys.any(
+              (pkg) => url?.startsWith('package:$pkg/') ?? false,
+            ),
+          );
+          var packageName = serverCode
+              ? module.serverPackage
+              : module.dartClientPackage;
+          t.url = 'package:$packageName/$packageName.dart';
         } else if (className == 'SerializableModel') {
           t.url = serverpodUrl(serverCode);
         } else if (config.name != 'serverpod' &&
