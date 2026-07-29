@@ -271,4 +271,83 @@ void main() {
       );
     },
   );
+  group(
+    'Given a module protocol with a server-only table in a shared package, '
+    'when generating code,',
+    () {
+      late String serverProtocolSource;
+      late String clientProtocolSource;
+
+      setUpAll(() {
+        final moduleConfig = GeneratorConfigBuilder()
+            .withName(_moduleName)
+            .withPackageType(PackageType.module)
+            .withSharedModelsSourcePathsParts({
+              'example_shared': ['..', 'example_shared'],
+            })
+            .build();
+
+        final protocolDefinition = ProtocolDefinition(
+          endpoints: [],
+          models: [
+            ModelClassDefinitionBuilder()
+                .withClassName('SharedTable')
+                .withTableName('shared_table')
+                .withDatabase(ModelDatabaseDefinition.all)
+                .withServerOnly(true)
+                .withSharedPackageName('example_shared')
+                .build(),
+          ],
+          futureCalls: [],
+        );
+
+        serverProtocolSource = const DartServerCodeGenerator()
+            .generateProtocolCode(
+              protocolDefinition: protocolDefinition,
+              config: moduleConfig,
+            )[path.join('lib', 'src', 'generated', 'protocol.dart')]!;
+        clientProtocolSource =
+            const DartClientCodeGenerator().generateProtocolCode(
+              protocolDefinition: protocolDefinition,
+              config: moduleConfig,
+            )[path.join(
+              '..',
+              '${_moduleName}_client',
+              'lib',
+              'src',
+              'protocol',
+              'protocol.dart',
+            )]!;
+      });
+
+      test(
+        'then the server protocol forwards the shared table metadata.',
+        () {
+          expect(
+            serverProtocolSource,
+            matches(
+              RegExp(
+                r'class Protocol extends _i\d+\.DatabaseSerializationManager',
+              ),
+            ),
+          );
+          expect(serverProtocolSource, contains('getTargetTableDefinitions'));
+        },
+      );
+
+      test(
+        'then the client protocol does not forward the server-only shared table metadata.',
+        () {
+          expect(
+            clientProtocolSource,
+            isNot(contains('DatabaseSerializationManager')),
+          );
+          expect(
+            clientProtocolSource,
+            isNot(contains('getTargetTableDefinitions')),
+          );
+        },
+      );
+    },
+  );
 }
