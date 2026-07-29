@@ -9,6 +9,9 @@ legacyEmail:
   - changePassword:
   - initiatePasswordReset:
   - resetPassword:
+legacyGoogle:
+  - authenticateWithServerAuthCode:
+  - authenticateWithIdToken:
 legacyStatus:
   - isSignedIn:
   - signOutDevice:

@@ -2,6 +2,7 @@ import 'package:serverpod/serverpod.dart';
 
 const _legacyToBridgeEndpoint = <String, String>{
   'serverpod_auth.email': 'serverpod_auth_bridge.legacyEmail',
+  'serverpod_auth.google': 'serverpod_auth_bridge.legacyGoogle',
   'serverpod_auth.status': 'serverpod_auth_bridge.legacyStatus',
   'serverpod_auth.user': 'serverpod_auth_bridge.legacyUser',
 };

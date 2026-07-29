@@ -139,6 +139,38 @@ class EndpointLegacyEmail extends _i1.EndpointRef {
   );
 }
 
+/// Bridge endpoint for legacy Google authentication.
+/// {@category Endpoint}
+class EndpointLegacyGoogle extends _i1.EndpointRef {
+  EndpointLegacyGoogle(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'serverpod_auth_bridge.legacyGoogle';
+
+  /// Google server auth code authentication is currently unsupported.
+  _i2.Future<_i4.LegacyAuthenticationResponse> authenticateWithServerAuthCode(
+    String authenticationCode,
+    String? redirectUri,
+  ) => caller.callServerEndpoint<_i4.LegacyAuthenticationResponse>(
+    'serverpod_auth_bridge.legacyGoogle',
+    'authenticateWithServerAuthCode',
+    {
+      'authenticationCode': authenticationCode,
+      'redirectUri': redirectUri,
+    },
+  );
+
+  /// Authenticates a user with a Google ID token and returns a legacy-format
+  /// response.
+  _i2.Future<_i4.LegacyAuthenticationResponse> authenticateWithIdToken(
+    String idToken,
+  ) => caller.callServerEndpoint<_i4.LegacyAuthenticationResponse>(
+    'serverpod_auth_bridge.legacyGoogle',
+    'authenticateWithIdToken',
+    {'idToken': idToken},
+  );
+}
+
 /// Proxy endpoint for legacy session status operations (sign-in check,
 /// sign-out, user info retrieval).
 /// {@category Endpoint}
@@ -250,6 +282,7 @@ class Caller extends _i1.ModuleEndpointCaller {
   Caller(_i1.ServerpodClientShared client) : super(client) {
     legacyAdmin = EndpointLegacyAdmin(this);
     legacyEmail = EndpointLegacyEmail(this);
+    legacyGoogle = EndpointLegacyGoogle(this);
     legacyStatus = EndpointLegacyStatus(this);
     legacyUser = EndpointLegacyUser(this);
     sessionMigration = EndpointSessionMigration(this);
@@ -258,6 +291,8 @@ class Caller extends _i1.ModuleEndpointCaller {
   late final EndpointLegacyAdmin legacyAdmin;
 
   late final EndpointLegacyEmail legacyEmail;
+
+  late final EndpointLegacyGoogle legacyGoogle;
 
   late final EndpointLegacyStatus legacyStatus;
 
@@ -269,6 +304,7 @@ class Caller extends _i1.ModuleEndpointCaller {
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
     'serverpod_auth_bridge.legacyAdmin': legacyAdmin,
     'serverpod_auth_bridge.legacyEmail': legacyEmail,
+    'serverpod_auth_bridge.legacyGoogle': legacyGoogle,
     'serverpod_auth_bridge.legacyStatus': legacyStatus,
     'serverpod_auth_bridge.legacyUser': legacyUser,
     'serverpod_auth_bridge.sessionMigration': sessionMigration,

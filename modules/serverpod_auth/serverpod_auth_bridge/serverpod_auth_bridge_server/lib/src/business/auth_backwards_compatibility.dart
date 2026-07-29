@@ -220,31 +220,100 @@ abstract class AuthBackwardsCompatibility {
           accessToken: accessToken,
         );
 
-    final legacyUserIdentifier = await LegacyExternalUserIdentifier.db
-        .findFirstRow(
-          session,
-          where: (final t) =>
-              t.userIdentifier.equals(accountDetails.userIdentifier),
-          transaction: transaction,
-        );
-
-    if (legacyUserIdentifier != null) {
-      await DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
-        final transaction,
-      ) async {
-        await AuthServices.instance.googleIdp.admin.linkGoogleAuthentication(
-          session,
-          authUserId: legacyUserIdentifier.authUserId,
-          accountDetails: accountDetails,
-          transaction: transaction,
-        );
-
-        await LegacyExternalUserIdentifier.db.deleteRow(
-          session,
-          legacyUserIdentifier,
-          transaction: transaction,
-        );
-      });
-    }
+    await importGoogleAccountFromDetails(
+      session,
+      accountDetails: accountDetails,
+      transaction: transaction,
+    );
   }
+
+  /// Imports an existing Google account if a legacy external identifier can be
+  /// matched to [accountDetails].
+  ///
+  /// Else it does nothing.
+  ///
+  /// First it matches the imported legacy identifier directly against Google's
+  /// user identifier (`sub`). If no match is found, it falls back to a
+  /// case-insensitive email match, which supports older legacy Google records
+  /// where the email was stored as the identifier.
+  static Future<void> importGoogleAccountFromDetails(
+    final Session session, {
+    required final GoogleAccountDetails accountDetails,
+    final Transaction? transaction,
+  }) async {
+    final legacyIdentifier = await _findLegacyGoogleIdentifier(
+      session,
+      accountDetails: accountDetails,
+      transaction: transaction,
+    );
+    if (legacyIdentifier == null) {
+      return;
+    }
+
+    await DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
+      final transaction,
+    ) async {
+      await AuthServices.instance.googleIdp.admin.linkGoogleAuthentication(
+        session,
+        authUserId: legacyIdentifier.authUserId,
+        accountDetails: accountDetails,
+        transaction: transaction,
+      );
+
+      await clearLegacyExternalUserIdentifier(
+        session,
+        userIdentifier: legacyIdentifier.userIdentifier,
+        transaction: transaction,
+      );
+    });
+  }
+}
+
+Future<({UuidValue authUserId, String userIdentifier})?>
+_findLegacyGoogleIdentifier(
+  final Session session, {
+  required final GoogleAccountDetails accountDetails,
+  required final Transaction? transaction,
+}) async {
+  final byGoogleUserIdentifier = await LegacyExternalUserIdentifier.db
+      .findFirstRow(
+        session,
+        where: (final t) =>
+            t.userIdentifier.equals(accountDetails.userIdentifier),
+        transaction: transaction,
+      );
+  if (byGoogleUserIdentifier != null) {
+    return (
+      authUserId: byGoogleUserIdentifier.authUserId,
+      userIdentifier: byGoogleUserIdentifier.userIdentifier,
+    );
+  }
+
+  final byEmailRows = await session.db.unsafeQuery(
+    'SELECT "authUserId", "userIdentifier" '
+    'FROM serverpod_auth_bridge_external_user_id '
+    'WHERE lower("userIdentifier") = lower(\$1) '
+    'LIMIT 1',
+    parameters: QueryParameters.positional([accountDetails.email]),
+    transaction: transaction,
+  );
+  if (byEmailRows.isEmpty) {
+    return null;
+  }
+
+  final byEmailRow = byEmailRows.first;
+  final authUserIdRaw = byEmailRow[0];
+  final authUserId = switch (authUserIdRaw) {
+    final UuidValue value => value,
+    final String value => UuidValue.withValidation(value),
+    _ => throw StateError(
+      'Expected "authUserId" to be UuidValue or String, got: '
+      '${authUserIdRaw.runtimeType}',
+    ),
+  };
+
+  return (
+    authUserId: authUserId,
+    userIdentifier: byEmailRow[1] as String,
+  );
 }
