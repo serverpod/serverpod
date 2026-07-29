@@ -64,10 +64,12 @@ import 'package:serverpod_test_server/src/generated/future_calls_generated_model
     as _i34;
 import 'package:serverpod_test_server/src/generated/future_calls_generated_models/test_generated_call_bye_model.dart'
     as _i35;
-import 'package:serverpod_test_server/src/generated/my_trigger_type.dart'
+import 'package:serverpod_test_server/src/generated/future_calls_generated_models/test_generated_call_invoke_model.dart'
     as _i36;
-import 'package:serverpod_test_server/src/generated/future_calls_generated_models/test_generated_call_execute_with_trigger_model.dart'
+import 'package:serverpod_test_server/src/generated/my_trigger_type.dart'
     as _i37;
+import 'package:serverpod_test_server/src/generated/future_calls_generated_models/test_generated_call_execute_with_trigger_model.dart'
+    as _i38;
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -5051,7 +5053,7 @@ class _TestFutureCallsEndpoint {
 
   _i4.Future<void> makeFutureCall(
     _i1.TestSessionBuilder sessionBuilder,
-    _i11.SimpleData data,
+    _i11.SimpleData? data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -5064,6 +5066,37 @@ class _TestFutureCallsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testFutureCalls',
           methodName: 'makeFutureCall',
+          parameters: _i1.testObjectToJson({'data': data}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i4.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i4.Future<void> makeFutureCallThatThrows(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i11.SimpleData? data,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'testFutureCalls',
+            method: 'makeFutureCallThatThrows',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'testFutureCalls',
+          methodName: 'makeFutureCallThatThrows',
           parameters: _i1.testObjectToJson({'data': data}),
           serializationManager: _serializationManager,
         );
@@ -15632,7 +15665,7 @@ class _MyFeatureEndpoint {
 class _TestCallFutureCall {
   Future<void> run(
     _i1.TestSessionBuilder sessionBuilder,
-    _i11.SimpleData data,
+    _i11.SimpleData? data,
   ) async {
     var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
         .internalBuild();
@@ -15650,7 +15683,7 @@ class _TestCallFutureCall {
 class _TestExceptionCallFutureCall {
   Future<void> run(
     _i1.TestSessionBuilder sessionBuilder,
-    _i11.SimpleData data,
+    _i11.SimpleData? data,
   ) async {
     var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
         .internalBuild();
@@ -15733,12 +15766,29 @@ class _TestGeneratedCallFutureCall {
     }
   }
 
+  Future<void> invoke(
+    _i1.TestSessionBuilder sessionBuilder,
+    String name,
+  ) async {
+    var object = _i36.TestGeneratedCallInvokeModel(name: name);
+    var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
+        .internalBuild();
+    try {
+      await _i33.TestGeneratedCallInvokeFutureCall().invoke(
+        _localUniqueSession,
+        object,
+      );
+    } finally {
+      await _localUniqueSession.close();
+    }
+  }
+
   Future<void> executeWithTrigger(
     _i1.TestSessionBuilder sessionBuilder,
     String entityId, {
-    required _i36.MyTriggerType triggerType,
+    required _i37.MyTriggerType triggerType,
   }) async {
-    var object = _i37.TestGeneratedCallExecuteWithTriggerModel(
+    var object = _i38.TestGeneratedCallExecuteWithTriggerModel(
       entityId: entityId,
       triggerType: triggerType,
     );

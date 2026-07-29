@@ -219,6 +219,9 @@ extension on ClassElement {
   /// are generated from the spec classes and we must not generate code for
   /// them.
   bool get isExecutableFutureCall {
+    // The name check covers generating the serverpod package itself, where
+    // the `InvokableFutureCall` declaration would otherwise be classified as
+    // an abstract future call spec.
     if (name == 'InvokableFutureCall') return true;
     return allSupertypes.any(
       (type) => type.element.name == 'InvokableFutureCall',

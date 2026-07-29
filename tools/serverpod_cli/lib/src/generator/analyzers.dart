@@ -12,6 +12,7 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 import '../commands/generate.dart';
 import 'code_generation_collector.dart';
+import 'dart/server_code_generator.dart';
 import 'dart/temp_protocol_generator.dart';
 import 'serverpod_code_generator.dart';
 
@@ -160,6 +161,8 @@ class Analyzers {
     var stubOverlayActive = false;
     var wroteStubToDisk = false;
     var wroteFullProtocol = false;
+    // Analyzer paths where the future calls file is currently shadowed.
+    final futureCallsOverlayPaths = <String>[];
     final protocolPath = p.joinAll(config.generatedServerProtocolFilePathParts);
     // The exact path the analyzer resolves protocol.dart to; overlays must
     // match it (same normalization as [refreshAnalysisContext]).
@@ -272,12 +275,14 @@ class Analyzers {
       success &= !futureCallsAnalyzerCollector.hasSevereErrors;
       futureCallsAnalyzerCollector.printErrors();
 
-      // Generate the future calls file before analyzing endpoints, so that
-      // endpoints importing the generated future calls file can resolve it
-      // on a clean tree. Future call generation does not depend on endpoints.
-      log.debug('Generating the future calls.');
-      var generatedFutureCallFiles =
-          await ServerpodCodeGenerator.generateFutureCalls(
+      // Make the future calls file resolvable before analyzing endpoints, so
+      // that endpoints importing the generated future calls file can resolve
+      // it on a clean tree. Future call generation does not depend on
+      // endpoints. Like the protocol stub above, the content is shadowed in
+      // the analyzer only; the file on disk is written once, by
+      // generateProtocolDefinition below.
+      final futureCallsCode = const DartServerCodeGenerator()
+          .generateFutureCallsCode(
             protocolDefinition: ProtocolDefinition(
               endpoints: const [],
               models: allModels,
@@ -285,7 +290,26 @@ class Analyzers {
             ),
             config: config,
           );
-      changedFiles.addAll(generatedFutureCallFiles);
+      for (final entry in futureCallsCode.entries) {
+        final overlay = _overlay;
+        if (overlay != null) {
+          final analyzerPath = p.normalize(File(entry.key).absolute.path);
+          overlay.setOverlay(
+            analyzerPath,
+            content: entry.value,
+            modificationStamp: DateTime.now().microsecondsSinceEpoch,
+          );
+          futureCallsOverlayPaths.add(analyzerPath);
+        } else {
+          // No overlay provider backing the analysis context; fall back to
+          // writing the file to disk. It is overwritten (with identical
+          // content) by generateProtocolDefinition below.
+          final file = File(entry.key);
+          await file.create(recursive: true);
+          await file.writeAsString(entry.value, flush: true);
+        }
+        changedFiles.add(entry.key);
+      }
 
       log.debug('Analyzing the endpoints.');
       final endpointAnalyzerCollector = CodeGenerationCollector();
@@ -314,11 +338,21 @@ class Analyzers {
 
       // The full protocol is on disk now (or was already up to date); retire
       // the stub overlay so analysis resolves protocol.dart to the real
-      // content from here on.
+      // content from here on. Same for the future calls overlay.
       if (stubOverlayActive) {
         _overlay!.removeOverlay(analyzerProtocolPath);
         stubOverlayActive = false;
         await refreshAnalysisContext(_futureCalls.collection, [protocolPath]);
+      }
+      if (futureCallsOverlayPaths.isNotEmpty) {
+        for (final path in futureCallsOverlayPaths) {
+          _overlay!.removeOverlay(path);
+        }
+        await refreshAnalysisContext(
+          _futureCalls.collection,
+          futureCallsOverlayPaths,
+        );
+        futureCallsOverlayPaths.clear();
       }
 
       log.debug('Cleaning old files.');
@@ -364,6 +398,15 @@ class Analyzers {
       if (stubOverlayActive) {
         _overlay!.removeOverlay(analyzerProtocolPath);
         await refreshAnalysisContext(_futureCalls.collection, [protocolPath]);
+      }
+      if (futureCallsOverlayPaths.isNotEmpty) {
+        for (final path in futureCallsOverlayPaths) {
+          _overlay!.removeOverlay(path);
+        }
+        await refreshAnalysisContext(
+          _futureCalls.collection,
+          futureCallsOverlayPaths,
+        );
       }
       if (wroteStubToDisk && !wroteFullProtocol && protocolBackup != null) {
         await File(protocolPath).writeAsString(protocolBackup, flush: true);

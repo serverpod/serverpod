@@ -19,6 +19,12 @@ class TestGeneratedCall extends FutureCall {
     session.log('Sample future call with only session parameter');
   }
 
+  /// A future call method named `invoke`, which is not reserved and generates
+  /// a wrapper like any other method.
+  Future<void> invoke(Session session, String name) async {
+    session.log('Invoked $name');
+  }
+
   /// Future call with enum parameter.
   Future<void> executeWithTrigger(
     Session session,

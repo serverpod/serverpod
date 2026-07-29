@@ -8,7 +8,6 @@ import 'package:serverpod/serverpod.dart';
 
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_server/src/generated/endpoints.dart' as e;
-import 'package:serverpod_test_server/src/generated/future_calls.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart' as p;
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 
@@ -120,6 +119,7 @@ void main() {
   group(
     'Given a serverpod server with future calls and a diagnostic event handler',
     () {
+      late Client client;
       var exceptionHandler = TestExceptionHandler();
       late Serverpod pod;
 
@@ -131,6 +131,7 @@ void main() {
           ),
         );
         await pod.startWithDatabase();
+        client = Client(pod.apiUrl);
       });
 
       tearDown(() async {
@@ -139,13 +140,12 @@ void main() {
       });
 
       test(
-        'when a scheduled future call throws '
+        'when a client calls an endpoint method that schedules a future call that throws '
         'then the diagnostic event handler gets called',
         () async {
-          await pod.futureCalls
-              .callWithDelay(const Duration(seconds: 1))
-              .testExceptionCall
-              .run(p.SimpleData(num: 42));
+          await client.testFutureCalls.makeFutureCallThatThrows(
+            SimpleData(num: 42),
+          );
 
           final record = await exceptionHandler.events.first.timeout(
             const Duration(seconds: 6),

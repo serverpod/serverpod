@@ -18,14 +18,16 @@ import 'future_calls_generated_models/test_generated_call_hello_model.dart'
     as _i4;
 import 'future_calls_generated_models/test_generated_call_bye_model.dart'
     as _i5;
-import 'package:serverpod_test_server/src/generated/my_trigger_type.dart'
+import 'future_calls_generated_models/test_generated_call_invoke_model.dart'
     as _i6;
-import 'future_calls_generated_models/test_generated_call_execute_with_trigger_model.dart'
+import 'package:serverpod_test_server/src/generated/my_trigger_type.dart'
     as _i7;
-import 'dart:async' as _i8;
-import '../futureCalls/test_call.dart' as _i9;
-import '../futureCalls/test_exception_call.dart' as _i10;
-import '../futureCalls/test_generated_call.dart' as _i11;
+import 'future_calls_generated_models/test_generated_call_execute_with_trigger_model.dart'
+    as _i8;
+import 'dart:async' as _i9;
+import '../futureCalls/test_call.dart' as _i10;
+import '../futureCalls/test_exception_call.dart' as _i11;
+import '../futureCalls/test_generated_call.dart' as _i12;
 
 /// Invokes a future call.
 typedef _InvokeFutureCall =
@@ -76,6 +78,7 @@ class FutureCalls extends _i1.FutureCallDispatch<_FutureCallRef> {
       'TestGeneratedCallLogDataFutureCall':
           TestGeneratedCallLogDataFutureCall(),
       'TestGeneratedCallDoTaskFutureCall': TestGeneratedCallDoTaskFutureCall(),
+      'TestGeneratedCallInvokeFutureCall': TestGeneratedCallInvokeFutureCall(),
       'TestGeneratedCallExecuteWithTriggerFutureCall':
           TestGeneratedCallExecuteWithTriggerFutureCall(),
     };
@@ -214,7 +217,7 @@ class _TestCallFutureCallDispatcher {
 
   final _InvokeFutureCall _invokeFutureCall;
 
-  Future<void> run(_i3.SimpleData data) {
+  Future<void> run(_i3.SimpleData? data) {
     return _invokeFutureCall(
       'TestCallRunFutureCall',
       data,
@@ -227,7 +230,7 @@ class _TestExceptionCallFutureCallDispatcher {
 
   final _InvokeFutureCall _invokeFutureCall;
 
-  Future<void> run(_i3.SimpleData data) {
+  Future<void> run(_i3.SimpleData? data) {
     return _invokeFutureCall(
       'TestExceptionCallRunFutureCall',
       data,
@@ -276,11 +279,19 @@ class _TestGeneratedCallFutureCallDispatcher {
     );
   }
 
+  Future<void> invoke(String name) {
+    var object = _i6.TestGeneratedCallInvokeModel(name: name);
+    return _invokeFutureCall(
+      'TestGeneratedCallInvokeFutureCall',
+      object,
+    );
+  }
+
   Future<void> executeWithTrigger(
     String entityId, {
-    required _i6.MyTriggerType triggerType,
+    required _i7.MyTriggerType triggerType,
   }) {
-    var object = _i7.TestGeneratedCallExecuteWithTriggerModel(
+    var object = _i8.TestGeneratedCallExecuteWithTriggerModel(
       entityId: entityId,
       triggerType: triggerType,
     );
@@ -294,13 +305,13 @@ class _TestGeneratedCallFutureCallDispatcher {
 class TestCallRunFutureCall extends _i1.FutureCall<_i3.SimpleData>
     implements _i1.InvokableFutureCall<_i3.SimpleData> {
   @override
-  _i8.Future<void> invoke(
+  _i9.Future<void> invoke(
     _i1.Session session,
     _i3.SimpleData? data,
   ) async {
-    await _i9.TestCall().run(
+    await _i10.TestCall().run(
       session,
-      data!,
+      data,
     );
   }
 }
@@ -308,13 +319,13 @@ class TestCallRunFutureCall extends _i1.FutureCall<_i3.SimpleData>
 class TestExceptionCallRunFutureCall extends _i1.FutureCall<_i3.SimpleData>
     implements _i1.InvokableFutureCall<_i3.SimpleData> {
   @override
-  _i8.Future<void> invoke(
+  _i9.Future<void> invoke(
     _i1.Session session,
     _i3.SimpleData? data,
   ) async {
-    await _i10.TestExceptionCall().run(
+    await _i11.TestExceptionCall().run(
       session,
-      data!,
+      data,
     );
   }
 }
@@ -323,12 +334,12 @@ class TestGeneratedCallHelloFutureCall
     extends _i1.FutureCall<_i4.TestGeneratedCallHelloModel>
     implements _i1.InvokableFutureCall<_i4.TestGeneratedCallHelloModel> {
   @override
-  _i8.Future<void> invoke(
+  _i9.Future<void> invoke(
     _i1.Session session,
     _i4.TestGeneratedCallHelloModel? object,
   ) async {
     if (object != null) {
-      await _i11.TestGeneratedCall().hello(
+      await _i12.TestGeneratedCall().hello(
         session,
         object.name,
       );
@@ -340,12 +351,12 @@ class TestGeneratedCallByeFutureCall
     extends _i1.FutureCall<_i5.TestGeneratedCallByeModel>
     implements _i1.InvokableFutureCall<_i5.TestGeneratedCallByeModel> {
   @override
-  _i8.Future<void> invoke(
+  _i9.Future<void> invoke(
     _i1.Session session,
     _i5.TestGeneratedCallByeModel? object,
   ) async {
     if (object != null) {
-      await _i11.TestGeneratedCall().bye(
+      await _i12.TestGeneratedCall().bye(
         session,
         object.name,
         code: object.code,
@@ -358,11 +369,11 @@ class TestGeneratedCallByeFutureCall
 class TestGeneratedCallLogDataFutureCall extends _i1.FutureCall<_i3.SimpleData>
     implements _i1.InvokableFutureCall<_i3.SimpleData> {
   @override
-  _i8.Future<void> invoke(
+  _i9.Future<void> invoke(
     _i1.Session session,
     _i3.SimpleData? data,
   ) async {
-    await _i11.TestGeneratedCall().logData(
+    await _i12.TestGeneratedCall().logData(
       session,
       data!,
     );
@@ -372,26 +383,45 @@ class TestGeneratedCallLogDataFutureCall extends _i1.FutureCall<_i3.SimpleData>
 class TestGeneratedCallDoTaskFutureCall extends _i1.FutureCall
     implements _i1.InvokableFutureCall {
   @override
-  _i8.Future<void> invoke(
+  _i9.Future<void> invoke(
     _i1.Session session,
     _i1.SerializableModel? object,
   ) async {
-    await _i11.TestGeneratedCall().doTask(session);
+    await _i12.TestGeneratedCall().doTask(session);
+  }
+}
+
+/// A future call method named `invoke`, which is not reserved and generates
+/// a wrapper like any other method.
+class TestGeneratedCallInvokeFutureCall
+    extends _i1.FutureCall<_i6.TestGeneratedCallInvokeModel>
+    implements _i1.InvokableFutureCall<_i6.TestGeneratedCallInvokeModel> {
+  @override
+  _i9.Future<void> invoke(
+    _i1.Session session,
+    _i6.TestGeneratedCallInvokeModel? object,
+  ) async {
+    if (object != null) {
+      await _i12.TestGeneratedCall().invoke(
+        session,
+        object.name,
+      );
+    }
   }
 }
 
 /// Future call with enum parameter.
 class TestGeneratedCallExecuteWithTriggerFutureCall
-    extends _i1.FutureCall<_i7.TestGeneratedCallExecuteWithTriggerModel>
+    extends _i1.FutureCall<_i8.TestGeneratedCallExecuteWithTriggerModel>
     implements
-        _i1.InvokableFutureCall<_i7.TestGeneratedCallExecuteWithTriggerModel> {
+        _i1.InvokableFutureCall<_i8.TestGeneratedCallExecuteWithTriggerModel> {
   @override
-  _i8.Future<void> invoke(
+  _i9.Future<void> invoke(
     _i1.Session session,
-    _i7.TestGeneratedCallExecuteWithTriggerModel? object,
+    _i8.TestGeneratedCallExecuteWithTriggerModel? object,
   ) async {
     if (object != null) {
-      await _i11.TestGeneratedCall().executeWithTrigger(
+      await _i12.TestGeneratedCall().executeWithTrigger(
         session,
         object.entityId,
         triggerType: object.triggerType,
