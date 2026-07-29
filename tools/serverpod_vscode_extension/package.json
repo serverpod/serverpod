@@ -18,7 +18,7 @@
   ],
   "activationEvents": [
     "onLanguage:yaml",
-    "activationEvents:serverpod"
+    "onLanguage:serverpod"
   ],
   "pricing": "Free",
   "homepage": "https://serverpod.dev",
