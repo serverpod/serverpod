@@ -200,6 +200,7 @@ jobs:
           - tests/serverpod_test_module/serverpod_test_module_server
           - tests/serverpod_test_nonvector/serverpod_test_nonvector_server
           - tests/serverpod_test_server
+          - tests/serverpod_test_shared_module/serverpod_test_shared_module_server
           - tests/serverpod_test_sqlite/serverpod_test_sqlite_server
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
