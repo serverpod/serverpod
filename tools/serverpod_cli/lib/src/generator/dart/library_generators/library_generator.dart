@@ -882,7 +882,19 @@ return deserializeByClassName(value);
                 ),
             ),
           ])
-          ..body = const Code('_hostProtocols.add(protocol);'),
+          ..body = Block.of([
+            const Code('_hostProtocols.add(protocol);'),
+            // A module forwards host registrations to the shared packages it
+            // owns, so that dynamic fields on the shared package's models can
+            // resolve types owned by the host project.
+            if (!sharedPackage && config.type == PackageType.module)
+              for (var packageName in config.sharedModelsSourcePathsParts.keys)
+                Code.scope(
+                  (a) =>
+                      '${a(refer('Protocol', 'package:$packageName/$packageName.dart'))}()'
+                      '.registerHostProtocol(projectName, protocol);',
+                ),
+          ]),
       ),
     ];
   }

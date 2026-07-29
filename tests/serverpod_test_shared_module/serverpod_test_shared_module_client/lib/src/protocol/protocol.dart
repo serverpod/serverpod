@@ -40,6 +40,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
     _i3.SerializationManager protocol,
   ) {
     _hostProtocols.add(protocol);
+    _i2.Protocol().registerHostProtocol(projectName, protocol);
   }
 
   static String? getClassNameFromObjectJson(dynamic data) {

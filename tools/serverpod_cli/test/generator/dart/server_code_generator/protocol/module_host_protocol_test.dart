@@ -253,6 +253,22 @@ void main() {
           expect(clientProtocolSource, contains('getTargetTableDefinitions'));
         },
       );
+
+      test(
+        'then the server and client protocols forward host registrations to '
+        'the shared package.',
+        () {
+          for (final protocolSource in [
+            serverProtocolSource,
+            clientProtocolSource,
+          ]) {
+            expect(
+              protocolSource,
+              contains('.registerHostProtocol(projectName, protocol);'),
+            );
+          }
+        },
+      );
     },
   );
 }
