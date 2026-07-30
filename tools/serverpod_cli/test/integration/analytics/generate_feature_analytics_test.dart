@@ -97,6 +97,7 @@ void main() {
           expect(featureCounts['unmanaged_migration'], 1);
           expect(featureCounts['server_only_field'], 2);
           expect(featureCounts['tail_field'], 1);
+          expect(featureCounts['dynamic_field'], 2);
           expect(featureCounts['vector_field'], 1);
           expect(featureCounts['geography_field'], 1);
           expect(

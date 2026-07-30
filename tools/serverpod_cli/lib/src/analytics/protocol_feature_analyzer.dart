@@ -65,6 +65,7 @@ const protocolFeatureTags = <String>{
   // Fields.
   'server_only_field',
   'tail_field',
+  'dynamic_field',
   'vector_field',
   'geography_field',
   // Relations.
@@ -277,6 +278,8 @@ class ProtocolFeatureAnalyzer {
       if (field.uniquePerFieldNames?.isNotEmpty ?? false) {
         tally.count('unique_per_index');
       }
+
+      if (field.type.className == 'dynamic') tally.count('dynamic_field');
       if (field.type.isVectorType) tally.count('vector_field');
       if (field.type.isGeographyType) tally.count('geography_field');
 

@@ -175,6 +175,7 @@ class: Reading
 immutable: true
 fields:
   value: double
+  metadata: dynamic
 ''');
 
   _model(projectDir, 'audit', '''
@@ -203,6 +204,7 @@ exception: NotFoundException
 sealed: true
 fields:
   message: String
+  details: dynamic
 ''');
 
   _model(projectDir, 'missing_exception', '''
