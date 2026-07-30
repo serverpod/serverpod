@@ -15,5 +15,5 @@ if /I "%~1"=="test" goto run_test
 exit /b %ERRORLEVEL%
 
 :run_test
-"%SERVERPOD_REAL_DART%" "%SERVERPOD_RETRY_RUNNER%" --attempts 3 --retry-exit-codes 65 --timeout-seconds 0 -- "%SERVERPOD_REAL_DART%" %*
+"%SERVERPOD_REAL_DART%" "%SERVERPOD_RETRY_RUNNER%" --attempts 3 --retry-exit-codes 65,255 --timeout-seconds 0 -- "%SERVERPOD_REAL_DART%" %*
 exit /b %ERRORLEVEL%

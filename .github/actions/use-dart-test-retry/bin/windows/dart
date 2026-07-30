@@ -12,6 +12,6 @@ fi
 
 exec "$SERVERPOD_REAL_DART" "$SERVERPOD_RETRY_RUNNER" \
   --attempts 3 \
-  --retry-exit-codes 65 \
+  --retry-exit-codes 65,255 \
   --timeout-seconds 0 \
   -- "$SERVERPOD_REAL_DART" "$@"
