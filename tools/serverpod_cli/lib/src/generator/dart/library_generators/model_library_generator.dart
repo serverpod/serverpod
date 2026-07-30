@@ -1500,14 +1500,6 @@ class SerializableModelLibraryGenerator {
           ),
           Parameter(
             (p) => p
-              ..name = 'orderDescending'
-              ..annotations.add(deprecatedOrderDescendingAnnotation())
-              ..named = true
-              ..defaultTo = const Code('false')
-              ..type = refer('bool'),
-          ),
-          Parameter(
-            (p) => p
               ..name = 'orderByList'
               ..named = true
               ..type = typeOrderByListBuilder(className, serverCode),
@@ -1527,11 +1519,6 @@ class SerializableModelLibraryGenerator {
               'offset': refer('offset'),
               'orderBy': refer('orderBy').nullSafeProperty('call').call(
                 [refer(className).property('t')],
-              ),
-              'orderDescending': const CodeExpression(
-                Code(
-                  '// ignore: deprecated_member_use_from_same_package\norderDescending',
-                ),
               ),
               'orderByList': refer('orderByList').nullSafeProperty('call').call(
                 [refer(className).property('t')],
@@ -3082,13 +3069,6 @@ class SerializableModelLibraryGenerator {
         ),
         Parameter(
           (p) => p
-            ..name = 'orderDescending'
-            ..annotations.add(deprecatedOrderDescendingAnnotation())
-            ..toSuper = true
-            ..named = true,
-        ),
-        Parameter(
-          (p) => p
             ..name = 'orderByList'
             ..toSuper = true
             ..named = true,
@@ -3518,18 +3498,15 @@ class SerializableModelLibraryGenerator {
 
     library.name = 'protocol';
 
-    if (serverCode) {
-      library.directives.add(
-        Directive.import(
-          'package:serverpod_serialization/serverpod_serialization.dart',
-        ),
-      );
-    }
+    library.directives.add(
+      Directive.import(
+        'package:serverpod_serialization/serverpod_serialization.dart',
+      ),
+    );
 
     // exports
     library.directives.addAll([
       for (var classInfo in models) Directive.export(classInfo.fileRef()),
-      if (!serverCode) Directive.export('client.dart'),
     ]);
 
     library.body.add(_buildTemporaryProtocolStubClass());

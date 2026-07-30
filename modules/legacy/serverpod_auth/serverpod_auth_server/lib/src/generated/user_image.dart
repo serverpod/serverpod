@@ -97,8 +97,6 @@ abstract class UserImage
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UserImageTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UserImageTable>? orderByList,
     UserImageInclude? include,
   }) {
@@ -107,8 +105,6 @@ abstract class UserImage
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UserImage.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(UserImage.t),
       include: include,
     );
@@ -227,8 +223,6 @@ class UserImageIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -273,8 +267,6 @@ class UserImageRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UserImageTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UserImageTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -284,8 +276,6 @@ class UserImageRepository {
       where: where?.call(UserImage.t),
       orderBy: orderBy?.call(UserImage.t),
       orderByList: orderByList?.call(UserImage.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -316,8 +306,6 @@ class UserImageRepository {
     _i1.WhereExpressionBuilder<UserImageTable>? where,
     int? offset,
     _i1.OrderByBuilder<UserImageTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UserImageTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -327,8 +315,6 @@ class UserImageRepository {
       where: where?.call(UserImage.t),
       orderBy: orderBy?.call(UserImage.t),
       orderByList: orderByList?.call(UserImage.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -533,8 +519,6 @@ class UserImageRepository {
     int? offset,
     _i1.OrderByBuilder<UserImageTable>? orderBy,
     _i1.OrderByListBuilder<UserImageTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -545,8 +529,6 @@ class UserImageRepository {
       offset: offset,
       orderBy: orderBy?.call(UserImage.t),
       orderByList: orderByList?.call(UserImage.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -567,8 +549,6 @@ class UserImageRepository {
     _i1.DatabaseSession session,
     List<UserImage> rows, {
     _i1.OrderByBuilder<UserImageTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UserImageTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -577,8 +557,6 @@ class UserImageRepository {
       rows,
       orderBy: orderBy?.call(UserImage.t),
       orderByList: orderByList?.call(UserImage.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -608,8 +586,6 @@ class UserImageRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UserImageTable> where,
     _i1.OrderByBuilder<UserImageTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UserImageTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -618,8 +594,6 @@ class UserImageRepository {
       where: where(UserImage.t),
       orderBy: orderBy?.call(UserImage.t),
       orderByList: orderByList?.call(UserImage.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

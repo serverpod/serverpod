@@ -8,11 +8,12 @@ sealed class Transport {
 
 /// Connection over a Unix Domain Socket inside the project's data directory.
 ///
-/// Default. Authentication is `trust` - the project directory already gates
-/// filesystem access to the socket; a 0700 socket adds nothing. The socket
-/// directory is `<dataDir>/../run`, so PG can bind via the relative path
-/// `../run` (after its `chdir(PGDATA)`) and keep `sun_path` ~20 bytes
-/// regardless of how deep the project lives on disk.
+/// The default when the platform supports Unix sockets. Authentication is
+/// `trust` - the project directory already gates filesystem access to the
+/// socket; a 0700 socket adds nothing. The socket directory is
+/// `<dataDir>/../run`, so PG can bind via the relative path `../run` (after its
+/// `chdir(PGDATA)`) and keep `sun_path` ~20 bytes regardless of how deep the
+/// project lives on disk.
 final class UnixTransport extends Transport {
   /// Superuser password seeded at `initdb` time. Unix connections use trust
   /// auth and ignore this; it is persisted to `postgres.password` in the data

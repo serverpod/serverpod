@@ -101,8 +101,6 @@ abstract class ObjectWithGeographyPoint
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectWithGeographyPointTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithGeographyPointTable>? orderByList,
     ObjectWithGeographyPointInclude? include,
   }) {
@@ -111,8 +109,6 @@ abstract class ObjectWithGeographyPoint
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithGeographyPoint.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(ObjectWithGeographyPoint.t),
       include: include,
     );
@@ -235,8 +231,6 @@ class ObjectWithGeographyPointIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -281,8 +275,6 @@ class ObjectWithGeographyPointRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectWithGeographyPointTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithGeographyPointTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -292,8 +284,6 @@ class ObjectWithGeographyPointRepository {
       where: where?.call(ObjectWithGeographyPoint.t),
       orderBy: orderBy?.call(ObjectWithGeographyPoint.t),
       orderByList: orderByList?.call(ObjectWithGeographyPoint.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -324,8 +314,6 @@ class ObjectWithGeographyPointRepository {
     _i1.WhereExpressionBuilder<ObjectWithGeographyPointTable>? where,
     int? offset,
     _i1.OrderByBuilder<ObjectWithGeographyPointTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithGeographyPointTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -335,8 +323,6 @@ class ObjectWithGeographyPointRepository {
       where: where?.call(ObjectWithGeographyPoint.t),
       orderBy: orderBy?.call(ObjectWithGeographyPoint.t),
       orderByList: orderByList?.call(ObjectWithGeographyPoint.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -545,8 +531,6 @@ class ObjectWithGeographyPointRepository {
     int? offset,
     _i1.OrderByBuilder<ObjectWithGeographyPointTable>? orderBy,
     _i1.OrderByListBuilder<ObjectWithGeographyPointTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -557,8 +541,6 @@ class ObjectWithGeographyPointRepository {
       offset: offset,
       orderBy: orderBy?.call(ObjectWithGeographyPoint.t),
       orderByList: orderByList?.call(ObjectWithGeographyPoint.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -579,8 +561,6 @@ class ObjectWithGeographyPointRepository {
     _i1.DatabaseSession session,
     List<ObjectWithGeographyPoint> rows, {
     _i1.OrderByBuilder<ObjectWithGeographyPointTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithGeographyPointTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -589,8 +569,6 @@ class ObjectWithGeographyPointRepository {
       rows,
       orderBy: orderBy?.call(ObjectWithGeographyPoint.t),
       orderByList: orderByList?.call(ObjectWithGeographyPoint.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -620,8 +598,6 @@ class ObjectWithGeographyPointRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ObjectWithGeographyPointTable> where,
     _i1.OrderByBuilder<ObjectWithGeographyPointTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithGeographyPointTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -630,8 +606,6 @@ class ObjectWithGeographyPointRepository {
       where: where(ObjectWithGeographyPoint.t),
       orderBy: orderBy?.call(ObjectWithGeographyPoint.t),
       orderByList: orderByList?.call(ObjectWithGeographyPoint.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

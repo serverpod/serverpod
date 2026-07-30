@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:pub_semver/pub_semver.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 import 'binary/binary_source.dart';
 import 'cluster/postgres_conf_builder.dart';
@@ -31,9 +32,8 @@ class EmbeddedPostgresOptions {
   /// Default: 'postgres' (matches existing Serverpod conventions).
   final String username;
 
-  /// How the postmaster listens. Defaults to [UnixTransport] - no port
-  /// allocation, no firewall prompts, no clash between two open Serverpod
-  /// projects.
+  /// How the postmaster listens. Defaults to [UnixTransport] when supported,
+  /// or loopback [TcpTransport] on platforms without Unix domain sockets.
   final Transport transport;
 
   /// PostgreSQL major.minor.patch version. Defaults to
@@ -104,7 +104,7 @@ class EmbeddedPostgresOptions {
     required this.dataDir,
     required this.databaseName,
     this.username = defaultUsername,
-    this.transport = const UnixTransport(),
+    Transport? transport,
     Version? version,
     this.binaryCache,
     this.startTimeout = const Duration(seconds: 60),
@@ -113,5 +113,10 @@ class EmbeddedPostgresOptions {
     this.onProgress,
     this.maxConnections = defaultMaxConnections,
     this.binarySource,
-  }) : version = version ?? defaultPostgresVersion;
+  }) : transport =
+           transport ??
+           (hasUnixSocketSupport()
+               ? const UnixTransport()
+               : const TcpTransport()),
+       version = version ?? defaultPostgresVersion;
 }

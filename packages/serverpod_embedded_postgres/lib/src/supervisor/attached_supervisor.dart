@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'pg_ctl.dart';
 import 'process_identity.dart';
 import 'supervised_process.dart';
 
@@ -9,9 +10,9 @@ import 'supervised_process.dart';
 /// `detach: true`.
 ///
 /// We don't have the original [Process] handle (it died with the previous
-/// VM), so we signal via [Process.killPid] and detect liveness via
-/// [verifyIdentity]. Log tail is read from the persisted log file rather
-/// than streamed from stdout/stderr.
+/// VM), so shutdown uses `pg_ctl` on Windows and [Process.killPid] elsewhere,
+/// with liveness detected through [verifyIdentity]. Log tail is read from the
+/// persisted log file rather than streamed from stdout/stderr.
 class AttachedSupervisor implements SupervisedProcess {
   /// Identity recorded in the pidfile by the supervisor that originally
   /// spawned this postmaster.
@@ -94,16 +95,27 @@ class AttachedSupervisor implements SupervisedProcess {
       _stopFuture ??= _stop(timeout);
 
   Future<void> _stop(Duration timeout) async {
-    Process.killPid(identity.pid, ProcessSignal.sigint);
+    var stopped = false;
+    if (Platform.isWindows) {
+      stopped = await stopWithPgCtl(
+        pgCtl: pgCtlForPostgresExecutable(identity.executable),
+        dataDir: Directory(identity.dataDir),
+        timeout: timeout,
+      );
+    }
 
-    var halfway = timeout ~/ 2;
-    var stopped = await _waitForExit(deadline: halfway);
     if (!stopped) {
-      Process.killPid(identity.pid, ProcessSignal.sigterm);
-      stopped = await _waitForExit(deadline: timeout - halfway);
+      Process.killPid(identity.pid, ProcessSignal.sigint);
+
+      var halfway = timeout ~/ 2;
+      stopped = await _waitForExit(deadline: halfway);
       if (!stopped) {
-        Process.killPid(identity.pid, ProcessSignal.sigkill);
-        await _waitForExit(deadline: const Duration(seconds: 5));
+        Process.killPid(identity.pid, ProcessSignal.sigterm);
+        stopped = await _waitForExit(deadline: timeout - halfway);
+        if (!stopped) {
+          Process.killPid(identity.pid, ProcessSignal.sigkill);
+          await _waitForExit(deadline: const Duration(seconds: 5));
+        }
       }
     }
 

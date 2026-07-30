@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/vendored/frontend_server_client.dart';
 import 'package:serverpod_shared/process_io.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 export 'package:serverpod_cli/src/vendored/frontend_server_client.dart'
     show CompileResult;
@@ -50,6 +52,10 @@ class KernelCompiler {
   /// Whether [start] has run.
   bool get isStarted => _started;
 
+  /// Exists while the Frontend Server may be writing [outputDill]; left
+  /// behind if the session dies mid-compile.
+  String get _compileMarkerPath => '$outputDill.compiling';
+
   /// Start the Frontend Server process.
   ///
   /// This starts the server in resident mode, ready to receive compile
@@ -71,9 +77,11 @@ class KernelCompiler {
   }
 
   /// Returns `true` if [outputDill] exists, is newer than every file under
-  /// [watchDirs], and is compatible with the current Dart SDK's kernel binary
-  /// format.
+  /// [watchDirs], is compatible with the current Dart SDK's kernel binary
+  /// format, and the last compile that wrote it completed.
   Future<bool> isDillUpToDate(Set<String> watchDirs) async {
+    if (File(_compileMarkerPath).existsSync()) return false;
+
     final dillFile = File(outputDill);
     if (!await dillFile.exists()) return false;
 
@@ -100,7 +108,12 @@ class KernelCompiler {
   /// Returns `true` on success (including when no compilation was needed).
   /// Returns `false` if compilation failed.
   Future<bool> compileIfNeeded(Set<String> watchDirs) async {
-    if (await isDillUpToDate(watchDirs)) {
+    if (File(_compileMarkerPath).existsSync()) {
+      log.warning(previousCompileInterrupted);
+      await invalidateCachedDill();
+      // Ensure a complete kernel, not an incremental delta.
+      await reset();
+    } else if (await isDillUpToDate(watchDirs)) {
       log.debug('Cached server.dill is up to date, skipping initial compile.');
       return true;
     }
@@ -109,6 +122,14 @@ class KernelCompiler {
     if (result == null) return false;
     await accept();
     return true;
+  }
+
+  /// Deletes the cached kernel outputs and the compile marker so the next
+  /// compile starts fresh. Used when the cached build cannot be trusted.
+  Future<void> invalidateCachedDill() async {
+    await File(outputDill).deleteIfExists();
+    await File('$outputDill.incremental.dill').deleteIfExists();
+    await File(_compileMarkerPath).deleteIfExists();
   }
 
   /// Compile the project.
@@ -126,30 +147,41 @@ class KernelCompiler {
     bool invalidatePackageConfig = false,
   }) async {
     final client = await _client;
+    final marker = File(_compileMarkerPath)..createSync(recursive: true);
 
+    final CompileResult result;
     if (_needsFullCompile) {
       log.debug('compile: full');
-      final result = await client.compile();
+      result = await client.compile();
       _needsFullCompile = false;
-      return result;
+    } else {
+      // Invalidate the exact URI the FES was started with (see
+      // [FrontendServerClient.packageConfigUri]) so the resident compiler
+      // reloads its package map in place instead of the reload silently
+      // no-op'ing on a mismatched URI.
+      final packageConfigUri = invalidatePackageConfig
+          ? client.packageConfigUri
+          : null;
+      log.debug(
+        'compile: $changedPaths'
+        '${packageConfigUri != null ? ' (+package_config.json)' : ''}',
+      );
+      final invalidatedUris = [
+        ...changedPaths.map(Uri.file),
+        ?packageConfigUri,
+      ];
+      result = await client.compile(invalidatedUris);
     }
 
-    // Invalidate the exact URI the FES was started with (see
-    // [FrontendServerClient.packageConfigUri]) so the resident compiler
-    // reloads its package map in place instead of the reload silently no-op'ing
-    // on a mismatched URI.
-    final packageConfigUri = invalidatePackageConfig
-        ? client.packageConfigUri
-        : null;
-    log.debug(
-      'compile: $changedPaths'
-      '${packageConfigUri != null ? ' (+package_config.json)' : ''}',
-    );
-    final invalidatedUris = [
-      ...changedPaths.map(Uri.file),
-      ?packageConfigUri,
-    ];
-    return client.compile(invalidatedUris);
+    // A null dillOutput means the FES died mid-write; keep the marker.
+    if (result.dillOutput != null) {
+      try {
+        marker.deleteSync();
+      } on FileSystemException {
+        // A stray marker only costs an extra full compile.
+      }
+    }
+    return result;
   }
 
   /// Accept the last compile result.

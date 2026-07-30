@@ -138,8 +138,6 @@ abstract class DurationDefaultMix
     int? limit,
     int? offset,
     _i1.OrderByBuilder<DurationDefaultMixTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DurationDefaultMixTable>? orderByList,
     DurationDefaultMixInclude? include,
   }) {
@@ -148,8 +146,6 @@ abstract class DurationDefaultMix
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DurationDefaultMix.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(DurationDefaultMix.t),
       include: include,
     );
@@ -281,8 +277,6 @@ class DurationDefaultMixIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -327,8 +321,6 @@ class DurationDefaultMixRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<DurationDefaultMixTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DurationDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -338,8 +330,6 @@ class DurationDefaultMixRepository {
       where: where?.call(DurationDefaultMix.t),
       orderBy: orderBy?.call(DurationDefaultMix.t),
       orderByList: orderByList?.call(DurationDefaultMix.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -370,8 +360,6 @@ class DurationDefaultMixRepository {
     _i1.WhereExpressionBuilder<DurationDefaultMixTable>? where,
     int? offset,
     _i1.OrderByBuilder<DurationDefaultMixTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DurationDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -381,8 +369,6 @@ class DurationDefaultMixRepository {
       where: where?.call(DurationDefaultMix.t),
       orderBy: orderBy?.call(DurationDefaultMix.t),
       orderByList: orderByList?.call(DurationDefaultMix.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -589,8 +575,6 @@ class DurationDefaultMixRepository {
     int? offset,
     _i1.OrderByBuilder<DurationDefaultMixTable>? orderBy,
     _i1.OrderByListBuilder<DurationDefaultMixTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -601,8 +585,6 @@ class DurationDefaultMixRepository {
       offset: offset,
       orderBy: orderBy?.call(DurationDefaultMix.t),
       orderByList: orderByList?.call(DurationDefaultMix.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -623,8 +605,6 @@ class DurationDefaultMixRepository {
     _i1.DatabaseSession session,
     List<DurationDefaultMix> rows, {
     _i1.OrderByBuilder<DurationDefaultMixTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DurationDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -633,8 +613,6 @@ class DurationDefaultMixRepository {
       rows,
       orderBy: orderBy?.call(DurationDefaultMix.t),
       orderByList: orderByList?.call(DurationDefaultMix.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -664,8 +642,6 @@ class DurationDefaultMixRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<DurationDefaultMixTable> where,
     _i1.OrderByBuilder<DurationDefaultMixTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DurationDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -674,8 +650,6 @@ class DurationDefaultMixRepository {
       where: where(DurationDefaultMix.t),
       orderBy: orderBy?.call(DurationDefaultMix.t),
       orderByList: orderByList?.call(DurationDefaultMix.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

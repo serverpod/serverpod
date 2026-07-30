@@ -17,8 +17,8 @@ import 'options.dart';
 /// VM (or detached, if [EmbeddedPostgresOptions.detach] was set).
 ///
 /// One Dart call boots a real PG instance, persistent across restarts, with
-/// no Docker dependency and (by default) no TCP port allocation. See the
-/// package README for the runtime and lifecycle contract.
+/// no Docker dependency and no fixed TCP port allocation. See the package
+/// README for the runtime and lifecycle contract.
 abstract class EmbeddedPostgres {
   /// Boot a fresh postmaster supervised by this process for [opts.dataDir].
   ///

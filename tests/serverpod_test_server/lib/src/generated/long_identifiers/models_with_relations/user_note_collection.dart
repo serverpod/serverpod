@@ -102,8 +102,6 @@ abstract class UserNoteCollection
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UserNoteCollectionTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UserNoteCollectionTable>? orderByList,
     UserNoteCollectionInclude? include,
   }) {
@@ -112,8 +110,6 @@ abstract class UserNoteCollection
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UserNoteCollection.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(UserNoteCollection.t),
       include: include,
     );
@@ -262,8 +258,6 @@ class UserNoteCollectionIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -316,8 +310,6 @@ class UserNoteCollectionRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UserNoteCollectionTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UserNoteCollectionTable>? orderByList,
     _i1.Transaction? transaction,
     UserNoteCollectionInclude? include,
@@ -328,8 +320,6 @@ class UserNoteCollectionRepository {
       where: where?.call(UserNoteCollection.t),
       orderBy: orderBy?.call(UserNoteCollection.t),
       orderByList: orderByList?.call(UserNoteCollection.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -361,8 +351,6 @@ class UserNoteCollectionRepository {
     _i1.WhereExpressionBuilder<UserNoteCollectionTable>? where,
     int? offset,
     _i1.OrderByBuilder<UserNoteCollectionTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UserNoteCollectionTable>? orderByList,
     _i1.Transaction? transaction,
     UserNoteCollectionInclude? include,
@@ -373,8 +361,6 @@ class UserNoteCollectionRepository {
       where: where?.call(UserNoteCollection.t),
       orderBy: orderBy?.call(UserNoteCollection.t),
       orderByList: orderByList?.call(UserNoteCollection.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -584,8 +570,6 @@ class UserNoteCollectionRepository {
     int? offset,
     _i1.OrderByBuilder<UserNoteCollectionTable>? orderBy,
     _i1.OrderByListBuilder<UserNoteCollectionTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -596,8 +580,6 @@ class UserNoteCollectionRepository {
       offset: offset,
       orderBy: orderBy?.call(UserNoteCollection.t),
       orderByList: orderByList?.call(UserNoteCollection.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -618,8 +600,6 @@ class UserNoteCollectionRepository {
     _i1.DatabaseSession session,
     List<UserNoteCollection> rows, {
     _i1.OrderByBuilder<UserNoteCollectionTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UserNoteCollectionTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -628,8 +608,6 @@ class UserNoteCollectionRepository {
       rows,
       orderBy: orderBy?.call(UserNoteCollection.t),
       orderByList: orderByList?.call(UserNoteCollection.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -659,8 +637,6 @@ class UserNoteCollectionRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UserNoteCollectionTable> where,
     _i1.OrderByBuilder<UserNoteCollectionTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UserNoteCollectionTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -669,8 +645,6 @@ class UserNoteCollectionRepository {
       where: where(UserNoteCollection.t),
       orderBy: orderBy?.call(UserNoteCollection.t),
       orderByList: orderByList?.call(UserNoteCollection.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

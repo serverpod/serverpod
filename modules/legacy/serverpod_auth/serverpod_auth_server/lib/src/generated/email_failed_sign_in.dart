@@ -98,8 +98,6 @@ abstract class EmailFailedSignIn
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EmailFailedSignInTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
     EmailFailedSignInInclude? include,
   }) {
@@ -108,8 +106,6 @@ abstract class EmailFailedSignIn
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EmailFailedSignIn.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(EmailFailedSignIn.t),
       include: include,
     );
@@ -229,8 +225,6 @@ class EmailFailedSignInIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -275,8 +269,6 @@ class EmailFailedSignInRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EmailFailedSignInTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -286,8 +278,6 @@ class EmailFailedSignInRepository {
       where: where?.call(EmailFailedSignIn.t),
       orderBy: orderBy?.call(EmailFailedSignIn.t),
       orderByList: orderByList?.call(EmailFailedSignIn.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -318,8 +308,6 @@ class EmailFailedSignInRepository {
     _i1.WhereExpressionBuilder<EmailFailedSignInTable>? where,
     int? offset,
     _i1.OrderByBuilder<EmailFailedSignInTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -329,8 +317,6 @@ class EmailFailedSignInRepository {
       where: where?.call(EmailFailedSignIn.t),
       orderBy: orderBy?.call(EmailFailedSignIn.t),
       orderByList: orderByList?.call(EmailFailedSignIn.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -537,8 +523,6 @@ class EmailFailedSignInRepository {
     int? offset,
     _i1.OrderByBuilder<EmailFailedSignInTable>? orderBy,
     _i1.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -549,8 +533,6 @@ class EmailFailedSignInRepository {
       offset: offset,
       orderBy: orderBy?.call(EmailFailedSignIn.t),
       orderByList: orderByList?.call(EmailFailedSignIn.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -571,8 +553,6 @@ class EmailFailedSignInRepository {
     _i1.DatabaseSession session,
     List<EmailFailedSignIn> rows, {
     _i1.OrderByBuilder<EmailFailedSignInTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -581,8 +561,6 @@ class EmailFailedSignInRepository {
       rows,
       orderBy: orderBy?.call(EmailFailedSignIn.t),
       orderByList: orderByList?.call(EmailFailedSignIn.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -612,8 +590,6 @@ class EmailFailedSignInRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EmailFailedSignInTable> where,
     _i1.OrderByBuilder<EmailFailedSignInTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -622,8 +598,6 @@ class EmailFailedSignInRepository {
       where: where(EmailFailedSignIn.t),
       orderBy: orderBy?.call(EmailFailedSignIn.t),
       orderByList: orderByList?.call(EmailFailedSignIn.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

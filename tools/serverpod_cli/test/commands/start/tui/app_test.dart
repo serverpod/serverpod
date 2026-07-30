@@ -548,6 +548,15 @@ void main() {
       expect(repairCalls, 1);
       expect(forced, isFalse);
     });
+
+    test('when A is pressed then apply migration is invoked', () async {
+      var applyCalls = 0;
+      holder.onApplyMigration = () => applyCalls++;
+
+      await _sendKey(tester, LogicalKey.keyA);
+
+      expect(applyCalls, 1);
+    });
   });
 
   group('Given a running TUI start app with exactly one launchable app', () {

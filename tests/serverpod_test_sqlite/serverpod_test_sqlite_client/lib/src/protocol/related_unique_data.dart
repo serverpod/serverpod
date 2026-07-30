@@ -101,8 +101,6 @@ abstract class RelatedUniqueData
     int? limit,
     int? offset,
     _i1.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
     RelatedUniqueDataInclude? include,
   }) {
@@ -111,8 +109,6 @@ abstract class RelatedUniqueData
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(RelatedUniqueData.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(RelatedUniqueData.t),
       include: include,
     );
@@ -246,8 +242,6 @@ class RelatedUniqueDataIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -294,8 +288,6 @@ class RelatedUniqueDataRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
     _i1.Transaction? transaction,
     RelatedUniqueDataInclude? include,
@@ -306,8 +298,6 @@ class RelatedUniqueDataRepository {
       where: where?.call(RelatedUniqueData.t),
       orderBy: orderBy?.call(RelatedUniqueData.t),
       orderByList: orderByList?.call(RelatedUniqueData.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -339,8 +329,6 @@ class RelatedUniqueDataRepository {
     _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     int? offset,
     _i1.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
     _i1.Transaction? transaction,
     RelatedUniqueDataInclude? include,
@@ -351,8 +339,6 @@ class RelatedUniqueDataRepository {
       where: where?.call(RelatedUniqueData.t),
       orderBy: orderBy?.call(RelatedUniqueData.t),
       orderByList: orderByList?.call(RelatedUniqueData.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -562,8 +548,6 @@ class RelatedUniqueDataRepository {
     int? offset,
     _i1.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
     _i1.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -574,8 +558,6 @@ class RelatedUniqueDataRepository {
       offset: offset,
       orderBy: orderBy?.call(RelatedUniqueData.t),
       orderByList: orderByList?.call(RelatedUniqueData.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -596,8 +578,6 @@ class RelatedUniqueDataRepository {
     _i1.DatabaseSession session,
     List<RelatedUniqueData> rows, {
     _i1.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -606,8 +586,6 @@ class RelatedUniqueDataRepository {
       rows,
       orderBy: orderBy?.call(RelatedUniqueData.t),
       orderByList: orderByList?.call(RelatedUniqueData.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -637,8 +615,6 @@ class RelatedUniqueDataRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<RelatedUniqueDataTable> where,
     _i1.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -647,8 +623,6 @@ class RelatedUniqueDataRepository {
       where: where(RelatedUniqueData.t),
       orderBy: orderBy?.call(RelatedUniqueData.t),
       orderByList: orderByList?.call(RelatedUniqueData.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

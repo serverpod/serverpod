@@ -483,7 +483,7 @@ void main() {
         });
       });
 
-      group('when updating with orderDescending', () {
+      group('when updating in descending order', () {
         late List<Types> updated;
 
         setUp(() async {

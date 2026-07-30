@@ -61,8 +61,11 @@ fi
 
 # INTEGRATION_TEST_SERVERPOD_MODE=test selects test.yaml (ephemeral ports), so
 # the few test files that boot a server outside a group don't collide on ports.
+# Tests tagged migration_artifacts mutate the checked-out migrations/protocol
+# directories and have a dedicated serial CI suite; running them here can race
+# every other isolate while it loads those files during server startup.
 echo "### Running concurrent integration tests (${#shard_test_files[@]} files, shard $shard_index/$total_shards)"
-INTEGRATION_TEST_SERVERPOD_MODE=test dart test "${shard_test_files[@]}" -t integration --reporter=failures-only
+INTEGRATION_TEST_SERVERPOD_MODE=test dart test "${shard_test_files[@]}" -t integration -x migration_artifacts --reporter=failures-only
 
 # Verify the embedded data path was created. Don't remove it here: the tests
 # leave the postmaster running (it is reaped on the next start), so an rm would

@@ -79,10 +79,6 @@ cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_brid
 cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_client/CHANGELOG.md
 cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server/CHANGELOG.md
 
-cp CHANGELOG.md modules/legacy/serverpod_chat/serverpod_chat_server/CHANGELOG.md
-cp CHANGELOG.md modules/legacy/serverpod_chat/serverpod_chat_client/CHANGELOG.md
-cp CHANGELOG.md modules/legacy/serverpod_chat/serverpod_chat_flutter/CHANGELOG.md
-
 cp CHANGELOG.md integrations/serverpod_cloud_storage_s3_compat/CHANGELOG.md
 cp CHANGELOG.md integrations/serverpod_cloud_storage_s3/CHANGELOG.md
 cp CHANGELOG.md integrations/serverpod_cloud_storage_gcp/CHANGELOG.md
@@ -138,10 +134,6 @@ cp README_subpackage.md modules/serverpod_auth/serverpod_auth_idp/serverpod_auth
 # cp README_subpackage.md modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_server/README.md
 # cp README_subpackage.md modules/serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server/README.md
 # cp README_subpackage.md modules/serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_client/README.md
-
-cp README_subpackage.md modules/legacy/serverpod_chat/serverpod_chat_server/README.md
-cp README_subpackage.md modules/legacy/serverpod_chat/serverpod_chat_client/README.md
-cp README_subpackage.md modules/legacy/serverpod_chat/serverpod_chat_flutter/README.md
 
 cp README_subpackage.md integrations/serverpod_cloud_storage_s3_compat/README.md
 cp README_subpackage.md integrations/serverpod_cloud_storage_s3/README.md

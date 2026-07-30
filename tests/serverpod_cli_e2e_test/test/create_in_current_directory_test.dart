@@ -29,7 +29,7 @@ void main() async {
         'when create is called with dot then project is created in the current directory.',
         () async {
           var result = await runServerpod(
-            ['create', '.', '--mini'],
+            ['create', '.', '--template', 'server', '--no-interactive'],
             workingDirectory: projectDir,
           );
 
@@ -77,53 +77,6 @@ void main() async {
             allOutput.contains('serverpod start'),
             isTrue,
             reason: 'Start instructions should mention serverpod start command',
-          );
-        },
-      );
-    },
-  );
-
-  group(
-    'Given a mini Serverpod project',
-    () {
-      late String projectName;
-      late String projectDir;
-      late String serverDir;
-
-      setUp(() async {
-        projectName =
-            'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
-        projectDir = path.join(d.sandbox, projectName);
-        serverDir = path.join(projectDir, '${projectName}_server');
-
-        var result = await runServerpod(
-          ['create', projectName, '--mini'],
-          workingDirectory: d.sandbox,
-        );
-        if (result.exitCode != 0) {
-          fail('Failed to create the serverpod mini project.');
-        }
-      });
-
-      test(
-        'when create is called with dot from the server directory then current project is upgraded.',
-        () async {
-          var result = await runServerpod(
-            ['create', '.', '--template', 'server'],
-            workingDirectory: serverDir,
-          );
-
-          expect(
-            result.exitCode,
-            equals(0),
-            reason:
-                'create should still upgrade an existing mini project from the server directory',
-          );
-          expect(
-            Directory(path.join(serverDir, 'config')).existsSync(),
-            isTrue,
-            reason:
-                'Upgrade should add the full server configuration to the current project',
           );
         },
       );

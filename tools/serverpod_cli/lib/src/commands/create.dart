@@ -22,15 +22,6 @@ enum CreateOption<V> implements OptionDefinition<V> {
           'running out of the box.',
     ),
   ),
-  mini(
-    FlagOption(
-      argName: 'mini',
-      defaultsTo: false,
-      negatable: false,
-      helpText: 'Shortcut for --template mini.',
-      group: _templateGroup,
-    ),
-  ),
   template(
     EnumOption(
       enumParser: EnumParser(ServerpodTemplateType.values),
@@ -40,13 +31,63 @@ enum CreateOption<V> implements OptionDefinition<V> {
       helpText: 'Template to use when creating a new project',
       allowedValues: ServerpodTemplateType.values,
       allowedHelp: {
-        'mini': 'Mini project with minimal features and no database',
         'fullstack':
             'Fullstack project including a server and a companion Flutter app',
         'server': 'Server project with standard features including database',
         'module': 'Serverpod Module project',
       },
       group: _templateGroup,
+    ),
+  ),
+  database(
+    FlagOption(
+      argName: 'database',
+      helpText: 'Include a database in the project.',
+    ),
+  ),
+  redis(
+    FlagOption(
+      argName: 'redis',
+      helpText: 'Include Redis caching in the project.',
+    ),
+  ),
+  auth(
+    FlagOption(
+      argName: 'auth',
+      helpText: 'Include authentication in the project. Requires a database.',
+    ),
+  ),
+  webapp(
+    FlagOption(
+      argName: 'webapp',
+      helpText: 'Configure the server to host a Flutter web app.',
+    ),
+  ),
+  website(
+    FlagOption(
+      argName: 'website',
+      helpText: 'Configure the server to host a website.',
+    ),
+  ),
+  ide(
+    MultiOption<CreateIdeOption>(
+      multiParser: MultiParser(EnumParser(CreateIdeOption.values)),
+      argName: 'ide',
+      defaultsTo: _defaultIdeOptions,
+      helpText:
+          'Configure agent skills and MCP servers for one or more IDEs. '
+          'Use "none" to disable all IDE configuration.',
+      allowedValues: CreateIdeOption.values,
+      allowedHelp: {
+        'none': 'Do not configure agent skills or MCP servers',
+        'antigravity': 'Configure agent skills and MCP for Antigravity',
+        'codex': 'Configure agent skills and MCP for Codex',
+        'claude': 'Configure agent skills and MCP for Claude',
+        'cursor': 'Configure agent skills and MCP for Cursor',
+        'opencode': 'Configure agent skills and MCP for OpenCode',
+        'vscode': 'Configure agent skills and MCP for VS Code',
+      },
+      customValidator: _validateIdeOptions,
     ),
   ),
   name(
@@ -67,10 +108,46 @@ enum CreateOption<V> implements OptionDefinition<V> {
     mode: MutuallyExclusiveMode.allowDefaults,
   );
 
+  static const _defaultIdeOptions = [
+    CreateIdeOption.claude,
+    CreateIdeOption.cursor,
+    CreateIdeOption.vscode,
+  ];
+
   const CreateOption(this.option);
 
   @override
   final ConfigOptionBase<V> option;
+}
+
+enum CreateIdeOption {
+  none,
+  antigravity,
+  codex,
+  claude,
+  cursor,
+  opencode,
+  vscode,
+}
+
+void _validateIdeOptions(List<CreateIdeOption> options) {
+  if (options.contains(CreateIdeOption.none) && options.length > 1) {
+    throw const FormatException(
+      '"none" cannot be combined with other IDE options.',
+    );
+  }
+}
+
+extension on CreateIdeOption {
+  TemplateIde? get templateIde => switch (this) {
+    CreateIdeOption.none => null,
+    CreateIdeOption.antigravity => TemplateIde.antigravity,
+    CreateIdeOption.codex => TemplateIde.codex,
+    CreateIdeOption.claude => TemplateIde.claude,
+    CreateIdeOption.cursor => TemplateIde.cursor,
+    CreateIdeOption.opencode => TemplateIde.openCode,
+    CreateIdeOption.vscode => TemplateIde.vscode,
+  };
 }
 
 class CreateCommand extends ServerpodCommand<CreateOption> {
@@ -94,9 +171,7 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
 
   @override
   Future<void> runWithConfig(Configuration<CreateOption> commandConfig) async {
-    var template = commandConfig.value(CreateOption.mini)
-        ? ServerpodTemplateType.mini
-        : commandConfig.value(CreateOption.template);
+    var template = commandConfig.value(CreateOption.template);
     var force = commandConfig.value(CreateOption.force);
     var name = commandConfig.value(CreateOption.name);
 
@@ -109,6 +184,17 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
       log.error(
         'Are you sure you want to create a project named "$name"?\n'
         'Use the --${CreateOption.force.option.argName} flag to force creation.',
+      );
+      throw ExitException.error();
+    }
+
+    final database = commandConfig.optionalValue(CreateOption.database) ?? true;
+    final auth = commandConfig.optionalValue(CreateOption.auth);
+
+    if (auth == true && !database) {
+      log.error(
+        'Authentication requires a database. Enable --database or remove '
+        '--auth.',
       );
       throw ExitException.error();
     }
@@ -134,17 +220,25 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
 
     final context = TemplateContext(
       template: template,
-      auth: true,
-      redis: true,
-      postgres: true,
-      website: template == ServerpodTemplateType.server,
-      webapp: template != ServerpodTemplateType.server,
-      ides: [TemplateIde.claude, TemplateIde.cursor, TemplateIde.vscode],
+      auth: (auth ?? true) && database,
+      redis: commandConfig.optionalValue(CreateOption.redis) ?? true,
+      postgres: database,
+      website:
+          commandConfig.optionalValue(CreateOption.website) ??
+          template == ServerpodTemplateType.server,
+      webapp:
+          commandConfig.optionalValue(CreateOption.webapp) ??
+          template != ServerpodTemplateType.server,
+      ides: commandConfig
+          .value(CreateOption.ide)
+          .map((option) => option.templateIde)
+          .nonNulls
+          .toList(),
     );
 
     final useTui = (interactive ?? true) && !ci.isCI;
 
-    if (useTui && !template.isMini) {
+    if (useTui) {
       await performCreateWithTui(
         name,
         force,

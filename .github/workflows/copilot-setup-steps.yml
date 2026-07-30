@@ -29,7 +29,7 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       - name: Set up Flutter
-        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        uses: ./.github/actions/use-flutter
         with:
           flutter-version: '3.44.4'
           channel: "stable"
@@ -41,18 +41,23 @@ jobs:
           echo "Dart SDK version should be >= 3.11.3"
 
       - name: Install Melos
-        run: dart pub global activate melos
+        uses: ./.github/actions/retry
+        with:
+          command: dart pub global activate melos
 
       - name: Set SERVERPOD_HOME environment variable
         run: echo "SERVERPOD_HOME=$GITHUB_WORKSPACE" >> $GITHUB_ENV
 
       - name: Install all dependencies
-        run: melos bootstrap
+        uses: ./.github/actions/retry
+        with:
+          command: melos bootstrap
 
       - name: Activate Serverpod CLI from source
-        run: |
-          cd tools/serverpod_cli
-          dart pub global activate --source path .
+        uses: ./.github/actions/retry
+        with:
+          command: dart pub global activate --source path .
+          working_directory: tools/serverpod_cli
 
       - name: Verify CLI installation
         run: serverpod --version

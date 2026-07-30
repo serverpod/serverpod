@@ -10,7 +10,9 @@ class TestWidget extends WebWidget {
   TestWidget(this.method);
 
   @override
-  String toString() => '<html><body>Method: $method</body></html>';
+  String render({String? Function(String)? onMissingVariable}) {
+    return '<html><body>Method: $method</body></html>';
+  }
 }
 
 class GetPostRoute extends WidgetRoute {

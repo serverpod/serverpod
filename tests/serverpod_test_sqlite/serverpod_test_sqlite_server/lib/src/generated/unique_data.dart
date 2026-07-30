@@ -85,8 +85,6 @@ abstract class UniqueData
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UniqueDataTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UniqueDataTable>? orderByList,
     UniqueDataInclude? include,
   }) {
@@ -95,8 +93,6 @@ abstract class UniqueData
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UniqueData.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(UniqueData.t),
       include: include,
     );
@@ -195,8 +191,6 @@ class UniqueDataIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -241,8 +235,6 @@ class UniqueDataRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UniqueDataTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UniqueDataTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -252,8 +244,6 @@ class UniqueDataRepository {
       where: where?.call(UniqueData.t),
       orderBy: orderBy?.call(UniqueData.t),
       orderByList: orderByList?.call(UniqueData.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -284,8 +274,6 @@ class UniqueDataRepository {
     _i1.WhereExpressionBuilder<UniqueDataTable>? where,
     int? offset,
     _i1.OrderByBuilder<UniqueDataTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UniqueDataTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -295,8 +283,6 @@ class UniqueDataRepository {
       where: where?.call(UniqueData.t),
       orderBy: orderBy?.call(UniqueData.t),
       orderByList: orderByList?.call(UniqueData.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -501,8 +487,6 @@ class UniqueDataRepository {
     int? offset,
     _i1.OrderByBuilder<UniqueDataTable>? orderBy,
     _i1.OrderByListBuilder<UniqueDataTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -513,8 +497,6 @@ class UniqueDataRepository {
       offset: offset,
       orderBy: orderBy?.call(UniqueData.t),
       orderByList: orderByList?.call(UniqueData.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -535,8 +517,6 @@ class UniqueDataRepository {
     _i1.DatabaseSession session,
     List<UniqueData> rows, {
     _i1.OrderByBuilder<UniqueDataTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UniqueDataTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -545,8 +525,6 @@ class UniqueDataRepository {
       rows,
       orderBy: orderBy?.call(UniqueData.t),
       orderByList: orderByList?.call(UniqueData.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -576,8 +554,6 @@ class UniqueDataRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UniqueDataTable> where,
     _i1.OrderByBuilder<UniqueDataTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UniqueDataTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -586,8 +562,6 @@ class UniqueDataRepository {
       where: where(UniqueData.t),
       orderBy: orderBy?.call(UniqueData.t),
       orderByList: orderByList?.call(UniqueData.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

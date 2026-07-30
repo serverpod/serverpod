@@ -86,8 +86,6 @@ abstract class DurationDefaultPersist
     int? limit,
     int? offset,
     _i1.OrderByBuilder<DurationDefaultPersistTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DurationDefaultPersistTable>? orderByList,
     DurationDefaultPersistInclude? include,
   }) {
@@ -96,8 +94,6 @@ abstract class DurationDefaultPersist
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DurationDefaultPersist.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(DurationDefaultPersist.t),
       include: include,
     );
@@ -186,8 +182,6 @@ class DurationDefaultPersistIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -232,8 +226,6 @@ class DurationDefaultPersistRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<DurationDefaultPersistTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DurationDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -243,8 +235,6 @@ class DurationDefaultPersistRepository {
       where: where?.call(DurationDefaultPersist.t),
       orderBy: orderBy?.call(DurationDefaultPersist.t),
       orderByList: orderByList?.call(DurationDefaultPersist.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -275,8 +265,6 @@ class DurationDefaultPersistRepository {
     _i1.WhereExpressionBuilder<DurationDefaultPersistTable>? where,
     int? offset,
     _i1.OrderByBuilder<DurationDefaultPersistTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DurationDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -286,8 +274,6 @@ class DurationDefaultPersistRepository {
       where: where?.call(DurationDefaultPersist.t),
       orderBy: orderBy?.call(DurationDefaultPersist.t),
       orderByList: orderByList?.call(DurationDefaultPersist.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -494,8 +480,6 @@ class DurationDefaultPersistRepository {
     int? offset,
     _i1.OrderByBuilder<DurationDefaultPersistTable>? orderBy,
     _i1.OrderByListBuilder<DurationDefaultPersistTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -506,8 +490,6 @@ class DurationDefaultPersistRepository {
       offset: offset,
       orderBy: orderBy?.call(DurationDefaultPersist.t),
       orderByList: orderByList?.call(DurationDefaultPersist.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -528,8 +510,6 @@ class DurationDefaultPersistRepository {
     _i1.DatabaseSession session,
     List<DurationDefaultPersist> rows, {
     _i1.OrderByBuilder<DurationDefaultPersistTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DurationDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -538,8 +518,6 @@ class DurationDefaultPersistRepository {
       rows,
       orderBy: orderBy?.call(DurationDefaultPersist.t),
       orderByList: orderByList?.call(DurationDefaultPersist.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -569,8 +547,6 @@ class DurationDefaultPersistRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<DurationDefaultPersistTable> where,
     _i1.OrderByBuilder<DurationDefaultPersistTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DurationDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -579,8 +555,6 @@ class DurationDefaultPersistRepository {
       where: where(DurationDefaultPersist.t),
       orderBy: orderBy?.call(DurationDefaultPersist.t),
       orderByList: orderByList?.call(DurationDefaultPersist.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

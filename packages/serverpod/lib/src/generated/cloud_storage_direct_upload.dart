@@ -110,8 +110,6 @@ abstract class CloudStorageDirectUploadEntry
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CloudStorageDirectUploadEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
     CloudStorageDirectUploadEntryInclude? include,
   }) {
@@ -120,8 +118,6 @@ abstract class CloudStorageDirectUploadEntry
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(CloudStorageDirectUploadEntry.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(CloudStorageDirectUploadEntry.t),
       include: include,
     );
@@ -259,8 +255,6 @@ class CloudStorageDirectUploadEntryIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -305,8 +299,6 @@ class CloudStorageDirectUploadEntryRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CloudStorageDirectUploadEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -316,8 +308,6 @@ class CloudStorageDirectUploadEntryRepository {
       where: where?.call(CloudStorageDirectUploadEntry.t),
       orderBy: orderBy?.call(CloudStorageDirectUploadEntry.t),
       orderByList: orderByList?.call(CloudStorageDirectUploadEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -348,8 +338,6 @@ class CloudStorageDirectUploadEntryRepository {
     _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
     int? offset,
     _i1.OrderByBuilder<CloudStorageDirectUploadEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -359,8 +347,6 @@ class CloudStorageDirectUploadEntryRepository {
       where: where?.call(CloudStorageDirectUploadEntry.t),
       orderBy: orderBy?.call(CloudStorageDirectUploadEntry.t),
       orderByList: orderByList?.call(CloudStorageDirectUploadEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -574,8 +560,6 @@ class CloudStorageDirectUploadEntryRepository {
     int? offset,
     _i1.OrderByBuilder<CloudStorageDirectUploadEntryTable>? orderBy,
     _i1.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -586,8 +570,6 @@ class CloudStorageDirectUploadEntryRepository {
       offset: offset,
       orderBy: orderBy?.call(CloudStorageDirectUploadEntry.t),
       orderByList: orderByList?.call(CloudStorageDirectUploadEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -608,8 +590,6 @@ class CloudStorageDirectUploadEntryRepository {
     _i1.DatabaseSession session,
     List<CloudStorageDirectUploadEntry> rows, {
     _i1.OrderByBuilder<CloudStorageDirectUploadEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -618,8 +598,6 @@ class CloudStorageDirectUploadEntryRepository {
       rows,
       orderBy: orderBy?.call(CloudStorageDirectUploadEntry.t),
       orderByList: orderByList?.call(CloudStorageDirectUploadEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -650,8 +628,6 @@ class CloudStorageDirectUploadEntryRepository {
     required _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>
     where,
     _i1.OrderByBuilder<CloudStorageDirectUploadEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -660,8 +636,6 @@ class CloudStorageDirectUploadEntryRepository {
       where: where(CloudStorageDirectUploadEntry.t),
       orderBy: orderBy?.call(CloudStorageDirectUploadEntry.t),
       orderByList: orderByList?.call(CloudStorageDirectUploadEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

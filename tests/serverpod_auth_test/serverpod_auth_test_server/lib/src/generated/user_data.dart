@@ -114,8 +114,6 @@ abstract class UserData
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UserDataTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UserDataTable>? orderByList,
     UserDataInclude? include,
   }) {
@@ -124,8 +122,6 @@ abstract class UserData
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UserData.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(UserData.t),
       include: include,
     );
@@ -278,8 +274,6 @@ class UserDataIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -326,8 +320,6 @@ class UserDataRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UserDataTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UserDataTable>? orderByList,
     _i1.Transaction? transaction,
     UserDataInclude? include,
@@ -338,8 +330,6 @@ class UserDataRepository {
       where: where?.call(UserData.t),
       orderBy: orderBy?.call(UserData.t),
       orderByList: orderByList?.call(UserData.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -371,8 +361,6 @@ class UserDataRepository {
     _i1.WhereExpressionBuilder<UserDataTable>? where,
     int? offset,
     _i1.OrderByBuilder<UserDataTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UserDataTable>? orderByList,
     _i1.Transaction? transaction,
     UserDataInclude? include,
@@ -383,8 +371,6 @@ class UserDataRepository {
       where: where?.call(UserData.t),
       orderBy: orderBy?.call(UserData.t),
       orderByList: orderByList?.call(UserData.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -592,8 +578,6 @@ class UserDataRepository {
     int? offset,
     _i1.OrderByBuilder<UserDataTable>? orderBy,
     _i1.OrderByListBuilder<UserDataTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -604,8 +588,6 @@ class UserDataRepository {
       offset: offset,
       orderBy: orderBy?.call(UserData.t),
       orderByList: orderByList?.call(UserData.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -626,8 +608,6 @@ class UserDataRepository {
     _i1.DatabaseSession session,
     List<UserData> rows, {
     _i1.OrderByBuilder<UserDataTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UserDataTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -636,8 +616,6 @@ class UserDataRepository {
       rows,
       orderBy: orderBy?.call(UserData.t),
       orderByList: orderByList?.call(UserData.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -667,8 +645,6 @@ class UserDataRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UserDataTable> where,
     _i1.OrderByBuilder<UserDataTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UserDataTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -677,8 +653,6 @@ class UserDataRepository {
       where: where(UserData.t),
       orderBy: orderBy?.call(UserData.t),
       orderByList: orderByList?.call(UserData.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

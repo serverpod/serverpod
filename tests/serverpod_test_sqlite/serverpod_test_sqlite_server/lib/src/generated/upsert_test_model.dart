@@ -93,8 +93,6 @@ abstract class UpsertTestModel
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UpsertTestModelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UpsertTestModelTable>? orderByList,
     UpsertTestModelInclude? include,
   }) {
@@ -103,8 +101,6 @@ abstract class UpsertTestModel
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UpsertTestModel.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(UpsertTestModel.t),
       include: include,
     );
@@ -220,8 +216,6 @@ class UpsertTestModelIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -266,8 +260,6 @@ class UpsertTestModelRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UpsertTestModelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UpsertTestModelTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -277,8 +269,6 @@ class UpsertTestModelRepository {
       where: where?.call(UpsertTestModel.t),
       orderBy: orderBy?.call(UpsertTestModel.t),
       orderByList: orderByList?.call(UpsertTestModel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -309,8 +299,6 @@ class UpsertTestModelRepository {
     _i1.WhereExpressionBuilder<UpsertTestModelTable>? where,
     int? offset,
     _i1.OrderByBuilder<UpsertTestModelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UpsertTestModelTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -320,8 +308,6 @@ class UpsertTestModelRepository {
       where: where?.call(UpsertTestModel.t),
       orderBy: orderBy?.call(UpsertTestModel.t),
       orderByList: orderByList?.call(UpsertTestModel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -528,8 +514,6 @@ class UpsertTestModelRepository {
     int? offset,
     _i1.OrderByBuilder<UpsertTestModelTable>? orderBy,
     _i1.OrderByListBuilder<UpsertTestModelTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -540,8 +524,6 @@ class UpsertTestModelRepository {
       offset: offset,
       orderBy: orderBy?.call(UpsertTestModel.t),
       orderByList: orderByList?.call(UpsertTestModel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -562,8 +544,6 @@ class UpsertTestModelRepository {
     _i1.DatabaseSession session,
     List<UpsertTestModel> rows, {
     _i1.OrderByBuilder<UpsertTestModelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UpsertTestModelTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -572,8 +552,6 @@ class UpsertTestModelRepository {
       rows,
       orderBy: orderBy?.call(UpsertTestModel.t),
       orderByList: orderByList?.call(UpsertTestModel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -603,8 +581,6 @@ class UpsertTestModelRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UpsertTestModelTable> where,
     _i1.OrderByBuilder<UpsertTestModelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UpsertTestModelTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -613,8 +589,6 @@ class UpsertTestModelRepository {
       where: where(UpsertTestModel.t),
       orderBy: orderBy?.call(UpsertTestModel.t),
       orderByList: orderByList?.call(UpsertTestModel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

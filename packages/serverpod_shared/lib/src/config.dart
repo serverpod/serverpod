@@ -620,9 +620,9 @@ class PostgresDatabaseConfig extends DatabaseConfig {
 
   /// Creates a config for an embedded PostgreSQL launched in [dataPath].
   ///
-  /// The postmaster is started on demand and reached over a local unix socket
-  /// with trust authentication, so host, port and password do not apply; the
-  /// connection coordinates are resolved at runtime from [dataPath].
+  /// The postmaster is started on demand and reached over a local Unix socket
+  /// when supported, or loopback TCP otherwise. The connection coordinates
+  /// are resolved at runtime from [dataPath].
   PostgresDatabaseConfig.embedded({
     required String dataPath,
     String user = 'postgres',

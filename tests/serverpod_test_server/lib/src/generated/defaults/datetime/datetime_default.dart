@@ -112,8 +112,6 @@ abstract class DateTimeDefault
     int? limit,
     int? offset,
     _i1.OrderByBuilder<DateTimeDefaultTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DateTimeDefaultTable>? orderByList,
     DateTimeDefaultInclude? include,
   }) {
@@ -122,8 +120,6 @@ abstract class DateTimeDefault
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DateTimeDefault.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(DateTimeDefault.t),
       include: include,
     );
@@ -247,8 +243,6 @@ class DateTimeDefaultIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -293,8 +287,6 @@ class DateTimeDefaultRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<DateTimeDefaultTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DateTimeDefaultTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -304,8 +296,6 @@ class DateTimeDefaultRepository {
       where: where?.call(DateTimeDefault.t),
       orderBy: orderBy?.call(DateTimeDefault.t),
       orderByList: orderByList?.call(DateTimeDefault.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -336,8 +326,6 @@ class DateTimeDefaultRepository {
     _i1.WhereExpressionBuilder<DateTimeDefaultTable>? where,
     int? offset,
     _i1.OrderByBuilder<DateTimeDefaultTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DateTimeDefaultTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -347,8 +335,6 @@ class DateTimeDefaultRepository {
       where: where?.call(DateTimeDefault.t),
       orderBy: orderBy?.call(DateTimeDefault.t),
       orderByList: orderByList?.call(DateTimeDefault.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -555,8 +541,6 @@ class DateTimeDefaultRepository {
     int? offset,
     _i1.OrderByBuilder<DateTimeDefaultTable>? orderBy,
     _i1.OrderByListBuilder<DateTimeDefaultTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -567,8 +551,6 @@ class DateTimeDefaultRepository {
       offset: offset,
       orderBy: orderBy?.call(DateTimeDefault.t),
       orderByList: orderByList?.call(DateTimeDefault.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -589,8 +571,6 @@ class DateTimeDefaultRepository {
     _i1.DatabaseSession session,
     List<DateTimeDefault> rows, {
     _i1.OrderByBuilder<DateTimeDefaultTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DateTimeDefaultTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -599,8 +579,6 @@ class DateTimeDefaultRepository {
       rows,
       orderBy: orderBy?.call(DateTimeDefault.t),
       orderByList: orderByList?.call(DateTimeDefault.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -630,8 +608,6 @@ class DateTimeDefaultRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<DateTimeDefaultTable> where,
     _i1.OrderByBuilder<DateTimeDefaultTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DateTimeDefaultTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -640,8 +616,6 @@ class DateTimeDefaultRepository {
       where: where(DateTimeDefault.t),
       orderBy: orderBy?.call(DateTimeDefault.t),
       orderByList: orderByList?.call(DateTimeDefault.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

@@ -46,14 +46,15 @@ Future<ResolvedEmbeddedPostgres?> startOrAttachEmbeddedPostgres(
 
   final EmbeddedStartResult result;
   try {
+    final configuredPassword = config.password.isEmpty ? null : config.password;
     result = await EmbeddedPostgres.startOrAttach(
       EmbeddedPostgresOptions(
         dataDir: dataDir,
         databaseName: config.name,
         username: config.user,
-        transport: UnixTransport(
-          initialPassword: config.password.isEmpty ? null : config.password,
-        ),
+        transport: hasUnixSocketSupport()
+            ? UnixTransport(initialPassword: configuredPassword)
+            : TcpTransport(password: configuredPassword),
         detach: false,
         repairStaleLocks: true,
       ),

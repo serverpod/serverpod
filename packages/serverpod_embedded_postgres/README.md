@@ -2,7 +2,7 @@
 
 Run a real PostgreSQL server as a child process for Serverpod local
 development. Same PG dialect as production, no Docker dependency, no TCP
-port conflicts by default. One Dart call boots the cluster, persistent
+fixed-port conflicts. One Dart call boots the cluster, persistent
 across restarts.
 
 ## Quickstart
@@ -49,13 +49,13 @@ not end users.
 
 ## Two transports
 
-**Unix Domain Socket (default).** Trust authentication; the project
-directory already gates filesystem access to the socket. PG `chdir`s to
-`PGDATA` before binding so `unix_socket_directories = '../run'` lands a
-~20-byte path in `sockaddr_un.sun_path`, well under the 104-byte macOS
-cap regardless of how deep your project lives. Fresh clusters still receive
-an initial superuser password (configured or generated) so the same cluster
-can later be reopened over TCP without reinitialization.
+**Unix Domain Socket (default when supported).** Trust authentication; the
+project directory already gates filesystem access to the socket. PG `chdir`s
+to `PGDATA` before binding so `unix_socket_directories = '../run'` lands a
+~20-byte path in `sockaddr_un.sun_path`, well under the 104-byte macOS cap
+regardless of how deep your project lives. Fresh clusters still receive an
+initial superuser password (configured or generated) so the same cluster can
+later be reopened over TCP without reinitialization.
 
 **TCP loopback (`TcpTransport`).** scram-sha-256 against `127.0.0.1`,
 password via [TcpTransport.password] (Serverpod passes `config/passwords.yaml`
@@ -63,6 +63,7 @@ password via [TcpTransport.password] (Serverpod passes `config/passwords.yaml`
 `<.serverpod>/postgres.password` for warm-restart consistency. The default
 `TcpTransport(port: 0)` gets an ephemeral port; explicit ports are honored.
 Port-race collision is retried up to 3 times before bubbling up.
+Platforms without Unix domain socket support select this transport by default.
 
 ```dart
 // TCP variant:

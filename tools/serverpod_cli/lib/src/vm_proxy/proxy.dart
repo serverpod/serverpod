@@ -92,7 +92,12 @@ class VmServiceProxy {
       }
       await [
         for (final wc in waiting)
-          _attachUpstream(wc.ws, upstreamWs, existingDownSub: wc.sub),
+          _attachUpstream(
+            wc.ws,
+            upstreamWs,
+            existingDownSub: wc.sub,
+            bufferedClientFrames: wc.buffered,
+          ),
       ].wait;
     }
   }
@@ -160,8 +165,14 @@ class VmServiceProxy {
       // callback owns its own error reporting.
       unawaited(Future(cb).catchError((Object _, StackTrace _) {}));
     }
+    // A real VM-service client (an IDE's DAP) sends its handshake -
+    // getVersion, streamListen, etc. - immediately upon connecting; it has
+    // no way of knowing an upstream isn't ready yet. Buffer those frames
+    // instead of discarding them so they can be replayed once paired
+    // (see _Pair._flushBufferedThenResume); otherwise the client is left
+    // waiting forever on a response to a request that was never forwarded.
     wc.sub = downstream.listen(
-      (_) {},
+      wc.buffered.add,
       onDone: () {
         if (_waitingClients.remove(wc)) wc.timer?.cancel();
       },
@@ -181,6 +192,7 @@ class VmServiceProxy {
     WebSocket downstream,
     Uri upstreamWs, {
     StreamSubscription<dynamic>? existingDownSub,
+    List<Object?> bufferedClientFrames = const [],
   }) async {
     WebSocket upstream;
     try {
@@ -196,6 +208,7 @@ class VmServiceProxy {
       () => _interceptor,
       _interceptDirections,
       existingDownSub: existingDownSub,
+      bufferedClientFrames: bufferedClientFrames,
     );
     _pairs.add(pair);
     unawaited(pair.done.whenComplete(() => _pairs.remove(pair)));
@@ -233,6 +246,7 @@ class _Pair {
   final Set<Direction> _interceptDirections;
   StreamSubscription<dynamic>? _downSub;
   StreamSubscription<dynamic>? _upSub;
+  final List<Object?> _bufferedClientFrames;
   final Completer<void> _done = Completer<void>();
 
   _Pair(
@@ -241,19 +255,22 @@ class _Pair {
     this._resolveInterceptor,
     this._interceptDirections, {
     StreamSubscription<dynamic>? existingDownSub,
-  }) : _downSub = existingDownSub;
+    List<Object?> bufferedClientFrames = const [],
+  }) : _downSub = existingDownSub,
+       _bufferedClientFrames = bufferedClientFrames;
 
   Future<void> get done => _done.future;
 
   void start() {
     final existing = _downSub;
     if (existing != null) {
-      // Re-aim the handlers on the pre-existing subscription from the
-      // waiting-client phase. WebSocket is single-subscription so we
-      // can't listen again.
-      existing.onData((data) => _onFrame(Direction.clientToServer, data));
-      existing.onDone(_close);
-      existing.onError((_) => _close());
+      // Pause immediately so nothing reaches the still-installed
+      // waiting-client handler (which appends to _bufferedClientFrames)
+      // while we flush it below - otherwise a frame arriving mid-flush
+      // could be lost or, iterating the same list, throw concurrent
+      // modification.
+      existing.pause();
+      unawaited(_flushBufferedThenResume(existing));
     } else {
       _downSub = _down.listen(
         (data) => _onFrame(Direction.clientToServer, data),
@@ -268,6 +285,23 @@ class _Pair {
       onError: (_) => _close(),
       cancelOnError: false,
     );
+  }
+
+  /// Replays frames the client sent while it was still in the waiting
+  /// queue, in order, through the same interceptor path as live traffic,
+  /// then re-aims the pre-existing subscription (WebSocket is
+  /// single-subscription so we can't listen again) at live forwarding and
+  /// resumes it.
+  Future<void> _flushBufferedThenResume(
+    StreamSubscription<dynamic> existing,
+  ) async {
+    for (final data in _bufferedClientFrames) {
+      await _onFrame(Direction.clientToServer, data);
+    }
+    existing.onData((data) => _onFrame(Direction.clientToServer, data));
+    existing.onDone(_close);
+    existing.onError((_) => _close());
+    existing.resume();
   }
 
   Future<void> _onFrame(Direction dir, Object? data) async {
@@ -336,6 +370,11 @@ class _Pair {
 class _WaitingClient {
   _WaitingClient(this.ws);
   final WebSocket ws;
+
+  /// Frames the client sent while queued here, in arrival order. Replayed
+  /// once an upstream pairs with this client (see
+  /// [_Pair._flushBufferedThenResume]).
+  final List<Object?> buffered = [];
   StreamSubscription<dynamic>? sub;
   Timer? timer;
 }

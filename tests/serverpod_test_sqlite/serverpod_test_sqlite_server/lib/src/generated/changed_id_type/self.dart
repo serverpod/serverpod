@@ -163,8 +163,6 @@ abstract class ChangedIdTypeSelf
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
     ChangedIdTypeSelfInclude? include,
   }) {
@@ -173,8 +171,6 @@ abstract class ChangedIdTypeSelf
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ChangedIdTypeSelf.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(ChangedIdTypeSelf.t),
       include: include,
     );
@@ -437,8 +433,6 @@ class ChangedIdTypeSelfIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -491,8 +485,6 @@ class ChangedIdTypeSelfRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
     _i1.Transaction? transaction,
     ChangedIdTypeSelfInclude? include,
@@ -503,8 +495,6 @@ class ChangedIdTypeSelfRepository {
       where: where?.call(ChangedIdTypeSelf.t),
       orderBy: orderBy?.call(ChangedIdTypeSelf.t),
       orderByList: orderByList?.call(ChangedIdTypeSelf.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -536,8 +526,6 @@ class ChangedIdTypeSelfRepository {
     _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable>? where,
     int? offset,
     _i1.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
     _i1.Transaction? transaction,
     ChangedIdTypeSelfInclude? include,
@@ -548,8 +536,6 @@ class ChangedIdTypeSelfRepository {
       where: where?.call(ChangedIdTypeSelf.t),
       orderBy: orderBy?.call(ChangedIdTypeSelf.t),
       orderByList: orderByList?.call(ChangedIdTypeSelf.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -759,8 +745,6 @@ class ChangedIdTypeSelfRepository {
     int? offset,
     _i1.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
     _i1.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -771,8 +755,6 @@ class ChangedIdTypeSelfRepository {
       offset: offset,
       orderBy: orderBy?.call(ChangedIdTypeSelf.t),
       orderByList: orderByList?.call(ChangedIdTypeSelf.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -793,8 +775,6 @@ class ChangedIdTypeSelfRepository {
     _i1.DatabaseSession session,
     List<ChangedIdTypeSelf> rows, {
     _i1.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -803,8 +783,6 @@ class ChangedIdTypeSelfRepository {
       rows,
       orderBy: orderBy?.call(ChangedIdTypeSelf.t),
       orderByList: orderByList?.call(ChangedIdTypeSelf.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -834,8 +812,6 @@ class ChangedIdTypeSelfRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable> where,
     _i1.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -844,8 +820,6 @@ class ChangedIdTypeSelfRepository {
       where: where(ChangedIdTypeSelf.t),
       orderBy: orderBy?.call(ChangedIdTypeSelf.t),
       orderByList: orderByList?.call(ChangedIdTypeSelf.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

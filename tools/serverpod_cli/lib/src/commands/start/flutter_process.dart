@@ -40,8 +40,8 @@ class FlutterNotInstalledException implements Exception {
 
 /// Manages a `flutter run --machine` subprocess. Mirrors [ServerProcess].
 /// IDE attach flows through [flutterProxy] (which owns the stable
-/// vm-service URI and the `flutter-vm-service-info.json` file);
-/// reload/restart go via [FlutterDaemonProtocol] over daemon stdin.
+/// vm-service URI and the per-app `flutter-vm-service-info-<appId>.json`
+/// file); reload/restart go via [FlutterDaemonProtocol] over daemon stdin.
 class FlutterProcess {
   static const _rawLogDeduplicationWindow = Duration(seconds: 5);
   static const _maxRecentRawLogLines = 1000;

@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 void main() {
   group('Apple sign-in button localization', () {
@@ -21,16 +20,13 @@ void main() {
                 onPressed: null,
                 isLoading: false,
                 isDisabled: false,
-                type: AppleButtonText.signupWith,
+                text: SignInButtonTextVariant.signUpWith,
               ),
             ),
           ),
         );
 
-        final button = tester.widget<SignInWithAppleButton>(
-          find.byType(SignInWithAppleButton),
-        );
-        expect(button.text, 'Sign up with Apple');
+        expect(find.text('Sign up with Apple'), findsOneWidget);
       },
     );
 
@@ -47,16 +43,13 @@ void main() {
                 onPressed: null,
                 isLoading: false,
                 isDisabled: false,
-                type: AppleButtonText.signinWith,
+                text: SignInButtonTextVariant.signInWith,
               ),
             ),
           ),
         );
 
-        final button = tester.widget<SignInWithAppleButton>(
-          find.byType(SignInWithAppleButton),
-        );
-        expect(button.text, 'Use Apple account');
+        expect(find.text('Use Apple account'), findsOneWidget);
       },
     );
   });
@@ -64,7 +57,7 @@ void main() {
   group('Google sign-in button localization', () {
     testWidgets(
       'Given default SignInLocalizationProvider with no override, '
-      'when building the GoogleSignInNativeButton with sign-in variant while loading, '
+      'when building the GoogleSignInNativeButton with sign-in variant, '
       'then the enum-based English fallback is used.',
       (tester) async {
         await tester.pumpWidget(
@@ -72,9 +65,9 @@ void main() {
             child: SignInLocalizationProvider(
               child: GoogleSignInNativeButton(
                 onPressed: null,
-                isLoading: true,
+                isLoading: false,
                 isDisabled: false,
-                text: GSIButtonText.signinWith,
+                text: SignInButtonTextVariant.signInWith,
               ),
             ),
           ),
@@ -86,7 +79,7 @@ void main() {
 
     testWidgets(
       'Given SignInLocalizationProvider with Google sign-in button label override, '
-      'when building the GoogleSignInNativeButton with sign-up variant while loading, '
+      'when building the GoogleSignInNativeButton with sign-up variant, '
       'then the override label is shown instead of the enum fallback.',
       (tester) async {
         await tester.pumpWidget(
@@ -95,9 +88,9 @@ void main() {
               google: GoogleSignInTexts(signInButton: 'Use Google account'),
               child: GoogleSignInNativeButton(
                 onPressed: null,
-                isLoading: true,
+                isLoading: false,
                 isDisabled: false,
-                text: GSIButtonText.signupWith,
+                text: SignInButtonTextVariant.signUpWith,
               ),
             ),
           ),
@@ -122,7 +115,7 @@ void main() {
                 onPressed: null,
                 isLoading: false,
                 isDisabled: false,
-                text: GitHubButtonText.signUp,
+                text: SignInButtonTextVariant.signUpWith,
               ),
             ),
           ),
@@ -147,7 +140,7 @@ void main() {
                 onPressed: null,
                 isLoading: false,
                 isDisabled: false,
-                text: GitHubButtonText.continueWith,
+                text: SignInButtonTextVariant.continueWith,
               ),
             ),
           ),
@@ -174,7 +167,7 @@ void main() {
                 onPressed: null,
                 isLoading: false,
                 isDisabled: false,
-                text: MicrosoftButtonText.signUp,
+                text: SignInButtonTextVariant.signUpWith,
               ),
             ),
           ),
@@ -201,7 +194,7 @@ void main() {
                 onPressed: null,
                 isLoading: false,
                 isDisabled: false,
-                text: MicrosoftButtonText.continueWith,
+                text: SignInButtonTextVariant.continueWith,
               ),
             ),
           ),

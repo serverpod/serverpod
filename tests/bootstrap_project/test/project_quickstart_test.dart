@@ -95,6 +95,25 @@ void main() async {
                 );
               });
 
+              test(
+                'has a src/cache_busting.dart file',
+                () {
+                  expect(
+                    File(
+                      path.join(
+                        tempPath,
+                        serverDir,
+                        'lib',
+                        'src',
+                        'cache_busting.dart',
+                      ),
+                    ).existsSync(),
+                    isTrue,
+                    reason: 'Server cache_busting.dart file does not exist.',
+                  );
+                },
+              );
+
               test('has a server.dart file', () {
                 expect(
                   File(
@@ -103,6 +122,93 @@ void main() async {
                   isTrue,
                 );
               });
+
+              test(
+                'then the server.dart contains webapp configurations',
+                () {
+                  final file = File(
+                    path.join(tempPath, serverDir, 'lib', 'server.dart'),
+                  );
+
+                  final content = file.readAsStringSync();
+
+                  expect(
+                    content,
+                    contains("import 'src/cache_busting.dart';"),
+                    reason:
+                        'server.dart does not contain webapp configurations.',
+                  );
+
+                  expect(
+                    content,
+                    contains("import 'src/web/routes/app_config_route.dart';"),
+                    reason:
+                        'server.dart does not contain webapp configurations.',
+                  );
+
+                  expect(
+                    content,
+                    contains(
+                      'StaticRoute.withCacheBusting(cacheBustingConfig)',
+                    ),
+                    reason:
+                        'server.dart does not contain webapp configurations.',
+                  );
+
+                  expect(
+                    content,
+                    contains('AppConfigRoute(apiConfig: pod.config.apiServer)'),
+                    reason:
+                        'server.dart does not contain webapp configurations.',
+                  );
+
+                  expect(
+                    content,
+                    contains(
+                      "final appDir = Directory(Uri(path: 'web/app').toFilePath())",
+                    ),
+                    reason:
+                        'server.dart does not contain webapp configurations.',
+                  );
+
+                  expect(
+                    content,
+                    contains('if (appDir.existsSync()) {'),
+                    reason:
+                        'server.dart does not contain webapp configurations.',
+                  );
+
+                  expect(
+                    content,
+                    contains(
+                      "Uri(path: 'web/pages/build_flutter_app.html').toFilePath()",
+                    ),
+                    reason:
+                        'server.dart does not contain webapp configurations.',
+                  );
+
+                  expect(
+                    content,
+                    contains('pod.webServer.addMiddleware('),
+                    reason:
+                        'server.dart does not contain webapp configurations.',
+                  );
+
+                  expect(
+                    content,
+                    contains('FallbackMiddleware('),
+                    reason:
+                        'server.dart does not contain webapp configurations.',
+                  );
+
+                  expect(
+                    content,
+                    contains('on: (response) => response.statusCode == 404'),
+                    reason:
+                        'server.dart does not contain webapp configurations.',
+                  );
+                },
+              );
 
               test('has an example_endpoint file', () {
                 expect(
