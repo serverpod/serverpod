@@ -156,7 +156,7 @@ database:
   );
 
   group(
-    'Given a Serverpod project configured with PostgreSQL without dataPath,',
+    'Given a Serverpod project configured with PostgreSQL on localhost without dataPath,',
     () {
       late Directory serverDirectory;
 
@@ -215,6 +215,90 @@ database:
           expect(
             _testLogger.progressMessages,
             isNot(contains(startingDockerServices)),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a Serverpod project configured with PostgreSQL on 127.0.0.1 without dataPath,',
+    () {
+      late Directory serverDirectory;
+
+      setUp(() async {
+        final projectRoot = await _createTestProject('''
+database:
+  host: 127.0.0.1
+  port: 5432
+  name: test
+  user: postgres
+''');
+        serverDirectory = Directory(p.join(projectRoot.path, 'test_server'));
+        _testLogger.reset();
+      });
+
+      test(
+        'when serverpod start runs without a Docker flag, '
+        'then Docker services startup is requested.',
+        () async {
+          await _createComposeFile(serverDirectory);
+
+          await _runStart(serverDirectory: serverDirectory);
+
+          expect(
+            _testLogger.progressMessages,
+            contains(startingDockerServices),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a Serverpod project configured with remote PostgreSQL without dataPath,',
+    () {
+      late Directory serverDirectory;
+
+      setUp(() async {
+        final projectRoot = await _createTestProject('''
+database:
+  host: db.example.com
+  port: 5432
+  name: test
+  user: postgres
+''');
+        serverDirectory = Directory(p.join(projectRoot.path, 'test_server'));
+        _testLogger.reset();
+      });
+
+      test(
+        'when serverpod start runs without a Docker flag, '
+        'then Docker services startup is skipped.',
+        () async {
+          await _createComposeFile(serverDirectory);
+
+          await _runStart(serverDirectory: serverDirectory);
+
+          expect(
+            _testLogger.progressMessages,
+            isNot(contains(startingDockerServices)),
+          );
+        },
+      );
+
+      test(
+        'when serverpod start runs with --docker, '
+        'then Docker services startup is requested.',
+        () async {
+          await _runStart(
+            serverDirectory: serverDirectory,
+            dockerArgument: '--docker',
+          );
+
+          expect(
+            _testLogger.progressMessages,
+            contains(startingDockerServices),
           );
         },
       );

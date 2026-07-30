@@ -75,9 +75,9 @@ enum StartOption<V> implements OptionDefinition<V> {
       helpText:
           'Start Docker Compose services if a Docker Compose file exists. '
           'Defaults to on if the project has a Docker Compose file and the '
-          'database is configured to PostgreSQL without a dataPath. Otherwise, '
-          'defaults to off. Pass --docker or --no-docker to override the '
-          'default behavior.',
+          'database is configured to PostgreSQL on localhost without a '
+          'dataPath. Otherwise, defaults to off. Pass --docker or '
+          '--no-docker to override the default behavior.',
     ),
   ),
   tui(
@@ -313,7 +313,11 @@ bool _resolveStartDocker({
       serverDir: serverDir,
     );
     final database = serverConfig.database;
-    return database is PostgresDatabaseConfig && database.dataPath == null;
+    if (database is! PostgresDatabaseConfig || database.dataPath != null) {
+      return false;
+    }
+    return database.host.toLowerCase() == 'localhost' ||
+        database.host == '127.0.0.1';
   } catch (_) {
     // Config may be incomplete during early project setup; do not start
     // Docker automatically. Users can still pass --docker explicitly.
