@@ -638,8 +638,7 @@ class Serverpod {
       _databasePoolManager = databaseProvider.createPoolManager(
         serializationManager,
         runtimeParametersBuilder,
-        databaseConfiguration,
-        serverDirectory: serverDirectory,
+        databaseConfiguration.withResolvedLocalPath(serverDirectory.path),
       );
     }
 

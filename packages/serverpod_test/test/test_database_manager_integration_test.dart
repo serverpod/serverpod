@@ -26,8 +26,7 @@ void main() {
         name: 'serverpod_test',
       );
       resolved = (await startOrAttachEmbeddedPostgres(
-        config,
-        baseDirectory: tmpRoot,
+        config.withResolvedLocalPath(tmpRoot.path),
       ))!;
       manager = TestDatabaseManager(resolved.connectivity);
     });

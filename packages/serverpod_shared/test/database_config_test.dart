@@ -905,6 +905,102 @@ database:
   );
 
   test(
+    'Given a SqliteDatabaseConfig a relative filePath, '
+    'when resolving local path against a base directory, '
+    'then the local path is resolved correctly.',
+    () {
+      final config = SqliteDatabaseConfig(filePath: 'data/app.db');
+
+      expect(
+        config.withResolvedLocalPath('/srv/server').filePath,
+        p.normalize(p.join('/srv/server', 'data', 'app.db')),
+      );
+    },
+  );
+
+  test(
+    'Given a SqliteDatabaseConfig a absolute filePath, '
+    'when resolving local path against a base directory, '
+    'then the config is returned unchanged.',
+    () {
+      final config = SqliteDatabaseConfig(filePath: '/var/lib/app.db');
+
+      expect(
+        identical(config.withResolvedLocalPath('/srv/server'), config),
+        isTrue,
+      );
+    },
+  );
+
+  test(
+    'Given a SqliteDatabaseConfig a :memory: filePath, '
+    'when resolving local path against a base directory, '
+    'then the config is returned unchanged.',
+    () {
+      final config = SqliteDatabaseConfig(filePath: ':memory:');
+
+      expect(
+        identical(config.withResolvedLocalPath('/srv/server'), config),
+        isTrue,
+      );
+    },
+  );
+
+  test(
+    'Given a PostgresDatabaseConfig a relative dataPath, '
+    'when resolving local path against a base directory, '
+    'then the local path is resolved correctly.',
+    () {
+      final config = PostgresDatabaseConfig.embedded(
+        dataPath: '.serverpod/pgdata',
+        name: 'app',
+      );
+
+      expect(
+        config.withResolvedLocalPath('/srv/server').dataPath,
+        p.normalize(p.join('/srv/server', '.serverpod', 'pgdata')),
+      );
+    },
+  );
+
+  test(
+    'Given a PostgresDatabaseConfig a absolute dataPath, '
+    'when resolving local path against a base directory, '
+    'then the config is returned unchanged.',
+    () {
+      final config = PostgresDatabaseConfig.embedded(
+        dataPath: '/var/lib/pgdata',
+        name: 'app',
+      );
+
+      expect(
+        identical(config.withResolvedLocalPath('/srv/server'), config),
+        isTrue,
+      );
+    },
+  );
+
+  test(
+    'Given a PostgresDatabaseConfig a null dataPath, '
+    'when resolving local path against a base directory, '
+    'then the config is returned unchanged.',
+    () {
+      final config = PostgresDatabaseConfig(
+        host: 'localhost',
+        port: 5432,
+        user: 'postgres',
+        password: 'secret',
+        name: 'app',
+      );
+
+      expect(
+        identical(config.withResolvedLocalPath('/srv/server'), config),
+        isTrue,
+      );
+    },
+  );
+
+  test(
     'Given a SqliteDatabaseConfig with custom maxConnectionCount then value is set.',
     () {
       var config = SqliteDatabaseConfig(

@@ -1,11 +1,9 @@
 import 'dart:io';
 
 import 'package:cli_tools/cli_tools.dart';
-import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/config_info/config_info.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_database/serverpod_database.dart';
-import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
 
 /// Runs the project's pending database migrations from outside the pod.
 ///
@@ -36,16 +34,11 @@ Future<List<String>> applyPendingMigrations({
 
   final serializationManager = _CliSerializationManager(moduleName);
 
-  // Resolve relative SQLite paths against [serverDir] so the CLI opens
-  // the same file the pod will
-  final resolvedDbConfig = _resolveDbConfigPaths(dbConfig, serverDir);
-
-  final pool = DatabaseProvider.forDialect(resolvedDbConfig.dialect)
-      .createPoolManager(
-        serializationManager,
-        null,
-        resolvedDbConfig,
-      );
+  final pool = DatabaseProvider.forDialect(dbConfig.dialect).createPoolManager(
+    serializationManager,
+    null,
+    dbConfig.withResolvedLocalPath(serverDir),
+  );
   await pool.started;
 
   try {
@@ -108,21 +101,6 @@ String runModeFromServerArgs(List<String> serverArgs) {
     }
   }
   return 'development';
-}
-
-/// Returns [dbConfig] with any relative SQLite [SqliteDatabaseConfig.filePath]
-/// resolved against [serverDir]. Non-SQLite configs and already-absolute
-/// paths are returned unchanged.
-DatabaseConfig _resolveDbConfigPaths(
-  DatabaseConfig dbConfig,
-  String serverDir,
-) {
-  if (dbConfig is! SqliteDatabaseConfig) return dbConfig;
-  if (p.isAbsolute(dbConfig.filePath)) return dbConfig;
-  return SqliteDatabaseConfig(
-    filePath: p.normalize(p.join(serverDir, dbConfig.filePath)),
-    maxConnectionCount: dbConfig.maxConnectionCount,
-  );
 }
 
 /// Minimal [DatabaseSerializationManager] stub. The CLI doesn't have
