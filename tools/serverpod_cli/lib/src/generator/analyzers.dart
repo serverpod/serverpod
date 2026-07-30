@@ -4,6 +4,8 @@ import 'package:analyzer/file_system/overlay_file_system.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/dart/definitions.dart'
+    show FutureCallDefinition;
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/util/analysis_helpers.dart';
@@ -272,41 +274,14 @@ class Analyzers {
       success &= !futureCallsAnalyzerCollector.hasSevereErrors;
       futureCallsAnalyzerCollector.printErrors();
 
-      // Make the future calls file resolvable before analyzing endpoints, so
-      // that endpoints importing the generated future calls file can resolve
-      // it on a clean tree. Future call generation does not depend on
-      // endpoints. Like the protocol stub above, the content is shadowed in
-      // the analyzer only; the file on disk is written once, by
-      // generateProtocolDefinition below.
-      final futureCallsCode = const DartServerCodeGenerator()
-          .generateFutureCallsCode(
-            protocolDefinition: ProtocolDefinition(
-              endpoints: const [],
-              models: allModels,
-              futureCalls: futureCalls,
-            ),
-            config: config,
-          );
-      for (final entry in futureCallsCode.entries) {
-        final overlay = _overlay;
-        if (overlay != null) {
-          final analyzerPath = p.normalize(File(entry.key).absolute.path);
-          overlay.setOverlay(
-            analyzerPath,
-            content: entry.value,
-            modificationStamp: DateTime.now().microsecondsSinceEpoch,
-          );
-          futureCallsOverlayPaths.add(analyzerPath);
-        } else {
-          // No overlay provider backing the analysis context; fall back to
-          // writing the file to disk. It is overwritten (with identical
-          // content) by generateProtocolDefinition below.
-          final file = File(entry.key);
-          await file.create(recursive: true);
-          await file.writeAsString(entry.value, flush: true);
-        }
-        changedFiles.add(entry.key);
-      }
+      futureCallsOverlayPaths.addAll(
+        await _shadowFutureCallsFile(
+          models: allModels,
+          futureCalls: futureCalls,
+          config: config,
+          changedFiles: changedFiles,
+        ),
+      );
 
       log.debug('Analyzing the endpoints.');
       final endpointAnalyzerCollector = CodeGenerationCollector();
@@ -422,6 +397,56 @@ class Analyzers {
         }
       }
     }
+  }
+
+  /// Makes the generated future calls file resolvable before endpoint
+  /// analysis, so endpoints that import it to schedule future calls don't
+  /// fail analysis on a clean tree, aborting generation before the file
+  /// would be written.
+  ///
+  /// Like the temporary protocols, the content is shadowed in the analyzer
+  /// via the overlay (or written to disk without one); the real file is
+  /// written by [ServerpodCodeGenerator.generateProtocolDefinition]. Returns
+  /// the overlaid paths for the caller to retire after that write.
+  Future<List<String>> _shadowFutureCallsFile({
+    required List<SerializableModelDefinition> models,
+    required List<FutureCallDefinition> futureCalls,
+    required GeneratorConfig config,
+    required Set<String> changedFiles,
+  }) async {
+    final overlayPaths = <String>[];
+
+    final futureCallsCode = const DartServerCodeGenerator()
+        .generateFutureCallsCode(
+          protocolDefinition: ProtocolDefinition(
+            endpoints: const [],
+            models: models,
+            futureCalls: futureCalls,
+          ),
+          config: config,
+        );
+
+    for (final entry in futureCallsCode.entries) {
+      final overlay = _overlay;
+      if (overlay != null) {
+        // Overlay paths must use the same normalization as
+        // refreshAnalysisContext.
+        final analyzerPath = p.normalize(File(entry.key).absolute.path);
+        overlay.setOverlay(
+          analyzerPath,
+          content: entry.value,
+          modificationStamp: DateTime.now().microsecondsSinceEpoch,
+        );
+        overlayPaths.add(analyzerPath);
+      } else {
+        final file = File(entry.key);
+        await file.create(recursive: true);
+        await file.writeAsString(entry.value, flush: true);
+      }
+      changedFiles.add(entry.key);
+    }
+
+    return overlayPaths;
   }
 }
 
