@@ -4,6 +4,8 @@ import 'package:analyzer/file_system/overlay_file_system.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/dart/definitions.dart'
+    show FutureCallDefinition;
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/util/analysis_helpers.dart';
@@ -12,6 +14,7 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 import '../commands/generate.dart';
 import 'code_generation_collector.dart';
+import 'dart/server_code_generator.dart';
 import 'dart/temp_protocol_generator.dart';
 import 'serverpod_code_generator.dart';
 
@@ -161,6 +164,8 @@ class Analyzers {
     var wroteStubsToDisk = false;
     var wroteFullProtocol = false;
     final tempProtocolPaths = <String>[];
+    // Analyzer paths where the future calls file is currently shadowed.
+    final futureCallsOverlayPaths = <String>[];
 
     try {
       log.debug('Analyzing serializable models in the protocol directory.');
@@ -259,6 +264,25 @@ class Analyzers {
           ? {...?affectedPaths, ...generatedModelFiles}
           : {...?affectedPaths};
 
+      log.debug('Analyzing the future calls.');
+      var futureCallsAnalyzerCollector = CodeGenerationCollector();
+      var futureCalls = await _futureCalls.analyze(
+        collector: futureCallsAnalyzerCollector,
+        changedFiles: changedFiles,
+      );
+
+      success &= !futureCallsAnalyzerCollector.hasSevereErrors;
+      futureCallsAnalyzerCollector.printErrors();
+
+      futureCallsOverlayPaths.addAll(
+        await _shadowFutureCallsFile(
+          models: allModels,
+          futureCalls: futureCalls,
+          config: config,
+          changedFiles: changedFiles,
+        ),
+      );
+
       log.debug('Analyzing the endpoints.');
       final endpointAnalyzerCollector = CodeGenerationCollector();
       final endpoints = await _endpoints.analyze(
@@ -269,16 +293,6 @@ class Analyzers {
 
       success &= !endpointAnalyzerCollector.hasSevereErrors;
       endpointAnalyzerCollector.printErrors();
-
-      log.debug('Analyzing the future calls.');
-      var futureCallsAnalyzerCollector = CodeGenerationCollector();
-      var futureCalls = await _futureCalls.analyze(
-        collector: futureCallsAnalyzerCollector,
-        changedFiles: changedFiles,
-      );
-
-      success &= !futureCallsAnalyzerCollector.hasSevereErrors;
-      futureCallsAnalyzerCollector.printErrors();
 
       log.debug('Generating the protocol.');
       var protocolDefinition = ProtocolDefinition(
@@ -296,6 +310,7 @@ class Analyzers {
 
       // The full protocols are on disk now (or were already up to date); retire
       // the stub overlays so analysis resolves their real content from here on.
+      // Same for the future calls overlay.
       if (stubOverlayPaths.isNotEmpty) {
         for (final path in stubOverlayPaths) {
           _overlay!.removeOverlay(path);
@@ -305,6 +320,16 @@ class Analyzers {
           _futureCalls.collection,
           tempProtocolPaths,
         );
+      }
+      if (futureCallsOverlayPaths.isNotEmpty) {
+        for (final path in futureCallsOverlayPaths) {
+          _overlay!.removeOverlay(path);
+        }
+        await refreshAnalysisContext(
+          _futureCalls.collection,
+          futureCallsOverlayPaths,
+        );
+        futureCallsOverlayPaths.clear();
       }
 
       log.debug('Cleaning old files.');
@@ -354,6 +379,15 @@ class Analyzers {
           tempProtocolPaths,
         );
       }
+      if (futureCallsOverlayPaths.isNotEmpty) {
+        for (final path in futureCallsOverlayPaths) {
+          _overlay!.removeOverlay(path);
+        }
+        await refreshAnalysisContext(
+          _futureCalls.collection,
+          futureCallsOverlayPaths,
+        );
+      }
       if (wroteStubsToDisk && !wroteFullProtocol) {
         for (final protocolPath in tempProtocolPaths) {
           final backup = protocolBackups[protocolPath];
@@ -363,6 +397,56 @@ class Analyzers {
         }
       }
     }
+  }
+
+  /// Makes the generated future calls file resolvable before endpoint
+  /// analysis, so endpoints that import it to schedule future calls don't
+  /// fail analysis on a clean tree, aborting generation before the file
+  /// would be written.
+  ///
+  /// Like the temporary protocols, the content is shadowed in the analyzer
+  /// via the overlay (or written to disk without one); the real file is
+  /// written by [ServerpodCodeGenerator.generateProtocolDefinition]. Returns
+  /// the overlaid paths for the caller to retire after that write.
+  Future<List<String>> _shadowFutureCallsFile({
+    required List<SerializableModelDefinition> models,
+    required List<FutureCallDefinition> futureCalls,
+    required GeneratorConfig config,
+    required Set<String> changedFiles,
+  }) async {
+    final overlayPaths = <String>[];
+
+    final futureCallsCode = const DartServerCodeGenerator()
+        .generateFutureCallsCode(
+          protocolDefinition: ProtocolDefinition(
+            endpoints: const [],
+            models: models,
+            futureCalls: futureCalls,
+          ),
+          config: config,
+        );
+
+    for (final entry in futureCallsCode.entries) {
+      final overlay = _overlay;
+      if (overlay != null) {
+        // Overlay paths must use the same normalization as
+        // refreshAnalysisContext.
+        final analyzerPath = p.normalize(File(entry.key).absolute.path);
+        overlay.setOverlay(
+          analyzerPath,
+          content: entry.value,
+          modificationStamp: DateTime.now().microsecondsSinceEpoch,
+        );
+        overlayPaths.add(analyzerPath);
+      } else {
+        final file = File(entry.key);
+        await file.create(recursive: true);
+        await file.writeAsString(entry.value, flush: true);
+      }
+      changedFiles.add(entry.key);
+    }
+
+    return overlayPaths;
   }
 }
 

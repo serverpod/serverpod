@@ -7,7 +7,6 @@ import 'package:test/test.dart';
 import 'package:serverpod/serverpod.dart';
 
 import 'package:serverpod_test_client/serverpod_test_client.dart';
-import 'package:serverpod_test_server/src/futureCalls/test_exception_call.dart';
 import 'package:serverpod_test_server/src/generated/endpoints.dart' as e;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as p;
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
@@ -131,7 +130,6 @@ void main() {
             diagnosticEventHandlers: [exceptionHandler],
           ),
         );
-        pod.registerFutureCall(TestExceptionCall(), 'testExceptionCall');
         await pod.startWithDatabase();
         client = Client(pod.apiUrl);
       });
