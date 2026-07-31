@@ -852,6 +852,37 @@ jobs:
         run: util/run_tests_e2e_host firefox ${{ matrix.shard }} 5
         timeout-minutes: 15
 
+  # Client-side databases run on Flutter web (executed in a browser).
+  client_database_web_tests:
+    name: Client database web tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ["3.38.4", "3.44.4"]
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: ./.github/actions/use-flutter
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: false
+      - uses: browser-actions/setup-chrome@2e1d749697dd1612b833dba4a722266286fbefcd # v2.1.2
+      - name: Retry transient Dart build-hook failures
+        uses: ./.github/actions/use-dart-test-retry
+      - name: Resolve melos
+        uses: ./.github/actions/retry
+        with:
+          command: dart pub get
+      # The run also covers serverpod_test_sqlite_client, which comes along as a
+      # path dependency of the Flutter package under --include-dependencies.
+      - name: Bootstrap
+        uses: ./.github/actions/retry
+        with:
+          command: dart run melos bootstrap --scope='serverpod_test_sqlite_flutter' --include-dependencies
+      - name: Run client database web tests
+        run: util/run_tests_client_database_web
+        timeout-minutes: 20
+
   serverpod_shared_integration_tests:
     name: serverpod_shared integration tests
     runs-on: ubuntu-latest

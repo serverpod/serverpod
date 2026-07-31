@@ -573,6 +573,13 @@ abstract class DatabaseConfig {
     throw error!;
   }
 
+  /// Returns this config with a relative local database path resolved against
+  /// [baseDirectory]. Missing, empty, and absolute local database paths are
+  /// returned unchanged.
+  ///
+  /// If the config does not have a local database path, returns itself.
+  DatabaseConfig withResolvedLocalPath(String baseDirectory) => this;
+
   @override
   String toString() {
     var str = '';
@@ -599,9 +606,8 @@ class PostgresDatabaseConfig extends DatabaseConfig {
   /// When non-null and non-empty after trimming, [PostgresPoolManager] boots a
   /// managed postmaster in this directory before opening connections.
   ///
-  /// Relative paths are resolved from [Directory.current] when the pool starts
-  /// (typically the server package root). The CLI resolves relative paths
-  /// against the server directory before connecting.
+  /// Relative paths should be resolved with [withResolvedLocalPath] at the
+  /// server boundary before the pool starts.
   final String? dataPath;
 
   /// Creates a new [PostgresDatabaseConfig].
@@ -652,6 +658,30 @@ class PostgresDatabaseConfig extends DatabaseConfig {
     maxConnectionCount: maxConnectionCount,
     dataPath: dataPath,
   );
+
+  /// Returns this config with a relative [dataPath] resolved against
+  /// [baseDirectory].
+  ///
+  /// Missing, empty, and absolute [dataPath] values are returned unchanged.
+  @override
+  PostgresDatabaseConfig withResolvedLocalPath(String baseDirectory) {
+    final dataPath = this.dataPath?.trim();
+    if (dataPath == null || dataPath.isEmpty || path.isAbsolute(dataPath)) {
+      return this;
+    }
+    return PostgresDatabaseConfig(
+      host: host,
+      port: port,
+      user: user,
+      password: password,
+      name: name,
+      requireSsl: requireSsl,
+      isUnixSocket: isUnixSocket,
+      searchPaths: searchPaths,
+      maxConnectionCount: maxConnectionCount,
+      dataPath: path.normalize(path.join(baseDirectory, dataPath)),
+    );
+  }
 
   factory PostgresDatabaseConfig._fromJson(
     Map dbSetup,
@@ -739,6 +769,21 @@ class SqliteDatabaseConfig extends DatabaseConfig {
 
   /// The file path to the SQLite database.
   String get filePath => host;
+
+  /// Returns this config with a relative [filePath] resolved against
+  /// [baseDirectory].
+  ///
+  /// `:memory:` and absolute paths are returned unchanged. Use this at the
+  /// server boundary; [SqliteDatabaseConfig] consumers (including clients)
+  /// should not assume a process working directory.
+  @override
+  SqliteDatabaseConfig withResolvedLocalPath(String baseDirectory) {
+    if (filePath == ':memory:' || path.isAbsolute(filePath)) return this;
+    return SqliteDatabaseConfig(
+      filePath: path.normalize(path.join(baseDirectory, filePath)),
+      maxConnectionCount: maxConnectionCount,
+    );
+  }
 
   factory SqliteDatabaseConfig._fromJson(
     Map dbSetup,
@@ -940,7 +985,7 @@ enum ConsoleLogFormat {
   json,
 
   /// Human-readable text format.
-  text
+  text,
   ;
 
   /// Returns a list of all enum names.

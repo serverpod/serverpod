@@ -60,12 +60,10 @@ class DartServerCodeGenerator extends CodeGenerator {
           serverClassGenerator.generateProtocol().generateCode(),
       p.joinAll([...config.generatedServerEndpointFilePathParts]):
           serverClassGenerator.generateServerEndpointDispatch().generateCode(),
-      if (protocolDefinition.shouldGenerateFutureCalls)
-        p.joinAll([
-          ...config.generatedServerFutureCallFilePathParts,
-        ]): serverClassGenerator
-            .generateServerFutureCalls()
-            .generateCode(),
+      ...generateFutureCallsCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      ),
     };
 
     var generatedServerTestToolsPathParts =
@@ -87,5 +85,32 @@ class DartServerCodeGenerator extends CodeGenerator {
     }
 
     return codeMap;
+  }
+
+  /// Generates the server future calls file, if the [protocolDefinition]
+  /// contains any future calls.
+  ///
+  /// This only depends on the future calls (not the endpoints) of the
+  /// [protocolDefinition], so it can be generated before endpoint analysis.
+  Map<String, String> generateFutureCallsCode({
+    required ProtocolDefinition protocolDefinition,
+    required GeneratorConfig config,
+  }) {
+    if (!protocolDefinition.shouldGenerateFutureCalls) return {};
+
+    var serverClassGenerator = LibraryGenerator(
+      serverCode: true,
+      sharedPackage: false,
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+
+    return {
+      p.joinAll([
+        ...config.generatedServerFutureCallFilePathParts,
+      ]): serverClassGenerator
+          .generateServerFutureCalls()
+          .generateCode(),
+    };
   }
 }

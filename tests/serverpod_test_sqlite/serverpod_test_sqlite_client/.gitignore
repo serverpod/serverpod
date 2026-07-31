@@ -11,3 +11,7 @@ build/
 
 # Directory created by dartdoc
 doc/api/
+
+# SQLite web assets provisioned by util/setup_sqlite_web_assets
+test/**/sqlite3.wasm
+test/**/db_worker.js
