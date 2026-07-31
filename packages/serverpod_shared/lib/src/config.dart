@@ -606,7 +606,7 @@ class PostgresDatabaseConfig extends DatabaseConfig {
   /// When non-null and non-empty after trimming, [PostgresPoolManager] boots a
   /// managed postmaster in this directory before opening connections.
   ///
-  /// Relative paths should be resolved with [withResolvedDataPath] at the
+  /// Relative paths should be resolved with [withResolvedLocalPath] at the
   /// server boundary before the pool starts.
   final String? dataPath;
 
@@ -985,7 +985,7 @@ enum ConsoleLogFormat {
   json,
 
   /// Human-readable text format.
-  text
+  text,
   ;
 
   /// Returns a list of all enum names.

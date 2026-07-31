@@ -905,7 +905,7 @@ database:
   );
 
   test(
-    'Given a SqliteDatabaseConfig a relative filePath, '
+    'Given a SqliteDatabaseConfig with a relative filePath, '
     'when resolving local path against a base directory, '
     'then the local path is resolved correctly.',
     () {
@@ -919,7 +919,7 @@ database:
   );
 
   test(
-    'Given a SqliteDatabaseConfig a absolute filePath, '
+    'Given a SqliteDatabaseConfig with an absolute filePath, '
     'when resolving local path against a base directory, '
     'then the config is returned unchanged.',
     () {
@@ -933,7 +933,7 @@ database:
   );
 
   test(
-    'Given a SqliteDatabaseConfig a :memory: filePath, '
+    'Given a SqliteDatabaseConfig with a :memory: filePath, '
     'when resolving local path against a base directory, '
     'then the config is returned unchanged.',
     () {
@@ -947,7 +947,7 @@ database:
   );
 
   test(
-    'Given a PostgresDatabaseConfig a relative dataPath, '
+    'Given a PostgresDatabaseConfig with a relative dataPath, '
     'when resolving local path against a base directory, '
     'then the local path is resolved correctly.',
     () {
@@ -964,7 +964,7 @@ database:
   );
 
   test(
-    'Given a PostgresDatabaseConfig a absolute dataPath, '
+    'Given a PostgresDatabaseConfig with an absolute dataPath, '
     'when resolving local path against a base directory, '
     'then the config is returned unchanged.',
     () {
@@ -981,7 +981,7 @@ database:
   );
 
   test(
-    'Given a PostgresDatabaseConfig a null dataPath, '
+    'Given a PostgresDatabaseConfig with a null dataPath, '
     'when resolving local path against a base directory, '
     'then the config is returned unchanged.',
     () {

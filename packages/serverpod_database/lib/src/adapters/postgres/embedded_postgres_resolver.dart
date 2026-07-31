@@ -30,7 +30,7 @@ class ResolvedEmbeddedPostgres {
 ///
 /// Returns `null` when [config] has no `dataPath` (it points at an
 /// externally-managed server). Relative `dataPath` values are used as-is
-/// (typically already resolved with [DatabaseConfig.withResolvedDataPath]).
+/// (typically already resolved with [DatabaseConfig.withResolvedLocalPath]).
 ///
 /// This pulls `package:serverpod_embedded_postgres` (and its `dart:ffi`
 /// dependencies), so it is deliberately NOT exported from the package barrel -
