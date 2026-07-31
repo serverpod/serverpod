@@ -465,7 +465,7 @@ class TypeDefinition {
                 .where(
                   (m) =>
                       _sharedPackageNameOfUrl(
-                        m.sharedModelsSourcePathsParts.keys,
+                        m.sharedPackageRootPathParts.keys,
                         url,
                       ) !=
                       null,

@@ -5,6 +5,7 @@ import 'package:package_config/package_config.dart';
 import 'package:path/path.dart' as path;
 import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:serverpod_cli/src/config/config.dart';
+import 'package:serverpod_cli/src/config/serverpod_manifest.dart';
 import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:yaml/yaml.dart';
@@ -27,6 +28,7 @@ List<ModuleConfig> loadModuleConfigs({
 
   var moduleConfigs = _loadModuleConfigs(
     modules: projectModuleDependencies,
+    packageConfig: packageConfig,
     nickNameOverrides: nickNameOverrides,
   );
 
@@ -92,6 +94,7 @@ Set<Package> _listModuleDependencies({
 
 List<ModuleConfig> _loadModuleConfigs({
   required Set<Package> modules,
+  required PackageConfig packageConfig,
   Map<String, String?> nickNameOverrides = const {},
 }) {
   var moduleConfigs = <ModuleConfig>[];
@@ -128,12 +131,15 @@ List<ModuleConfig> _loadModuleConfigs({
           nickname: nickname,
           migrationVersions: migrationVersions,
           serverPackageDirectoryPathParts: packageSrcRoot.pathSegments,
-          sharedModelsSourcePathsParts: _sharedPackages(
+          sharedPackageRootPathParts: _sharedPackageRoots(
             packageSrcRoot,
-            moduleInfo,
+            packageConfig,
+            moduleName,
           ),
         ),
       );
+    } on ServerpodModulesNotFoundException {
+      rethrow;
     } catch (e) {
       continue;
     }
@@ -147,33 +153,41 @@ Map<dynamic, dynamic> loadConfigFile(File file) {
   return loadYaml(yaml) as Map;
 }
 
-/// Reads the shared packages a module owns from its config, mapping each
-/// package name to its path parts relative to the module's server package.
-/// Entries that cannot be resolved are skipped; a dependency's own config is
-/// validated when the dependency itself is generated.
-Map<String, List<String>> _sharedPackages(
+/// Reads the shared packages advertised by an installed module, mapping each
+/// package name to the package root resolved by the current package config.
+Map<String, List<String>> _sharedPackageRoots(
   Uri packageSrcRoot,
-  Map<dynamic, dynamic> moduleInfo,
+  PackageConfig packageConfig,
+  String moduleName,
 ) {
-  var sharedPackages = moduleInfo['shared_packages'];
-  if (sharedPackages is! YamlList) {
-    return const {};
+  var manifestFile = File.fromUri(
+    packageSrcRoot.resolve(
+      'lib/src/generated/${ServerpodManifest.fileName}',
+    ),
+  );
+
+  ServerpodManifest? manifest;
+  try {
+    manifest = ServerpodManifest.tryLoadSync(manifestFile);
+  } on ServerpodManifestException catch (error) {
+    throw ServerpodModulesNotFoundException(
+      'Failed to load the generated Serverpod manifest for module '
+      '$moduleName: $error',
+    );
   }
+  if (manifest == null) return const {};
 
   var result = <String, List<String>>{};
-  for (var sharedPath in sharedPackages) {
-    if (sharedPath is! String || path.isAbsolute(sharedPath)) {
-      continue;
-    }
-    try {
-      var pubspecFile = File.fromUri(
-        packageSrcRoot.resolve('$sharedPath/pubspec.yaml'),
+  for (var packageName in manifest.sharedPackages) {
+    var package = packageConfig[packageName];
+    if (package == null) {
+      throw ServerpodModulesNotFoundException(
+        'Module $moduleName advertises shared package $packageName, but it '
+        'could not be located in the package config.',
       );
-      var pubspec = parsePubspec(pubspecFile);
-      result[pubspec.name] = path.split(sharedPath);
-    } catch (_) {
-      continue;
     }
+
+    result[packageName] = package.root.pathSegments;
   }
   return result;
 }

@@ -89,7 +89,7 @@ class ModelHelper {
       // the module (same as its server models): available as endpoint types,
       // but not regenerated here.
       for (var sharedSourcePathParts
-          in moduleConfig.sharedPackageSourcePathParts) {
+          in moduleConfig.sharedPackageRootPathParts.values) {
         modelSource = await _loadYamlModelsFromDisk(
           moduleAlias: moduleConfig.nickname,
           loadConfig: moduleConfig,

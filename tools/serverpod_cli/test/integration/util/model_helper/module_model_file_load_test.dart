@@ -1201,10 +1201,8 @@ fields:
           .withModules([
             ModuleConfigBuilder('test_module')
                 .withServerPackageDirectoryPathParts(split(moduleProject.path))
-                .withSharedModelsSourcePathsParts({
-                  'test_module_shared': split(
-                    relative(sharedPackage.path, from: moduleProject.path),
-                  ),
+                .withSharedPackageRootPathParts({
+                  'test_module_shared': split(sharedPackage.path),
                 })
                 .build(),
           ])

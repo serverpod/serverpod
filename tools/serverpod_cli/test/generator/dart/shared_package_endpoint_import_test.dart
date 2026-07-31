@@ -147,7 +147,7 @@ void main() {
         var config = GeneratorConfigBuilder()
             .withName(_projectName)
             .withModules([
-              ModuleConfigBuilder(_moduleName).withSharedModelsSourcePathsParts(
+              ModuleConfigBuilder(_moduleName).withSharedPackageRootPathParts(
                 {
                   _moduleSharedPackageName: ['..', _moduleSharedPackageName],
                 },
