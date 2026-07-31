@@ -1,28 +1,26 @@
-# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
-# Mode: development
+# TEMPLATE
 
 publish_to: none
 
-name: serverpod_test_sqlite_client
+name: serverpod_test_sqlite_flutter
 version: 1.0.0
-description: SQLite project test client for Serverpod.
+description: Flutter web tests for Serverpod client-side databases.
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '^3.10.3'
+  sdk: DART_VERSION
+  flutter: FLUTTER_VERSION
 
 dependencies:
-  serverpod_auth_core_client: 4.0.0-beta.1
-  serverpod_auth_idp_client: 4.0.0-beta.1
-  serverpod_client: 4.0.0-beta.1
-  serverpod_service_client: 4.0.0-beta.1
-  serverpod_test_sqlite_shared:
-    path: ../serverpod_test_sqlite_shared
+  flutter:
+    sdk: flutter
+  serverpod_test_sqlite_client:
+    path: ../serverpod_test_sqlite_client
 
 dev_dependencies:
-  path: ^1.8.3
-  serverpod_database: 4.0.0-beta.1
-  test: ^1.25.5
+  flutter_test:
+    sdk: flutter
+  serverpod_database: SERVERPOD_VERSION
 
 dependency_overrides:
   serverpod_auth_core_client:
@@ -41,3 +39,6 @@ dependency_overrides:
     path: ../../../packages/serverpod_service_client
   serverpod_shared:
     path: ../../../packages/serverpod_shared
+
+flutter:
+  uses-material-design: true

@@ -57,8 +57,7 @@ development:
             ).createPoolManager(
               _TestSerializationManager(),
               null,
-              databaseConfig,
-              serverDirectory: serverDir,
+              databaseConfig.withResolvedLocalPath(serverDir.path),
             );
 
         await poolManager!.started;
@@ -139,8 +138,7 @@ development:
         'then a generated non-empty password authenticates.',
         () async {
           resolvedPostgres = await startOrAttachEmbeddedPostgres(
-            databaseConfig,
-            baseDirectory: serverDir,
+            databaseConfig.withResolvedLocalPath(serverDir.path),
           );
           expect(
             resolvedPostgres!.connectivity.isUnixSocket,

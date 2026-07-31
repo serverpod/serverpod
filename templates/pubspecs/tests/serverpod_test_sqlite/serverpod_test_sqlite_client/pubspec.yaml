@@ -19,6 +19,7 @@ dependencies:
     path: ../serverpod_test_sqlite_shared
 
 dev_dependencies:
+  path: ^1.8.3
   serverpod_database: SERVERPOD_VERSION
   test: ^1.25.5
 
