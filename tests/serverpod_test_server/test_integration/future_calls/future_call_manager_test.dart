@@ -795,8 +795,8 @@ void main() async {
             matches(
               'Attempted to run a FutureCall that was not registered. This is likely due '
               'to changing a FutureCall method after it was scheduled, leading to an '
-              'entry that no longer has a matching method. For legacy future calls, '
-              r'make sure they are registered in the server start. Entry: \{.*\"name\":\s*\"scheduled-but-unregistered-call\".*\}',
+              'entry that no longer has a matching method. '
+              r'Entry: \{.*\"name\":\s*\"scheduled-but-unregistered-call\".*\}',
             ),
           );
         },
