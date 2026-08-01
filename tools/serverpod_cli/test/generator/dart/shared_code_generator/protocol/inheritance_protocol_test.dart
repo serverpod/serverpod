@@ -170,21 +170,21 @@ void main() {
             expect(deserializeMethod, isNotNull);
           });
 
-          test('that does NOT return $parentClassName.fromJson', () {
+          test('that does NOT reference $parentClassName.fromJson', () {
             expect(
-              deserializeMethod!.toSource().contains(
-                'return _i3.$parentClassName.fromJson',
+              protocolClass!.toSource().contains(
+                '_i3.$parentClassName.fromJson',
               ),
               isFalse,
             );
           });
 
           test(
-            'that returns $childClassName.fromJson with the top nodes alias',
+            'that calls $childClassName.fromJson with the top nodes alias',
             () {
               expect(
-                deserializeMethod!.toSource().contains(
-                  'return _i2.$childClassName.fromJson',
+                protocolClass!.toSource().contains(
+                  '_i2.$childClassName.fromJson',
                 ),
                 isTrue,
               );
@@ -192,11 +192,11 @@ void main() {
           );
 
           test(
-            'that does return $grandchildClassName.fromJson with the top nodes alias',
+            'that calls $grandchildClassName.fromJson with the top nodes alias',
             () {
               expect(
-                deserializeMethod!.toSource().contains(
-                  'return _i2.$grandchildClassName.fromJson',
+                protocolClass!.toSource().contains(
+                  '_i2.$grandchildClassName.fromJson',
                 ),
                 isTrue,
               );

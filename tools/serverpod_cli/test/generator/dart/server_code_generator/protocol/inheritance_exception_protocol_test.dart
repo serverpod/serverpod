@@ -164,10 +164,10 @@ void main() {
           });
 
           test(
-            'that does NOT return $parentClassName.fromJson.',
+            'that does NOT reference $parentClassName.fromJson.',
             () {
               expect(
-                deserializeMethod!.toSource().contains(
+                protocolClass.toSource().contains(
                   '$parentClassName.fromJson',
                 ),
                 isFalse,
@@ -175,18 +175,18 @@ void main() {
             },
           );
 
-          test('that returns $childClassName.fromJson.', () {
+          test('that calls $childClassName.fromJson.', () {
             expect(
-              deserializeMethod!.toSource().contains(
+              protocolClass.toSource().contains(
                 '$childClassName.fromJson',
               ),
               isTrue,
             );
           });
 
-          test('that returns $grandchildClassName.fromJson.', () {
+          test('that calls $grandchildClassName.fromJson.', () {
             expect(
-              deserializeMethod!.toSource().contains(
+              protocolClass.toSource().contains(
                 '$grandchildClassName.fromJson',
               ),
               isTrue,
