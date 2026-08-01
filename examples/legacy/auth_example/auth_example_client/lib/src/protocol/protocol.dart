@@ -12,8 +12,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'example.dart' as _i2;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i3;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i2;
+import 'example.dart' as _i3;
 export 'example.dart';
 export 'client.dart';
 
@@ -23,6 +23,9 @@ class Protocol extends _i1.SerializationManager {
   factory Protocol() => _instance;
 
   static final Protocol _instance = Protocol._().._registerHostProtocols();
+
+  static final Map<Type, dynamic Function(dynamic, Protocol)> _deserializers =
+      _buildDeserializers();
 
   static String? getClassNameFromObjectJson(dynamic data) {
     if (data is! Map) return null;
@@ -51,21 +54,19 @@ class Protocol extends _i1.SerializationManager {
       }
     }
 
-    if (t == _i2.Example) {
-      return _i2.Example.fromJson(data) as T;
-    }
-    if (t == _i1.getType<_i2.Example?>()) {
-      return (data != null ? _i2.Example.fromJson(data) : null) as T;
+    final fn = _deserializers[t];
+    if (fn != null) {
+      return fn(data, this) as T;
     }
     try {
-      return _i3.Protocol().deserialize<T>(data, t);
+      return _i2.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _i2.Example => 'Example',
+      _i3.Example => 'Example',
       _ => null,
     };
   }
@@ -83,10 +84,10 @@ class Protocol extends _i1.SerializationManager {
     }
 
     switch (data) {
-      case _i2.Example():
+      case _i3.Example():
         return 'Example';
     }
-    className = _i3.Protocol().getClassNameForObject(data);
+    className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.') ? className : 'serverpod_auth.$className';
     }
@@ -100,17 +101,17 @@ class Protocol extends _i1.SerializationManager {
       return super.deserializeByClassName(data);
     }
     if (dataClassName == 'Example') {
-      return deserialize<_i2.Example>(data['data']);
+      return deserialize<_i3.Example>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth.')) {
       data['className'] = dataClassName.substring(15);
-      return _i3.Protocol().deserializeByClassName(data);
+      return _i2.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
 
   void _registerHostProtocols() {
-    _i3.Protocol().registerHostProtocol('auth_example', this);
+    _i2.Protocol().registerHostProtocol('auth_example', this);
   }
 
   @override
@@ -126,8 +127,16 @@ class Protocol extends _i1.SerializationManager {
       return null;
     }
     try {
-      return _i3.Protocol().mapRecordToJson(record);
+      return _i2.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
+  }
+
+  static Map<Type, dynamic Function(dynamic, Protocol)> _buildDeserializers() {
+    final map = <Type, dynamic Function(dynamic, Protocol)>{};
+    map[_i3.Example] = (data, protocol) => _i3.Example.fromJson(data);
+    map[_i1.getType<_i3.Example?>()] = (data, protocol) =>
+        (data != null ? _i3.Example.fromJson(data) : null);
+    return map;
   }
 }

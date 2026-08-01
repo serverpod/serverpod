@@ -32,6 +32,9 @@ class Protocol extends _i1.DatabaseSerializationManager {
 
   final Set<_i1.SerializationManager> _hostProtocols = {};
 
+  static final Map<Type, dynamic Function(dynamic, Protocol)> _deserializers =
+      _buildDeserializers();
+
   static List<_i2.TableDefinition> get targetTableDefinitions => [
     _i2.TableDefinition(
       name: 'serverpod_auth_migration_migrated_user',
@@ -153,11 +156,9 @@ class Protocol extends _i1.DatabaseSerializationManager {
       }
     }
 
-    if (t == _i7.MigratedUser) {
-      return _i7.MigratedUser.fromJson(data) as T;
-    }
-    if (t == _i1.getType<_i7.MigratedUser?>()) {
-      return (data != null ? _i7.MigratedUser.fromJson(data) : null) as T;
+    final fn = _deserializers[t];
+    if (fn != null) {
+      return fn(data, this) as T;
     }
     try {
       return _i3.Protocol().deserialize<T>(data, t);
@@ -350,5 +351,13 @@ class Protocol extends _i1.DatabaseSerializationManager {
       return _i6.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
+  }
+
+  static Map<Type, dynamic Function(dynamic, Protocol)> _buildDeserializers() {
+    final map = <Type, dynamic Function(dynamic, Protocol)>{};
+    map[_i7.MigratedUser] = (data, protocol) => _i7.MigratedUser.fromJson(data);
+    map[_i1.getType<_i7.MigratedUser?>()] = (data, protocol) =>
+        (data != null ? _i7.MigratedUser.fromJson(data) : null);
+    return map;
   }
 }

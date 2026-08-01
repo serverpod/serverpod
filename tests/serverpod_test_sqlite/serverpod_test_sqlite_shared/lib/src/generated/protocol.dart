@@ -13,11 +13,11 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import 'package:serverpod_serialization/serverpod_serialization.dart' as _i2;
-import 'shared/enum.dart' as _i3;
-import 'shared/subclass.dart' as _i4;
-import 'shared/model.dart' as _i5;
-import 'shared/shared_table_record.dart' as _i6;
-import 'package:serverpod_database/serverpod_database.dart' as _i7;
+import 'package:serverpod_database/serverpod_database.dart' as _i3;
+import 'shared/enum.dart' as _i4;
+import 'shared/subclass.dart' as _i5;
+import 'shared/model.dart' as _i6;
+import 'shared/shared_table_record.dart' as _i7;
 export 'shared/enum.dart';
 export 'shared/subclass.dart';
 export 'shared/model.dart';
@@ -31,6 +31,9 @@ class Protocol extends _i1.DatabaseSerializationManager {
   static final Protocol _instance = Protocol._();
 
   final Set<_i2.SerializationManager> _hostProtocols = {};
+
+  static final Map<Type, dynamic Function(dynamic, Protocol)> _deserializers =
+      _buildDeserializers();
 
   static List<_i1.TableDefinition> get targetTableDefinitions => [
     _i1.TableDefinition(
@@ -112,42 +115,22 @@ class Protocol extends _i1.DatabaseSerializationManager {
       }
     }
 
-    if (t == _i3.SharedEnum) {
-      return _i3.SharedEnum.fromJson(data) as T;
-    }
-    if (t == _i4.SharedSubclass) {
-      return _i4.SharedSubclass.fromJson(data) as T;
-    }
-    if (t == _i5.SharedModel) {
-      return _i5.SharedModel.fromJson(data) as T;
-    }
-    if (t == _i6.SharedTableRecord) {
-      return _i6.SharedTableRecord.fromJson(data) as T;
-    }
-    if (t == _i2.getType<_i3.SharedEnum?>()) {
-      return (data != null ? _i3.SharedEnum.fromJson(data) : null) as T;
-    }
-    if (t == _i2.getType<_i4.SharedSubclass?>()) {
-      return (data != null ? _i4.SharedSubclass.fromJson(data) : null) as T;
-    }
-    if (t == _i2.getType<_i5.SharedModel?>()) {
-      return (data != null ? _i5.SharedModel.fromJson(data) : null) as T;
-    }
-    if (t == _i2.getType<_i6.SharedTableRecord?>()) {
-      return (data != null ? _i6.SharedTableRecord.fromJson(data) : null) as T;
+    final fn = _deserializers[t];
+    if (fn != null) {
+      return fn(data, this) as T;
     }
     try {
-      return _i7.Protocol().deserialize<T>(data, t);
+      return _i3.Protocol().deserialize<T>(data, t);
     } on _i2.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _i3.SharedEnum => 'SharedEnum',
-      _i4.SharedSubclass => 'SharedSubclass',
-      _i5.SharedModel => 'SharedModel',
-      _i6.SharedTableRecord => 'SharedTableRecord',
+      _i4.SharedEnum => 'SharedEnum',
+      _i5.SharedSubclass => 'SharedSubclass',
+      _i6.SharedModel => 'SharedModel',
+      _i7.SharedTableRecord => 'SharedTableRecord',
       _ => null,
     };
   }
@@ -165,13 +148,13 @@ class Protocol extends _i1.DatabaseSerializationManager {
     }
 
     switch (data) {
-      case _i3.SharedEnum():
+      case _i4.SharedEnum():
         return 'SharedEnum';
-      case _i4.SharedSubclass():
+      case _i5.SharedSubclass():
         return 'SharedSubclass';
-      case _i5.SharedModel():
+      case _i6.SharedModel():
         return 'SharedModel';
-      case _i6.SharedTableRecord():
+      case _i7.SharedTableRecord():
         return 'SharedTableRecord';
     }
     return null;
@@ -184,16 +167,16 @@ class Protocol extends _i1.DatabaseSerializationManager {
       return super.deserializeByClassName(data);
     }
     if (dataClassName == 'SharedEnum') {
-      return deserialize<_i3.SharedEnum>(data['data']);
+      return deserialize<_i4.SharedEnum>(data['data']);
     }
     if (dataClassName == 'SharedSubclass') {
-      return deserialize<_i4.SharedSubclass>(data['data']);
+      return deserialize<_i5.SharedSubclass>(data['data']);
     }
     if (dataClassName == 'SharedModel') {
-      return deserialize<_i5.SharedModel>(data['data']);
+      return deserialize<_i6.SharedModel>(data['data']);
     }
     if (dataClassName == 'SharedTableRecord') {
-      return deserialize<_i6.SharedTableRecord>(data['data']);
+      return deserialize<_i7.SharedTableRecord>(data['data']);
     }
     return super.deserializeByClassName(data);
   }
@@ -260,8 +243,8 @@ class Protocol extends _i1.DatabaseSerializationManager {
   @override
   _i1.Table? getTableForType(Type t) {
     switch (t) {
-      case _i6.SharedTableRecord:
-        return _i6.SharedTableRecord.t;
+      case _i7.SharedTableRecord:
+        return _i7.SharedTableRecord.t;
     }
     return null;
   }
@@ -283,8 +266,27 @@ class Protocol extends _i1.DatabaseSerializationManager {
       return null;
     }
     try {
-      return _i7.Protocol().mapRecordToJson(record);
+      return _i3.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
+  }
+
+  static Map<Type, dynamic Function(dynamic, Protocol)> _buildDeserializers() {
+    final map = <Type, dynamic Function(dynamic, Protocol)>{};
+    map[_i4.SharedEnum] = (data, protocol) => _i4.SharedEnum.fromJson(data);
+    map[_i5.SharedSubclass] = (data, protocol) =>
+        _i5.SharedSubclass.fromJson(data);
+    map[_i6.SharedModel] = (data, protocol) => _i6.SharedModel.fromJson(data);
+    map[_i7.SharedTableRecord] = (data, protocol) =>
+        _i7.SharedTableRecord.fromJson(data);
+    map[_i2.getType<_i4.SharedEnum?>()] = (data, protocol) =>
+        (data != null ? _i4.SharedEnum.fromJson(data) : null);
+    map[_i2.getType<_i5.SharedSubclass?>()] = (data, protocol) =>
+        (data != null ? _i5.SharedSubclass.fromJson(data) : null);
+    map[_i2.getType<_i6.SharedModel?>()] = (data, protocol) =>
+        (data != null ? _i6.SharedModel.fromJson(data) : null);
+    map[_i2.getType<_i7.SharedTableRecord?>()] = (data, protocol) =>
+        (data != null ? _i7.SharedTableRecord.fromJson(data) : null);
+    return map;
   }
 }

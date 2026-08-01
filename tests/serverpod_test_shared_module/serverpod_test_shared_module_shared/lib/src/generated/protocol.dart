@@ -25,6 +25,9 @@ class Protocol extends _i1.DatabaseSerializationManager {
 
   final Set<_i2.SerializationManager> _hostProtocols = {};
 
+  static final Map<Type, dynamic Function(dynamic, Protocol)> _deserializers =
+      _buildDeserializers();
+
   static List<_i1.TableDefinition> get targetTableDefinitions => [
     _i1.TableDefinition(
       name: 'shared_module_table',
@@ -95,14 +98,9 @@ class Protocol extends _i1.DatabaseSerializationManager {
       }
     }
 
-    if (t == _i3.SharedModuleTable) {
-      return _i3.SharedModuleTable.fromJson(data) as T;
-    }
-    if (t == _i2.getType<_i3.SharedModuleTable?>()) {
-      return (data != null ? _i3.SharedModuleTable.fromJson(data) : null) as T;
-    }
-    if (t == dynamic) {
-      return deserializeDynamicFieldValue(data) as T;
+    final fn = _deserializers[t];
+    if (fn != null) {
+      return fn(data, this) as T;
     }
     return super.deserialize<T>(data, t);
   }
@@ -230,5 +228,16 @@ class Protocol extends _i1.DatabaseSerializationManager {
       return null;
     }
     throw Exception('Unsupported record type ${record.runtimeType}');
+  }
+
+  static Map<Type, dynamic Function(dynamic, Protocol)> _buildDeserializers() {
+    final map = <Type, dynamic Function(dynamic, Protocol)>{};
+    map[_i3.SharedModuleTable] = (data, protocol) =>
+        _i3.SharedModuleTable.fromJson(data);
+    map[_i2.getType<_i3.SharedModuleTable?>()] = (data, protocol) =>
+        (data != null ? _i3.SharedModuleTable.fromJson(data) : null);
+    map[dynamic] = (data, protocol) =>
+        protocol.deserializeDynamicFieldValue(data);
+    return map;
   }
 }

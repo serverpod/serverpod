@@ -12,9 +12,9 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _i2;
 import 'package:serverpod_test_shared_module_shared/serverpod_test_shared_module_shared.dart'
-    as _i2;
-import 'package:serverpod_client/serverpod_client.dart' as _i3;
+    as _i3;
 export 'package:serverpod_test_shared_module_shared/serverpod_test_shared_module_shared.dart'
     hide Protocol;
 export 'client.dart';
@@ -26,21 +26,24 @@ class Protocol extends _i1.DatabaseSerializationManager {
 
   static final Protocol _instance = Protocol._();
 
-  final Set<_i3.SerializationManager> _hostProtocols = {};
+  final Set<_i2.SerializationManager> _hostProtocols = {};
+
+  static final Map<Type, dynamic Function(dynamic, Protocol)> _deserializers =
+      _buildDeserializers();
 
   static List<_i1.TableDefinition> get targetTableDefinitions => [
-    ..._i2.Protocol() is _i1.DatabaseSerializationManager
-        ? (_i2.Protocol() as _i1.DatabaseSerializationManager)
+    ..._i3.Protocol() is _i1.DatabaseSerializationManager
+        ? (_i3.Protocol() as _i1.DatabaseSerializationManager)
               .getTargetTableDefinitions()
         : [],
   ];
 
   void registerHostProtocol(
     String projectName,
-    _i3.SerializationManager protocol,
+    _i2.SerializationManager protocol,
   ) {
     _hostProtocols.add(protocol);
-    _i2.Protocol().registerHostProtocol(projectName, protocol);
+    _i3.Protocol().registerHostProtocol(projectName, protocol);
   }
 
   static String? getClassNameFromObjectJson(dynamic data) {
@@ -73,9 +76,13 @@ class Protocol extends _i1.DatabaseSerializationManager {
       }
     }
 
+    final fn = _deserializers[t];
+    if (fn != null) {
+      return fn(data, this) as T;
+    }
     try {
-      return _i2.Protocol().deserialize<T>(data, t);
-    } on _i3.DeserializationTypeNotFoundException catch (_) {}
+      return _i3.Protocol().deserialize<T>(data, t);
+    } on _i2.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
@@ -97,7 +104,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
       );
     }
 
-    className = _i2.Protocol().getClassNameForObject(data);
+    className = _i3.Protocol().getClassNameForObject(data);
     if (className != null) return className;
     return null;
   }
@@ -109,7 +116,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
       return super.deserializeByClassName(data);
     }
     try {
-      return _i2.Protocol().deserializeByClassName(data);
+      return _i3.Protocol().deserializeByClassName(data);
     } on FormatException catch (_) {}
     return super.deserializeByClassName(data);
   }
@@ -132,8 +139,8 @@ class Protocol extends _i1.DatabaseSerializationManager {
         'data': object,
       };
       return forProtocol
-          ? _i3.SerializationManager.toEncodableForProtocol(wrapped)
-          : _i3.SerializationManager.toEncodable(wrapped);
+          ? _i2.SerializationManager.toEncodableForProtocol(wrapped)
+          : _i2.SerializationManager.toEncodable(wrapped);
     }
     return super.dynamicFieldToJson(object, forProtocol: forProtocol);
   }
@@ -176,7 +183,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
   @override
   _i1.Table? getTableForType(Type t) {
     {
-      var protocol = _i2.Protocol();
+      var protocol = _i3.Protocol();
       var table = protocol is _i1.DatabaseSerializationManager
           ? (protocol as _i1.DatabaseSerializationManager).getTableForType(t)
           : null;
@@ -204,5 +211,10 @@ class Protocol extends _i1.DatabaseSerializationManager {
       return null;
     }
     throw Exception('Unsupported record type ${record.runtimeType}');
+  }
+
+  static Map<Type, dynamic Function(dynamic, Protocol)> _buildDeserializers() {
+    final map = <Type, dynamic Function(dynamic, Protocol)>{};
+    return map;
   }
 }

@@ -27,6 +27,9 @@ class Protocol extends _i1.DatabaseSerializationManager {
 
   final Set<_i1.SerializationManager> _hostProtocols = {};
 
+  static final Map<Type, dynamic Function(dynamic, Protocol)> _deserializers =
+      _buildDeserializers();
+
   static List<_i2.TableDefinition> get targetTableDefinitions => [
     ..._i3.Protocol() is _i1.DatabaseSerializationManager
         ? (_i3.Protocol() as _i1.DatabaseSerializationManager)
@@ -72,6 +75,10 @@ class Protocol extends _i1.DatabaseSerializationManager {
       }
     }
 
+    final fn = _deserializers[t];
+    if (fn != null) {
+      return fn(data, this) as T;
+    }
     try {
       return _i3.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
@@ -223,5 +230,10 @@ class Protocol extends _i1.DatabaseSerializationManager {
       return _i2.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
+  }
+
+  static Map<Type, dynamic Function(dynamic, Protocol)> _buildDeserializers() {
+    final map = <Type, dynamic Function(dynamic, Protocol)>{};
+    return map;
   }
 }
