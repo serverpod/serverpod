@@ -78,6 +78,28 @@ class Protocol extends _i1.DatabaseSerializationManager {
 
   final Set<_i2.SerializationManager> _hostProtocols = {};
 
+  static final Map<Type, dynamic Function(dynamic, Protocol)> _deserializers =
+      _buildDeserializers();
+
+  static Map<Type, dynamic Function(dynamic, Protocol)> _buildDeserializers() {
+    final map = <Type, dynamic Function(dynamic, Protocol)>{};
+    map[_i3.SharedEnum] = (data, protocol) => _i3.SharedEnum.fromJson(data);
+    map[_i4.SharedSubclass] = (data, protocol) =>
+        _i4.SharedSubclass.fromJson(data);
+    map[_i5.SharedModel] = (data, protocol) => _i5.SharedModel.fromJson(data);
+    map[_i6.SharedTableRecord] = (data, protocol) =>
+        _i6.SharedTableRecord.fromJson(data);
+    map[_i2.getType<_i3.SharedEnum?>()] = (data, protocol) =>
+        (data != null ? _i3.SharedEnum.fromJson(data) : null);
+    map[_i2.getType<_i4.SharedSubclass?>()] = (data, protocol) =>
+        (data != null ? _i4.SharedSubclass.fromJson(data) : null);
+    map[_i2.getType<_i5.SharedModel?>()] = (data, protocol) =>
+        (data != null ? _i5.SharedModel.fromJson(data) : null);
+    map[_i2.getType<_i6.SharedTableRecord?>()] = (data, protocol) =>
+        (data != null ? _i6.SharedTableRecord.fromJson(data) : null);
+    return map;
+  }
+
   void registerHostProtocol(
     String projectName,
     _i2.SerializationManager protocol,
@@ -112,29 +134,9 @@ class Protocol extends _i1.DatabaseSerializationManager {
       }
     }
 
-    if (t == _i3.SharedEnum) {
-      return _i3.SharedEnum.fromJson(data) as T;
-    }
-    if (t == _i4.SharedSubclass) {
-      return _i4.SharedSubclass.fromJson(data) as T;
-    }
-    if (t == _i5.SharedModel) {
-      return _i5.SharedModel.fromJson(data) as T;
-    }
-    if (t == _i6.SharedTableRecord) {
-      return _i6.SharedTableRecord.fromJson(data) as T;
-    }
-    if (t == _i2.getType<_i3.SharedEnum?>()) {
-      return (data != null ? _i3.SharedEnum.fromJson(data) : null) as T;
-    }
-    if (t == _i2.getType<_i4.SharedSubclass?>()) {
-      return (data != null ? _i4.SharedSubclass.fromJson(data) : null) as T;
-    }
-    if (t == _i2.getType<_i5.SharedModel?>()) {
-      return (data != null ? _i5.SharedModel.fromJson(data) : null) as T;
-    }
-    if (t == _i2.getType<_i6.SharedTableRecord?>()) {
-      return (data != null ? _i6.SharedTableRecord.fromJson(data) : null) as T;
+    final fn = _deserializers[t];
+    if (fn != null) {
+      return fn(data, this) as T;
     }
     try {
       return _i7.Protocol().deserialize<T>(data, t);
