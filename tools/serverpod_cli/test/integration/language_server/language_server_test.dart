@@ -21,15 +21,69 @@ fields:
   name: String
 ''';
 
-const _secondInvalidModelYaml = '''
-class: Example2
-fields:
-  name: (String)
-''';
-
 void main() {
   setUpAll(() {
     CommandLineExperimentalFeatures.initialize([]);
+  });
+
+  group('Given an initialized language server for a project without model '
+      'files', () {
+    late LanguageServerTestSession session;
+    late String modelsDir;
+
+    setUp(() async {
+      await ProjectDirectoryBuilder().build().create();
+
+      modelsDir = p.join(
+        d.sandbox,
+        'project',
+        'my_project_server',
+        'lib',
+        'src',
+        'models',
+      );
+
+      session = LanguageServerTestSession();
+      await session.initialize(Uri.directory(p.join(d.sandbox, 'project')));
+      session.sendInitialized();
+    });
+
+    tearDown(() async {
+      await session.dispose();
+    });
+
+    test(
+      'when an invalid model file is created on disk without being opened '
+      'then diagnostics are published for it.',
+      () async {
+        var newPath = p.join(modelsDir, 'example.spy.yaml');
+        File(newPath).writeAsStringSync(_invalidModelYaml);
+
+        var reported = session.nextDiagnosticsFor(
+          newPath,
+          where: (params) => params.diagnostics.isNotEmpty,
+        );
+        session.sendWatchedFileEvents([(newPath, FileChangeType.Created)]);
+
+        var diagnostics = (await reported).diagnostics;
+        expect(diagnostics.single.message, contains('invalid datatype'));
+      },
+    );
+
+    test(
+      'when a valid model file is created on disk without being opened '
+      'then empty diagnostics are published for it.',
+      () async {
+        var newPath = p.join(modelsDir, 'example.spy.yaml');
+        File(newPath).writeAsStringSync(_validModelYaml);
+
+        var reported = session.nextDiagnosticsFor(newPath);
+        session.sendWatchedFileEvents([(newPath, FileChangeType.Created)]);
+
+        var diagnostics = (await reported).diagnostics;
+        expect(diagnostics, isEmpty);
+      },
+    );
   });
 
   group(
@@ -75,6 +129,22 @@ void main() {
       });
 
       test(
+        'when the model file is deleted on disk '
+        'then empty diagnostics are published for its URI.',
+        () async {
+          File(modelPath).deleteSync();
+
+          var cleared = session.nextDiagnosticsFor(
+            modelPath,
+            where: (params) => params.diagnostics.isEmpty,
+          );
+          session.sendWatchedFileEvents([(modelPath, FileChangeType.Deleted)]);
+
+          await expectLater(cleared, completes);
+        },
+      );
+
+      test(
         'when the model file is renamed on disk '
         'then diagnostics move from the old to the new URI.',
         () async {
@@ -101,42 +171,9 @@ void main() {
       );
 
       test(
-        'when the model file is deleted on disk '
-        'then empty diagnostics are published for its URI.',
-        () async {
-          File(modelPath).deleteSync();
-
-          var cleared = session.nextDiagnosticsFor(
-            modelPath,
-            where: (params) => params.diagnostics.isEmpty,
-          );
-          session.sendWatchedFileEvents([(modelPath, FileChangeType.Deleted)]);
-
-          await expectLater(cleared, completes);
-        },
-      );
-
-      test(
-        'when a new invalid model file is created on disk without being opened '
-        'then diagnostics are published for it.',
-        () async {
-          var newPath = p.join(modelsDir, 'example2.spy.yaml');
-          File(newPath).writeAsStringSync(_secondInvalidModelYaml);
-
-          var reported = session.nextDiagnosticsFor(
-            newPath,
-            where: (params) => params.diagnostics.isNotEmpty,
-          );
-          session.sendWatchedFileEvents([(newPath, FileChangeType.Created)]);
-
-          var diagnostics = (await reported).diagnostics;
-          expect(diagnostics.single.message, contains('invalid datatype'));
-        },
-      );
-
-      test(
         'when the model directory is renamed on disk and only directory-level '
-        'events are delivered then diagnostics move to the new URIs.',
+        'events are delivered '
+        'then diagnostics move to the new URIs.',
         () async {
           var newSubDir = p.join(modelsDir, 'renamed_subdir');
           Directory(subDir).renameSync(newSubDir);
@@ -159,12 +196,54 @@ void main() {
           expect(diagnostics.single.message, contains('invalid datatype'));
         },
       );
+    },
+  );
+
+  group(
+    'Given an initialized language server with an open document for an '
+    'invalid model file',
+    () {
+      late LanguageServerTestSession session;
+      late String modelPath;
+
+      setUp(() async {
+        await ProjectDirectoryBuilder()
+            .withModelDirContents([
+              d.file('example.spy.yaml', _invalidModelYaml),
+            ])
+            .build()
+            .create();
+
+        modelPath = p.join(
+          d.sandbox,
+          'project',
+          'my_project_server',
+          'lib',
+          'src',
+          'models',
+          'example.spy.yaml',
+        );
+
+        session = LanguageServerTestSession();
+        await session.initialize(Uri.directory(p.join(d.sandbox, 'project')));
+        var initialDiagnostics = session.nextDiagnosticsFor(
+          modelPath,
+          where: (params) => params.diagnostics.isNotEmpty,
+        );
+        session.sendInitialized();
+        await initialDiagnostics;
+
+        session.openDocument(modelPath, _invalidModelYaml);
+      });
+
+      tearDown(() async {
+        await session.dispose();
+      });
 
       test(
-        'when a watched change event arrives for an open document '
+        'when a watched change event arrives for the open document '
         'then the editor buffer content stays authoritative.',
         () async {
-          session.openDocument(modelPath, _invalidModelYaml);
           File(modelPath).writeAsStringSync(_validModelYaml);
 
           var revalidated = session.nextDiagnosticsFor(modelPath);
@@ -183,9 +262,9 @@ void main() {
 
       test(
         'when the model file is deleted on disk and the document is then '
-        'closed then empty diagnostics are published for its URI.',
+        'closed '
+        'then empty diagnostics are published for its URI.',
         () async {
-          session.openDocument(modelPath, _invalidModelYaml);
           File(modelPath).deleteSync();
 
           var cleared = session.nextDiagnosticsFor(
@@ -219,10 +298,14 @@ void main() {
       var watchers = (options['watchers'] as List).cast<Map>();
       expect(
         watchers.map((watcher) => watcher['globPattern']),
-        containsAll(['**/*.{spy,yaml,yml}', '**/*']),
+        containsAll([
+          '**/*.{spy,spy.yaml,spy.yml}',
+          '**/lib/src/{models,protocol}/**/*.{yaml,yml}',
+          '**/lib/**',
+        ]),
       );
       var directoryWatcher = watchers.singleWhere(
-        (watcher) => watcher['globPattern'] == '**/*',
+        (watcher) => watcher['globPattern'] == '**/lib/**',
       );
       expect(directoryWatcher['kind'], 5, reason: 'WatchKind.Create | Delete');
     },
