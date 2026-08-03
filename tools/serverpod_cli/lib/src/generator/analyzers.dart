@@ -4,6 +4,7 @@ import 'package:analyzer/file_system/overlay_file_system.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analytics/protocol_feature_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart'
     show FutureCallDefinition;
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
@@ -19,7 +20,11 @@ import 'dart/temp_protocol_generator.dart';
 import 'serverpod_code_generator.dart';
 
 /// Result of a code generation run.
-typedef GenerateResult = ({bool success, Set<String> generatedFiles});
+typedef GenerateResult = ({
+  bool success,
+  Set<String> generatedFiles,
+  ProtocolAnalyticsSnapshot? protocolAnalyticsSnapshot,
+});
 
 /// Holds the set of analyzers needed for code generation.
 ///
@@ -257,7 +262,11 @@ class Analyzers {
       }
 
       if (!requirements.generateProtocol) {
-        return (success: success, generatedFiles: generatedModelFiles.toSet());
+        return (
+          success: success,
+          generatedFiles: generatedModelFiles.toSet(),
+          protocolAnalyticsSnapshot: null,
+        );
       }
 
       final changedFiles = requirements.generateModels
@@ -365,7 +374,14 @@ class Analyzers {
         config: config,
       );
 
-      return (success: success, generatedFiles: allGeneratedFiles);
+      return (
+        success: success,
+        generatedFiles: allGeneratedFiles,
+        protocolAnalyticsSnapshot: _createProtocolAnalyticsSnapshot(
+          protocolDefinition: protocolDefinition,
+          config: config,
+        ),
+      );
     } finally {
       // Retire still-active stubs after an interrupted, models-only, or failed
       // generation. Overlays only need to be removed; disk fallbacks restore
@@ -447,6 +463,21 @@ class Analyzers {
     }
 
     return overlayPaths;
+  }
+}
+
+ProtocolAnalyticsSnapshot? _createProtocolAnalyticsSnapshot({
+  required ProtocolDefinition protocolDefinition,
+  required GeneratorConfig config,
+}) {
+  try {
+    return ProtocolFeatureAnalyzer.analyze(
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+  } catch (_) {
+    // Analytics must never disrupt generation.
+    return null;
   }
 }
 

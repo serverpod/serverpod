@@ -117,6 +117,7 @@ Future<void> performCreateWithTui(
   bool force, {
   required ServerpodTemplateType template,
   required bool? interactive,
+  String analyticsMethod = 'create',
   List<ServerpodCreateConfig> configs = ServerpodCreateConfig.values,
   TemplateContext? defaultContext,
   bool requireIde = false,
@@ -164,6 +165,7 @@ Future<void> performCreateWithTui(
           interactive: interactive,
           createDefaultMigrationForUpgrade: createDefaultMigrationForUpgrade,
           context: state.toTemplateContext(),
+          analyticsMethod: analyticsMethod,
         );
 
         final success = result is CreateSuccess;

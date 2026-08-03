@@ -186,12 +186,14 @@ class GeneratorConfigBuilder {
 GeneratorConfig buildTestServerConfig(
   Directory projectDir, {
   Map<String, List<String>> sharedModelsSourcePathsParts = const {},
+  DatabaseDialect databaseDialect = DatabaseDialect.postgres,
 }) {
   return GeneratorConfigBuilder()
       .withName('test')
       .withServerPackageDirectoryPathParts([projectDir.path])
       .withRelativeDartClientPackagePathParts(['test_client'])
       .withSharedModelsSourcePathsParts(sharedModelsSourcePathsParts)
+      .withDatabaseDialect(databaseDialect)
       .withModules([
         ModuleConfig(
           type: PackageType.server,

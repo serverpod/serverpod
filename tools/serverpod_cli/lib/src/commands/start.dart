@@ -8,6 +8,8 @@ import 'package:config/config.dart';
 import 'package:meta/meta.dart' show visibleForTesting;
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
+import 'package:serverpod_cli/src/analytics/session_metrics.dart';
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
@@ -157,6 +159,16 @@ class StartCommand extends ServerpodCommand<StartOption> {
       // Bail before the TUI takes over the terminal
       if (await _detectExistingInstance(config)) return;
 
+      // Fire-and-forget: analytics must never delay session start.
+      unawaited(
+        _captureSessionStartAnalytics(
+          config: config,
+          commandConfig: commandConfig,
+          useTui: true,
+          launchFlutterApp: launchFlutterApp,
+        ),
+      );
+
       final exitCode = await _runWithTui(
         commandConfig: commandConfig,
         watch: watch,
@@ -191,6 +203,16 @@ class StartCommand extends ServerpodCommand<StartOption> {
     }
 
     if (await _detectExistingInstance(config)) return;
+
+    // Fire-and-forget: analytics must never delay session start.
+    unawaited(
+      _captureSessionStartAnalytics(
+        config: config,
+        commandConfig: commandConfig,
+        useTui: false,
+        launchFlutterApp: launchFlutterApp,
+      ),
+    );
 
     final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
     final docker = commandConfig.optionalValue(StartOption.docker);
@@ -271,6 +293,30 @@ Future<bool> _runHooksFor(
       log.error(message);
       return false;
   }
+}
+
+Future<void> _captureSessionStartAnalytics({
+  required GeneratorConfig config,
+  required Configuration<StartOption> commandConfig,
+  required bool useTui,
+  required bool launchFlutterApp,
+}) async {
+  if (!cliAnalytics.enabled) return;
+
+  await cliAnalytics.captureSessionStart(
+    config: config,
+    watchMode: commandConfig.value(StartOption.watch),
+    tuiEnabled: useTui,
+    flutterEnabled: launchFlutterApp,
+    dockerMode: switch (commandConfig.optionalValue(StartOption.docker)) {
+      true => DockerStartMode.on,
+      false => DockerStartMode.off,
+      null => DockerStartMode.auto,
+    },
+    dockerComposePresent:
+        _findComposeFile(p.joinAll(config.serverPackageDirectoryPathParts)) !=
+        null,
+  );
 }
 
 /// Compose file names Docker Compose resolves by default, in its own lookup
