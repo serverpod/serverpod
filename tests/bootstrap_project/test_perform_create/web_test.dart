@@ -716,6 +716,9 @@ void main() {
         },
       );
     },
+    skip: Platform.isWindows
+        ? 'Windows does not support postgres in github actions'
+        : null,
   );
 
   group(
