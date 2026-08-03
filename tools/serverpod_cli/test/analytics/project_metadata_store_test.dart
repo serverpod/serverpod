@@ -9,7 +9,6 @@ import 'package:test_descriptor/test_descriptor.dart' as d;
 void main() {
   group('Given a server directory without metadata, ', () {
     late String serverDir;
-    late ProjectMetadata metadata;
 
     setUp(() async {
       await _deleteIfExists(d.path('metadata_project_a'));
@@ -30,13 +29,14 @@ void main() {
         'metadata_project_a',
         'myapp_server',
       );
-      metadata = await ProjectMetadataStore.loadOrCreate(serverDir);
     });
 
     test(
       'when loadOrCreate runs, '
       'then it persists metadata derived from generator.yaml.',
       () async {
+        final metadata = await ProjectMetadataStore.loadOrCreate(serverDir);
+
         expect(metadata.checkoutId, isNotEmpty);
         expect(metadata.generateCallCount, 0);
         expect(
