@@ -8,10 +8,11 @@ import 'package:uuid/uuid.dart';
 import 'project_identity.dart';
 import 'project_metadata.dart';
 
-/// Reads and writes the per-clone analytics metadata file.
+/// Reads and writes the per-server checkout analytics metadata file.
 ///
 /// Its directory is resolved by [ProjectIdentity.metadataDirectory] — the
-/// shared git common dir inside a repo (so worktrees share one file), or
+/// server-specific directory under the shared git common dir inside a repo (so
+/// matching servers in worktrees share one file), or
 /// `<serverDir>/.dart_tool/serverpod` outside a repo.
 class ProjectMetadataStore {
   static const metadataFileName = 'metadata.json';
@@ -131,10 +132,9 @@ class ProjectMetadataStore {
 
   /// Stamps [projectCreatedAt] for a freshly scaffolded project.
   ///
-  /// Metadata is keyed by git clone, not by project, so creating a project
-  /// inside an existing checkout (a monorepo, or `create --force`) must not
-  /// discard the checkout id or the counters already accumulated there — only
-  /// the creation date is authoritative here.
+  /// Metadata is keyed by server within a git clone, so recreating the same
+  /// server with `create --force` must not discard its checkout id or counters —
+  /// only the creation date is authoritative here.
   static Future<ProjectMetadata> initializeNewProject(
     String serverDir, {
     required DateTime projectCreatedAt,

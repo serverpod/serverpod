@@ -71,6 +71,9 @@ Analytics distinguish:
 - successful outcomes from failed attempts where failure is itself a useful
   product signal.
 
+Each Serverpod server is treated as a separate logical project, including when
+multiple servers live in the same repository.
+
 Adoption views should count each active logical project once, using its most
 recent relevant state. Usage-depth views should likewise use a representative
 project state rather than summing every generation run. Activity counters and

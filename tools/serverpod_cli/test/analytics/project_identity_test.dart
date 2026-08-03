@@ -124,6 +124,7 @@ void main() {
             d.dir('wt', [d.file('commondir', '../..\n')]),
           ]),
         ]),
+        d.dir('app_server', [d.file('pubspec.yaml', 'name: app_server\n')]),
       ]).create();
       // The linked worktree: its `.git` is a file pointing at the gitdir.
       final worktreeGitDir = p.join(
@@ -138,18 +139,23 @@ void main() {
         d.dir('app_server', [d.file('pubspec.yaml', 'name: app_server\n')]),
       ]).create();
 
-      final mainServerDir = p.join(d.sandbox, 'repo', '.git'); // common dir
+      final commonDir = p.join(d.sandbox, 'repo', '.git');
+      final mainServerDir = p.join(d.sandbox, 'repo', 'app_server');
       final worktreeServerDir = p.join(d.sandbox, 'wt', 'app_server');
 
       // The worktree resolves to the same common dir as the main repo, so
       // both share one metadata location (no per-leaf copies).
       expect(
         ProjectIdentity.gitCommonDir(worktreeServerDir),
-        mainServerDir,
+        commonDir,
       );
       expect(
         ProjectIdentity.metadataDirectory(worktreeServerDir),
-        p.join(mainServerDir, 'serverpod'),
+        ProjectIdentity.metadataDirectory(mainServerDir),
+      );
+      expect(
+        ProjectIdentity.durableProjectId(worktreeServerDir),
+        ProjectIdentity.durableProjectId(mainServerDir),
       );
     },
   );
@@ -244,6 +250,63 @@ workspace:
         ProjectIdentity.gitCommonDir(serverDir),
         p.join(d.sandbox, 'package_repo', '.git'),
       );
+    },
+  );
+
+  test(
+    'Given two servers in the same git checkout, '
+    'when their analytics identities are resolved, '
+    'then each server is tracked independently.',
+    () async {
+      final recording = RecordingAnalytics();
+      initializeCliAnalytics(
+        CliAnalytics(analytics: recording)..enabled = true,
+      );
+      addTearDown(() => initializeCliAnalytics(CliAnalytics.disabled()));
+
+      await d.dir('monorepo', [
+        d.dir('.git', [
+          d.file(
+            'config',
+            '[remote "origin"]\n  url = git@github.com:org/monorepo.git\n',
+          ),
+        ]),
+        d.dir('apps', [
+          d.dir('first_server', [d.file('pubspec.yaml', '')]),
+        ]),
+        d.dir('services', [
+          d.dir('second_server', [d.file('pubspec.yaml', '')]),
+        ]),
+      ]).create();
+
+      final firstServer = p.join(
+        d.sandbox,
+        'monorepo',
+        'apps',
+        'first_server',
+      );
+      final secondServer = p.join(
+        d.sandbox,
+        'monorepo',
+        'services',
+        'second_server',
+      );
+
+      await cliAnalytics.captureFlutterLaunch(
+        serverDir: firstServer,
+        device: 'chrome',
+        isRelaunch: false,
+      );
+      await cliAnalytics.captureFlutterLaunch(
+        serverDir: secondServer,
+        device: 'chrome',
+        isRelaunch: false,
+      );
+
+      final first = recording.properties.first;
+      final second = recording.properties.last;
+      expect(first[r'$groups'], isNot(second[r'$groups']));
+      expect(first['checkout_id'], isNot(second['checkout_id']));
     },
   );
 

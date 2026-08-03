@@ -42,8 +42,8 @@ class CliAnalytics {
 
     try {
       final metadata = await ProjectMetadataStore.loadOrCreate(serverDir);
-      // Durable id from the git remote; falls back to the per-clone checkout id
-      // for projects without a remote.
+      // Durable id from the git remote and server path; falls back to the
+      // per-server checkout id for projects without a remote.
       final projectId =
           ProjectIdentity.durableProjectId(serverDir) ?? metadata.checkoutId;
       final payload = AnalyticsPayloadBuilder.build(

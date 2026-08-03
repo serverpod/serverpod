@@ -9,32 +9,40 @@ import 'package:yaml/yaml.dart';
 class ProjectIdentity {
   const ProjectIdentity._();
 
-  /// Directory holding the per-clone analytics metadata file.
+  /// Directory holding the per-server checkout analytics metadata file.
   ///
-  /// In a git checkout this is the shared git common dir, so every worktree of
-  /// a clone reads and writes one centralized file (never a per-leaf copy), and
-  /// the data is inherently never committed. Outside a repo it falls back to
-  /// the gitignored `<serverDir>/.dart_tool/serverpod` directory.
+  /// In a git checkout this is a server-specific directory under the shared
+  /// git common dir, so matching servers in every worktree share metadata while
+  /// different servers in a monorepo remain independent. Outside a repo it
+  /// falls back to the gitignored `<serverDir>/.dart_tool/serverpod` directory.
   static String metadataDirectory(String serverDir) {
     final commonDir = gitCommonDir(serverDir);
-    if (commonDir != null) return p.join(commonDir, 'serverpod');
+    final serverPath = _serverRepositoryPath(serverDir);
+    if (commonDir != null && serverPath != null) {
+      final serverKey = const Uuid().v5(Namespace.url.value, serverPath);
+      return p.join(commonDir, 'serverpod', serverKey);
+    }
     return p.join(serverDir, '.dart_tool', 'serverpod');
   }
 
-  /// Durable project id shared by every checkout of the same repository.
+  /// Durable project id shared by matching server paths across repository
+  /// checkouts.
   ///
-  /// Derived as `UUIDv5(url-namespace, <normalized remote URL>)`. The remote
-  /// URL never leaves the machine — only the irreversible hash. Returns `null`
-  /// when there is no resolvable git remote, in which case callers fall back to
-  /// the per-clone checkout id.
+  /// Derived from the normalized remote URL and the server's
+  /// repository-relative path. Neither value leaves the machine — only the
+  /// irreversible id. Returns `null` when either value cannot be resolved, in
+  /// which case callers fall back to the per-server checkout id.
   static String? durableProjectId(String serverDir) {
     final commonDir = gitCommonDir(serverDir);
     if (commonDir == null) return null;
+    final serverPath = _serverRepositoryPath(serverDir);
+    if (serverPath == null) return null;
     final url = _readRemoteUrl(commonDir);
     if (url == null) return null;
     final normalized = normalizeRemoteUrl(url);
     if (normalized == null) return null;
-    return const Uuid().v5(Namespace.url.value, normalized);
+    final repositoryId = const Uuid().v5(Namespace.url.value, normalized);
+    return const Uuid().v5(repositoryId, serverPath);
   }
 
   /// Resolves the shared git common directory for [serverDir], or `null` when
@@ -90,6 +98,21 @@ class ProjectIdentity {
       dir = parent;
       isStartDirectory = false;
     }
+  }
+
+  static String? _serverRepositoryPath(String serverDir) {
+    final dotGit = _findDotGit(serverDir);
+    if (dotGit == null) return null;
+
+    final repositoryRoot = p.dirname(dotGit);
+    final serverDirectory = _canonicalDirectory(serverDir);
+    if (!p.equals(repositoryRoot, serverDirectory) &&
+        !p.isWithin(repositoryRoot, serverDirectory)) {
+      return null;
+    }
+
+    final relative = p.relative(serverDirectory, from: repositoryRoot);
+    return p.posix.joinAll(p.split(relative));
   }
 
   static String? _userHomeDirectory() {

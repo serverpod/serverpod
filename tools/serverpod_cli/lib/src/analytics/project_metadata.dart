@@ -1,4 +1,4 @@
-/// Local per-clone analytics state persisted in the metadata file
+/// Local per-server checkout analytics state persisted in the metadata file
 /// (see [ProjectMetadataStore] for its location).
 class ProjectMetadata {
   ProjectMetadata({
@@ -8,8 +8,9 @@ class ProjectMetadata {
     Map<String, int>? commandInvocations,
   }) : commandInvocations = Map<String, int>.from(commandInvocations ?? {});
 
-  /// Random per-clone id. The durable, remote-derived `project_id` is computed
-  /// on the fly (see `ProjectIdentity`) and is intentionally not stored here.
+  /// Random per-server checkout id. The durable, remote-derived `project_id` is
+  /// computed on the fly (see `ProjectIdentity`) and is intentionally not
+  /// stored here.
   final String checkoutId;
   final DateTime projectCreatedAt;
   int generateCallCount;
