@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
+import 'package:serverpod_cli/src/analytics/project_metadata_store.dart';
 import 'package:serverpod_cli/src/analytics/session_metrics.dart';
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
@@ -165,6 +168,45 @@ serverpod:
       expect(properties['device_category'], 'desktop');
       expect(properties['device_platform'], 'macos');
       expect(properties['is_relaunch'], isFalse);
+    },
+  );
+
+  test(
+    'Given analytics are enabled and the project metadata is corrupt, '
+    'when capturing analytics for start, '
+    'then the metadata is recovered and the event is reported.',
+    () async {
+      await d.dir('corrupt_session', [
+        d.dir('myapp_server', [
+          d.file('pubspec.yaml', 'name: myapp_server'),
+        ]),
+      ]).create();
+
+      final serverDir = p.join(
+        d.sandbox,
+        'corrupt_session',
+        'myapp_server',
+      );
+      final metadataFile = File(
+        ProjectMetadataStore.metadataFilePath(serverDir),
+      );
+      await metadataFile.parent.create(recursive: true);
+      await metadataFile.writeAsString('not json');
+
+      await cliAnalytics.captureSessionStart(
+        config: buildAnalyticsTestConfig(serverDir),
+        watchMode: true,
+        tuiEnabled: false,
+        flutterEnabled: false,
+        dockerMode: DockerStartMode.off,
+        dockerComposePresent: false,
+      );
+
+      expect(recording.events, ['cli.session_start']);
+      expect(
+        (await ProjectMetadataStore.loadOrCreate(serverDir)).checkoutId,
+        isNotEmpty,
+      );
     },
   );
 

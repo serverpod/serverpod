@@ -40,9 +40,16 @@ class ProjectMetadataStore {
   static Future<ProjectMetadata> _loadOrCreate(String serverDir) async {
     final file = File(metadataFilePath(serverDir));
     if (await file.exists()) {
-      final json =
-          jsonDecode(await file.readAsString()) as Map<String, dynamic>;
-      return ProjectMetadata.fromJson(json);
+      final contents = await file.readAsString();
+      try {
+        final json = jsonDecode(contents) as Map<String, dynamic>;
+        return ProjectMetadata.fromJson(json);
+      } on FormatException {
+        // Recreate malformed metadata so one interrupted write cannot disable
+        // analytics permanently for this checkout.
+      } on TypeError {
+        // The JSON was valid but did not match the metadata schema.
+      }
     }
 
     final createdAt = await _resolveProjectCreatedAt(serverDir);

@@ -94,6 +94,44 @@ void main() {
     );
   });
 
+  group('Given a server directory with corrupt project metadata, ', () {
+    late String serverDir;
+
+    setUp(() async {
+      await _deleteIfExists(d.path('metadata_project_corrupt'));
+      await d.dir('.git', [d.file('config', '')]).create();
+      await d.dir('metadata_project_corrupt', [
+        d.dir('myapp_server', [
+          d.file('pubspec.yaml', 'name: myapp_server\n'),
+        ]),
+      ]).create();
+
+      serverDir = p.join(
+        d.sandbox,
+        'metadata_project_corrupt',
+        'myapp_server',
+      );
+      final metadataFile = File(
+        ProjectMetadataStore.metadataFilePath(serverDir),
+      );
+      await metadataFile.parent.create(recursive: true);
+      await metadataFile.writeAsString('not json');
+    });
+
+    test(
+      'when the metadata is loaded, '
+      'then it is replaced with usable metadata.',
+      () async {
+        final recovered = await ProjectMetadataStore.loadOrCreate(serverDir);
+
+        expect(recovered.checkoutId, isNotEmpty);
+
+        final reloaded = await ProjectMetadataStore.loadOrCreate(serverDir);
+        expect(reloaded.checkoutId, recovered.checkoutId);
+      },
+    );
+  });
+
   group('Given metadata already accumulated in a checkout, ', () {
     late String serverDir;
     late ProjectMetadata before;
