@@ -79,8 +79,11 @@ void main() {
 
       final serverDir = p.join(d.sandbox, 'repo_main', 'app_server');
       expect(
-        p.dirname(ProjectIdentity.metadataDirectory(serverDir)),
-        p.join(d.sandbox, 'repo_main', '.git', 'serverpod'),
+        p.equals(
+          p.dirname(ProjectIdentity.metadataDirectory(serverDir)),
+          p.join(d.sandbox, 'repo_main', '.git', 'serverpod'),
+        ),
+        isTrue,
       );
     },
   );
@@ -219,8 +222,11 @@ workspace:
       );
 
       expect(
-        p.dirname(ProjectIdentity.metadataDirectory(serverDir)),
-        p.join(d.sandbox, 'workspace_repo', '.git', 'serverpod'),
+        p.equals(
+          p.dirname(ProjectIdentity.metadataDirectory(serverDir)),
+          p.join(d.sandbox, 'workspace_repo', '.git', 'serverpod'),
+        ),
+        isTrue,
       );
     },
   );
@@ -248,8 +254,11 @@ workspace:
       );
 
       expect(
-        p.dirname(ProjectIdentity.metadataDirectory(serverDir)),
-        p.join(d.sandbox, 'package_repo', '.git', 'serverpod'),
+        p.equals(
+          p.dirname(ProjectIdentity.metadataDirectory(serverDir)),
+          p.join(d.sandbox, 'package_repo', '.git', 'serverpod'),
+        ),
+        isTrue,
       );
     },
   );

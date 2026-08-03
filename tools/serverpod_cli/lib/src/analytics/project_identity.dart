@@ -79,12 +79,12 @@ class ProjectIdentity {
         final gitDir = _readGitdirPointer(dotGit);
         if (gitDir == null) return null;
         final commonDirFile = File(p.join(gitDir, 'commondir'));
-        if (!commonDirFile.existsSync()) return gitDir;
+        if (!commonDirFile.existsSync()) return _canonicalDirectory(gitDir);
         var commonDir = commonDirFile.readAsStringSync().trim();
         if (!p.isAbsolute(commonDir)) {
           commonDir = p.normalize(p.join(gitDir, commonDir));
         }
-        return commonDir;
+        return _canonicalDirectory(commonDir);
       default:
         return null;
     }
