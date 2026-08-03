@@ -4,6 +4,8 @@ import 'package:path/path.dart' as p;
 import 'package:uuid/uuid.dart';
 import 'package:yaml/yaml.dart';
 
+typedef _GitContext = ({String repositoryRoot, String commonDir});
+
 /// Resolves anonymous project / checkout identity for analytics without sending
 /// any path, URL, or repository name off the machine.
 class ProjectIdentity {
@@ -16,11 +18,14 @@ class ProjectIdentity {
   /// different servers in a monorepo remain independent. Outside a repo it
   /// falls back to the gitignored `<serverDir>/.dart_tool/serverpod` directory.
   static String metadataDirectory(String serverDir) {
-    final commonDir = gitCommonDir(serverDir);
-    final serverPath = _serverRepositoryPath(serverDir);
-    if (commonDir != null && serverPath != null) {
+    final git = _resolveGitContext(serverDir);
+    if (git != null) {
+      final serverPath = _serverRepositoryPath(
+        serverDir,
+        repositoryRoot: git.repositoryRoot,
+      );
       final serverKey = const Uuid().v5(Namespace.url.value, serverPath);
-      return p.join(commonDir, 'serverpod', serverKey);
+      return p.join(git.commonDir, 'serverpod', serverKey);
     }
     return p.join(serverDir, '.dart_tool', 'serverpod');
   }
@@ -33,11 +38,13 @@ class ProjectIdentity {
   /// irreversible id. Returns `null` when either value cannot be resolved, in
   /// which case callers fall back to the per-server checkout id.
   static String? durableProjectId(String serverDir) {
-    final commonDir = gitCommonDir(serverDir);
-    if (commonDir == null) return null;
-    final serverPath = _serverRepositoryPath(serverDir);
-    if (serverPath == null) return null;
-    final url = _readRemoteUrl(commonDir);
+    final git = _resolveGitContext(serverDir);
+    if (git == null) return null;
+    final serverPath = _serverRepositoryPath(
+      serverDir,
+      repositoryRoot: git.repositoryRoot,
+    );
+    final url = _readRemoteUrl(git.commonDir);
     if (url == null) return null;
     final normalized = normalizeRemoteUrl(url);
     if (normalized == null) return null;
@@ -45,19 +52,26 @@ class ProjectIdentity {
     return const Uuid().v5(repositoryId, serverPath);
   }
 
-  /// Resolves the shared git common directory for [serverDir], or `null` when
-  /// [serverDir] is not inside a git working tree.
+  /// Resolves the git repository context for [serverDir], or `null` when it is
+  /// outside an applicable git working tree.
   ///
   /// Walks up to the nearest `.git`. A `.git` directory is the common dir
   /// itself; a `.git` *file* points at a worktree git dir whose `commondir`
-  /// references the shared parent — that parent is returned so all worktrees
-  /// converge on one location. Lookup stops at a nearer Dart workspace or the
-  /// user's home directory so an unrelated outer checkout is not adopted.
-  /// Reads git's own files; never spawns `git`.
-  static String? gitCommonDir(String serverDir) {
+  /// references the shared parent. The result includes both the current
+  /// repository root and shared common dir. Lookup stops at a nearer Dart
+  /// workspace or the user's home directory so an unrelated outer checkout is
+  /// not adopted. Reads git's own files; never spawns `git`.
+  static _GitContext? _resolveGitContext(String serverDir) {
     final dotGit = _findDotGit(serverDir);
     if (dotGit == null) return null;
 
+    final commonDir = _resolveCommonDirectory(dotGit);
+    if (commonDir == null) return null;
+
+    return (repositoryRoot: p.dirname(dotGit), commonDir: commonDir);
+  }
+
+  static String? _resolveCommonDirectory(String dotGit) {
     switch (FileSystemEntity.typeSync(dotGit)) {
       case FileSystemEntityType.directory:
         return dotGit;
@@ -100,17 +114,11 @@ class ProjectIdentity {
     }
   }
 
-  static String? _serverRepositoryPath(String serverDir) {
-    final dotGit = _findDotGit(serverDir);
-    if (dotGit == null) return null;
-
-    final repositoryRoot = p.dirname(dotGit);
+  static String _serverRepositoryPath(
+    String serverDir, {
+    required String repositoryRoot,
+  }) {
     final serverDirectory = _canonicalDirectory(serverDir);
-    if (!p.equals(repositoryRoot, serverDirectory) &&
-        !p.isWithin(repositoryRoot, serverDirectory)) {
-      return null;
-    }
-
     final relative = p.relative(serverDirectory, from: repositoryRoot);
     return p.posix.joinAll(p.split(relative));
   }

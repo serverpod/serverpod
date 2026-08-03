@@ -64,8 +64,8 @@ void main() {
 
   test(
     'Given a project in the main worktree of a git checkout, '
-    'when its git common directory is resolved, '
-    'then the git common dir is the .git directory.',
+    'when its metadata directory is resolved, '
+    'then it is stored under the git directory.',
     () async {
       await d.dir('repo_main', [
         d.dir('.git', [
@@ -79,16 +79,16 @@ void main() {
 
       final serverDir = p.join(d.sandbox, 'repo_main', 'app_server');
       expect(
-        ProjectIdentity.gitCommonDir(serverDir),
-        p.join(d.sandbox, 'repo_main', '.git'),
+        p.dirname(ProjectIdentity.metadataDirectory(serverDir)),
+        p.join(d.sandbox, 'repo_main', '.git', 'serverpod'),
       );
     },
   );
 
   test(
     'Given a project reached through an alternate filesystem path, '
-    'when its git common directory is resolved, '
-    'then the canonical git directory is returned.',
+    'when its metadata directory is resolved, '
+    'then the canonical repository location is used.',
     () async {
       await d.dir('canonical_repo', [
         d.dir('.git', [d.file('config', '')]),
@@ -98,20 +98,29 @@ void main() {
         d.path('canonical_repo'),
       );
 
+      final canonicalServerDir = p.join(
+        d.sandbox,
+        'canonical_repo',
+        'app_server',
+      );
+      final aliasServerDir = p.join(
+        d.sandbox,
+        'canonical_repo_alias',
+        'app_server',
+      );
+
       expect(
-        ProjectIdentity.gitCommonDir(
-          p.join(d.sandbox, 'canonical_repo_alias', 'app_server'),
-        ),
-        p.join(d.sandbox, 'canonical_repo', '.git'),
+        ProjectIdentity.metadataDirectory(aliasServerDir),
+        ProjectIdentity.metadataDirectory(canonicalServerDir),
       );
     },
     testOn: '!windows',
   );
 
   test(
-    'Given a project in a linked worktree, '
-    'when its git common directory is resolved, '
-    'then it centralizes on the shared common dir.',
+    'Given the same server in a main and linked worktree, '
+    'when their analytics identities are resolved, '
+    'then they share metadata and durable project identity.',
     () async {
       // Main repo with a registered worktree "wt".
       await d.dir('repo', [
@@ -139,16 +148,9 @@ void main() {
         d.dir('app_server', [d.file('pubspec.yaml', 'name: app_server\n')]),
       ]).create();
 
-      final commonDir = p.join(d.sandbox, 'repo', '.git');
       final mainServerDir = p.join(d.sandbox, 'repo', 'app_server');
       final worktreeServerDir = p.join(d.sandbox, 'wt', 'app_server');
 
-      // The worktree resolves to the same common dir as the main repo, so
-      // both share one metadata location (no per-leaf copies).
-      expect(
-        ProjectIdentity.gitCommonDir(worktreeServerDir),
-        commonDir,
-      );
       expect(
         ProjectIdentity.metadataDirectory(worktreeServerDir),
         ProjectIdentity.metadataDirectory(mainServerDir),
@@ -162,8 +164,8 @@ void main() {
 
   test(
     'Given a project in a Dart workspace nested inside an outer git checkout, '
-    'when its git common directory is resolved, '
-    'then lookup stops at the workspace boundary.',
+    'when its metadata directory is resolved, '
+    'then it uses the local workspace fallback.',
     () async {
       await d.dir('outer_repo', [
         d.dir('.git', [d.file('config', '')]),
@@ -186,7 +188,6 @@ workspace:
         'app_server',
       );
 
-      expect(ProjectIdentity.gitCommonDir(serverDir), isNull);
       expect(
         ProjectIdentity.metadataDirectory(serverDir),
         p.join(serverDir, '.dart_tool', 'serverpod'),
@@ -196,8 +197,8 @@ workspace:
 
   test(
     'Given a project whose Dart workspace and git checkout share a root, '
-    'when its git common directory is resolved, '
-    'then the colocated git directory is used.',
+    'when its metadata directory is resolved, '
+    'then it is stored under the colocated git directory.',
     () async {
       await d.dir('workspace_repo', [
         d.dir('.git', [d.file('config', '')]),
@@ -218,16 +219,16 @@ workspace:
       );
 
       expect(
-        ProjectIdentity.gitCommonDir(serverDir),
-        p.join(d.sandbox, 'workspace_repo', '.git'),
+        p.dirname(ProjectIdentity.metadataDirectory(serverDir)),
+        p.join(d.sandbox, 'workspace_repo', '.git', 'serverpod'),
       );
     },
   );
 
   test(
     'Given a project below an ordinary parent package in a git checkout, '
-    'when its git common directory is resolved, '
-    'then lookup continues through the non-workspace pubspec.',
+    'when its metadata directory is resolved, '
+    'then lookup continues to the git-backed metadata location.',
     () async {
       await d.dir('package_repo', [
         d.dir('.git', [d.file('config', '')]),
@@ -247,8 +248,8 @@ workspace:
       );
 
       expect(
-        ProjectIdentity.gitCommonDir(serverDir),
-        p.join(d.sandbox, 'package_repo', '.git'),
+        p.dirname(ProjectIdentity.metadataDirectory(serverDir)),
+        p.join(d.sandbox, 'package_repo', '.git', 'serverpod'),
       );
     },
   );
