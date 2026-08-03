@@ -59,6 +59,11 @@ class StatefulAnalyzer {
       .whereType<SerializableModelDefinition>()
       .toList();
 
+  /// The source URIs of all models currently registered in the state.
+  List<Uri> get registeredModelUris => _modelStates.values
+      .map((state) => state.source.yamlSourceUri)
+      .toList(growable: false);
+
   /// Adds a new model to the state but leaves the responsibility of validating
   /// it to the caller. Please note that [validateAll] should be called to
   /// guarantee that all errors are found.
