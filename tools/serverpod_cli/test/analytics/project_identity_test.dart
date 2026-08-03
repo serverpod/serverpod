@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/analytics/project_identity.dart';
 import 'package:test/test.dart';
@@ -81,6 +83,29 @@ void main() {
   );
 
   test(
+    'Given a project reached through an alternate filesystem path, '
+    'when its git common directory is resolved, '
+    'then the canonical git directory is returned.',
+    () async {
+      await d.dir('canonical_repo', [
+        d.dir('.git', [d.file('config', '')]),
+        d.dir('app_server', [d.file('pubspec.yaml', '')]),
+      ]).create();
+      await Link(d.path('canonical_repo_alias')).create(
+        d.path('canonical_repo'),
+      );
+
+      expect(
+        ProjectIdentity.gitCommonDir(
+          p.join(d.sandbox, 'canonical_repo_alias', 'app_server'),
+        ),
+        p.join(d.sandbox, 'canonical_repo', '.git'),
+      );
+    },
+    testOn: '!windows',
+  );
+
+  test(
     'Given a project in a linked worktree, '
     'when its git common directory is resolved, '
     'then it centralizes on the shared common dir.',
@@ -122,6 +147,99 @@ void main() {
       expect(
         ProjectIdentity.metadataDirectory(worktreeServerDir),
         p.join(mainServerDir, 'serverpod'),
+      );
+    },
+  );
+
+  test(
+    'Given a project in a Dart workspace nested inside an outer git checkout, '
+    'when its git common directory is resolved, '
+    'then lookup stops at the workspace boundary.',
+    () async {
+      await d.dir('outer_repo', [
+        d.dir('.git', [d.file('config', '')]),
+        d.dir('workspace', [
+          d.file('pubspec.yaml', '''
+name: workspace
+workspace:
+  - app_server
+'''),
+          d.dir('app_server', [
+            d.file('pubspec.yaml', 'name: app_server\n'),
+          ]),
+        ]),
+      ]).create();
+
+      final serverDir = p.join(
+        d.sandbox,
+        'outer_repo',
+        'workspace',
+        'app_server',
+      );
+
+      expect(ProjectIdentity.gitCommonDir(serverDir), isNull);
+      expect(
+        ProjectIdentity.metadataDirectory(serverDir),
+        p.join(serverDir, '.dart_tool', 'serverpod'),
+      );
+    },
+  );
+
+  test(
+    'Given a project whose Dart workspace and git checkout share a root, '
+    'when its git common directory is resolved, '
+    'then the colocated git directory is used.',
+    () async {
+      await d.dir('workspace_repo', [
+        d.dir('.git', [d.file('config', '')]),
+        d.file('pubspec.yaml', '''
+name: workspace
+workspace:
+  - app_server
+'''),
+        d.dir('app_server', [
+          d.file('pubspec.yaml', 'name: app_server\n'),
+        ]),
+      ]).create();
+
+      final serverDir = p.join(
+        d.sandbox,
+        'workspace_repo',
+        'app_server',
+      );
+
+      expect(
+        ProjectIdentity.gitCommonDir(serverDir),
+        p.join(d.sandbox, 'workspace_repo', '.git'),
+      );
+    },
+  );
+
+  test(
+    'Given a project below an ordinary parent package in a git checkout, '
+    'when its git common directory is resolved, '
+    'then lookup continues through the non-workspace pubspec.',
+    () async {
+      await d.dir('package_repo', [
+        d.dir('.git', [d.file('config', '')]),
+        d.dir('package', [
+          d.file('pubspec.yaml', 'name: package\n'),
+          d.dir('app_server', [
+            d.file('pubspec.yaml', 'name: app_server\n'),
+          ]),
+        ]),
+      ]).create();
+
+      final serverDir = p.join(
+        d.sandbox,
+        'package_repo',
+        'package',
+        'app_server',
+      );
+
+      expect(
+        ProjectIdentity.gitCommonDir(serverDir),
+        p.join(d.sandbox, 'package_repo', '.git'),
       );
     },
   );

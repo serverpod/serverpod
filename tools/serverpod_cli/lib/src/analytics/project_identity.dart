@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:uuid/uuid.dart';
+import 'package:yaml/yaml.dart';
 
 /// Resolves anonymous project / checkout identity for analytics without sending
 /// any path, URL, or repository name off the machine.
@@ -42,7 +43,9 @@ class ProjectIdentity {
   /// Walks up to the nearest `.git`. A `.git` directory is the common dir
   /// itself; a `.git` *file* points at a worktree git dir whose `commondir`
   /// references the shared parent — that parent is returned so all worktrees
-  /// converge on one location. Reads git's own files; never spawns `git`.
+  /// converge on one location. Lookup stops at a nearer Dart workspace or the
+  /// user's home directory so an unrelated outer checkout is not adopted.
+  /// Reads git's own files; never spawns `git`.
   static String? gitCommonDir(String serverDir) {
     final dotGit = _findDotGit(serverDir);
     if (dotGit == null) return null;
@@ -66,15 +69,56 @@ class ProjectIdentity {
   }
 
   static String? _findDotGit(String startDir) {
-    var dir = p.absolute(startDir);
+    var dir = _canonicalDirectory(startDir);
+    final home = _userHomeDirectory();
+    final isInsideHome =
+        home != null && (p.equals(home, dir) || p.isWithin(home, dir));
+    var isStartDirectory = true;
+
     while (true) {
+      if (isInsideHome && p.equals(dir, home)) return null;
+
       final dotGit = p.join(dir, '.git');
       if (FileSystemEntity.typeSync(dotGit) != FileSystemEntityType.notFound) {
         return dotGit;
       }
+
+      if (!isStartDirectory && _isDartWorkspace(dir)) return null;
+
       final parent = p.dirname(dir);
       if (parent == dir) return null;
       dir = parent;
+      isStartDirectory = false;
+    }
+  }
+
+  static String? _userHomeDirectory() {
+    final home =
+        Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'];
+    if (home == null || home.isEmpty) return null;
+    return _canonicalDirectory(home);
+  }
+
+  static String _canonicalDirectory(String directory) {
+    final absolute = p.normalize(p.absolute(directory));
+    try {
+      return p.canonicalize(Directory(absolute).resolveSymbolicLinksSync());
+    } on FileSystemException {
+      return absolute;
+    }
+  }
+
+  static bool _isDartWorkspace(String directory) {
+    final pubspec = File(p.join(directory, 'pubspec.yaml'));
+    if (!pubspec.existsSync()) return false;
+
+    try {
+      final yaml = loadYaml(pubspec.readAsStringSync());
+      return yaml is YamlMap && yaml.containsKey('workspace');
+    } on FileSystemException {
+      return false;
+    } on FormatException {
+      return false;
     }
   }
 
