@@ -359,7 +359,7 @@ class Analyzers {
         );
       }
 
-      await ServerpodCodeGenerator.cleanPreviouslyGeneratedDartFiles(
+      await ServerpodCodeGenerator.cleanPreviouslyGeneratedFiles(
         generatedFiles: allGeneratedFiles,
         protocolDefinition: protocolDefinition,
         config: config,

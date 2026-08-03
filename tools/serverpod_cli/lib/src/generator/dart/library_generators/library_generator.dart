@@ -91,6 +91,12 @@ class LibraryGenerator {
       for (var classInfo in topLevelModels)
         if (classInfo.shouldExport)
           Directive.export(TypeDefinition.getRef(classInfo)),
+      if (!sharedPackage && config.type == PackageType.module)
+        for (var packageName in config.sharedModelsSourcePathsParts.keys)
+          Directive.export(
+            'package:$packageName/$packageName.dart',
+            hide: const ['Protocol'],
+          ),
       if (!serverCode && !sharedPackage) Directive.export('client.dart'),
     ]);
 
@@ -110,7 +116,9 @@ class LibraryGenerator {
         serverCode ||
         (sharedPackage
             ? hasDatabaseTablesForCurrentSide
-            : protocolDefinition.models.hasHostClientDatabaseTables);
+            : protocolDefinition.models.hasHostClientDatabaseTables ||
+                  (config.type == PackageType.module &&
+                      protocolDefinition.models.hasSharedClientDatabaseTables));
 
     protocol
       ..name = 'Protocol'
@@ -467,13 +475,18 @@ class LibraryGenerator {
                 ),
             if (!sharedPackage)
               for (var packageName in config.sharedModelsSourcePathsParts.keys)
-                _buildGetClassNameForObjectDelegation(
-                  packageName == 'serverpod_database' &&
-                          config.name != 'serverpod'
-                      ? serverpodDatabaseUrl(serverCode)
-                      : 'package:$packageName/$packageName.dart',
-                  packageName,
-                ),
+                if (config.type == PackageType.module)
+                  _buildGetClassNameForObjectForwarding(
+                    'package:$packageName/$packageName.dart',
+                  )
+                else
+                  _buildGetClassNameForObjectDelegation(
+                    packageName == 'serverpod_database' &&
+                            config.name != 'serverpod'
+                        ? serverpodDatabaseUrl(serverCode)
+                        : 'package:$packageName/$packageName.dart',
+                    packageName,
+                  ),
             if (config.name != 'serverpod' && serverCode)
               _buildGetClassNameForObjectDelegation(
                 serverpodProtocolUrl(serverCode),
@@ -520,13 +533,18 @@ class LibraryGenerator {
                 ),
             if (!sharedPackage)
               for (var packageName in config.sharedModelsSourcePathsParts.keys)
-                _buildDeserializeByClassNameDelegation(
-                  packageName == 'serverpod_database' &&
-                          config.name != 'serverpod'
-                      ? serverpodDatabaseUrl(serverCode)
-                      : 'package:$packageName/$packageName.dart',
-                  packageName,
-                ),
+                if (config.type == PackageType.module)
+                  _buildDeserializeByClassNameForwarding(
+                    'package:$packageName/$packageName.dart',
+                  )
+                else
+                  _buildDeserializeByClassNameDelegation(
+                    packageName == 'serverpod_database' &&
+                            config.name != 'serverpod'
+                        ? serverpodDatabaseUrl(serverCode)
+                        : 'package:$packageName/$packageName.dart',
+                    packageName,
+                  ),
             if (config.name != 'serverpod' && serverCode)
               _buildDeserializeByClassNameDelegation(
                 serverpodProtocolUrl(serverCode),
@@ -683,6 +701,16 @@ class LibraryGenerator {
     ]);
   }
 
+  Block _buildGetClassNameForObjectForwarding(String protocolImportPath) {
+    return Block.of([
+      Code.scope(
+        (a) =>
+            'className = ${a(refer('Protocol', protocolImportPath))}().getClassNameForObject(data);',
+      ),
+      const Code('if(className != null)return className;'),
+    ]);
+  }
+
   Block _buildDeserializeByClassNameDelegation(
     String protocolImportPath,
     String projectName,
@@ -698,6 +726,14 @@ class LibraryGenerator {
       ),
       const Code('}'),
     ]);
+  }
+
+  Code _buildDeserializeByClassNameForwarding(String protocolImportPath) {
+    return Code.scope(
+      (a) =>
+          'try{return ${a(refer('Protocol', protocolImportPath))}().deserializeByClassName(data);}'
+          'on FormatException catch(_){}',
+    );
   }
 
   Code _buildGetTableForTypeDelegation(
@@ -846,7 +882,19 @@ return deserializeByClassName(value);
                 ),
             ),
           ])
-          ..body = const Code('_hostProtocols.add(protocol);'),
+          ..body = Block.of([
+            const Code('_hostProtocols.add(protocol);'),
+            // A module forwards host registrations to the shared packages it
+            // owns, so that dynamic fields on the shared package's models can
+            // resolve types owned by the host project.
+            if (!sharedPackage && config.type == PackageType.module)
+              for (var packageName in config.sharedModelsSourcePathsParts.keys)
+                Code.scope(
+                  (a) =>
+                      '${a(refer('Protocol', 'package:$packageName/$packageName.dart'))}()'
+                      '.registerHostProtocol(projectName, protocol);',
+                ),
+          ]),
       ),
     ];
   }
