@@ -39,8 +39,8 @@ void main() {
   tearDown(() => initializeCliAnalytics(CliAnalytics.disabled()));
 
   test(
-    'Given two incremental generation runs in the same burst, '
-    'when the debounce period ends, '
+    'Given two incremental generation runs in the same pending burst, '
+    'when pending analytics are flushed, '
     'then one event reports their run count and mean duration.',
     () async {
       final config = buildAnalyticsTestConfig(serverDir);
@@ -58,7 +58,7 @@ void main() {
         snapshot: _snapshot,
       );
 
-      await Future<void>.delayed(const Duration(milliseconds: 50));
+      await tracker.flushPending();
 
       expect(recording.events, ['cli.generate']);
 
@@ -76,7 +76,7 @@ void main() {
 
   test(
     'Given a flushed generation burst followed by a new run, '
-    'when the second debounce period ends, '
+    'when pending analytics are flushed again, '
     'then the second event reports only the new run.',
     () async {
       final config = buildAnalyticsTestConfig(serverDir);
@@ -87,7 +87,7 @@ void main() {
         duration: const Duration(milliseconds: 100),
         snapshot: _snapshot,
       );
-      await Future<void>.delayed(const Duration(milliseconds: 50));
+      await tracker.flushPending();
 
       tracker.recordIncrementalRun(
         config: config,
@@ -95,7 +95,7 @@ void main() {
         duration: const Duration(milliseconds: 400),
         snapshot: _snapshot,
       );
-      await Future<void>.delayed(const Duration(milliseconds: 50));
+      await tracker.flushPending();
 
       expect(recording.events, ['cli.generate', 'cli.generate']);
       expect(recording.properties.last['incremental_run_count'], 1);
