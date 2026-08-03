@@ -91,6 +91,7 @@ Future<Process> startProcessAndWaitForKeywords(
   Map<String, String>? environment,
   bool ignorePlatform = false,
   required List<String> keywords,
+  void Function(String output)? onOutput,
 }) async {
   final completer = Completer<Process>();
 
@@ -118,6 +119,7 @@ Future<Process> startProcessAndWaitForKeywords(
   });
   process.stdout.transform(utf8.decoder).listen((e) {
     print('COMMAND "$command" stdout: $e');
+    onOutput?.call(e);
     checkForKeywords(e);
   });
 

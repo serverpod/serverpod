@@ -1,4 +1,5 @@
 @Timeout(Duration(minutes: 5))
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:bootstrap_project/src/util.dart';
@@ -224,10 +225,6 @@ void main() {
           );
           expect(
             content,
-            contains('/app/assets/assets/config.json'),
-          );
-          expect(
-            content,
             contains(
               "final appDir = Directory(Uri(path: 'web/app').toFilePath());",
             ),
@@ -350,6 +347,17 @@ void main() {
       );
 
       test(
+        'then the server server.dart serves the app config under the root asset path',
+        () async {
+          final serverFile = File(
+            p.join(project.serverDir, 'lib', 'server.dart'),
+          );
+          final content = await serverFile.readAsString();
+          expect(content, contains("'/assets/assets/config.json'"));
+        },
+      );
+
+      test(
         'then the server.dart has a fallback middleware for the default route',
         () async {
           final serverFile = File(
@@ -408,6 +416,17 @@ void main() {
           );
           expect(content, contains("'/app'"));
           expect(content, contains("'/app/**'"));
+        },
+      );
+
+      test(
+        'then the server server.dart serves the app config under the /app asset path',
+        () async {
+          final serverFile = File(
+            p.join(project.serverDir, 'lib', 'server.dart'),
+          );
+          final content = await serverFile.readAsString();
+          expect(content, contains("'/app/assets/assets/config.json'"));
         },
       );
 
@@ -571,6 +590,129 @@ void main() {
           final file = File(p.join(project.serverDir, 'config', 'test.yaml'));
           final content = await file.readAsString();
           expect(content, contains('webServer:'));
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a project is created with fullstack template and webapp enabled with an injected config asset, '
+    'and the pod is running with managed public hosts',
+    () {
+      Process? startProjectProcess;
+      HttpClient? client;
+
+      final project = setUpPerformCreateInTempDir(
+        context: TemplateContext(
+          template: ServerpodTemplateType.fullstack,
+          webapp: true,
+        ),
+      );
+
+      setUpAll(() async {
+        final appDir = Directory(p.join(project.serverDir, 'web', 'app'));
+        final configAsset = File(
+          p.join(appDir.path, 'assets', 'assets', 'config.json'),
+        );
+        await configAsset.parent.create(recursive: true);
+        await File(p.join(appDir.path, 'index.html')).writeAsString(
+          '<html><body>Flutter app</body></html>',
+        );
+        await configAsset.writeAsString(
+          jsonEncode({'apiUrl': 'https://invalid.url'}),
+        );
+
+        final testConfig = File(
+          p.join(project.serverDir, 'config', 'test.yaml'),
+        );
+        final config = await testConfig.readAsString();
+        await testConfig.writeAsString(
+          config
+              .replaceFirst(
+                '''apiServer:
+  port: 0
+  publicHost: localhost
+  publicPort: 0
+  publicScheme: http''',
+                '''apiServer:
+  port: 0
+  publicHost: api.managed.host
+  publicPort: 443
+  publicScheme: https''',
+              )
+              .replaceFirst(
+                '''webServer:
+  port: 0
+  publicHost: localhost
+  publicPort: 0
+  publicScheme: http''',
+                '''webServer:
+  port: 0
+  publicHost: app.managed.host
+  publicPort: 80
+  publicScheme: http''',
+              ),
+        );
+
+        final serverOutput = StringBuffer();
+        final webServerStartedPattern = RegExp(
+          r'Webserver listening on http://app\.managed\.host:(\d+)',
+        );
+        int? webPort;
+        startProjectProcess = await startProcessAndWaitForKeywords(
+          'dart',
+          ['bin/main.dart', '--mode=test'],
+          workingDirectory: project.serverDir,
+          keywords: ['Webserver listening on'],
+          onOutput: (output) {
+            serverOutput.write(output);
+            final match = webServerStartedPattern.firstMatch(
+              serverOutput.toString(),
+            );
+            if (match != null) webPort = int.parse(match.group(1)!);
+          },
+        );
+        expect(
+          webPort,
+          isNotNull,
+          reason: 'Could not determine the web server port.',
+        );
+        final capturedWebPort = webPort!;
+
+        client = HttpClient()
+          ..connectionFactory = (uri, proxyHost, proxyPort) async {
+            return Socket.startConnect(
+              InternetAddress.loopbackIPv6,
+              capturedWebPort,
+            );
+          };
+      });
+
+      tearDownAll(() {
+        client?.close(force: true);
+        startProjectProcess?.kill();
+      });
+
+      test(
+        'when requesting the root config asset, '
+        'then the dynamic app config overrides the injected asset',
+        () async {
+          final request = await client!.getUrl(
+            Uri.http(
+              'app.managed.host',
+              '/assets/assets/config.json',
+            ),
+          );
+          final response = await request.close();
+          final responseBody = await utf8.decoder.bind(response).join();
+          final appConfig = jsonDecode(responseBody) as Map<String, dynamic>;
+          final apiUrl = Uri.parse(appConfig['apiUrl'] as String);
+
+          expect(response.statusCode, HttpStatus.ok);
+          expect(apiUrl.scheme, 'https');
+          expect(apiUrl.host, 'api.managed.host');
+          expect(apiUrl.port, 443);
+          expect(responseBody, isNot(contains('invalid.url')));
         },
       );
     },
