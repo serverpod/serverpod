@@ -3,14 +3,22 @@
 : "${SERVERPOD_REAL_DART:?The real Dart executable was not configured.}"
 : "${SERVERPOD_RETRY_RUNNER:?The retry runner was not configured.}"
 
-# CI prepends this wrapper to PATH. Keep every Dart command except `dart test`
-# identical to local development.
-if [[ "${1:-}" != "test" ]]; then
+# The shared retry action already retries its entire command. Avoid multiplying
+# its attempts when that command invokes Dart again.
+if [[ "${SERVERPOD_DART_RETRY_ACTIVE:-}" == "1" ]]; then
   exec "$SERVERPOD_REAL_DART" "$@"
 fi
+
+# Build hooks run only for test, run, and build. Keep every other Dart command
+# identical to local development.
+case "${1:-}" in
+  test|run|build) ;;
+  *) exec "$SERVERPOD_REAL_DART" "$@" ;;
+esac
 
 exec "$SERVERPOD_REAL_DART" "$SERVERPOD_RETRY_RUNNER" \
   --attempts 3 \
   --retry-exit-codes 65,255 \
+  --retry-output-contains "Error: Running build hooks failed." \
   --timeout-seconds 0 \
   -- "$SERVERPOD_REAL_DART" "$@"
