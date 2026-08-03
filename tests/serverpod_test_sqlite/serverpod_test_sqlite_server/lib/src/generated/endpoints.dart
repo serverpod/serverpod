@@ -16,8 +16,10 @@ import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i3;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _i4;
-import 'package:serverpod_test_sqlite_server/src/generated/future_calls.dart'
+import 'package:serverpod_test_shared_module_server/serverpod_test_shared_module_server.dart'
     as _i5;
+import 'package:serverpod_test_sqlite_server/src/generated/future_calls.dart'
+    as _i6;
 export 'future_calls.dart' show ServerpodFutureCallsGetter;
 
 class Endpoints extends _i1.EndpointDispatch {
@@ -118,10 +120,12 @@ class Endpoints extends _i1.EndpointDispatch {
       ..initializeEndpoints(server);
     modules['serverpod_auth_idp'] = _i4.Endpoints()
       ..initializeEndpoints(server);
+    modules['serverpod_test_shared_module'] = _i5.Endpoints()
+      ..initializeEndpoints(server);
   }
 
   @override
   _i1.FutureCallDispatch? get futureCalls {
-    return _i5.FutureCalls();
+    return _i6.FutureCalls();
   }
 }

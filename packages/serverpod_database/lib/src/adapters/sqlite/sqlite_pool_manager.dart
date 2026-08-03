@@ -1,7 +1,4 @@
-import 'dart:io';
-
 import 'package:meta/meta.dart';
-import 'package:path/path.dart' as path;
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 
@@ -21,9 +18,6 @@ class SqlitePoolManager implements DatabasePoolManager {
 
   /// Database configuration.
   final SqliteDatabaseConfig config;
-
-  /// Base dir a relative `filePath` resolves against. Defaults to cwd.
-  final Directory? _serverDirectory;
 
   late DatabaseSerializationManager _serializationManager;
 
@@ -57,24 +51,13 @@ class SqlitePoolManager implements DatabasePoolManager {
   SqliteValueEncoder get encoder => const SqliteValueEncoder();
 
   /// Creates a new [SqlitePoolManager]. Typically, this is done automatically
-  /// when starting the [Server] with SQLite configuration.
+  /// when starting the server with SQLite configuration or a client-side
+  /// database session.
   SqlitePoolManager(
     DatabaseSerializationManager serializationManager,
-    this.config, {
-    Directory? serverDirectory,
-  }) : _serverDirectory = serverDirectory {
+    this.config,
+  ) {
     _serializationManager = serializationManager;
-  }
-
-  /// `config.filePath`, with a relative path anchored at [_serverDirectory]
-  /// (or cwd). `:memory:` and absolute paths are returned unchanged.
-  String get _resolvedFilePath {
-    final filePath = config.filePath;
-    if (filePath == ':memory:' || path.isAbsolute(filePath)) return filePath;
-    return path.join(
-      (_serverDirectory ?? Directory.current).path,
-      filePath,
-    );
   }
 
   @override
@@ -88,7 +71,7 @@ class SqlitePoolManager implements DatabasePoolManager {
       throw StateError('Database stopped. Call `start()` again to restart.');
     }
     final db = SqliteDatabase(
-      path: _resolvedFilePath,
+      path: config.filePath,
       options: SqliteOptions(
         maxReaders:
             config.maxConnectionCount ?? SqliteOptions.defaultMaxReaders,

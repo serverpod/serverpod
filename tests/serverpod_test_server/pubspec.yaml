@@ -21,6 +21,8 @@ dependencies:
     path: ../serverpod_test_module/serverpod_test_module_server
   serverpod_test_shared:
     path: ../serverpod_test_shared
+  serverpod_test_shared_module_server:
+    path: ../serverpod_test_shared_module/serverpod_test_shared_module_server
   uuid: ^4.5.3
   web: '>=0.3.0 <2.0.0'
   web_socket: ^1.0.1
@@ -35,6 +37,8 @@ dev_dependencies:
     path: ../serverpod_test_client
   serverpod_test_module_client:
     path: ../serverpod_test_module/serverpod_test_module_client
+  serverpod_test_shared_module_client:
+    path: ../serverpod_test_shared_module/serverpod_test_shared_module_client
   test: ^1.25.5
   test_descriptor: ^2.0.2
 

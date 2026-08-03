@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/util/locate_modules.dart';
+import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:test/test.dart';
 
+import '../../test_util/builders/generator_config_builder.dart';
 import '../../test_util/builders/project_dependency_factory.dart';
 
 void main() {
@@ -272,6 +276,107 @@ void main() {
       );
 
       expect(moduleConfigs, isEmpty);
+    },
+  );
+
+  test(
+    'Given an installed module that advertises a shared package, '
+    'when loading project models, '
+    'then the shared model is loaded under the module identity.',
+    () async {
+      const moduleName = 'module_server';
+      const sharedPackageName = 'module_shared';
+      const sharedPackageDirectoryName = 'module_shared-1.0.0';
+
+      var ProjectDependencyContext(
+        :packageConfig,
+        :projectPubspec,
+      ) = await ProjectDependencyStructureFactory()
+          .addProjectDependency(moduleName)
+          .addModuleProject(
+            ModuleProjectBuilder()
+                .withName(moduleName)
+                .withPubspecDependencies([sharedPackageName])
+                .withGeneratedManifestYaml('''
+version: 1
+shared_packages:
+  - $sharedPackageName
+''')
+                .build(),
+          )
+          .addPackageToPackageConfig(moduleName)
+          .addPackageToPackageConfig(
+            sharedPackageName,
+            rootDirectoryName: sharedPackageDirectoryName,
+          )
+          .construct();
+      var sharedModelFile = File.fromUri(
+        packageConfig[sharedPackageName]!.root.resolve(
+          'lib/src/models/shared_model.spy.yaml',
+        ),
+      );
+      sharedModelFile.createSync(recursive: true);
+      sharedModelFile.writeAsStringSync('''
+class: SharedModel
+fields:
+  name: String
+''');
+      var moduleConfigs = loadModuleConfigs(
+        projectPubspec: projectPubspec,
+        packageConfig: packageConfig,
+      );
+      var config = GeneratorConfigBuilder().withModules(moduleConfigs).build();
+
+      var models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
+
+      var sharedModel = models.singleWhere(
+        (model) => model.yaml.contains('class: SharedModel'),
+      );
+      expect(sharedModel.moduleAlias, 'module');
+      expect(sharedModel.isSharedModel, isFalse);
+    },
+  );
+
+  test(
+    'Given an installed module that advertises a missing shared package, '
+    'when loading modules, '
+    'then an exception identifies the missing package.',
+    () async {
+      const moduleName = 'module_server';
+      const sharedPackageName = 'module_shared';
+
+      var ProjectDependencyContext(
+        :packageConfig,
+        :projectPubspec,
+      ) = await ProjectDependencyStructureFactory()
+          .addProjectDependency(moduleName)
+          .addModuleProject(
+            ModuleProjectBuilder()
+                .withName(moduleName)
+                .withPubspecDependencies([sharedPackageName])
+                .withGeneratedManifestYaml('''
+version: 1
+shared_packages:
+  - $sharedPackageName
+''')
+                .build(),
+          )
+          .addPackageToPackageConfig(moduleName)
+          .construct();
+
+      expect(
+        () => loadModuleConfigs(
+          projectPubspec: projectPubspec,
+          packageConfig: packageConfig,
+        ),
+        throwsA(
+          isA<ServerpodModulesNotFoundException>().having(
+            (exception) => exception.message,
+            'message',
+            contains(sharedPackageName),
+          ),
+        ),
+      );
     },
   );
 }

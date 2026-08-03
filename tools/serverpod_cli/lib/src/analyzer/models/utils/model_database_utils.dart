@@ -27,4 +27,14 @@ extension SerializableModelDefinitionsClientDatabase
   bool get hasHostClientDatabaseTables => whereType<ModelClassDefinition>().any(
     (model) => model.isHostClientDatabaseTable,
   );
+
+  /// Whether a shared package owned by the current project contains a table
+  /// that requires client-side database support.
+  bool get hasSharedClientDatabaseTables =>
+      whereType<ModelClassDefinition>().any(
+        (model) =>
+            model.isSharedModel &&
+            !model.serverOnly &&
+            model.shouldGenerateTableCode(false),
+      );
 }

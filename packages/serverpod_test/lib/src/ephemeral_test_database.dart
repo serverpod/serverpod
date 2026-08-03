@@ -127,8 +127,7 @@ final class _PostgresEphemeralTestDatabase implements EphemeralTestDatabase {
     required Directory serverDirectory,
   }) async {
     final connectivity = await _resolveConnectivity(
-      database,
-      baseDirectory: serverDirectory,
+      database.withResolvedLocalPath(serverDirectory.path),
     );
     final manager = TestDatabaseManager(connectivity);
     await manager.createEmptyDatabase(databaseName);
@@ -145,19 +144,15 @@ final class _PostgresEphemeralTestDatabase implements EphemeralTestDatabase {
   /// `dataPath`, caching by data directory. Returns the resolved coordinates,
   /// or [database] itself for an externally-managed server.
   static Future<PostgresDatabaseConfig> _resolveConnectivity(
-    PostgresDatabaseConfig database, {
-    required Directory baseDirectory,
-  }) async {
+    PostgresDatabaseConfig database,
+  ) async {
     if (database.dataPath == null) return database;
 
-    final key = '${baseDirectory.path}|${database.dataPath}';
+    final key = database.dataPath!;
     final existing = _sharedEmbeddedPostgres[key];
     if (existing != null) return existing.connectivity;
 
-    final resolved = await startOrAttachEmbeddedPostgres(
-      database,
-      baseDirectory: baseDirectory,
-    );
+    final resolved = await startOrAttachEmbeddedPostgres(database);
     if (resolved != null) {
       _sharedEmbeddedPostgres[key] = resolved;
       return resolved.connectivity;

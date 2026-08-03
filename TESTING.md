@@ -118,6 +118,9 @@ builds the server bundle itself.
 - **Dockerized Flutter integration** - `util/run_tests_flutter_integration`:
   self-contained compose stack with its own postgres + redis (its environment
   opts out of embedded PostgreSQL).
+- **Client-side databases on the web** - `util/run_tests_client_database_web`.
+  Requires Chrome. Runs two suites to validate complete client-side usage of
+  the database functionality. More details are documented in the script.
 - **Primary host workflow** - `melos run test`. This excludes the e2e and
   Dockerized Flutter suites, but its bootstrap group still requires Docker on
   non-Windows hosts and its redis-tagged integration tests require Redis.

@@ -48,7 +48,6 @@ import 'session_log_entry.dart' as _i34;
 import 'session_log_filter.dart' as _i35;
 import 'session_log_info.dart' as _i36;
 import 'session_log_result.dart' as _i37;
-import 'package:serverpod_database/src/generated/table_definition.dart' as _i38;
 export 'authentication/revoked_authentication_auth_id.dart';
 export 'authentication/revoked_authentication_scope.dart';
 export 'authentication/revoked_authentication_user.dart';
@@ -1539,9 +1538,9 @@ class Protocol extends _i1.DatabaseSerializationManager {
               .toList()
           as T;
     }
-    if (t == List<_i38.TableDefinition>) {
+    if (t == List<_i3.TableDefinition>) {
       return (data as List)
-              .map((e) => deserialize<_i38.TableDefinition>(e))
+              .map((e) => deserialize<_i3.TableDefinition>(e))
               .toList()
           as T;
     }

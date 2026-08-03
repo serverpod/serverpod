@@ -52,6 +52,13 @@ jobs:
         uses: ./.github/actions/retry
         with:
           command: dart run melos bootstrap
+      # The frozen chat module is not part of the melos workspace; without
+      # package resolution, dart format cannot read the package includes in
+      # its analysis_options.yaml files and would apply default settings.
+      - name: Resolve frozen legacy chat packages
+        uses: ./.github/actions/retry
+        with:
+          command: for d in modules/legacy/serverpod_chat/* examples/legacy/chat/*; do if [ -d "$d" ]; then (cd "$d" && flutter pub get); fi; done
       - name: Verify formatting
         run: dart format --output=none --set-exit-if-changed .
 
@@ -184,9 +191,7 @@ jobs:
           - examples/auth/auth_server
           - examples/middleware/middleware_server
           - examples/legacy/auth_example/auth_example_server
-          - examples/legacy/chat/chat_server
           - modules/legacy/serverpod_auth/serverpod_auth_server
-          - modules/legacy/serverpod_chat/serverpod_chat_server
           - modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_server
           - modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_server
           - modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server
@@ -195,6 +200,7 @@ jobs:
           - tests/serverpod_test_module/serverpod_test_module_server
           - tests/serverpod_test_nonvector/serverpod_test_nonvector_server
           - tests/serverpod_test_server
+          - tests/serverpod_test_shared_module/serverpod_test_shared_module_server
           - tests/serverpod_test_sqlite/serverpod_test_sqlite_server
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -845,6 +851,37 @@ jobs:
       - name: Run e2e web tests
         run: util/run_tests_e2e_host firefox ${{ matrix.shard }} 5
         timeout-minutes: 15
+
+  # Client-side databases run on Flutter web (executed in a browser).
+  client_database_web_tests:
+    name: Client database web tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ["3.38.4", "3.44.4"]
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: ./.github/actions/use-flutter
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: false
+      - uses: browser-actions/setup-chrome@2e1d749697dd1612b833dba4a722266286fbefcd # v2.1.2
+      - name: Retry transient Dart build-hook failures
+        uses: ./.github/actions/use-dart-test-retry
+      - name: Resolve melos
+        uses: ./.github/actions/retry
+        with:
+          command: dart pub get
+      # The run also covers serverpod_test_sqlite_client, which comes along as a
+      # path dependency of the Flutter package under --include-dependencies.
+      - name: Bootstrap
+        uses: ./.github/actions/retry
+        with:
+          command: dart run melos bootstrap --scope='serverpod_test_sqlite_flutter' --include-dependencies
+      - name: Run client database web tests
+        run: util/run_tests_client_database_web
+        timeout-minutes: 20
 
   serverpod_shared_integration_tests:
     name: serverpod_shared integration tests

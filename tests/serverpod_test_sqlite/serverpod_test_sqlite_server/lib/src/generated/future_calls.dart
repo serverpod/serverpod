@@ -59,7 +59,7 @@ class FutureCalls extends _i1.FutureCallDispatch<_FutureCallRef> {
     _i1.FutureCallManager futureCallManager,
     String serverId,
   ) {
-    var registeredFutureCalls = <String, _i1.FutureCall>{
+    var registeredFutureCalls = <String, _i1.InvokableFutureCall>{
       'InsertSimpleDataCallPersistIncrementedSimpleDataFutureCall':
           InsertSimpleDataCallPersistIncrementedSimpleDataFutureCall(),
     };
@@ -201,7 +201,8 @@ class _InsertSimpleDataCallFutureCallDispatcher {
 }
 
 class InsertSimpleDataCallPersistIncrementedSimpleDataFutureCall
-    extends _i1.FutureCall<_i3.SimpleData> {
+    extends _i1.FutureCall<_i3.SimpleData>
+    implements _i1.InvokableFutureCall<_i3.SimpleData> {
   @override
   _i4.Future<void> invoke(
     _i1.Session session,

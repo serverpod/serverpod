@@ -83,6 +83,7 @@ class MainScreen extends StatelessComponent {
   Component _buildHeader(ServerpodThemeData theme, CreateConfigState state) {
     final showingSummary = state.form.isSummary;
     final creatingProject = state.creatingProject;
+    final showHint = !showingSummary && !creatingProject;
 
     final title = switch (creatingProject) {
       true => isUpgrade ? 'Upgrading project' : 'Creating project',
@@ -104,13 +105,14 @@ class MainScreen extends StatelessComponent {
             ),
           ),
           const Spacer(),
-          Text(
-            '💡 Click to select',
-            style: TextStyle(
-              color: theme.brightText,
-              fontWeight: FontWeight.bold,
+          if (showHint)
+            Text(
+              '💡 Click to select',
+              style: TextStyle(
+                color: theme.brightText,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
         ],
       ),
     );

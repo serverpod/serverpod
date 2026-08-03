@@ -831,13 +831,19 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
 
     // For INSERT/UPDATE/DELETE, sqlite_async's execute() returns ResultSet with
     // 0 rows, so we need to read the affected row count via SELECT changes().
+    //
+    // The statements share one write lock rather than direct access to the
+    // database object (`computeWithDatabase`): on the web the database lives in
+    // a worker, where that access cannot be handed out. A write lock serializes
+    // the statements against other writers just the same, and leaves each of
+    // them auto-committing individually, as before.
     if (script.any((s) => s.isWriteStatement) && transaction == null) {
       final connection = await _sqliteConnection;
-      return connection.computeWithDatabase((db) async {
+      return connection.writeLock((context) async {
         var updatedRows = 0;
         for (final statement in script) {
-          db.execute(statement.text, params);
-          updatedRows += db.updatedRows;
+          await context.execute(statement.text, params);
+          updatedRows += await _sqliteChangesFromContext(context);
         }
         return updatedRows;
       });
@@ -1519,7 +1525,20 @@ _SqliteTransaction? _castToSqliteTransaction(Transaction? transaction) {
 /// matches the native SQLite count for that connection.
 Future<int> _sqliteChangesFromTransaction(Transaction transaction) async {
   final sqliteTx = _castToSqliteTransaction(transaction)!;
-  final changesResult = await sqliteTx.execute('SELECT changes()', []);
+  return _rowCountFromChanges(await sqliteTx.execute('SELECT changes()', []));
+}
+
+/// Returns the number of rows changed by the last statement run on [context],
+/// using SQLite's `changes()` function.
+///
+/// Like [_sqliteChangesFromTransaction], but for statements run under a plain
+/// write lock rather than inside a transaction.
+Future<int> _sqliteChangesFromContext(SqliteWriteContext context) async {
+  return _rowCountFromChanges(await context.execute('SELECT changes()'));
+}
+
+/// Reads the result of a `SELECT changes()` query as a row count.
+int _rowCountFromChanges(ResultSet changesResult) {
   if (changesResult.isEmpty) return 0;
   final n = changesResult.first.columnAt(0);
   return n is int ? n : int.tryParse(n.toString()) ?? 0;

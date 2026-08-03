@@ -299,7 +299,7 @@ flutter run
 
 - **`legacy/serverpod_auth`**: Legacy authentication module (Google, Apple, Email, Firebase)
 - **`serverpod_auth`**: New authentication system
-- **`legacy/serverpod_chat`**: Legacy real-time chat module
+- **`legacy/serverpod_chat`**: Legacy real-time chat module (frozen at Serverpod 4.0.0-beta.0, uses hosted dependencies instead of the monorepo overrides)
 
 ### Examples (`/examples/`)
 
