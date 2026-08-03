@@ -1,9 +1,12 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
 import 'package:serverpod_cli/src/analytics/project_identity.dart';
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
+
+import '../test_util/analytics_helpers.dart';
 
 void main() {
   test('Given SSH and HTTPS remote URLs for the same repository, '
@@ -296,6 +299,90 @@ workspace:
         ),
         isNull,
       );
+    },
+  );
+
+  test(
+    'Given a git checkout without a remote, '
+    'when analytics are captured twice, '
+    'then its anonymous checkout id is reused as the project id.',
+    () async {
+      final recording = RecordingAnalytics();
+      initializeCliAnalytics(
+        CliAnalytics(analytics: recording)..enabled = true,
+      );
+      addTearDown(() => initializeCliAnalytics(CliAnalytics.disabled()));
+
+      await d.dir('fallback_no_remote', [
+        d.dir('.git', [d.file('config', '[core]\n  bare = false\n')]),
+        d.dir('app_server', [d.file('pubspec.yaml', '')]),
+      ]).create();
+      final serverDir = p.join(
+        d.sandbox,
+        'fallback_no_remote',
+        'app_server',
+      );
+
+      await cliAnalytics.captureFlutterLaunch(
+        serverDir: serverDir,
+        device: 'chrome',
+        isRelaunch: false,
+      );
+      await cliAnalytics.captureFlutterLaunch(
+        serverDir: serverDir,
+        device: 'chrome',
+        isRelaunch: true,
+      );
+
+      final first = recording.properties.first;
+      final second = recording.properties.last;
+      expect(first[r'$groups'], {'project': first['checkout_id']});
+      expect(second[r'$groups'], first[r'$groups']);
+      expect(second['checkout_id'], first['checkout_id']);
+    },
+  );
+
+  test(
+    'Given a project outside a git checkout, '
+    'when analytics are captured twice, '
+    'then its local anonymous id is reused as the project id.',
+    () async {
+      final recording = RecordingAnalytics();
+      initializeCliAnalytics(
+        CliAnalytics(analytics: recording)..enabled = true,
+      );
+      addTearDown(() => initializeCliAnalytics(CliAnalytics.disabled()));
+
+      await d.dir('fallback_no_git', [
+        d.file('pubspec.yaml', '''
+name: workspace
+workspace:
+  - app_server
+'''),
+        d.dir('app_server', [d.file('pubspec.yaml', '')]),
+      ]).create();
+      final serverDir = p.join(
+        d.sandbox,
+        'fallback_no_git',
+        'app_server',
+      );
+
+      await cliAnalytics.captureFlutterLaunch(
+        serverDir: serverDir,
+        device: 'chrome',
+        isRelaunch: false,
+      );
+      await cliAnalytics.captureFlutterLaunch(
+        serverDir: serverDir,
+        device: 'chrome',
+        isRelaunch: true,
+      );
+
+      final first = recording.properties.first;
+      final second = recording.properties.last;
+      expect(first[r'$groups'], {'project': first['checkout_id']});
+      expect(second[r'$groups'], first[r'$groups']);
+      expect(second['checkout_id'], first['checkout_id']);
     },
   );
 }
