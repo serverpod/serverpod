@@ -5,6 +5,7 @@ import 'package:serverpod_cli/src/generator/code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/library_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/model_library_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/model_generators_util.dart';
+import 'package:serverpod_cli/src/generator/dart_formatters.dart';
 import 'package:serverpod_cli/src/migrations/client_side/client_migration_dart_emitter.dart';
 
 /// A [CodeGenerator] that generates the client side dart code of a
@@ -33,15 +34,18 @@ class DartClientCodeGenerator extends CodeGenerator {
       config,
     );
 
-    return {
-      for (var entry in modelAllocatorContext.entries)
-        entry.model.getFullFilePath(
-          config,
-          serverCode: false,
-        ): clientSideGenerator
-            .generateModelLibrary(entry.model)
-            .generateCode(allocator: entry.allocator),
-    };
+    var codeMap = <String, String>{};
+    for (var entry in modelAllocatorContext.entries) {
+      var path = entry.model.getFullFilePath(config, serverCode: false);
+      codeMap[path] = clientSideGenerator
+          .generateModelLibrary(entry.model)
+          .generateCode(
+            allocator: entry.allocator,
+            formatter: GeneratedDartFormatters.of(path),
+          );
+    }
+
+    return codeMap;
   }
 
   @override
@@ -55,11 +59,23 @@ class DartClientCodeGenerator extends CodeGenerator {
       protocolDefinition: protocolDefinition,
       config: config,
     );
+
+    var protocolPath = p.joinAll([
+      ...config.generatedDartClientModelPathParts,
+      'protocol.dart',
+    ]);
+    var clientPath = p.joinAll([
+      ...config.generatedDartClientModelPathParts,
+      'client.dart',
+    ]);
+
     var files = {
-      p.joinAll([...config.generatedDartClientModelPathParts, 'protocol.dart']):
-          clientClassGenerator.generateProtocol().generateCode(),
-      p.joinAll([...config.generatedDartClientModelPathParts, 'client.dart']):
-          clientClassGenerator.generateClientEndpointCalls().generateCode(),
+      protocolPath: clientClassGenerator.generateProtocol().generateCode(
+        formatter: GeneratedDartFormatters.of(protocolPath),
+      ),
+      clientPath: clientClassGenerator
+          .generateClientEndpointCalls()
+          .generateCode(formatter: GeneratedDartFormatters.of(clientPath)),
     };
     if (protocolDefinition.models.hasHostClientDatabaseTables &&
         config.type != PackageType.module) {
