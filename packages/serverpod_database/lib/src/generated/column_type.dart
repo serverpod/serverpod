@@ -71,7 +71,7 @@ enum ColumnType implements _i1.SerializableModel {
   geographyPolygon,
 
   /// Dart type: [GeographyGeometryCollection]
-  geographyGeometryCollection
+  geographyGeometryCollection,
   ;
 
   static ColumnType fromJson(int index) {

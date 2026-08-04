@@ -7,6 +7,7 @@ import 'package:serverpod_cli/src/generator/dart/library_generators/model_librar
 import 'package:serverpod_cli/src/generator/dart/library_generators/server_test_tools_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/model_generators_util.dart';
 import 'package:serverpod_cli/src/generator/dart/protocol_definition_extension.dart';
+import 'package:serverpod_cli/src/generator/dart_formatters.dart';
 
 /// A [CodeGenerator] that generates the server side dart code of a
 /// serverpod project.
@@ -32,15 +33,18 @@ class DartServerCodeGenerator extends CodeGenerator {
       config,
     );
 
-    return {
-      for (var entry in modelAllocatorContext.entries)
-        entry.model.getFullFilePath(
-          config,
-          serverCode: true,
-        ): serverSideGenerator
-            .generateModelLibrary(entry.model)
-            .generateCode(allocator: entry.allocator),
-    };
+    var codeMap = <String, String>{};
+    for (var entry in modelAllocatorContext.entries) {
+      var path = entry.model.getFullFilePath(config, serverCode: true);
+      codeMap[path] = serverSideGenerator
+          .generateModelLibrary(entry.model)
+          .generateCode(
+            allocator: entry.allocator,
+            formatter: GeneratedDartFormatters.of(path),
+          );
+    }
+
+    return codeMap;
   }
 
   @override
@@ -55,11 +59,16 @@ class DartServerCodeGenerator extends CodeGenerator {
       config: config,
     );
 
+    var protocolPath = p.joinAll(config.generatedServerProtocolFilePathParts);
+    var endpointsPath = p.joinAll(config.generatedServerEndpointFilePathParts);
+
     var codeMap = {
-      p.joinAll([...config.generatedServerProtocolFilePathParts]):
-          serverClassGenerator.generateProtocol().generateCode(),
-      p.joinAll([...config.generatedServerEndpointFilePathParts]):
-          serverClassGenerator.generateServerEndpointDispatch().generateCode(),
+      protocolPath: serverClassGenerator.generateProtocol().generateCode(
+        formatter: GeneratedDartFormatters.of(protocolPath),
+      ),
+      endpointsPath: serverClassGenerator
+          .generateServerEndpointDispatch()
+          .generateCode(formatter: GeneratedDartFormatters.of(endpointsPath)),
       ...generateFutureCallsCode(
         protocolDefinition: protocolDefinition,
         config: config,
@@ -74,14 +83,13 @@ class DartServerCodeGenerator extends CodeGenerator {
         config: config,
       );
 
-      codeMap.addAll({
-        p.joinAll([
-          ...generatedServerTestToolsPathParts,
-          'serverpod_test_tools.dart',
-        ]): testToolsGenerator
-            .generateTestHelper()
-            .generateCode(),
-      });
+      var testToolsPath = p.joinAll([
+        ...generatedServerTestToolsPathParts,
+        'serverpod_test_tools.dart',
+      ]);
+      codeMap[testToolsPath] = testToolsGenerator
+          .generateTestHelper()
+          .generateCode(formatter: GeneratedDartFormatters.of(testToolsPath));
     }
 
     return codeMap;
@@ -105,12 +113,16 @@ class DartServerCodeGenerator extends CodeGenerator {
       config: config,
     );
 
+    var futureCallsPath = p.joinAll(
+      config.generatedServerFutureCallFilePathParts,
+    );
+
     return {
-      p.joinAll([
-        ...config.generatedServerFutureCallFilePathParts,
-      ]): serverClassGenerator
+      futureCallsPath: serverClassGenerator
           .generateServerFutureCalls()
-          .generateCode(),
+          .generateCode(
+            formatter: GeneratedDartFormatters.of(futureCallsPath),
+          ),
     };
   }
 }

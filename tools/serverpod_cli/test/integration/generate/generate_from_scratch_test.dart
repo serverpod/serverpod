@@ -5,6 +5,7 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/analyzers.dart';
+import 'package:serverpod_shared/process_io.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
@@ -16,7 +17,7 @@ Future<(Directory, Directory)> _buildProject() async {
   final generatedDir = Directory(
     p.join(projectDir.path, 'lib', 'src', 'generated'),
   );
-  await createTestEnvironment(projectDir);
+  await createTestEnvironment(projectDir, sdkConstraint: '^3.10.3');
 
   return (projectDir, generatedDir);
 }
@@ -224,7 +225,7 @@ class GreetingEndpoint extends Endpoint {
     },
   );
 
-  group('Given a model and endpoints using it with no generated files', () {
+  group('Given a model and endpoints using it with no generated files,', () {
     late Directory projectDir;
     late Directory generatedDir;
     late Directory generatedClientDir;
@@ -244,17 +245,17 @@ class GreetingEndpoint extends Endpoint {
         path.join(projectDir.path, 'test_client', 'lib', 'src', 'protocol'),
       );
 
-      var modelFile = File(
-        path.join(
-          projectDir.path,
-          'lib',
-          'src',
-          'protocol',
-          'item.spy.yaml',
-        ),
-      );
-      modelFile.createSync(recursive: true);
-      modelFile.writeAsStringSync('''
+      File(
+          path.join(
+            projectDir.path,
+            'lib',
+            'src',
+            'protocol',
+            'item.spy.yaml',
+          ),
+        )
+        ..createSync(recursive: true)
+        ..writeAsStringSync('''
 class: Item
 fields:
   name: String
@@ -264,17 +265,17 @@ fields:
       // With no generated files on disk, a temporary protocol.dart (model
       // exports and a stub Protocol class) is written before analysis so the
       // import resolves.
-      var endpointFile = File(
-        path.join(
-          projectDir.path,
-          'lib',
-          'src',
-          'endpoints',
-          'item_endpoint.dart',
-        ),
-      );
-      endpointFile.createSync(recursive: true);
-      endpointFile.writeAsStringSync('''
+      File(
+          path.join(
+            projectDir.path,
+            'lib',
+            'src',
+            'endpoints',
+            'item_endpoint.dart',
+          ),
+        )
+        ..createSync(recursive: true)
+        ..writeAsStringSync('''
 import 'package:serverpod/serverpod.dart';
 import 'package:test_server/src/generated/protocol.dart';
 
@@ -310,21 +311,18 @@ class ClientItemEndpoint extends Endpoint {
       analyzers = await Analyzers.create(config);
     });
 
-    group('when generating', () {
+    group('when generating,', () {
       late GenerateResult result;
 
-      tearDown(() => generatedDir.deleteIfExists(recursive: true));
       setUp(() async {
-        result = await analyzers.performGenerate(
-          config: config,
-        );
+        result = await analyzers.performGenerate(config: config);
       });
 
       test('then generation succeeds on first run.', () {
         expect(result.success, isTrue);
       });
 
-      test('then endpoint file is generated.', () {
+      test('then endpoint files are generated.', () {
         expect(
           result.generatedFiles.any((f) => f.contains('endpoints')),
           isTrue,
@@ -337,8 +335,263 @@ class ClientItemEndpoint extends Endpoint {
           isTrue,
         );
       });
+
+      test('then generated Dart is format-clean.', () async {
+        final formatResult = await Process.run(
+          dartExecutablePath,
+          [
+            'format',
+            '--output=none',
+            '--set-exit-if-changed',
+            generatedDir.path,
+            generatedClientDir.path,
+          ],
+          workingDirectory: projectDir.path,
+        );
+
+        expect(
+          formatResult.exitCode,
+          0,
+          reason: '${formatResult.stdout}\n${formatResult.stderr}',
+        );
+      });
     });
   });
+
+  group(
+    'Given not yet generated protocol and database models targeting server and client packages with different formatter configurations,',
+    () {
+      late Directory projectDir;
+      late Directory generatedDir;
+      late Directory generatedClientDir;
+      late Directory generatedClientMigrationsDir;
+      late GeneratorConfig config;
+      late Analyzers analyzers;
+
+      tearDownAll(() => projectDir.deleteIfExists(recursive: true));
+      tearDown(() {
+        generatedDir.deleteIfExists(recursive: true);
+        generatedClientDir.deleteIfExists(recursive: true);
+        generatedClientMigrationsDir.deleteIfExists(recursive: true);
+      });
+
+      setUpAll(() async {
+        (projectDir, generatedDir) = await _buildProject();
+        await _createClientPackage(projectDir);
+        generatedClientDir = Directory(
+          path.join(projectDir.path, 'test_client', 'lib', 'src', 'protocol'),
+        );
+        generatedClientMigrationsDir = Directory(
+          path.join(projectDir.path, 'test_client', 'lib', 'migrations'),
+        );
+
+        File(path.join(projectDir.path, 'analysis_options.yaml'))
+          ..createSync(recursive: true)
+          ..writeAsStringSync('''
+formatter:
+  page_width: 80
+  trailing_commas: preserve
+''');
+        File(
+            path.join(
+              projectDir.path,
+              'test_client',
+              'analysis_options.yaml',
+            ),
+          )
+          ..createSync(recursive: true)
+          ..writeAsStringSync('''
+formatter:
+  page_width: 120
+  trailing_commas: automate
+''');
+        File(
+            path.join(
+              generatedClientMigrationsDir.path,
+              'analysis_options.yaml',
+            ),
+          )
+          ..createSync(recursive: true)
+          ..writeAsStringSync('''
+formatter:
+  page_width: 60
+''');
+        File(
+            path.join(
+              projectDir.path,
+              'lib',
+              'src',
+              'protocol',
+              'item.spy.yaml',
+            ),
+          )
+          ..createSync(recursive: true)
+          ..writeAsStringSync('''
+class: Item
+fields:
+  name: String
+''');
+        File(
+            path.join(
+              projectDir.path,
+              'lib',
+              'src',
+              'protocol',
+              'database_item.spy.yaml',
+            ),
+          )
+          ..createSync(recursive: true)
+          ..writeAsStringSync('''
+class: DatabaseItem
+table: database_item
+database: all
+fields:
+  name: String
+''');
+
+        config = buildTestServerConfig(projectDir);
+        analyzers = await Analyzers.create(config);
+      });
+
+      group('when generating,', () {
+        setUp(() async {
+          await analyzers.performGenerate(config: config);
+        });
+
+        test(
+          'then server model code uses the server page width.',
+          () async {
+            final generatedModel = await File(
+              path.join(generatedDir.path, 'item.dart'),
+            ).readAsString();
+
+            expect(
+              generatedModel,
+              contains('''
+abstract class Item
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {'''),
+            );
+          },
+        );
+
+        test(
+          'then client model code uses the client page width.',
+          () async {
+            final generatedClientModel = await File(
+              path.join(generatedClientDir.path, 'item.dart'),
+            ).readAsString();
+
+            expect(
+              generatedClientModel,
+              contains(
+                'abstract class Item implements '
+                '_i1.SerializableModel, _i1.ProtocolSerialization {',
+              ),
+            );
+          },
+        );
+
+        test(
+          'then generated client migration Dart is format-clean.',
+          () async {
+            final formatResult = await Process.run(
+              dartExecutablePath,
+              [
+                'format',
+                '--output=none',
+                '--set-exit-if-changed',
+                generatedClientMigrationsDir.path,
+              ],
+              workingDirectory: projectDir.path,
+            );
+
+            expect(
+              formatResult.exitCode,
+              0,
+              reason: '${formatResult.stdout}\n${formatResult.stderr}',
+            );
+          },
+        );
+      });
+    },
+  );
+
+  group(
+    'Given a not yet generated enum in a package preserving trailing commas,',
+    () {
+      late Directory projectDir;
+      late Directory generatedDir;
+      late String generatedEnumPath;
+      late GeneratorConfig config;
+      late Analyzers analyzers;
+
+      tearDownAll(() => projectDir.deleteIfExists(recursive: true));
+      tearDown(() => generatedDir.deleteIfExists(recursive: true));
+
+      setUpAll(() async {
+        (projectDir, generatedDir) = await _buildProject();
+        File(path.join(projectDir.path, 'analysis_options.yaml'))
+          ..createSync(recursive: true)
+          ..writeAsStringSync('''
+formatter:
+  page_width: 80
+  trailing_commas: preserve
+''');
+        File(
+            path.join(
+              projectDir.path,
+              'lib',
+              'src',
+              'protocol',
+              'chat_role.spy.yaml',
+            ),
+          )
+          ..createSync(recursive: true)
+          ..writeAsStringSync('''
+enum: ChatRole
+serialized: byName
+values:
+  - user
+  - assistant
+  - system
+''');
+        generatedEnumPath = path.join(generatedDir.path, 'chat_role.dart');
+        config = buildTestServerConfig(projectDir);
+        analyzers = await Analyzers.create(config);
+      });
+
+      group('when generating,', () {
+        setUp(() async {
+          await analyzers.performGenerate(config: config);
+        });
+
+        test('then the trailing comma is preserved.', () async {
+          final generatedEnum = await File(generatedEnumPath).readAsString();
+
+          expect(generatedEnum, contains('  assistant,\n  system,\n  ;'));
+        });
+
+        test('then the generated enum is format-clean.', () async {
+          final formatResult = await Process.run(
+            dartExecutablePath,
+            [
+              'format',
+              '--output=none',
+              '--set-exit-if-changed',
+              generatedEnumPath,
+            ],
+            workingDirectory: projectDir.path,
+          );
+
+          expect(
+            formatResult.exitCode,
+            0,
+            reason: '${formatResult.stdout}\n${formatResult.stderr}',
+          );
+        });
+      });
+    },
+  );
 
   group(
     'Given a model that is removed from disk when analyzers are updated incrementally',
@@ -406,7 +659,7 @@ fields:
   );
 
   group(
-    'Given server and client imports of a shared model with no generated files',
+    'Given server and client imports of a shared model with no generated files,',
     () {
       late Directory projectDir;
       late GeneratorConfig config;
@@ -462,6 +715,60 @@ class ${package == 'test_server' ? 'Server' : 'Client'}SharedModelEndpoint exten
       );
     },
   );
+
+  group(
+    'Given a not yet generated shared model package with page width 120,',
+    () {
+      late Directory projectDir;
+      late Directory generatedSharedDir;
+      late GeneratorConfig config;
+      late Analyzers analyzers;
+
+      tearDownAll(() => projectDir.deleteIfExists(recursive: true));
+      tearDown(() => generatedSharedDir.deleteIfExists(recursive: true));
+
+      setUpAll(() async {
+        (projectDir, _) = await _buildProject();
+        await _createSharedPackage(projectDir);
+        await File(
+          path.join(projectDir.path, 'test_shared', 'analysis_options.yaml'),
+        ).writeAsString('''
+formatter:
+  page_width: 120
+  trailing_commas: automate
+''');
+        generatedSharedDir = Directory(
+          path.join(projectDir.path, 'test_shared', 'lib', 'src', 'generated'),
+        );
+        config = buildTestServerConfig(
+          projectDir,
+          sharedModelsSourcePathsParts: {
+            'test_shared': ['test_shared'],
+          },
+        );
+        analyzers = await Analyzers.create(config);
+      });
+
+      test(
+        'when generating, '
+        'then shared model code uses the shared package page width.',
+        () async {
+          await analyzers.performGenerate(config: config);
+          final generatedSharedModel = await File(
+            path.join(generatedSharedDir.path, 'shared_model.dart'),
+          ).readAsString();
+
+          expect(
+            generatedSharedModel,
+            contains(
+              'abstract class SharedModel implements '
+              '_i1.SerializableModel, _i1.ProtocolSerialization {',
+            ),
+          );
+        },
+      );
+    },
+  );
 }
 
 Future<void> _createClientPackage(
@@ -483,7 +790,7 @@ Future<void> _createClientPackage(
 name: test_client
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: '^3.10.3'
 
 dependencies:
   serverpod_client:
@@ -532,7 +839,7 @@ Future<void> _createSharedPackage(Directory projectDir) async {
 name: test_shared
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: '^3.10.3'
 
 dependencies:
   serverpod_serialization:

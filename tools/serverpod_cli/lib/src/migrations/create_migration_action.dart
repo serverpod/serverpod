@@ -6,6 +6,7 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
 import 'package:serverpod_cli/src/analytics/migration_metrics.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
+import 'package:serverpod_cli/src/generator/dart_formatters.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -128,6 +129,10 @@ Future<CreateMigrationOutcome> createMigrationAction({
       : null;
 
   final precomputedVersion = MigrationGenerator.createVersionName(tag);
+
+  if (hasClientMigrations) {
+    await GeneratedDartFormatters.resolve(config);
+  }
 
   final results = await Future.wait([
     _createMigration(

@@ -14,7 +14,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 enum DefaultServerOnlyEnum implements _i1.SerializableModel {
   foo,
-  bar
+  bar,
   ;
 
   static DefaultServerOnlyEnum fromJson(int index) {

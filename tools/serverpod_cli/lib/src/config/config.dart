@@ -235,11 +235,18 @@ class GeneratorConfig implements ModelLoadConfig {
   /// Paths outside the source tree that may influence generated output
   List<String> get auxiliaryInputPaths => [
     p.joinAll([...serverPackageDirectoryPathParts, 'config', 'generator.yaml']),
+    p.joinAll([...serverPackageDirectoryPathParts, 'analysis_options.yaml']),
     p.joinAll([...serverPackageDirectoryPathParts, 'pubspec.yaml']),
     p.joinAll([...serverPackageDirectoryPathParts, 'pubspec.lock']),
+    p.joinAll([...clientPackagePathParts, 'analysis_options.yaml']),
     p.joinAll([...clientPackagePathParts, 'pubspec.yaml']),
     p.joinAll([...clientPackagePathParts, 'pubspec.lock']),
     for (final pathParts in sharedModelsSourcePathsParts.values) ...[
+      p.joinAll([
+        ...serverPackageDirectoryPathParts,
+        ...pathParts,
+        'analysis_options.yaml',
+      ]),
       p.joinAll([
         ...serverPackageDirectoryPathParts,
         ...pathParts,

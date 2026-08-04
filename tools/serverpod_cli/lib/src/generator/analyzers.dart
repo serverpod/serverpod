@@ -17,6 +17,7 @@ import '../commands/generate.dart';
 import 'code_generation_collector.dart';
 import 'dart/server_code_generator.dart';
 import 'dart/temp_protocol_generator.dart';
+import 'dart_formatters.dart';
 import 'serverpod_code_generator.dart';
 
 /// Result of a code generation run.
@@ -171,6 +172,10 @@ class Analyzers {
     final tempProtocolPaths = <String>[];
     // Analyzer paths where the future calls file is currently shadowed.
     final futureCallsOverlayPaths = <String>[];
+
+    // Refresh the run-scoped registry so persistent analyzers do not retain
+    // formatter settings from an earlier generation.
+    await GeneratedDartFormatters.resolve(config);
 
     try {
       log.debug('Analyzing serializable models in the protocol directory.');
