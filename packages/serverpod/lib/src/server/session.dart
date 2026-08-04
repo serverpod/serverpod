@@ -730,7 +730,6 @@ extension SessionInternalMethods on Session {
       _authenticated = null;
     }
   }
-
 }
 
 /// Returns true if the session is expected to be alive for an extended

@@ -264,7 +264,6 @@ void main() {
         expect(body['authId'], isNull);
       });
     });
-
   });
 
   group('Given a server without an authenticationHandler', () {

@@ -262,7 +262,6 @@ void main() {
       expect(logResult.sessionLog[0].logs[2].error, isNull);
       expect(logResult.sessionLog[0].logs[2].stackTrace, isNull);
     });
-
   });
 
   group('Database', () {
