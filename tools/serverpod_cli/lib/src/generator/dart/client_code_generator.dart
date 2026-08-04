@@ -84,8 +84,16 @@ class DartClientCodeGenerator extends CodeGenerator {
         'lib',
         'migrations',
         'migration_registry.dart',
-      ])] = _migrationDartEmitter
-          .emitPlaceholderRegistry();
+      ])] = _migrationDartEmitter.emitPlaceholderRegistry(
+        formatter: GeneratedDartFormatters.of(
+          p.joinAll([
+            ...config.clientPackagePathParts,
+            'lib',
+            'migrations',
+            'migration_registry.dart',
+          ]),
+        ),
+      );
     }
     return files;
   }

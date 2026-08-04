@@ -359,11 +359,12 @@ class ClientItemEndpoint extends Endpoint {
   });
 
   group(
-    'Given a not yet generated model targeting server and client packages with different page widths,',
+    'Given not yet generated protocol and database models targeting server and client packages with different formatter configurations,',
     () {
       late Directory projectDir;
       late Directory generatedDir;
       late Directory generatedClientDir;
+      late Directory generatedClientMigrationsDir;
       late GeneratorConfig config;
       late Analyzers analyzers;
 
@@ -371,6 +372,7 @@ class ClientItemEndpoint extends Endpoint {
       tearDown(() {
         generatedDir.deleteIfExists(recursive: true);
         generatedClientDir.deleteIfExists(recursive: true);
+        generatedClientMigrationsDir.deleteIfExists(recursive: true);
       });
 
       setUpAll(() async {
@@ -378,6 +380,9 @@ class ClientItemEndpoint extends Endpoint {
         await _createClientPackage(projectDir);
         generatedClientDir = Directory(
           path.join(projectDir.path, 'test_client', 'lib', 'src', 'protocol'),
+        );
+        generatedClientMigrationsDir = Directory(
+          path.join(projectDir.path, 'test_client', 'lib', 'migrations'),
         );
 
         File(path.join(projectDir.path, 'analysis_options.yaml'))
@@ -402,6 +407,17 @@ formatter:
 ''');
         File(
             path.join(
+              generatedClientMigrationsDir.path,
+              'analysis_options.yaml',
+            ),
+          )
+          ..createSync(recursive: true)
+          ..writeAsStringSync('''
+formatter:
+  page_width: 60
+''');
+        File(
+            path.join(
               projectDir.path,
               'lib',
               'src',
@@ -412,6 +428,23 @@ formatter:
           ..createSync(recursive: true)
           ..writeAsStringSync('''
 class: Item
+fields:
+  name: String
+''');
+        File(
+            path.join(
+              projectDir.path,
+              'lib',
+              'src',
+              'protocol',
+              'database_item.spy.yaml',
+            ),
+          )
+          ..createSync(recursive: true)
+          ..writeAsStringSync('''
+class: DatabaseItem
+table: database_item
+database: all
 fields:
   name: String
 ''');
@@ -454,6 +487,28 @@ abstract class Item
                 'abstract class Item implements '
                 '_i1.SerializableModel, _i1.ProtocolSerialization {',
               ),
+            );
+          },
+        );
+
+        test(
+          'then generated client migration Dart is format-clean.',
+          () async {
+            final formatResult = await Process.run(
+              dartExecutablePath,
+              [
+                'format',
+                '--output=none',
+                '--set-exit-if-changed',
+                generatedClientMigrationsDir.path,
+              ],
+              workingDirectory: projectDir.path,
+            );
+
+            expect(
+              formatResult.exitCode,
+              0,
+              reason: '${formatResult.stdout}\n${formatResult.stderr}',
             );
           },
         );

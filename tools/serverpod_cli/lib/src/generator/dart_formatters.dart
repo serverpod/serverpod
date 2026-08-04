@@ -78,6 +78,7 @@ final class GeneratedDartFormatters {
     return [
       p.joinAll(config.generatedServeModelPathParts),
       p.joinAll(config.generatedDartClientModelPathParts),
+      p.joinAll([...config.clientPackagePathParts, 'lib', 'migrations']),
       if (serverTestToolsPath != null) p.joinAll(serverTestToolsPath),
       ...config.generatedSharedModelsPaths,
     ];

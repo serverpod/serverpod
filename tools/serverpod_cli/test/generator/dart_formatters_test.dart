@@ -115,4 +115,39 @@ formatter:
       expect(formatter.pageWidth, 120);
     },
   );
+
+  test(
+    'Given a client package with page width 120, '
+    'when its client migration formatters are resolved, '
+    'then they capture the target page width.',
+    () async {
+      final clientDirectory = Directory(
+        p.join(tempDirectory.path, 'example_client'),
+      );
+      await clientDirectory.create(recursive: true);
+      await File(
+        p.join(clientDirectory.path, 'analysis_options.yaml'),
+      ).writeAsString('''
+formatter:
+  page_width: 120
+''');
+      final config = GeneratorConfigBuilder()
+          .withServerPackageDirectoryPathParts(p.split(serverDirectory.path))
+          .withRelativeDartClientPackagePathParts(['..', 'example_client'])
+          .build();
+
+      await GeneratedDartFormatters.resolve(config);
+
+      final formatter = GeneratedDartFormatters.of(
+        p.joinAll([
+          ...config.clientPackagePathParts,
+          'lib',
+          'migrations',
+          'migration_registry.dart',
+        ]),
+      );
+
+      expect(formatter.pageWidth, 120);
+    },
+  );
 }

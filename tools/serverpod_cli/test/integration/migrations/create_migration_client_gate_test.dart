@@ -117,6 +117,9 @@ fields:
         Directory(path.normalize(path.joinAll(config.clientPackagePathParts))),
       );
 
+  Directory clientPackageDirectory(GeneratorConfig config) =>
+      Directory(path.normalize(path.joinAll(config.clientPackagePathParts)));
+
   test(
     'Given a project whose only client database table comes from a shared package, '
     'when creating a migration,'
@@ -187,6 +190,49 @@ fields:
         clientMigrations.listSync().whereType<Directory>(),
         isNotEmpty,
         reason: 'a client migration version directory should be written',
+      );
+    },
+  );
+
+  test(
+    'Given a project with a host client database table and client formatter configuration, '
+    'when creating a migration, '
+    'then the generated client migration Dart is format-clean.',
+    () async {
+      writeHostClientTableModel();
+
+      var builtConfig = config
+          .withServerPackageDirectoryPathParts(
+            path.split(serverDirectory.path),
+          )
+          .build();
+      var clientDirectory = clientPackageDirectory(builtConfig);
+      var analysisOptions = File(
+        path.join(clientDirectory.path, 'analysis_options.yaml'),
+      );
+      await analysisOptions.create(recursive: true);
+      await analysisOptions.writeAsString('''
+formatter:
+  page_width: 120
+''');
+
+      await createMigrationAction(config: builtConfig);
+
+      var formatResult = await Process.run(
+        Platform.resolvedExecutable,
+        [
+          'format',
+          '--output=none',
+          '--set-exit-if-changed',
+          clientMigrationsDirectory(builtConfig).path,
+        ],
+        workingDirectory: clientDirectory.path,
+      );
+
+      expect(
+        formatResult.exitCode,
+        0,
+        reason: '${formatResult.stdout}\n${formatResult.stderr}',
       );
     },
   );
