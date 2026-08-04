@@ -154,7 +154,7 @@ class MessageCentral {
   }
 
   /// Removes all listeners from the specified [Session]. This method is
-  /// automatically called when [StreamingSession] is closed.
+  /// automatically called when the session is closed.
   void removeListenersForSession(Session session) {
     var channelNames = _sessionToChannelNamesLookup.remove(session);
     var listeners = _sessionToCallbacksLookup.remove(session);

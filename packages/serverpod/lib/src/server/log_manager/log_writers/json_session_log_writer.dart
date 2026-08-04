@@ -8,8 +8,8 @@ import '../session_log.dart';
 
 /// A [SessionLogWriter] that emits typed session events as single-line
 /// JSON to stdout (stderr for errors/fatal). Every session opens and
-/// closes with a [protocol.SessionLogEntry] row; log/query/message
-/// entries emit the corresponding protocol rows keyed by a synthetic
+/// closes with a [protocol.SessionLogEntry] row; log/query entries
+/// emit the corresponding protocol rows keyed by a synthetic
 /// per-session `sessionLogId` derived from the session id hash.
 @internal
 class JsonSessionLogWriter extends SessionLogWriter {
@@ -38,8 +38,6 @@ class JsonSessionLogWriter extends SessionLogWriter {
         _emit(_buildLogRow(e, state));
       case SessionQueryEntry e:
         _emit(_buildQueryRow(e, state));
-      case SessionMessageEntry e:
-        _emit(_buildMessageRow(e, state));
     }
   }
 
@@ -60,7 +58,6 @@ class JsonSessionLogWriter extends SessionLogWriter {
             logLevel == protocol.LogLevel.error ||
             logLevel == protocol.LogLevel.fatal,
       protocol.QueryLogEntry(:final error) => error != null,
-      protocol.MessageLogEntry(:final error) => error != null,
       _ => false,
     };
     if (isError) {
@@ -112,7 +109,6 @@ class JsonSessionLogWriter extends SessionLogWriter {
     return protocol.LogEntry(
       sessionLogId: state.sessionLogId,
       serverId: state.open.serverId,
-      messageId: entry.messageId,
       time: entry.time,
       logLevel: _toProtocolLogLevel(entry.level),
       message: entry.message,
@@ -129,28 +125,9 @@ class JsonSessionLogWriter extends SessionLogWriter {
     return protocol.QueryLogEntry(
       sessionLogId: state.sessionLogId,
       serverId: state.open.serverId,
-      messageId: entry.messageId,
       query: entry.query,
       duration: entry.duration.inMicroseconds / Duration.microsecondsPerSecond,
       numRows: entry.numRowsAffected,
-      error: entry.error,
-      stackTrace: entry.stackTrace?.toString(),
-      slow: entry.slow,
-      order: entry.order,
-    );
-  }
-
-  protocol.MessageLogEntry _buildMessageRow(
-    SessionMessageEntry entry,
-    _OpenState state,
-  ) {
-    return protocol.MessageLogEntry(
-      sessionLogId: state.sessionLogId,
-      serverId: state.open.serverId,
-      messageId: entry.messageId!,
-      endpoint: entry.endpoint,
-      messageName: entry.messageName,
-      duration: entry.duration.inMicroseconds / Duration.microsecondsPerSecond,
       error: entry.error,
       stackTrace: entry.stackTrace?.toString(),
       slow: entry.slow,
