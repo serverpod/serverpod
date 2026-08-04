@@ -18,7 +18,7 @@ enum GinOperatorClass implements _i1.SerializableModel {
   arrayOps,
   jsonbOps,
   jsonbPathOps,
-  tsvectorOps
+  tsvectorOps,
   ;
 
   static GinOperatorClass fromJson(String name) {
