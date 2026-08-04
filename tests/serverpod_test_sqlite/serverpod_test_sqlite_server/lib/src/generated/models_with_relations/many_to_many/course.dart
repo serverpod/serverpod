@@ -260,10 +260,6 @@ class CourseRepository {
 
   final attachRow = const CourseAttachRowRepository._();
 
-  final detach = const CourseDetachRepository._();
-
-  final detachRow = const CourseDetachRowRepository._();
-
   /// Returns a list of [Course]s matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
@@ -710,60 +706,6 @@ class CourseAttachRowRepository {
     }
 
     var $enrollment = enrollment.copyWith(courseId: course.id);
-    await session.db.updateRow<_i2.Enrollment>(
-      $enrollment,
-      columns: [_i2.Enrollment.t.courseId],
-      transaction: transaction,
-    );
-  }
-}
-
-class CourseDetachRepository {
-  const CourseDetachRepository._();
-
-  /// Detaches the relation between this [Course] and the given [Enrollment]
-  /// by setting the [Enrollment]'s foreign key `courseId` to `null`.
-  ///
-  /// This removes the association between the two models without deleting
-  /// the related record.
-  Future<void> enrollments(
-    _i1.DatabaseSession session,
-    List<_i2.Enrollment> enrollment, {
-    _i1.Transaction? transaction,
-  }) async {
-    if (enrollment.any((e) => e.id == null)) {
-      throw ArgumentError.notNull('enrollment.id');
-    }
-
-    var $enrollment = enrollment
-        .map((e) => e.copyWith(courseId: null))
-        .toList();
-    await session.db.update<_i2.Enrollment>(
-      $enrollment,
-      columns: [_i2.Enrollment.t.courseId],
-      transaction: transaction,
-    );
-  }
-}
-
-class CourseDetachRowRepository {
-  const CourseDetachRowRepository._();
-
-  /// Detaches the relation between this [Course] and the given [Enrollment]
-  /// by setting the [Enrollment]'s foreign key `courseId` to `null`.
-  ///
-  /// This removes the association between the two models without deleting
-  /// the related record.
-  Future<void> enrollments(
-    _i1.DatabaseSession session,
-    _i2.Enrollment enrollment, {
-    _i1.Transaction? transaction,
-  }) async {
-    if (enrollment.id == null) {
-      throw ArgumentError.notNull('enrollment.id');
-    }
-
-    var $enrollment = enrollment.copyWith(courseId: null);
     await session.db.updateRow<_i2.Enrollment>(
       $enrollment,
       columns: [_i2.Enrollment.t.courseId],

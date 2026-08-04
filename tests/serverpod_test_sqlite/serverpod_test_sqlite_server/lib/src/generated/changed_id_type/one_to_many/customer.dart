@@ -259,10 +259,6 @@ class CustomerIntRepository {
 
   final attachRow = const CustomerIntAttachRowRepository._();
 
-  final detach = const CustomerIntDetachRepository._();
-
-  final detachRow = const CustomerIntDetachRowRepository._();
-
   /// Returns a list of [CustomerInt]s matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
@@ -709,60 +705,6 @@ class CustomerIntAttachRowRepository {
     }
 
     var $orderUuid = orderUuid.copyWith(customerId: customerInt.id);
-    await session.db.updateRow<_i2.OrderUuid>(
-      $orderUuid,
-      columns: [_i2.OrderUuid.t.customerId],
-      transaction: transaction,
-    );
-  }
-}
-
-class CustomerIntDetachRepository {
-  const CustomerIntDetachRepository._();
-
-  /// Detaches the relation between this [CustomerInt] and the given [OrderUuid]
-  /// by setting the [OrderUuid]'s foreign key `customerId` to `null`.
-  ///
-  /// This removes the association between the two models without deleting
-  /// the related record.
-  Future<void> orders(
-    _i1.DatabaseSession session,
-    List<_i2.OrderUuid> orderUuid, {
-    _i1.Transaction? transaction,
-  }) async {
-    if (orderUuid.any((e) => e.id == null)) {
-      throw ArgumentError.notNull('orderUuid.id');
-    }
-
-    var $orderUuid = orderUuid
-        .map((e) => e.copyWith(customerId: null))
-        .toList();
-    await session.db.update<_i2.OrderUuid>(
-      $orderUuid,
-      columns: [_i2.OrderUuid.t.customerId],
-      transaction: transaction,
-    );
-  }
-}
-
-class CustomerIntDetachRowRepository {
-  const CustomerIntDetachRowRepository._();
-
-  /// Detaches the relation between this [CustomerInt] and the given [OrderUuid]
-  /// by setting the [OrderUuid]'s foreign key `customerId` to `null`.
-  ///
-  /// This removes the association between the two models without deleting
-  /// the related record.
-  Future<void> orders(
-    _i1.DatabaseSession session,
-    _i2.OrderUuid orderUuid, {
-    _i1.Transaction? transaction,
-  }) async {
-    if (orderUuid.id == null) {
-      throw ArgumentError.notNull('orderUuid.id');
-    }
-
-    var $orderUuid = orderUuid.copyWith(customerId: null);
     await session.db.updateRow<_i2.OrderUuid>(
       $orderUuid,
       columns: [_i2.OrderUuid.t.customerId],
