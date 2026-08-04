@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
+import 'package:serverpod_cli/src/config/serverpod_manifest.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/locate_modules.dart';
 import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
@@ -195,6 +196,12 @@ class GeneratorConfig implements ModelLoadConfig {
   List<String> get generatedServerEndpointDescriptionFilePathParts => [
     ...generatedServeModelPathParts,
     'protocol.yaml',
+  ];
+
+  /// The path of the generated Serverpod package manifest.
+  List<String> get generatedServerpodManifestFilePathParts => [
+    ...generatedServeModelPathParts,
+    ServerpodManifest.fileName,
   ];
 
   /// The path parts of the directory, where the generated code is stored in the
@@ -735,6 +742,10 @@ class ModuleConfig implements ModelLoadConfig {
   /// Might be relative.
   final List<String> serverPackageDirectoryPathParts;
 
+  /// The installed shared packages the module owns, mapping each package name
+  /// to the path parts of its package root from the package config.
+  final Map<String, List<String>> sharedPackageRootPathParts;
+
   @override
   List<String> get libSourcePathParts => [
     ...serverPackageDirectoryPathParts,
@@ -775,6 +786,7 @@ class ModuleConfig implements ModelLoadConfig {
     required this.nickname,
     required this.migrationVersions,
     required this.serverPackageDirectoryPathParts,
+    this.sharedPackageRootPathParts = const {},
   }) : dartClientPackage = '${name}_client',
        serverPackage = '${name}_server';
 

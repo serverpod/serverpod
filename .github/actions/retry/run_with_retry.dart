@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 const _timeoutExitCode = 124;
@@ -17,8 +18,9 @@ Future<void> main(List<String> arguments) async {
 
     final isRetriable =
         result.timedOut ||
-        options.retryExitCodes.isEmpty ||
-        options.retryExitCodes.contains(result.exitCode);
+        ((options.retryExitCodes.isEmpty ||
+                options.retryExitCodes.contains(result.exitCode)) &&
+            (options.retryOutputContains == null || result.outputMatched));
     if (!isRetriable || attempt == options.attempts) {
       exitCode = result.exitCode;
       return;
@@ -40,6 +42,14 @@ Future<void> main(List<String> arguments) async {
 }
 
 Future<_Result> _run(_Options options) async {
+  if (options.retryOutputContains == null) {
+    return _runWithInheritedStdio(options);
+  }
+
+  return _runWithCapturedStdio(options);
+}
+
+Future<_Result> _runWithInheritedStdio(_Options options) async {
   final process = await Process.start(
     options.command.first,
     options.command.skip(1).toList(),
@@ -49,24 +59,77 @@ Future<_Result> _run(_Options options) async {
   );
 
   if (options.timeout == null) {
-    return _Result(await process.exitCode, timedOut: false);
+    return _Result(
+      await process.exitCode,
+      timedOut: false,
+      outputMatched: false,
+    );
   }
 
+  return _waitForProcess(process, options.timeout!);
+}
+
+Future<_Result> _runWithCapturedStdio(_Options options) async {
+  final process = await Process.start(
+    options.command.first,
+    options.command.skip(1).toList(),
+    workingDirectory: options.workingDirectory,
+    runInShell: Platform.isWindows,
+  );
+  final pattern = options.retryOutputContains!;
+  final stdoutMatched = _forwardAndMatch(process.stdout, stdout, pattern);
+  final stderrMatched = _forwardAndMatch(process.stderr, stderr, pattern);
+
+  final result = options.timeout == null
+      ? _Result(
+          await process.exitCode,
+          timedOut: false,
+          outputMatched: false,
+        )
+      : await _waitForProcess(process, options.timeout!);
+  final matches = await Future.wait([stdoutMatched, stderrMatched]);
+  return _Result(
+    result.exitCode,
+    timedOut: result.timedOut,
+    outputMatched: matches.any((matched) => matched),
+  );
+}
+
+Future<_Result> _waitForProcess(Process process, Duration timeout) async {
   final timedOut = Completer<void>();
-  final timer = Timer(options.timeout!, timedOut.complete);
+  final timer = Timer(timeout, timedOut.complete);
   final result = await Future.any<Object?>([
     process.exitCode,
     timedOut.future,
   ]);
   timer.cancel();
 
-  if (result is int) return _Result(result, timedOut: false);
+  if (result is int) {
+    return _Result(result, timedOut: false, outputMatched: false);
+  }
 
   stderr.writeln(
-    '### Command timed out after ${options.timeout!.inSeconds} seconds.',
+    '### Command timed out after ${timeout.inSeconds} seconds.',
   );
   await _terminate(process);
-  return const _Result(_timeoutExitCode, timedOut: true);
+  return const _Result(
+    _timeoutExitCode,
+    timedOut: true,
+    outputMatched: false,
+  );
+}
+
+Future<bool> _forwardAndMatch(
+  Stream<List<int>> input,
+  IOSink output,
+  String pattern,
+) async {
+  final matcher = _BytePatternMatcher(utf8.encode(pattern));
+  await for (final bytes in input) {
+    output.add(bytes);
+    matcher.add(bytes);
+  }
+  return matcher.matched;
 }
 
 Future<void> _terminate(Process process) async {
@@ -136,6 +199,7 @@ class _Options {
     required this.backoff,
     required this.delaySeconds,
     required this.retryExitCodes,
+    required this.retryOutputContains,
     required this.timeout,
     required this.workingDirectory,
     required this.command,
@@ -145,6 +209,7 @@ class _Options {
   final _Backoff backoff;
   final int delaySeconds;
   final Set<int> retryExitCodes;
+  final String? retryOutputContains;
   final Duration? timeout;
   final String workingDirectory;
   final List<String> command;
@@ -154,6 +219,7 @@ class _Options {
     var backoff = _Backoff.linear;
     var delaySeconds = 1;
     var retryExitCodes = <int>{};
+    String? retryOutputContains;
     var timeoutSeconds = 120;
     var workingDirectory = '.';
     final separator = arguments.indexOf('--');
@@ -173,6 +239,8 @@ class _Options {
           delaySeconds = _nonNegativeInt(arguments, ++index, argument);
         case '--retry-exit-codes':
           retryExitCodes = _exitCodes(_value(arguments, ++index, argument));
+        case '--retry-output-contains':
+          retryOutputContains = _nonEmptyValue(arguments, ++index, argument);
         case '--timeout-seconds':
           timeoutSeconds = _nonNegativeInt(arguments, ++index, argument);
         case '--working-directory':
@@ -187,6 +255,7 @@ class _Options {
       backoff: backoff,
       delaySeconds: delaySeconds,
       retryExitCodes: retryExitCodes,
+      retryOutputContains: retryOutputContains,
       timeout: timeoutSeconds == 0 ? null : Duration(seconds: timeoutSeconds),
       workingDirectory: workingDirectory,
       command: arguments.sublist(separator + 1),
@@ -200,6 +269,16 @@ class _Options {
   ) {
     if (index >= arguments.length) _usage('Missing value for $option.');
     return arguments[index];
+  }
+
+  static String _nonEmptyValue(
+    List<String> arguments,
+    int index,
+    String option,
+  ) {
+    final value = _value(arguments, index, option);
+    if (value.isEmpty) _usage('$option must not be empty.');
+    return value;
   }
 
   static int _positiveInt(
@@ -258,7 +337,8 @@ class _Options {
       ..writeln(
         'Usage: dart run_with_retry.dart '
         '[--attempts N] [--backoff STRATEGY] [--delay-seconds N] '
-        '[--retry-exit-codes CODES] [--timeout-seconds N] '
+        '[--retry-exit-codes CODES] [--retry-output-contains TEXT] '
+        '[--timeout-seconds N] '
         '[--working-directory PATH] -- COMMAND [ARGUMENTS...]',
       );
     exit(64);
@@ -268,8 +348,45 @@ class _Options {
 enum _Backoff { fixed, linear }
 
 class _Result {
-  const _Result(this.exitCode, {required this.timedOut});
+  const _Result(
+    this.exitCode, {
+    required this.timedOut,
+    required this.outputMatched,
+  });
 
   final int exitCode;
   final bool timedOut;
+  final bool outputMatched;
+}
+
+class _BytePatternMatcher {
+  _BytePatternMatcher(this._pattern);
+
+  final List<int> _pattern;
+  var _tail = <int>[];
+  var matched = false;
+
+  void add(List<int> bytes) {
+    if (matched) return;
+
+    final combined = [..._tail, ...bytes];
+    for (var start = 0; start <= combined.length - _pattern.length; start++) {
+      var matches = true;
+      for (var offset = 0; offset < _pattern.length; offset++) {
+        if (combined[start + offset] != _pattern[offset]) {
+          matches = false;
+          break;
+        }
+      }
+      if (matches) {
+        matched = true;
+        return;
+      }
+    }
+
+    final tailLength = _pattern.length - 1;
+    _tail = combined.length <= tailLength
+        ? combined
+        : combined.sublist(combined.length - tailLength);
+  }
 }

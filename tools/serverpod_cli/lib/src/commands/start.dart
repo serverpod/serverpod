@@ -8,6 +8,8 @@ import 'package:config/config.dart';
 import 'package:meta/meta.dart' show visibleForTesting;
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
+import 'package:serverpod_cli/src/analytics/session_metrics.dart';
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
@@ -75,9 +77,9 @@ enum StartOption<V> implements OptionDefinition<V> {
       helpText:
           'Start Docker Compose services if a Docker Compose file exists. '
           'Defaults to on if the project has a Docker Compose file and the '
-          'database is configured to PostgreSQL without a dataPath. Otherwise, '
-          'defaults to off. Pass --docker or --no-docker to override the '
-          'default behavior.',
+          'database is configured to PostgreSQL on localhost without a '
+          'dataPath. Otherwise, defaults to off. Pass --docker or '
+          '--no-docker to override the default behavior.',
     ),
   ),
   tui(
@@ -157,6 +159,16 @@ class StartCommand extends ServerpodCommand<StartOption> {
       // Bail before the TUI takes over the terminal
       if (await _detectExistingInstance(config)) return;
 
+      // Fire-and-forget: analytics must never delay session start.
+      unawaited(
+        _captureSessionStartAnalytics(
+          config: config,
+          commandConfig: commandConfig,
+          useTui: true,
+          launchFlutterApp: launchFlutterApp,
+        ),
+      );
+
       final exitCode = await _runWithTui(
         commandConfig: commandConfig,
         watch: watch,
@@ -191,6 +203,16 @@ class StartCommand extends ServerpodCommand<StartOption> {
     }
 
     if (await _detectExistingInstance(config)) return;
+
+    // Fire-and-forget: analytics must never delay session start.
+    unawaited(
+      _captureSessionStartAnalytics(
+        config: config,
+        commandConfig: commandConfig,
+        useTui: false,
+        launchFlutterApp: launchFlutterApp,
+      ),
+    );
 
     final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
     final docker = commandConfig.optionalValue(StartOption.docker);
@@ -273,6 +295,30 @@ Future<bool> _runHooksFor(
   }
 }
 
+Future<void> _captureSessionStartAnalytics({
+  required GeneratorConfig config,
+  required Configuration<StartOption> commandConfig,
+  required bool useTui,
+  required bool launchFlutterApp,
+}) async {
+  if (!cliAnalytics.enabled) return;
+
+  await cliAnalytics.captureSessionStart(
+    config: config,
+    watchMode: commandConfig.value(StartOption.watch),
+    tuiEnabled: useTui,
+    flutterEnabled: launchFlutterApp,
+    dockerMode: switch (commandConfig.optionalValue(StartOption.docker)) {
+      true => DockerStartMode.on,
+      false => DockerStartMode.off,
+      null => DockerStartMode.auto,
+    },
+    dockerComposePresent:
+        _findComposeFile(p.joinAll(config.serverPackageDirectoryPathParts)) !=
+        null,
+  );
+}
+
 /// Compose file names Docker Compose resolves by default, in its own lookup
 /// order.
 const _composeFileNames = [
@@ -313,7 +359,11 @@ bool _resolveStartDocker({
       serverDir: serverDir,
     );
     final database = serverConfig.database;
-    return database is PostgresDatabaseConfig && database.dataPath == null;
+    if (database is! PostgresDatabaseConfig || database.dataPath != null) {
+      return false;
+    }
+    return database.host.toLowerCase() == 'localhost' ||
+        database.host == '127.0.0.1';
   } catch (_) {
     // Config may be incomplete during early project setup; do not start
     // Docker automatically. Users can still pass --docker explicitly.

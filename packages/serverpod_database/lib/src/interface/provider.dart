@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../concepts/runtime_parameters.dart';
@@ -24,14 +22,13 @@ abstract interface class DatabaseProvider {
 
   /// Creates a new [DatabasePoolManager] for the given parameters.
   ///
-  /// [serverDirectory] is used to anchor relative paths in the database config.
-  /// Defaults to cwd.
+  /// Relative paths in [config] (SQLite [SqliteDatabaseConfig.filePath],
+  /// Postgres [PostgresDatabaseConfig.dataPath]) must already be resolved.
   DatabasePoolManager createPoolManager(
     DatabaseSerializationManager serializationManager,
     RuntimeParametersListBuilder? runtimeParametersBuilder,
-    covariant DatabaseConfig config, {
-    Directory? serverDirectory,
-  });
+    covariant DatabaseConfig config,
+  );
 
   /// Creates a new [DatabaseConnection] for the given [poolManager].
   DatabaseConnection createConnection(

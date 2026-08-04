@@ -34,6 +34,7 @@ database:
   port: 9090
   name: serverpod_auth_core_test
   user: postgres
+  dataPath: .serverpod/test/pgdata
 
 # This is the setup for your Redis test instance.
 redis:

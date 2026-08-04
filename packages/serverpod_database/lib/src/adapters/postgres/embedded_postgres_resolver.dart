@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:path/path.dart' as path;
 import 'package:postgres/postgres.dart' as pg;
 import 'package:serverpod_embedded_postgres/serverpod_embedded_postgres.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -30,18 +29,17 @@ class ResolvedEmbeddedPostgres {
 /// [config]'s `dataPath`, returning its resolved connection coordinates.
 ///
 /// Returns `null` when [config] has no `dataPath` (it points at an
-/// externally-managed server). Relative `dataPath` values resolve against
-/// [baseDirectory] (typically the server package root).
+/// externally-managed server). Relative `dataPath` values are used as-is
+/// (typically already resolved with [DatabaseConfig.withResolvedLocalPath]).
 ///
 /// This pulls `package:serverpod_embedded_postgres` (and its `dart:ffi`
 /// dependencies), so it is deliberately NOT exported from the package barrel -
 /// it must never reach a web client. Server-side consumers reach it via
 /// `package:serverpod_database/embedded.dart`.
 Future<ResolvedEmbeddedPostgres?> startOrAttachEmbeddedPostgres(
-  PostgresDatabaseConfig config, {
-  required Directory baseDirectory,
-}) async {
-  final dataDir = config._embeddedPostgresDataDir(baseDirectory: baseDirectory);
+  PostgresDatabaseConfig config,
+) async {
+  final dataDir = config._embeddedPostgresDataDir();
   if (dataDir == null) return null;
 
   final EmbeddedStartResult result;
@@ -77,16 +75,11 @@ Future<ResolvedEmbeddedPostgres?> startOrAttachEmbeddedPostgres(
 
 extension on PostgresDatabaseConfig {
   /// The effective PGDATA [Directory] for the embedded PostgreSQL, or `null`
-  /// when no `dataPath` is configured. Relative paths resolve against
-  /// [baseDirectory].
-  Directory? _embeddedPostgresDataDir({required Directory baseDirectory}) {
+  /// when no `dataPath` is configured.
+  Directory? _embeddedPostgresDataDir() {
     final dataPath = this.dataPath?.trim();
     if (dataPath == null || dataPath.isEmpty) return null;
-    return Directory(
-      path.isAbsolute(dataPath)
-          ? dataPath
-          : path.join(baseDirectory.path, dataPath),
-    );
+    return Directory(dataPath);
   }
 
   /// Connection coordinates for [endpoint], falling back to this config's

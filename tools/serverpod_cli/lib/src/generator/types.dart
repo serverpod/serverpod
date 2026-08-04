@@ -296,6 +296,18 @@ class TypeDefinition {
     return model.fileRef();
   }
 
+  /// The name of the shared package in [sharedPackageNames] that declares the
+  /// library [url] points at, or `null` if [url] is not inside any of them.
+  static String? _sharedPackageNameOfUrl(
+    Iterable<String> sharedPackageNames,
+    String? url,
+  ) {
+    if (url == null) return null;
+    return sharedPackageNames
+        .where((packageName) => url.startsWith('package:$packageName/'))
+        .firstOrNull;
+  }
+
   /// Generate a [Reference] from this definition.
   ///
   /// For classes this will be a [TypeReference],
@@ -413,6 +425,15 @@ class TypeDefinition {
               reference,
             ]);
           }
+        } else if (_sharedPackageNameOfUrl(
+              config.sharedModelsSourcePathsParts.keys,
+              url,
+            )
+            case var packageName?) {
+          // endpoint definition references a model from a shared package the
+          // project owns; import it through the package's public library
+          // instead of reaching into its implementation.
+          t.url = 'package:$packageName/$packageName.dart';
         } else if (!serverCode &&
             (url?.startsWith('package:${config.serverPackage}/') ?? false)) {
           // import from the server package
@@ -440,6 +461,24 @@ class TypeDefinition {
                   'package:${module.serverPackage}/',
                   'package:${module.dartClientPackage}/',
                 );
+        } else if (config.modules
+                .where(
+                  (m) =>
+                      _sharedPackageNameOfUrl(
+                        m.sharedPackageRootPathParts.keys,
+                        url,
+                      ) !=
+                      null,
+                )
+                .firstOrNull
+            case var module?) {
+          // endpoint definition references a model from a module's shared
+          // package; import it through the module package that re-exports it
+          // instead of reaching into the shared package's implementation.
+          var packageName = serverCode
+              ? module.serverPackage
+              : module.dartClientPackage;
+          t.url = 'package:$packageName/$packageName.dart';
         } else if (className == 'SerializableModel') {
           t.url = serverpodUrl(serverCode);
         } else if (config.name != 'serverpod' &&
@@ -818,7 +857,9 @@ class TypeDefinition {
           .toList(),
       serializationDataType: serializationDataType,
       enumDefinition: enumDefinition,
-      url: isProjectModel ? defaultModuleAlias : url,
+      url: isProjectModel
+          ? defaultModuleAlias
+          : sharedModelDefinition?.type.moduleAlias ?? url,
       recordFieldName: recordFieldName,
       vectorDimension: vectorDimension,
     );

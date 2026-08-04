@@ -1,5 +1,5 @@
-name: Use Dart test retry
-description: Wraps dart test to retry exit code 65 from transient native build-hook failures.
+name: Use Dart build-hook retry
+description: Retries failed Dart test, run, and build commands when native build hooks fail with exit code 65 or 255.
 
 runs:
   using: composite

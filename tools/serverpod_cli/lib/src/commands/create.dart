@@ -253,6 +253,7 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
       force,
       interactive: interactive,
       context: context,
+      analyticsMethod: 'create',
     );
 
     if (result is! CreateSuccess) {

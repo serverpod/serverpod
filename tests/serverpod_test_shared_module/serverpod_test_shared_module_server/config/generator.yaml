@@ -1,0 +1,10 @@
+type: module
+nickname: server_test_shared_module
+
+experimental_features:
+  all: true
+
+client_package_path: ../serverpod_test_shared_module_client
+
+shared_packages:
+  - ../serverpod_test_shared_module_shared

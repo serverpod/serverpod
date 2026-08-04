@@ -446,7 +446,7 @@ abstract class EndpointCaller {
   /// final connectedIdps = await client.auth.idp.getConnectedIdps();
   ///
   /// /// Look up an Idp by its name, in this case, the string "email"
-  /// final userHasEmailAndPassword = connectedIdps.has(EmailIdp.method);
+  /// final userHasEmailAndPassword = connectedIdps.has('email');
   ///
   /// /// Look up an Idp by its type
   /// final userHasGoogleAccount = connectedIdps.has<EndpointGoogleIdpBase>();

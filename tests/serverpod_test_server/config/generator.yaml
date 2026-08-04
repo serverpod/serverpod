@@ -12,6 +12,8 @@ shared_packages:
 modules:
   serverpod_test_module:
     nickname: module
+  serverpod_test_shared_module:
+    nickname: shared_module
 
 extraClasses:
   - package:serverpod_test_shared/serverpod_test_shared.dart:CustomClass

@@ -11,7 +11,8 @@ import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod_shared/src/password_manager.dart';
 
-class _SimpleFutureCall extends FutureCall<SimpleData> {
+class _SimpleFutureCall extends FutureCall<SimpleData>
+    implements InvokableFutureCall<SimpleData> {
   @override
   Future<void> invoke(Session session, SimpleData? object) async {}
 }
@@ -46,7 +47,10 @@ void main() {
             serverId: 'default',
           );
 
-          server.registerFutureCall(_SimpleFutureCall(), name);
+          server.futureCallManager!.registerFutureCall(
+            _SimpleFutureCall(),
+            name,
+          );
           entry = await FutureCallEntry.db.insertRow(session, entry);
           futureCallEntries.add(entry);
         }
@@ -106,7 +110,11 @@ void main() {
             serverId: 'default',
           );
 
-          if (i != 0) server.registerFutureCall(_SimpleFutureCall(), name);
+          if (i != 0)
+            server.futureCallManager!.registerFutureCall(
+              _SimpleFutureCall(),
+              name,
+            );
           entry = await FutureCallEntry.db.insertRow(session, entry);
           futureCallEntries.add(entry);
         }
@@ -197,7 +205,11 @@ void main() {
             serverId: 'default',
           );
 
-          if (i != 0) server.registerFutureCall(_SimpleFutureCall(), name);
+          if (i != 0)
+            server.futureCallManager!.registerFutureCall(
+              _SimpleFutureCall(),
+              name,
+            );
           entry = await FutureCallEntry.db.insertRow(session, entry);
           futureCallEntries.add(entry);
         }
@@ -290,7 +302,11 @@ void main() {
             serverId: 'default',
           );
 
-          if (i >= 2) server.registerFutureCall(_SimpleFutureCall(), name);
+          if (i >= 2)
+            server.futureCallManager!.registerFutureCall(
+              _SimpleFutureCall(),
+              name,
+            );
           entry = await FutureCallEntry.db.insertRow(session, entry);
           futureCallEntries.add(entry);
         }
@@ -379,7 +395,11 @@ void main() {
             serverId: 'default',
           );
 
-          if (i >= 2) server.registerFutureCall(_SimpleFutureCall(), name);
+          if (i >= 2)
+            server.futureCallManager!.registerFutureCall(
+              _SimpleFutureCall(),
+              name,
+            );
           entry = await FutureCallEntry.db.insertRow(session, entry);
           futureCallEntries.add(entry);
         }
@@ -443,7 +463,11 @@ void main() {
             serverId: 'default',
           );
 
-          if (i >= 2) server.registerFutureCall(_SimpleFutureCall(), name);
+          if (i >= 2)
+            server.futureCallManager!.registerFutureCall(
+              _SimpleFutureCall(),
+              name,
+            );
           entry = await FutureCallEntry.db.insertRow(session, entry);
           futureCallEntries.add(entry);
         }
@@ -499,7 +523,11 @@ void main() {
             serverId: 'default',
           );
 
-          if (i == 2) server.registerFutureCall(_SimpleFutureCall(), name);
+          if (i == 2)
+            server.futureCallManager!.registerFutureCall(
+              _SimpleFutureCall(),
+              name,
+            );
           entry = await FutureCallEntry.db.insertRow(session, entry);
           futureCallEntries.add(entry);
         }
@@ -566,7 +594,10 @@ void main() {
             serverId: 'default',
           );
 
-          server.registerFutureCall(_SimpleFutureCall(), name);
+          server.futureCallManager!.registerFutureCall(
+            _SimpleFutureCall(),
+            name,
+          );
           entry = await FutureCallEntry.db.insertRow(session, entry);
           futureCallEntries.add(entry);
         }

@@ -324,6 +324,7 @@ moduleEndpointExtension:
 moduleSerialization:
   - serializeModuleObject:
   - modifyModuleObject:
+  - modifySharedModuleTable:
   - serializeNestedModuleObject:
 namedParameters:
   - namedParametersMethod:

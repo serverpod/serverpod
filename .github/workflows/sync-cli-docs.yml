@@ -13,6 +13,7 @@ on:
       - "tools/serverpod_cli/bin/**"
       - "tools/serverpod_cli/scripts/generate_command_usages.dart"
       - ".github/actions/retry/**"
+      - ".github/actions/use-dart-test-retry/**"
       - ".github/workflows/sync-cli-docs.yml"
   workflow_dispatch:
 
@@ -56,6 +57,9 @@ jobs:
         uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: stable
+
+      - name: Retry transient Dart build-hook failures
+        uses: ./src/.github/actions/use-dart-test-retry
 
       - name: Resolve serverpod_cli dependencies
         uses: ./src/.github/actions/retry

@@ -8,7 +8,8 @@ import 'package:test/test.dart';
 import '../test_tools/serverpod_test_tools.dart';
 import '../utils/future_call_manager_builder.dart';
 
-class CompleterTestCall extends FutureCall<SimpleData> {
+class CompleterTestCall extends FutureCall<SimpleData>
+    implements InvokableFutureCall<SimpleData> {
   final Completer<SimpleData?> completer = Completer<SimpleData?>();
 
   @override

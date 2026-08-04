@@ -45,6 +45,7 @@ runs:
         RETRY_BACKOFF: ${{ inputs.backoff }}
         RETRY_COMMAND: ${{ inputs.command }}
         RETRY_DELAY_SECONDS: ${{ inputs.delay_seconds }}
+        SERVERPOD_DART_RETRY_ACTIVE: "1"
         RETRY_EXIT_CODES: ${{ inputs.retry_exit_codes }}
         RETRY_TIMEOUT_SECONDS: ${{ inputs.timeout_seconds }}
         RETRY_WORKING_DIRECTORY: ${{ inputs.working_directory }}
@@ -66,6 +67,7 @@ runs:
         RETRY_BACKOFF: ${{ inputs.backoff }}
         RETRY_COMMAND: ${{ inputs.command }}
         RETRY_DELAY_SECONDS: ${{ inputs.delay_seconds }}
+        SERVERPOD_DART_RETRY_ACTIVE: "1"
         RETRY_EXIT_CODES: ${{ inputs.retry_exit_codes }}
         RETRY_TIMEOUT_SECONDS: ${{ inputs.timeout_seconds }}
         RETRY_WORKING_DIRECTORY: ${{ inputs.working_directory }}

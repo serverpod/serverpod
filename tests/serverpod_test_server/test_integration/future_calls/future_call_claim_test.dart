@@ -8,7 +8,8 @@ import 'package:test/test.dart';
 import '../test_tools/serverpod_test_tools.dart';
 import '../utils/future_call_manager_builder.dart';
 
-class _CounterFutureCall extends FutureCall<SimpleData> {
+class _CounterFutureCall extends FutureCall<SimpleData>
+    implements InvokableFutureCall<SimpleData> {
   int counter = 0;
 
   @override
@@ -17,7 +18,8 @@ class _CounterFutureCall extends FutureCall<SimpleData> {
   }
 }
 
-class _CompleterFutureCall extends FutureCall<SimpleData> {
+class _CompleterFutureCall extends FutureCall<SimpleData>
+    implements InvokableFutureCall<SimpleData> {
   final Completer<SimpleData?> completer = Completer<SimpleData?>();
   int counter = 0;
 
