@@ -76,8 +76,6 @@ abstract class EndpointMethodAnalyzer {
     if (method.isStatic) return false;
     if (method.markedAsIgnored) return false;
 
-    if (_excludedMethodNameSet.contains(method.name)) return false;
-
     return method.formalParameters.isFirstRequiredParameterSession;
   }
 
