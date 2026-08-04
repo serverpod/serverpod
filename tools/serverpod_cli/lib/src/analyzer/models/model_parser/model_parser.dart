@@ -701,6 +701,7 @@ class ModelParser {
             indexFieldsTypes.every((f) => f.type.isGeographyType),
       );
       var unique = _parseUniqueKey(nodeDocument);
+      var nullsDistinct = _parseNullsDistinctKey(nodeDocument);
       var operatorClass = _parseOperatorClass(
         nodeDocument,
         type,
@@ -717,6 +718,7 @@ class ModelParser {
         name: indexName,
         type: type,
         unique: unique,
+        nullsDistinct: nullsDistinct,
         fields: indexFields,
         ginOperatorClass: operatorClass,
         vectorDistanceFunction: distanceFunction,
@@ -780,6 +782,12 @@ class ModelParser {
     var node = documentContents.nodes[Keyword.unique];
     var nodeValue = node?.value;
     return nodeValue is bool ? nodeValue : false;
+  }
+
+  static bool? _parseNullsDistinctKey(YamlMap documentContents) {
+    var node = documentContents.nodes[Keyword.nullsDistinct];
+    var nodeValue = node?.value;
+    return nodeValue is bool ? nodeValue : null;
   }
 
   static GinOperatorClass? _parseOperatorClass(

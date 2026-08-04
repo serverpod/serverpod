@@ -413,6 +413,7 @@ class ModelClassDefinitionBuilder {
               name: index.indexName,
               type: index.type,
               unique: index.isUnique,
+              nullsDistinct: index.nullsDistinct,
               fields: index.elements.map((e) => e.definition).toList(),
               ginOperatorClass: index.ginOperatorClass,
               vectorDistanceFunction: index.vectorDistanceFunction,
