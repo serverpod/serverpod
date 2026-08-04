@@ -244,12 +244,12 @@ void main() {
       late final companyClass = definitions.last as ModelClassDefinition;
 
       test(
-        'then the list relation has the foreign key owner id type on the company side of UuidValue.',
+        'then the list relation has the foreign key owner id type on the employee side of int.',
         () {
           var field = companyClass.findField('employees');
           var relation = field?.relation as ListRelationDefinition;
 
-          expect(relation.foreignKeyOwnerIdType.className, 'UuidValue');
+          expect(relation.foreignKeyOwnerIdType.className, 'int');
         },
       );
 
@@ -323,12 +323,12 @@ void main() {
       late final companyClass = definitions.last as ModelClassDefinition;
 
       test(
-        'then the list relation has the foreign key owner id type on the company side of UuidValue.',
+        'then the list relation has the foreign key owner id type on the employee side of int.',
         () {
           var field = companyClass.findField('employees');
           var relation = field?.relation as ListRelationDefinition;
 
-          expect(relation.foreignKeyOwnerIdType.className, 'UuidValue');
+          expect(relation.foreignKeyOwnerIdType.className, 'int');
         },
       );
 

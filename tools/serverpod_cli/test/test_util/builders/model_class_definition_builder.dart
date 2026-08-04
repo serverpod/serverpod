@@ -234,6 +234,7 @@ class ModelClassDefinitionBuilder {
     String parentTable, {
     String? foreignKeyFieldName,
     TypeDefinition? foreignIdType,
+    TypeDefinition? referenceIdType,
     bool nullableRelation = false,
   }) {
     _fields.addAll([
@@ -252,6 +253,10 @@ class ModelClassDefinitionBuilder {
               ObjectRelationDefinition(
                 parentTable: parentTable,
                 parentTableIdType: foreignIdType ?? TypeDefinition.int,
+                referenceIdType:
+                    referenceIdType ??
+                    foreignIdType ??
+                    TypeDefinition.int.asNullable,
                 fieldName: foreignFieldName,
                 foreignFieldName: 'id',
                 isForeignKeyOrigin: false,
@@ -270,6 +275,7 @@ class ModelClassDefinitionBuilder {
     String parentTable, {
     String? foreignKeyFieldName,
     TypeDefinition? foreignKeyParentTableIdType,
+    TypeDefinition? referenceIdType,
     bool nullableRelation = false,
   }) {
     var foreignFieldName = foreignKeyFieldName ?? '${fieldName}Id';
@@ -283,6 +289,10 @@ class ModelClassDefinitionBuilder {
             ObjectRelationDefinition(
               parentTable: parentTable,
               parentTableIdType: foreignTableIdType,
+              referenceIdType:
+                  referenceIdType ??
+                  foreignKeyParentTableIdType ??
+                  TypeDefinition.int.asNullable,
               fieldName: foreignFieldName,
               foreignFieldName: 'id',
               nullableRelation: nullableRelation,
@@ -327,7 +337,7 @@ class ModelClassDefinitionBuilder {
             ListRelationDefinition(
               fieldName: 'id',
               foreignKeyOwnerIdType:
-                  foreignKeyOwnerIdType ?? TypeDefinition.int,
+                  foreignKeyOwnerIdType ?? TypeDefinition.int.asNullable,
               foreignFieldName:
                   '\$_${_className.camelCase}${fieldName.pascalCase}${_className.pascalCase}Id',
               nullableRelation: true,
@@ -363,7 +373,7 @@ class ModelClassDefinitionBuilder {
             ListRelationDefinition(
               fieldName: 'id',
               foreignKeyOwnerIdType:
-                  foreignKeyOwnerIdType ?? TypeDefinition.int,
+                  foreignKeyOwnerIdType ?? TypeDefinition.int.asNullable,
               foreignFieldName: foreignKeyFieldName,
               nullableRelation: nullableRelation,
               implicitForeignField: false,
