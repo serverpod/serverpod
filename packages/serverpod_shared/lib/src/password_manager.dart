@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:serverpod_shared/src/environment_variables.dart';
@@ -82,7 +83,9 @@ class PasswordManager {
 
     var invalidPasswordKeys = extracted.entries
         .where(
-          (entry) => entry.key is! String || entry.value is! String,
+          (entry) =>
+              entry.key is! String ||
+              _normalizePasswordValue(entry.value) == null,
         )
         .map((entry) => entry.key);
 
@@ -92,7 +95,18 @@ class PasswordManager {
       );
     }
 
-    return extracted.cast<String, String>();
+    return {
+      for (final entry in extracted.entries)
+        entry.key as String: _normalizePasswordValue(entry.value)!,
+    };
+  }
+
+  String? _normalizePasswordValue(Object? value) {
+    if (value is String) return value;
+    if (value is List && value.every((element) => element is String)) {
+      return jsonEncode(value);
+    }
+    return null;
   }
 
   /// Load all passwords for the current run mode.
