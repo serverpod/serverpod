@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 
 /// Channels that are listened to by the Serverpod Framework.
@@ -155,20 +156,20 @@ class MessageCentral {
   /// Removes all listeners from the specified [Session]. This method is
   /// automatically called when [StreamingSession] is closed.
   void removeListenersForSession(Session session) {
-    // Get subscribed channels
-    var channelNames = _sessionToChannelNamesLookup[session];
-    if (channelNames == null) return;
-    var listeners = _sessionToCallbacksLookup[session];
-    if (listeners == null) return;
+    var channelNames = _sessionToChannelNamesLookup.remove(session);
+    var listeners = _sessionToCallbacksLookup.remove(session);
 
-    for (var channelName in channelNames) {
-      for (var listener in listeners) {
-        _removeListener(session, channelName, listener);
+    if (channelNames != null && listeners != null) {
+      for (var channelName in channelNames) {
+        for (var listener in listeners) {
+          _removeListener(session, channelName, listener);
+        }
       }
     }
 
-    _sessionToChannelNamesLookup.remove(session);
-    _sessionToCallbacksLookup.remove(session);
+    // Executed unconditionally, so the session is fully released even if the
+    // listener lookups were already emptied by removeListener.
+    _executeCleanupCallbacks(session);
   }
 
   void _removeListener(
@@ -184,8 +185,6 @@ class MessageCentral {
         session.serverpod.redisController!.unsubscribe(channelName);
       }
     }
-
-    _executeCleanupCallbacks(session);
   }
 
   /// Creates a stream that listens to a specified channel.
@@ -233,16 +232,27 @@ class MessageCentral {
     if (callbacks == null) return;
 
     callbacks.remove(callback);
+    if (callbacks.isEmpty) {
+      _sessionToCleanupCallbacksLookup.remove(session);
+    }
   }
 
   void _executeCleanupCallbacks(Session session) {
-    var callbacks = _sessionToCleanupCallbacksLookup[session];
+    var callbacks = _sessionToCleanupCallbacksLookup.remove(session);
     if (callbacks == null) return;
 
     for (var callback in callbacks) {
       callback();
     }
-
-    _sessionToCleanupCallbacksLookup.remove(session);
   }
+}
+
+/// Internal methods for [MessageCentral].
+extension MessageCentralInternalMethods on MessageCentral {
+  /// Whether [session] is still referenced by any internal lookup.
+  @visibleForTesting
+  bool hasSessionReferences(Session session) =>
+      _sessionToChannelNamesLookup.containsKey(session) ||
+      _sessionToCallbacksLookup.containsKey(session) ||
+      _sessionToCleanupCallbacksLookup.containsKey(session);
 }

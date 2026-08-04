@@ -43,8 +43,7 @@ import 'session_log_entry.dart' as _i29;
 import 'session_log_filter.dart' as _i30;
 import 'session_log_info.dart' as _i31;
 import 'session_log_result.dart' as _i32;
-import 'package:serverpod_database/src/generated/table_definition.dart' as _i33;
-import 'package:serverpod_database/serverpod_database.dart' as _i34;
+import 'package:serverpod_database/serverpod_database.dart' as _i33;
 export 'cache_info.dart';
 export 'caches_info.dart';
 export 'cloud_storage.dart';
@@ -415,7 +414,7 @@ class Protocol extends _i1.SerializationManager {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
     try {
-      return _i34.Protocol().deserialize<T>(data, t);
+      return _i33.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -533,7 +532,7 @@ class Protocol extends _i1.SerializationManager {
       case _i32.SessionLogResult():
         return 'SessionLogResult';
     }
-    className = _i34.Protocol().getClassNameForObject(data);
+    className = _i33.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.')
           ? className
@@ -646,13 +645,13 @@ class Protocol extends _i1.SerializationManager {
     }
     if (dataClassName.startsWith('serverpod_database.')) {
       data['className'] = dataClassName.substring(19);
-      return _i34.Protocol().deserializeByClassName(data);
+      return _i33.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
 
   void _registerHostProtocols() {
-    _i34.Protocol().registerHostProtocol('serverpod', this);
+    _i33.Protocol().registerHostProtocol('serverpod', this);
   }
 
   @override

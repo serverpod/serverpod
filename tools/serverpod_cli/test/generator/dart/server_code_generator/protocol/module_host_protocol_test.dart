@@ -1,9 +1,12 @@
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:test/test.dart';
 
 import '../../../../test_util/builders/generator_config_builder.dart';
+import '../../../../test_util/builders/model_class_definition_builder.dart';
 import '../../../../test_util/builders/module_config_builder.dart';
 
 const _moduleName = 'example_module';
@@ -137,6 +140,214 @@ void main() {
       test('then it does not override deserializeDynamicFieldValue', () {
         expect(protocolSource, isNot(contains('deserializeDynamicFieldValue')));
       });
+    },
+  );
+  group(
+    'Given a module protocol with a shared package, '
+    'when generating code,',
+    () {
+      late String serverProtocolSource;
+      late String clientProtocolSource;
+
+      setUpAll(() {
+        final moduleConfig = GeneratorConfigBuilder()
+            .withName(_moduleName)
+            .withPackageType(PackageType.module)
+            .withSharedModelsSourcePathsParts({
+              'example_shared': ['..', 'example_shared'],
+            })
+            .build();
+
+        final protocolDefinition = ProtocolDefinition(
+          endpoints: [],
+          models: [
+            ModelClassDefinitionBuilder()
+                .withClassName('SharedTable')
+                .withTableName('shared_table')
+                .withDatabase(ModelDatabaseDefinition.all)
+                .withSharedPackageName('example_shared')
+                .build(),
+          ],
+          futureCalls: [],
+        );
+
+        serverProtocolSource = const DartServerCodeGenerator()
+            .generateProtocolCode(
+              protocolDefinition: protocolDefinition,
+              config: moduleConfig,
+            )[path.join('lib', 'src', 'generated', 'protocol.dart')]!;
+        clientProtocolSource =
+            const DartClientCodeGenerator().generateProtocolCode(
+              protocolDefinition: protocolDefinition,
+              config: moduleConfig,
+            )[path.join(
+              '..',
+              '${_moduleName}_client',
+              'lib',
+              'src',
+              'protocol',
+              'protocol.dart',
+            )]!;
+      });
+
+      test(
+        'then the server and client protocols re-export the shared package models.',
+        () {
+          const sharedPackageExport =
+              "export 'package:example_shared/example_shared.dart' hide Protocol;";
+
+          expect(serverProtocolSource, contains(sharedPackageExport));
+          expect(clientProtocolSource, contains(sharedPackageExport));
+        },
+      );
+
+      test(
+        'then the server and client protocols forward shared model class names without a shared package prefix.',
+        () {
+          for (final protocolSource in [
+            serverProtocolSource,
+            clientProtocolSource,
+          ]) {
+            expect(
+              protocolSource,
+              contains('if (className != null) return className;'),
+            );
+            expect(
+              protocolSource,
+              isNot(contains("'example_shared.\$className'")),
+            );
+          }
+        },
+      );
+
+      test(
+        'then the server and client protocols deserialize unprefixed shared model class names.',
+        () {
+          for (final protocolSource in [
+            serverProtocolSource,
+            clientProtocolSource,
+          ]) {
+            expect(
+              protocolSource,
+              contains('Protocol().deserializeByClassName(data)'),
+            );
+            expect(
+              protocolSource,
+              isNot(contains("dataClassName.startsWith('example_shared.')")),
+            );
+          }
+        },
+      );
+
+      test(
+        'then the client protocol forwards the shared table metadata.',
+        () {
+          expect(
+            clientProtocolSource,
+            matches(
+              RegExp(
+                r'class Protocol extends _i\d+\.DatabaseSerializationManager',
+              ),
+            ),
+          );
+          expect(clientProtocolSource, contains('getTargetTableDefinitions'));
+        },
+      );
+
+      test(
+        'then the server and client protocols forward host registrations to '
+        'the shared package.',
+        () {
+          for (final protocolSource in [
+            serverProtocolSource,
+            clientProtocolSource,
+          ]) {
+            expect(
+              protocolSource,
+              contains('.registerHostProtocol(projectName, protocol);'),
+            );
+          }
+        },
+      );
+    },
+  );
+  group(
+    'Given a module protocol with a server-only table in a shared package, '
+    'when generating code,',
+    () {
+      late String serverProtocolSource;
+      late String clientProtocolSource;
+
+      setUpAll(() {
+        final moduleConfig = GeneratorConfigBuilder()
+            .withName(_moduleName)
+            .withPackageType(PackageType.module)
+            .withSharedModelsSourcePathsParts({
+              'example_shared': ['..', 'example_shared'],
+            })
+            .build();
+
+        final protocolDefinition = ProtocolDefinition(
+          endpoints: [],
+          models: [
+            ModelClassDefinitionBuilder()
+                .withClassName('SharedTable')
+                .withTableName('shared_table')
+                .withDatabase(ModelDatabaseDefinition.all)
+                .withServerOnly(true)
+                .withSharedPackageName('example_shared')
+                .build(),
+          ],
+          futureCalls: [],
+        );
+
+        serverProtocolSource = const DartServerCodeGenerator()
+            .generateProtocolCode(
+              protocolDefinition: protocolDefinition,
+              config: moduleConfig,
+            )[path.join('lib', 'src', 'generated', 'protocol.dart')]!;
+        clientProtocolSource =
+            const DartClientCodeGenerator().generateProtocolCode(
+              protocolDefinition: protocolDefinition,
+              config: moduleConfig,
+            )[path.join(
+              '..',
+              '${_moduleName}_client',
+              'lib',
+              'src',
+              'protocol',
+              'protocol.dart',
+            )]!;
+      });
+
+      test(
+        'then the server protocol forwards the shared table metadata.',
+        () {
+          expect(
+            serverProtocolSource,
+            matches(
+              RegExp(
+                r'class Protocol extends _i\d+\.DatabaseSerializationManager',
+              ),
+            ),
+          );
+          expect(serverProtocolSource, contains('getTargetTableDefinitions'));
+        },
+      );
+
+      test(
+        'then the client protocol does not forward the server-only shared table metadata.',
+        () {
+          expect(
+            clientProtocolSource,
+            isNot(contains('DatabaseSerializationManager')),
+          );
+          expect(
+            clientProtocolSource,
+            isNot(contains('getTargetTableDefinitions')),
+          );
+        },
+      );
     },
   );
 }

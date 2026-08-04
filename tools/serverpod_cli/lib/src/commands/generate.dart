@@ -6,6 +6,7 @@ import 'package:config/config.dart';
 import 'package:path/path.dart' as path;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analytics/generate_analytics.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/watcher.dart';
@@ -263,13 +264,24 @@ Future<GenerateResult> analyzeAndGenerate({
     return true;
   });
   if (incremental) {
-    if (!needsGenerate) return (success: true, generatedFiles: <String>{});
+    if (!needsGenerate) {
+      return (
+        success: true,
+        generatedFiles: <String>{},
+        protocolAnalyticsSnapshot: null,
+      );
+    }
   } else if (verifyStaleness &&
       sourceStats != null &&
       await isGenerationUpToDate(config, sourceStats)) {
     log.debug('Generated code is up to date, skipping.');
-    return (success: true, generatedFiles: <String>{});
+    return (
+      success: true,
+      generatedFiles: <String>{},
+      protocolAnalyticsSnapshot: null,
+    );
   }
+  final stopwatch = Stopwatch()..start();
   late final GenerateResult result;
   await log.progress('Generating code', () async {
     result = await analyzers.performGenerate(
@@ -279,6 +291,7 @@ Future<GenerateResult> analyzeAndGenerate({
     );
     return result.success;
   });
+  stopwatch.stop();
   if (result.success) {
     await writeGenerationStamp(
       config,
@@ -289,6 +302,15 @@ Future<GenerateResult> analyzeAndGenerate({
     );
     log.debug(incrementalCodeGenerationComplete);
   }
+
+  await reportGenerateAnalytics(
+    config: config,
+    success: result.success,
+    duration: stopwatch.elapsed,
+    incremental: incremental,
+    protocolAnalyticsSnapshot: result.protocolAnalyticsSnapshot,
+  );
+
   return result;
 }
 

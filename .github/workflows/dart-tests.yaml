@@ -52,6 +52,13 @@ jobs:
         uses: ./.github/actions/retry
         with:
           command: dart run melos bootstrap
+      # The frozen chat module is not part of the melos workspace; without
+      # package resolution, dart format cannot read the package includes in
+      # its analysis_options.yaml files and would apply default settings.
+      - name: Resolve frozen legacy chat packages
+        uses: ./.github/actions/retry
+        with:
+          command: for d in modules/legacy/serverpod_chat/* examples/legacy/chat/*; do if [ -d "$d" ]; then (cd "$d" && flutter pub get); fi; done
       - name: Verify formatting
         run: dart format --output=none --set-exit-if-changed .
 
@@ -112,6 +119,7 @@ jobs:
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: "3.12.2"
+      - uses: ./.github/actions/use-dart-test-retry
       - uses: ./.github/actions/retry
         with:
           command: dart pub get
@@ -152,6 +160,7 @@ jobs:
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: "3.12.2"
+      - uses: ./.github/actions/use-dart-test-retry
       - uses: ./.github/actions/retry
         with:
           command: dart pub get
@@ -184,9 +193,7 @@ jobs:
           - examples/auth/auth_server
           - examples/middleware/middleware_server
           - examples/legacy/auth_example/auth_example_server
-          - examples/legacy/chat/chat_server
           - modules/legacy/serverpod_auth/serverpod_auth_server
-          - modules/legacy/serverpod_chat/serverpod_chat_server
           - modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_server
           - modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_server
           - modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server
@@ -195,6 +202,7 @@ jobs:
           - tests/serverpod_test_module/serverpod_test_module_server
           - tests/serverpod_test_nonvector/serverpod_test_nonvector_server
           - tests/serverpod_test_server
+          - tests/serverpod_test_shared_module/serverpod_test_shared_module_server
           - tests/serverpod_test_sqlite/serverpod_test_sqlite_server
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -547,8 +555,7 @@ jobs:
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: stable
-      - name: Retry transient Dart build-hook failures
-        uses: ./.github/actions/use-dart-test-retry
+      - uses: ./.github/actions/use-dart-test-retry
       - uses: ./.github/actions/use-embedded-pg
       - name: Install melos
         uses: ./.github/actions/retry
@@ -672,8 +679,7 @@ jobs:
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.sdk }}
-      - name: Retry transient Dart build-hook failures
-        uses: ./.github/actions/use-dart-test-retry
+      - uses: ./.github/actions/use-dart-test-retry
       - name: Run unit tests
         shell: bash
         working-directory: ${{ matrix.project }}
@@ -700,8 +706,7 @@ jobs:
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.sdk }}
-      - name: Retry transient Dart build-hook failures
-        uses: ./.github/actions/use-dart-test-retry
+      - uses: ./.github/actions/use-dart-test-retry
       - name: Run unit tests
         shell: bash
         working-directory: tools/serverpod_cli
@@ -786,8 +791,7 @@ jobs:
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.sdk }}
-      - name: Retry transient Dart build-hook failures
-        uses: ./.github/actions/use-dart-test-retry
+      - uses: ./.github/actions/use-dart-test-retry
       - uses: ./.github/actions/use-embedded-pg
       - uses: ./.github/actions/use-pod-bundle
         with:
@@ -821,8 +825,7 @@ jobs:
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.sdk }}
-      - name: Retry transient Dart build-hook failures
-        uses: ./.github/actions/use-dart-test-retry
+      - uses: ./.github/actions/use-dart-test-retry
       - uses: ./.github/actions/use-embedded-pg
       - uses: ./.github/actions/use-pod-bundle
         with:
@@ -845,6 +848,37 @@ jobs:
       - name: Run e2e web tests
         run: util/run_tests_e2e_host firefox ${{ matrix.shard }} 5
         timeout-minutes: 15
+
+  # Client-side databases run on Flutter web (executed in a browser).
+  client_database_web_tests:
+    name: Client database web tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ["3.38.4", "3.44.4"]
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: ./.github/actions/use-flutter
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: false
+      - uses: browser-actions/setup-chrome@2e1d749697dd1612b833dba4a722266286fbefcd # v2.1.2
+      - name: Retry transient Dart build-hook failures
+        uses: ./.github/actions/use-dart-test-retry
+      - name: Resolve melos
+        uses: ./.github/actions/retry
+        with:
+          command: dart pub get
+      # The run also covers serverpod_test_sqlite_client, which comes along as a
+      # path dependency of the Flutter package under --include-dependencies.
+      - name: Bootstrap
+        uses: ./.github/actions/retry
+        with:
+          command: dart run melos bootstrap --scope='serverpod_test_sqlite_flutter' --include-dependencies
+      - name: Run client database web tests
+        run: util/run_tests_client_database_web
+        timeout-minutes: 20
 
   serverpod_shared_integration_tests:
     name: serverpod_shared integration tests
@@ -877,6 +911,7 @@ jobs:
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: false
+      - uses: ./.github/actions/use-dart-test-retry
       - name: Start containers
         run: docker compose --progress quiet up --build -V -d
         working-directory: ${{ matrix.module.server }}
@@ -919,8 +954,7 @@ jobs:
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.dart-version }}
-      - name: Retry transient Dart build-hook failures
-        uses: ./.github/actions/use-dart-test-retry
+      - uses: ./.github/actions/use-dart-test-retry
       - uses: ./.github/actions/use-embedded-pg
       - name: Install melos
         uses: ./.github/actions/retry
@@ -952,8 +986,7 @@ jobs:
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.dart-version }}
-      - name: Retry transient Dart build-hook failures
-        uses: ./.github/actions/use-dart-test-retry
+      - uses: ./.github/actions/use-dart-test-retry
       - uses: ./.github/actions/use-embedded-pg
       - name: Install melos
         uses: ./.github/actions/retry
@@ -982,8 +1015,7 @@ jobs:
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.dart-version }}
-      - name: Retry transient Dart build-hook failures
-        uses: ./.github/actions/use-dart-test-retry
+      - uses: ./.github/actions/use-dart-test-retry
       - name: Run SQLite integration tests
         run: util/run_tests_sqlite_integration
 
@@ -1006,8 +1038,7 @@ jobs:
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: false
-      - name: Retry transient Dart build-hook failures
-        uses: ./.github/actions/use-dart-test-retry
+      - uses: ./.github/actions/use-dart-test-retry
       - name: Cache PUB_CACHE
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
@@ -1055,8 +1086,7 @@ jobs:
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.sdk }}
-      - name: Retry transient Dart build-hook failures
-        uses: ./.github/actions/use-dart-test-retry
+      - uses: ./.github/actions/use-dart-test-retry
       # Redis is disabled on the server (SERVERPOD_REDIS_ENABLED=false in the run
       # script), so unlike the integration suite no Redis is needed.
       - uses: ./.github/actions/use-embedded-pg
@@ -1088,8 +1118,7 @@ jobs:
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.sdk }}
-      - name: Retry transient Dart build-hook failures
-        uses: ./.github/actions/use-dart-test-retry
+      - uses: ./.github/actions/use-dart-test-retry
       - uses: ./.github/actions/use-cli-bundle
       - uses: ./.github/actions/use-pod-bundle
         with:
@@ -1114,8 +1143,7 @@ jobs:
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: false
-      - name: Retry transient Dart build-hook failures
-        uses: ./.github/actions/use-dart-test-retry
+      - uses: ./.github/actions/use-dart-test-retry
       - name: Setup docker (missing on MacOS)
         if: runner.os == 'macos'
         run: |
@@ -1194,8 +1222,7 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
-      - name: Retry transient Dart build-hook failures
-        uses: ./.github/actions/use-dart-test-retry
+      - uses: ./.github/actions/use-dart-test-retry
       - uses: ./.github/actions/retry
         with:
           command: dart pub get
@@ -1217,8 +1244,7 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
-      - name: Retry transient Dart build-hook failures
-        uses: ./.github/actions/use-dart-test-retry
+      - uses: ./.github/actions/use-dart-test-retry
       - uses: ./.github/actions/retry
         with:
           command: dart pub get
@@ -1240,8 +1266,7 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
-      - name: Retry transient Dart build-hook failures
-        uses: ./.github/actions/use-dart-test-retry
+      - uses: ./.github/actions/use-dart-test-retry
       - uses: ./.github/actions/retry
         with:
           command: dart pub get
@@ -1260,8 +1285,7 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
-      - name: Retry transient Dart build-hook failures
-        uses: ./.github/actions/use-dart-test-retry
+      - uses: ./.github/actions/use-dart-test-retry
       - uses: ./.github/actions/retry
         with:
           command: dart pub get
@@ -1283,8 +1307,7 @@ jobs:
         with:
           flutter-version: "3.38.4"
           cache: false
-      - name: Retry transient Dart build-hook failures
-        uses: ./.github/actions/use-dart-test-retry
+      - uses: ./.github/actions/use-dart-test-retry
       - name: Install melos
         uses: ./.github/actions/retry
         with:

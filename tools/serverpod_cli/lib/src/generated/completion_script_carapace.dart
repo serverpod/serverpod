@@ -48,7 +48,6 @@ commands:
   - name: create
     flags:
       -f, --force: "Create the project even if there are issues that prevent it from running out of the box."
-      --mini: "Shortcut for --template mini."
       -t, --template=: "Template to use when creating a new project"
       --database: "Include a database in the project."
       --no-database: "Include a database in the project."
@@ -70,7 +69,7 @@ commands:
       - [website, no-website]
     completion:
       flag:
-        template: ["mini", "fullstack", "server", "module"]
+        template: ["fullstack", "server", "module"]
         ide: ["none", "antigravity", "codex", "claude", "cursor", "opencode", "vscode"]
 
   - name: database
@@ -137,8 +136,8 @@ commands:
       -w, --watch: "Watch files and use the Frontend Server for fast incremental compilation. With --no-watch, the server is started via `dart run`."
       --no-watch: "Watch files and use the Frontend Server for fast incremental compilation. With --no-watch, the server is started via `dart run`."
       -d, --directory=: "The server directory (defaults to auto-detect from current directory)."
-      --docker: "Start Docker Compose services if a Docker Compose file exists. Defaults to on if the project has a Docker Compose file and the database is configured to PostgreSQL without a dataPath. Otherwise, defaults to off. Pass --docker or --no-docker to override the default behavior."
-      --no-docker: "Start Docker Compose services if a Docker Compose file exists. Defaults to on if the project has a Docker Compose file and the database is configured to PostgreSQL without a dataPath. Otherwise, defaults to off. Pass --docker or --no-docker to override the default behavior."
+      --docker: "Start Docker Compose services if a Docker Compose file exists. Defaults to on if the project has a Docker Compose file and the database is configured to PostgreSQL on localhost without a dataPath. Otherwise, defaults to off. Pass --docker or --no-docker to override the default behavior."
+      --no-docker: "Start Docker Compose services if a Docker Compose file exists. Defaults to on if the project has a Docker Compose file and the database is configured to PostgreSQL on localhost without a dataPath. Otherwise, defaults to off. Pass --docker or --no-docker to override the default behavior."
       --tui: "Show interactive terminal UI."
       --no-tui: "Show interactive terminal UI."
       --flutter: "Auto-launch the companion Flutter apps as configured on the server pubspec.yaml with `auto_launch: true`. Use --no-flutter to disable auto-launch. Apps can still be started on demand from the TUI."

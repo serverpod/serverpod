@@ -219,6 +219,115 @@ void main() {
     });
   });
 
+  const _environmentCacheControlTestName =
+      'Given a Flutter cache control environment variable and no Dart factory, '
+      'when a Flutter asset is requested, '
+      'then the environment cache control is applied.';
+  test(_environmentCacheControlTestName, () async {
+    if (await _rerunWithCacheControlEnvironment(
+      testName: _environmentCacheControlTestName,
+      value: 'public, max-age=60, s-maxage=86400',
+    )) {
+      return;
+    }
+
+    final pod = IntegrationTestServer.create(
+      config: ServerpodConfig(
+        apiServer: ServerConfig(
+          port: 0,
+          publicHost: 'localhost',
+          publicPort: 0,
+          publicScheme: 'http',
+        ),
+        webServer: ServerConfig(
+          port: 0,
+          publicHost: 'localhost',
+          publicPort: 0,
+          publicScheme: 'http',
+        ),
+      ),
+    );
+    pod.webServer.addRoute(FlutterRoute(webDir));
+
+    await pod.start();
+    addTearDown(() async {
+      await pod.shutdown(exitProcess: false);
+    });
+
+    final response = await client.get(
+      Uri.parse('${pod.webUrl}main.dart.js'),
+    );
+
+    expect(response.statusCode, 200);
+    expect(response.headers['cache-control'], contains('public'));
+    expect(response.headers['cache-control'], contains('max-age=60'));
+    expect(response.headers['cache-control'], contains('s-maxage=86400'));
+  });
+
+  const _dartCacheControlTestName =
+      'Given a Flutter cache control environment variable and a Dart factory, '
+      'when a Flutter asset is requested, '
+      'then the Dart cache control takes precedence.';
+  test(_dartCacheControlTestName, () async {
+    if (await _rerunWithCacheControlEnvironment(
+      testName: _dartCacheControlTestName,
+      value: 'max-age=not-a-number',
+    )) {
+      return;
+    }
+
+    final pod = IntegrationTestServer.create(
+      config: ServerpodConfig(
+        apiServer: ServerConfig(
+          port: 0,
+          publicHost: 'localhost',
+          publicPort: 0,
+          publicScheme: 'http',
+        ),
+        webServer: ServerConfig(
+          port: 0,
+          publicHost: 'localhost',
+          publicPort: 0,
+          publicScheme: 'http',
+        ),
+      ),
+    );
+    pod.webServer.addRoute(
+      FlutterRoute(
+        webDir,
+        cacheControlFactory: StaticRoute.noStore(),
+      ),
+    );
+
+    await pod.start();
+    addTearDown(() async {
+      await pod.shutdown(exitProcess: false);
+    });
+
+    final response = await client.get(
+      Uri.parse('${pod.webUrl}main.dart.js'),
+    );
+
+    expect(response.statusCode, 200);
+    expect(response.headers['cache-control'], contains('no-store'));
+    expect(response.headers['cache-control'], isNot(contains('public')));
+  });
+
+  const _invalidEnvironmentCacheControlTestName =
+      'Given an invalid Flutter cache control environment variable and no Dart factory, '
+      'when FlutterRoute is created, '
+      'then a FormatException is thrown.';
+  test(_invalidEnvironmentCacheControlTestName, () async {
+    if (await _rerunWithCacheControlEnvironment(
+      testName: _invalidEnvironmentCacheControlTestName,
+      value: 'invalid-directive',
+    )) {
+      return;
+    }
+
+    expect(() => FlutterRoute(webDir), throwsFormatException);
+  });
+
   group('Given a FlutterRoute with default caching', () {
     late Serverpod pod;
 
@@ -335,4 +444,35 @@ void main() {
       },
     );
   });
+}
+
+Future<bool> _rerunWithCacheControlEnvironment({
+  required String testName,
+  required String value,
+}) async {
+  const cacheControlEnvVarName = 'SERVERPOD_WEB_SERVER_FLUTTER_CACHE_CONTROL';
+
+  if (Platform.environment[cacheControlEnvVarName] == value) {
+    return false;
+  }
+
+  final result = await Process.run(
+    Platform.resolvedExecutable,
+    [
+      'test',
+      '--plain-name',
+      testName,
+      'test_integration/web_server/flutter_route_test.dart',
+    ],
+    workingDirectory: Directory.current.path,
+    environment: {cacheControlEnvVarName: value},
+  );
+
+  expect(
+    result.exitCode,
+    0,
+    reason:
+        'Nested test failed.\nstdout:\n${result.stdout}\nstderr:\n${result.stderr}',
+  );
+  return true;
 }

@@ -203,9 +203,6 @@ extension ServerpodTemplateTypeExtension on ServerpodTemplateType {
     ServerpodTemplateType.server => TemplateTypeOption.server,
     ServerpodTemplateType.fullstack => TemplateTypeOption.serverAndApp,
     ServerpodTemplateType.module => TemplateTypeOption.module,
-    ServerpodTemplateType.mini => throw UnsupportedError(
-      'Mini template is not supported in the config.',
-    ),
   };
 }
 

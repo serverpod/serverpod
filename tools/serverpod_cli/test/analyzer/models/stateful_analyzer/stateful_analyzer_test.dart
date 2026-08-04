@@ -59,6 +59,44 @@ void main() {
   );
 
   test(
+    'Given an empty state, when reading registeredModelUris, then an empty list is returned.',
+    () {
+      var statefulAnalyzer = StatefulAnalyzer(config, []);
+
+      expect(statefulAnalyzer.registeredModelUris, isEmpty);
+    },
+  );
+
+  test(
+    'Given models in the initial state, when reading registeredModelUris, then the source URIs of all registered models are returned.',
+    () {
+      var firstUri = Uri(path: 'lib/src/model/first.yaml');
+      var secondUri = Uri(path: 'lib/src/model/second.yaml');
+      var statefulAnalyzer = StatefulAnalyzer(config, [
+        ModelSourceBuilder().withYamlSourceUri(firstUri).withYaml(
+          '''
+          class: First
+          fields:
+            name: String
+          ''',
+        ).build(),
+        ModelSourceBuilder().withYamlSourceUri(secondUri).withYaml(
+          '''
+          class: Second
+          fields:
+            name: String
+          ''',
+        ).build(),
+      ]);
+
+      expect(
+        statefulAnalyzer.registeredModelUris,
+        unorderedEquals([firstUri, secondUri]),
+      );
+    },
+  );
+
+  test(
     'Given an empty state, when validating a single model, then an empty list is returned',
     () {
       var statefulAnalyzer = StatefulAnalyzer(config, []);

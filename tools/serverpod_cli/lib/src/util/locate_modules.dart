@@ -5,6 +5,7 @@ import 'package:package_config/package_config.dart';
 import 'package:path/path.dart' as path;
 import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:serverpod_cli/src/config/config.dart';
+import 'package:serverpod_cli/src/config/serverpod_manifest.dart';
 import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:yaml/yaml.dart';
@@ -27,6 +28,7 @@ List<ModuleConfig> loadModuleConfigs({
 
   var moduleConfigs = _loadModuleConfigs(
     modules: projectModuleDependencies,
+    packageConfig: packageConfig,
     nickNameOverrides: nickNameOverrides,
   );
 
@@ -92,6 +94,7 @@ Set<Package> _listModuleDependencies({
 
 List<ModuleConfig> _loadModuleConfigs({
   required Set<Package> modules,
+  required PackageConfig packageConfig,
   Map<String, String?> nickNameOverrides = const {},
 }) {
   var moduleConfigs = <ModuleConfig>[];
@@ -128,8 +131,15 @@ List<ModuleConfig> _loadModuleConfigs({
           nickname: nickname,
           migrationVersions: migrationVersions,
           serverPackageDirectoryPathParts: packageSrcRoot.pathSegments,
+          sharedPackageRootPathParts: _sharedPackageRoots(
+            packageSrcRoot,
+            packageConfig,
+            moduleName,
+          ),
         ),
       );
+    } on ServerpodModulesNotFoundException {
+      rethrow;
     } catch (e) {
       continue;
     }
@@ -141,6 +151,45 @@ List<ModuleConfig> _loadModuleConfigs({
 Map<dynamic, dynamic> loadConfigFile(File file) {
   var yaml = file.readAsStringSync();
   return loadYaml(yaml) as Map;
+}
+
+/// Reads the shared packages advertised by an installed module, mapping each
+/// package name to the package root resolved by the current package config.
+Map<String, List<String>> _sharedPackageRoots(
+  Uri packageSrcRoot,
+  PackageConfig packageConfig,
+  String moduleName,
+) {
+  var manifestFile = File.fromUri(
+    packageSrcRoot.resolve(
+      'lib/src/generated/${ServerpodManifest.fileName}',
+    ),
+  );
+
+  ServerpodManifest? manifest;
+  try {
+    manifest = ServerpodManifest.tryLoadSync(manifestFile);
+  } on ServerpodManifestException catch (error) {
+    throw ServerpodModulesNotFoundException(
+      'Failed to load the generated Serverpod manifest for module '
+      '$moduleName: $error',
+    );
+  }
+  if (manifest == null) return const {};
+
+  var result = <String, List<String>>{};
+  for (var packageName in manifest.sharedPackages) {
+    var package = packageConfig[packageName];
+    if (package == null) {
+      throw ServerpodModulesNotFoundException(
+        'Module $moduleName advertises shared package $packageName, but it '
+        'could not be located in the package config.',
+      );
+    }
+
+    result[packageName] = package.root.pathSegments;
+  }
+  return result;
 }
 
 List<String> findAllMigrationVersionsSync({

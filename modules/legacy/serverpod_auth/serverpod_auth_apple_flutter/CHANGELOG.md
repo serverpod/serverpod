@@ -1,3 +1,40 @@
+## 4.0.0-beta.1
+
+- feat: Exposes flags on the `serverpod create` command to customize the created project.
+- feat: Unifies and customizes social sign-in button styling.
+- feat: Adds support for cache busting with dedicated syntax in templating system.
+- feat: Allows running tests with complete isolation and plain `dart test` using `withServerpod`.
+- feat: Uses custom embedded PostgreSQL binaries built with `pgvector` and `postgis` support.
+- feat: Defaults to autostart docker on `serverpod start` if using PostgreSQL without `dataPath`.
+- feat: Makes stack trace logs clickable to expand individually on `serverpod start` TUI.
+- feat: Adds structured Flutter logs to `serverpod start` TUI.
+- feat: Allows booting the embedded PostgreSQL from the CLI with `serverpod database start`.
+- feat: Allows using the `table` keyword with `database: all` on shared package models.
+- feat: Changes the `WidgetRoute.build` method to return `WebWidget?` and easily throw a 404.
+- feat: Makes "X Stop App" / "X Close Tab" hints clickable in `serverpod start` TUI.
+- feat: Removes the experimental flag from `serverpod start` command.
+- fix: BREAKING. Removes the native Google Sign-In web implementation in favor of OAuth2.
+- fix: BREAKING. Removes deprecated orderDescending parameter on ORM methods.
+- fix: BREAKING. Removes deprecated `ignoreEndpoint` annotation from the CLI.
+- fix: BREAKING. Removes deprecated `SerializationManagerServer` class.
+- fix: BREAKING. Removes deprecated web-server widgets and legacy static directory classes.
+- fix: Fixes VS Code debugger not working with the new `serverpod start` TUI.
+- fix: Releases sessions from `MessageCentral` when streams are cancelled before session close.
+- fix: Fixes generator failing when the client or shared package are imported on the server.
+- fix: Invalidates corrupt cached server.dill after an interrupted compile.
+- fix: Shows the device platform in the `serverpod start` TUI Flutter app status line.
+- fix: Fixes `generate --watch` mode feedback loops when no changes existed.
+- fix: Fixes high disk I/O when starting the Flutter app from `serverpod start`.
+- fix: Allows unverified emails in Firebase IDP for default account validation.
+- fix: Ensures any error is flushed to the terminal when exiting the TUI with a non-zero exit code.
+- fix: Fixes Flutter app tabs not being marked as ready on non-web devices on the TUI.
+- fix: Fixes the background of the `SignInWidget` and `EmailSignInWidget` not being transparent
+- fix: Fixes a racing condition when closing a streaming method right after opening it.
+- fix: Adds the missing `databaseInterceptor` parameter to `withServerpod`.
+- refactor: Unify create and apply migration buttons on `serverpod start` TUI as `Migrate` action.
+- refactor: Improve the `serverpod create` TUI look and feel.
+- chore: Removes the `--mini` option from `serverpod create` command.
+
 ## 4.0.0-beta.0
 
 - feat: Shows inline "Copied" confirmation in `serverpod start` TUI alerts.
@@ -26,7 +63,7 @@
 - feat: Exposes the Redis connection to allow users to build custom extensions.
 - feat: Adds the `tail` keyword on models to configure the order of inherited fields.
 - feat: Automatically reloads the server when dependencies change.
-- feat: Adds a `withSession` method on `Serverpod` for manual session usage with automatic teardown.
+- feat: Adds a `withSession` method on `Serverpod` for manual session usage with automatic teardown. ([@nicowalter256](https://github.com/nicowalter256))
 - feat: Adds a `noReturn` parameter to all ORM methods to allow skipping the returning the data.
 - feat: Allows using the `unique(per=...)` shorthand for composite unique indexes.
 - feat: Adds a `databaseInterceptor` parameter to `Serverpod` for intercepting database operations.
