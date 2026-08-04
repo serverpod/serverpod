@@ -2583,6 +2583,8 @@ extension on DatabaseDefinition {
                 ]),
                 'type': literalString(index.type),
                 'isUnique': literalBool(index.isUnique),
+                if (index.nullsDistinct != null)
+                  'nullsDistinct': literalBool(index.nullsDistinct!),
                 'isPrimary': literalBool(index.isPrimary),
                 if (index.ginOperatorClass != null)
                   'ginOperatorClass': refer(

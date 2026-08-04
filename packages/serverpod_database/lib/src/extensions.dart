@@ -286,6 +286,16 @@ extension IndexComparisons on IndexDefinition {
       );
     }
 
+    if ((nullsDistinct ?? true) != (other.nullsDistinct ?? true)) {
+      mismatches.add(
+        IndexComparisonWarning(
+          name: 'nullsDistinct',
+          expected: '$nullsDistinct',
+          found: '${other.nullsDistinct}',
+        ),
+      );
+    }
+
     if (predicate != other.predicate) {
       mismatches.add(
         IndexComparisonWarning(
