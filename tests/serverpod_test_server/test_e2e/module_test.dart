@@ -46,60 +46,6 @@ void main() {
       expect(result.data, equals(42));
     });
 
-    group('when calling endpoint streams on module', () {
-      late Stream streamingStream;
-      setUpAll(() async {
-        streamingStream = client.modules.module.streaming.stream
-            .asBroadcastStream();
-      });
-      setUp(() async {
-        // ignore: deprecated_member_use
-        await client.openStreamingConnection(
-          disconnectOnLostInternetConnection: false,
-        );
-      });
-
-      tearDown(() async {
-        // ignore: deprecated_member_use
-        await client.closeStreamingConnection();
-      });
-
-      test(
-        'then should be possible to send to and read from endpoint stream',
-        () async {
-          var nums = [42, 1337, 69];
-
-          for (var num in nums) {
-            await client.modules.module.streaming.sendStreamMessage(
-              module.ModuleClass(name: 'name', data: num),
-            );
-          }
-
-          var resultNums = (await streamingStream.take(3).toList()).map(
-            (o) => o.data,
-          );
-          expect(resultNums, equals(nums));
-        },
-      );
-
-      test('then stream opened should have been called', () async {
-        await expectLater(
-          client.modules.module.streaming.wasStreamOpenCalled(),
-          completion(isTrue),
-        );
-      });
-
-      test('then stream closed should have been called', () async {
-        // ignore: deprecated_member_use
-        await client.closeStreamingConnection();
-
-        await expectLater(
-          client.modules.module.streaming.wasStreamClosedCalled(),
-          completion(isTrue),
-        );
-      });
-    });
-
     test(
       'when calling stream-returning method that takes stream as a parameter '
       'then should return a stream',

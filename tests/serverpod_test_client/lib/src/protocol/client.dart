@@ -1728,22 +1728,6 @@ class EndpointLogging extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
-class EndpointStreamLogging extends _i1.EndpointRef {
-  EndpointStreamLogging(_i1.EndpointCaller caller) : super(caller);
-
-  @override
-  String get name => 'streamLogging';
-}
-
-/// {@category Endpoint}
-class EndpointStreamQueryLogging extends _i1.EndpointRef {
-  EndpointStreamQueryLogging(_i1.EndpointCaller caller) : super(caller);
-
-  @override
-  String get name => 'streamQueryLogging';
-}
-
-/// {@category Endpoint}
 class EndpointLoggingDisabled extends _i1.EndpointRef {
   EndpointLoggingDisabled(_i1.EndpointCaller caller) : super(caller);
 
@@ -3486,15 +3470,6 @@ class EndpointSessionAuthentication extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
-class EndpointSessionAuthenticationStreaming extends _i1.EndpointRef {
-  EndpointSessionAuthenticationStreaming(_i1.EndpointCaller caller)
-    : super(caller);
-
-  @override
-  String get name => 'sessionAuthenticationStreaming';
-}
-
-/// {@category Endpoint}
 class EndpointSetParameters extends _i1.EndpointRef {
   EndpointSetParameters(_i1.EndpointCaller caller) : super(caller);
 
@@ -3730,22 +3705,6 @@ class EndpointSimple extends _i1.EndpointRef {
     'hello',
     {'name': name},
   );
-}
-
-/// {@category Endpoint}
-class EndpointStreaming extends _i1.EndpointRef {
-  EndpointStreaming(_i1.EndpointCaller caller) : super(caller);
-
-  @override
-  String get name => 'streaming';
-}
-
-/// {@category Endpoint}
-class EndpointStreamingLogging extends _i1.EndpointRef {
-  EndpointStreamingLogging(_i1.EndpointCaller caller) : super(caller);
-
-  @override
-  String get name => 'streamingLogging';
 }
 
 /// {@category Endpoint}
@@ -4499,8 +4458,6 @@ class Client extends _i1.ServerpodClientShared {
     testFutureCalls = EndpointTestFutureCalls(this);
     listParameters = EndpointListParameters(this);
     logging = EndpointLogging(this);
-    streamLogging = EndpointStreamLogging(this);
-    streamQueryLogging = EndpointStreamQueryLogging(this);
     loggingDisabled = EndpointLoggingDisabled(this);
     mapParameters = EndpointMapParameters(this);
     methodSignaturePermutations = EndpointMethodSignaturePermutations(this);
@@ -4521,15 +4478,10 @@ class Client extends _i1.ServerpodClientShared {
       this,
     );
     sessionAuthentication = EndpointSessionAuthentication(this);
-    sessionAuthenticationStreaming = EndpointSessionAuthenticationStreaming(
-      this,
-    );
     setParameters = EndpointSetParameters(this);
     signInRequired = EndpointSignInRequired(this);
     adminScopeRequired = EndpointAdminScopeRequired(this);
     simple = EndpointSimple(this);
-    streaming = EndpointStreaming(this);
-    streamingLogging = EndpointStreamingLogging(this);
     subSubDirTest = EndpointSubSubDirTest(this);
     subDirTest = EndpointSubDirTest(this);
     testTools = EndpointTestTools(this);
@@ -4606,10 +4558,6 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointLogging logging;
 
-  late final EndpointStreamLogging streamLogging;
-
-  late final EndpointStreamQueryLogging streamQueryLogging;
-
   late final EndpointLoggingDisabled loggingDisabled;
 
   late final EndpointMapParameters mapParameters;
@@ -4647,9 +4595,6 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointSessionAuthentication sessionAuthentication;
 
-  late final EndpointSessionAuthenticationStreaming
-  sessionAuthenticationStreaming;
-
   late final EndpointSetParameters setParameters;
 
   late final EndpointSignInRequired signInRequired;
@@ -4657,10 +4602,6 @@ class Client extends _i1.ServerpodClientShared {
   late final EndpointAdminScopeRequired adminScopeRequired;
 
   late final EndpointSimple simple;
-
-  late final EndpointStreaming streaming;
-
-  late final EndpointStreamingLogging streamingLogging;
 
   late final EndpointSubSubDirTest subSubDirTest;
 
@@ -4717,8 +4658,6 @@ class Client extends _i1.ServerpodClientShared {
     'testFutureCalls': testFutureCalls,
     'listParameters': listParameters,
     'logging': logging,
-    'streamLogging': streamLogging,
-    'streamQueryLogging': streamQueryLogging,
     'loggingDisabled': loggingDisabled,
     'mapParameters': mapParameters,
     'methodSignaturePermutations': methodSignaturePermutations,
@@ -4737,13 +4676,10 @@ class Client extends _i1.ServerpodClientShared {
     'serverOnlyScopedFieldModel': serverOnlyScopedFieldModel,
     'serverOnlyScopedFieldChildModel': serverOnlyScopedFieldChildModel,
     'sessionAuthentication': sessionAuthentication,
-    'sessionAuthenticationStreaming': sessionAuthenticationStreaming,
     'setParameters': setParameters,
     'signInRequired': signInRequired,
     'adminScopeRequired': adminScopeRequired,
     'simple': simple,
-    'streaming': streaming,
-    'streamingLogging': streamingLogging,
     'subSubDirTest': subSubDirTest,
     'subDirTest': subDirTest,
     'testTools': testTools,

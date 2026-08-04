@@ -183,26 +183,6 @@ class Endpoints extends _i1.EndpointDispatch {
       name: 'streaming',
       endpoint: endpoints['streaming']!,
       methodConnectors: {
-        'wasStreamOpenCalled': _i1.MethodConnector(
-          name: 'wasStreamOpenCalled',
-          params: {},
-          call:
-              (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async => (endpoints['streaming'] as _i5.StreamingEndpoint)
-                  .wasStreamOpenCalled(session),
-        ),
-        'wasStreamClosedCalled': _i1.MethodConnector(
-          name: 'wasStreamClosedCalled',
-          params: {},
-          call:
-              (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async => (endpoints['streaming'] as _i5.StreamingEndpoint)
-                  .wasStreamClosedCalled(session),
-        ),
         'intEchoStream': _i1.MethodStreamConnector(
           name: 'intEchoStream',
           params: {},

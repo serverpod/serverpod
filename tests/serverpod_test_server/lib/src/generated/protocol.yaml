@@ -200,8 +200,6 @@ logging:
   - streamLogging:
   - streamQueryLogging:
   - streamException:
-streamLogging:
-streamQueryLogging:
 loggingDisabled:
   - logInfo:
 mapParameters:
@@ -403,7 +401,6 @@ sessionAuthentication:
   - isAuthenticated:
   - streamAuthenticatedUserId:
   - streamIsAuthenticated:
-sessionAuthenticationStreaming:
 setParameters:
   - returnIntSet:
   - returnIntSetSet:
@@ -436,8 +433,6 @@ simple:
   - addToGlobalInt:
   - getGlobalInt:
   - hello:
-streaming:
-streamingLogging:
 subSubDirTest:
   - testMethod:
 subDirTest:

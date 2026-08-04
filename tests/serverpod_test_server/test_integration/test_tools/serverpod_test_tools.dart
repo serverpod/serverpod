@@ -261,10 +261,6 @@ class TestEndpoints {
 
   late final _LoggingEndpoint logging;
 
-  late final _StreamLogging streamLogging;
-
-  late final _StreamQueryLogging streamQueryLogging;
-
   late final _LoggingDisabledEndpoint loggingDisabled;
 
   late final _MapParametersEndpoint mapParameters;
@@ -302,9 +298,6 @@ class TestEndpoints {
 
   late final _SessionAuthenticationEndpoint sessionAuthentication;
 
-  late final _SessionAuthenticationStreamingEndpoint
-  sessionAuthenticationStreaming;
-
   late final _SetParametersEndpoint setParameters;
 
   late final _SignInRequiredEndpoint signInRequired;
@@ -312,10 +305,6 @@ class TestEndpoints {
   late final _AdminScopeRequiredEndpoint adminScopeRequired;
 
   late final _SimpleEndpoint simple;
-
-  late final _StreamingEndpoint streaming;
-
-  late final _StreamingLoggingEndpoint streamingLogging;
 
   late final _SubSubDirTestEndpoint subSubDirTest;
 
@@ -469,14 +458,6 @@ class _InternalTestEndpoints extends TestEndpoints
       endpoints,
       serializationManager,
     );
-    streamLogging = _StreamLogging(
-      endpoints,
-      serializationManager,
-    );
-    streamQueryLogging = _StreamQueryLogging(
-      endpoints,
-      serializationManager,
-    );
     loggingDisabled = _LoggingDisabledEndpoint(
       endpoints,
       serializationManager,
@@ -549,10 +530,6 @@ class _InternalTestEndpoints extends TestEndpoints
       endpoints,
       serializationManager,
     );
-    sessionAuthenticationStreaming = _SessionAuthenticationStreamingEndpoint(
-      endpoints,
-      serializationManager,
-    );
     setParameters = _SetParametersEndpoint(
       endpoints,
       serializationManager,
@@ -566,14 +543,6 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     simple = _SimpleEndpoint(
-      endpoints,
-      serializationManager,
-    );
-    streaming = _StreamingEndpoint(
-      endpoints,
-      serializationManager,
-    );
-    streamingLogging = _StreamingLoggingEndpoint(
       endpoints,
       serializationManager,
     );
@@ -6277,20 +6246,6 @@ class _LoggingEndpoint {
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
-}
-
-class _StreamLogging {
-  _StreamLogging(
-    _endpointDispatch,
-    _serializationManager,
-  );
-}
-
-class _StreamQueryLogging {
-  _StreamQueryLogging(
-    _endpointDispatch,
-    _serializationManager,
-  );
 }
 
 class _LoggingDisabledEndpoint {
@@ -12508,13 +12463,6 @@ class _SessionAuthenticationEndpoint {
   }
 }
 
-class _SessionAuthenticationStreamingEndpoint {
-  _SessionAuthenticationStreamingEndpoint(
-    _endpointDispatch,
-    _serializationManager,
-  );
-}
-
 class _SetParametersEndpoint {
   _SetParametersEndpoint(
     this._endpointDispatch,
@@ -13417,20 +13365,6 @@ class _SimpleEndpoint {
       }
     });
   }
-}
-
-class _StreamingEndpoint {
-  _StreamingEndpoint(
-    _endpointDispatch,
-    _serializationManager,
-  );
-}
-
-class _StreamingLoggingEndpoint {
-  _StreamingLoggingEndpoint(
-    _endpointDispatch,
-    _serializationManager,
-  );
 }
 
 class _SubSubDirTestEndpoint {
