@@ -375,4 +375,69 @@ void main() {
       expect(args3.role, equals(ServerpodRole.maintenance));
     });
   });
+
+  group('Given command line arguments with unknown custom flags', () {
+    test(
+      'when a custom flag follows a known option then the known option is respected',
+      () {
+        final args = CommandLineArgs(['--mode', 'production', '--myCustomFlag']);
+        expect(args.runMode, equals('production'));
+        expect(args.serverId, equals('default'));
+        expect(args.loggingMode, equals(ServerpodLoggingMode.normal));
+        expect(args.role, equals(ServerpodRole.monolith));
+        expect(args.applyMigrations, isFalse);
+        expect(args.applyRepairMigration, isFalse);
+      },
+    );
+
+    test(
+      'when a custom flag precedes a known option then the known option is respected',
+      () {
+        final args = CommandLineArgs(['--myCustomFlag', '--mode', 'production']);
+        expect(args.runMode, equals('production'));
+      },
+    );
+
+    test(
+      'when a custom option with a value precedes a known option then the known option is respected',
+      () {
+        final args = CommandLineArgs([
+          '--myCustomOption',
+          'someValue',
+          '--mode',
+          'production',
+        ]);
+        expect(args.runMode, equals('production'));
+      },
+    );
+
+    test(
+      'when a custom flag is mixed with known options using equals syntax then known options are respected',
+      () {
+        final args = CommandLineArgs([
+          '--mode=production',
+          '--myCustom=someValue',
+        ]);
+        expect(args.runMode, equals('production'));
+      },
+    );
+
+    test(
+      'when multiple known options are mixed with custom flags then all known options are parsed correctly',
+      () {
+        final args = CommandLineArgs([
+          '--mode', 'production',
+          '--myCustomFlag',
+          '--server-id', 'my-server',
+          '--anotherCustom', 'val',
+          '--role', 'serverless',
+          '--apply-migrations',
+        ]);
+        expect(args.runMode, equals('production'));
+        expect(args.serverId, equals('my-server'));
+        expect(args.role, equals(ServerpodRole.serverless));
+        expect(args.applyMigrations, isTrue);
+      },
+    );
+  });
 }
