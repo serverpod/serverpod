@@ -4,15 +4,19 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:serverpod/serverpod.dart';
 
+const _flutterCacheControlEnvironmentVariable =
+    'SERVERPOD_WEB_SERVER_FLUTTER_CACHE_CONTROL';
+
 /// Route for serving Flutter web applications with WASM support.
 ///
 /// Combines static file serving with automatic fallback to index.html for
 /// client-side routing, plus WASM headers (COOP/COEP) for multi-threading.
 ///
-/// By default, critical Flutter files (index.html, flutter_service_worker.js,
-/// flutter_bootstrap.js, manifest.json, version.json) are served with no-cache
-/// headers to prevent stale app manifests and service workers. All other files
-/// can be cached according to browser heuristics or custom cache control.
+/// Unless `SERVERPOD_WEB_SERVER_FLUTTER_CACHE_CONTROL` is set, critical Flutter
+/// files (index.html, flutter_service_worker.js, flutter_bootstrap.js,
+/// manifest.json, version.json) are served with no-cache headers by default
+/// to prevent stale app manifests and service workers. All other files can be
+/// cached according to browser heuristics or custom cache control.
 ///
 /// To invalidate the cache, change the version in your pubspec.yaml file and
 /// build your Flutter project.
@@ -60,20 +64,44 @@ class FlutterRoute extends Route {
   ///
   /// The [host] parameter restricts this route to a specific virtual host
   /// (defaults to `null`, matching any host).
+  ///
+  /// An explicit [cacheControlFactory] takes precedence over the value of the
+  /// `SERVERPOD_WEB_SERVER_FLUTTER_CACHE_CONTROL` environment variable.
+  ///
+  /// If that environment variable is set and no [cacheControlFactory] is
+  /// provided, it is parsed at construction time. An invalid value throws a
+  /// [FormatException].
   FlutterRoute(
     this.directory, {
     File? indexFile,
-    this.cacheControlFactory = _defaultFlutterCacheControl,
+    CacheControlFactory? cacheControlFactory,
     this.cacheBustingConfig,
     super.host,
-  }) : indexFile = indexFile ?? File(path.join(directory.path, 'index.html')),
+  }) : cacheControlFactory =
+           cacheControlFactory ?? _cacheControlFromEnvironment(),
+       indexFile = indexFile ?? File(path.join(directory.path, 'index.html')),
        super(methods: {Method.get, Method.head});
+
+  /// Resolves cache control from the environment, or the Flutter defaults.
+  ///
+  /// Parses `SERVERPOD_WEB_SERVER_FLUTTER_CACHE_CONTROL` immediately so invalid
+  /// values fail at construction rather than on the first request.
+  static CacheControlFactory _cacheControlFromEnvironment() {
+    final cacheControl =
+        Platform.environment[_flutterCacheControlEnvironmentVariable];
+    if (cacheControl == null) {
+      return _defaultFlutterCacheControl;
+    }
+
+    final header = CacheControlHeader.parse([cacheControl]);
+    return (_, _) => header;
+  }
 
   /// Default cache control factory for Flutter web files.
   ///
   /// Returns no-cache headers for critical Flutter files to prevent issues
   /// with stale app manifests, service workers, or version mismatches.
-  /// All other files return null, allowing browser caching heuristics.
+  /// All other files are cached publicly for one day.
   static CacheControlHeader? _defaultFlutterCacheControl(
     Request request,
     FileInfo fileInfo,
