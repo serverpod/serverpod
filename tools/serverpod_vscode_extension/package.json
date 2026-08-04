@@ -18,7 +18,9 @@
   ],
   "activationEvents": [
     "onLanguage:yaml",
-    "onLanguage:serverpod"
+    "onLanguage:serverpod",
+    "onDebugResolve:dart",
+    "activationEvents:serverpod"
   ],
   "pricing": "Free",
   "homepage": "https://serverpod.dev",
@@ -73,7 +75,8 @@
     "build": "vsce package"
   },
   "dependencies": {
-    "vscode-languageclient": "^9.0.1"
+    "vscode-languageclient": "^9.0.1",
+    "yaml": "^2.9.0"
   },
   "devDependencies": {
     "@types/glob": "^9.0.0",

@@ -252,7 +252,8 @@ class FlutterAppManager {
 
     onEnsureAppTab(runtime.app);
 
-    final device = runtime.app.device ?? flutterDeviceWebServerWithBrowser;
+    final device =
+        runtime.app.device ?? ideDevice() ?? flutterDeviceWebServerWithBrowser;
 
     late final FlutterProcess process;
     process = FlutterProcess(
@@ -410,12 +411,48 @@ class FlutterAppManager {
   Future<void> dispose() async {
     await stopAll();
     await _runtimes.values.map((runtime) => runtime.proxy.close()).wait;
+    await File(
+      p.join(serverpodToolDir, ideDeviceInfoFile),
+    ).deleteIfExists();
   }
 
   _AppRuntime? _runtimeFor(String appId) => _runtimes[appId];
 
   String _infoFileFor(String appId) =>
       p.join(serverpodToolDir, 'flutter-vm-service-info-$appId.json');
+
+  /// The file where the serverpod VS Code extension writes the
+  /// IDE-selected Flutter device to, as `{"deviceId": "<id>"}`, inside
+  /// [serverpodToolDir].
+  ///
+  /// Scoped to one session: the extension writes it as it launches, and
+  /// [dispose] removes it when the session ends, so a later `serverpod start`
+  /// from a plain terminal is never silently retargeted by a device
+  /// picked in an IDE.
+  static const ideDeviceInfoFile = 'ide-flutter-device.json';
+
+  /// The device id selected in the IDE, or null when it does not apply.
+  ///
+  /// Only honored when exactly one app is configured - with several apps the
+  /// selection would ambiguously retarget all of them, so each app must pin
+  /// its own `device` in the pubspec instead. An explicit `device` on the
+  /// single app also wins over the IDE device info.
+  /// Read fresh on every spawn so a new IDE selection applies to the next
+  /// launch without restarting the session, and so a `device` added to the
+  /// server pubspec while running takes over through the config reload.
+  @visibleForTesting
+  String? ideDevice() {
+    if (_apps.length != 1) return null;
+    final file = File(p.join(serverpodToolDir, ideDeviceInfoFile));
+    try {
+      final decoded = jsonDecode(file.readAsStringSync());
+      final deviceId = decoded is Map ? decoded['deviceId'] : null;
+      if (deviceId is String && deviceId.isNotEmpty) return deviceId;
+    } catch (_) {
+      // Missing or malformed info file - fall back to the default device.
+    }
+    return null;
+  }
 
   void _setupDependencyTracker(String appId) {
     final runtime = _runtimeFor(appId);

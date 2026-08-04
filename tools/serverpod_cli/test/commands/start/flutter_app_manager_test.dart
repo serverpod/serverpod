@@ -5,6 +5,8 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/start/flutter_app_manager.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_log_event.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_process.dart'
+    show flutterDeviceWebServerWithBrowser;
 import 'package:serverpod_cli/src/commands/start/package_dependency_tracker.dart';
 import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:serverpod_shared/log.dart' show LogLevel;
@@ -54,12 +56,13 @@ class _AppSpec {
     this.id, {
     // `web-server` (no browser) so launches never spawn a real browser and
     // the VM-service connect waits without a timeout, as most manager tests
-    // expect. Pass a desktop device (e.g. `linux`) for non-web scenarios.
+    // expect. Pass a desktop device (e.g. `linux`) for non-web scenarios, or
+    // null to omit the `device` line from the app's pubspec entry.
     this.device = 'web-server',
   });
 
   final String id;
-  final String device;
+  final String? device;
 
   /// Directory (and package) name of the fabricated Flutter app.
   String get dirName => '${id.replaceAll('-', '_')}_flutter';
@@ -122,7 +125,9 @@ class _ManagerFixture {
     for (final spec in apps) {
       appEntries.writeln('    ${spec.id}:');
       appEntries.writeln('      path: ../${spec.dirName}');
-      appEntries.writeln('      device: ${spec.device}');
+      if (spec.device != null) {
+        appEntries.writeln('      device: ${spec.device}');
+      }
     }
     final serverPubspecFile = File(p.join(serverDir.path, 'pubspec.yaml'));
     serverPubspecFile.writeAsStringSync('''
@@ -200,6 +205,19 @@ dependencies:
     sdk: flutter
 ''');
     return dir;
+  }
+
+  void writeIdeDeviceInfo(String content) {
+    File(
+        p.join(
+          serverDir.path,
+          '.dart_tool',
+          'serverpod',
+          FlutterAppManager.ideDeviceInfoFile,
+        ),
+      )
+      ..createSync(recursive: true)
+      ..writeAsStringSync(content);
   }
 
   Future<void> dispose() async {
@@ -732,6 +750,154 @@ serverpod:
           expect(f.manager.dependencyTrackerFor('project'), isNotNull);
         },
       );
+    },
+  );
+
+  test(
+    'Given a FlutterAppManager with a single app configured without a device '
+    'and an IDE device info file, '
+    'when the app is launched, '
+    'then the IDE device info drives the spawn device',
+    () async {
+      final f = await _ManagerFixture.create(
+        apps: const [_AppSpec('project', device: null)],
+        shim: 'never_publishes_uri.dart',
+      );
+
+      addTearDown(() => f.dispose());
+
+      f.writeIdeDeviceInfo('{"deviceId": "linux"}');
+
+      expect(f.manager.ideDevice(), 'linux');
+
+      await f.manager.launch('project');
+      expect(f.manager.processFor('project')!.device, 'linux');
+    },
+  );
+
+  test(
+    'Given a FlutterAppManager with a single app configured with a device '
+    'and an IDE device info file, '
+    'when the app is launched, '
+    'then the configured device is used',
+    () async {
+      final f = await _ManagerFixture.create(
+        apps: const [_AppSpec('project', device: 'web-server')],
+        shim: 'never_publishes_uri.dart',
+      );
+
+      addTearDown(() => f.dispose());
+
+      f.writeIdeDeviceInfo('{"deviceId": "linux"}');
+
+      await f.manager.launch('project');
+      expect(f.manager.processFor('project')!.device, 'web-server');
+    },
+  );
+
+  test(
+    'Given a FlutterAppManager with a single app configured without a device '
+    'and an IDE device info file, '
+    'when a device is added to the pubspec while running, '
+    'then it takes over on the next launch',
+    () async {
+      final f = await _ManagerFixture.create(
+        apps: const [_AppSpec('project', device: null)],
+        shim: 'never_publishes_uri.dart',
+      );
+
+      addTearDown(() => f.dispose());
+
+      f.writeIdeDeviceInfo('{"deviceId": "linux"}');
+
+      await f.manager.launch('project');
+      expect(f.manager.processFor('project')!.device, 'linux');
+
+      f.serverPubspecFile.writeAsStringSync('''
+name: project_server
+serverpod:
+  flutter_apps:
+    project:
+      path: ../project_flutter
+      device: web-server
+''');
+      await f.manager.loadApps();
+      await f.manager.stop('project');
+      await f.manager.launch('project');
+
+      expect(f.manager.processFor('project')!.device, 'web-server');
+    },
+  );
+
+  test(
+    'Given a FlutterAppManager with multiple configured apps '
+    'and an IDE device info file, '
+    'when an app is launched, '
+    'then the IDE device info is ignored',
+    () async {
+      final f = await _ManagerFixture.create(
+        apps: const [
+          _AppSpec('web', device: null),
+          _AppSpec('admin', device: null),
+        ],
+        shim: 'never_publishes_uri.dart',
+      );
+
+      addTearDown(() => f.dispose());
+
+      f.writeIdeDeviceInfo('{"deviceId": "linux"}');
+
+      expect(f.manager.ideDevice(), isNull);
+
+      await f.manager.launch('web');
+      expect(
+        f.manager.processFor('web')!.device,
+        flutterDeviceWebServerWithBrowser,
+      );
+    },
+  );
+
+  test(
+    'Given a FlutterAppManager with a malformed IDE device info file, '
+    'when the IDE device is read, '
+    'then it returns null',
+    () async {
+      final f = await _ManagerFixture.create(
+        apps: const [_AppSpec('project', device: null)],
+      );
+
+      addTearDown(() => f.dispose());
+
+      f.writeIdeDeviceInfo('not json');
+
+      expect(f.manager.ideDevice(), isNull);
+    },
+  );
+
+  test(
+    'Given a FlutterAppManager with an IDE device info file, '
+    'when the manager is disposed, '
+    'then the IDE device info file is removed',
+    () async {
+      final f = await _ManagerFixture.create(
+        apps: const [_AppSpec('project', device: null)],
+      );
+
+      f.writeIdeDeviceInfo('{"deviceId": "linux"}');
+      final infoFile = File(
+        p.join(
+          f.serverDir.path,
+          '.dart_tool',
+          'serverpod',
+          FlutterAppManager.ideDeviceInfoFile,
+        ),
+      );
+      expect(infoFile.existsSync(), isTrue);
+
+      await f.manager.dispose();
+
+      expect(infoFile.existsSync(), isFalse);
+      expect(f.manager.ideDevice(), isNull);
     },
   );
 }
