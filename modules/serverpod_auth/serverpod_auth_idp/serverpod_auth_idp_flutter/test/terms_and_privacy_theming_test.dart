@@ -28,7 +28,7 @@ void main() {
         ),
       );
 
-      final texts = EmailSignInTexts.defaults;
+      const texts = EmailSignInTexts.defaults;
       expect(_textStyleOf(tester, texts.termsIntro)?.color, Colors.white);
       expect(_textStyleOf(tester, texts.andText)?.color, Colors.white);
     },
@@ -52,7 +52,7 @@ void main() {
         ),
       );
 
-      final texts = EmailSignInTexts.defaults;
+      const texts = EmailSignInTexts.defaults;
       final context = tester.element(find.byType(TermsAndPrivacyText));
       final bodySmallSize = Theme.of(context).textTheme.bodySmall?.fontSize;
       expect(bodySmallSize, isNotNull);
