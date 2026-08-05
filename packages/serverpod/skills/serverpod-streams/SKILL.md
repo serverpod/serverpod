@@ -89,7 +89,3 @@ class PixelDrawingEndpoint extends Endpoint {
   }
 }
 ```
-
-## Removed legacy pattern
-
-The older `streamOpened`/`handleStreamMessage`/`sendStreamMessage` pattern and `openStreamingConnection()` were removed in Serverpod 4.0. Use streaming methods (Stream as parameter/return type) instead.
