@@ -660,36 +660,17 @@ void main() {
               ),
         );
 
-        final serverOutput = StringBuffer();
-        final webServerStartedPattern = RegExp(
-          r'Webserver listening on http://app\.managed\.host:(\d+)',
+        final startedPod = await _startPodAndCaptureWebPort(
+          project: project,
+          host: 'app.managed.host',
         );
-        int? webPort;
-        startProjectProcess = await startProcessAndWaitForKeywords(
-          'dart',
-          ['bin/main.dart', '--mode=test'],
-          workingDirectory: project.serverDir,
-          keywords: ['Webserver listening on'],
-          onOutput: (output) {
-            serverOutput.write(output);
-            final match = webServerStartedPattern.firstMatch(
-              serverOutput.toString(),
-            );
-            if (match != null) webPort = int.parse(match.group(1)!);
-          },
-        );
-        expect(
-          webPort,
-          isNotNull,
-          reason: 'Could not determine the web server port.',
-        );
-        final capturedWebPort = webPort!;
+        startProjectProcess = startedPod.process;
 
         client = HttpClient()
           ..connectionFactory = (uri, proxyHost, proxyPort) async {
             return Socket.startConnect(
               InternetAddress.loopbackIPv4,
-              capturedWebPort,
+              startedPod.webPort,
             );
           };
       });
@@ -727,7 +708,8 @@ void main() {
 
   group(
     'Given a project is created with fullstack template and webapp and website enabled, '
-    'and the pod is running',
+    'and the pod is running, '
+    'and Flutter web app is not built',
     () {
       Process? startProjectProcess;
       late int webPort;
@@ -740,36 +722,13 @@ void main() {
         ),
       );
 
-      Future<void> startPod() async {
-        final serverOutput = StringBuffer();
-        final webServerStartedPattern = RegExp(
-          r'Webserver listening on http://localhost:(\d+)',
-        );
-        int? nextWebPort;
-        final process = await startProcessAndWaitForKeywords(
-          'dart',
-          ['bin/main.dart', '--mode=test'],
-          workingDirectory: project.serverDir,
-          keywords: ['Webserver listening on'],
-          onOutput: (output) {
-            serverOutput.write(output);
-            final match = webServerStartedPattern.firstMatch(
-              serverOutput.toString(),
-            );
-            if (match != null) nextWebPort = int.parse(match.group(1)!);
-          },
-        );
-        expect(
-          nextWebPort,
-          isNotNull,
-          reason: 'Could not determine the web server port.',
-        );
-        startProjectProcess = process;
-        webPort = nextWebPort!;
-      }
-
       setUpAll(() async {
-        await startPod();
+        final startedPod = await _startPodAndCaptureWebPort(
+          project: project,
+          host: 'localhost',
+        );
+        startProjectProcess = startedPod.process;
+        webPort = startedPod.webPort;
       });
 
       tearDownAll(() async {
@@ -814,49 +773,98 @@ void main() {
           );
         },
       );
-
-      group('Given the Flutter web app is built and the pod is restarted', () {
-        setUp(() async {
-          final runningProcess = startProjectProcess;
-          if (runningProcess != null) {
-            await stopProcess(runningProcess);
-            startProjectProcess = null;
-          }
-
-          final flutterBuildProcess = await startServerpodCli(
-            ['run', 'flutter_build'],
-            rootPath: rootPath,
-            workingDirectory: project.serverDir,
-            environment: {
-              'SERVERPOD_HOME': rootPath,
-            },
-          );
-          expect(await flutterBuildProcess.exitCode, 0);
-
-          await startPod();
-        });
-
-        test(
-          'when requesting the Flutter web app under /app, '
-          'then the web app is served successfully',
-          () async {
-            final response = await http.get(
-              Uri.parse('http://localhost:$webPort/app'),
-            );
-            expect(response.statusCode, equals(200));
-            expect(
-              response.body,
-              isNot(contains('<title>Flutter web app not built</title>')),
-            );
-            expect(
-              response.body,
-              contains(
-                '<meta name="description" content="A new Flutter project.">',
-              ),
-            );
-          },
-        );
-      });
     },
   );
+
+  group(
+    'Given a project is created with fullstack template and webapp and website enabled, '
+    'and the Flutter web app is built, '
+    'and the pod is running',
+    () {
+      Process? startProjectProcess;
+      late int webPort;
+
+      final project = setUpPerformCreateInTempDir(
+        context: TemplateContext(
+          template: ServerpodTemplateType.fullstack,
+          webapp: true,
+          website: true,
+        ),
+      );
+
+      setUpAll(() async {
+        final flutterBuildProcess = await startServerpodCli(
+          ['run', 'flutter_build'],
+          rootPath: rootPath,
+          workingDirectory: project.serverDir,
+          environment: {
+            'SERVERPOD_HOME': rootPath,
+          },
+        );
+        expect(await flutterBuildProcess.exitCode, 0);
+
+        final startedPod = await _startPodAndCaptureWebPort(
+          project: project,
+          host: 'localhost',
+        );
+        startProjectProcess = startedPod.process;
+        webPort = startedPod.webPort;
+      });
+
+      tearDownAll(() async {
+        final process = startProjectProcess;
+        if (process != null) await stopProcess(process);
+      });
+
+      test(
+        'when requesting the Flutter web app under /app, '
+        'then the web app is served successfully',
+        () async {
+          final response = await http.get(
+            Uri.parse('http://localhost:$webPort/app'),
+          );
+          expect(response.statusCode, equals(200));
+          expect(
+            response.body,
+            isNot(contains('<title>Flutter web app not built</title>')),
+          );
+          expect(
+            response.body,
+            contains(
+              '<meta name="description" content="A new Flutter project.">',
+            ),
+          );
+        },
+      );
+    },
+  );
+}
+
+Future<({Process process, int webPort})> _startPodAndCaptureWebPort({
+  required TempProject project,
+  required String host,
+}) async {
+  final serverOutput = StringBuffer();
+  final webServerStartedPattern = RegExp(
+    'Webserver listening on http://${RegExp.escape(host)}:(\\d+)',
+  );
+  int? webPort;
+  final process = await startProcessAndWaitForKeywords(
+    'dart',
+    ['bin/main.dart', '--mode=test'],
+    workingDirectory: project.serverDir,
+    keywords: ['Webserver listening on'],
+    onOutput: (output) {
+      serverOutput.write(output);
+      final match = webServerStartedPattern.firstMatch(serverOutput.toString());
+      if (match != null) webPort = int.parse(match.group(1)!);
+    },
+  );
+  expect(
+    webPort,
+    isNotNull,
+    reason: 'Could not determine the web server port.',
+  );
+
+  return (process: process, webPort: webPort!);
 }
