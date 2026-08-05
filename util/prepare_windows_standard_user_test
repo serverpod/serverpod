@@ -21,8 +21,11 @@ MSYS2_ARG_CONV_EXCL='*' net.exe user \
 
 runner_temp_msys="$(cygpath -u "$RUNNER_TEMP")"
 test_work_msys="$runner_temp_msys/standard-user-test"
-test_work_win="$(cygpath -m "$test_work_msys")"
-test_log_win="$(cygpath -m "$test_work_msys/output.log")"
+test_work_win="$(cygpath -w "$test_work_msys")"
+# This value is consumed by native cmd.exe (IF EXIST and TYPE), not by Git
+# Bash. Keep native backslashes here so reading the log does not depend on
+# CMD's inconsistent handling of forward slashes in file names.
+test_log_win="$(cygpath -w "$test_work_msys/output.log")"
 test_path_win="$(cygpath -mp "$PATH")"
 
 grant_test_user_write_access() {
@@ -70,8 +73,8 @@ fi
 # the tool and CI variables the test commands require; copying the complete
 # runner environment would also expose unrelated credentials.
 test_environment_commands="set \"PATH=$test_path_win\"
-set \"PUB_CACHE=$(cygpath -m "$PUB_CACHE")\"
-set \"RUNNER_TEMP=$(cygpath -m "$RUNNER_TEMP")\"
+set \"PUB_CACHE=$(cygpath -w "$PUB_CACHE")\"
+set \"RUNNER_TEMP=$(cygpath -w "$RUNNER_TEMP")\"
 set \"SHARD_INDEX=${SHARD_INDEX:-}\"
 set \"TOTAL_SHARDS=${TOTAL_SHARDS:-}\""
 
@@ -93,16 +96,23 @@ append_test_environment_variable() {
   test_environment_commands+=$'\n'"set \"$name=$value\""
 }
 
+append_test_path_environment_variable() {
+  local name="$1"
+  local value="${!name:-}"
+  [[ -n "$value" ]] || return 0
+  test_environment_commands+=$'\n'"set \"$name=$(cygpath -w "$value")\""
+}
+
 append_test_environment_variable CI
-append_test_environment_variable DART_HOME
-append_test_environment_variable FLUTTER_ROOT
 append_test_environment_variable GITHUB_ACTIONS
-append_test_environment_variable GITHUB_WORKSPACE
-append_test_environment_variable SERVERPOD_PG_CACHE_DIR
-append_test_environment_variable SERVERPOD_CLI_EXE
-append_test_environment_variable SERVERPOD_REAL_DART
-append_test_environment_variable SERVERPOD_RETRY_RUNNER
 append_test_environment_variable SERVERPOD_SILENCE_LIFECYCLE_MESSAGES
+append_test_path_environment_variable DART_HOME
+append_test_path_environment_variable FLUTTER_ROOT
+append_test_path_environment_variable GITHUB_WORKSPACE
+append_test_path_environment_variable SERVERPOD_PG_CACHE_DIR
+append_test_path_environment_variable SERVERPOD_CLI_EXE
+append_test_path_environment_variable SERVERPOD_REAL_DART
+append_test_path_environment_variable SERVERPOD_RETRY_RUNNER
 
 flutter_preflight_commands=''
 if [[ -n "${FLUTTER_ROOT:-}" ]]; then
