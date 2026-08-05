@@ -6,11 +6,11 @@ import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/analyzers.dart';
 import 'package:serverpod_shared/process_io.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
 import '../../test_util/builders/generator_config_builder.dart';
 import '../../test_util/endpoint_validation_helpers.dart';
+import '../../test_util/file_system_entity_helpers.dart';
 
 Future<(Directory, Directory)> _buildProject() async {
   final projectDir = Directory.systemTemp.createTempSync('cli_test_');
@@ -31,7 +31,7 @@ void main() {
       late GeneratorConfig config;
       late Analyzers analyzers;
 
-      tearDownAll(() => projectDir.deleteIfExists(recursive: true));
+      tearDownAll(() => projectDir.deleteBestEffort(recursive: true));
 
       setUpAll(() async {
         (projectDir, generatedDir) = await _buildProject();
@@ -83,7 +83,7 @@ class MyFutureCall extends FutureCall {
         () {
           late GenerateResult result;
 
-          tearDown(() => generatedDir.deleteIfExists(recursive: true));
+          tearDown(() => generatedDir.deleteBestEffort(recursive: true));
           setUp(() async {
             result = await analyzers.performGenerate(
               config: config,
@@ -123,7 +123,7 @@ class MyFutureCall extends FutureCall {
       late GeneratorConfig config;
       late Analyzers analyzers;
 
-      tearDownAll(() => projectDir.deleteIfExists(recursive: true));
+      tearDownAll(() => projectDir.deleteBestEffort(recursive: true));
 
       setUpAll(() async {
         (projectDir, generatedDir) = await _buildProject();
@@ -197,7 +197,7 @@ class GreetingEndpoint extends Endpoint {
       group('when generating', () {
         late GenerateResult result;
 
-        tearDown(() => generatedDir.deleteIfExists(recursive: true));
+        tearDown(() => generatedDir.deleteBestEffort(recursive: true));
         setUp(() async {
           result = await analyzers.performGenerate(
             config: config,
@@ -232,10 +232,10 @@ class GreetingEndpoint extends Endpoint {
     late GeneratorConfig config;
     late Analyzers analyzers;
 
-    tearDownAll(() => projectDir.deleteIfExists(recursive: true));
-    tearDown(() {
-      generatedDir.deleteIfExists(recursive: true);
-      generatedClientDir.deleteIfExists(recursive: true);
+    tearDownAll(() => projectDir.deleteBestEffort(recursive: true));
+    tearDown(() async {
+      await generatedDir.deleteBestEffort(recursive: true);
+      await generatedClientDir.deleteBestEffort(recursive: true);
     });
 
     setUpAll(() async {
@@ -368,11 +368,11 @@ class ClientItemEndpoint extends Endpoint {
       late GeneratorConfig config;
       late Analyzers analyzers;
 
-      tearDownAll(() => projectDir.deleteIfExists(recursive: true));
-      tearDown(() {
-        generatedDir.deleteIfExists(recursive: true);
-        generatedClientDir.deleteIfExists(recursive: true);
-        generatedClientMigrationsDir.deleteIfExists(recursive: true);
+      tearDownAll(() => projectDir.deleteBestEffort(recursive: true));
+      tearDown(() async {
+        await generatedDir.deleteBestEffort(recursive: true);
+        await generatedClientDir.deleteBestEffort(recursive: true);
+        await generatedClientMigrationsDir.deleteBestEffort(recursive: true);
       });
 
       setUpAll(() async {
@@ -525,8 +525,8 @@ abstract class Item
       late GeneratorConfig config;
       late Analyzers analyzers;
 
-      tearDownAll(() => projectDir.deleteIfExists(recursive: true));
-      tearDown(() => generatedDir.deleteIfExists(recursive: true));
+      tearDownAll(() => projectDir.deleteBestEffort(recursive: true));
+      tearDown(() => generatedDir.deleteBestEffort(recursive: true));
 
       setUpAll(() async {
         (projectDir, generatedDir) = await _buildProject();
@@ -601,7 +601,7 @@ values:
       late Analyzers analyzers;
       late String modelPath;
 
-      tearDownAll(() => projectDir.deleteIfExists(recursive: true));
+      tearDownAll(() => projectDir.deleteBestEffort(recursive: true));
 
       setUpAll(() async {
         (projectDir, _) = await _buildProject();
@@ -665,7 +665,7 @@ fields:
       late GeneratorConfig config;
       late Analyzers analyzers;
 
-      tearDownAll(() => projectDir.deleteIfExists(recursive: true));
+      tearDownAll(() => projectDir.deleteBestEffort(recursive: true));
 
       setUpAll(() async {
         (projectDir, _) = await _buildProject();
@@ -724,8 +724,8 @@ class ${package == 'test_server' ? 'Server' : 'Client'}SharedModelEndpoint exten
       late GeneratorConfig config;
       late Analyzers analyzers;
 
-      tearDownAll(() => projectDir.deleteIfExists(recursive: true));
-      tearDown(() => generatedSharedDir.deleteIfExists(recursive: true));
+      tearDownAll(() => projectDir.deleteBestEffort(recursive: true));
+      tearDown(() => generatedSharedDir.deleteBestEffort(recursive: true));
 
       setUpAll(() async {
         (projectDir, _) = await _buildProject();
