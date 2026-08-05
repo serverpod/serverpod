@@ -682,7 +682,7 @@ void main() {
         client = HttpClient()
           ..connectionFactory = (uri, proxyHost, proxyPort) async {
             return Socket.startConnect(
-              InternetAddress.loopbackIPv6,
+              InternetAddress.loopbackIPv4,
               capturedWebPort,
             );
           };
