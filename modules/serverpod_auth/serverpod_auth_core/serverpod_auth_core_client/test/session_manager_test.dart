@@ -222,7 +222,72 @@ void main() {
         );
       },
     );
+
+    test(
+      'when a user signs in from anonymous '
+      'then modern method streaming connections are closed.',
+      () async {
+        await sessionManager.updateSignedInUser(
+          _authSuccess(authStrategy: AuthStrategy.session.name, token: ''),
+        );
+
+        expect(client.closeStreamingMethodConnectionsCallCount, 1);
+      },
+    );
+
+    test(
+      'when the signed-in user signs out '
+      'then modern method streaming connections are closed.',
+      () async {
+        await sessionManager.updateSignedInUser(
+          _authSuccess(authStrategy: AuthStrategy.session.name, token: ''),
+        );
+        client.closeStreamingMethodConnectionsCallCount = 0;
+
+        await sessionManager.updateSignedInUser(null);
+
+        expect(client.closeStreamingMethodConnectionsCallCount, 1);
+      },
+    );
+
+    test(
+      'when a JWT refresh rotates tokens for the same user '
+      'then streaming connections are left open.',
+      () async {
+        await sessionManager.updateSignedInUser(
+          _authSuccess(authStrategy: AuthStrategy.jwt.name, token: 'access'),
+        );
+        client.closeStreamingMethodConnectionsCallCount = 0;
+
+        await sessionManager.updateSignedInUser(
+          _authSuccess(authStrategy: AuthStrategy.jwt.name, token: 'rotated'),
+        );
+
+        expect(client.closeStreamingMethodConnectionsCallCount, 0);
+      },
+    );
   });
+
+  test(
+    'Given a header-mode ClientAuthSessionManager '
+    'when the signed-in identity changes '
+    'then streaming connections are left open.',
+    () async {
+      final client = _TestServerpodClient(
+        requestDelegate: _CookieRequestDelegate(),
+      );
+      final sessionManager = ClientAuthSessionManager(
+        caller: Caller(client),
+        storage: InMemoryClientAuthSuccessStorage(),
+      );
+
+      await sessionManager.updateSignedInUser(
+        _authSuccess(authStrategy: AuthStrategy.session.name, token: 'token'),
+      );
+
+      expect(client.closeStreamingMethodConnectionsCallCount, 0);
+    },
+  );
 
   group('Given a JWT auth key provider in cookie mode', () {
     late AuthSuccess? authInfo;

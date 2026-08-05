@@ -166,8 +166,19 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
     final persistedAuthInfo = _usesCookieAuth && authInfo != null
         ? _validateAndSanitizeCookieAuthInfo(authInfo)
         : authInfo;
+    final identityChanged =
+        _authInfo?.authUserId != authInfo?.authUserId ||
+        _authInfo?.authStrategy != authInfo?.authStrategy;
     await storage.set(persistedAuthInfo);
     _authInfo = authInfo;
+    if (_usesCookieAuth && identityChanged) {
+      // The method-stream WebSocket authenticates from the cookie captured at
+      // handshake time, so a socket from before the identity change would
+      // keep the old identity. Closing it makes the next stream reconnect
+      // with a fresh handshake; a same-identity update (e.g. a JWT token
+      // rotation) keeps streams running.
+      await _caller?.client.closeStreamingMethodConnections(exception: null);
+    }
     onAuthInfoChanged?.call(_authInfo);
   }
 
