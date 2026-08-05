@@ -9,16 +9,9 @@ void main() {
     late Client secondaryClient;
 
     setUp(() async {
-      primaryClient = Client(
-        serverUrl,
-        // ignore: deprecated_member_use
-        authenticationKeyManager: TestAuthKeyManager(),
-      );
-      secondaryClient = Client(
-        serverUrl,
-        // ignore: deprecated_member_use
-        authenticationKeyManager: TestAuthKeyManager(),
-      );
+      primaryClient = Client(serverUrl)..authKeyProvider = TestAuthKeyManager();
+      secondaryClient = Client(serverUrl)
+        ..authKeyProvider = TestAuthKeyManager();
 
       await _authenticateClient(primaryClient);
       await _authenticateClient(secondaryClient);
@@ -94,8 +87,7 @@ Future<void> _authenticateClient(Client client) async {
     'password',
   );
   expect(response.success, isTrue, reason: 'Authentication failed for client');
-  // ignore: deprecated_member_use
-  await client.authenticationKeyManager?.put(
+  await (client.authKeyProvider as TestAuthKeyManager).put(
     '${response.keyId}:${response.key}',
   );
 }

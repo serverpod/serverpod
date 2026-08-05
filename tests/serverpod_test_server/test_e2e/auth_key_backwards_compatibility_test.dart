@@ -12,15 +12,13 @@ void main() {
     'Given a simulated legacy client with old authorization conventions, ',
     () {
       late Client client;
+      late TestAuthKeyManager authKeyProvider;
       late String authKey;
 
       setUpAll(() async {
         // prepare a proper authentication key
-        client = Client(
-          serverUrl,
-          // ignore: deprecated_member_use
-          authenticationKeyManager: TestAuthKeyManager(),
-        );
+        authKeyProvider = TestAuthKeyManager();
+        client = Client(serverUrl)..authKeyProvider = authKeyProvider;
         var response = await client.authentication.authenticate(
           'test@foo.bar',
           'password',
@@ -30,8 +28,7 @@ void main() {
       });
 
       tearDownAll(() async {
-        // ignore: deprecated_member_use
-        await client.authenticationKeyManager?.remove();
+        await authKeyProvider.remove();
         await client.authentication.removeAllUsers();
         await client.authentication.signOut();
         assert(

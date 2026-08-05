@@ -32,15 +32,12 @@ class SessionManager with ChangeNotifier {
     Storage? storage,
   }) : _storage = storage ?? SharedPreferenceStorage() {
     _instance = this;
+    final authKeyProvider = caller.client.authKeyProvider;
     assert(
-      // ignore: deprecated_member_use
-      caller.client.authenticationKeyManager != null,
-      'The client needs an associated key manager',
+      authKeyProvider is FlutterAuthenticationKeyManager,
+      'The client needs a FlutterAuthenticationKeyManager auth key provider',
     );
-    keyManager =
-        // ignore: deprecated_member_use
-        caller.client.authenticationKeyManager!
-            as FlutterAuthenticationKeyManager;
+    keyManager = authKeyProvider as FlutterAuthenticationKeyManager;
   }
 
   /// Returns a singleton instance of the session manager

@@ -4,11 +4,8 @@ import 'package:serverpod_test_server/test_util/test_key_manager.dart';
 import 'package:test/test.dart';
 
 void main() {
-  var client = Client(
-    serverUrl,
-    // ignore: deprecated_member_use
-    authenticationKeyManager: TestAuthKeyManager(),
-  );
+  var authKeyProvider = TestAuthKeyManager();
+  var client = Client(serverUrl)..authKeyProvider = authKeyProvider;
   // ".bar" is the only valid top level domain for test email addresses
   const email = 'test@serverpod.bar';
   const password = 'password';
@@ -155,8 +152,7 @@ void main() {
         );
         assert(authResponse.success, 'Failed to authenticate user');
         assert(authResponse.key != null, 'Failed to retrieve auth key');
-        // ignore: deprecated_member_use
-        await client.authenticationKeyManager?.put(
+        await authKeyProvider.put(
           '${authResponse.keyId}:${authResponse.key}',
         );
 
@@ -167,8 +163,7 @@ void main() {
       },
     );
 
-    // ignore: deprecated_member_use
-    tearDown(() async => await client.authenticationKeyManager?.remove());
+    tearDown(() async => await authKeyProvider.remove());
 
     test(
       'when changing password then user can authenticate with new password',
