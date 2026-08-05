@@ -154,18 +154,41 @@ class LibraryGenerator {
               ? const Code('Protocol._().._registerHostProtocols()')
               : const Code('Protocol._()'),
       ),
-      if (shouldExtendDatabaseSerializationManager)
+      if (_supportsHostProtocols)
         Field(
           (f) => f
+            ..name = '_hostProtocols'
+            ..type = TypeReference(
+              (t) => t
+                ..symbol = 'Set'
+                ..types.add(
+                  refer('SerializationManager', serverpodUrl(serverCode)),
+                ),
+            )
+            ..modifier = FieldModifier.final$
+            ..assignment = literalSet({}).code,
+        ),
+    ]);
+
+    final allFieldsToGenerateSerialization = unsealedModels
+        .whereType<ModelClassDefinition>()
+        .expand((m) => m.fields)
+        .where((f) => f.shouldIncludeField(serverCode))
+        .distinct();
+
+    protocol.methods.addAll([
+      if (shouldExtendDatabaseSerializationManager)
+        Method(
+          (m) => m
             ..name = 'targetTableDefinitions'
             ..static = true
-            ..modifier = FieldModifier.final$
-            ..type = TypeReference(
+            ..type = MethodType.getter
+            ..returns = TypeReference(
               (t) => t
                 ..symbol = 'List'
                 ..types.add(_tableDefinitionReference(serverCode)),
             )
-            ..assignment =
+            ..body =
                 createDatabaseDefinitionFromModels(
                   allModels,
                   config.name,
@@ -211,29 +234,6 @@ class LibraryGenerator {
                         ],
                 ),
         ),
-      if (_supportsHostProtocols)
-        Field(
-          (f) => f
-            ..name = '_hostProtocols'
-            ..type = TypeReference(
-              (t) => t
-                ..symbol = 'Set'
-                ..types.add(
-                  refer('SerializationManager', serverpodUrl(serverCode)),
-                ),
-            )
-            ..modifier = FieldModifier.final$
-            ..assignment = literalSet({}).code,
-        ),
-    ]);
-
-    final allFieldsToGenerateSerialization = unsealedModels
-        .whereType<ModelClassDefinition>()
-        .expand((m) => m.fields)
-        .where((f) => f.shouldIncludeField(serverCode))
-        .distinct();
-
-    protocol.methods.addAll([
       if (_supportsHostProtocols) ..._buildModuleHostProtocolMethods(),
       Method(
         (m) => m
