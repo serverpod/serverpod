@@ -81,12 +81,11 @@ restore access after reload.
   carries the `x-serverpod-auth-mode: cookie` marker and whose `Origin` (if
   present) is allow-listed; otherwise the ambient cookie is ignored. The `?auth=`
   query fallback was removed in Phase 0.
-- WS: every handshake is `Origin`-checked against `allowedOrigins`. The modern
+- WS: every handshake is `Origin`-checked against `allowedOrigins`. The
   `/v1/websocket` handler (`method_websocket_request_handler.dart`) accepts the
   in-band `OpenMethodStreamCommand.authentication` and falls back to the
-  handshake auth cookie. The legacy `/websocket` handler
-  (`endpoint_websocket_request_handler.dart`) authenticates in-band via the
-  `auth` control message only (no cookie read).
+  handshake auth cookie only when the open command's `authMode` permits it.
+  (The legacy `/websocket` handler was removed in Serverpod 4.0.)
 
 ### Token issuance
 
@@ -267,23 +266,22 @@ requirements.
 
 Standalone breaking change, independent of the relic cookie release.
 
-- Streaming clients authenticate in-band via the `auth` control message instead
-  of `?auth=` (`serverpod_client_shared.dart`).
-- The server no longer reads `auth` from the URL: streaming session
-  (`session.dart`) and HTTP query fallback (`server.dart`).
-- The legacy streaming handler opens endpoint streams on the `auth` control
-  message, which the client sends as its first frame (with a null key when
-  anonymous); a ping does not open them, and an endpoint message before the
-  handshake opens them anonymously as a fallback. This lets `streamOpened`
-  observe the settled auth state (`endpoint_websocket_request_handler.dart`).
+- Streaming clients authenticate in-band via
+  `OpenMethodStreamCommand.authentication`; the connection URL carries no
+  credentials.
+- The server no longer reads `auth` from the URL (HTTP query fallback in
+  `server.dart`). The legacy streaming API, which Phase 0 originally reworked
+  to an in-band `auth` handshake, was removed entirely in Serverpod 4.0.
 - `allowedOrigins` config (YAML list, comma-separated string, or
   `SERVERPOD_ALLOWED_ORIGINS`). When set, browser WS handshakes with a
   disallowed `Origin` get 403; requests without an `Origin` (native /
   server-to-server) are allowed.
 
-Breaking: `?auth=` is no longer accepted; `streamOpened` for the legacy streaming
-API fires on the `auth` handshake (or the first endpoint message) rather than at
-connect.
+Breaking: `?auth=` is no longer accepted. This ships as a documented breaking
+change in Serverpod 4.0 (which also removed the legacy streaming API entirely)
+rather than behind a compatibility flag; older clients that authenticated via
+the query parameter must upgrade. Client tests assert that no credentials
+appear in connection URLs and that streaming auth travels in-band.
 
 ### Phase 1: httpOnly-cookie session (opaque / SAS strategy) (implemented)
 
