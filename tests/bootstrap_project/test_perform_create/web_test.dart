@@ -625,7 +625,13 @@ void main() {
         final testConfig = File(
           p.join(project.serverDir, 'config', 'test.yaml'),
         );
-        final config = await testConfig.readAsString();
+        // Templates checked out on Windows use CRLF. Normalize before matching
+        // the multiline YAML blocks below so the replacements work on every
+        // platform.
+        final config = (await testConfig.readAsString()).replaceAll(
+          '\r\n',
+          '\n',
+        );
         await testConfig.writeAsString(
           config
               .replaceFirst(

@@ -42,7 +42,10 @@ class TempProject {
 /// Returns the [TempProject] whose paths the tests assert against.
 TempProject setUpPerformCreateInTempDir({required TemplateContext context}) {
   final project = TempProject(
-    'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}',
+    // The project name occurs twice in generated Flutter paths. Keep it short
+    // enough for nested tool-generated paths to stay below Windows' legacy
+    // MAX_PATH limit (for example, Flutter's generated Swift package path).
+    'tmp_${const Uuid().v4().replaceAll('-', '').substring(0, 12)}',
   );
   setUpAll(() async {
     setupForPerformCreateTest();
