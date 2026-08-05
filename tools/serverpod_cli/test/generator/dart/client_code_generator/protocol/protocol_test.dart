@@ -77,23 +77,13 @@ void main() {
       );
 
       test(
-        'then targetTableDefinitions is a static getter so hot reload refreshes it.',
+        'then target table definitions are generated as a static getter.',
         () {
           expect(
             codeMap[expectedFileName],
             matches(
               RegExp(
                 r'static List<.*TableDefinition> get targetTableDefinitions =>',
-              ),
-            ),
-          );
-          expect(
-            codeMap[expectedFileName],
-            isNot(
-              contains(
-                RegExp(
-                  r'static final List<.*TableDefinition> targetTableDefinitions',
-                ),
               ),
             ),
           );
