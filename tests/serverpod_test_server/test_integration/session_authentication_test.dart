@@ -46,11 +46,7 @@ void main() {
 
         setUp(() {
           final authKeyManager = TestAuthKeyManager();
-          client = Client(
-            server.apiUrl,
-            // ignore: deprecated_member_use
-            authenticationKeyManager: authKeyManager,
-          );
+          client = Client(server.apiUrl)..authKeyProvider = authKeyManager;
           authKeyManager.put(validTestToken);
         });
 
@@ -97,11 +93,7 @@ void main() {
 
         setUp(() {
           final authKeyManager = TestAuthKeyManager();
-          client = Client(
-            server.apiUrl,
-            // ignore: deprecated_member_use
-            authenticationKeyManager: authKeyManager,
-          );
+          client = Client(server.apiUrl)..authKeyProvider = authKeyManager;
           authKeyManager.put(invalidTestToken);
         });
 
@@ -142,11 +134,7 @@ void main() {
 
         setUp(() {
           final authKeyManager = TestAuthKeyManager();
-          client = Client(
-            server.apiUrl,
-            // ignore: deprecated_member_use
-            authenticationKeyManager: authKeyManager,
-          );
+          client = Client(server.apiUrl)..authKeyProvider = authKeyManager;
           authKeyManager.put(validTestToken);
         });
 
@@ -184,11 +172,7 @@ void main() {
 
         setUp(() {
           final authKeyManager = TestAuthKeyManager();
-          client = Client(
-            server.apiUrl,
-            // ignore: deprecated_member_use
-            authenticationKeyManager: authKeyManager,
-          );
+          client = Client(server.apiUrl)..authKeyProvider = authKeyManager;
           authKeyManager.put(invalidTestToken);
         });
 

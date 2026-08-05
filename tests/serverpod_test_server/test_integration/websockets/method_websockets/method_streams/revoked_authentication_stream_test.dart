@@ -34,11 +34,7 @@ void main() {
     session = await server.createSession();
 
     authKeyManager = TestAuthKeyManager();
-    client = c.Client(
-      server.apiUrl,
-      // ignore: deprecated_member_use
-      authenticationKeyManager: authKeyManager,
-    );
+    client = c.Client(server.apiUrl)..authKeyProvider = authKeyManager;
     expect(
       server.redisController,
       isNotNull,

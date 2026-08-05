@@ -1277,20 +1277,6 @@ return deserializeByClassName(value);
                     ),
                     Parameter(
                       (p) => p
-                        ..annotations.add(
-                          refer('Deprecated', 'dart:core').call([
-                            literalString(
-                              'Use authKeyProvider instead. '
-                              'This will be removed in future releases.',
-                            ),
-                          ]),
-                        )
-                        ..name = 'authenticationKeyManager'
-                        ..named = true
-                        ..toSuper = true,
-                    ),
-                    Parameter(
-                      (p) => p
                         ..name = 'streamingConnectionTimeout'
                         ..named = true
                         ..type = TypeReference(

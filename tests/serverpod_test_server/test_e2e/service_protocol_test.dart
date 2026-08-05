@@ -7,14 +7,11 @@ import 'package:test/test.dart';
 
 void main() {
   var client = Client(serverUrl);
-  var serviceClient = service.Client(
-    serviceServerUrl,
-    // ignore: deprecated_member_use
-    authenticationKeyManager: TestServiceKeyManager(
+  var serviceClient = service.Client(serviceServerUrl)
+    ..authKeyProvider = TestServiceKeyManager(
       '0',
       'super_SECRET_password',
-    ),
-  );
+    );
 
   group('Health metrics', () {
     test('Fetch health metrics', () async {
