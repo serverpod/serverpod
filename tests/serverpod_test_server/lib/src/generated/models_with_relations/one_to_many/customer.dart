@@ -258,10 +258,6 @@ class CustomerRepository {
 
   final attachRow = const CustomerAttachRowRepository._();
 
-  final detach = const CustomerDetachRepository._();
-
-  final detachRow = const CustomerDetachRowRepository._();
-
   /// Returns a list of [Customer]s matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
@@ -706,58 +702,6 @@ class CustomerAttachRowRepository {
     }
 
     var $order = order.copyWith(customerId: customer.id);
-    await session.db.updateRow<_i2.Order>(
-      $order,
-      columns: [_i2.Order.t.customerId],
-      transaction: transaction,
-    );
-  }
-}
-
-class CustomerDetachRepository {
-  const CustomerDetachRepository._();
-
-  /// Detaches the relation between this [Customer] and the given [Order]
-  /// by setting the [Order]'s foreign key `customerId` to `null`.
-  ///
-  /// This removes the association between the two models without deleting
-  /// the related record.
-  Future<void> orders(
-    _i1.DatabaseSession session,
-    List<_i2.Order> order, {
-    _i1.Transaction? transaction,
-  }) async {
-    if (order.any((e) => e.id == null)) {
-      throw ArgumentError.notNull('order.id');
-    }
-
-    var $order = order.map((e) => e.copyWith(customerId: null)).toList();
-    await session.db.update<_i2.Order>(
-      $order,
-      columns: [_i2.Order.t.customerId],
-      transaction: transaction,
-    );
-  }
-}
-
-class CustomerDetachRowRepository {
-  const CustomerDetachRowRepository._();
-
-  /// Detaches the relation between this [Customer] and the given [Order]
-  /// by setting the [Order]'s foreign key `customerId` to `null`.
-  ///
-  /// This removes the association between the two models without deleting
-  /// the related record.
-  Future<void> orders(
-    _i1.DatabaseSession session,
-    _i2.Order order, {
-    _i1.Transaction? transaction,
-  }) async {
-    if (order.id == null) {
-      throw ArgumentError.notNull('order.id');
-    }
-
-    var $order = order.copyWith(customerId: null);
     await session.db.updateRow<_i2.Order>(
       $order,
       columns: [_i2.Order.t.customerId],
