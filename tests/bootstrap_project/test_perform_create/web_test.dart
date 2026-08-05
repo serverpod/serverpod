@@ -716,9 +716,6 @@ void main() {
         },
       );
     },
-    skip: Platform.isWindows
-        ? 'Windows does not support postgres in github actions'
-        : null,
   );
 
   group(
@@ -738,7 +735,7 @@ void main() {
       setUpAll(() async {
         startProjectProcess = await startProcessAndWaitForKeywords(
           'dart',
-          ['bin/main.dart', '--apply-migrations'],
+          ['bin/main.dart'],
           workingDirectory: project.serverDir,
           keywords: ['Webserver listening on'],
         );
@@ -799,7 +796,7 @@ void main() {
           startProjectProcess.kill();
           startProjectProcess = await startProcessAndWaitForKeywords(
             'dart',
-            ['bin/main.dart', '--apply-migrations'],
+            ['bin/main.dart'],
             workingDirectory: project.serverDir,
             keywords: ['Webserver listening on'],
           );
@@ -827,8 +824,5 @@ void main() {
         );
       });
     },
-    skip: Platform.isWindows
-        ? 'Windows does not support postgres in github actions'
-        : null,
   );
 }
