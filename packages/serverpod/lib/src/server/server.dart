@@ -545,24 +545,27 @@ class Server implements RouterInjectable {
     );
     authenticationKey = unwrapAuthHeaderValue(authenticationHeaderValue);
 
-    // Fall back to the web auth cookie for requests that opted into cookie mode
-    // via the marker header (layer 3 CSRF defense). A cross-site form or simple
-    // request cannot set this custom header without a CORS preflight, which
-    // fails for non-allow-listed origins.
-    if (authenticationKey == null &&
-        serverpod.config.authCookie != null &&
-        request.headers[webAuthModeHeaderName]?.firstOrNull ==
-            webAuthModeCookie) {
-      // Reject a cookie-mode request whose `Origin` is present but not in the
-      // allow-list (Layer 2 CSRF defense).
+    // The marker header is layer 3 of the CSRF defense: a cross-site form or
+    // simple request cannot set a custom header without a CORS preflight,
+    // which fails for non-allow-listed origins.
+    final webAuthMode = request.headers[webAuthModeHeaderName]?.firstOrNull;
+    if (serverpod.config.authCookie != null &&
+        (webAuthMode == webAuthModeCookie ||
+            webAuthMode == webAuthModeCookieTransport)) {
+      // Layer 2: reject a present-but-not-allow-listed `Origin`, including on
+      // cookie-issuing unauthenticated calls such as sign-in.
       if (_isOriginDisallowed(request)) {
         return Response.forbidden(
           body: Body.fromString('Request origin not allowed.'),
         );
       }
-      authenticationKey = request.getAuthCookieValue(
-        serverpod.config.authCookie,
-      );
+      // Only the strict cookie mode may authenticate from the main auth
+      // cookie; a transport-only request stays anonymous.
+      if (authenticationKey == null && webAuthMode == webAuthModeCookie) {
+        authenticationKey = request.getAuthCookieValue(
+          serverpod.config.authCookie,
+        );
+      }
     }
 
     MethodCallSession? maybeSession;

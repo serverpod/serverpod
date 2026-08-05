@@ -84,7 +84,7 @@ void main() {
 
     test(
       'when an unauthenticated call is made '
-      'then the marker is still sent without an Authorization header.',
+      'then the transport-only marker is sent without an Authorization header.',
       () async {
         client = TestServerpodClient(
           host: httpHost,
@@ -100,7 +100,7 @@ void main() {
         );
 
         expect(requestCount, 1);
-        expect(receivedAuthModeMarkers, [webAuthModeCookie]);
+        expect(receivedAuthModeMarkers, [webAuthModeCookieTransport]);
         expect(receivedAuthHeaders, [null]);
       },
     );
@@ -173,14 +173,14 @@ class _CookieCapableRequestDelegate extends ServerpodClientRequestDelegate {
     Uri url, {
     required String body,
     String? authenticationValue,
+    bool authenticated = true,
   }) async {
     final response = await _httpClient.post(
       url,
       body: body,
       headers: {
         'authorization': ?authenticationValue,
-        if (cookieAuth) webAuthModeHeaderName: webAuthModeCookie,
-        if (cookieAuth) webBasePathHeaderName: cookieAuthBasePath,
+        ...webAuthHeaders(authenticated: authenticated),
       },
     );
 

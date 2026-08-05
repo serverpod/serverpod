@@ -55,6 +55,7 @@ class ServerpodClientRequestDelegateImpl
     Uri url, {
     required String body,
     String? authenticationValue,
+    bool authenticated = true,
   }) async {
     try {
       final response = await _httpClient

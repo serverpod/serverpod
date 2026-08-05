@@ -548,6 +548,7 @@ class _CookieRequestDelegate extends ServerpodClientRequestDelegate {
     Uri url, {
     required String body,
     String? authenticationValue,
+    bool authenticated = true,
   }) {
     throw UnimplementedError();
   }

@@ -154,6 +154,7 @@ final class ClientMethodStreamManager {
       args: connectionDetails.args,
       inputStreams: parameterStreams,
       authentication: await connectionDetails.authKeyProvider?.authHeaderValue,
+      authMode: connectionDetails.webAuthMode,
     );
 
     _addMessageToWebSocket(openCommand);

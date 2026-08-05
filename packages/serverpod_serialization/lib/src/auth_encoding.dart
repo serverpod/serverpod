@@ -18,6 +18,12 @@ const webAuthModeHeaderName = 'x-serverpod-auth-mode';
 /// The [webAuthModeHeaderName] value that selects cookie-based web auth.
 const webAuthModeCookie = 'cookie';
 
+/// The [webAuthModeHeaderName] value for cookie transport without
+/// authentication: cookies are still carried and may be set (sign-in, JWT
+/// refresh), but the main auth cookie must not authenticate the call. Sent by
+/// cookie-mode clients for `@unauthenticatedClientCall` methods.
+const webAuthModeCookieTransport = 'cookie-transport';
+
 /// The request header a cookie-mode web client sets to declare the
 /// browser-visible base path of the server: the path component of the client's
 /// `host`, e.g. `/api` behind a prefix-stripping reverse proxy, or `/`.

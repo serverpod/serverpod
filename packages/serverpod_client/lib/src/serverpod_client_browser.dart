@@ -45,6 +45,7 @@ class ServerpodClientRequestDelegateImpl
     Uri url, {
     required String body,
     String? authenticationValue,
+    bool authenticated = true,
   }) async {
     try {
       var response = await _httpClient
@@ -53,8 +54,7 @@ class ServerpodClientRequestDelegateImpl
             body: body,
             headers: {
               'authorization': ?authenticationValue,
-              if (cookieAuth) webAuthModeHeaderName: webAuthModeCookie,
-              if (cookieAuth) webBasePathHeaderName: cookieAuthBasePath,
+              ...webAuthHeaders(authenticated: authenticated),
             },
           )
           .timeout(connectionTimeout);

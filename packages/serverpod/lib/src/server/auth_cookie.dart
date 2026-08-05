@@ -2,7 +2,11 @@ import 'package:relic/relic.dart';
 import 'package:serverpod/src/server/session.dart';
 import 'package:serverpod/src/util/request_extension.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart'
-    show webAuthModeHeaderName, webAuthModeCookie, webBasePathHeaderName;
+    show
+        webAuthModeHeaderName,
+        webAuthModeCookie,
+        webAuthModeCookieTransport,
+        webBasePathHeaderName;
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// A declared base path: absolute, no `;` (cookie-attribute delimiter), no
@@ -12,17 +16,22 @@ final _basePathRegExp = RegExp(r'^/[^;\s\x00-\x1f\x7f]{0,255}$');
 /// Web-auth-cookie helpers on [Session]: decides whether a request wants
 /// cookie-based web auth and writes/clears the auth cookie accordingly.
 extension WebAuthCookieSession on Session {
-  /// Whether the request asked for cookie-based web auth (via the
-  /// [webAuthModeHeaderName] header) and the server has a
+  /// Whether the request participates in cookie-based web auth transport (via
+  /// the [webAuthModeHeaderName] header) and the server has a
   /// [ServerpodConfig.authCookie] configured.
+  ///
+  /// True for both [webAuthModeCookie] and [webAuthModeCookieTransport];
+  /// whether the main auth cookie may authenticate the call is decided
+  /// separately by the server from the strict [webAuthModeCookie] value.
   ///
   /// When true the auth token should be issued as an `HttpOnly` cookie (see
   /// [writeWebAuthCookie]) and omitted from the response body, so it never
   /// reaches client-side JavaScript.
   bool get isWebAuthCookieRequest {
     if (serverpod.config.authCookie == null) return false;
-    return request?.headers[webAuthModeHeaderName]?.firstOrNull ==
-        webAuthModeCookie;
+    final authMode = request?.headers[webAuthModeHeaderName]?.firstOrNull;
+    return authMode == webAuthModeCookie ||
+        authMode == webAuthModeCookieTransport;
   }
 
   /// If [isWebAuthCookieRequest], writes [token] as the auth cookie and returns

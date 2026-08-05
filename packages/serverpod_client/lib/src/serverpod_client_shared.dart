@@ -43,10 +43,15 @@ class MethodCallContext {
 /// is available.
 abstract class ServerpodClientRequestDelegate {
   /// Performs the actual request to the server and returns the response data.
+  ///
+  /// [authenticated] is the per-call authentication intent (false for
+  /// `@unauthenticatedClientCall` methods); in cookie auth mode it selects
+  /// between the [webAuthModeCookie] and [webAuthModeCookieTransport] markers.
   Future<String> serverRequest<T>(
     Uri url, {
     required String body,
     String? authenticationValue,
+    bool authenticated = true,
   });
 
   /// Whether the transport can carry an `HttpOnly` auth cookie.
@@ -60,6 +65,17 @@ abstract class ServerpodClientRequestDelegate {
   /// refresh cookie `Path` correctly behind a prefix-stripping reverse proxy.
   /// Derived from the client's host; `/` when the server is at the root.
   String cookieAuthBasePath = '/';
+
+  /// The cookie-auth request headers for a call with the given [authenticated]
+  /// intent: the [webAuthModeHeaderName] marker and the declared base path,
+  /// or empty when [cookieAuth] is disabled.
+  Map<String, String> webAuthHeaders({required bool authenticated}) => {
+    if (cookieAuth)
+      webAuthModeHeaderName: authenticated
+          ? webAuthModeCookie
+          : webAuthModeCookieTransport,
+    if (cookieAuth) webBasePathHeaderName: cookieAuthBasePath,
+  };
 
   /// Closes the connection to the server.
   /// This delegate should not be used after calling this.
@@ -316,6 +332,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
         url,
         body: body,
         authenticationValue: authenticationValue,
+        authenticated: authenticated,
       );
 
       T result;
@@ -348,6 +365,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
       parameterStreams: streams,
       outputController: StreamController<G>(),
       authKeyProvider: authenticated ? authKeyProvider : null,
+      webAuthMode: cookieAuth && authenticated ? webAuthModeCookie : null,
     );
 
     _methodStreamManager.openMethodStream(connectionDetails).catchError((e, _) {

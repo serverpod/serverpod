@@ -326,14 +326,17 @@ class MethodWebsocketRequestHandler {
       );
     }
 
-    // The in-band value (a wrapped header) takes precedence; otherwise fall
-    // back to the web auth cookie sent on the handshake (a raw token) when
-    // configured.
+    // The in-band value (a wrapped header) takes precedence. The handshake
+    // auth cookie (a raw token) may only authenticate a stream whose open
+    // command permits it, since browsers attach the cookie to every
+    // connection from a cookie-mode origin.
     final authenticationKey =
         unwrapAuthHeaderValue(authentication) ??
-        webSocket.request.getAuthCookieValue(
-          server.serverpod.config.authCookie,
-        );
+        (message.authMode == webAuthModeCookie
+            ? webSocket.request.getAuthCookieValue(
+                server.serverpod.config.authCookie,
+              )
+            : null);
 
     MethodStreamSession? maybeSession;
     MethodStreamCallContext methodStreamCallContext;
