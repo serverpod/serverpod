@@ -166,12 +166,18 @@ class MigrationGenerator {
     );
 
     if (write) {
-      await _artifactStore.writeVersion(artifacts);
-      versions.add(versionName);
-      await _artifactStore.writeVersionRegistry(versions);
+      await persistMigration(artifacts);
     }
 
     return artifacts;
+  }
+
+  /// Writes [artifacts] to disk and updates the version registry.
+  Future<void> persistMigration(MigrationVersionArtifacts artifacts) async {
+    var versions = await _artifactStore.listVersions();
+    await _artifactStore.writeVersion(artifacts);
+    versions.add(artifacts.version);
+    await _artifactStore.writeVersionRegistry(versions);
   }
 
   Future<Iterable<DatabaseDefinition>> _loadModuleDatabaseDefinitions(
