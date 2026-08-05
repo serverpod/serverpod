@@ -11,7 +11,7 @@ import '../session_log.dart';
 /// Mapping:
 ///
 /// - [open] -> `{type: 'scope_start', id, label, timestamp, session: {…}}`
-/// - [record] for log/query/message entries ->
+/// - [record] for log/query entries ->
 ///   `{type: 'log', level, message, scopeId, timestamp, session: {kind, …}}`
 /// - [close] -> `{type: 'scope_end', id, success, duration, timestamp, session: {…}}`
 ///
@@ -51,7 +51,6 @@ class VmServiceSessionLogWriter extends SessionLogWriter {
           'session': {
             'kind': 'log',
             'order': e.order,
-            'messageId': e.messageId,
           },
         });
       case SessionQueryEntry e:
@@ -66,28 +65,8 @@ class VmServiceSessionLogWriter extends SessionLogWriter {
           'session': {
             'kind': 'query',
             'order': e.order,
-            'messageId': e.messageId,
             'duration': e.duration.inMicroseconds / 1000000,
             'numRows': e.numRowsAffected,
-            'slow': e.slow,
-          },
-        });
-      case SessionMessageEntry e:
-        _postEvent({
-          'type': 'log',
-          'level': 'info',
-          'message': '${e.messageName} (${e.endpoint})',
-          'scopeId': e.sessionId,
-          'timestamp': e.time.toUtc().toIso8601String(),
-          'error': e.error,
-          'stackTrace': e.stackTrace?.toString(),
-          'session': {
-            'kind': 'message',
-            'order': e.order,
-            'messageId': e.messageId,
-            'endpoint': e.endpoint,
-            'messageName': e.messageName,
-            'duration': e.duration.inMicroseconds / 1000000,
             'slow': e.slow,
           },
         });

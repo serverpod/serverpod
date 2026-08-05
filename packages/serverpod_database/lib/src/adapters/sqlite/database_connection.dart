@@ -56,15 +56,13 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     int? offset,
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     Include? include,
     Transaction? transaction,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'find');
-    var orderByCols = _resolveOrderBy(orderByList, orderBy, orderDescending);
+    var orderByCols = _resolveOrderBy(orderByList, orderBy);
 
     await _warnIfSqliteIgnoresLockBehavior(
       session,
@@ -98,8 +96,6 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     int? offset,
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     Transaction? transaction,
     Include? include,
     LockMode? lockMode,
@@ -112,8 +108,6 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       offset: offset,
       orderBy: orderBy,
       orderByList: orderByList,
-      // ignore: deprecated_member_use_from_same_package
-      orderDescending: orderDescending,
       limit: 1,
       transaction: transaction,
       include: include,
@@ -554,8 +548,6 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     int? offset,
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -573,7 +565,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
 
     String selectQuery;
     if (requiresFilteredSubquery) {
-      var orders = _resolveOrderBy(orderByList, orderBy, orderDescending);
+      var orders = _resolveOrderBy(orderByList, orderBy);
       // SQLite requires LIMIT if using OFFSET. In this case, use a large limit.
       var effectiveLimit = limit ?? (offset != null ? 0x7fffffff : null);
       selectQuery = SelectQueryBuilder(table: table)
@@ -638,8 +630,6 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     List<T> rows, {
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -654,8 +644,6 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       table.id.inSet(rows.map((row) => row.id!).castToIdType().toSet()),
       orderBy: orderBy,
       orderByList: orderByList,
-      // ignore: deprecated_member_use_from_same_package
-      orderDescending: orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -684,17 +672,13 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     Expression where, {
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     Transaction? transaction,
     bool noReturn = false,
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'deleteWhere');
     // Ordering applies to the returned deleted rows, so it is irrelevant when
     // nothing is returned.
-    var orderByCols = noReturn
-        ? null
-        : _resolveOrderBy(orderByList, orderBy, orderDescending);
+    var orderByCols = noReturn ? null : _resolveOrderBy(orderByList, orderBy);
 
     // SQLite does not support DELETE ... USING. Use subquery to get ids first.
     var selectIdsQuery = SelectQueryBuilder(table: table)
@@ -847,13 +831,19 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
 
     // For INSERT/UPDATE/DELETE, sqlite_async's execute() returns ResultSet with
     // 0 rows, so we need to read the affected row count via SELECT changes().
+    //
+    // The statements share one write lock rather than direct access to the
+    // database object (`computeWithDatabase`): on the web the database lives in
+    // a worker, where that access cannot be handed out. A write lock serializes
+    // the statements against other writers just the same, and leaves each of
+    // them auto-committing individually, as before.
     if (script.any((s) => s.isWriteStatement) && transaction == null) {
       final connection = await _sqliteConnection;
-      return connection.computeWithDatabase((db) async {
+      return connection.writeLock((context) async {
         var updatedRows = 0;
         for (final statement in script) {
-          db.execute(statement.text, params);
-          updatedRows += db.updatedRows;
+          await context.execute(statement.text, params);
+          updatedRows += await _sqliteChangesFromContext(context);
         }
         return updatedRows;
       });
@@ -1293,8 +1283,6 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
         var orderBy = _resolveOrderBy(
           nestedInclude.orderByList,
           nestedInclude.orderBy,
-          // ignore: deprecated_member_use_from_same_package
-          nestedInclude.orderDescending,
         );
 
         var query = SelectQueryBuilder(table: relationTable)
@@ -1378,12 +1366,10 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
   List<Order>? _resolveOrderBy(
     List<Column>? orderByList,
     Column<dynamic>? orderBy,
-    bool orderDescending,
   ) {
     assert(orderByList == null || orderBy == null);
     if (orderBy != null) {
-      if (orderBy is Order) return [orderBy];
-      return [orderDescending ? orderBy.desc() : orderBy.asc()];
+      return [orderBy is Order ? orderBy : orderBy.asc()];
     }
     if (orderByList == null || orderByList.isEmpty) return null;
     return orderByList.asOrderBy();
@@ -1539,7 +1525,20 @@ _SqliteTransaction? _castToSqliteTransaction(Transaction? transaction) {
 /// matches the native SQLite count for that connection.
 Future<int> _sqliteChangesFromTransaction(Transaction transaction) async {
   final sqliteTx = _castToSqliteTransaction(transaction)!;
-  final changesResult = await sqliteTx.execute('SELECT changes()', []);
+  return _rowCountFromChanges(await sqliteTx.execute('SELECT changes()', []));
+}
+
+/// Returns the number of rows changed by the last statement run on [context],
+/// using SQLite's `changes()` function.
+///
+/// Like [_sqliteChangesFromTransaction], but for statements run under a plain
+/// write lock rather than inside a transaction.
+Future<int> _sqliteChangesFromContext(SqliteWriteContext context) async {
+  return _rowCountFromChanges(await context.execute('SELECT changes()'));
+}
+
+/// Reads the result of a `SELECT changes()` query as a row count.
+int _rowCountFromChanges(ResultSet changesResult) {
   if (changesResult.isEmpty) return 0;
   final n = changesResult.first.columnAt(0);
   return n is int ? n : int.tryParse(n.toString()) ?? 0;

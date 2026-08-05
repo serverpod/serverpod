@@ -17,7 +17,7 @@ import 'postgres_conf_builder.dart';
 /// else would be churn.
 class ClusterStore {
   /// PG install dir from [BinaryStore.ensure], e.g.
-  /// `~/Library/Caches/serverpod/pg-binaries/16.13.0/darwin-amd64`.
+  /// `~/Library/Caches/serverpod/pg-binaries/16.13.0-r1/macos-x64`.
   final Directory installDir;
 
   /// PGDATA - per-project, persistent across restarts.
@@ -94,7 +94,7 @@ class ClusterStore {
 
       var result = await Process.run(initdb, args);
       if (result.exitCode != 0) {
-        throw InitdbException(
+        throw InitializeDatabaseException(
           'initdb exit ${result.exitCode}\n'
           '--- stdout ---\n${result.stdout}\n'
           '--- stderr ---\n${result.stderr}',
@@ -115,7 +115,10 @@ class ClusterStore {
   /// block is appended. Lines outside the block are preserved.
   ///
   /// No-op when the rewrite would produce identical content.
-  void reconcilePostgresConf({required Transport transport}) {
+  void reconcilePostgresConf({
+    required Transport transport,
+    int maxConnections = defaultMaxConnections,
+  }) {
     var conf = File(p.join(dataDir.path, 'postgresql.conf'));
     if (!conf.existsSync()) {
       throw StateError(
@@ -126,6 +129,7 @@ class ClusterStore {
     var body = buildPostgresConfBody(
       transport: transport,
       pgDataDir: dataDir,
+      maxConnections: maxConnections,
     );
     var rewritten = rewriteManagedBlock(original, body);
     if (rewritten != original) {

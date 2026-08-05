@@ -23,7 +23,6 @@ class MainScreen extends StatelessComponent {
     this.onHotReload,
     this.onHotRestart,
     this.onCreateMigration,
-    this.onApplyMigration,
     this.onClearLogs,
     this.onLaunchApp,
     this.onTabSelected,
@@ -31,6 +30,7 @@ class MainScreen extends StatelessComponent {
     required this.onCopyAlert,
     required this.onDismissAlert,
     required this.onStopOrCloseAppTab,
+    required this.onToggleStackTrace,
   });
 
   final ServerWatchState state;
@@ -42,7 +42,6 @@ class MainScreen extends StatelessComponent {
   final VoidCallback? onHotReload;
   final VoidCallback? onHotRestart;
   final void Function({bool force})? onCreateMigration;
-  final VoidCallback? onApplyMigration;
   final VoidCallback? onClearLogs;
   final ValueChanged<int>? onLaunchApp;
 
@@ -58,6 +57,10 @@ class MainScreen extends StatelessComponent {
 
   /// Stops the app or closes the tab for the given app tab (also bound to `X`).
   final void Function(AppLogTab tab) onStopOrCloseAppTab;
+
+  /// Flips the stack-trace visibility of one log entry, invoked by clicking
+  /// its expand/collapse affordance (`E` toggles all entries at once).
+  final void Function(LogEntry entry) onToggleStackTrace;
 
   List<(String, List<(String, String)>)> get _helpBindings => [
     (
@@ -77,6 +80,7 @@ class MainScreen extends StatelessComponent {
             state.launchableApps.length == 1 ? 'Launch app' : 'Launch apps',
           ),
         ('Shift+M', 'Force Create migration'),
+        ('A', 'Apply migration'),
         ('P', 'Repair migration'),
         ('Shift+P', 'Force Repair migration'),
         ('E', 'Expand / collapse stack traces'),
@@ -491,7 +495,9 @@ class MainScreen extends StatelessComponent {
 
     String statusText;
     if (tab.ready) {
-      statusText = tab.url ?? 'App running';
+      final device = tab.device;
+      statusText =
+          tab.url ?? 'Running on device${device == null ? '' : ' $device'}';
     } else if (tab.stopped) {
       statusText = 'App stopped';
     } else {
@@ -651,6 +657,9 @@ class MainScreen extends StatelessComponent {
 
   /// Renders a single [LogEntry], appending its stack trace - or a collapsed
   /// affordance hinting that one exists - when the entry carries one.
+  ///
+  /// The affordance line is clickable and toggles just this entry's trace;
+  /// the `E` key still expands or collapses all traces at once.
   Component _buildLogEntry(BuildContext context, LogEntry entry, int index) {
     final message = LogMessageWidget(key: ValueKey(index), entry: entry);
     final stackTrace = entry.stackTrace?.toString().trimRight();
@@ -658,13 +667,35 @@ class MainScreen extends StatelessComponent {
 
     final st = ServerpodTheme.of(context);
     final dim = TextStyle(color: st.debugLevel, fontWeight: FontWeight.dim);
+    final expanded = state.isStackTraceExpanded(entry);
 
-    final trailing = state.expandStackTraces
-        ? Text(stackTrace, style: dim)
-        : Text(
-            '▸ ${stackTrace.split('\n').length}-line stack trace (press e)',
-            style: dim,
-          );
+    final lineCount = stackTrace.split('\n').length;
+    final affordance = GestureDetector(
+      onTap: () => onToggleStackTrace(entry),
+      child: RichText(
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: expanded
+                  ? '▾ $lineCount-line stack trace '
+                  : '▸ $lineCount-line stack trace ',
+              style: dim,
+            ),
+            TextSpan(
+              text: 'E',
+              style: TextStyle(
+                color: st.activationKey,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            TextSpan(
+              text: expanded ? ' Collapse' : ' Expand',
+              style: TextStyle(color: st.brightText),
+            ),
+          ],
+        ),
+      ),
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -672,8 +703,13 @@ class MainScreen extends StatelessComponent {
         message,
         Padding(
           padding: const EdgeInsets.only(left: 6),
-          child: trailing,
+          child: affordance,
         ),
+        if (expanded)
+          Padding(
+            padding: const EdgeInsets.only(left: 6),
+            child: Text(stackTrace, style: dim),
+          ),
       ],
     );
   }
@@ -745,19 +781,12 @@ class MainScreen extends StatelessComponent {
             enabled: actionsEnabled && onHotReload != null,
           ),
         Button(
-          name: 'Create migration',
+          name: 'Migrate',
           activationChar: 'M',
           activationKeys: const [LogicalKey.keyM],
           onActivate: (_) => onCreateMigration?.call(),
           onShiftActivate: (_) => onCreateMigration?.call(force: true),
           enabled: actionsEnabled && onCreateMigration != null,
-        ),
-        Button(
-          name: 'Apply migrations',
-          activationChar: 'A',
-          activationKeys: const [LogicalKey.keyA],
-          onActivate: (_) => onApplyMigration?.call(),
-          enabled: actionsEnabled && onApplyMigration != null,
         ),
         Button(
           name: 'Clear logs',

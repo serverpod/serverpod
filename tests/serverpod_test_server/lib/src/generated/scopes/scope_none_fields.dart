@@ -77,8 +77,6 @@ abstract class ScopeNoneFields
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
     ScopeNoneFieldsInclude? include,
   }) {
@@ -87,8 +85,6 @@ abstract class ScopeNoneFields
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ScopeNoneFields.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(ScopeNoneFields.t),
       include: include,
     );
@@ -209,8 +205,6 @@ class ScopeNoneFieldsIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -255,8 +249,6 @@ class ScopeNoneFieldsRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -266,8 +258,6 @@ class ScopeNoneFieldsRepository {
       where: where?.call(ScopeNoneFields.t),
       orderBy: orderBy?.call(ScopeNoneFields.t),
       orderByList: orderByList?.call(ScopeNoneFields.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -298,8 +288,6 @@ class ScopeNoneFieldsRepository {
     _i1.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
     int? offset,
     _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -309,8 +297,6 @@ class ScopeNoneFieldsRepository {
       where: where?.call(ScopeNoneFields.t),
       orderBy: orderBy?.call(ScopeNoneFields.t),
       orderByList: orderByList?.call(ScopeNoneFields.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -517,8 +503,6 @@ class ScopeNoneFieldsRepository {
     int? offset,
     _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
     _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -529,8 +513,6 @@ class ScopeNoneFieldsRepository {
       offset: offset,
       orderBy: orderBy?.call(ScopeNoneFields.t),
       orderByList: orderByList?.call(ScopeNoneFields.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -551,8 +533,6 @@ class ScopeNoneFieldsRepository {
     _i1.DatabaseSession session,
     List<ScopeNoneFields> rows, {
     _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -561,8 +541,6 @@ class ScopeNoneFieldsRepository {
       rows,
       orderBy: orderBy?.call(ScopeNoneFields.t),
       orderByList: orderByList?.call(ScopeNoneFields.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -592,8 +570,6 @@ class ScopeNoneFieldsRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ScopeNoneFieldsTable> where,
     _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -602,8 +578,6 @@ class ScopeNoneFieldsRepository {
       where: where(ScopeNoneFields.t),
       orderBy: orderBy?.call(ScopeNoneFields.t),
       orderByList: orderByList?.call(ScopeNoneFields.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

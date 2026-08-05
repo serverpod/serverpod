@@ -246,6 +246,8 @@ import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i220;
 import 'package:serverpod_test_client/src/protocol/inheritance/polymorphism/parent.dart'
     as _i221;
 import 'package:serverpod_test_client/src/protocol/types.dart' as _i222;
+import 'package:serverpod_test_shared_module_client/serverpod_test_shared_module_client.dart'
+    as _i223;
 export 'by_index_enum_with_name_value.dart';
 export 'by_name_enum_with_name_value.dart';
 export 'changed_id_type/many_to_many/course.dart';
@@ -5909,6 +5911,9 @@ class Protocol extends _i1.SerializationManager {
       return _i215.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
+      return _i223.Protocol().deserialize<T>(data, t);
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+    try {
       return _i217.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
@@ -6684,6 +6689,12 @@ class Protocol extends _i1.SerializationManager {
           ? className
           : 'serverpod_test_module.$className';
     }
+    className = _i223.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return className.contains('.')
+          ? className
+          : 'serverpod_test_shared_module.$className';
+    }
     className = _i217.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.')
@@ -7389,6 +7400,10 @@ class Protocol extends _i1.SerializationManager {
       data['className'] = dataClassName.substring(22);
       return _i215.Protocol().deserializeByClassName(data);
     }
+    if (dataClassName.startsWith('serverpod_test_shared_module.')) {
+      data['className'] = dataClassName.substring(29);
+      return _i223.Protocol().deserializeByClassName(data);
+    }
     if (dataClassName.startsWith('serverpod_test_shared.')) {
       data['className'] = dataClassName.substring(22);
       return _i217.Protocol().deserializeByClassName(data);
@@ -7457,6 +7472,7 @@ class Protocol extends _i1.SerializationManager {
   void _registerHostProtocols() {
     _i220.Protocol().registerHostProtocol('serverpod_test', this);
     _i215.Protocol().registerHostProtocol('serverpod_test', this);
+    _i223.Protocol().registerHostProtocol('serverpod_test', this);
     _i217.Protocol().registerHostProtocol('serverpod_test', this);
   }
 
@@ -7939,6 +7955,9 @@ class Protocol extends _i1.SerializationManager {
     } catch (_) {}
     try {
       return _i215.Protocol().mapRecordToJson(record);
+    } catch (_) {}
+    try {
+      return _i223.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

@@ -16,6 +16,7 @@ dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
   path: ^1.8.3
   serverpod_cli: SERVERPOD_VERSION
+  serverpod_shared: SERVERPOD_VERSION
   test: ^1.25.5
   test_descriptor: ^2.0.2
 

@@ -25,6 +25,7 @@ class _FakeConfig extends Fake implements GeneratorConfig {
   @override
   List<String> get auxiliaryInputPaths => [
     p.join(serverDir, 'config', 'generator.yaml'),
+    p.join(serverDir, 'analysis_options.yaml'),
     p.join(serverDir, 'pubspec.yaml'),
     p.join(serverDir, 'pubspec.lock'),
   ];
@@ -154,6 +155,30 @@ void main() {
       },
     );
   });
+
+  test(
+    'Given analysis_options.yaml changes after the stamp, '
+    'when isGenerationUpToDate is called, '
+    'then it returns false.',
+    () async {
+      final analysisOptionsFile = File(
+        p.join(tempDir.path, 'analysis_options.yaml'),
+      );
+      await analysisOptionsFile.writeAsString('''
+formatter:
+  trailing_commas: automate
+''');
+      await writeGenerationStamp(config, generatedFiles: {});
+      final stampMtime = stampFile.statSync().modified;
+      await waitForMtimeAfter(stampMtime, tempDir);
+      await analysisOptionsFile.writeAsString('''
+formatter:
+  trailing_commas: preserve
+''');
+      final sources = await enumerateSourceFiles(config);
+      expect(await isGenerationUpToDate(config, sources), isFalse);
+    },
+  );
 
   group('Given stamp has old CLI version', () {
     setUp(() async {

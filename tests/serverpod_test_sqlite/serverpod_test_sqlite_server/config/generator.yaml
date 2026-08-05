@@ -14,3 +14,5 @@ modules:
     nickname: auth
   serverpod_auth_idp:
     nickname: auth_idp
+  serverpod_test_shared_module:
+    nickname: shared_module

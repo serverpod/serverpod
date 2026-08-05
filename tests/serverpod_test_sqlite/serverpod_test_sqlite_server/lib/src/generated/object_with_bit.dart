@@ -127,8 +127,6 @@ abstract class ObjectWithBit
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectWithBitTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithBitTable>? orderByList,
     ObjectWithBitInclude? include,
   }) {
@@ -137,8 +135,6 @@ abstract class ObjectWithBit
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithBit.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(ObjectWithBit.t),
       include: include,
     );
@@ -319,8 +315,6 @@ class ObjectWithBitIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -365,8 +359,6 @@ class ObjectWithBitRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectWithBitTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithBitTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -376,8 +368,6 @@ class ObjectWithBitRepository {
       where: where?.call(ObjectWithBit.t),
       orderBy: orderBy?.call(ObjectWithBit.t),
       orderByList: orderByList?.call(ObjectWithBit.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -408,8 +398,6 @@ class ObjectWithBitRepository {
     _i1.WhereExpressionBuilder<ObjectWithBitTable>? where,
     int? offset,
     _i1.OrderByBuilder<ObjectWithBitTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithBitTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -419,8 +407,6 @@ class ObjectWithBitRepository {
       where: where?.call(ObjectWithBit.t),
       orderBy: orderBy?.call(ObjectWithBit.t),
       orderByList: orderByList?.call(ObjectWithBit.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -625,8 +611,6 @@ class ObjectWithBitRepository {
     int? offset,
     _i1.OrderByBuilder<ObjectWithBitTable>? orderBy,
     _i1.OrderByListBuilder<ObjectWithBitTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -637,8 +621,6 @@ class ObjectWithBitRepository {
       offset: offset,
       orderBy: orderBy?.call(ObjectWithBit.t),
       orderByList: orderByList?.call(ObjectWithBit.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -659,8 +641,6 @@ class ObjectWithBitRepository {
     _i1.DatabaseSession session,
     List<ObjectWithBit> rows, {
     _i1.OrderByBuilder<ObjectWithBitTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithBitTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -669,8 +649,6 @@ class ObjectWithBitRepository {
       rows,
       orderBy: orderBy?.call(ObjectWithBit.t),
       orderByList: orderByList?.call(ObjectWithBit.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -700,8 +678,6 @@ class ObjectWithBitRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ObjectWithBitTable> where,
     _i1.OrderByBuilder<ObjectWithBitTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithBitTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -710,8 +686,6 @@ class ObjectWithBitRepository {
       where: where(ObjectWithBit.t),
       orderBy: orderBy?.call(ObjectWithBit.t),
       orderByList: orderByList?.call(ObjectWithBit.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

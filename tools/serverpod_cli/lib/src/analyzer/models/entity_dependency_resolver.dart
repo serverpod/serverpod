@@ -540,13 +540,28 @@ class ModelDependencyResolver {
 
       if (foreignFieldName == null) return;
 
+      // The nullability of the relation is always determined by the foreign
+      // key field, never by the object field. If the foreign class is not yet
+      // resolved, the matched field is the object field and the foreign key
+      // field may not exist yet; in that case the nullability comes from the
+      // explicitly declared foreign key field, or the `optional` keyword when
+      // the foreign key field is implicit.
+      bool nullableRelation;
+      if (foreignRelation is UnresolvedObjectRelationDefinition) {
+        nullableRelation =
+            referenceClass.findField(foreignFieldName)?.type.nullable ??
+            foreignRelation.nullableRelation;
+      } else {
+        nullableRelation = foreignField.type.nullable;
+      }
+
       fieldDefinition.relation = ListRelationDefinition(
         name: relation.name,
         foreignKeyOwnerIdType: referenceClass.idField.type,
         fieldName: defaultPrimaryKeyName,
         foreignFieldName: foreignFieldName,
         foreignContainerField: foreignContainerField,
-        nullableRelation: foreignFields.first.type.nullable,
+        nullableRelation: nullableRelation,
       );
     }
   }

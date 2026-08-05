@@ -8,6 +8,8 @@ import 'package:config/config.dart';
 import 'package:meta/meta.dart' show visibleForTesting;
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
+import 'package:serverpod_cli/src/analytics/session_metrics.dart';
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
@@ -72,11 +74,12 @@ enum StartOption<V> implements OptionDefinition<V> {
   docker(
     FlagOption(
       argName: 'docker',
-      defaultsTo: false,
       helpText:
-          'Start Docker Compose services if a docker-compose.yaml exists. '
-          'Default off; pass --docker to opt in to compose-managed services '
-          '(typically Redis when running PostgreSQL separately).',
+          'Start Docker Compose services if a Docker Compose file exists. '
+          'Defaults to on if the project has a Docker Compose file and the '
+          'database is configured to PostgreSQL on localhost without a '
+          'dataPath. Otherwise, defaults to off. Pass --docker or '
+          '--no-docker to override the default behavior.',
     ),
   ),
   tui(
@@ -156,6 +159,16 @@ class StartCommand extends ServerpodCommand<StartOption> {
       // Bail before the TUI takes over the terminal
       if (await _detectExistingInstance(config)) return;
 
+      // Fire-and-forget: analytics must never delay session start.
+      unawaited(
+        _captureSessionStartAnalytics(
+          config: config,
+          commandConfig: commandConfig,
+          useTui: true,
+          launchFlutterApp: launchFlutterApp,
+        ),
+      );
+
       final exitCode = await _runWithTui(
         commandConfig: commandConfig,
         watch: watch,
@@ -191,8 +204,18 @@ class StartCommand extends ServerpodCommand<StartOption> {
 
     if (await _detectExistingInstance(config)) return;
 
+    // Fire-and-forget: analytics must never delay session start.
+    unawaited(
+      _captureSessionStartAnalytics(
+        config: config,
+        commandConfig: commandConfig,
+        useTui: false,
+        launchFlutterApp: launchFlutterApp,
+      ),
+    );
+
     final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
-    final docker = commandConfig.value(StartOption.docker);
+    final docker = commandConfig.optionalValue(StartOption.docker);
 
     // Listen for termination signals before starting any services so that
     // a SIGINT at any point triggers graceful shutdown (including Docker
@@ -272,57 +295,150 @@ Future<bool> _runHooksFor(
   }
 }
 
+Future<void> _captureSessionStartAnalytics({
+  required GeneratorConfig config,
+  required Configuration<StartOption> commandConfig,
+  required bool useTui,
+  required bool launchFlutterApp,
+}) async {
+  if (!cliAnalytics.enabled) return;
+
+  await cliAnalytics.captureSessionStart(
+    config: config,
+    watchMode: commandConfig.value(StartOption.watch),
+    tuiEnabled: useTui,
+    flutterEnabled: launchFlutterApp,
+    dockerMode: switch (commandConfig.optionalValue(StartOption.docker)) {
+      true => DockerStartMode.on,
+      false => DockerStartMode.off,
+      null => DockerStartMode.auto,
+    },
+    dockerComposePresent:
+        _findComposeFile(p.joinAll(config.serverPackageDirectoryPathParts)) !=
+        null,
+  );
+}
+
+/// Compose file names Docker Compose resolves by default, in its own lookup
+/// order.
+const _composeFileNames = [
+  'compose.yaml',
+  'compose.yml',
+  'docker-compose.yaml',
+  'docker-compose.yml',
+];
+
+File? _findComposeFile(String serverDir) {
+  for (final name in _composeFileNames) {
+    final file = File(p.join(serverDir, name));
+    if (file.existsSync()) return file;
+  }
+  return null;
+}
+
+bool _resolveStartDocker({
+  required bool? dockerFlag,
+  required String serverDir,
+  required String runMode,
+}) {
+  if (dockerFlag != null) return dockerFlag;
+
+  // Projects without a compose file (e.g. using a remote or natively
+  // installed database) have nothing for Docker Compose to start. Only an
+  // explicit --docker treats a missing compose file as an error.
+  if (_findComposeFile(serverDir) == null) return false;
+
+  try {
+    final passwords = PasswordManager(runMode: runMode).loadPasswords(
+      serverDir: serverDir,
+    );
+    final serverConfig = ServerpodConfig.load(
+      runMode,
+      null,
+      passwords,
+      serverDir: serverDir,
+    );
+    final database = serverConfig.database;
+    if (database is! PostgresDatabaseConfig || database.dataPath != null) {
+      return false;
+    }
+    return database.host.toLowerCase() == 'localhost' ||
+        database.host == '127.0.0.1';
+  } catch (_) {
+    // Config may be incomplete during early project setup; do not start
+    // Docker automatically. Users can still pass --docker explicitly.
+    return false;
+  }
+}
+
 /// Ensures Docker Compose services are running.
 ///
 /// Returns `true` if this method started the containers (meaning we should
-/// stop them on shutdown). Returns `false` if no action was taken.
-Future<bool> _ensureDockerServices(String serverDir) async {
-  final composeFile = File(p.join(serverDir, 'docker-compose.yaml'));
-  if (!await composeFile.exists()) return false;
+/// stop them on shutdown), `false` if they were already running, and `null`
+/// when Docker cannot be used.
+Future<bool?> _ensureDockerServices(String serverDir) async {
+  if (_findComposeFile(serverDir) == null) {
+    log.error(dockerComposeFileMissing);
+    return null;
+  }
 
   // Check if containers are already running.
-  final ps = await Process.run(
-    'docker',
+  final ps = await _runDocker(
     ['compose', 'ps', '--status', 'running', '-q'],
-    workingDirectory: serverDir,
+    serverDir,
   );
 
+  if (ps == null) {
+    log.error(dockerNotInstalled);
+    return null;
+  }
+
   if (ps.exitCode != 0) {
-    log.warning(
-      'Docker does not appear to be running. '
-      'Start Docker or use --no-docker to skip.',
-    );
-    return false;
+    log.error(dockerNotRunning);
+    return null;
   }
 
   final running = (ps.stdout as String).trim();
   if (running.isNotEmpty) return false;
 
   // Start containers.
-  log.info('Starting Docker Compose services...');
-  final up = await Process.run(
-    'docker',
-    ['compose', 'up', '-d'],
-    workingDirectory: serverDir,
-  );
+  final up = await _runDocker(['compose', 'up', '-d'], serverDir);
+
+  if (up == null) {
+    log.error(dockerNotInstalled);
+    return null;
+  }
 
   if (up.exitCode != 0) {
     final error = (up.stderr as String).trim();
-    log.warning('Failed to start Docker Compose services: $error');
-    return false;
+    log.error('$dockerComposeStartFailed\n\n$error');
+    return null;
   }
 
   log.info('Docker Compose services started.');
   return true;
 }
 
+/// Runs `docker` with [arguments] in [serverDir]. Returns `null` when the
+/// binary cannot be launched (Docker not installed or not on PATH).
+Future<ProcessResult?> _runDocker(
+  List<String> arguments,
+  String serverDir,
+) async {
+  try {
+    return await Process.run(
+      'docker',
+      arguments,
+      workingDirectory: serverDir,
+    );
+  } on ProcessException {
+    return null;
+  }
+}
+
 Future<void> _stopDockerServices(String serverDir) async {
   log.info('Stopping Docker Compose services...');
-  await Process.run(
-    'docker',
-    ['compose', 'stop'],
-    workingDirectory: serverDir,
-  );
+  await _runDocker(['compose', 'stop'], serverDir);
 }
 
 /// Prepends `--apply-migrations` to [serverArgs] unless it is already present.
@@ -362,7 +478,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   required String serverDir,
   required ServerArgsRef serverArgs,
   required bool watch,
-  required bool docker,
+  required bool? docker,
   // When the project fails to generate or compile: if `true`, keep the session
   // open with no server running and recover later (the file watcher auto-boots
   // in watch mode; [WatchSession.retryStart] boots on demand otherwise). If
@@ -407,12 +523,21 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     return const WatchLoopAborted(0);
   }
 
+  final startDocker = _resolveStartDocker(
+    dockerFlag: docker,
+    serverDir: serverDir,
+    runMode: runModeFromServerArgs(serverArgs.value),
+  );
+
   var startedDocker = false;
-  if (docker) {
-    await log.progress('Starting Docker services', () async {
-      startedDocker = await _ensureDockerServices(serverDir);
-      return true;
+  if (startDocker) {
+    bool? dockerStarted;
+    await log.progress(startingDockerServices, () async {
+      dockerStarted = await _ensureDockerServices(serverDir);
+      return dockerStarted != null;
     });
+    if (dockerStarted == null) return const WatchLoopAborted(1);
+    startedDocker = dockerStarted!;
   }
 
   Future<void> stopDockerIfStarted() async {
@@ -634,14 +759,23 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   // now. The watch session brings it up once the project is fixed.
   ServerProcess? initialServerProcess;
   if (buildOk) {
-    await log.progress('Starting server', () async {
-      final initialDill = watch
-          ? p.join(serverpodToolDir, 'server.dill')
-          : null;
-      initialServerProcess = await serverProcessFactory(initialDill);
-      return true;
-    });
-  } else {
+    initialServerProcess = await bootInitialServer(
+      initialDill: watch ? p.join(serverpodToolDir, 'server.dill') : null,
+      startServer: serverProcessFactory,
+      compiler: compiler,
+    );
+    if (initialServerProcess == null) {
+      log.error('Initial compilation failed.');
+      buildOk = false;
+      if (!keepOpenOnFailure) {
+        await compiler?.dispose();
+        await flutterManager.dispose();
+        await rollbackStartup();
+        return const WatchLoopAborted(1);
+      }
+    }
+  }
+  if (!buildOk) {
     log.warning(watch ? startBlockedByErrorsWatch : startBlockedByErrorsManual);
   }
 
@@ -782,6 +916,48 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       vmServiceInfoFile: vmServiceInfoFile,
     ),
   );
+}
+
+/// Boots the initial server process, recovering once from a corrupt cached
+/// dill (a pod that dies before publishing its VM service URI never got past
+/// kernel loading). Returns `null` if the recovery recompile fails.
+@visibleForTesting
+Future<ServerProcess?> bootInitialServer({
+  required String? initialDill,
+  required Future<ServerProcess> Function(String? dillPath) startServer,
+  required KernelCompiler? compiler,
+}) async {
+  Future<ServerProcess> boot() async {
+    late ServerProcess server;
+    await log.progress('Starting server', () async {
+      server = await startServer(initialDill);
+      return true;
+    });
+    return server;
+  }
+
+  final server = await boot();
+  if (compiler == null) return server;
+
+  // exitCode is already completed whenever isRunning is false.
+  final crashedLoadingKernel =
+      server.vmServiceUri == null &&
+      !server.isRunning &&
+      await server.exitCode != 0;
+  if (!crashedLoadingKernel) return server;
+
+  log.warning(cachedBuildCrashedOnBoot);
+  await compiler.invalidateCachedDill();
+  // Ensure a complete kernel, not an incremental delta.
+  await compiler.reset();
+  final result = await compileWithProgress(
+    'Compiling server',
+    compiler,
+    rejectOnFailure: true,
+  );
+  if (result == null) return null;
+  await compiler.accept();
+  return boot();
 }
 
 /// The paths the watch-mode [FileWatcher] observes: server/shared/client
@@ -1105,7 +1281,7 @@ Future<void> _runTuiBackend({
     tuiWriter.attach(holder);
 
     final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
-    final docker = commandConfig.value(StartOption.docker);
+    final docker = commandConfig.optionalValue(StartOption.docker);
 
     final argsRef = ServerArgsRef(serverArgs);
 
@@ -1149,6 +1325,8 @@ Future<void> _runTuiBackend({
         tab.ready = false;
         tab.stopped = false;
         tab.url = null;
+        // Refreshed per launch; the configured device may have changed.
+        tab.device = app.device;
         // Focus the tab only when the launch was initiated from the launch
         // panel (which is open at that point). Apps auto-started by
         // `serverpod start` launch with the panel closed, so the Server logs
@@ -1307,7 +1485,13 @@ Future<void> _runTuiBackend({
           runTrackedAction(
             holder,
             force ? 'Force-creating migration' : 'Creating migration',
-            () => _runCreateMigrationForTui(config, force: force),
+            () async {
+              await _runCreateMigrationForTui(
+                config,
+                force: force,
+              );
+              await _tryApplyMigrationForTui(ctx.session.applyMigration);
+            },
           );
         };
         holder.onCreateRepairMigration = ({bool force = false}) {
@@ -1316,11 +1500,14 @@ Future<void> _runTuiBackend({
             force
                 ? 'Force-creating repair migration'
                 : 'Creating repair migration',
-            () => _runCreateRepairMigrationForTui(
-              config,
-              runMode: runModeFromServerArgs(serverArgs),
-              force: force,
-            ),
+            () async {
+              await _runCreateRepairMigrationForTui(
+                config,
+                runMode: runModeFromServerArgs(serverArgs),
+                force: force,
+              );
+              await _tryApplyMigrationForTui(ctx.session.applyMigration);
+            },
           );
         };
         holder.onApplyMigration = () {
@@ -1330,7 +1517,6 @@ Future<void> _runTuiBackend({
             ctx.session.applyMigration,
           );
         };
-
         holder.state.serverReady = ctx.session.isRunning;
         // Degraded start (no server yet): expose the manual "Start server"
         // recovery action. The watcher also auto-recovers in watch mode.
@@ -1424,6 +1610,22 @@ Future<void> _runCreateMigrationForTui(
   );
   if (result.isError) throw Exception(result.message);
   log.info(result.message);
+}
+
+/// Applies a newly created migration without changing the tracked status of
+/// the successful create operation if applying it fails.
+Future<void> _tryApplyMigrationForTui(
+  Future<void> Function() applyMigration,
+) async {
+  try {
+    await applyMigration();
+  } catch (error, stackTrace) {
+    log.error(
+      'Failed to apply migration: $error.',
+      stackTrace: stackTrace,
+    );
+    log.info('Press A to retry apply migration');
+  }
 }
 
 /// Runs `create-migration` for the MCP `create_migration` tool. Returns a

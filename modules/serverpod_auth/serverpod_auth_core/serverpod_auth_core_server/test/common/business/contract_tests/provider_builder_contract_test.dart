@@ -3,11 +3,11 @@ import 'package:test/test.dart';
 
 import '../fakes/fakes.dart';
 
-void testSuite<T extends Object>(
+void testSuite<T extends IdentityProvider>(
   final IdentityProviderBuilder<T> Function() createIdpBuilder,
 ) {
   group(
-    'Given a identity provider builder',
+    'Given an identity provider builder,',
     () {
       late IdentityProviderBuilder<T> idpBuilder;
       late TokenManager tokenManager;
@@ -21,12 +21,17 @@ void testSuite<T extends Object>(
         userProfiles = const UserProfiles();
       });
 
-      test('when getting type, then the correct type should be returned', () {
-        expect(idpBuilder.type, equals(T));
-      });
+      test(
+        'when reading its provider type, '
+        'then the type of the built identity provider is returned.',
+        () {
+          expect(idpBuilder.type, equals(T));
+        },
+      );
 
       test(
-        'when constructing a provider the provider should be constructed',
+        'when building an identity provider, '
+        'then an identity provider of the declared type is returned.',
         () {
           final provider = idpBuilder.build(
             tokenManager: tokenManager,
@@ -39,7 +44,22 @@ void testSuite<T extends Object>(
       );
 
       test(
-        'when constructing multiple providers the providers should be unique',
+        'when building an identity provider, '
+        'then it exposes a non-empty authentication method.',
+        () {
+          final provider = idpBuilder.build(
+            tokenManager: tokenManager,
+            authUsers: authUsers,
+            userProfiles: userProfiles,
+          );
+
+          expect(provider.method, isNotEmpty);
+        },
+      );
+
+      test(
+        'when building two identity providers, '
+        'then distinct provider instances are returned.',
         () {
           final provider1 = idpBuilder.build(
             tokenManager: tokenManager,

@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
+import 'package:serverpod_cli/src/config/serverpod_manifest.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/locate_modules.dart';
 import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
@@ -197,6 +198,12 @@ class GeneratorConfig implements ModelLoadConfig {
     'protocol.yaml',
   ];
 
+  /// The path of the generated Serverpod package manifest.
+  List<String> get generatedServerpodManifestFilePathParts => [
+    ...generatedServeModelPathParts,
+    ServerpodManifest.fileName,
+  ];
+
   /// The path parts of the directory, where the generated code is stored in the
   /// server package.
   List<String> get generatedServeModelPathParts => [
@@ -228,11 +235,18 @@ class GeneratorConfig implements ModelLoadConfig {
   /// Paths outside the source tree that may influence generated output
   List<String> get auxiliaryInputPaths => [
     p.joinAll([...serverPackageDirectoryPathParts, 'config', 'generator.yaml']),
+    p.joinAll([...serverPackageDirectoryPathParts, 'analysis_options.yaml']),
     p.joinAll([...serverPackageDirectoryPathParts, 'pubspec.yaml']),
     p.joinAll([...serverPackageDirectoryPathParts, 'pubspec.lock']),
+    p.joinAll([...clientPackagePathParts, 'analysis_options.yaml']),
     p.joinAll([...clientPackagePathParts, 'pubspec.yaml']),
     p.joinAll([...clientPackagePathParts, 'pubspec.lock']),
     for (final pathParts in sharedModelsSourcePathsParts.values) ...[
+      p.joinAll([
+        ...serverPackageDirectoryPathParts,
+        ...pathParts,
+        'analysis_options.yaml',
+      ]),
       p.joinAll([
         ...serverPackageDirectoryPathParts,
         ...pathParts,
@@ -263,8 +277,8 @@ class GeneratorConfig implements ModelLoadConfig {
       ];
     }
 
-    var isServerpodMini = !isFeatureEnabled(ServerpodFeature.database);
-    if (isServerpodMini) {
+    var isDatabaseDisabled = !isFeatureEnabled(ServerpodFeature.database);
+    if (isDatabaseDisabled) {
       return [
         ...serverPackageDirectoryPathParts,
         ..._defaultRelativeServerTestToolsPathParts,
@@ -735,6 +749,10 @@ class ModuleConfig implements ModelLoadConfig {
   /// Might be relative.
   final List<String> serverPackageDirectoryPathParts;
 
+  /// The installed shared packages the module owns, mapping each package name
+  /// to the path parts of its package root from the package config.
+  final Map<String, List<String>> sharedPackageRootPathParts;
+
   @override
   List<String> get libSourcePathParts => [
     ...serverPackageDirectoryPathParts,
@@ -775,6 +793,7 @@ class ModuleConfig implements ModelLoadConfig {
     required this.nickname,
     required this.migrationVersions,
     required this.serverPackageDirectoryPathParts,
+    this.sharedPackageRootPathParts = const {},
   }) : dartClientPackage = '${name}_client',
        serverPackage = '${name}_server';
 

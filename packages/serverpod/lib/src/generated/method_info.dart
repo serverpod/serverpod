@@ -88,8 +88,6 @@ abstract class MethodInfo
     int? limit,
     int? offset,
     _i1.OrderByBuilder<MethodInfoTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<MethodInfoTable>? orderByList,
     MethodInfoInclude? include,
   }) {
@@ -98,8 +96,6 @@ abstract class MethodInfo
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(MethodInfo.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(MethodInfo.t),
       include: include,
     );
@@ -201,8 +197,6 @@ class MethodInfoIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -247,8 +241,6 @@ class MethodInfoRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<MethodInfoTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<MethodInfoTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -258,8 +250,6 @@ class MethodInfoRepository {
       where: where?.call(MethodInfo.t),
       orderBy: orderBy?.call(MethodInfo.t),
       orderByList: orderByList?.call(MethodInfo.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -290,8 +280,6 @@ class MethodInfoRepository {
     _i1.WhereExpressionBuilder<MethodInfoTable>? where,
     int? offset,
     _i1.OrderByBuilder<MethodInfoTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<MethodInfoTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -301,8 +289,6 @@ class MethodInfoRepository {
       where: where?.call(MethodInfo.t),
       orderBy: orderBy?.call(MethodInfo.t),
       orderByList: orderByList?.call(MethodInfo.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -507,8 +493,6 @@ class MethodInfoRepository {
     int? offset,
     _i1.OrderByBuilder<MethodInfoTable>? orderBy,
     _i1.OrderByListBuilder<MethodInfoTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -519,8 +503,6 @@ class MethodInfoRepository {
       offset: offset,
       orderBy: orderBy?.call(MethodInfo.t),
       orderByList: orderByList?.call(MethodInfo.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -541,8 +523,6 @@ class MethodInfoRepository {
     _i1.DatabaseSession session,
     List<MethodInfo> rows, {
     _i1.OrderByBuilder<MethodInfoTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<MethodInfoTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -551,8 +531,6 @@ class MethodInfoRepository {
       rows,
       orderBy: orderBy?.call(MethodInfo.t),
       orderByList: orderByList?.call(MethodInfo.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -582,8 +560,6 @@ class MethodInfoRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<MethodInfoTable> where,
     _i1.OrderByBuilder<MethodInfoTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<MethodInfoTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -592,8 +568,6 @@ class MethodInfoRepository {
       where: where(MethodInfo.t),
       orderBy: orderBy?.call(MethodInfo.t),
       orderByList: orderByList?.call(MethodInfo.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

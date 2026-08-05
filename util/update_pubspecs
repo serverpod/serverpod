@@ -46,6 +46,7 @@ cp CHANGELOG.md tests/serverpod_test_client/CHANGELOG.md
 cp CHANGELOG.md tests/serverpod_test_server/CHANGELOG.md
 cp CHANGELOG.md tests/serverpod_test_shared/CHANGELOG.md
 cp CHANGELOG.md tests/serverpod_test_sqlite/serverpod_test_sqlite_client/CHANGELOG.md
+cp CHANGELOG.md tests/serverpod_test_sqlite/serverpod_test_sqlite_flutter/CHANGELOG.md
 cp CHANGELOG.md tests/serverpod_test_sqlite/serverpod_test_sqlite_server/CHANGELOG.md
 cp CHANGELOG.md tests/serverpod_test_sqlite/serverpod_test_sqlite_shared/CHANGELOG.md
 cp CHANGELOG.md tests/serverpod_auth_test/serverpod_auth_test_flutter/CHANGELOG.md
@@ -79,10 +80,6 @@ cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_brid
 cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_client/CHANGELOG.md
 cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server/CHANGELOG.md
 
-cp CHANGELOG.md modules/legacy/serverpod_chat/serverpod_chat_server/CHANGELOG.md
-cp CHANGELOG.md modules/legacy/serverpod_chat/serverpod_chat_client/CHANGELOG.md
-cp CHANGELOG.md modules/legacy/serverpod_chat/serverpod_chat_flutter/CHANGELOG.md
-
 cp CHANGELOG.md integrations/serverpod_cloud_storage_s3_compat/CHANGELOG.md
 cp CHANGELOG.md integrations/serverpod_cloud_storage_s3/CHANGELOG.md
 cp CHANGELOG.md integrations/serverpod_cloud_storage_gcp/CHANGELOG.md
@@ -106,6 +103,7 @@ cp README_subpackage.md tests/serverpod_test_client/README.md
 cp README_subpackage.md tests/serverpod_test_server/README.md
 cp README_subpackage.md tests/serverpod_test_shared/README.md
 cp README_subpackage.md tests/serverpod_test_sqlite/serverpod_test_sqlite_client/README.md
+cp README_subpackage.md tests/serverpod_test_sqlite/serverpod_test_sqlite_flutter/README.md
 cp README_subpackage.md tests/serverpod_test_sqlite/serverpod_test_sqlite_server/README.md
 cp README_subpackage.md tests/serverpod_test_sqlite/serverpod_test_sqlite_shared/README.md
 cp README_subpackage.md tests/serverpod_auth_test/serverpod_auth_test_flutter/README.md
@@ -138,10 +136,6 @@ cp README_subpackage.md modules/serverpod_auth/serverpod_auth_idp/serverpod_auth
 # cp README_subpackage.md modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_server/README.md
 # cp README_subpackage.md modules/serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server/README.md
 # cp README_subpackage.md modules/serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_client/README.md
-
-cp README_subpackage.md modules/legacy/serverpod_chat/serverpod_chat_server/README.md
-cp README_subpackage.md modules/legacy/serverpod_chat/serverpod_chat_client/README.md
-cp README_subpackage.md modules/legacy/serverpod_chat/serverpod_chat_flutter/README.md
 
 cp README_subpackage.md integrations/serverpod_cloud_storage_s3_compat/README.md
 cp README_subpackage.md integrations/serverpod_cloud_storage_s3/README.md

@@ -162,8 +162,6 @@ abstract class MessageLogEntry
     int? limit,
     int? offset,
     _i1.OrderByBuilder<MessageLogEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
     MessageLogEntryInclude? include,
   }) {
@@ -172,8 +170,6 @@ abstract class MessageLogEntry
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(MessageLogEntry.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(MessageLogEntry.t),
       include: include,
     );
@@ -413,8 +409,6 @@ class MessageLogEntryIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -459,8 +453,6 @@ class MessageLogEntryRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<MessageLogEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -470,8 +462,6 @@ class MessageLogEntryRepository {
       where: where?.call(MessageLogEntry.t),
       orderBy: orderBy?.call(MessageLogEntry.t),
       orderByList: orderByList?.call(MessageLogEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -502,8 +492,6 @@ class MessageLogEntryRepository {
     _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
     int? offset,
     _i1.OrderByBuilder<MessageLogEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -513,8 +501,6 @@ class MessageLogEntryRepository {
       where: where?.call(MessageLogEntry.t),
       orderBy: orderBy?.call(MessageLogEntry.t),
       orderByList: orderByList?.call(MessageLogEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -721,8 +707,6 @@ class MessageLogEntryRepository {
     int? offset,
     _i1.OrderByBuilder<MessageLogEntryTable>? orderBy,
     _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -733,8 +717,6 @@ class MessageLogEntryRepository {
       offset: offset,
       orderBy: orderBy?.call(MessageLogEntry.t),
       orderByList: orderByList?.call(MessageLogEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -755,8 +737,6 @@ class MessageLogEntryRepository {
     _i1.DatabaseSession session,
     List<MessageLogEntry> rows, {
     _i1.OrderByBuilder<MessageLogEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -765,8 +745,6 @@ class MessageLogEntryRepository {
       rows,
       orderBy: orderBy?.call(MessageLogEntry.t),
       orderByList: orderByList?.call(MessageLogEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -796,8 +774,6 @@ class MessageLogEntryRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<MessageLogEntryTable> where,
     _i1.OrderByBuilder<MessageLogEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -806,8 +782,6 @@ class MessageLogEntryRepository {
       where: where(MessageLogEntry.t),
       orderBy: orderBy?.call(MessageLogEntry.t),
       orderByList: orderByList?.call(MessageLogEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

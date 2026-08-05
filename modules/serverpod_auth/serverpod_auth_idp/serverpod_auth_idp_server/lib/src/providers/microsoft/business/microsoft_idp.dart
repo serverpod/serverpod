@@ -17,9 +17,10 @@ import 'microsoft_idp_utils.dart';
 ///
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
-class MicrosoftIdp {
+class MicrosoftIdp implements IdentityProvider {
   /// The method used when authenticating with the Microsoft identity provider.
-  static const String method = 'microsoft';
+  @override
+  String get method => 'microsoft';
 
   /// Admin operations to work with Microsoft-backed accounts.
   final MicrosoftIdpAdmin admin;
@@ -145,6 +146,24 @@ class MicrosoftIdp {
   /// Determines whether the current session has an associated Microsoft account.
   Future<bool> hasAccount(final Session session) async =>
       await utils.getAccount(session) != null;
+
+  /// Migrates [MicrosoftAccount]s from [userToRemoveId] to [userToKeepId].
+  @override
+  Future<void> mergeAuthUsers(
+    final Session session, {
+    required final UuidValue userToKeepId,
+    required final UuidValue userToRemoveId,
+    required final Transaction transaction,
+  }) async {
+    await MicrosoftAccount.db.updateWhere(
+      session,
+      where: (final t) => t.authUserId.equals(userToRemoveId),
+      columnValues: (final t) => [
+        t.authUserId(userToKeepId),
+      ],
+      transaction: transaction,
+    );
+  }
 }
 
 /// Extension to get the MicrosoftIdp instance from the AuthServices.

@@ -7,15 +7,12 @@ import 'package:test/test.dart';
 import '../lib/src/util.dart';
 import '../../serverpod_test_server/lib/test_util/custom_matcher.dart';
 
-const tempDirName = 'temp';
-
 void main() {
   final rootPath = path.join(Directory.current.path, '..', '..');
   final cliProjectPath = getServerpodCliProjectPath(rootPath: rootPath);
-  final tempPath = path.join(rootPath, tempDirName);
+  final tempPath = Directory.systemTemp.createTempSync('spb_').path;
 
   setUpAll(() async {
-    await Directory(tempPath).create();
     final pubGetProcess = await startProcess('dart', [
       'pub',
       'get',
@@ -480,9 +477,9 @@ void main() {
   });
 
   group(
-    'Given a created module project and a running docker environment',
+    'Given a created module project',
     () {
-      final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+      final (:projectName, commandRoot: _) = createRandomProjectName(tempPath);
 
       late Process createProcess;
 
@@ -504,28 +501,10 @@ void main() {
           },
         );
         assert((await createProcess.exitCode) == 0);
-
-        final docker = await startProcess(
-          'docker',
-          ['compose', 'up', '--build', '--detach'],
-          workingDirectory: commandRoot,
-          ignorePlatform: true,
-        );
-
-        assert((await docker.exitCode) == 0);
       });
 
-      tearDown(() async {
+      tearDown(() {
         createProcess.kill();
-
-        await runProcess(
-          'docker',
-          ['compose', 'down', '-v'],
-          workingDirectory: commandRoot,
-          skipBatExtentionOnWindows: true,
-        );
-
-        while (!await isNetworkPortAvailable(8090)) ;
       });
 
       test(
@@ -545,8 +524,5 @@ void main() {
         },
       );
     },
-    skip: Platform.isWindows
-        ? 'Windows does not support postgres docker image in github actions'
-        : null,
   );
 }

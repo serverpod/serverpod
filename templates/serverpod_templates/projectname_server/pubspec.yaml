@@ -9,11 +9,11 @@ environment:
 #resolution: workspace #--UNCOMMENT_LINE--#
 
 dependencies:
-  serverpod: 4.0.0-beta.0
+  serverpod: 4.0.0-beta.1
 
 dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
-  serverpod_test: 4.0.0-beta.0
+  serverpod_test: 4.0.0-beta.1
   test: ^1.25.5
 
 # {{#flutterApp}}
@@ -45,7 +45,8 @@ serverpod:
   # Companion Flutter apps that `serverpod start` can launch (Ctrl+R), keyed
   # by a display alias. The default device is the web server, opening the
   # machine's default browser when ready. All non-reserved properties are
-  # forwarded to `flutter run`. See the example below:
+  # forwarded to `flutter run`. For the best IDE debugging experience, use
+  # `chrome` or a native target as the device. See the example below:
   #
   # Admin:
   #   path: ../apps/admin_flutter

@@ -161,8 +161,6 @@ abstract class LogEntry
     int? limit,
     int? offset,
     _i1.OrderByBuilder<LogEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<LogEntryTable>? orderByList,
     LogEntryInclude? include,
   }) {
@@ -171,8 +169,6 @@ abstract class LogEntry
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(LogEntry.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(LogEntry.t),
       include: include,
     );
@@ -411,8 +407,6 @@ class LogEntryIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -457,8 +451,6 @@ class LogEntryRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<LogEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<LogEntryTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -468,8 +460,6 @@ class LogEntryRepository {
       where: where?.call(LogEntry.t),
       orderBy: orderBy?.call(LogEntry.t),
       orderByList: orderByList?.call(LogEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -500,8 +490,6 @@ class LogEntryRepository {
     _i1.WhereExpressionBuilder<LogEntryTable>? where,
     int? offset,
     _i1.OrderByBuilder<LogEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<LogEntryTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -511,8 +499,6 @@ class LogEntryRepository {
       where: where?.call(LogEntry.t),
       orderBy: orderBy?.call(LogEntry.t),
       orderByList: orderByList?.call(LogEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -717,8 +703,6 @@ class LogEntryRepository {
     int? offset,
     _i1.OrderByBuilder<LogEntryTable>? orderBy,
     _i1.OrderByListBuilder<LogEntryTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -729,8 +713,6 @@ class LogEntryRepository {
       offset: offset,
       orderBy: orderBy?.call(LogEntry.t),
       orderByList: orderByList?.call(LogEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -751,8 +733,6 @@ class LogEntryRepository {
     _i1.DatabaseSession session,
     List<LogEntry> rows, {
     _i1.OrderByBuilder<LogEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<LogEntryTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -761,8 +741,6 @@ class LogEntryRepository {
       rows,
       orderBy: orderBy?.call(LogEntry.t),
       orderByList: orderByList?.call(LogEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -792,8 +770,6 @@ class LogEntryRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<LogEntryTable> where,
     _i1.OrderByBuilder<LogEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<LogEntryTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -802,8 +778,6 @@ class LogEntryRepository {
       where: where(LogEntry.t),
       orderBy: orderBy?.call(LogEntry.t),
       orderByList: orderByList?.call(LogEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

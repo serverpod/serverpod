@@ -37,9 +37,6 @@ void main() {
     },
   );
 
-  // NOTE: This test must come after the previous, since registering a host
-  // protocol can not be undone. Otherwise, the test would not throw because
-  // the previous registration would leak to the next test.
   group(
     'Given a module protocol with two registered host protocols,',
     () {

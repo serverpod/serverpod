@@ -155,8 +155,6 @@ abstract class BleedRoot
     int? limit,
     int? offset,
     _i1.OrderByBuilder<BleedRootTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<BleedRootTable>? orderByList,
     BleedRootInclude? include,
   }) {
@@ -165,8 +163,6 @@ abstract class BleedRoot
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(BleedRoot.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(BleedRoot.t),
       include: include,
     );
@@ -367,8 +363,6 @@ class BleedRootIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -417,8 +411,6 @@ class BleedRootRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<BleedRootTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<BleedRootTable>? orderByList,
     _i1.Transaction? transaction,
     BleedRootInclude? include,
@@ -429,8 +421,6 @@ class BleedRootRepository {
       where: where?.call(BleedRoot.t),
       orderBy: orderBy?.call(BleedRoot.t),
       orderByList: orderByList?.call(BleedRoot.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -462,8 +452,6 @@ class BleedRootRepository {
     _i1.WhereExpressionBuilder<BleedRootTable>? where,
     int? offset,
     _i1.OrderByBuilder<BleedRootTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<BleedRootTable>? orderByList,
     _i1.Transaction? transaction,
     BleedRootInclude? include,
@@ -474,8 +462,6 @@ class BleedRootRepository {
       where: where?.call(BleedRoot.t),
       orderBy: orderBy?.call(BleedRoot.t),
       orderByList: orderByList?.call(BleedRoot.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -683,8 +669,6 @@ class BleedRootRepository {
     int? offset,
     _i1.OrderByBuilder<BleedRootTable>? orderBy,
     _i1.OrderByListBuilder<BleedRootTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -695,8 +679,6 @@ class BleedRootRepository {
       offset: offset,
       orderBy: orderBy?.call(BleedRoot.t),
       orderByList: orderByList?.call(BleedRoot.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -717,8 +699,6 @@ class BleedRootRepository {
     _i1.DatabaseSession session,
     List<BleedRoot> rows, {
     _i1.OrderByBuilder<BleedRootTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<BleedRootTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -727,8 +707,6 @@ class BleedRootRepository {
       rows,
       orderBy: orderBy?.call(BleedRoot.t),
       orderByList: orderByList?.call(BleedRoot.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -758,8 +736,6 @@ class BleedRootRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<BleedRootTable> where,
     _i1.OrderByBuilder<BleedRootTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<BleedRootTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -768,8 +744,6 @@ class BleedRootRepository {
       where: where(BleedRoot.t),
       orderBy: orderBy?.call(BleedRoot.t),
       orderByList: orderByList?.call(BleedRoot.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

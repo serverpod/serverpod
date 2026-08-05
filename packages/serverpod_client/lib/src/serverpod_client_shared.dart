@@ -1,13 +1,11 @@
 // ignore_for_file: deprecated_member_use_from_same_package
 
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:serverpod_client/src/client_method_stream_manager.dart';
 import 'package:serverpod_client/src/method_stream/method_stream_connection_details.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'serverpod_client_shared_private.dart';
 
@@ -17,21 +15,6 @@ import 'serverpod_client_io.dart'
 
 /// A callback with no parameters or return value.
 typedef VoidCallback = void Function();
-
-/// Status of the streaming connection.
-enum StreamingConnectionStatus {
-  /// Streaming connection is live.
-  connected,
-
-  /// Streaming connection is connecting.
-  connecting,
-
-  /// Streaming connection is disconnected.
-  disconnected,
-
-  /// Streaming connection is waiting to make a new connection attempt.
-  waitingToRetry,
-}
 
 /// Context for a method call.
 class MethodCallContext {
@@ -78,12 +61,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
   late final ServerpodClientRequestDelegate _requestDelegate;
 
-  WebSocketChannel? _webSocket;
-
-  Timer? _connectionTimer;
-
-  final List<VoidCallback> _websocketConnectionStatusListeners = [];
-
   ClientMethodStreamManager? _clientMethodStreamManager;
   ClientMethodStreamManager get _methodStreamManager {
     var methodStreamManager = _clientMethodStreamManager;
@@ -99,11 +76,10 @@ abstract class ServerpodClientShared extends EndpointCaller {
     return methodStreamManager;
   }
 
-  late bool _disconnectWebSocketStreamOnLostInternetConnection;
   late bool _disconnectMethodStreamsOnLostInternetConnection;
 
-  /// Full host name of the web socket endpoint.
-  /// E.g. "wss://example.com/websocket"
+  /// Host name of the web socket endpoint, without a path.
+  /// E.g. "wss://example.com/"
   Uri get _webSocketHost {
     var uri = Uri.parse(host);
     if (uri.scheme == 'http') {
@@ -111,23 +87,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     } else if (uri.scheme == 'https') {
       uri = uri.replace(scheme: 'wss');
     }
-    uri = uri.replace(path: '/websocket');
     return uri;
-  }
-
-  Future<String> get _webSocketHostWithAuth async {
-    var uri = _webSocketHost;
-
-    var auth = await authKeyProvider?.authHeaderValue;
-    if (auth != null) {
-      uri = uri.replace(
-        queryParameters: {
-          // Key must be unwrapped here because the server expects it plain.
-          'auth': unwrapAuthHeaderValue(auth),
-        },
-      );
-    }
-    return uri.toString();
   }
 
   /// The [SerializationManager] used to serialize objects sent to the server.
@@ -150,24 +110,9 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// Looks up module callers by their name. Overridden by generated code.
   Map<String, ModuleEndpointCaller> get moduleLookup;
 
-  Map<String, EndpointRef>? _consolidatedEndpointRefLookupCache;
-
-  Map<String, EndpointRef> get _consolidatedEndpointRefLookup {
-    if (_consolidatedEndpointRefLookupCache != null) {
-      return _consolidatedEndpointRefLookupCache!;
-    }
-
-    _consolidatedEndpointRefLookupCache = {};
-    _consolidatedEndpointRefLookupCache!.addAll(endpointRefLookup);
-    for (var module in moduleLookup.values) {
-      _consolidatedEndpointRefLookupCache!.addAll(module.endpointRefLookup);
-    }
-
-    return _consolidatedEndpointRefLookupCache!;
-  }
-
-  /// Timeout when opening a web socket connection. If no message has been
-  /// received within the timeout duration the socket will be closed.
+  /// Timeout when opening a web socket connection for a streaming method
+  /// call. If the connection has not been established within the timeout
+  /// duration the socket will be closed.
   final Duration streamingConnectionTimeout;
 
   /// Timeout when calling a server endpoint. If no response has been received, defaults to 20 seconds.
@@ -184,8 +129,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
   /// Callback when any call to the server succeeds.
   final void Function(MethodCallContext callContext)? onSucceededCall;
-
-  bool _firstMessageReceived = false;
 
   ConnectivityMonitor? _connectivityMonitor;
 
@@ -204,11 +147,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
     if (_disconnectMethodStreamsOnLostInternetConnection) {
       closeStreamingMethodConnections();
-    }
-
-    if (_disconnectWebSocketStreamOnLostInternetConnection &&
-        _webSocket != null) {
-      closeStreamingConnection();
     }
   }
 
@@ -249,139 +187,16 @@ abstract class ServerpodClientShared extends EndpointCaller {
     disconnectStreamsOnLostInternetConnection ??= false;
     _disconnectMethodStreamsOnLostInternetConnection =
         disconnectStreamsOnLostInternetConnection;
-    _disconnectWebSocketStreamOnLostInternetConnection =
-        disconnectStreamsOnLostInternetConnection;
 
     // Use authKeyProvider if provided, otherwise fall back to deprecated
     // authenticationKeyManager for backwards compatibility.
     authKeyProvider ??= authenticationKeyManager;
   }
 
-  /// Handles a message received from the WebSocket stream. Typically, this
-  /// method shouldn't be called directly.
-  void _handleRawWebSocketMessage(String message) {
-    Map data = jsonDecode(message);
-
-    String? command = data['command'];
-    if (command != null) {
-      if (command == 'pong') {
-        // Do nothing.
-      }
-      return;
-    }
-
-    String endpoint = data['endpoint'];
-    Map<String, dynamic> objectData = data['object'];
-    var model = serializationManager.deserializeByClassName(objectData);
-    if (model == null) {
-      throw const ServerpodClientException('serializable model is null', 0);
-    }
-
-    var endpointRef = _consolidatedEndpointRefLookup[endpoint];
-    if (endpointRef == null) {
-      throw ServerpodClientException('Endpoint $endpoint was not found', 0);
-    }
-    endpointRef._streamController.sink.add(model);
-  }
-
-  /// Sends a message to the servers WebSocket stream. Typically, this method
-  /// shouldn't be called directly, instead use [sendToStream].
-  Future<void> _sendRawWebSocketMessage(String message) async {
-    if (_webSocket == null) {
-      throw const ServerpodClientException('WebSocket is not connected', 0);
-    }
-    _webSocket!.sink.add(message);
-  }
-
-  Future<void> _sendSerializableObjectToStream(
-    String endpoint,
-    SerializableModel message,
-  ) async {
-    var data = {
-      'endpoint': endpoint,
-      'object': {
-        'className': serializationManager.getClassNameForObject(message),
-        'data': message,
-      },
-    };
-
-    var serialization = SerializationManager.encode(data);
-    await _sendRawWebSocketMessage(serialization);
-  }
-
-  Future<void> _sendControlCommandToStream(
-    String command, [
-    Map<String, dynamic> args = const {},
-  ]) async {
-    var data = {'command': command, 'args': args};
-    var serialization = SerializationManager.encode(data);
-    await _sendRawWebSocketMessage(serialization);
-  }
-
   /// Closes all open connections to the server.
   void close() {
     _requestDelegate.close();
-    closeStreamingConnection();
     closeStreamingMethodConnections();
-  }
-
-  void _cancelConnectionTimer() {
-    _connectionTimer?.cancel();
-    _connectionTimer = null;
-  }
-
-  /// Open a streaming connection to the server.
-  @Deprecated(
-    'This method was used in the old streaming API and will be removed in future versions. '
-    'Use endpoints with stream parameters or return type to open a streaming connection directly.',
-  )
-  Future<void> openStreamingConnection({
-    bool disconnectOnLostInternetConnection = true,
-  }) async {
-    if (_webSocket != null) return;
-    if (disconnectOnLostInternetConnection) {
-      assert(
-        _connectivityMonitor != null,
-        'To enable automatic disconnect on lost internet connection, you need to set the connectivityMonitor property.',
-      );
-    }
-    _disconnectWebSocketStreamOnLostInternetConnection =
-        disconnectOnLostInternetConnection;
-
-    try {
-      // Connect to the server.
-      _firstMessageReceived = false;
-      var host = await _webSocketHostWithAuth;
-      _webSocket = WebSocketChannel.connect(Uri.parse(host));
-      await _webSocket?.ready;
-
-      // We are sending the ping message to the server, so that we are
-      // guaranteed to get a first message in return. This will verify that we
-      // have an open connection to the server.
-      await _sendControlCommandToStream('ping');
-      unawaited(_listenToWebSocketStream());
-
-      // Time out and close the connection if we haven't got a pong response
-      // within the timeout period.
-      _connectionTimer = Timer(streamingConnectionTimeout, () async {
-        if (!_firstMessageReceived) {
-          await _webSocket?.sink.close();
-          _webSocket = null;
-          _cancelConnectionTimer();
-          _notifyWebSocketConnectionStatusListeners();
-        }
-      });
-    } catch (e) {
-      // ignore: avoid_print
-      print('Failed to open streaming connection: $e');
-      _webSocket = null;
-      _cancelConnectionTimer();
-      rethrow;
-    }
-
-    // If everything is going according to plan, we are now connected to the
-    // server.
-    _notifyWebSocketConnectionStatusListeners();
   }
 
   /// Closes all open streaming method connections.
@@ -395,116 +210,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
     Object? exception = const WebSocketClosedException(),
   }) async {
     await _methodStreamManager.closeAllConnections(exception);
-  }
-
-  /// Closes the streaming connection if it is open.
-  @Deprecated(
-    'This method was used in the old streaming API and will be removed in future versions. '
-    'Use endpoints with stream parameters or return type to resolve the streaming connection status directly.',
-  )
-  Future<void> closeStreamingConnection() async {
-    await _webSocket?.sink.close();
-    _webSocket = null;
-    _cancelConnectionTimer();
-
-    // Notify listeners that websocket has been closed
-    _notifyWebSocketConnectionStatusListeners();
-
-    // Hack for dart:io version of websocket to get time to close the stream
-    // in _listenToWebSocket
-    await Future.delayed(const Duration(milliseconds: 100));
-  }
-
-  Future<void> _listenToWebSocketStream() async {
-    if (_webSocket == null) return;
-
-    try {
-      await for (String message in _webSocket!.stream) {
-        _handleRawWebSocketMessage(message);
-        if (!_firstMessageReceived) {
-          _firstMessageReceived = true;
-          _notifyWebSocketConnectionStatusListeners();
-        }
-      }
-      _webSocket = null;
-      _cancelConnectionTimer();
-    } catch (e) {
-      // ignore: avoid_print
-      print('Error while listening to websocket stream: $e');
-      _webSocket = null;
-      _cancelConnectionTimer();
-    }
-    _notifyWebSocketConnectionStatusListeners();
-  }
-
-  /// Adds a callback for when the [streamingConnectionStatus] property is
-  /// changed.
-  @Deprecated(
-    'This method was used in the old streaming API and will be removed in future versions. '
-    'Use endpoints with stream parameters or return type to resolve the streaming connection status directly.',
-  )
-  void addStreamingConnectionStatusListener(VoidCallback listener) {
-    _websocketConnectionStatusListeners.add(listener);
-  }
-
-  /// Removes a connection status listener.
-  @Deprecated(
-    'This method was used in the old streaming API and will be removed in future versions. '
-    'Use endpoints with stream parameters or return type to resolve the streaming connection status directly.',
-  )
-  void removeStreamingConnectionStatusListener(VoidCallback listener) {
-    _websocketConnectionStatusListeners.remove(listener);
-  }
-
-  /// The previous streaming connection status (used to detect changes in
-  /// connection status, so that listeners can be notified)
-  StreamingConnectionStatus? _prevStreamingConnectionStatus;
-
-  /// Checks if the streaming connection status has changed, and if so,
-  /// notifies listeners.
-  void _notifyWebSocketConnectionStatusListeners() {
-    var currStreamingConnectionStatus = streamingConnectionStatus;
-    if (currStreamingConnectionStatus == _prevStreamingConnectionStatus) return;
-
-    _prevStreamingConnectionStatus = currStreamingConnectionStatus;
-    for (var listener in _websocketConnectionStatusListeners) {
-      listener();
-    }
-  }
-
-  /// Returns the current status of the streaming connection. It can be one of
-  /// connected, connecting, or disconnected. Use the
-  /// [StreamingConnectionHandler] if you want to automatically reconnect if
-  /// the connection is lost.
-  @Deprecated(
-    'This method was used in the old streaming API and will be removed in future versions. '
-    'Use endpoints with stream parameters or return type to resolve the streaming connection status directly.',
-  )
-  StreamingConnectionStatus get streamingConnectionStatus {
-    if (_webSocket != null && _firstMessageReceived) {
-      return StreamingConnectionStatus.connected;
-    } else if (_webSocket != null) {
-      return StreamingConnectionStatus.connecting;
-    } else {
-      return StreamingConnectionStatus.disconnected;
-    }
-  }
-
-  /// Updates the authentication key if the streaming connection is open.
-  /// Note, the provided key will be converted/wrapped as a proper authentication header value
-  /// when sent to the server.
-  @Deprecated(
-    'This method was used in the old streaming API and will be removed in a future version. '
-    'Use streams as parameters or return type of an endpoint to resolve the authenticated user directly.',
-  )
-  Future<void> updateStreamingConnectionAuthenticationKey() async {
-    if (streamingConnectionStatus == StreamingConnectionStatus.disconnected) {
-      return;
-    }
-    await _sendControlCommandToStream(
-      'auth',
-      {'key': await authKeyProvider?.authHeaderValue},
-    );
   }
 
   @override
@@ -741,7 +446,7 @@ abstract class EndpointCaller {
   /// final connectedIdps = await client.auth.idp.getConnectedIdps();
   ///
   /// /// Look up an Idp by its name, in this case, the string "email"
-  /// final userHasEmailAndPassword = connectedIdps.has(EmailIdp.method);
+  /// final userHasEmailAndPassword = connectedIdps.has('email');
   ///
   /// /// Look up an Idp by its type
   /// final userHasGoogleAccount = connectedIdps.has<EndpointGoogleIdpBase>();
@@ -787,31 +492,6 @@ abstract class EndpointRef {
 
   /// The name of the endpoint this reference is connected to.
   String get name;
-
-  /// The stream controller handles the stream of [SerializableModel] sent
-  /// from the server endpoint to the client, if it supports streaming.
-  var _streamController = StreamController<SerializableModel>();
-
-  /// Stream of messages sent from an endpoint that supports streaming.
-  Stream<SerializableModel> get stream => _streamController.stream;
-
-  /// Sends a message to the endpoint's stream.
-  Future<void> sendStreamMessage(SerializableModel message) async {
-    return client._sendSerializableObjectToStream(name, message);
-  }
-
-  /// Resets web socket stream, so it's possible to re-listen to endpoint
-  /// streams.
-  void resetStream() {
-    try {
-      if (!_streamController.isClosed) {
-        _streamController.close();
-      }
-    } catch (e) {
-      // Just in case, an issue happens when closing the stream.
-    }
-    _streamController = StreamController<SerializableModel>();
-  }
 }
 
 /// Thrown if not able to get an endpoint on the client by type.

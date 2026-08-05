@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_dependency_tracker.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_log_event.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
@@ -287,6 +288,17 @@ class FlutterAppManager {
 
     runtime.process = process;
     runtime.spawnInFlight = false;
+
+    // Configured targets are reported by `cli.session_start`; this is the
+    // usage side, so a platform declared once and never run does not weigh as
+    // much as one launched every session.
+    unawaited(
+      cliAnalytics.captureFlutterLaunch(
+        serverDir: p.joinAll(serverPackageDirectoryPathParts),
+        device: runtime.app.device,
+        isRelaunch: isRelaunch,
+      ),
+    );
 
     unawaited(
       _connectAfterLaunch(

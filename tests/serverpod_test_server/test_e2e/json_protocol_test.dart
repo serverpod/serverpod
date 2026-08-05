@@ -1,31 +1,9 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
-import 'package:web_socket/web_socket.dart';
-import '../test_integration/websockets/websocket_extensions.dart';
-
-Future<dynamic> _getWebsocketMessage(
-  WebSocket websocket,
-) async {
-  try {
-    return await websocket.textEvents
-        .timeout(
-          Duration(seconds: 5),
-          onTimeout: (sink) => throw TimeoutException(
-            'Message was not received within the timeout period.',
-          ),
-        )
-        .firstWhere(
-          (event) => event.contains('serverOnlyScopedFieldModel'),
-        );
-  } catch (e) {
-    return e;
-  }
-}
 
 void main() {
   group("Given a Serverpod server when fetching an object, ", () {
@@ -77,97 +55,6 @@ void main() {
   );
 
   group(
-    "Given a Serverpod server with WebSocket connection, when listening for a serialized object, ",
-    () {
-      late dynamic message;
-
-      setUpAll(() async {
-        WebSocket websocket = await WebSocket.connect(
-          Uri.parse(serverEndpointWebsocketUrl),
-        );
-
-        message = await _getWebsocketMessage(websocket);
-        await websocket.close();
-        if (message is Exception) throw message;
-      });
-
-      test(
-        'then the server should respond with a string message',
-        () async {
-          expect(message, isA<String>());
-        },
-      );
-
-      test(
-        'then the serialized response body should contain "endpoint" key',
-        () async {
-          Map responseMap = jsonDecode(message);
-          expect(responseMap, contains('endpoint'));
-        },
-      );
-
-      test(
-        'then the serialized response body should contain "object" key',
-        () async {
-          Map responseMap = jsonDecode(message);
-          expect(responseMap, contains('object'));
-        },
-      );
-
-      test(
-        'then the "object" json object inside serialized response body should contain "className" key',
-        () async {
-          Map responseMap = jsonDecode(message);
-          Map objectMap = responseMap['object'];
-          expect(objectMap, contains('className'));
-        },
-      );
-
-      test(
-        'then the "object" json object inside serialized response body should contain "data" key',
-        () async {
-          Map responseMap = jsonDecode(message);
-          Map objectMap = responseMap['object'];
-          expect(objectMap, contains('data'));
-        },
-      );
-    },
-  );
-
-  group(
-    "Given a Serverpod server with WebSocket connection, when listening for a serialized object with server only field, ",
-    () {
-      late dynamic message;
-
-      setUpAll(() async {
-        WebSocket websocket = await WebSocket.connect(
-          Uri.parse(serverEndpointWebsocketUrl),
-        );
-
-        message = await _getWebsocketMessage(websocket);
-        await websocket.close();
-        if (message is Exception) throw message;
-      });
-
-      test(
-        'then the "data" json object should not contain server-only field',
-        () async {
-          Map? nestedMap = jsonDecode(message)['object']?['data'];
-          expect(nestedMap, isNot(contains('serverOnlyScope')));
-        },
-      );
-
-      test(
-        'then the "nested" json object should not contain server-only field',
-        () async {
-          Map? nestedMap = jsonDecode(message)['object']?['data']?['nested'];
-          expect(nestedMap, isNot(contains('serverOnlyScope')));
-        },
-      );
-    },
-  );
-
-  group(
     "Given a Serverpod server when fetching an custom class object with server only field, ",
     () {
       late http.Response response;
@@ -183,31 +70,6 @@ void main() {
         Map jsonMap = jsonDecode(response.body);
         expect(jsonMap, isNot(contains('serverOnlyValue')));
       });
-    },
-  );
-
-  group(
-    "Given a Serverpod server with WebSocket connection, when listening for a serialized custom class object with server only field, ",
-    () {
-      late dynamic message;
-
-      setUpAll(() async {
-        WebSocket websocket = await WebSocket.connect(
-          Uri.parse(serverEndpointWebsocketUrl),
-        );
-
-        message = await _getWebsocketMessage(websocket);
-        await websocket.close();
-        if (message is Exception) throw message;
-      });
-
-      test(
-        'then the "data" json object should not contain server-only field',
-        () async {
-          Map? nestedMap = jsonDecode(message)['object']?['data'];
-          expect(nestedMap, isNot(contains('serverOnlyValue')));
-        },
-      );
     },
   );
 

@@ -19,3 +19,6 @@ config/firebase_service_account_key.json
 
 # Embedded PostgreSQL runtime artifacts (data dir, sockets, pidfiles)
 .serverpod/
+
+# SQLite databases created by the ephemeral test database
+**/sp_*.db*

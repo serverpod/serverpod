@@ -88,8 +88,6 @@ abstract class Channel
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ChannelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChannelTable>? orderByList,
     ChannelInclude? include,
   }) {
@@ -98,8 +96,6 @@ abstract class Channel
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Channel.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(Channel.t),
       include: include,
     );
@@ -200,8 +196,6 @@ class ChannelIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -246,8 +240,6 @@ class ChannelRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ChannelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChannelTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -257,8 +249,6 @@ class ChannelRepository {
       where: where?.call(Channel.t),
       orderBy: orderBy?.call(Channel.t),
       orderByList: orderByList?.call(Channel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -289,8 +279,6 @@ class ChannelRepository {
     _i1.WhereExpressionBuilder<ChannelTable>? where,
     int? offset,
     _i1.OrderByBuilder<ChannelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChannelTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -300,8 +288,6 @@ class ChannelRepository {
       where: where?.call(Channel.t),
       orderBy: orderBy?.call(Channel.t),
       orderByList: orderByList?.call(Channel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -506,8 +492,6 @@ class ChannelRepository {
     int? offset,
     _i1.OrderByBuilder<ChannelTable>? orderBy,
     _i1.OrderByListBuilder<ChannelTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -518,8 +502,6 @@ class ChannelRepository {
       offset: offset,
       orderBy: orderBy?.call(Channel.t),
       orderByList: orderByList?.call(Channel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -540,8 +522,6 @@ class ChannelRepository {
     _i1.DatabaseSession session,
     List<Channel> rows, {
     _i1.OrderByBuilder<ChannelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChannelTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -550,8 +530,6 @@ class ChannelRepository {
       rows,
       orderBy: orderBy?.call(Channel.t),
       orderByList: orderByList?.call(Channel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -581,8 +559,6 @@ class ChannelRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ChannelTable> where,
     _i1.OrderByBuilder<ChannelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChannelTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -591,8 +567,6 @@ class ChannelRepository {
       where: where(Channel.t),
       orderBy: orderBy?.call(Channel.t),
       orderByList: orderByList?.call(Channel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

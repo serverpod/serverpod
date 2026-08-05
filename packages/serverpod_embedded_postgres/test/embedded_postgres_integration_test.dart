@@ -24,15 +24,9 @@ void main() {
     if (tmpRoot.existsSync()) tmpRoot.deleteSync(recursive: true);
   });
 
-  // Default transport is UnixTransport. Skip on platforms without Dart UDS
-  // support (Windows < Dart 3.11).
-  var udsSkip = hasUnixSocketSupport()
-      ? null
-      : 'Unix domain sockets not available on this Dart/platform';
-
-  group('Given a fresh project layout', skip: udsSkip, () {
+  group('Given a fresh project layout', () {
     test(
-      'when EmbeddedPostgres.start runs with UnixTransport defaults '
+      'when EmbeddedPostgres.start runs with transport defaults '
       'then endpoint connects, SELECT 1 returns 1, and stop() releases the pidfile.',
       () async {
         var pgDataDir = Directory(p.join(tmpRoot.path, '.serverpod', 'pgdata'));
@@ -47,6 +41,7 @@ void main() {
 
         expect(pg_.isRunning, isTrue);
         expect(pg_.pid, isNotNull);
+        expect(pg_.endpoint.isUnixSocket, hasUnixSocketSupport());
 
         var conn = await pg.Connection.open(
           pg_.endpoint,
@@ -74,7 +69,7 @@ void main() {
             p.join(tmpRoot.path, '.serverpod', 'postgres.password'),
           ).existsSync(),
           isTrue,
-          reason: 'fresh Unix clusters seed a password for a later TCP switch',
+          reason: 'fresh clusters persist a password for TCP connections',
         );
       },
       timeout: const Timeout(Duration(seconds: 120)),

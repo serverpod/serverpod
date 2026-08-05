@@ -120,8 +120,6 @@ abstract class Organization
     int? limit,
     int? offset,
     _i1.OrderByBuilder<OrganizationTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<OrganizationTable>? orderByList,
     OrganizationInclude? include,
   }) {
@@ -130,8 +128,6 @@ abstract class Organization
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Organization.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(Organization.t),
       include: include,
     );
@@ -315,8 +311,6 @@ class OrganizationIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -369,8 +363,6 @@ class OrganizationRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<OrganizationTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<OrganizationTable>? orderByList,
     _i1.Transaction? transaction,
     OrganizationInclude? include,
@@ -381,8 +373,6 @@ class OrganizationRepository {
       where: where?.call(Organization.t),
       orderBy: orderBy?.call(Organization.t),
       orderByList: orderByList?.call(Organization.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -414,8 +404,6 @@ class OrganizationRepository {
     _i1.WhereExpressionBuilder<OrganizationTable>? where,
     int? offset,
     _i1.OrderByBuilder<OrganizationTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<OrganizationTable>? orderByList,
     _i1.Transaction? transaction,
     OrganizationInclude? include,
@@ -426,8 +414,6 @@ class OrganizationRepository {
       where: where?.call(Organization.t),
       orderBy: orderBy?.call(Organization.t),
       orderByList: orderByList?.call(Organization.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -635,8 +621,6 @@ class OrganizationRepository {
     int? offset,
     _i1.OrderByBuilder<OrganizationTable>? orderBy,
     _i1.OrderByListBuilder<OrganizationTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -647,8 +631,6 @@ class OrganizationRepository {
       offset: offset,
       orderBy: orderBy?.call(Organization.t),
       orderByList: orderByList?.call(Organization.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -669,8 +651,6 @@ class OrganizationRepository {
     _i1.DatabaseSession session,
     List<Organization> rows, {
     _i1.OrderByBuilder<OrganizationTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<OrganizationTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -679,8 +659,6 @@ class OrganizationRepository {
       rows,
       orderBy: orderBy?.call(Organization.t),
       orderByList: orderByList?.call(Organization.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -710,8 +688,6 @@ class OrganizationRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<OrganizationTable> where,
     _i1.OrderByBuilder<OrganizationTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<OrganizationTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -720,8 +696,6 @@ class OrganizationRepository {
       where: where(Organization.t),
       orderBy: orderBy?.call(Organization.t),
       orderByList: orderByList?.call(Organization.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

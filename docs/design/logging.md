@@ -162,10 +162,9 @@ class SessionClose {
   final StackTrace? stackTrace;
 }
 
-sealed class SessionEntry { /* sessionId, order, time, messageId */ }
+sealed class SessionEntry { /* sessionId, order, time */ }
 class SessionLogEntry extends SessionEntry { /* level, message, error, stackTrace */ }
 class SessionQueryEntry extends SessionEntry { /* query, duration, slow, numRowsAffected, error, stackTrace */ }
-class SessionMessageEntry extends SessionEntry { /* endpoint, messageName, duration, slow, error, stackTrace */ }
 
 abstract class SessionLogWriter {
   Future<void> open(SessionOpen event);
@@ -240,9 +239,9 @@ Available to any VM-service client that subscribes to the `Extension` stream. Th
 
 **`TextSessionLogWriter`** - emits session events as aligned columnar text (TIME / ID / TYPE / CONTEXT / DETAILS) directly to stdout (stderr for errors). Renamed from the previous `SessionTextStdOutLogWriter`; wire format unchanged.
 
-**`JsonSessionLogWriter`** - emits session events as single-line JSON to stdout (stderr for errors). Every session opens and closes with a `protocol.SessionLogEntry` row; log/query/message entries emit `protocol.LogEntry` / `QueryLogEntry` / `MessageLogEntry` rows keyed by a synthetic per-session `sessionLogId`. Renamed from `JsonStdOutLogWriter`.
+**`JsonSessionLogWriter`** - emits session events as single-line JSON to stdout (stderr for errors). Every session opens and closes with a `protocol.SessionLogEntry` row; log/query entries emit `protocol.LogEntry` / `QueryLogEntry` rows keyed by a synthetic per-session `sessionLogId`. Renamed from `JsonStdOutLogWriter`.
 
-**`DatabaseSessionLogWriter`** - persists typed session events to `serverpod_session_log` / `serverpod_log` / `serverpod_query_log` / `serverpod_message_log`. Consumes the typed records directly, so the generated `TableRow` classes stay internal to this writer. The writer is created before the database is up and attaches its internal `Session` later via `attach(session)`; before that it's a no-op.
+**`DatabaseSessionLogWriter`** - persists typed session events to `serverpod_session_log` / `serverpod_log` / `serverpod_query_log`. Consumes the typed records directly, so the generated `TableRow` classes stay internal to this writer. The writer is created before the database is up and attaches its internal `Session` later via `attach(session)`; before that it's a no-op.
 
 **`VmServiceSessionLogWriter`** - session counterpart of `VmServiceLogWriter`. Emits session events on the same `ext.serverpod.log` wire channel, reusing the existing `scope_start` / `log` / `scope_end` event types so the current CLI `handleServerLogEvent` keeps working. Session-specific fields (kind, endpoint, method, duration, slow, numQueries, …) are namespaced under a top-level `session` sub-object that session-aware consumers can unpack.
 
@@ -348,7 +347,7 @@ In TUI mode the CLI also subscribes to the server process's `ext.serverpod.log` 
 
 ### Session integration
 
-`SessionLogManager` builds a `SessionOpen` record in its constructor (sessionId, kind, label, serverId, endpoint, method, futureCallName) and dispatches it through `sessionLog.open(...)`. Query / message / log dispatches build `SessionQueryEntry` / `SessionMessageEntry` / `SessionLogEntry` records and call `sessionLog.record(...)`. At teardown `finalizeLog` builds a `SessionClose` (duration, success, slow, numQueries, authenticatedUserId, error, stackTrace) and calls `sessionLog.close(...)`. Order is assigned by the producer at call time so persisted order matches caller order even when writes race downstream.
+`SessionLogManager` builds a `SessionOpen` record in its constructor (sessionId, kind, label, serverId, endpoint, method, futureCallName) and dispatches it through `sessionLog.open(...)`. Query / log dispatches build `SessionQueryEntry` / `SessionLogEntry` records and call `sessionLog.record(...)`. At teardown `finalizeLog` builds a `SessionClose` (duration, success, slow, numQueries, authenticatedUserId, error, stackTrace) and calls `sessionLog.close(...)`. Order is assigned by the producer at call time so persisted order matches caller order even when writes race downstream.
 
 Long-lived streaming sessions with `logStreamingSessionsContinuously: false` buffer `SessionEntry` records in memory and flush them at `finalizeLog`. The session-open `SessionOpen` is deferred to the same point so a session that produces no events is never advertised to the chain.
 

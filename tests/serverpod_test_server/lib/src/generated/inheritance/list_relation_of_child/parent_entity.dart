@@ -86,8 +86,6 @@ abstract class ParentEntity
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ParentEntityTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ParentEntityTable>? orderByList,
     ParentEntityInclude? include,
   }) {
@@ -96,8 +94,6 @@ abstract class ParentEntity
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ParentEntity.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(ParentEntity.t),
       include: include,
     );
@@ -216,8 +212,6 @@ class ParentEntityIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -270,8 +264,6 @@ class ParentEntityRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ParentEntityTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ParentEntityTable>? orderByList,
     _i1.Transaction? transaction,
     ParentEntityInclude? include,
@@ -282,8 +274,6 @@ class ParentEntityRepository {
       where: where?.call(ParentEntity.t),
       orderBy: orderBy?.call(ParentEntity.t),
       orderByList: orderByList?.call(ParentEntity.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -315,8 +305,6 @@ class ParentEntityRepository {
     _i1.WhereExpressionBuilder<ParentEntityTable>? where,
     int? offset,
     _i1.OrderByBuilder<ParentEntityTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ParentEntityTable>? orderByList,
     _i1.Transaction? transaction,
     ParentEntityInclude? include,
@@ -327,8 +315,6 @@ class ParentEntityRepository {
       where: where?.call(ParentEntity.t),
       orderBy: orderBy?.call(ParentEntity.t),
       orderByList: orderByList?.call(ParentEntity.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -536,8 +522,6 @@ class ParentEntityRepository {
     int? offset,
     _i1.OrderByBuilder<ParentEntityTable>? orderBy,
     _i1.OrderByListBuilder<ParentEntityTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -548,8 +532,6 @@ class ParentEntityRepository {
       offset: offset,
       orderBy: orderBy?.call(ParentEntity.t),
       orderByList: orderByList?.call(ParentEntity.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -570,8 +552,6 @@ class ParentEntityRepository {
     _i1.DatabaseSession session,
     List<ParentEntity> rows, {
     _i1.OrderByBuilder<ParentEntityTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ParentEntityTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -580,8 +560,6 @@ class ParentEntityRepository {
       rows,
       orderBy: orderBy?.call(ParentEntity.t),
       orderByList: orderByList?.call(ParentEntity.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -611,8 +589,6 @@ class ParentEntityRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ParentEntityTable> where,
     _i1.OrderByBuilder<ParentEntityTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ParentEntityTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -621,8 +597,6 @@ class ParentEntityRepository {
       where: where(ParentEntity.t),
       orderBy: orderBy?.call(ParentEntity.t),
       orderByList: orderByList?.call(ParentEntity.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

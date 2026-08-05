@@ -4,7 +4,6 @@ import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
 
-import '../../test_tags.dart';
 import '../../test_tools/serverpod_test_tools.dart';
 import '../test_utils/email_idp_test_fixture.dart';
 
@@ -12,7 +11,6 @@ void main() {
   withServerpod(
     'Given existing email account',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late UuidValue authUserId;
@@ -126,7 +124,6 @@ void main() {
   withServerpod(
     'Given non-existing email account',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
@@ -170,7 +167,6 @@ void main() {
     /// Disabling rollback database since we use separate transaction for
     /// logging failed sign in attempts.
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late AuthUserModel authUser;
       late Session session;
@@ -317,7 +313,6 @@ void main() {
     /// Disabling rollback database since we use separate transaction for
     /// logging failed sign in attempts.
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       const email = 'test@serverpod.dev';
@@ -397,7 +392,6 @@ void main() {
     /// Disabling rollback database since we use separate transaction for
     /// logging failed sign in attempts.
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       const email = 'test@serverpod.dev';
@@ -477,7 +471,6 @@ void main() {
     /// Disabling rollback database since we use separate transaction for
     /// logging failed sign in attempts.
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late UuidValue authUserId;

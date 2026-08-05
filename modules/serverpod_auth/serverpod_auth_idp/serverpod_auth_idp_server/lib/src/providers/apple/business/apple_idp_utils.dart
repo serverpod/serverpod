@@ -37,6 +37,9 @@ typedef AppleAuthSuccess = ({
 /// But for most cases, the methods exposed by [AppleIdp] and [AppleIdpAdmin] should
 /// be sufficient.
 class AppleIdpUtils {
+  /// The method used when authenticating with the Apple identity provider.
+  String get method => 'apple';
+
   /// Configuration for the Apple identity provider.
   final AppleIdpConfig? config;
 
@@ -241,7 +244,7 @@ class AppleIdpUtils {
         await _tokenManager.revokeAllTokens(
           session,
           authUserId: appleAccount.authUserId,
-          method: AppleIdp.method,
+          method: method,
         );
 
         if (notification is AppleServerNotificationAccountDelete) {

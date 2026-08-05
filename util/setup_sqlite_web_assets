@@ -1,0 +1,127 @@
+#!/bin/bash
+
+# Provisions the two files that a client-side SQLite database needs in a
+# browser, for the test packages that run browser suites.
+#
+# `sqlite_async` loads sqlite3 as WebAssembly and runs it in a web worker, so a
+# page opening a database has to serve:
+#
+#   sqlite3.wasm  - released by the `sqlite3` package
+#   db_worker.js  - released by the `sqlite_async` package
+#
+# Both are downloaded at the version the package resolved to, since neither
+# carries a version negotiation. This is the setup applications follow too, as
+# documented in https://pub.dev/packages/sqlite_async#web - the only difference
+# is that an application puts the files in `web/` by hand.
+#
+# `SqlitePoolManager` leaves `WebSqliteOptions` at its defaults, which name both
+# files relative to the page. `dart test` serves a browser suite from the
+# directory of its test file and `flutter test` serves the package's `test/`
+# directory, so both files are placed next to every test file. They are
+# gitignored - this script regenerates them.
+
+if [ ! -f util/.serverpod_util_root ]; then
+    echo "Run this script from the root of the Serverpod repository"
+    echo "I.e. util/setup_sqlite_web_assets"
+    exit 1
+fi
+
+# Makes script exit on first non-zero error code
+set -e
+
+# Packages with browser test suites that open a client-side database.
+PACKAGES=(
+    "tests/serverpod_test_sqlite/serverpod_test_sqlite_client"
+    "tests/serverpod_test_sqlite/serverpod_test_sqlite_flutter"
+)
+
+WASM_RELEASES="https://github.com/simolus3/sqlite3.dart/releases/download"
+WORKER_RELEASES="https://github.com/powersync-ja/sqlite_async.dart/releases/download"
+CACHE_DIR="$(pwd)/.serverpod/web_assets"
+
+mkdir -p "$CACHE_DIR"
+
+# The version a package resolved a dependency to, read from its lockfile.
+resolved_version() {
+    local package="$1"
+    local dependency="$2"
+    if [ ! -f "$package/pubspec.lock" ]; then
+        echo "### $package is not resolved - run 'melos bootstrap' first" >&2
+        exit 1
+    fi
+    awk -v dependency="  $dependency:" '
+        $0 == dependency { found = 1 }
+        found && /^    version:/ {
+            gsub(/["  ]/, "", $2)
+            print $2
+            exit
+        }
+    ' "$package/pubspec.lock"
+}
+
+# Downloads <url> to the cache as <name>, unless it is already there.
+download_asset() {
+    local name="$1"
+    local url="$2"
+    if [ -f "$CACHE_DIR/$name" ]; then
+        return
+    fi
+    echo "### Downloading $name from $url"
+    if ! curl --silent --show-error --location --fail --max-time 300 \
+        --output "$CACHE_DIR/$name.part" "$url"; then
+        rm -f "$CACHE_DIR/$name.part"
+        echo "### Could not download $url" >&2
+        exit 1
+    fi
+    mv "$CACHE_DIR/$name.part" "$CACHE_DIR/$name"
+}
+
+# Hard link where possible, so one download serves every test directory.
+link_or_copy() {
+    local source="$1"
+    local target="$2"
+    rm -f "$target"
+    ln "$source" "$target" 2>/dev/null || cp "$source" "$target"
+}
+
+for package in "${PACKAGES[@]}"; do
+    echo "### Provisioning SQLite web assets for $package"
+
+    sqlite3_version="$(resolved_version "$package" sqlite3)"
+    sqlite_async_version="$(resolved_version "$package" sqlite_async)"
+    if [ -z "$sqlite3_version" ] || [ -z "$sqlite_async_version" ]; then
+        echo "### No resolved sqlite3/sqlite_async version in $package/pubspec.lock" >&2
+        exit 1
+    fi
+
+    wasm="sqlite3-$sqlite3_version.wasm"
+    worker="db_worker-$sqlite_async_version.js"
+    download_asset "$wasm" \
+        "$WASM_RELEASES/sqlite3-$sqlite3_version/sqlite3.wasm"
+    download_asset "$worker" \
+        "$WORKER_RELEASES/sqlite_async-v$sqlite_async_version/db_worker.js"
+
+    # Both files go next to every test file, since that is where the browser
+    # resolves them from.
+    directories=()
+    while IFS= read -r directory; do
+        directories+=("$directory")
+    done < <(
+        find "$package/test" -name '*_test.dart' |
+            while IFS= read -r test_file; do dirname "$test_file"; done |
+            sort -u
+    )
+
+    if [ ${#directories[@]} -eq 0 ]; then
+        echo "### No test files found under $package/test" >&2
+        exit 1
+    fi
+
+    for directory in "${directories[@]}"; do
+        link_or_copy "$CACHE_DIR/$wasm" "$directory/sqlite3.wasm"
+        link_or_copy "$CACHE_DIR/$worker" "$directory/db_worker.js"
+    done
+
+    echo "### Placed sqlite3.wasm ($sqlite3_version) and db_worker.js" \
+        "($sqlite_async_version) in ${#directories[@]} directories"
+done

@@ -48,8 +48,6 @@ abstract class Session implements DatabaseSession {
   /// The time the session object was created.
   DateTime get startTime => _startTime;
 
-  int? _messageId;
-
   AuthenticationInfo? _authenticated;
 
   /// Updates the authentication information for the session.
@@ -66,13 +64,12 @@ abstract class Session implements DatabaseSession {
   /// Returns true if the user is signed in.
   bool get isUserSignedIn => _authenticated != null;
 
-  String? _authenticationKey;
+  final String? _authenticationKey;
 
   /// The authentication key used to authenticate the session.
   String? get authenticationKey => _authenticationKey;
 
-  /// An custom object associated with this [Session]. This is especially
-  /// useful for keeping track of the state in a [StreamingEndpoint].
+  /// A custom object associated with this [Session].
   dynamic userObject;
 
   /// Access to the database.
@@ -140,11 +137,9 @@ abstract class Session implements DatabaseSession {
     String? authenticationKey,
     required this.enableLogging,
     required this.endpoint,
-    int? messageId,
     this.method,
     this.request,
   }) : _authenticationKey = authenticationKey,
-       _messageId = messageId,
        sessionId = sessionId ?? const Uuid().v4obj() {
     _startTime = DateTime.now();
 
@@ -346,54 +341,6 @@ class MethodStreamSession extends Session {
   }) : _method = method,
        _request = request,
        super(method: method, request: request);
-}
-
-/// When a web socket connection is opened to the [Server] a [StreamingSession]
-/// object is created. It contains all data associated with the current
-/// connection and provides easy access to the database.
-class StreamingSession extends Session {
-  /// The uri that was used to call the server.
-  final Uri uri;
-
-  /// Query parameters of the server call.
-  late final Map<String, String> queryParameters;
-
-  final Request _request;
-
-  /// The [Request] associated with the call.
-  @override
-  Request get request => _request;
-
-  /// The underlying web socket that handles communication with the server.
-  final RelicWebSocket webSocket;
-
-  String _endpoint;
-
-  /// The name of the endpoint that is being called.
-  set endpoint(String endpoint) => _endpoint = endpoint;
-
-  @override
-  String get endpoint => _endpoint;
-
-  /// Creates a new [Session] for the web socket stream.
-  StreamingSession._({
-    required super.server,
-    required this.uri,
-    required Request request,
-    required this.webSocket,
-    super.endpoint = 'StreamingSession',
-    super.enableLogging = true,
-  }) : _endpoint = endpoint,
-       _request = request,
-       super(messageId: 0, request: request) {
-    // Read query parameters
-    var queryParameters = <String, String>{};
-    queryParameters.addAll(uri.queryParameters);
-    this.queryParameters = queryParameters;
-
-    // Get the authentication key, if any
-    _authenticationKey = queryParameters['auth'];
-  }
 }
 
 /// Created when a [FutureCall] is being made. It contains all data associated
@@ -756,27 +703,6 @@ extension SessionInternalMethods on Session {
     return session;
   }
 
-  /// Creates a new [StreamingSession].
-  static Future<StreamingSession> createStreamingSession({
-    required Server server,
-    required Uri uri,
-    required Request request,
-    required RelicWebSocket webSocket,
-    String endpoint = 'StreamingSession',
-    bool enableLogging = true,
-  }) async {
-    final session = StreamingSession._(
-      server: server,
-      uri: uri,
-      request: request,
-      webSocket: webSocket,
-      endpoint: endpoint,
-      enableLogging: enableLogging,
-    );
-    await session.initializeAuthentication();
-    return session;
-  }
-
   /// Returns the [LogManager] for the session.
   SessionLogManager? get logManager => _logManager;
 
@@ -784,17 +710,6 @@ extension SessionInternalMethods on Session {
   /// This will be null if the session is not authenticated or not initialized.
   AuthenticationInfo? get authInfoOrNull {
     return _authenticated;
-  }
-
-  /// Returns the next message id for the session.
-  int? get messageId => _messageId;
-
-  /// Returns the next message id for the session.
-  int nextMessageId() {
-    var id = _messageId ?? 0;
-    _messageId = id + 1;
-
-    return id;
   }
 
   /// Initializes authentication for this session.
@@ -815,22 +730,8 @@ extension SessionInternalMethods on Session {
       _authenticated = null;
     }
   }
-
-  /// Updates the authentication key and re-initializes authentication.
-  ///
-  /// This method sets a new authentication key for the session and triggers
-  /// re-initialization of the authentication information. This is useful for
-  /// scenarios where authentication needs to be refreshed or changed mid-session.
-  ///
-  /// After calling this method, the [Session.authenticated] property will reflect
-  /// the authentication status for the new key.
-  Future<void> updateAuthenticationKey(String? authenticationKey) async {
-    _authenticationKey = authenticationKey;
-    await initializeAuthentication();
-  }
 }
 
 /// Returns true if the session is expected to be alive for an extended
 /// period of time.
-bool _isLongLived(Session session) =>
-    session is StreamingSession || session is MethodStreamSession;
+bool _isLongLived(Session session) => session is MethodStreamSession;

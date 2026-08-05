@@ -89,7 +89,3 @@ class PixelDrawingEndpoint extends Endpoint {
   }
 }
 ```
-
-## Deprecated pattern
-
-The older `streamOpened`/`handleStreamMessage`/`sendStreamMessage` pattern and `openStreamingConnection()` still exists for legacy code but is deprecated. Use only streaming methods (Stream as parameter/return type) for new code.

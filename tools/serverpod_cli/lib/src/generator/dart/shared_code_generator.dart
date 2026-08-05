@@ -4,6 +4,7 @@ import 'package:serverpod_cli/src/generator/code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/library_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/model_library_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/model_generators_util.dart';
+import 'package:serverpod_cli/src/generator/dart_formatters.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 
 /// A [CodeGenerator] that generates dart code for shared (model-only) packages.
@@ -42,7 +43,10 @@ class DartSharedCodeGenerator extends CodeGenerator {
         var path = entry.model.getFullFilePath(config, serverCode: false);
         var code = generator
             .generateModelLibrary(entry.model)
-            .generateCode(allocator: entry.allocator)
+            .generateCode(
+              allocator: entry.allocator,
+              formatter: GeneratedDartFormatters.of(path),
+            )
             .replaceServerpodUrls();
         result[path] = code;
       }
@@ -93,16 +97,17 @@ class DartSharedCodeGenerator extends CodeGenerator {
         ),
       );
 
-      result[p.joinAll([
+      var protocolPath = p.joinAll([
         ...config.serverPackageDirectoryPathParts,
         ...e.value,
         'lib',
-        'src',
-        'generated',
+        ...config.generatedServeModelPackagePathParts,
         'protocol.dart',
-      ])] = sharedClassGenerator
+      ]);
+
+      result[protocolPath] = sharedClassGenerator
           .generateProtocol()
-          .generateCode()
+          .generateCode(formatter: GeneratedDartFormatters.of(protocolPath))
           .replaceServerpodUrls();
     }
 

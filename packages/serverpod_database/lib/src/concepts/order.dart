@@ -38,11 +38,6 @@ class Order implements Column {
 
   Order._({required this.column, this.orderDescending = false});
 
-  /// Creates a new [Order] definition for a specific [column] and whether it
-  /// should be ordered descending or ascending.
-  @Deprecated('Use the helpers asc() and desc() on the column instead.')
-  factory Order({required Column column, bool orderDescending}) = Order._;
-
   @override
   String toString() {
     var str = '$column';

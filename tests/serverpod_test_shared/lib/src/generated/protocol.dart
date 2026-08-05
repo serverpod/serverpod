@@ -72,13 +72,13 @@ class Protocol extends _i1.DatabaseSerializationManager {
           name: 'sharedEnum',
           columnType: _i1.ColumnType.text,
           isNullable: false,
-          dartType: 'SharedEnum',
+          dartType: 'serverpod_test_shared:SharedEnum',
         ),
         _i1.ColumnDefinition(
           name: 'sharedSubclass',
           columnType: _i1.ColumnType.json,
           isNullable: true,
-          dartType: 'SharedSubclass?',
+          dartType: 'serverpod_test_shared:SharedSubclass?',
         ),
         _i1.ColumnDefinition(
           name: 'itemCount',

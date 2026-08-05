@@ -10,6 +10,8 @@ import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:serverpod_shared/log.dart' show LogLevel;
 import 'package:test/test.dart';
 
+import '../../test_util/file_system_entity_helpers.dart';
+
 String _shimPath(String name) => p.join(
   Directory.current.path,
   'test',
@@ -203,7 +205,7 @@ dependencies:
   Future<void> dispose() async {
     await manager.dispose();
     await _fakeVmServer?.close(force: true);
-    await tempDir.delete(recursive: true);
+    await tempDir.deleteBestEffort(recursive: true);
   }
 }
 
@@ -285,7 +287,7 @@ void main() {
         () async {
           // `launch` flips the spawn-in-flight flag synchronously, before its
           // first await, so the app reads as launching the instant the call is
-          // kicked off — no fixed wait needed. The shim never publishes a URL,
+          // kicked off - no fixed wait needed. The shim never publishes a URL,
           // so it stays launching until torn down in tearDown.
           unawaited(f.manager.launch('app-a'));
 

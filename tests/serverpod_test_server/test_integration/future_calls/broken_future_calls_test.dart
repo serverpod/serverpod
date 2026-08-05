@@ -11,7 +11,8 @@ import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod_shared/src/password_manager.dart';
 
-class _SimpleFutureCall extends FutureCall<SimpleData> {
+class _SimpleFutureCall extends FutureCall<SimpleData>
+    implements InvokableFutureCall<SimpleData> {
   @override
   Future<void> invoke(Session session, SimpleData? object) async {}
 }
@@ -28,6 +29,10 @@ void main() {
 
       setUp(() async {
         server = IntegrationTestServer.create();
+        // Provision this suite's database before the pre-start writes below;
+        // `start()` (called inside the test) would otherwise be the first to
+        // create it, so these inserts would hit a database that doesn't exist.
+        await server.ensureDatabase();
         session = await server.createSession(enableLogging: false);
         await LoggingUtil.clearAllLogs(session);
 
@@ -42,7 +47,10 @@ void main() {
             serverId: 'default',
           );
 
-          server.registerFutureCall(_SimpleFutureCall(), name);
+          server.futureCallManager!.registerFutureCall(
+            _SimpleFutureCall(),
+            name,
+          );
           entry = await FutureCallEntry.db.insertRow(session, entry);
           futureCallEntries.add(entry);
         }
@@ -84,6 +92,10 @@ void main() {
 
       setUp(() async {
         server = IntegrationTestServer.create();
+        // Provision this suite's database before the pre-start writes below;
+        // `start()` (called inside the test) would otherwise be the first to
+        // create it, so these inserts would hit a database that doesn't exist.
+        await server.ensureDatabase();
         session = await server.createSession(enableLogging: false);
         await LoggingUtil.clearAllLogs(session);
 
@@ -98,7 +110,11 @@ void main() {
             serverId: 'default',
           );
 
-          if (i != 0) server.registerFutureCall(_SimpleFutureCall(), name);
+          if (i != 0)
+            server.futureCallManager!.registerFutureCall(
+              _SimpleFutureCall(),
+              name,
+            );
           entry = await FutureCallEntry.db.insertRow(session, entry);
           futureCallEntries.add(entry);
         }
@@ -171,6 +187,10 @@ void main() {
 
       setUp(() async {
         server = IntegrationTestServer.create();
+        // Provision this suite's database before the pre-start writes below;
+        // `start()` (called inside the test) would otherwise be the first to
+        // create it, so these inserts would hit a database that doesn't exist.
+        await server.ensureDatabase();
         session = await server.createSession(enableLogging: false);
         await LoggingUtil.clearAllLogs(session);
 
@@ -185,7 +205,11 @@ void main() {
             serverId: 'default',
           );
 
-          if (i != 0) server.registerFutureCall(_SimpleFutureCall(), name);
+          if (i != 0)
+            server.futureCallManager!.registerFutureCall(
+              _SimpleFutureCall(),
+              name,
+            );
           entry = await FutureCallEntry.db.insertRow(session, entry);
           futureCallEntries.add(entry);
         }
@@ -260,6 +284,10 @@ void main() {
             futureCall: FutureCallConfig(checkBrokenCalls: true),
           ),
         );
+        // Provision this suite's database before the pre-start writes below;
+        // `start()` (called inside the test) would otherwise be the first to
+        // create it, so these inserts would hit a database that doesn't exist.
+        await server.ensureDatabase();
         session = await server.createSession(enableLogging: false);
         await LoggingUtil.clearAllLogs(session);
 
@@ -274,7 +302,11 @@ void main() {
             serverId: 'default',
           );
 
-          if (i >= 2) server.registerFutureCall(_SimpleFutureCall(), name);
+          if (i >= 2)
+            server.futureCallManager!.registerFutureCall(
+              _SimpleFutureCall(),
+              name,
+            );
           entry = await FutureCallEntry.db.insertRow(session, entry);
           futureCallEntries.add(entry);
         }
@@ -345,6 +377,10 @@ void main() {
             futureCall: FutureCallConfig(checkBrokenCalls: false),
           ),
         );
+        // Provision this suite's database before the pre-start writes below;
+        // `start()` (called inside the test) would otherwise be the first to
+        // create it, so these inserts would hit a database that doesn't exist.
+        await server.ensureDatabase();
         session = await server.createSession(enableLogging: false);
         await LoggingUtil.clearAllLogs(session);
 
@@ -359,7 +395,11 @@ void main() {
             serverId: 'default',
           );
 
-          if (i >= 2) server.registerFutureCall(_SimpleFutureCall(), name);
+          if (i >= 2)
+            server.futureCallManager!.registerFutureCall(
+              _SimpleFutureCall(),
+              name,
+            );
           entry = await FutureCallEntry.db.insertRow(session, entry);
           futureCallEntries.add(entry);
         }
@@ -405,6 +445,10 @@ void main() {
             futureCall: FutureCallConfig(deleteBrokenCalls: false),
           ),
         );
+        // Provision this suite's database before the pre-start writes below;
+        // `start()` (called inside the test) would otherwise be the first to
+        // create it, so these inserts would hit a database that doesn't exist.
+        await server.ensureDatabase();
         session = await server.createSession(enableLogging: false);
         await LoggingUtil.clearAllLogs(session);
 
@@ -419,7 +463,11 @@ void main() {
             serverId: 'default',
           );
 
-          if (i >= 2) server.registerFutureCall(_SimpleFutureCall(), name);
+          if (i >= 2)
+            server.futureCallManager!.registerFutureCall(
+              _SimpleFutureCall(),
+              name,
+            );
           entry = await FutureCallEntry.db.insertRow(session, entry);
           futureCallEntries.add(entry);
         }
@@ -457,6 +505,10 @@ void main() {
             futureCall: FutureCallConfig(deleteBrokenCalls: true),
           ),
         );
+        // Provision this suite's database before the pre-start writes below;
+        // `start()` (called inside the test) would otherwise be the first to
+        // create it, so these inserts would hit a database that doesn't exist.
+        await server.ensureDatabase();
         session = await server.createSession(enableLogging: false);
         await LoggingUtil.clearAllLogs(session);
 
@@ -471,7 +523,11 @@ void main() {
             serverId: 'default',
           );
 
-          if (i == 2) server.registerFutureCall(_SimpleFutureCall(), name);
+          if (i == 2)
+            server.futureCallManager!.registerFutureCall(
+              _SimpleFutureCall(),
+              name,
+            );
           entry = await FutureCallEntry.db.insertRow(session, entry);
           futureCallEntries.add(entry);
         }
@@ -520,6 +576,10 @@ void main() {
             futureCall: FutureCallConfig(deleteBrokenCalls: true),
           ),
         );
+        // Provision this suite's database before the pre-start writes below;
+        // `start()` (called inside the test) would otherwise be the first to
+        // create it, so these inserts would hit a database that doesn't exist.
+        await server.ensureDatabase();
         session = await server.createSession(enableLogging: false);
         await LoggingUtil.clearAllLogs(session);
 
@@ -534,7 +594,10 @@ void main() {
             serverId: 'default',
           );
 
-          server.registerFutureCall(_SimpleFutureCall(), name);
+          server.futureCallManager!.registerFutureCall(
+            _SimpleFutureCall(),
+            name,
+          );
           entry = await FutureCallEntry.db.insertRow(session, entry);
           futureCallEntries.add(entry);
         }

@@ -119,8 +119,6 @@ abstract class Team implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<TeamTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<TeamTable>? orderByList,
     TeamInclude? include,
   }) {
@@ -129,8 +127,6 @@ abstract class Team implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Team.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(Team.t),
       include: include,
     );
@@ -314,8 +310,6 @@ class TeamIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -368,8 +362,6 @@ class TeamRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<TeamTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<TeamTable>? orderByList,
     _i1.Transaction? transaction,
     TeamInclude? include,
@@ -380,8 +372,6 @@ class TeamRepository {
       where: where?.call(Team.t),
       orderBy: orderBy?.call(Team.t),
       orderByList: orderByList?.call(Team.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -413,8 +403,6 @@ class TeamRepository {
     _i1.WhereExpressionBuilder<TeamTable>? where,
     int? offset,
     _i1.OrderByBuilder<TeamTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<TeamTable>? orderByList,
     _i1.Transaction? transaction,
     TeamInclude? include,
@@ -425,8 +413,6 @@ class TeamRepository {
       where: where?.call(Team.t),
       orderBy: orderBy?.call(Team.t),
       orderByList: orderByList?.call(Team.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -634,8 +620,6 @@ class TeamRepository {
     int? offset,
     _i1.OrderByBuilder<TeamTable>? orderBy,
     _i1.OrderByListBuilder<TeamTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -646,8 +630,6 @@ class TeamRepository {
       offset: offset,
       orderBy: orderBy?.call(Team.t),
       orderByList: orderByList?.call(Team.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -668,8 +650,6 @@ class TeamRepository {
     _i1.DatabaseSession session,
     List<Team> rows, {
     _i1.OrderByBuilder<TeamTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<TeamTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -678,8 +658,6 @@ class TeamRepository {
       rows,
       orderBy: orderBy?.call(Team.t),
       orderByList: orderByList?.call(Team.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -709,8 +687,6 @@ class TeamRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<TeamTable> where,
     _i1.OrderByBuilder<TeamTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<TeamTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -719,8 +695,6 @@ class TeamRepository {
       where: where(Team.t),
       orderBy: orderBy?.call(Team.t),
       orderByList: orderByList?.call(Team.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

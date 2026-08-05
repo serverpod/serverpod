@@ -149,6 +149,7 @@ class QuickstartCommand extends ServerpodCommand<QuickstartOption> {
           postgres: true,
           webapp: true,
         ),
+        analyticsMethod: 'quickstart',
       );
       return;
     }
@@ -158,6 +159,7 @@ class QuickstartCommand extends ServerpodCommand<QuickstartOption> {
       force,
       interactive: interactive,
       context: context,
+      analyticsMethod: 'quickstart',
     );
 
     if (result is! CreateSuccess) {

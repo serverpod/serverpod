@@ -1,12 +1,11 @@
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
-import 'package:pub_semver/pub_semver.dart';
 
 class ClientMigrationDartEmitter {
   const ClientMigrationDartEmitter();
 
-  String emitPlaceholderRegistry() {
-    return _formatSource(
+  String emitPlaceholderRegistry({required DartFormatter formatter}) {
+    return formatter.format(
       '''
 ${_generateFileHeader.trim()}
 library;
@@ -18,14 +17,17 @@ ${_emitMigrationRegistryClass(const [])}
     );
   }
 
-  String emitRegistry(List<String> versions) {
+  String emitRegistry(
+    List<String> versions, {
+    required DartFormatter formatter,
+  }) {
     final parts = versions
         .map((version) => "part '${_partUri(version)}/migration.dart';")
         .join('\n');
 
     final partSection = parts.isEmpty ? '' : '$parts\n\n';
 
-    return _formatSource(
+    return formatter.format(
       '''
 ${_createMigrationFileHeader.trim()}
 library;
@@ -42,6 +44,7 @@ $partSection${_emitMigrationRegistryClass(versions)}
     required String version,
     required String migrationSql,
     required String definitionSql,
+    required DartFormatter formatter,
   }) {
     final className = '_Migration${migrationClassSuffix(version)}';
     final migrationClass = Class(
@@ -56,7 +59,7 @@ $partSection${_emitMigrationRegistryClass(versions)}
         ]),
     );
 
-    return _formatSource(
+    return formatter.format(
       '''
 ${_createMigrationFileHeader.trim()}
 part of '../migration_registry.dart';
@@ -133,13 +136,6 @@ ${migrationClass.accept(_emitter).toString()}
           rawMultiline ? _rawMultilineLiteral(value) : _stringLiteral(value),
         ),
     );
-  }
-
-  String _formatSource(String source) {
-    return DartFormatter(
-      languageVersion: Version(3, 8, 0),
-      trailingCommas: TrailingCommas.preserve,
-    ).format(source);
   }
 }
 

@@ -4,6 +4,9 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:serverpod/serverpod.dart';
 
+const _flutterCacheControlEnvironmentVariable =
+    'SERVERPOD_WEB_SERVER_FLUTTER_CACHE_CONTROL';
+
 /// Route for serving Flutter web applications.
 ///
 /// Combines static file serving with automatic fallback to index.html for
@@ -21,9 +24,9 @@ import 'package:serverpod/serverpod.dart';
 ///
 /// ## About Caching
 ///
-/// By default, all files are served with `private, no-cache` headers so the
-/// browser always revalidates with the server via ETag. This is the only safe
-/// default because:
+/// Unless `SERVERPOD_WEB_SERVER_FLUTTER_CACHE_CONTROL` is set, all files are
+/// served with `private, no-cache` headers so the browser always revalidates
+/// with the server via ETag. This is the only safe built-in default because:
 ///
 /// - Flutter's service worker is deprecated and will be removed
 ///   (see [flutter#156910](https://github.com/flutter/flutter/issues/156910)).
@@ -52,9 +55,10 @@ class FlutterRoute extends Route {
 
   /// Cache control factory for static files.
   ///
-  /// Defaults to `private, no-cache` for all files (ETag revalidation on
-  /// every request). Override this when using [cacheBustingConfig] to serve
-  /// cache-busted assets with aggressive caching headers.
+  /// Defaults to the value of `SERVERPOD_WEB_SERVER_FLUTTER_CACHE_CONTROL`, or
+  /// `private, no-cache` when the environment variable is not set. Override
+  /// this when using [cacheBustingConfig] to serve cache-busted assets with
+  /// aggressive caching headers.
   final CacheControlFactory cacheControlFactory;
 
   /// Optional cache busting configuration for static files.
@@ -80,6 +84,9 @@ class FlutterRoute extends Route {
   /// The [host] parameter restricts this route to a specific virtual host
   /// (defaults to `null`, matching any host).
   ///
+  /// An explicit [cacheControlFactory] takes precedence over the value of the
+  /// `SERVERPOD_WEB_SERVER_FLUTTER_CACHE_CONTROL` environment variable.
+  ///
   /// Set [enableWasmHeaders] to `false` when serving a non-WASM Flutter web
   /// build that should not use cross-origin isolation.
   FlutterRoute(
@@ -91,8 +98,17 @@ class FlutterRoute extends Route {
     super.host,
   }) : indexFile = indexFile ?? File(path.join(directory.path, 'index.html')),
        cacheControlFactory =
-           cacheControlFactory ?? StaticRoute.privateNoCache(),
+           cacheControlFactory ?? _cacheControlFactoryFromEnvironment(),
        super(methods: {Method.get, Method.head});
+
+  static CacheControlFactory _cacheControlFactoryFromEnvironment() {
+    final cacheControl =
+        Platform.environment[_flutterCacheControlEnvironmentVariable];
+    if (cacheControl == null) return StaticRoute.privateNoCache();
+
+    final parsedCacheControl = CacheControlHeader.parse([cacheControl]);
+    return (_, _) => parsedCacheControl;
+  }
 
   @override
   void injectIn(RelicRouter router) {

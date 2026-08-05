@@ -1,14 +1,12 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
-import 'package:serverpod_test_server/test_util/test_tags.dart';
 
 import '../test_tools/serverpod_test_tools.dart';
 
 void main() async {
   withServerpod(
     'Given a running server',
-    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
     // Disable health checks to avoid the health check updating the last database
     // operation time and causing flakiness on the test.
     configOverride: (config) =>

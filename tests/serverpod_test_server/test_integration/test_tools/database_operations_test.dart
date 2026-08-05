@@ -1,6 +1,5 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
-import 'package:serverpod_test_server/test_util/test_tags.dart';
 import 'package:test/test.dart';
 
 import 'serverpod_test_tools.dart';
@@ -350,33 +349,23 @@ void main() {
           );
         },
         rollbackDatabase: RollbackDatabase.disabled,
-        testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
       );
 
       withServerpod(
         'when fetching SimpleData in the next withServerpod',
         (sessionBuilder, endpoints) {
           var session = sessionBuilder.build();
-          tearDownAll(() async {
-            await SimpleData.db.deleteWhere(
-              session,
-              where: (_) => Constant.bool(true),
-            );
-          });
 
           test(
-            'then should not have been rolled back and has to be deleted manually',
+            'then there is no data because each group has its own database',
             () async {
               var simpleDatas = await SimpleData.db.find(session);
 
-              expect(simpleDatas, hasLength(2));
-              expect(simpleDatas[0].num, 123);
-              expect(simpleDatas[1].num, 123);
+              expect(simpleDatas, hasLength(0));
             },
           );
         },
         rollbackDatabase: RollbackDatabase.disabled,
-        testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
       );
     });
 
@@ -403,7 +392,6 @@ void main() {
           });
         },
         rollbackDatabase: RollbackDatabase.disabled,
-        testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
       );
 
       withServerpod(
@@ -411,21 +399,16 @@ void main() {
         (sessionBuilder, endpoints) {
           var session = sessionBuilder.build();
 
-          tearDownAll(() async {
-            await SimpleData.db.deleteWhere(
-              session,
-              where: (_) => Constant.bool(true),
-            );
-          });
+          test(
+            'then there is no data because each group has its own database',
+            () async {
+              var simpleDatas = await SimpleData.db.find(session);
 
-          test('then only committed data should have persisted', () async {
-            var simpleDatas = await SimpleData.db.find(session);
-
-            expect(simpleDatas, hasLength(1));
-          });
+              expect(simpleDatas, hasLength(0));
+            },
+          );
         },
         rollbackDatabase: RollbackDatabase.disabled,
-        testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
       );
     });
 
@@ -453,7 +436,6 @@ void main() {
         });
       },
       rollbackDatabase: RollbackDatabase.disabled,
-      testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
     );
   });
 

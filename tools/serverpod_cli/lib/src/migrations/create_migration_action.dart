@@ -1,8 +1,12 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
+import 'package:serverpod_cli/src/analytics/migration_metrics.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
+import 'package:serverpod_cli/src/generator/dart_formatters.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -126,6 +130,10 @@ Future<CreateMigrationOutcome> createMigrationAction({
 
   final precomputedVersion = MigrationGenerator.createVersionName(tag);
 
+  if (hasClientMigrations) {
+    await GeneratedDartFormatters.resolve(config);
+  }
+
   final results = await Future.wait([
     _createMigration(
       empty: empty,
@@ -146,14 +154,26 @@ Future<CreateMigrationOutcome> createMigrationAction({
       ),
   ]);
 
-  if (!hasClientMigrations) {
-    return results.first;
-  }
+  final outcome = hasClientMigrations
+      ? CreateMigrationServerClientCreated(
+          serverResult: results.first,
+          clientResult: results.last,
+        )
+      : results.first;
 
-  return CreateMigrationServerClientCreated(
-    serverResult: results.first,
-    clientResult: results.last,
+  // Hooked here rather than in the callers so the `create-migration` command,
+  // the start TUI's Migrate action and the `create_migration` MCP tool are all
+  // covered by one call.
+  // Awaited, not fire-and-forget: the work is local (metadata write plus two
+  // directory scans; the HTTP send is queued, not awaited), and detaching it
+  // would let a short-lived process exit before the event is queued at all.
+  await cliAnalytics.captureMigrationCreated(
+    config: config,
+    flags: MigrationCreatedFlags.fromOutcome(outcome),
+    isRepairMigration: false,
   );
+
+  return outcome;
 }
 
 Future<CreateMigrationOutcome> _createMigration({

@@ -9,6 +9,7 @@ library;
 export 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 
 export 'src/anonymous/anonymous_auth_controller.dart';
+export 'src/anonymous/anonymous_sign_in_button.dart';
 export 'src/anonymous/anonymous_sign_in_widget.dart';
 export 'src/apple/apple_auth_controller.dart';
 export 'src/apple/apple_sign_in_button.dart';
@@ -16,6 +17,8 @@ export 'src/apple/apple_sign_in_service.dart';
 export 'src/apple/apple_sign_in_style.dart';
 export 'src/apple/apple_sign_in_widget.dart';
 export 'src/common/external_idp_registry.dart';
+export 'src/common/sign_in_button_base.dart';
+export 'src/common/sign_in_button_style.dart';
 export 'src/common/oauth2_pkce/oauth2_pkce_client_config.dart';
 export 'src/common/oauth2_pkce/oauth2_pkce_exception.dart';
 export 'src/common/oauth2_pkce/oauth2_pkce_result.dart';

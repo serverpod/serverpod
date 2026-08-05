@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# Runs the focused serverpod_test_server pgvector and PostGIS contract against
+# an embedded PostgreSQL postmaster.
+
+if [ ! -f util/.serverpod_util_root ]; then
+    echo "Run this script from the root of the Serverpod repository"
+    echo "I.e. util/run_tests_database_integration_embedded"
+    exit 1
+fi
+
+# The selected files mix withServerpod's integration-tagged groups with the
+# IntegrationTestServer suites, so the file list itself is the filter.
+export SERVERPOD_TEST_TAG=''
+
+# Keep this list explicit so general database coverage is not duplicated on
+# every platform. These tests exercise pgvector and PostGIS values, operators,
+# indexes, and runtime query parameters against each published bundle.
+exec bash util/run_tests_integration_embedded \
+    tests/serverpod_test_server \
+    test_integration/column_operations/column_bit_test.dart \
+    test_integration/column_operations/column_geography_geometry_collection_test.dart \
+    test_integration/column_operations/column_geography_line_string_test.dart \
+    test_integration/column_operations/column_geography_point_test.dart \
+    test_integration/column_operations/column_geography_polygon_test.dart \
+    test_integration/column_operations/column_half_vector_test.dart \
+    test_integration/column_operations/column_sparse_vector_test.dart \
+    test_integration/column_operations/column_vector_test.dart \
+    test_integration/database_operations/runtime_parameters/hnsw_index_query_options_test.dart \
+    test_integration/database_operations/runtime_parameters/ivfflat_index_query_options_test.dart \
+    test_integration/database_operations/runtime_parameters/vector_index_query_options_test.dart \
+    test_integration/database_operations/runtime_parameters/vector_query_test.dart \
+    test_integration/database_operations/transactions/runtime_parameters_test.dart \
+    test_integration/index_test.dart

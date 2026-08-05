@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Runs the serverpod_test_sqlite_server migration e2e tests on the host - no
+# Docker required. The tests inspect and reset the live database through the
+# insights API, so a server is started in the background; SQLite is file-based,
+# so that server shares the sqlite_data/ database files with the
+# create-migration and apply-migrations steps the tests spawn.
+
 if [ ! -f util/.serverpod_util_root ]; then
     echo "Run this script from the root of the Serverpod repository"
     echo "I.e. util/run_tests_sqlite_migrations_e2e"
@@ -8,14 +14,90 @@ fi
 
 # Makes script exit on first non-zero error code
 set -e
+export SERVERPOD_SILENCE_LIFECYCLE_MESSAGES="1"
+# create-repair-migration fetches the live schema from the server's insights API,
+# building the URL from the server config's insightsServer.publicHost (which
+# defaults to the Docker hostname). Override it to localhost so the in-repo CLI
+# reaches the host server.
+export SERVERPOD_INSIGHTS_SERVER_PUBLIC_HOST="localhost"
 
-# Bind mount targets must exist (directory for sqlite_data so WAL/SHM stay shared).
-mkdir -p tests/serverpod_test_sqlite/serverpod_test_sqlite_server/sqlite_data
+# Whole-file sharding for parallel CI jobs: pass <shard-index> <total-shards>
+# (0-based index, default 0 1 = a single shard). dart test's own --total-shards
+# splits at the test-CASE level, which breaks migration tests that build on the
+# live schema across cases in a file. We assign whole files to a shard (below) so
+# each file's sequence runs together (in order, --concurrency=1) against this
+# shard's own server + database.
+shard_index="${1:-0}"
+total_shards="${2:-1}"
 
-cd tests/docker/tests_sqlite_e2e_migrations
+cd tests/serverpod_test_sqlite/serverpod_test_sqlite_server
 
-docker compose --progress quiet up \
-  --abort-on-container-exit \
-  --exit-code-from tests \
-  --build \
-  --remove-orphans
+# Reset the database (SQLite files under sqlite_data/).
+echo "### Resetting SQLite database"
+mkdir -p sqlite_data
+rm -f sqlite_data/*.db*
+
+# Build the server into a standalone bundle so it carries its OWN copy of the
+# sqlite3 native library. Running it via `dart run` shares
+# .dart_tool/native_assets with the `dart test` run below, and `dart test`
+# re-links sqlite3 there while the server holds the old copy mapped - which
+# segfaults the running server (SEGV_MAPERR). The bundle's lib/ is isolated from
+# those rebuilds.
+#
+# CI prebuilds the bundle once in the build_pod job and points SERVERPOD_POD_BUNDLE
+# at the unpacked bundle dir, so the shards skip the ~1.5min `dart build cli`; a
+# local run with no such env builds it here.
+if [ -n "$SERVERPOD_POD_BUNDLE" ]; then
+    echo "### Using prebuilt server bundle from $SERVERPOD_POD_BUNDLE"
+    SERVER_EXE="$(echo "$SERVERPOD_POD_BUNDLE"/bin/*)"
+else
+    echo "### Building the test server bundle"
+    rm -rf .dart_tool/server_bundle
+    dart build cli -t bin/main.dart -o .dart_tool/server_bundle
+    SERVER_EXE="$(echo .dart_tool/server_bundle/bundle/bin/*)"
+fi
+
+# Start the bundled server in the background; it applies migrations on boot and
+# serves the insights API the tests use to inspect/reset the live database.
+echo "### Starting test server"
+"$SERVER_EXE" -m production --apply-migrations &
+SERVER_PID=$!
+# The bundled exe is the server process directly (no `dart run` wrapper), so
+# killing it suffices; the port sweep is a belt-and-suspenders fallback.
+cleanup() {
+    kill "$SERVER_PID" 2>/dev/null || true
+    for port in 8080 8081 8082; do
+        lsof -ti "tcp:$port" 2>/dev/null | xargs -r kill 2>/dev/null || true
+    done
+}
+trap cleanup EXIT
+
+# Wait for the insights server (localhost:8081) to accept connections.
+echo "### Waiting for the insights server on localhost:8081"
+for _ in $(seq 1 60); do
+    if (exec 3<>/dev/tcp/localhost/8081) 2>/dev/null; then
+        exec 3>&- 3<&-
+        echo "### Server is up"
+        break
+    fi
+    sleep 1
+done
+
+# Assign whole test files to this shard, round-robin, so a file's coupled
+# migration sequence always runs together.
+shard_test_files=()
+file_i=0
+while IFS= read -r test_file; do
+    if [ "$total_shards" -le 1 ] || [ $(( file_i % total_shards )) -eq "$shard_index" ]; then
+        shard_test_files+=("$test_file")
+    fi
+    file_i=$(( file_i + 1 ))
+done < <(find test_e2e_migrations -name '*_test.dart' | sort)
+if [ ${#shard_test_files[@]} -eq 0 ]; then
+    echo "### No test files assigned to shard $shard_index/$total_shards"
+    exit 0
+fi
+
+# Run the migration e2e tests.
+echo "### Running migration e2e tests (${#shard_test_files[@]} files, shard $shard_index/$total_shards)"
+dart test "${shard_test_files[@]}" --concurrency=1 --reporter=failures-only

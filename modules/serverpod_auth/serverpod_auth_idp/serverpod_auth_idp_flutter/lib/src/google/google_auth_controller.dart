@@ -56,11 +56,12 @@ class GoogleAuthController extends ChangeNotifier {
   /// initialized.
   ///
   /// The amount of allowable UI is up to the platform to determine, but it
-  /// should be minimal. Possible examples include FedCM on the web, and One Tap
-  /// on Android. Platforms may even show no UI, and only sign in if a previous
-  /// sign-in is being restored. This method is intended to be called as soon
-  /// as the application needs to know if the user is signed in, often at
-  /// initial launch.
+  /// should be minimal. Possible examples include One Tap on Android.
+  /// Platforms may even show no UI, and only sign in if a previous sign-in is
+  /// being restored. This method is intended to be called as soon as the
+  /// application needs to know if the user is signed in, often at initial
+  /// launch. Has no effect on web, where only the OAuth2 PKCE redirect flow
+  /// is supported.
   final bool attemptLightweightSignIn;
 
   /// Scopes to request from Google.
@@ -122,7 +123,7 @@ class GoogleAuthController extends ChangeNotifier {
     if (_isInitialized) return;
 
     // OAuth2 PKCE flow on web: no google_sign_in subscription needed.
-    if (kIsWeb && GoogleWebSignInService.instance.isInitialized) {
+    if (kIsWeb) {
       _isInitialized = true;
       _setState(GoogleAuthState.idle);
       return;
@@ -172,11 +173,10 @@ class GoogleAuthController extends ChangeNotifier {
   /// user will be signed in. On failure, transitions to error state with the
   /// error message.
   ///
-  /// On web with the redirect URI configured, opens the browser to Google's
-  /// authorization page using the OAuth2 PKCE redirect flow via
-  /// [GoogleWebSignInService].
+  /// On web, opens the browser to Google's authorization page using the
+  /// OAuth2 PKCE redirect flow via [GoogleWebSignInService].
   Future<void> signIn() async {
-    if (kIsWeb && GoogleWebSignInService.instance.isInitialized) {
+    if (kIsWeb) {
       await _signInWeb();
       return;
     }

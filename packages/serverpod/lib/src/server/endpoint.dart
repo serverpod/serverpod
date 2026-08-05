@@ -1,9 +1,7 @@
-import 'package:serverpod_serialization/serverpod_serialization.dart';
-
 import '../authentication/scope.dart';
 import 'server.dart';
 import 'serverpod.dart';
-import 'session.dart';
+import 'session.dart' show Session;
 
 /// The [Endpoint] is an entrypoint to the [Server]. To add a custom [Endpoint]
 /// to a [Server], create a subclass and place it in the `endpoints` directory.
@@ -49,77 +47,11 @@ abstract class Endpoint {
   /// the http response (defaults to `text/plain`).
   bool get sendAsRaw => false;
 
-  final Map<Session, dynamic> _userObjects = {};
-
-  /// Retrieves a custom object associated with this [Endpoint] and [Session].
-  @Deprecated(
-    'This method was used in the old streaming API and will be removed in a future version. '
-    'Use streams as parameters or return type of an endpoint to resolve the authenticated user directly.',
-  )
-  dynamic getUserObject(Session session) {
-    return _userObjects[session];
-  }
-
-  /// Associate a custom object with this [Endpoint] and [Session].
-  @Deprecated(
-    'This method was used in the old streaming API and will be removed in a future version. '
-    'Use streams as parameters or return type of an endpoint to resolve the authenticated user directly.',
-  )
-  void setUserObject(Session session, dynamic userObject) {
-    _userObjects[session] = userObject;
-  }
-
   /// Initializes the endpoint with the current [Server]. Typically, this is
   /// done from generated code.
   void initialize(Server server, String name, String? moduleName) {
     _server = server;
     _name = name;
     _moduleName = moduleName;
-  }
-
-  /// Override this method to setup a new stream when a client connects to the
-  /// server.
-  @Deprecated(
-    'Use streams as parameters or return type of an endpoint instead. '
-    'This method will be removed in a future version.',
-  )
-  Future<void> streamOpened(StreamingSession session) async {}
-
-  /// Called when a stream was closed.
-  @Deprecated(
-    'Use streams as parameters or return type of an endpoint instead. '
-    'This method will be removed in a future version.',
-  )
-  Future<void> streamClosed(StreamingSession session) async {}
-
-  /// Invoked when a message is sent to this endpoint from the client.
-  /// Override this method to create your own custom [StreamingEndpoint].
-  @Deprecated(
-    'Use streams as parameters or return type of an endpoint instead. '
-    'This method will be removed in a future version.',
-  )
-  Future<void> handleStreamMessage(
-    StreamingSession session,
-    SerializableModel message,
-  ) async {}
-
-  /// Sends an event to the client represented by the [Session] object.
-  @Deprecated(
-    'Use streams as parameters or return type of an endpoint instead. '
-    'This method will be removed in a future version.',
-  )
-  Future<void> sendStreamMessage(
-    StreamingSession session,
-    SerializableModel message,
-  ) async {
-    var prefix = moduleName == null ? '' : '$moduleName.';
-
-    var data = {
-      'endpoint': '$prefix$name',
-      'object': server.serializationManager.wrapWithClassName(message),
-    };
-
-    var payload = SerializationManager.encodeForProtocol(data);
-    session.webSocket.sendText(payload);
   }
 }

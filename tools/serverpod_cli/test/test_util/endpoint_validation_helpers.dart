@@ -25,7 +25,10 @@ Future<String> resolveServerpodCliEntrypoint() async {
   return path.join(root, 'tools', 'serverpod_cli', 'bin', 'serverpod_cli.dart');
 }
 
-Future createTestEnvironment(Directory testProjectDirectory) async {
+Future createTestEnvironment(
+  Directory testProjectDirectory, {
+  String sdkConstraint = '>=3.0.0 <4.0.0',
+}) async {
   final pathToServerpodRoot = await resolveServerpodRoot();
 
   var pubspecFile = File(path.join(testProjectDirectory.path, 'pubspec.yaml'));
@@ -36,7 +39,7 @@ name: test_server
 description: Starting point for a Serverpod server.
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: '$sdkConstraint'
 
 dependencies:
   serverpod:

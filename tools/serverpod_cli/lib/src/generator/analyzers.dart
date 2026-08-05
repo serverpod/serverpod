@@ -4,6 +4,9 @@ import 'package:analyzer/file_system/overlay_file_system.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analytics/protocol_feature_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/dart/definitions.dart'
+    show FutureCallDefinition;
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/util/analysis_helpers.dart';
@@ -12,11 +15,17 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 import '../commands/generate.dart';
 import 'code_generation_collector.dart';
+import 'dart/server_code_generator.dart';
 import 'dart/temp_protocol_generator.dart';
+import 'dart_formatters.dart';
 import 'serverpod_code_generator.dart';
 
 /// Result of a code generation run.
-typedef GenerateResult = ({bool success, Set<String> generatedFiles});
+typedef GenerateResult = ({
+  bool success,
+  Set<String> generatedFiles,
+  ProtocolAnalyticsSnapshot? protocolAnalyticsSnapshot,
+});
 
 /// Holds the set of analyzers needed for code generation.
 ///
@@ -156,61 +165,64 @@ class Analyzers {
     Set<String>? affectedPaths,
   }) async {
     bool success = true;
-    String? protocolBackup;
-    var stubOverlayActive = false;
-    var wroteStubToDisk = false;
+    final protocolBackups = <String, String>{};
+    final stubOverlayPaths = <String>[];
+    var wroteStubsToDisk = false;
     var wroteFullProtocol = false;
-    final protocolPath = p.joinAll(config.generatedServerProtocolFilePathParts);
-    // The exact path the analyzer resolves protocol.dart to; overlays must
-    // match it (same normalization as [refreshAnalysisContext]).
-    final analyzerProtocolPath = p.normalize(File(protocolPath).absolute.path);
+    final tempProtocolPaths = <String>[];
+    // Analyzer paths where the future calls file is currently shadowed.
+    final futureCallsOverlayPaths = <String>[];
+
+    // Refresh the run-scoped registry so persistent analyzers do not retain
+    // formatter settings from an earlier generation.
+    await GeneratedDartFormatters.resolve(config);
 
     try {
       log.debug('Analyzing serializable models in the protocol directory.');
 
-      final models = _models.validateAll(
-        reportIssuesForPaths: affectedPaths,
-      );
+      final models = _models.validateAll(reportIssuesForPaths: affectedPaths);
       success &= !_models.hasSevereErrors;
 
       List<String> generatedModelFiles = [];
 
-      // Generate model files and a temporary protocol.dart before analyzing
-      // future calls and endpoints. The temp protocol exports model classes so
-      // that endpoint and future call files can resolve `import protocol.dart`.
-      // The full protocol (with Protocol class, endpoint dispatch, etc.) is
-      // generated later by ServerpodCodeGenerator.generateProtocolDefinition.
+      // Generate model files and temporary protocol.dart stubs before analyzing
+      // future calls and endpoints. The temp protocols export model classes so
+      // imports against the server and client barrels resolve. The full
+      // protocols are generated later by
+      // ServerpodCodeGenerator.generateProtocolDefinition.
       if (requirements.generateModels) {
         log.debug('Generating files for serializable models.');
 
-        final stubContent = _temporaryProtocolContent(
+        final tempProtocols = _temporaryProtocols(
           models: models,
           config: config,
         );
+        tempProtocolPaths.addAll(tempProtocols.keys);
+
         final overlay = _overlay;
         if (overlay != null) {
-          // Shadow protocol.dart with the stub inside the analyzer only. The
-          // file on disk keeps the previous full protocol, so a generation
-          // whose output is unchanged never touches its timestamp - which
-          // matters because file watchers treat protocol.dart changes as a
-          // reason to recompile (and would otherwise fire on every run).
-          overlay.setOverlay(
-            analyzerProtocolPath,
-            content: stubContent,
-            modificationStamp: DateTime.now().microsecondsSinceEpoch,
-          );
-          stubOverlayActive = true;
-        } else {
-          // No overlay provider backing the analysis context; fall back to
-          // writing the stub to disk and restoring the previous protocol if
-          // the full one never gets written.
-          final protocolFile = File(protocolPath);
-          if (protocolFile.existsSync()) {
-            protocolBackup = await protocolFile.readAsString();
+          for (final entry in tempProtocols.entries) {
+            // Overlay paths must use the same normalization as
+            // refreshAnalysisContext.
+            final analyzerPath = p.normalize(File(entry.key).absolute.path);
+            overlay.setOverlay(
+              analyzerPath,
+              content: entry.value,
+              modificationStamp: DateTime.now().microsecondsSinceEpoch,
+            );
+            stubOverlayPaths.add(analyzerPath);
           }
-          await protocolFile.create(recursive: true);
-          await protocolFile.writeAsString(stubContent, flush: true);
-          wroteStubToDisk = true;
+        } else {
+          // No overlay provider backs the analysis context; fall back to disk.
+          for (final entry in tempProtocols.entries) {
+            final protocolFile = File(entry.key);
+            if (protocolFile.existsSync()) {
+              protocolBackups[entry.key] = await protocolFile.readAsString();
+            }
+            await protocolFile.create(recursive: true);
+            await protocolFile.writeAsString(entry.value, flush: true);
+          }
+          wroteStubsToDisk = true;
         }
 
         generatedModelFiles =
@@ -221,7 +233,7 @@ class Analyzers {
 
         await refreshAnalysisContext(
           _futureCalls.collection,
-          [...generatedModelFiles, protocolPath],
+          [...generatedModelFiles, ...tempProtocolPaths],
         );
       }
 
@@ -255,12 +267,35 @@ class Analyzers {
       }
 
       if (!requirements.generateProtocol) {
-        return (success: success, generatedFiles: generatedModelFiles.toSet());
+        return (
+          success: success,
+          generatedFiles: generatedModelFiles.toSet(),
+          protocolAnalyticsSnapshot: null,
+        );
       }
 
       final changedFiles = requirements.generateModels
           ? {...?affectedPaths, ...generatedModelFiles}
           : {...?affectedPaths};
+
+      log.debug('Analyzing the future calls.');
+      var futureCallsAnalyzerCollector = CodeGenerationCollector();
+      var futureCalls = await _futureCalls.analyze(
+        collector: futureCallsAnalyzerCollector,
+        changedFiles: changedFiles,
+      );
+
+      success &= !futureCallsAnalyzerCollector.hasSevereErrors;
+      futureCallsAnalyzerCollector.printErrors();
+
+      futureCallsOverlayPaths.addAll(
+        await _shadowFutureCallsFile(
+          models: allModels,
+          futureCalls: futureCalls,
+          config: config,
+          changedFiles: changedFiles,
+        ),
+      );
 
       log.debug('Analyzing the endpoints.');
       final endpointAnalyzerCollector = CodeGenerationCollector();
@@ -272,16 +307,6 @@ class Analyzers {
 
       success &= !endpointAnalyzerCollector.hasSevereErrors;
       endpointAnalyzerCollector.printErrors();
-
-      log.debug('Analyzing the future calls.');
-      var futureCallsAnalyzerCollector = CodeGenerationCollector();
-      var futureCalls = await _futureCalls.analyze(
-        collector: futureCallsAnalyzerCollector,
-        changedFiles: changedFiles,
-      );
-
-      success &= !futureCallsAnalyzerCollector.hasSevereErrors;
-      futureCallsAnalyzerCollector.printErrors();
 
       log.debug('Generating the protocol.');
       var protocolDefinition = ProtocolDefinition(
@@ -297,13 +322,28 @@ class Analyzers {
           );
       wroteFullProtocol = true;
 
-      // The full protocol is on disk now (or was already up to date); retire
-      // the stub overlay so analysis resolves protocol.dart to the real
-      // content from here on.
-      if (stubOverlayActive) {
-        _overlay!.removeOverlay(analyzerProtocolPath);
-        stubOverlayActive = false;
-        await refreshAnalysisContext(_futureCalls.collection, [protocolPath]);
+      // The full protocols are on disk now (or were already up to date); retire
+      // the stub overlays so analysis resolves their real content from here on.
+      // Same for the future calls overlay.
+      if (stubOverlayPaths.isNotEmpty) {
+        for (final path in stubOverlayPaths) {
+          _overlay!.removeOverlay(path);
+        }
+        stubOverlayPaths.clear();
+        await refreshAnalysisContext(
+          _futureCalls.collection,
+          tempProtocolPaths,
+        );
+      }
+      if (futureCallsOverlayPaths.isNotEmpty) {
+        for (final path in futureCallsOverlayPaths) {
+          _overlay!.removeOverlay(path);
+        }
+        await refreshAnalysisContext(
+          _futureCalls.collection,
+          futureCallsOverlayPaths,
+        );
+        futureCallsOverlayPaths.clear();
       }
 
       log.debug('Cleaning old files.');
@@ -333,44 +373,129 @@ class Analyzers {
         );
       }
 
-      await ServerpodCodeGenerator.cleanPreviouslyGeneratedDartFiles(
+      await ServerpodCodeGenerator.cleanPreviouslyGeneratedFiles(
         generatedFiles: allGeneratedFiles,
         protocolDefinition: protocolDefinition,
         config: config,
       );
 
-      return (success: success, generatedFiles: allGeneratedFiles);
+      return (
+        success: success,
+        generatedFiles: allGeneratedFiles,
+        protocolAnalyticsSnapshot: _createProtocolAnalyticsSnapshot(
+          protocolDefinition: protocolDefinition,
+          config: config,
+        ),
+      );
     } finally {
-      // Retire a still-active stub (interrupted run, models-only generation,
-      // or an exception). With an overlay the file on disk was never touched;
-      // just drop the shadow. When the stub was written to disk instead,
-      // restore the previous protocol.dart so generated model files that call
-      // Protocol() can still compile.
-      if (stubOverlayActive) {
-        _overlay!.removeOverlay(analyzerProtocolPath);
-        await refreshAnalysisContext(_futureCalls.collection, [protocolPath]);
+      // Retire still-active stubs after an interrupted, models-only, or failed
+      // generation. Overlays only need to be removed; disk fallbacks restore
+      // any previous protocol contents.
+      if (stubOverlayPaths.isNotEmpty) {
+        for (final path in stubOverlayPaths) {
+          _overlay!.removeOverlay(path);
+        }
+        await refreshAnalysisContext(
+          _futureCalls.collection,
+          tempProtocolPaths,
+        );
       }
-      if (wroteStubToDisk && !wroteFullProtocol && protocolBackup != null) {
-        await File(protocolPath).writeAsString(protocolBackup, flush: true);
+      if (futureCallsOverlayPaths.isNotEmpty) {
+        for (final path in futureCallsOverlayPaths) {
+          _overlay!.removeOverlay(path);
+        }
+        await refreshAnalysisContext(
+          _futureCalls.collection,
+          futureCallsOverlayPaths,
+        );
+      }
+      if (wroteStubsToDisk && !wroteFullProtocol) {
+        for (final protocolPath in tempProtocolPaths) {
+          final backup = protocolBackups[protocolPath];
+          if (backup != null) {
+            await File(protocolPath).writeAsString(backup, flush: true);
+          }
+        }
       }
     }
   }
+
+  /// Makes the generated future calls file resolvable before endpoint
+  /// analysis, so endpoints that import it to schedule future calls don't
+  /// fail analysis on a clean tree, aborting generation before the file
+  /// would be written.
+  ///
+  /// Like the temporary protocols, the content is shadowed in the analyzer
+  /// via the overlay (or written to disk without one); the real file is
+  /// written by [ServerpodCodeGenerator.generateProtocolDefinition]. Returns
+  /// the overlaid paths for the caller to retire after that write.
+  Future<List<String>> _shadowFutureCallsFile({
+    required List<SerializableModelDefinition> models,
+    required List<FutureCallDefinition> futureCalls,
+    required GeneratorConfig config,
+    required Set<String> changedFiles,
+  }) async {
+    final overlayPaths = <String>[];
+
+    final futureCallsCode = const DartServerCodeGenerator()
+        .generateFutureCallsCode(
+          protocolDefinition: ProtocolDefinition(
+            endpoints: const [],
+            models: models,
+            futureCalls: futureCalls,
+          ),
+          config: config,
+        );
+
+    for (final entry in futureCallsCode.entries) {
+      final overlay = _overlay;
+      if (overlay != null) {
+        // Overlay paths must use the same normalization as
+        // refreshAnalysisContext.
+        final analyzerPath = p.normalize(File(entry.key).absolute.path);
+        overlay.setOverlay(
+          analyzerPath,
+          content: entry.value,
+          modificationStamp: DateTime.now().microsecondsSinceEpoch,
+        );
+        overlayPaths.add(analyzerPath);
+      } else {
+        final file = File(entry.key);
+        await file.create(recursive: true);
+        await file.writeAsString(entry.value, flush: true);
+      }
+      changedFiles.add(entry.key);
+    }
+
+    return overlayPaths;
+  }
 }
 
-/// Generates the content of a temporary protocol.dart that exports all model
-/// classes and a stub [Protocol] class.
+ProtocolAnalyticsSnapshot? _createProtocolAnalyticsSnapshot({
+  required ProtocolDefinition protocolDefinition,
+  required GeneratorConfig config,
+}) {
+  try {
+    return ProtocolFeatureAnalyzer.analyze(
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+  } catch (_) {
+    // Analytics must never disrupt generation.
+    return null;
+  }
+}
+
+/// Generates temporary protocol.dart stubs for the server and client packages.
 ///
-/// Shadowing protocol.dart with this content allows endpoint and future call
-/// files to resolve their `import 'protocol.dart'` during analysis, and lets
-/// generated model files that call `Protocol()` compile before the full
-/// protocol exists. The full protocol (with endpoint dispatch, etc.) is
-/// written later via [ServerpodCodeGenerator.generateProtocolDefinition].
-String _temporaryProtocolContent({
+/// These stubs allow endpoint and future call imports to resolve before the
+/// full protocols are generated.
+Map<String, String> _temporaryProtocols({
   required List<SerializableModelDefinition> models,
   required GeneratorConfig config,
 }) {
-  return const DartTemporaryProtocolGenerator()
-      .generateSerializableModelsCode(models: models, config: config)
-      .values
-      .first;
+  return const DartTemporaryProtocolGenerator().generateSerializableModelsCode(
+    models: models,
+    config: config,
+  );
 }

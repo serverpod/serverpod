@@ -80,8 +80,6 @@ abstract class ReadWriteTestEntry
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ReadWriteTestEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
     ReadWriteTestEntryInclude? include,
   }) {
@@ -90,8 +88,6 @@ abstract class ReadWriteTestEntry
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ReadWriteTestEntry.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(ReadWriteTestEntry.t),
       include: include,
     );
@@ -177,8 +173,6 @@ class ReadWriteTestEntryIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -223,8 +217,6 @@ class ReadWriteTestEntryRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ReadWriteTestEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -234,8 +226,6 @@ class ReadWriteTestEntryRepository {
       where: where?.call(ReadWriteTestEntry.t),
       orderBy: orderBy?.call(ReadWriteTestEntry.t),
       orderByList: orderByList?.call(ReadWriteTestEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -266,8 +256,6 @@ class ReadWriteTestEntryRepository {
     _i1.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
     int? offset,
     _i1.OrderByBuilder<ReadWriteTestEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -277,8 +265,6 @@ class ReadWriteTestEntryRepository {
       where: where?.call(ReadWriteTestEntry.t),
       orderBy: orderBy?.call(ReadWriteTestEntry.t),
       orderByList: orderByList?.call(ReadWriteTestEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -485,8 +471,6 @@ class ReadWriteTestEntryRepository {
     int? offset,
     _i1.OrderByBuilder<ReadWriteTestEntryTable>? orderBy,
     _i1.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -497,8 +481,6 @@ class ReadWriteTestEntryRepository {
       offset: offset,
       orderBy: orderBy?.call(ReadWriteTestEntry.t),
       orderByList: orderByList?.call(ReadWriteTestEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -519,8 +501,6 @@ class ReadWriteTestEntryRepository {
     _i1.DatabaseSession session,
     List<ReadWriteTestEntry> rows, {
     _i1.OrderByBuilder<ReadWriteTestEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -529,8 +509,6 @@ class ReadWriteTestEntryRepository {
       rows,
       orderBy: orderBy?.call(ReadWriteTestEntry.t),
       orderByList: orderByList?.call(ReadWriteTestEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -560,8 +538,6 @@ class ReadWriteTestEntryRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ReadWriteTestEntryTable> where,
     _i1.OrderByBuilder<ReadWriteTestEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -570,8 +546,6 @@ class ReadWriteTestEntryRepository {
       where: where(ReadWriteTestEntry.t),
       orderBy: orderBy?.call(ReadWriteTestEntry.t),
       orderByList: orderByList?.call(ReadWriteTestEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

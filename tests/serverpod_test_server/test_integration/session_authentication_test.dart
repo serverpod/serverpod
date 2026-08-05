@@ -32,7 +32,7 @@ void main() {
 
       server.webServer.addRoute(SessionTestRoute(), '/session-test');
 
-      await server.start();
+      await server.startWithDatabase();
     });
 
     tearDownAll(() async {
@@ -47,7 +47,7 @@ void main() {
         setUp(() {
           final authKeyManager = TestAuthKeyManager();
           client = Client(
-            'http://localhost:8080/',
+            server.apiUrl,
             // ignore: deprecated_member_use
             authenticationKeyManager: authKeyManager,
           );
@@ -98,7 +98,7 @@ void main() {
         setUp(() {
           final authKeyManager = TestAuthKeyManager();
           client = Client(
-            'http://localhost:8080/',
+            server.apiUrl,
             // ignore: deprecated_member_use
             authenticationKeyManager: authKeyManager,
           );
@@ -143,7 +143,7 @@ void main() {
         setUp(() {
           final authKeyManager = TestAuthKeyManager();
           client = Client(
-            'http://localhost:8080/',
+            server.apiUrl,
             // ignore: deprecated_member_use
             authenticationKeyManager: authKeyManager,
           );
@@ -185,7 +185,7 @@ void main() {
         setUp(() {
           final authKeyManager = TestAuthKeyManager();
           client = Client(
-            'http://localhost:8080/',
+            server.apiUrl,
             // ignore: deprecated_member_use
             authenticationKeyManager: authKeyManager,
           );
@@ -219,7 +219,7 @@ void main() {
 
       setUp(() async {
         response = await http.get(
-          Uri.parse('http://localhost:8082/session-test'),
+          Uri.parse('${server.webUrl}session-test'),
           headers: {
             'Authorization': 'Bearer $validTestToken',
           },
@@ -245,7 +245,7 @@ void main() {
 
       setUp(() async {
         response = await http.get(
-          Uri.parse('http://localhost:8082/session-test'),
+          Uri.parse('${server.webUrl}session-test'),
           headers: {
             'Authorization': 'Bearer $invalidTestToken',
           },
@@ -264,138 +264,6 @@ void main() {
         expect(body['authId'], isNull);
       });
     });
-
-    test(
-      'when opening a streaming connection with a valid token then session.authenticated is initialized',
-      () async {
-        final authKeyManager = TestAuthKeyManager();
-        final client = Client(
-          'http://localhost:8080/',
-          // ignore: deprecated_member_use
-          authenticationKeyManager: authKeyManager,
-        );
-        authKeyManager.put(validTestToken);
-
-        // ignore: deprecated_member_use
-        await client.openStreamingConnection(
-          disconnectOnLostInternetConnection: false,
-        );
-
-        try {
-          final message =
-              await client.sessionAuthenticationStreaming.stream.first
-                  as SimpleData;
-
-          expect(message.num, equals(1));
-        } finally {
-          // ignore: deprecated_member_use
-          await client.closeStreamingConnection();
-          client.close();
-        }
-      },
-    );
-
-    test(
-      'when opening a streaming connection with an invalid token then session.authenticated is null',
-      () async {
-        final authKeyManager = TestAuthKeyManager();
-        final client = Client(
-          'http://localhost:8080/',
-          // ignore: deprecated_member_use
-          authenticationKeyManager: authKeyManager,
-        );
-        authKeyManager.put(invalidTestToken);
-
-        // ignore: deprecated_member_use
-        await client.openStreamingConnection(
-          disconnectOnLostInternetConnection: false,
-        );
-
-        try {
-          final message =
-              await client.sessionAuthenticationStreaming.stream.first
-                  as SimpleData;
-
-          expect(message.num, equals(0));
-        } finally {
-          // ignore: deprecated_member_use
-          await client.closeStreamingConnection();
-          client.close();
-        }
-      },
-    );
-
-    test(
-      'when sending message over a streaming connection with a valid token '
-      'then session.authenticated remains initialized',
-      () async {
-        final authKeyManager = TestAuthKeyManager();
-        final client = Client(
-          'http://localhost:8080/',
-          // ignore: deprecated_member_use
-          authenticationKeyManager: authKeyManager,
-        );
-        authKeyManager.put(validTestToken);
-
-        // ignore: deprecated_member_use
-        await client.openStreamingConnection(
-          disconnectOnLostInternetConnection: false,
-        );
-
-        try {
-          client.sessionAuthenticationStreaming.sendStreamMessage(
-            SimpleData(num: 999),
-          );
-
-          // Skip the first message from streamOpened
-          final message =
-              await client.sessionAuthenticationStreaming.stream.skip(1).first
-                  as SimpleData;
-
-          expect(message.num, equals(1));
-        } finally {
-          // ignore: deprecated_member_use
-          await client.closeStreamingConnection();
-          client.close();
-        }
-      },
-    );
-
-    test(
-      'when sending message over a streaming connection with an invalid token '
-      'then session.authenticated remains null',
-      () async {
-        final authKeyManager = TestAuthKeyManager();
-        final client = Client(
-          'http://localhost:8080/',
-          // ignore: deprecated_member_use
-          authenticationKeyManager: authKeyManager,
-        );
-        authKeyManager.put(invalidTestToken);
-
-        // ignore: deprecated_member_use
-        await client.openStreamingConnection(
-          disconnectOnLostInternetConnection: false,
-        );
-
-        try {
-          client.sessionAuthenticationStreaming.sendStreamMessage(
-            SimpleData(num: 999),
-          );
-
-          // Skip the first message from streamOpened
-          final message =
-              await client.sessionAuthenticationStreaming.stream.skip(1).first
-                  as SimpleData;
-
-          expect(message.num, equals(0));
-        } finally {
-          // ignore: deprecated_member_use
-          await client.closeStreamingConnection();
-          client.close();
-        }
-      },
-    );
   });
 
   group('Given a server without an authenticationHandler', () {
@@ -410,7 +278,7 @@ void main() {
 
       server.webServer.addRoute(SessionTestRoute(), '/session-test');
 
-      await server.start();
+      await server.startWithDatabase();
     });
 
     tearDownAll(() async {
@@ -423,7 +291,7 @@ void main() {
         late Client client;
 
         setUp(() {
-          client = Client('http://localhost:8080/');
+          client = Client(server.apiUrl);
         });
 
         tearDown(() {
@@ -452,7 +320,7 @@ void main() {
         late Client client;
 
         setUp(() {
-          client = Client('http://localhost:8080/');
+          client = Client(server.apiUrl);
         });
 
         tearDown(() {
@@ -480,7 +348,7 @@ void main() {
       'when accessing web route then session.authenticated is null',
       () async {
         final response = await http.get(
-          Uri.parse('http://localhost:8082/session-test'),
+          Uri.parse('${server.webUrl}session-test'),
         );
 
         expect(response.statusCode, equals(200));
@@ -489,30 +357,6 @@ void main() {
         expect(body['userId'], isNull);
         expect(body['scopes'], isEmpty);
         expect(body['authId'], isNull);
-      },
-    );
-
-    test(
-      'when opening WebSocket connection then session.authenticated is null',
-      () async {
-        final client = Client('http://localhost:8080/');
-
-        // ignore: deprecated_member_use
-        await client.openStreamingConnection(
-          disconnectOnLostInternetConnection: false,
-        );
-
-        try {
-          final message =
-              await client.sessionAuthenticationStreaming.stream.first
-                  as SimpleData;
-
-          expect(message.num, equals(0));
-        } finally {
-          // ignore: deprecated_member_use
-          await client.closeStreamingConnection();
-          client.close();
-        }
       },
     );
   });
