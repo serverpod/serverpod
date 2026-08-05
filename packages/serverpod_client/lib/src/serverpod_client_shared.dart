@@ -66,6 +66,10 @@ abstract class ServerpodClientRequestDelegate {
   /// Derived from the client's host; `/` when the server is at the root.
   String cookieAuthBasePath = '/';
 
+  /// Creates a lock with the given [name] shared across browser tabs of the
+  /// same origin, or null when the platform has no cross-tab coordination.
+  CrossTabLock? createCrossTabLock(String name) => null;
+
   /// The cookie-auth request headers for a call with the given [authenticated]
   /// intent: the [webAuthModeHeaderName] marker and the declared base path,
   /// or empty when [cookieAuth] is disabled.
@@ -209,6 +213,23 @@ abstract class ServerpodClientShared extends EndpointCaller {
   String get _hostBasePath {
     var path = Uri.parse(host).path.replaceFirst(RegExp(r'/+$'), '');
     return path.isEmpty ? '/' : path;
+  }
+
+  bool _authRefreshCrossTabLockCreated = false;
+  CrossTabLock? _authRefreshCrossTabLock;
+
+  /// A lock serializing authentication refreshes against this server across
+  /// browser tabs, or null when the platform has no cross-tab coordination.
+  /// The lock name is derived from the host origin and base path and carries
+  /// no secrets.
+  CrossTabLock? get authRefreshCrossTabLock {
+    if (!_authRefreshCrossTabLockCreated) {
+      _authRefreshCrossTabLockCreated = true;
+      _authRefreshCrossTabLock = _requestDelegate.createCrossTabLock(
+        'serverpod-auth-refresh:${Uri.parse(host).origin}$_hostBasePath',
+      );
+    }
+    return _authRefreshCrossTabLock;
   }
 
   /// Creates a new ServerpodClientShared.

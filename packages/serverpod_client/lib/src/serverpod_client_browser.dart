@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:serverpod_client/serverpod_client.dart';
 
 import 'serverpod_client_shared_private.dart';
+import 'web_locks_cross_tab_lock.dart';
 
 /// Handles communication with the server.
 /// This is the concrete implementation using the http library
@@ -29,6 +30,10 @@ class ServerpodClientRequestDelegateImpl
 
   @override
   bool get supportsCookieAuth => true;
+
+  @override
+  CrossTabLock? createCrossTabLock(String name) =>
+      WebLocksCrossTabLock.isSupported ? WebLocksCrossTabLock(name) : null;
 
   @override
   set cookieAuth(bool value) {

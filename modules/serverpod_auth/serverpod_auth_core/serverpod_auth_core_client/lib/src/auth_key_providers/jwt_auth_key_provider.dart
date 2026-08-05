@@ -19,6 +19,11 @@ class JwtAuthKeyProvider extends MutexRefresherClientAuthKeyProvider {
     /// Defaults to header mode (no cookie).
     bool Function()? usesCookieAuth,
 
+    /// Returns the lock serializing refreshes across browser tabs. Required
+    /// in cookie mode, where concurrent tab refreshes of the shared refresh
+    /// cookie would trip the server's reuse revocation.
+    CrossTabLock? Function()? getCrossTabRefreshLock,
+
     /// Optional function to invalidate the cached authentication info before
     /// refreshing the token.
     Future<void> Function()? invalidateCachedAuthInfo,
@@ -33,6 +38,7 @@ class JwtAuthKeyProvider extends MutexRefresherClientAuthKeyProvider {
            refreshEndpoint: refreshEndpoint,
            refreshJwtTokenBefore: refreshJwtTokenBefore,
            usesCookieAuth: usesCookieAuth ?? () => false,
+           getCrossTabRefreshLock: getCrossTabRefreshLock ?? () => null,
          ),
        );
 }
@@ -44,6 +50,7 @@ class _JwtAuthKeyProviderDelegate implements RefresherClientAuthKeyProvider {
   final EndpointRefreshJwtTokens refreshEndpoint;
   final Duration refreshJwtTokenBefore;
   final bool Function() usesCookieAuth;
+  final CrossTabLock? Function() getCrossTabRefreshLock;
 
   _JwtAuthKeyProviderDelegate({
     required this.getAuthInfo,
@@ -52,6 +59,7 @@ class _JwtAuthKeyProviderDelegate implements RefresherClientAuthKeyProvider {
     required this.refreshEndpoint,
     required this.refreshJwtTokenBefore,
     required this.usesCookieAuth,
+    required this.getCrossTabRefreshLock,
   });
 
   @override
@@ -83,17 +91,33 @@ class _JwtAuthKeyProviderDelegate implements RefresherClientAuthKeyProvider {
           currentToken.isEmpty ||
           currentExpiresAt?.isExpiring(refreshJwtTokenBefore) == true;
       if (!shouldRefresh) return RefreshAuthKeyResult.skipped;
-    } else {
-      if ((!force &&
-              currentExpiresAt?.isExpiring(refreshJwtTokenBefore) != true) ||
-          refreshToken == null) {
-        return RefreshAuthKeyResult.skipped;
+
+      // The refresh cookie is shared between tabs and its secret is
+      // single-use, so an uncoordinated concurrent refresh from another tab
+      // would be treated as credential reuse and revoke the session.
+      final crossTabLock = getCrossTabRefreshLock();
+      if (crossTabLock == null) {
+        throw StateError(
+          'Cookie-based JWT auth requires cross-tab refresh coordination, '
+          'but the platform does not support it (the browser is missing the '
+          'Web Locks API).',
+        );
       }
+      return crossTabLock.synchronize(() => _refresh(refreshToken: null));
     }
 
+    if ((!force &&
+            currentExpiresAt?.isExpiring(refreshJwtTokenBefore) != true) ||
+        refreshToken == null) {
+      return RefreshAuthKeyResult.skipped;
+    }
+    return _refresh(refreshToken: refreshToken);
+  }
+
+  Future<RefreshAuthKeyResult> _refresh({required String? refreshToken}) async {
     try {
       final authSuccess = await refreshEndpoint.refreshAccessToken(
-        refreshToken: cookieAuth ? null : refreshToken,
+        refreshToken: refreshToken,
       );
       await onRefreshAuthInfo(authSuccess);
       return RefreshAuthKeyResult.success;

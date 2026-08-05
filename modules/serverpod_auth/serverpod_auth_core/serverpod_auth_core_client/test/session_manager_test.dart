@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart';
 import 'package:test/test.dart';
 
@@ -292,6 +294,7 @@ void main() {
   group('Given a JWT auth key provider in cookie mode', () {
     late AuthSuccess? authInfo;
     late _TestRefreshJwtTokensEndpoint refreshEndpoint;
+    late _FakeCrossTabLock crossTabLock;
     late JwtAuthKeyProvider authKeyProvider;
 
     setUp(() {
@@ -302,6 +305,7 @@ void main() {
         tokenExpiresAt: DateTime.now().toUtc().add(const Duration(hours: 1)),
       );
       refreshEndpoint = _TestRefreshJwtTokensEndpoint();
+      crossTabLock = _FakeCrossTabLock();
       authKeyProvider = JwtAuthKeyProvider(
         getAuthInfo: () async => authInfo,
         onRefreshAuthInfo: (authSuccess) async {
@@ -309,6 +313,7 @@ void main() {
         },
         refreshEndpoint: refreshEndpoint,
         usesCookieAuth: () => true,
+        getCrossTabRefreshLock: () => crossTabLock,
       );
     });
 
@@ -362,6 +367,77 @@ void main() {
         final result = await authKeyProvider.refreshAuthKey();
 
         expect(result, RefreshAuthKeyResult.skipped);
+        expect(refreshEndpoint.refreshTokens, isEmpty);
+        expect(crossTabLock.synchronizeCallCount, 0);
+      },
+    );
+
+    test(
+      'when refreshing, '
+      'then the refresh runs under the cross-tab lock.',
+      () async {
+        refreshEndpoint.authSuccess = _authSuccess(
+          authStrategy: AuthStrategy.jwt.name,
+          token: 'new-access-token',
+          refreshToken: null,
+        );
+
+        await authKeyProvider.refreshAuthKey();
+
+        expect(crossTabLock.synchronizeCallCount, 1);
+      },
+    );
+
+    test(
+      'when two providers sharing the cross-tab lock refresh concurrently, '
+      'then the refresh requests are serialized.',
+      () async {
+        refreshEndpoint.authSuccess = _authSuccess(
+          authStrategy: AuthStrategy.jwt.name,
+          token: 'new-access-token',
+          refreshToken: null,
+        );
+        AuthSuccess? otherAuthInfo = _authSuccess(
+          authStrategy: AuthStrategy.jwt.name,
+          token: '',
+          refreshToken: null,
+        );
+        final otherProvider = JwtAuthKeyProvider(
+          getAuthInfo: () async => otherAuthInfo,
+          onRefreshAuthInfo: (authSuccess) async {
+            otherAuthInfo = authSuccess;
+          },
+          refreshEndpoint: refreshEndpoint,
+          usesCookieAuth: () => true,
+          getCrossTabRefreshLock: () => crossTabLock,
+        );
+
+        final results = await Future.wait([
+          authKeyProvider.refreshAuthKey(),
+          otherProvider.refreshAuthKey(),
+        ]);
+
+        expect(results, everyElement(RefreshAuthKeyResult.success));
+        expect(refreshEndpoint.refreshTokens, hasLength(2));
+        expect(refreshEndpoint.maxConcurrentRefreshes, 1);
+      },
+    );
+
+    test(
+      'when the platform provides no cross-tab lock, '
+      'then refreshing throws a StateError.',
+      () async {
+        final lockLessProvider = JwtAuthKeyProvider(
+          getAuthInfo: () async => authInfo,
+          onRefreshAuthInfo: (authSuccess) async {},
+          refreshEndpoint: refreshEndpoint,
+          usesCookieAuth: () => true,
+        );
+
+        await expectLater(
+          lockLessProvider.refreshAuthKey(),
+          throwsA(isA<StateError>()),
+        );
         expect(refreshEndpoint.refreshTokens, isEmpty);
       },
     );
@@ -658,6 +734,8 @@ class _TestRefreshJwtTokensEndpoint extends EndpointRefreshJwtTokens {
 
   AuthSuccess? authSuccess;
   final refreshTokens = <String?>[];
+  int _inFlightRefreshes = 0;
+  int maxConcurrentRefreshes = 0;
 
   @override
   String get name => 'serverpod_auth_core.refreshJwtTokens';
@@ -665,8 +743,35 @@ class _TestRefreshJwtTokensEndpoint extends EndpointRefreshJwtTokens {
   @override
   Future<AuthSuccess> refreshAccessToken({String? refreshToken}) async {
     refreshTokens.add(refreshToken);
+    _inFlightRefreshes++;
+    if (_inFlightRefreshes > maxConcurrentRefreshes) {
+      maxConcurrentRefreshes = _inFlightRefreshes;
+    }
+    await Future<void>.delayed(Duration.zero);
+    _inFlightRefreshes--;
     final authSuccess = this.authSuccess;
     if (authSuccess == null) throw StateError('No authSuccess configured.');
     return authSuccess;
+  }
+}
+
+class _FakeCrossTabLock implements CrossTabLock {
+  Future<void> _tail = Future<void>.value();
+  int synchronizeCallCount = 0;
+
+  @override
+  Future<T> synchronize<T>(Future<T> Function() action) {
+    synchronizeCallCount++;
+    final previousTail = _tail;
+    final completer = Completer<void>();
+    _tail = completer.future;
+    return () async {
+      await previousTail;
+      try {
+        return await action();
+      } finally {
+        completer.complete();
+      }
+    }();
   }
 }

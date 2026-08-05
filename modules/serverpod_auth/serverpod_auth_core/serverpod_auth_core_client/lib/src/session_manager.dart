@@ -85,6 +85,7 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
           // since the storage is shared between tabs.
           invalidateCachedAuthInfo: _resetCachedAuthInfo,
           usesCookieAuth: () => _usesCookieAuth,
+          getCrossTabRefreshLock: () => caller.client.authRefreshCrossTabLock,
           refreshEndpoint: caller.client
               .getEndpointOfType<EndpointRefreshJwtTokens>(),
         );
