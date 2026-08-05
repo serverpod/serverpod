@@ -15,6 +15,10 @@ class JwtAuthKeyProvider extends MutexRefresherClientAuthKeyProvider {
     /// The endpoint to use for refreshing the token.
     required EndpointRefreshJwtTokens refreshEndpoint,
 
+    /// Whether refresh credentials are carried in an HttpOnly cookie.
+    /// Defaults to header mode (no cookie).
+    bool Function()? usesCookieAuth,
+
     /// Optional function to invalidate the cached authentication info before
     /// refreshing the token.
     Future<void> Function()? invalidateCachedAuthInfo,
@@ -28,6 +32,7 @@ class JwtAuthKeyProvider extends MutexRefresherClientAuthKeyProvider {
            onRefreshAuthInfo: onRefreshAuthInfo,
            refreshEndpoint: refreshEndpoint,
            refreshJwtTokenBefore: refreshJwtTokenBefore,
+           usesCookieAuth: usesCookieAuth ?? () => false,
          ),
        );
 }
@@ -38,6 +43,7 @@ class _JwtAuthKeyProviderDelegate implements RefresherClientAuthKeyProvider {
   final Future<void> Function(AuthSuccess authSuccess) onRefreshAuthInfo;
   final EndpointRefreshJwtTokens refreshEndpoint;
   final Duration refreshJwtTokenBefore;
+  final bool Function() usesCookieAuth;
 
   _JwtAuthKeyProviderDelegate({
     required this.getAuthInfo,
@@ -45,12 +51,14 @@ class _JwtAuthKeyProviderDelegate implements RefresherClientAuthKeyProvider {
     required this.onRefreshAuthInfo,
     required this.refreshEndpoint,
     required this.refreshJwtTokenBefore,
+    required this.usesCookieAuth,
   });
 
   @override
   Future<String?> get authHeaderValue async {
     final currentAuth = await getAuthInfo();
     if (currentAuth == null) return null;
+    if (currentAuth.token.isEmpty) return null;
     return wrapAsBearerAuthHeaderValue(currentAuth.token);
   }
 
@@ -58,19 +66,34 @@ class _JwtAuthKeyProviderDelegate implements RefresherClientAuthKeyProvider {
   /// about to expire within the configured tolerance. Otherwise, returns skipped.
   @override
   Future<RefreshAuthKeyResult> refreshAuthKey({bool force = false}) async {
-    await invalidateCachedAuthInfo?.call();
+    final cookieAuth = usesCookieAuth();
+    // In cookie mode the persisted copy is token-blanked and the browser jar
+    // holds the (shared) refresh cookie, so reloading from storage would only
+    // discard the in-memory access token and force a needless rotation.
+    if (!cookieAuth) await invalidateCachedAuthInfo?.call();
     final currentAuthInfo = await getAuthInfo();
     final currentExpiresAt = currentAuthInfo?.tokenExpiresAt;
     final refreshToken = currentAuthInfo?.refreshToken;
 
-    if (!force && currentExpiresAt?.isExpiring(refreshJwtTokenBefore) != true ||
-        refreshToken == null) {
-      return RefreshAuthKeyResult.skipped;
+    if (cookieAuth) {
+      final currentToken = currentAuthInfo?.token;
+      final shouldRefresh =
+          force ||
+          currentToken == null ||
+          currentToken.isEmpty ||
+          currentExpiresAt?.isExpiring(refreshJwtTokenBefore) == true;
+      if (!shouldRefresh) return RefreshAuthKeyResult.skipped;
+    } else {
+      if ((!force &&
+              currentExpiresAt?.isExpiring(refreshJwtTokenBefore) != true) ||
+          refreshToken == null) {
+        return RefreshAuthKeyResult.skipped;
+      }
     }
 
     try {
       final authSuccess = await refreshEndpoint.refreshAccessToken(
-        refreshToken: refreshToken,
+        refreshToken: cookieAuth ? null : refreshToken,
       );
       await onRefreshAuthInfo(authSuccess);
       return RefreshAuthKeyResult.success;

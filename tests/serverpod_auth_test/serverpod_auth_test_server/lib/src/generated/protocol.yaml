@@ -9,8 +9,16 @@ authTest:
   - deleteJwtRefreshTokens:
   - destroySpecificRefreshToken:
   - checkSession:
+  - checkSessionUnauthenticated:
+  - checkSessionUnauthenticatedStream:
+  - openPublicUserStream:
+  - resetJwtRefreshConcurrency:
+  - getMaxConcurrentJwtRefreshes:
+unauthenticatedRequireLoginAuthTest:
+  - call:
 authenticatedStreamingTest:
   - openAuthenticatedStream:
+  - watchAuthenticatedUserId:
 emailAccountBackwardsCompatibilityTest:
   - createLegacyUser:
   - createLegacySession:

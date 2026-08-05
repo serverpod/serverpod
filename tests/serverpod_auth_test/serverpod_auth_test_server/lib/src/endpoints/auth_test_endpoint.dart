@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
+
+import 'jwt_refresh_endpoint.dart';
 
 /// Endpoint for testing authentication.
 class AuthTestEndpoint extends Endpoint {
@@ -44,7 +48,7 @@ class AuthTestEndpoint extends Endpoint {
     final Session session,
     final UuidValue authUserId,
   ) async {
-    return jwt.createTokens(
+    return AuthServices.getTokenManager<JwtTokenManager>().issueToken(
       session,
       authUserId: authUserId,
       method: 'test',
@@ -92,4 +96,37 @@ class AuthTestEndpoint extends Endpoint {
     final userId = session.authenticated;
     return userId?.authUserId == authUserId;
   }
+
+  @unauthenticatedClientCall
+  Future<bool> checkSessionUnauthenticated(final Session session) async {
+    return session.isUserSignedIn;
+  }
+
+  @unauthenticatedClientCall
+  Stream<bool> checkSessionUnauthenticatedStream(
+    final Session session,
+  ) async* {
+    yield session.isUserSignedIn;
+  }
+
+  Stream<String?> openPublicUserStream(final Session session) async* {
+    yield session.authenticated?.userIdentifier;
+    await Completer<void>().future;
+  }
+
+  Future<void> resetJwtRefreshConcurrency(final Session session) async {
+    JwtRefreshEndpoint.resetConcurrencyTracking();
+  }
+
+  Future<int> getMaxConcurrentJwtRefreshes(final Session session) async {
+    return JwtRefreshEndpoint.maxConcurrentRefreshes;
+  }
+}
+
+class UnauthenticatedRequireLoginAuthTestEndpoint extends Endpoint {
+  @override
+  bool get requireLogin => true;
+
+  @unauthenticatedClientCall
+  Future<void> call(final Session session) async {}
 }

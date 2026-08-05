@@ -45,6 +45,11 @@ class ServerpodClientRequestDelegateImpl
     }
   }
 
+  // The dart:io HttpClient/IOClient has no cookie jar: it neither resends the
+  // auth cookie nor stores `Set-Cookie`, so it cannot carry cookie-based auth.
+  @override
+  bool get supportsCookieAuth => false;
+
   @override
   Future<String> serverRequest<T>(
     Uri url, {

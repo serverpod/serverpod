@@ -8,11 +8,13 @@ class TestServerpodClient extends ServerpodClientShared {
   TestServerpodClient({
     required Uri host,
     ClientAuthKeyProvider? authKeyProvider,
+    ServerpodClientRequestDelegate? requestDelegate,
   }) : super(
          host.toString(),
          TestSerializationManager(),
          streamingConnectionTimeout: const Duration(seconds: 5),
          connectionTimeout: const Duration(seconds: 20),
+         requestDelegate: requestDelegate,
        ) {
     this.authKeyProvider = authKeyProvider;
   }

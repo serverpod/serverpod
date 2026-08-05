@@ -1,3 +1,4 @@
+import 'package:http/browser_client.dart';
 import 'package:http/http.dart' as http;
 import 'package:serverpod_client/serverpod_client.dart';
 
@@ -27,6 +28,19 @@ class ServerpodClientRequestDelegateImpl
   }
 
   @override
+  bool get supportsCookieAuth => true;
+
+  @override
+  set cookieAuth(bool value) {
+    super.cookieAuth = value;
+    if (value) {
+      // Send auth cookies with requests and accept Set-Cookie responses.
+      var client = _httpClient;
+      if (client is BrowserClient) client.withCredentials = true;
+    }
+  }
+
+  @override
   Future<String> serverRequest<T>(
     Uri url, {
     required String body,
@@ -39,6 +53,8 @@ class ServerpodClientRequestDelegateImpl
             body: body,
             headers: {
               'authorization': ?authenticationValue,
+              if (cookieAuth) webAuthModeHeaderName: webAuthModeCookie,
+              if (cookieAuth) webBasePathHeaderName: cookieAuthBasePath,
             },
           )
           .timeout(connectionTimeout);

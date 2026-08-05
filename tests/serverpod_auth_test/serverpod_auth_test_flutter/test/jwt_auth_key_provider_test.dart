@@ -357,7 +357,7 @@ class TestEndpointRefreshJwtToken extends EndpointJwtRefresh {
   Exception? simulateException;
 
   @override
-  Future<AuthSuccess> refreshAccessToken({required String refreshToken}) async {
+  Future<AuthSuccess> refreshAccessToken({String? refreshToken}) async {
     callCount++;
     if (simulateException != null) throw simulateException!;
     return super.refreshAccessToken(refreshToken: refreshToken);

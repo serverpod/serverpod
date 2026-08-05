@@ -472,31 +472,64 @@ void main() {
         },
       );
 
-      test(
-        'when rotating tokens multiple times within the same second, then new tokens are returned.',
-        () async {
-          final newTokenPairs = await withClock(
-            Clock.fixed(DateTime.now()),
-            () => Future.wait(
-              List.generate(
-                3,
-                (final _) => jwtAdmin.rotateRefreshToken(
-                  session,
-                  refreshToken: authSuccess.refreshToken!,
+      group(
+        'when three requests concurrently rotate the same refresh token',
+        () {
+          late List<Object> rotationResults;
+
+          setUp(() async {
+            rotationResults = await withClock(
+              Clock.fixed(DateTime.now()),
+              () => Future.wait<Object>(
+                List.generate(
+                  3,
+                  (final _) async {
+                    try {
+                      return await jwtAdmin.rotateRefreshToken(
+                        session,
+                        refreshToken: authSuccess.refreshToken!,
+                      );
+                    } catch (error) {
+                      return error;
+                    }
+                  },
                 ),
               ),
-            ),
+            );
+          });
+
+          test('then exactly one rotation succeeds.', () {
+            expect(rotationResults.whereType<TokenPair>(), hasLength(1));
+          });
+
+          test('then the stale rotation attempts are rejected.', () {
+            final errors = rotationResults.where(
+              (result) => result is! TokenPair,
+            );
+
+            expect(errors, hasLength(2));
+            expect(
+              errors,
+              everyElement(
+                anyOf(
+                  isA<RefreshTokenInvalidSecretServerException>(),
+                  isA<RefreshTokenNotFoundServerException>(),
+                ),
+              ),
+            );
+          });
+
+          test(
+            'then reuse revocation removes the refresh token row.',
+            () async {
+              final refreshTokens = await jwt.listJwtTokens(
+                session,
+                authUserId: authUserId,
+              );
+
+              expect(refreshTokens, isEmpty);
+            },
           );
-
-          final tokens = newTokenPairs.map((final t) => t.accessToken).toSet();
-          expect(tokens, hasLength(3));
-          expect(tokens.add(authSuccess.token), isTrue);
-
-          final refreshTokens = newTokenPairs
-              .map((final t) => t.refreshToken)
-              .toSet();
-          expect(refreshTokens, hasLength(3));
-          expect(refreshTokens.add(authSuccess.refreshToken!), isTrue);
         },
       );
 

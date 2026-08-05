@@ -84,6 +84,7 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
           // required for web if another tab has rotated the refresh token,
           // since the storage is shared between tabs.
           invalidateCachedAuthInfo: _resetCachedAuthInfo,
+          usesCookieAuth: () => _usesCookieAuth,
           refreshEndpoint: caller.client
               .getEndpointOfType<EndpointRefreshJwtTokens>(),
         );
@@ -100,6 +101,8 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
     _authKeyProviderDelegates[authStrategyName] = authKeyProvider;
     return authKeyProvider;
   }
+
+  bool get _usesCookieAuth => _caller?.client.cookieAuth ?? false;
 
   @override
   Future<String?> get authHeaderValue async =>
@@ -160,9 +163,36 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
 
   /// Updates the signed in user on the storage.
   Future<void> updateSignedInUser(AuthSuccess? authInfo) async {
-    await storage.set(authInfo);
+    final persistedAuthInfo = _usesCookieAuth && authInfo != null
+        ? _validateAndSanitizeCookieAuthInfo(authInfo)
+        : authInfo;
+    await storage.set(persistedAuthInfo);
     _authInfo = authInfo;
     onAuthInfoChanged?.call(_authInfo);
+  }
+
+  AuthSuccess _validateAndSanitizeCookieAuthInfo(AuthSuccess authInfo) {
+    final authStrategy = AuthStrategy.fromJson(authInfo.authStrategy);
+
+    if (authStrategy == AuthStrategy.session && authInfo.token.isNotEmpty) {
+      throw StateError(
+        'cookieAuth is enabled but the server returned the auth token in the '
+        'response body instead of an HttpOnly cookie. Configure `authCookie` '
+        'on the server, or run the client in header mode (cookieAuth: false).',
+      );
+    }
+
+    if (authStrategy == AuthStrategy.jwt &&
+        (authInfo.refreshToken?.isNotEmpty ?? false)) {
+      throw StateError(
+        'cookieAuth is enabled but the server returned the JWT refresh token in '
+        'the response body instead of an HttpOnly cookie. Configure '
+        '`authCookie` on the server, or run the client in header mode '
+        '(cookieAuth: false).',
+      );
+    }
+
+    return authInfo.copyWith(token: '', refreshToken: null);
   }
 
   /// Verifies the current sign in status of the user with the server and

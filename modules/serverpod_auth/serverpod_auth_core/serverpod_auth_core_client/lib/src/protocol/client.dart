@@ -71,9 +71,7 @@ abstract class EndpointRefreshJwtTokens extends _i1.EndpointRef {
   ///
   /// This endpoint is unauthenticated, meaning the client won't include any
   /// authentication information with the call.
-  _i2.Future<_i3.AuthSuccess> refreshAccessToken({
-    required String refreshToken,
-  });
+  _i2.Future<_i3.AuthSuccess> refreshAccessToken({String? refreshToken});
 }
 
 /// Endpoint for read-only access to user profile information.

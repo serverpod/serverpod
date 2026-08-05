@@ -5,6 +5,7 @@ import '../../../auth_user/auth_user.dart';
 import '../../../generated/common/models/auth_strategy.dart';
 import '../../../jwt/business/jwt.dart';
 import '../../../jwt/business/jwt_config.dart';
+import '../../../jwt/util/jwt_refresh_cookie_path.dart';
 import '../token_manager.dart';
 
 /// Token manager adapter for [Jwt].
@@ -19,14 +20,20 @@ class JwtTokenManager implements TokenManager {
   /// The [Jwt] instance.
   final Jwt jwt;
 
+  final JwtConfig _config;
+
   /// Creates a new [JwtTokenManager] instance.
   JwtTokenManager({
     required final JwtConfig config,
     final AuthUsers authUsers = const AuthUsers(),
-  }) : jwt = Jwt(
-         config: config,
-         authUsers: authUsers,
-       );
+    final Jwt? jwt,
+  }) : _config = config,
+       jwt =
+           jwt ??
+           Jwt(
+             config: config,
+             authUsers: authUsers,
+           );
 
   @override
   Future<AuthSuccess> issueToken(
@@ -36,13 +43,25 @@ class JwtTokenManager implements TokenManager {
     final Set<Scope>? scopes,
     final Transaction? transaction,
   }) async {
-    return jwt.createTokens(
+    final authSuccess = await jwt.createTokens(
       session,
       authUserId: authUserId,
       method: method,
       scopes: scopes,
       transaction: transaction,
     );
+    if (!session.isWebAuthCookieRequest) return authSuccess;
+
+    final refreshToken = authSuccess.refreshToken;
+    if (refreshToken == null) return authSuccess;
+
+    final maxAgeSeconds = _config.refreshTokenLifetime.inSeconds;
+    session.writeWebAuthRefreshCookie(
+      refreshToken,
+      maxAgeSeconds: maxAgeSeconds > 0 ? maxAgeSeconds : null,
+      path: jwtRefreshCookiePath(session),
+    );
+    return authSuccess.copyWith(refreshToken: null);
   }
 
   @override
