@@ -688,9 +688,10 @@ void main() {
           };
       });
 
-      tearDownAll(() {
+      tearDownAll(() async {
         client?.close(force: true);
-        startProjectProcess?.kill();
+        final process = startProjectProcess;
+        if (process != null) await stopProcess(process);
       });
 
       test(
@@ -722,7 +723,8 @@ void main() {
     'Given a project is created with fullstack template and webapp and website enabled, '
     'and the pod is running',
     () {
-      late Process startProjectProcess;
+      Process? startProjectProcess;
+      late int webPort;
 
       final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
@@ -732,23 +734,49 @@ void main() {
         ),
       );
 
-      setUpAll(() async {
-        startProjectProcess = await startProcessAndWaitForKeywords(
+      Future<void> startPod() async {
+        final serverOutput = StringBuffer();
+        final webServerStartedPattern = RegExp(
+          r'Webserver listening on http://localhost:(\d+)',
+        );
+        int? nextWebPort;
+        final process = await startProcessAndWaitForKeywords(
           'dart',
-          ['bin/main.dart'],
+          ['bin/main.dart', '--mode=test'],
           workingDirectory: project.serverDir,
           keywords: ['Webserver listening on'],
+          onOutput: (output) {
+            serverOutput.write(output);
+            final match = webServerStartedPattern.firstMatch(
+              serverOutput.toString(),
+            );
+            if (match != null) nextWebPort = int.parse(match.group(1)!);
+          },
         );
+        expect(
+          nextWebPort,
+          isNotNull,
+          reason: 'Could not determine the web server port.',
+        );
+        startProjectProcess = process;
+        webPort = nextWebPort!;
+      }
+
+      setUpAll(() async {
+        await startPod();
       });
 
-      tearDownAll(() {
-        startProjectProcess.kill();
+      tearDownAll(() async {
+        final process = startProjectProcess;
+        if (process != null) await stopProcess(process);
       });
 
       test(
         'when requesting the static website under / then it is is served',
         () async {
-          final response = await http.get(Uri.parse('http://localhost:8082'));
+          final response = await http.get(
+            Uri.parse('http://localhost:$webPort'),
+          );
           expect(response.statusCode, equals(200));
           expect(
             response.body,
@@ -763,7 +791,7 @@ void main() {
         'then the "Flutter web app not built" page is served',
         () async {
           final response = await http.get(
-            Uri.parse('http://localhost:8082/app'),
+            Uri.parse('http://localhost:$webPort/app'),
           );
           expect(response.statusCode, equals(200));
           expect(
@@ -783,6 +811,12 @@ void main() {
 
       group('Given the Flutter web app is built and the pod is restarted', () {
         setUp(() async {
+          final runningProcess = startProjectProcess;
+          if (runningProcess != null) {
+            await stopProcess(runningProcess);
+            startProjectProcess = null;
+          }
+
           final flutterBuildProcess = await startServerpodCli(
             ['run', 'flutter_build'],
             rootPath: rootPath,
@@ -793,13 +827,7 @@ void main() {
           );
           expect(await flutterBuildProcess.exitCode, 0);
 
-          startProjectProcess.kill();
-          startProjectProcess = await startProcessAndWaitForKeywords(
-            'dart',
-            ['bin/main.dart'],
-            workingDirectory: project.serverDir,
-            keywords: ['Webserver listening on'],
-          );
+          await startPod();
         });
 
         test(
@@ -807,7 +835,7 @@ void main() {
           'then the web app is served successfully',
           () async {
             final response = await http.get(
-              Uri.parse('http://localhost:8082/app'),
+              Uri.parse('http://localhost:$webPort/app'),
             );
             expect(response.statusCode, equals(200));
             expect(

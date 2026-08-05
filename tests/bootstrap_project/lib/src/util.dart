@@ -94,6 +94,7 @@ Future<Process> startProcessAndWaitForKeywords(
   void Function(String output)? onOutput,
 }) async {
   final completer = Completer<Process>();
+  final output = StringBuffer();
 
   var process = await Process.start(
     _getCommandToRun(command, ignorePlatform),
@@ -102,10 +103,10 @@ Future<Process> startProcessAndWaitForKeywords(
     environment: environment,
   );
 
-  void checkForKeywords(String data) {
+  void checkForKeywords() {
     if (keywords.isEmpty) return;
     for (var keyword in keywords) {
-      if (data.contains(keyword)) {
+      if (output.toString().contains(keyword)) {
         if (!completer.isCompleted) {
           completer.complete(process);
         }
@@ -113,21 +114,56 @@ Future<Process> startProcessAndWaitForKeywords(
     }
   }
 
-  process.stderr.transform(utf8.decoder).listen((e) {
+  final stderrDone = process.stderr.transform(utf8.decoder).forEach((e) {
     print('COMMAND "$command" stderr: $e');
-    checkForKeywords(e);
+    output.write(e);
+    checkForKeywords();
   });
-  process.stdout.transform(utf8.decoder).listen((e) {
+  final stdoutDone = process.stdout.transform(utf8.decoder).forEach((e) {
     print('COMMAND "$command" stdout: $e');
+    output.write(e);
     onOutput?.call(e);
-    checkForKeywords(e);
+    checkForKeywords();
   });
+
+  unawaited(() async {
+    final exitCode = await process.exitCode;
+    await Future.wait([stdoutDone, stderrDone]);
+    if (!completer.isCompleted) {
+      completer.completeError(
+        StateError(
+          'Command "$command ${arguments.join(' ')}" exited with code '
+          '$exitCode before producing one of: ${keywords.join(', ')}.\n'
+          '$output',
+        ),
+      );
+    }
+  }());
 
   if (keywords.isEmpty && !completer.isCompleted) {
     completer.complete(process);
   }
 
   return completer.future;
+}
+
+/// Stops [process] and waits until all of its resources have been released.
+///
+/// Waiting for [Process.exitCode] is important on Windows, where starting a
+/// replacement process immediately after [Process.kill] can race with the old
+/// process releasing listening sockets and file handles.
+Future<int> stopProcess(
+  Process process, {
+  Duration timeout = const Duration(seconds: 10),
+}) async {
+  process.kill();
+  return process.exitCode.timeout(
+    timeout,
+    onTimeout: () {
+      process.kill(ProcessSignal.sigkill);
+      return process.exitCode;
+    },
+  );
 }
 
 Future<Process> startServerpodCli(
