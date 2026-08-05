@@ -53,9 +53,14 @@ class FlutterAppManager {
     required this.serverPackageDirectoryPathParts,
     required this.projectName,
     required this.launchFlutterApp,
+    this.environmentOverrideForTesting,
     this.flutterExecutableForTesting,
     this.argsOverrideForTesting,
   });
+
+  /// Test-only override for process environment.
+  /// Decides whether this run was launched by the IDE - see [ideLaunchEnvVar].
+  final Map<String, String>? environmentOverrideForTesting;
 
   /// Test-only override for the `flutter` executable path.
   final String? flutterExecutableForTesting;
@@ -408,12 +413,17 @@ class FlutterAppManager {
   }
 
   /// Closes every proxy and deletes info files.
+  ///
+  /// Only an IDE launch removes the device info; a plain terminal run leaves
+  /// it alone, since it may belong to a pending IDE launch.
   Future<void> dispose() async {
     await stopAll();
     await _runtimes.values.map((runtime) => runtime.proxy.close()).wait;
-    await File(
-      p.join(serverpodToolDir, ideDeviceInfoFile),
-    ).deleteIfExists();
+    if (_isIdeLaunch) {
+      await File(
+        p.join(serverpodToolDir, ideDeviceInfoFile),
+      ).deleteIfExists();
+    }
   }
 
   _AppRuntime? _runtimeFor(String appId) => _runtimes[appId];
@@ -426,22 +436,40 @@ class FlutterAppManager {
   /// [serverpodToolDir].
   ///
   /// Scoped to one session: the extension writes it as it launches, and
-  /// [dispose] removes it when the session ends, so a later `serverpod start`
-  /// from a plain terminal is never silently retargeted by a device
-  /// picked in an IDE.
+  /// [dispose] removes it when the session ends. Only a run carrying
+  /// [ideLaunchEnvVar] reads it, so a `serverpod start` from a plain terminal
+  /// is never silently retargeted by a device picked in an IDE - including
+  /// when a killed session left the file behind.
   static const ideDeviceInfoFile = 'ide-flutter-device.json';
+
+  /// Environment variable the generated VS Code `serverpod_start` task sets
+  /// to mark a run it launched.
+  ///
+  /// Only such a run reads [ideDeviceInfoFile]. A `serverpod start` from a
+  /// plain terminal carries no marker and ignores the file entirely, so one
+  /// left behind by a session that was killed - which never reaches
+  /// [dispose] - can never retarget an unrelated run.
+  static const ideLaunchEnvVar = 'SERVERPOD_LAUNCHED_FROM_IDE';
+
+  /// Whether this process was launched by the IDE.
+  bool get _isIdeLaunch {
+    final env = environmentOverrideForTesting ?? Platform.environment;
+    return bool.tryParse(env[ideLaunchEnvVar] ?? '') ?? false;
+  }
 
   /// The device id selected in the IDE, or null when it does not apply.
   ///
-  /// Only honored when exactly one app is configured - with several apps the
-  /// selection would ambiguously retarget all of them, so each app must pin
-  /// its own `device` in the pubspec instead. An explicit `device` on the
-  /// single app also wins over the IDE device info.
+  /// Only honored on an IDE launch (see [ideLaunchEnvVar]), and only when
+  /// exactly one app is configured - with several apps the selection would
+  /// ambiguously retarget all of them, so each app must pin its own `device`
+  /// in the pubspec instead. An explicit `device` on the single app also wins
+  /// over the IDE device info.
   /// Read fresh on every spawn so a new IDE selection applies to the next
   /// launch without restarting the session, and so a `device` added to the
   /// server pubspec while running takes over through the config reload.
   @visibleForTesting
   String? ideDevice() {
+    if (!_isIdeLaunch) return null;
     if (_apps.length != 1) return null;
     final file = File(p.join(serverpodToolDir, ideDeviceInfoFile));
     try {

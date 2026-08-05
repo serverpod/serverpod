@@ -19,8 +19,7 @@
   "activationEvents": [
     "onLanguage:yaml",
     "onLanguage:serverpod",
-    "onDebugResolve:dart",
-    "activationEvents:serverpod"
+    "onDebugResolve:dart"
   ],
   "pricing": "Free",
   "homepage": "https://serverpod.dev",
