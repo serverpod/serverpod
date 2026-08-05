@@ -170,9 +170,6 @@ extension IntegrationTestServerExtension on Serverpod {
   /// `http://localhost:<bound web-server port>/`.
   String get webUrl => 'http://localhost:${webServer.port}/';
 
-  /// `ws://localhost:<bound api port>/websocket` (endpoint streaming).
-  String get endpointWebSocketUrl => 'ws://localhost:${server.port}/websocket';
-
   /// `ws://localhost:<bound api port>/v1/websocket` (method streaming).
   String get methodWebSocketUrl => 'ws://localhost:${server.port}/v1/websocket';
 }

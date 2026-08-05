@@ -231,51 +231,6 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint with excluded method name (overridden method from Endpoint class)',
-    () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-
-      late List<EndpointDefinition> endpointDefinitions;
-      late EndpointsAnalyzer analyzer;
-      setUpAll(() async {
-        var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
-        endpointFile.createSync(recursive: true);
-        endpointFile.writeAsStringSync('''
-import 'package:serverpod/serverpod.dart';
-
-class ExampleEndpoint extends Endpoint {
-   @override
-   dynamic getUserObject(Session session) async {
-    return 'Hello';
-  }
-}
-''');
-        analyzer = EndpointsAnalyzer(testDirectory);
-        endpointDefinitions = await analyzer.analyze(
-          collector: collector,
-          models: StatefulAnalyzer(config, []).models,
-        );
-      });
-
-      test('then no validation errors are reported.', () {
-        expect(collector.errors, isEmpty);
-      });
-
-      test('then endpoint definition is created.', () {
-        expect(endpointDefinitions, hasLength(1));
-      });
-
-      test('then endpoint definition has does not have method defined.', () {
-        var methods = endpointDefinitions.firstOrNull?.methods;
-        expect(methods, isEmpty);
-      });
-    },
-  );
-
-  group(
     'Given an endpoint method without a first positional `Session` param and the other parameters are not a `Session` parameter when analyzed',
     () {
       var collector = CodeGenerationCollector();

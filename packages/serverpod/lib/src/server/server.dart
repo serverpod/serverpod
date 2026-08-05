@@ -10,7 +10,6 @@ import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/health/health_routes.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/session.dart';
-import 'package:serverpod/src/server/websocket_request_handlers/endpoint_websocket_request_handler.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/method_websocket_request_handler.dart';
 import 'package:serverpod_database/serverpod_database.dart';
 
@@ -154,10 +153,6 @@ class Server implements RouterInjectable {
       ..get('/', healthRoutes.legacyHealth);
     healthRoutes.injectIn(router);
     router
-      ..get(
-        '/websocket',
-        _dispatchWebSocket(EndpointWebsocketRequestHandler.handleWebsocket),
-      )
       ..get(
         '/v1/websocket',
         _dispatchWebSocket(MethodWebsocketRequestHandler.handleWebsocket),

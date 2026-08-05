@@ -13,15 +13,6 @@ import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
 import 'package:serverpod_cli/src/util/type_validators.dart';
 
-const _excludedMethodNameSet = {
-  'streamOpened',
-  'streamClosed',
-  'handleStreamMessage',
-  'sendStreamMessage',
-  'setUserObject',
-  'getUserObject',
-};
-
 abstract class EndpointMethodAnalyzer {
   /// Parses an [MethodElement] into a [MethodDefinition].
   /// Assumes that the [MethodElement] is a valid endpoint method.
@@ -84,8 +75,6 @@ abstract class EndpointMethodAnalyzer {
     if (method.isPrivate) return false;
     if (method.isStatic) return false;
     if (method.markedAsIgnored) return false;
-
-    if (_excludedMethodNameSet.contains(method.name)) return false;
 
     return method.formalParameters.isFirstRequiredParameterSession;
   }

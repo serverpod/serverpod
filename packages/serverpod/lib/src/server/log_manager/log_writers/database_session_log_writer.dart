@@ -8,8 +8,8 @@ import '../../session.dart';
 import '../session_log.dart';
 
 /// A [SessionLogWriter] that persists typed session events to the
-/// `serverpod_session_log` / `serverpod_log` / `serverpod_query_log` /
-/// `serverpod_message_log` tables.
+/// `serverpod_session_log` / `serverpod_log` / `serverpod_query_log`
+/// tables.
 ///
 /// Backed by an internal [Session] attached via [attach]; while
 /// detached the writer is a no-op so it can sit in the session-log
@@ -113,11 +113,6 @@ class DatabaseSessionLogWriter extends SessionLogWriter {
           session,
           _buildQueryRow(e, sessionLogId, state.open),
         );
-      case SessionMessageEntry e:
-        await protocol.MessageLogEntry.db.insertRow(
-          session,
-          _buildMessageRow(e, sessionLogId, state.open),
-        );
     }
   }
 
@@ -201,7 +196,6 @@ class DatabaseSessionLogWriter extends SessionLogWriter {
     return protocol.LogEntry(
       sessionLogId: sessionLogId,
       serverId: open.serverId,
-      messageId: entry.messageId,
       time: entry.time,
       logLevel: _toProtocolLogLevel(entry.level),
       message: entry.message,
@@ -219,31 +213,9 @@ class DatabaseSessionLogWriter extends SessionLogWriter {
     return protocol.QueryLogEntry(
       sessionLogId: sessionLogId,
       serverId: open.serverId,
-      messageId: entry.messageId,
       query: entry.query,
       duration: entry.duration.inMicroseconds / Duration.microsecondsPerSecond,
       numRows: entry.numRowsAffected,
-      error: entry.error,
-      stackTrace: entry.stackTrace?.toString(),
-      slow: entry.slow,
-      order: entry.order,
-    );
-  }
-
-  protocol.MessageLogEntry _buildMessageRow(
-    SessionMessageEntry entry,
-    int sessionLogId,
-    SessionOpen open,
-  ) {
-    return protocol.MessageLogEntry(
-      sessionLogId: sessionLogId,
-      serverId: open.serverId,
-      // Session-message entries are required to carry a messageId; the
-      // base field is nullable but the constructor enforces non-null.
-      messageId: entry.messageId!,
-      endpoint: entry.endpoint,
-      messageName: entry.messageName,
-      duration: entry.duration.inMicroseconds / Duration.microsecondsPerSecond,
       error: entry.error,
       stackTrace: entry.stackTrace?.toString(),
       slow: entry.slow,
