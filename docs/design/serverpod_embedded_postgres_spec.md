@@ -24,7 +24,7 @@ Status: **draft**. Audience: implementors.
 - iOS / Android / WASM. Desktop only.
 - Replacing `package:postgres` as the driver. We produce a connection string.
 - Multi-version-PG-side-by-side in one project.
-- PostgreSQL extensions (PostGIS, pgvector, ...). See §11.
+- PostgreSQL extensions beyond the bundled PostGIS and pgvector. See §11.
 
 ## 3. Public API
 
@@ -193,8 +193,9 @@ Detect via `Abi.current()`. Fail loudly on unsupported tuples.
 
 ### Pinned PG version
 
-Default: **latest 16.x patch**, matching `pgvector/pgvector:pg16` used by the
-project templates today and `postgres:16.3` in the test docker-composes.
+Default: **latest 16.x patch**, matching `ghcr.io/serverpod/postgres:16` used
+by the project templates (and by the primary test docker-composes). Some older
+test/example compose files still pin `postgres:16.3` or `pgvector/pgvector:pg16`.
 PG 14-17 ship universal binaries on macOS via EDB; only PG 18.0-18.2 had a
 regression ([edb-installers#409](https://github.com/EnterpriseDB/edb-installers/issues/409)).
 Bump in lockstep with Serverpod Cloud.
@@ -434,11 +435,11 @@ Ships with Serverpod 3.5.
 
 - **PostgreSQL extensions.** No pgvector, PostGIS, or others beyond what
   Zonky's stock binaries include. **Note**: the default Serverpod project
-  template uses `pgvector/pgvector:pg16`, so this package cannot be a
-  drop-in replacement for newly-created projects until pgvector lands. The
-  intended path: ship pgvector-only `.so/.dylib/.dll` artifacts compiled
-  against the pinned Zonky PG version, fetched on demand. Tracked
-  separately for v1.1.
+  template uses `ghcr.io/serverpod/postgres:16`, which includes pgvector and
+  PostGIS, so this package cannot be a drop-in replacement for newly-created
+  projects until the required extensions land. The intended path: ship
+  extension artifacts compiled against the pinned Zonky PG version, fetched on
+  demand. Tracked separately for v1.1.
 - Replication, logical decoding, hot standby.
 - Backup/restore tooling - use `pg_dump` directly.
 - pgAdmin / web UI.

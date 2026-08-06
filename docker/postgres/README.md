@@ -18,10 +18,10 @@ migration Serverpod can generate without requiring a local image build.
 | `16`, `pg16` | Latest build of the PostgreSQL 16 line (`pg16` mirrors pgvector's naming). |
 
 Major versions only, on purpose. A project pins the major it was created
-against and keeps receiving patch and extension updates within it, and nothing
-published here can move it to a different major. That is why there is no
-`latest` - it would silently carry a compose file nobody revisits onto the next
-major - and no patch-level tags either: `16.14` reads like a pin but still
+against and receives patch and extension updates when the image is republished,
+and nothing published here can move it to a different major. That is why there
+is no `latest` - it would silently carry a compose file nobody revisits onto the
+next major - and no patch-level tags either: `16.14` reads like a pin but still
 changes whenever the image is rebuilt against newer PostGIS/pgvector packages.
 
 For a database that genuinely never moves, pin the digest:
@@ -52,18 +52,20 @@ that the models need.
 ## Publishing
 
 The `.github/workflows/publish-postgres-image.yaml` builds `linux/amd64` and
-`linux/arm64`, smoke-tests that both extensions load, and pushes. It publishes
-when a push to `main` changes the `Dockerfile` or the workflow itself - the two
-things that determine the published artifact - and on `workflow_dispatch`,
-which can publish from any branch. A pull request touching either one builds
-and smoke-tests every platform without publishing.
+`linux/arm64`, uses QEMU to smoke-test that both extensions load and serve data
+on each architecture, and pushes. It publishes when a push to `main` changes
+the `Dockerfile` or the workflow itself, and on `workflow_dispatch`, which can
+publish from any branch. A pull request touching the Dockerfile, workflow, or
+smoke script validates every platform without publishing.
 
-Publishing is kept to those events because each one mints a new package
+Publishing is kept to those two events because each one mints a new package
 version: the digest changes on every build, the tags move to it, and the
-version they moved off becomes untagged. Dispatch covers the case where a
-branch needs its image published before merging - which is how this image was
-bootstrapped, since the compose files referencing it could not pass CI until
-the tag existed.
+version they moved off becomes untagged. The image is republished only when a
+change calls for it. Dispatch covers the case where a branch needs its image
+published before merging - which is how this image was bootstrapped, since the
+compose files referencing it could not pass CI until the tag existed - and is
+also the way to pick up newer base-image or package updates when nothing in the
+recipe has changed.
 
 Do not prune untagged versions, by hand or with a cleanup action. For a
 multi-arch image the per-architecture manifests and the provenance
@@ -90,12 +92,14 @@ docker build -t serverpod-postgres docker/postgres \
   --build-arg BASE_IMAGE=pgvector/pgvector:pg16
 ```
 
-The `smoke.sh` script is the gate the workflow runs before it pushes, and it
-takes any image reference - a local build or a published tag:
+The `smoke.sh` script is the gate the workflow runs before it pushes. It takes
+any image reference - a local build or a published tag - and an optional
+platform when the image should run under emulation:
 
 ```bash
 docker/postgres/smoke.sh serverpod-postgres
 docker/postgres/smoke.sh ghcr.io/serverpod/postgres:16
+docker/postgres/smoke.sh ghcr.io/serverpod/postgres:16 linux/arm64
 ```
 
 It boots the image, creates both extensions and round-trips a `vector` and a

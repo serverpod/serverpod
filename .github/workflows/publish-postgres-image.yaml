@@ -5,16 +5,15 @@ name: Publish PostgreSQL image
 # file of newly created projects and by this repo's own docker test stacks.
 # Recipe: docker/postgres/Dockerfile.
 #
-# Publishing happens on main, when a push there changes the recipe, and on
-# workflow_dispatch, which can publish from any branch. Everything else - a pull
-# request touching the recipe - builds and smoke-tests every platform without
+# Publishing happens on main when a push there changes the recipe, and on
+# workflow_dispatch, which can publish from any branch. A pull request touching
+# the recipe or its smoke gate builds and smoke-tests every platform without
 # pushing.
 #
-# One publish means one new package version: the digest changes on every build
-# (the revision label alone guarantees it), the tags move to it, and the version
-# they moved off becomes untagged. So publishing is kept to the events that
-# should mint an image - a merge, or someone deliberately asking - rather than
-# every commit that happens to touch the Dockerfile.
+# Every publish mints a package version: the tags move to the new digest and the
+# version they moved off becomes untagged, and that untagged pile is what a
+# careless prune deletes - taking the live image down with it. So the image is
+# republished only when a change calls for it.
 on:
   workflow_dispatch:
     inputs:
@@ -31,10 +30,9 @@ on:
         description: 'Build and smoke-test only, do not push.'
         type: boolean
         default: false
-  # Only what determines the published artifact triggers a publish. Editing the
-  # README or smoke.sh changes no layer, and rebuilding for them would mint a
-  # new digest and orphan the old one for nothing; a changed smoke.sh is
-  # exercised by the next real publish.
+  # Only what determines the published artifact triggers a push-time publish.
+  # Editing the README or smoke.sh changes no layer, and rebuilding for them
+  # would mint a new digest and orphan the old one for nothing.
   push:
     branches: [main]
     paths:
@@ -43,15 +41,17 @@ on:
   pull_request:
     paths:
       - 'docker/postgres/Dockerfile'
+      - 'docker/postgres/smoke.sh'
       - '.github/workflows/publish-postgres-image.yaml'
 
 permissions:
   contents: read
 
-# Serialize publishes so two runs can't race the same rolling tag; PR
-# validation runs are disposable and may be cancelled.
+# All publishing events share one group because they update the same rolling
+# tags, even when a dispatch originates from another branch. PR validation runs
+# are isolated by ref, disposable, and may be cancelled.
 concurrency:
-  group: publish-postgres-image-${{ github.ref }}
+  group: publish-postgres-image-${{ github.event_name == 'pull_request' && github.ref || 'publish' }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
@@ -64,9 +64,23 @@ jobs:
     env:
       DEFAULT_BASE_IMAGE: pgvector/pgvector:pg16
       PLATFORMS: linux/amd64,linux/arm64
-      LOCAL_TAG: serverpod-postgres:smoke
+      LOCAL_TAG_AMD64: serverpod-postgres:smoke-amd64
+      LOCAL_TAG_ARM64: serverpod-postgres:smoke-arm64
+      # Busts the apt layer's cache key, so a build re-resolves packages instead
+      # of reusing a layer cached before an upstream update. Only a manual
+      # dispatch asks for that - a recipe change already changes the layer, and
+      # a per-run value everywhere would mean the layer cache never hits, so the
+      # arm64 build would pay a full emulated apt install on every pull request.
+      PACKAGE_REFRESH: ${{ github.event_name == 'workflow_dispatch' && github.run_id || 'pinned' }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      # Ahead of the resolve step below, which uses buildx to pin the base
+      # image's digest.
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@96fe6ef7f33517b61c61be40b68a1882f3264fb8 # v4.2.0
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
 
       - name: Resolve base image, tags and publish mode
         id: cfg
@@ -80,10 +94,39 @@ jobs:
           OWNER: ${{ github.repository_owner }}
         run: |
           set -euo pipefail
-          base="${BASE_IMAGE_INPUT:-}"
-          [ -n "$base" ] || base="$DEFAULT_BASE_IMAGE"
+          requested="${BASE_IMAGE_INPUT:-}"
+          [ -n "$requested" ] || requested="$DEFAULT_BASE_IMAGE"
           # GHCR namespaces are lowercase; the org name may not be.
           image="ghcr.io/$(echo "$OWNER" | tr '[:upper:]' '[:lower:]')/postgres"
+
+          # Pin the base to the digest it resolves to right now, and hand that
+          # one reference to the version probe below and to all three builds.
+          # A tag is mutable and every build passes --pull, so each would
+          # re-resolve it independently: an upstream push mid-run could publish
+          # an image whose base was never smoke-tested, and nothing downstream
+          # would notice. The digest has to name the multi-platform index, not
+          # one platform's manifest, or the arm64 build has nothing to build.
+          case "$requested" in
+            *@sha256:*)
+              # Already immutable - take it as given.
+              base="$requested"
+              ;;
+            *)
+              digest="$(docker buildx imagetools inspect "$requested" --format '{{.Manifest.Digest}}')"
+              case "$digest" in
+                sha256:*) ;;
+                *) echo "::error::could not resolve $requested to a digest (got '$digest')"; exit 1 ;;
+              esac
+              # Strip the tag, but only a real tag: the last colon belongs to a
+              # registry port, not a tag, when what follows it contains a slash.
+              name="$requested"
+              case "${requested##*:}" in
+                */*) ;;
+                *) name="${requested%:*}" ;;
+              esac
+              base="$name@$digest"
+              ;;
+          esac
 
           # The tag names the major the image actually carries, so read the
           # version off the base rather than trust the tag it was requested
@@ -125,6 +168,7 @@ jobs:
 
           {
             echo "base=$base"
+            echo "requested=$requested"
             echo "image=$image"
             echo "version=$version"
             echo "major=$major"
@@ -134,13 +178,8 @@ jobs:
             echo "TAGS_EOF"
           } >> "$GITHUB_OUTPUT"
 
-          echo "base image: $base (PostgreSQL $version), push: $push"
+          echo "base image: $requested pinned to $base (PostgreSQL $version), push: $push"
           echo "tags:"; echo "$tags"
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@96fe6ef7f33517b61c61be40b68a1882f3264fb8 # v4.2.0
-      - name: Set up Buildx
-        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
 
       # Skipped on pull requests and dry runs - a fork's GITHUB_TOKEN cannot
       # write packages, and neither can publish anyway.
@@ -152,24 +191,43 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Native-arch build first, loaded into the local daemon so the smoke test
-      # below can actually run it; the multi-arch publish build reuses these
-      # layers from the cache.
+      # Build each architecture separately and load it into the local daemon so
+      # the smoke test can run it. QEMU runs arm64 on the amd64 Actions runner;
+      # the multi-arch publish build below reuses both sets of layers.
       - name: Build (amd64, for the smoke test)
         uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
         with:
           context: docker/postgres
           platforms: linux/amd64
-          build-args: BASE_IMAGE=${{ steps.cfg.outputs.base }}
+          build-args: |
+            BASE_IMAGE=${{ steps.cfg.outputs.base }}
+            PACKAGE_REFRESH=${{ env.PACKAGE_REFRESH }}
+          pull: true
           load: true
-          tags: ${{ env.LOCAL_TAG }}
+          tags: ${{ env.LOCAL_TAG_AMD64 }}
           cache-from: type=gha
-          cache-to: type=gha,mode=max
 
-      # Gate: an image that cannot load both extensions must never be pushed.
-      # Same script a developer runs against a local build or a published tag.
-      - name: Smoke-test the image
-        run: docker/postgres/smoke.sh "$LOCAL_TAG"
+      - name: Smoke-test the image (amd64)
+        run: docker/postgres/smoke.sh "$LOCAL_TAG_AMD64" linux/amd64
+
+      - name: Build (arm64, for the smoke test)
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        with:
+          context: docker/postgres
+          platforms: linux/arm64
+          build-args: |
+            BASE_IMAGE=${{ steps.cfg.outputs.base }}
+            PACKAGE_REFRESH=${{ env.PACKAGE_REFRESH }}
+          pull: true
+          load: true
+          tags: ${{ env.LOCAL_TAG_ARM64 }}
+          cache-from: type=gha
+
+      # Gate: an image that cannot load both extensions on either architecture
+      # must never be pushed. This is the same script a developer can run
+      # against a local build or a published tag.
+      - name: Smoke-test the image (arm64)
+        run: docker/postgres/smoke.sh "$LOCAL_TAG_ARM64" linux/arm64
 
       - name: Build and push
         id: publish
@@ -177,10 +235,13 @@ jobs:
         with:
           context: docker/postgres
           platforms: ${{ env.PLATFORMS }}
-          build-args: BASE_IMAGE=${{ steps.cfg.outputs.base }}
-          # On a pull request or dry run this still builds every platform - the
-          # result is simply discarded instead of pushed, so a recipe that only
-          # breaks on arm64 is still caught before it can be published.
+          build-args: |
+            BASE_IMAGE=${{ steps.cfg.outputs.base }}
+            PACKAGE_REFRESH=${{ env.PACKAGE_REFRESH }}
+          pull: true
+          # On a pull request or dry run the result is discarded instead of
+          # pushed; the builds and runtime smoke tests above still validate both
+          # platforms before a recipe can be merged or deliberately published.
           push: ${{ steps.cfg.outputs.push }}
           tags: ${{ steps.cfg.outputs.tags }}
           labels: org.opencontainers.image.revision=${{ github.sha }}
@@ -205,12 +266,13 @@ jobs:
           TAGS: ${{ steps.cfg.outputs.tags }}
           PUSHED: ${{ steps.cfg.outputs.push }}
           BASE: ${{ steps.cfg.outputs.base }}
+          REQUESTED: ${{ steps.cfg.outputs.requested }}
           DIGEST: ${{ steps.publish.outputs.digest }}
         run: |
           {
             if [ "$PUSHED" = 'true' ]; then echo '### Published'; else echo '### Built (not published)'; fi
             echo
-            echo "- Base image: \`$BASE\`"
+            echo "- Base image: \`$REQUESTED\`, pinned to \`$BASE\`"
             echo "- Platforms: \`$PLATFORMS\`"
             [ -z "$DIGEST" ] || echo "- Digest: \`$DIGEST\`"
             echo "- Tags:"
