@@ -5,7 +5,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 import 'package:serverpod_auth_test_client/serverpod_auth_test_client.dart';
 
-import '../test/utils/test_storage.dart';
+import 'package:serverpod_auth_test_flutter/src/test_utils/test_storage.dart';
 
 const _apiUrl = 'http://localhost:8080/';
 const _corsRejectionCase = bool.fromEnvironment(

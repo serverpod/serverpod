@@ -55,6 +55,11 @@ abstract class EndpointRefreshJwtTokens extends _i1.EndpointRef {
 
   /// Creates a new token pair for the given [refreshToken].
   ///
+  /// If [refreshToken] is omitted, cookie-mode web clients fall back to the
+  /// configured HttpOnly refresh cookie. When neither source is present this
+  /// throws [RefreshTokenNotFoundException], the same public "no usable refresh
+  /// credential" exception used for unknown refresh tokens.
+  ///
   /// Can throw the following exceptions:
   /// -[RefreshTokenMalformedException]: refresh token is malformed and could
   ///   not be parsed. Not expected to happen for tokens issued by the server.

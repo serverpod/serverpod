@@ -253,6 +253,25 @@ void main() {
     );
 
     test(
+      'when the signed-in user signs out via signOutDevice '
+      'then streams are closed before the sign-out request.',
+      () async {
+        await sessionManager.updateSignedInUser(
+          _authSuccess(authStrategy: AuthStrategy.session.name, token: ''),
+        );
+        client.events.clear();
+
+        await sessionManager.signOutDevice();
+
+        expect(client.events, [
+          'close streams',
+          'call serverpod_auth_core.status.signOutDevice',
+          'close streams',
+        ]);
+      },
+    );
+
+    test(
       'when a JWT refresh rotates tokens for the same user '
       'then streaming connections are left open.',
       () async {
@@ -656,6 +675,9 @@ class _TestSerializationManager extends SerializationManager {}
 class _TestServerpodClient extends ServerpodClientShared {
   var closeStreamingMethodConnectionsCallCount = 0;
 
+  /// Ordered log of stream closes and endpoint calls.
+  final events = <String>[];
+
   _TestServerpodClient({
     required ServerpodClientRequestDelegate requestDelegate,
   }) : super(
@@ -677,6 +699,18 @@ class _TestServerpodClient extends ServerpodClientShared {
     Object? exception = const WebSocketClosedException(),
   }) async {
     closeStreamingMethodConnectionsCallCount++;
+    events.add('close streams');
+  }
+
+  @override
+  Future<T> callServerEndpoint<T>(
+    String endpoint,
+    String method,
+    Map<String, dynamic> args, {
+    bool authenticated = true,
+  }) {
+    events.add('call $endpoint.$method');
+    throw UnimplementedError();
   }
 }
 

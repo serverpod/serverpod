@@ -231,6 +231,12 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
   }
 
   Future<bool> _signOut({required bool allDevices}) async {
+    // In cookie mode, close streams before the server revokes the session:
+    // revocation error-closes any stream still open on the socket, racing the
+    // clean close that updateSignedInUser performs afterwards.
+    if (_usesCookieAuth) {
+      await _caller?.client.closeStreamingMethodConnections(exception: null);
+    }
     try {
       switch (allDevices) {
         case true:
