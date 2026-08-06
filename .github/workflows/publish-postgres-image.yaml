@@ -1,0 +1,247 @@
+name: Publish PostgreSQL image
+
+# Builds and publishes ghcr.io/serverpod/postgres, the official Serverpod
+# PostgreSQL image (PostgreSQL + pgvector + PostGIS) used by the docker-compose
+# file of newly created projects and by this repo's own docker test stacks.
+# Recipe: docker/postgres/Dockerfile.
+#
+# Publishing is triggered by a push that touches the recipe, on ANY branch, and
+# by workflow_dispatch. Branch pushes publish on purpose: the compose files that
+# consume this image - here and in newly created projects - are useless until it
+# exists, so the PR that introduces or changes the recipe has to be able to
+# publish before it lands. Dispatch alone cannot cover that case, since GitHub
+# only offers workflow_dispatch for workflows already present on main.
+#
+# What protects the rolling tags is the smoke gate below, not the branch name;
+# only `latest` is restricted to main and manual dispatch. Pull request events
+# build and smoke-test every platform without publishing, so a fork's PR still
+# validates the recipe.
+on:
+  workflow_dispatch:
+    inputs:
+      base_image:
+        description: >-
+          Base image to build on. Defaults to pgvector/pgvector:pg16.
+        default: ''
+      extra_tag:
+        description: >-
+          Additional tag to publish, e.g. a preview tag when testing from a
+          branch. The version tags below are always published as well.
+        default: ''
+      dry_run:
+        description: 'Build and smoke-test only, do not push.'
+        type: boolean
+        default: false
+  push:
+    branches: ['**']
+    paths:
+      - 'docker/postgres/**'
+      - '.github/workflows/publish-postgres-image.yaml'
+  pull_request:
+    paths:
+      - 'docker/postgres/**'
+      - '.github/workflows/publish-postgres-image.yaml'
+
+permissions:
+  contents: read
+
+# Serialize publishes so two runs can't race the same rolling tag; PR
+# validation runs are disposable and may be cancelled.
+concurrency:
+  group: publish-postgres-image-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    name: Build and publish
+    # A same-repo PR already got a run from its branch push; only fork PRs,
+    # whose pushes never reach this repo, need the pull_request event.
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    env:
+      DEFAULT_BASE_IMAGE: pgvector/pgvector:pg16
+      # The major version that also gets the `latest` tag. Bump when a newer
+      # major becomes the one new projects are created with.
+      LATEST_PG_MAJOR: '16'
+      PLATFORMS: linux/amd64,linux/arm64
+      LOCAL_TAG: serverpod-postgres:smoke
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Resolve base image, tags and publish mode
+        id: cfg
+        env:
+          # Dispatch inputs are read through the environment, never inlined
+          # into the script body.
+          BASE_IMAGE_INPUT: ${{ inputs.base_image }}
+          EXTRA_TAG_INPUT: ${{ inputs.extra_tag }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          EVENT: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+          OWNER: ${{ github.repository_owner }}
+        run: |
+          set -euo pipefail
+          base="${BASE_IMAGE_INPUT:-}"
+          [ -n "$base" ] || base="$DEFAULT_BASE_IMAGE"
+          # GHCR namespaces are lowercase; the org name may not be.
+          image="ghcr.io/$(echo "$OWNER" | tr '[:upper:]' '[:lower:]')/postgres"
+
+          # The published tags name the PostgreSQL version the image actually
+          # carries, so read it from the base rather than trust the tag it was
+          # requested under. --entrypoint bypasses docker-entrypoint.sh, which
+          # would otherwise reason about initialising a data directory.
+          docker pull --quiet "$base" >/dev/null
+          version="$(docker run --rm --entrypoint postgres "$base" --version | awk '{print $3}')"
+          case "$version" in
+            [0-9]*.[0-9]*) ;;
+            *) echo "::error::could not read a PostgreSQL version from $base (got '$version')"; exit 1 ;;
+          esac
+          major="${version%%.*}"
+
+          # Version tags roll forward from any branch that changes the recipe;
+          # `latest` is the one tag a work-in-progress branch must not move, so
+          # it takes main or a deliberate manual dispatch.
+          tags="$image:pg$major"$'\n'"$image:$major"$'\n'"$image:$version"
+          if [ "$major" = "$LATEST_PG_MAJOR" ] &&
+             { [ "$REF" = 'refs/heads/main' ] || [ "$EVENT" = 'workflow_dispatch' ]; }; then
+            tags="$tags"$'\n'"$image:latest"
+          fi
+          if [ -n "${EXTRA_TAG_INPUT:-}" ]; then
+            # A dispatch input joins a newline-separated tag list, so hold it
+            # to what a docker tag may actually contain.
+            case "$EXTRA_TAG_INPUT" in
+              *[!A-Za-z0-9._-]* | [!A-Za-z0-9_]*)
+                echo "::error::extra_tag '$EXTRA_TAG_INPUT' is not a valid docker tag"; exit 1 ;;
+            esac
+            tags="$tags"$'\n'"$image:$EXTRA_TAG_INPUT"
+          fi
+
+          if [ "$EVENT" = 'pull_request' ] || [ "${DRY_RUN:-false}" = 'true' ]; then
+            push=false
+          else
+            push=true
+          fi
+
+          {
+            echo "base=$base"
+            echo "image=$image"
+            echo "version=$version"
+            echo "push=$push"
+            echo "tags<<TAGS_EOF"
+            echo "$tags"
+            echo "TAGS_EOF"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "base image: $base (PostgreSQL $version), push: $push"
+          echo "tags:"; echo "$tags"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@96fe6ef7f33517b61c61be40b68a1882f3264fb8 # v4.2.0
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
+
+      # Skipped on pull requests and dry runs - a fork's GITHUB_TOKEN cannot
+      # write packages, and neither can publish anyway.
+      - name: Log in to GitHub Container Registry
+        if: steps.cfg.outputs.push == 'true'
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Native-arch build first, loaded into the local daemon so the smoke test
+      # below can actually run it; the multi-arch publish build reuses these
+      # layers from the cache.
+      - name: Build (amd64, for the smoke test)
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        with:
+          context: docker/postgres
+          platforms: linux/amd64
+          build-args: BASE_IMAGE=${{ steps.cfg.outputs.base }}
+          load: true
+          tags: ${{ env.LOCAL_TAG }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Gate: an image that cannot load both extensions must never be pushed.
+      - name: Smoke-test the image
+        run: |
+          set -euo pipefail
+          name=serverpod-postgres-smoke
+          trap 'docker rm -f "$name" >/dev/null 2>&1 || true' EXIT
+          docker run -d --name "$name" -e POSTGRES_PASSWORD=postgres "$LOCAL_TAG" >/dev/null
+
+          # The image's own initialisation runs a socket-only temporary server
+          # first, so readiness is checked over TCP to be sure the real server
+          # is up rather than the init-time one.
+          ready=0
+          for _ in $(seq 60); do
+            if docker exec "$name" pg_isready -h 127.0.0.1 -U postgres -q; then ready=1; break; fi
+            sleep 1
+          done
+          if [ "$ready" != 1 ]; then
+            echo "::error::postgres never became ready"
+            docker logs "$name"
+            exit 1
+          fi
+
+          docker exec -e PGPASSWORD=postgres "$name" \
+            psql -h 127.0.0.1 -U postgres -v ON_ERROR_STOP=1 \
+              -c 'CREATE EXTENSION vector' \
+              -c 'CREATE EXTENSION postgis' \
+              -c 'CREATE TABLE smoke (id serial primary key, embedding vector(3), location geography(Point, 4326))' \
+              -c "INSERT INTO smoke (embedding, location) VALUES ('[1,2,3]', ST_Point(11.1, 22.2))" \
+              -c "SELECT id, embedding <-> '[3,2,1]' AS distance, ST_AsText(location) FROM smoke" \
+              -c 'SELECT extname, extversion FROM pg_extension ORDER BY 1'
+
+      - name: Build and push
+        id: publish
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        with:
+          context: docker/postgres
+          platforms: ${{ env.PLATFORMS }}
+          build-args: BASE_IMAGE=${{ steps.cfg.outputs.base }}
+          # On a pull request or dry run this still builds every platform - the
+          # result is simply discarded instead of pushed, so a recipe that only
+          # breaks on arm64 is still caught before it can be published.
+          push: ${{ steps.cfg.outputs.push }}
+          tags: ${{ steps.cfg.outputs.tags }}
+          labels: org.opencontainers.image.revision=${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Verify the published manifest
+        if: steps.cfg.outputs.push == 'true'
+        env:
+          REF: ${{ steps.cfg.outputs.image }}:${{ steps.cfg.outputs.version }}
+        run: |
+          set -euo pipefail
+          out="$(docker buildx imagetools inspect "$REF")"
+          echo "$out"
+          for platform in ${PLATFORMS//,/ }; do
+            grep -qE "Platform:[[:space:]]+$platform([[:space:]]|$)" <<< "$out" \
+              || { echo "::error::published manifest for $REF is missing $platform"; exit 1; }
+          done
+
+      - name: Summary
+        env:
+          TAGS: ${{ steps.cfg.outputs.tags }}
+          PUSHED: ${{ steps.cfg.outputs.push }}
+          BASE: ${{ steps.cfg.outputs.base }}
+          DIGEST: ${{ steps.publish.outputs.digest }}
+        run: |
+          {
+            if [ "$PUSHED" = 'true' ]; then echo '### Published'; else echo '### Built (not published)'; fi
+            echo
+            echo "- Base image: \`$BASE\`"
+            echo "- Platforms: \`$PLATFORMS\`"
+            [ -z "$DIGEST" ] || echo "- Digest: \`$DIGEST\`"
+            echo "- Tags:"
+            while IFS= read -r tag; do [ -z "$tag" ] || echo "  - \`$tag\`"; done <<< "$TAGS"
+          } >> "$GITHUB_STEP_SUMMARY"
