@@ -115,6 +115,34 @@ Add these secrets to your repository (Settings → Secrets → Actions):
 
 The CI workflow automatically skips providers without configured secrets and only runs on push events or same-repo PRs (not fork PRs, for security).
 
+## Transactional Email Service
+
+The Serverpod Cloud email service (used by `ServerpodCloudEmailIdpConfig`) has its own
+integration test that talks to the real service at `https://emails.serverpod.dev`:
+
+```
+modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server/test/integration/serverpod_cloud_email_integration_test.dart
+```
+
+Run it locally with:
+
+```bash
+util/run_tests_integration_email
+```
+
+The negative paths (`400` invalid field, `401` invalid token) require no credentials and
+run on every CI push via the `email_integration_tests` job. The happy path actually
+delivers email, so it only runs when these variables/secrets are set (and self-skips
+otherwise):
+
+| Variable | Description |
+|----------|-------------|
+| `SERVERPOD_TEST_SCLOUD_EMAIL_KEY` | A valid Serverpod Cloud email service token (`scloudAuthEmailKey`). |
+| `SERVERPOD_TEST_SCLOUD_EMAIL_RECIPIENT` | The address to deliver test email to. |
+| `SERVERPOD_TEST_SCLOUD_EMAIL_BASE_URL` | Optional override of the service URL (defaults to production). |
+
+Locally, place these in `integrations/.env.test` alongside the cloud storage credentials.
+
 ## Adding a New Provider
 
 There are two approaches depending on whether your provider has an S3-compatible API.

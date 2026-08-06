@@ -60,7 +60,6 @@ class _SimpleData implements SerializableModel, ProtocolSerialization {
     };
   }
 
-  @override
   factory _SimpleData.fromJson(Map<String, dynamic> json) {
     return _SimpleData(json['data'], serverOnlyField: json['serverOnlyField']);
   }

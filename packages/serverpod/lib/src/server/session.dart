@@ -48,8 +48,6 @@ abstract class Session implements DatabaseSession {
   /// The time the session object was created.
   DateTime get startTime => _startTime;
 
-  int? _messageId;
-
   AuthenticationInfo? _authenticated;
 
   /// Updates the authentication information for the session.
@@ -66,13 +64,12 @@ abstract class Session implements DatabaseSession {
   /// Returns true if the user is signed in.
   bool get isUserSignedIn => _authenticated != null;
 
-  String? _authenticationKey;
+  final String? _authenticationKey;
 
   /// The authentication key used to authenticate the session.
   String? get authenticationKey => _authenticationKey;
 
-  /// An custom object associated with this [Session]. This is especially
-  /// useful for keeping track of the state in a [StreamingEndpoint].
+  /// A custom object associated with this [Session].
   dynamic userObject;
 
   /// Access to the database.
@@ -89,7 +86,7 @@ abstract class Session implements DatabaseSession {
   Database get db {
     var database = _db;
     if (database == null) {
-      throw Exception('Database is not available in this session.');
+      throw StateError('Database is not available in this session.');
     }
     return database;
   }
@@ -140,11 +137,9 @@ abstract class Session implements DatabaseSession {
     String? authenticationKey,
     required this.enableLogging,
     required this.endpoint,
-    int? messageId,
     this.method,
     this.request,
   }) : _authenticationKey = authenticationKey,
-       _messageId = messageId,
        sessionId = sessionId ?? const Uuid().v4obj() {
     _startTime = DateTime.now();
 
@@ -220,18 +215,31 @@ abstract class Session implements DatabaseSession {
 
   /// Logs a message. Default [LogLevel] is [LogLevel.info]. The log is written
   /// to the database when the session is closed.
+  ///
+  /// [metadata] is forwarded to the CLI over the VM service stream but not
+  /// persisted to the database.
   void log(
     String message, {
     LogLevel? level,
     dynamic exception,
     StackTrace? stackTrace,
+    Map<String, Object?>? metadata,
   }) {
     _logManager?.logEntry(
       message: message,
       level: level ?? LogLevel.info,
       error: exception?.toString(),
       stackTrace: stackTrace,
+      metadata: metadata,
     );
+  }
+
+  /// Logs [message] as an alert. Works like [log], but the `serverpod` CLI
+  /// shows it as a copyable alert in its terminal UI. Wrap a copyable segment
+  /// in angle brackets, e.g. `'Code: <123456>'`. Other log destinations treat
+  /// it as a regular log message.
+  void alert(String message, {LogLevel? level}) {
+    log(message, level: level, metadata: {'alert': true});
   }
 }
 
@@ -333,54 +341,6 @@ class MethodStreamSession extends Session {
   }) : _method = method,
        _request = request,
        super(method: method, request: request);
-}
-
-/// When a web socket connection is opened to the [Server] a [StreamingSession]
-/// object is created. It contains all data associated with the current
-/// connection and provides easy access to the database.
-class StreamingSession extends Session {
-  /// The uri that was used to call the server.
-  final Uri uri;
-
-  /// Query parameters of the server call.
-  late final Map<String, String> queryParameters;
-
-  final Request _request;
-
-  /// The [Request] associated with the call.
-  @override
-  Request get request => _request;
-
-  /// The underlying web socket that handles communication with the server.
-  final RelicWebSocket webSocket;
-
-  String _endpoint;
-
-  /// The name of the endpoint that is being called.
-  set endpoint(String endpoint) => _endpoint = endpoint;
-
-  @override
-  String get endpoint => _endpoint;
-
-  /// Creates a new [Session] for the web socket stream.
-  StreamingSession._({
-    required super.server,
-    required this.uri,
-    required Request request,
-    required this.webSocket,
-    super.endpoint = 'StreamingSession',
-    super.enableLogging = true,
-  }) : _endpoint = endpoint,
-       _request = request,
-       super(messageId: 0, request: request) {
-    // Read query parameters
-    var queryParameters = <String, String>{};
-    queryParameters.addAll(uri.queryParameters);
-    this.queryParameters = queryParameters;
-
-    // Get the authentication key, if any
-    _authenticationKey = queryParameters['auth'];
-  }
 }
 
 /// Created when a [FutureCall] is being made. It contains all data associated
@@ -593,22 +553,23 @@ class MessageCentralAccess {
     );
   }
 
-  /// Posts a [message] to a named channel. If [global] is set to true, the
-  /// message will be posted to all servers in the cluster, otherwise it will
-  /// only be posted locally on the current server. Returns true if the message
-  /// was successfully posted.
+  /// Posts a [message] to a named channel. The [scope] determines whether the
+  /// message is delivered locally on the current server, globally to all
+  /// servers in the cluster, or globally with a local fallback if Redis is
+  /// not enabled (the default).
   ///
   /// Returns true if the message was successfully posted.
   ///
-  /// Throws a [StateError] if Redis is not enabled and [global] is set to true.
+  /// Throws a [StateError] if Redis is not enabled and [scope] is
+  /// [MessageScope.global].
   Future<bool> postMessage(
     String channelName,
     SerializableModel message, {
-    bool global = false,
+    MessageScope scope = MessageScope.auto,
   }) => _session.server.messageCentral.postMessage(
     channelName,
     message,
-    global: global,
+    scope: scope,
   );
 
   /// Creates a stream that listens to a specified channel.
@@ -651,21 +612,9 @@ class MessageCentralAccess {
       );
     }
 
-    try {
-      return await _session.server.messageCentral.postMessage(
-        MessageCentralServerpodChannels.revokedAuthentication(userIdentifier),
-        message,
-        global: true,
-      );
-    } on StateError catch (_) {
-      // Throws StateError if Redis is not enabled that is ignored.
-    }
-
-    // If Redis is not enabled, send the message locally.
     return _session.server.messageCentral.postMessage(
       MessageCentralServerpodChannels.revokedAuthentication(userIdentifier),
       message,
-      global: false,
     );
   }
 }
@@ -743,27 +692,6 @@ extension SessionInternalMethods on Session {
     return session;
   }
 
-  /// Creates a new [StreamingSession].
-  static Future<StreamingSession> createStreamingSession({
-    required Server server,
-    required Uri uri,
-    required Request request,
-    required RelicWebSocket webSocket,
-    String endpoint = 'StreamingSession',
-    bool enableLogging = true,
-  }) async {
-    final session = StreamingSession._(
-      server: server,
-      uri: uri,
-      request: request,
-      webSocket: webSocket,
-      endpoint: endpoint,
-      enableLogging: enableLogging,
-    );
-    await session.initializeAuthentication();
-    return session;
-  }
-
   /// Returns the [LogManager] for the session.
   SessionLogManager? get logManager => _logManager;
 
@@ -771,17 +699,6 @@ extension SessionInternalMethods on Session {
   /// This will be null if the session is not authenticated or not initialized.
   AuthenticationInfo? get authInfoOrNull {
     return _authenticated;
-  }
-
-  /// Returns the next message id for the session.
-  int? get messageId => _messageId;
-
-  /// Returns the next message id for the session.
-  int nextMessageId() {
-    var id = _messageId ?? 0;
-    _messageId = id + 1;
-
-    return id;
   }
 
   /// Initializes authentication for this session.
@@ -802,22 +719,8 @@ extension SessionInternalMethods on Session {
       _authenticated = null;
     }
   }
-
-  /// Updates the authentication key and re-initializes authentication.
-  ///
-  /// This method sets a new authentication key for the session and triggers
-  /// re-initialization of the authentication information. This is useful for
-  /// scenarios where authentication needs to be refreshed or changed mid-session.
-  ///
-  /// After calling this method, the [Session.authenticated] property will reflect
-  /// the authentication status for the new key.
-  Future<void> updateAuthenticationKey(String? authenticationKey) async {
-    _authenticationKey = authenticationKey;
-    await initializeAuthentication();
-  }
 }
 
 /// Returns true if the session is expected to be alive for an extended
 /// period of time.
-bool _isLongLived(Session session) =>
-    session is StreamingSession || session is MethodStreamSession;
+bool _isLongLived(Session session) => session is MethodStreamSession;

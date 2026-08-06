@@ -16,7 +16,8 @@ import 'package:serverpod_service_client/src/protocol/protocol.dart' as _i3;
 
 /// Information about an override for log settings for either an entire
 /// endpoint or a specific method.
-abstract class LogSettingsOverride implements _i1.SerializableModel {
+abstract class LogSettingsOverride
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   LogSettingsOverride._({
     this.module,
     this.endpoint,
@@ -71,6 +72,17 @@ abstract class LogSettingsOverride implements _i1.SerializableModel {
       if (endpoint != null) 'endpoint': endpoint,
       if (method != null) 'method': method,
       'logSettings': logSettings.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod.LogSettingsOverride',
+      if (module != null) 'module': module,
+      if (endpoint != null) 'endpoint': endpoint,
+      if (method != null) 'method': method,
+      'logSettings': logSettings.toJsonForProtocol(),
     };
   }
 

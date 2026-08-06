@@ -13,7 +13,10 @@
 import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 
 abstract class SharedException
-    implements _i1.SerializableException, _i1.SerializableModel {
+    implements
+        _i1.SerializableException,
+        _i1.SerializableModel,
+        _i1.ProtocolSerialization {
   SharedException._({
     required this.message,
     this.code,
@@ -44,6 +47,15 @@ abstract class SharedException
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'SharedException',
+      'message': message,
+      if (code != null) 'code': code,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'SharedException',
       'message': message,

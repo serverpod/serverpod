@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
+import 'package:serverpod_cli/src/generator/dart_formatters.dart';
 import 'package:serverpod_database/serverpod_database.dart';
 // ignore: implementation_imports
 import 'package:serverpod_database/src/definition/definition_normalizer.dart';
@@ -155,6 +156,7 @@ class ClientMigrationArtifactStore implements MigrationArtifactStoreWriter {
         version: artifacts.version,
         migrationSql: artifacts.migrationSql,
         definitionSql: artifacts.definitionSql,
+        formatter: GeneratedDartFormatters.of(migrationFile.path),
       ),
     );
   }
@@ -166,7 +168,12 @@ class ClientMigrationArtifactStore implements MigrationArtifactStoreWriter {
       'migration_registry.dart',
     );
     await _migrationsBase.create(recursive: true);
-    await File(registryFile).writeAsString(_dartEmitter.emitRegistry(versions));
+    await File(registryFile).writeAsString(
+      _dartEmitter.emitRegistry(
+        versions,
+        formatter: GeneratedDartFormatters.of(registryFile),
+      ),
+    );
   }
 
   @override

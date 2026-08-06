@@ -21,16 +21,9 @@ import 'package:serverpod_service_client/src/protocol/session_log_filter.dart'
 import 'package:serverpod_service_client/src/protocol/caches_info.dart' as _i6;
 import 'package:serverpod_service_client/src/protocol/server_health_result.dart'
     as _i7;
-import 'package:serverpod_database/src/generated/table_definition.dart' as _i8;
-import 'package:serverpod_database/src/generated/database_definition.dart'
-    as _i9;
-import 'package:serverpod_database/src/generated/database_definitions.dart'
-    as _i10;
-import 'package:serverpod_database/src/generated/bulk_data.dart' as _i11;
-import 'package:serverpod_database/src/generated/filter/filter.dart' as _i12;
-import 'package:serverpod_database/src/generated/bulk_query_result.dart'
-    as _i13;
-import 'protocol.dart' as _i14;
+import 'package:serverpod_database/serverpod_database.dart' as _i8;
+import 'package:http/http.dart' as _i9;
+import 'protocol.dart' as _i10;
 
 /// The [InsightsEndpoint] provides a way to access real time information from
 /// the running server or to change settings.
@@ -156,30 +149,53 @@ class EndpointInsights extends _i1.EndpointRef {
   ///
   /// See also:
   /// - [getTargetTableDefinition]
-  _i2.Future<_i9.DatabaseDefinition> getLiveDatabaseDefinition() =>
-      caller.callServerEndpoint<_i9.DatabaseDefinition>(
+  _i2.Future<_i8.DatabaseDefinition> getLiveDatabaseDefinition() =>
+      caller.callServerEndpoint<_i8.DatabaseDefinition>(
         'insights',
         'getLiveDatabaseDefinition',
         {},
       );
 
+  /// Applies pending database migrations to the running pod, mirroring the
+  /// boot-time path triggered by `--apply-migrations` and
+  /// `--apply-repair-migration`. Verifies database integrity after applying.
+  ///
+  /// Expects pending and/or repair migrations to be available in the
+  /// project's `migrations/` folder. The pod's serialization manager
+  /// (which reflects the latest hot-reloaded code) is used as the source
+  /// of truth for the target schema during verification.
+  ///
+  /// Used by `serverpod start`'s watch loop to apply newly generated
+  /// migrations without restarting the pod.
+  _i2.Future<_i8.MigrationsApplyResult> applyMigrations({
+    required bool applyRepairMigration,
+    required bool applyMigrations,
+  }) => caller.callServerEndpoint<_i8.MigrationsApplyResult>(
+    'insights',
+    'applyMigrations',
+    {
+      'applyRepairMigration': applyRepairMigration,
+      'applyMigrations': applyMigrations,
+    },
+  );
+
   /// Returns the target and live database definitions. See
   /// [getTargetTableDefinition] and [getLiveDatabaseDefinition] for more
   /// details.
-  _i2.Future<_i10.DatabaseDefinitions> getDatabaseDefinitions() =>
-      caller.callServerEndpoint<_i10.DatabaseDefinitions>(
+  _i2.Future<_i8.DatabaseDefinitions> getDatabaseDefinitions() =>
+      caller.callServerEndpoint<_i8.DatabaseDefinitions>(
         'insights',
         'getDatabaseDefinitions',
         {},
       );
 
   /// Exports raw data serialized in JSON from the database.
-  _i2.Future<_i11.BulkData> fetchDatabaseBulkData({
+  _i2.Future<_i8.BulkData> fetchDatabaseBulkData({
     required String table,
     required int startingId,
     required int limit,
-    _i12.Filter? filter,
-  }) => caller.callServerEndpoint<_i11.BulkData>(
+    _i8.Filter? filter,
+  }) => caller.callServerEndpoint<_i8.BulkData>(
     'insights',
     'fetchDatabaseBulkData',
     {
@@ -192,8 +208,8 @@ class EndpointInsights extends _i1.EndpointRef {
 
   /// Executes a list of queries on the database and returns the last result.
   /// The queries are executed in a single transaction.
-  _i2.Future<_i13.BulkQueryResult> runQueries(List<String> queries) =>
-      caller.callServerEndpoint<_i13.BulkQueryResult>(
+  _i2.Future<_i8.BulkQueryResult> runQueries(List<String> queries) =>
+      caller.callServerEndpoint<_i8.BulkQueryResult>(
         'insights',
         'runQueries',
         {'queries': queries},
@@ -230,10 +246,6 @@ class Client extends _i1.ServerpodClientShared {
   Client(
     String host, {
     dynamic securityContext,
-    @Deprecated(
-      'Use authKeyProvider instead. This will be removed in future releases.',
-    )
-    super.authenticationKeyManager,
     Duration? streamingConnectionTimeout,
     Duration? connectionTimeout,
     Function(
@@ -244,9 +256,10 @@ class Client extends _i1.ServerpodClientShared {
     onFailedCall,
     Function(_i1.MethodCallContext)? onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
+    _i9.Client? httpClientOverride,
   }) : super(
          host,
-         _i14.Protocol(),
+         _i10.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -254,6 +267,7 @@ class Client extends _i1.ServerpodClientShared {
          onSucceededCall: onSucceededCall,
          disconnectStreamsOnLostInternetConnection:
              disconnectStreamsOnLostInternetConnection,
+         httpClientOverride: httpClientOverride,
        ) {
     insights = EndpointInsights(this);
   }

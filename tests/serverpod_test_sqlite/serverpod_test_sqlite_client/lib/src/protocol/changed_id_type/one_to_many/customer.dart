@@ -14,7 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../changed_id_type/one_to_many/order.dart' as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
 
-abstract class CustomerInt implements _i1.SerializableModel {
+abstract class CustomerInt
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   CustomerInt._({
     this.id,
     required this.name,
@@ -64,6 +65,17 @@ abstract class CustomerInt implements _i1.SerializableModel {
       'name': name,
       if (orders != null)
         'orders': orders?.toJson(valueToJson: (v) => v.toJson()),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'CustomerInt',
+      if (id != null) 'id': id,
+      'name': name,
+      if (orders != null)
+        'orders': orders?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
   }
 

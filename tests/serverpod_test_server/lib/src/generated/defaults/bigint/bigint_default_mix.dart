@@ -117,8 +117,6 @@ abstract class BigIntDefaultMix
     int? limit,
     int? offset,
     _i1.OrderByBuilder<BigIntDefaultMixTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<BigIntDefaultMixTable>? orderByList,
     BigIntDefaultMixInclude? include,
   }) {
@@ -127,8 +125,6 @@ abstract class BigIntDefaultMix
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(BigIntDefaultMix.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(BigIntDefaultMix.t),
       include: include,
     );
@@ -258,8 +254,6 @@ class BigIntDefaultMixIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -304,8 +298,6 @@ class BigIntDefaultMixRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<BigIntDefaultMixTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<BigIntDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -315,8 +307,6 @@ class BigIntDefaultMixRepository {
       where: where?.call(BigIntDefaultMix.t),
       orderBy: orderBy?.call(BigIntDefaultMix.t),
       orderByList: orderByList?.call(BigIntDefaultMix.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -347,8 +337,6 @@ class BigIntDefaultMixRepository {
     _i1.WhereExpressionBuilder<BigIntDefaultMixTable>? where,
     int? offset,
     _i1.OrderByBuilder<BigIntDefaultMixTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<BigIntDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -358,8 +346,6 @@ class BigIntDefaultMixRepository {
       where: where?.call(BigIntDefaultMix.t),
       orderBy: orderBy?.call(BigIntDefaultMix.t),
       orderByList: orderByList?.call(BigIntDefaultMix.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -393,16 +379,22 @@ class BigIntDefaultMixRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<BigIntDefaultMix>> insert(
     _i1.DatabaseSession session,
     List<BigIntDefaultMix> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<BigIntDefaultMix>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -420,21 +412,96 @@ class BigIntDefaultMixRepository {
     );
   }
 
+  /// Upserts all [BigIntDefaultMix]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [BigIntDefaultMix]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<BigIntDefaultMix>> upsert(
+    _i1.DatabaseSession session,
+    List<BigIntDefaultMix> rows, {
+    required _i1.ColumnSelections<BigIntDefaultMixTable> conflictColumns,
+    _i1.ColumnSelections<BigIntDefaultMixTable>? updateColumns,
+    _i1.WhereExpressionBuilder<BigIntDefaultMixTable>? updateWhere,
+    _i1.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<BigIntDefaultMix>(
+      rows,
+      conflictColumns: conflictColumns(BigIntDefaultMix.t),
+      updateColumns: updateColumns?.call(BigIntDefaultMix.t),
+      updateWhere: updateWhere?.call(BigIntDefaultMix.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [BigIntDefaultMix] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [BigIntDefaultMix] will have its `id` field set.
+  Future<BigIntDefaultMix?> upsertRow(
+    _i1.DatabaseSession session,
+    BigIntDefaultMix row, {
+    required _i1.ColumnSelections<BigIntDefaultMixTable> conflictColumns,
+    _i1.ColumnSelections<BigIntDefaultMixTable>? updateColumns,
+    _i1.WhereExpressionBuilder<BigIntDefaultMixTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<BigIntDefaultMix>(
+      row,
+      conflictColumns: conflictColumns(BigIntDefaultMix.t),
+      updateColumns: updateColumns?.call(BigIntDefaultMix.t),
+      updateWhere: updateWhere?.call(BigIntDefaultMix.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [BigIntDefaultMix]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<BigIntDefaultMix>> update(
     _i1.DatabaseSession session,
     List<BigIntDefaultMix> rows, {
     _i1.ColumnSelections<BigIntDefaultMixTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<BigIntDefaultMix>(
       rows,
       columns: columns?.call(BigIntDefaultMix.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -472,6 +539,10 @@ class BigIntDefaultMixRepository {
 
   /// Updates all [BigIntDefaultMix]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<BigIntDefaultMix>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<BigIntDefaultMixUpdateTable>
@@ -481,9 +552,8 @@ class BigIntDefaultMixRepository {
     int? offset,
     _i1.OrderByBuilder<BigIntDefaultMixTable>? orderBy,
     _i1.OrderByListBuilder<BigIntDefaultMixTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<BigIntDefaultMix>(
       columnValues: columnValues(BigIntDefaultMix.t.updateTable),
@@ -492,9 +562,8 @@ class BigIntDefaultMixRepository {
       offset: offset,
       orderBy: orderBy?.call(BigIntDefaultMix.t),
       orderByList: orderByList?.call(BigIntDefaultMix.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -505,22 +574,24 @@ class BigIntDefaultMixRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<BigIntDefaultMix>> delete(
     _i1.DatabaseSession session,
     List<BigIntDefaultMix> rows, {
     _i1.OrderByBuilder<BigIntDefaultMixTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<BigIntDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<BigIntDefaultMix>(
       rows,
       orderBy: orderBy?.call(BigIntDefaultMix.t),
       orderByList: orderByList?.call(BigIntDefaultMix.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -540,22 +611,24 @@ class BigIntDefaultMixRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<BigIntDefaultMix>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<BigIntDefaultMixTable> where,
     _i1.OrderByBuilder<BigIntDefaultMixTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<BigIntDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<BigIntDefaultMix>(
       where: where(BigIntDefaultMix.t),
       orderBy: orderBy?.call(BigIntDefaultMix.t),
       orderByList: orderByList?.call(BigIntDefaultMix.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

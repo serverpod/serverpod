@@ -696,12 +696,23 @@ void main() {
       );
 
       test(
-        'when the JWT is decoded, then it names ES512 as its `alg`.',
+        'when the JWT is decoded, then it names ES512 as its `alg` and includes a `kid`.',
         () {
-          expect(
-            dart_jsonwebtoken.JWT.decode(jwtToken).header,
-            equals({'alg': 'ES512', 'typ': 'JWT'}),
-          );
+          final header = dart_jsonwebtoken.JWT.decode(jwtToken).header!;
+          expect(header['alg'], equals('ES512'));
+          expect(header['typ'], equals('JWT'));
+          expect(header['kid'], isA<String>());
+          expect(header['kid'], isNotEmpty);
+        },
+      );
+
+      test(
+        'when two JWTs are created with the same key, then they share the same `kid`.',
+        () {
+          final jwt2 = jwtUtil.createJwt(refreshToken);
+          final kid1 = dart_jsonwebtoken.JWT.decode(jwtToken).header!['kid'];
+          final kid2 = dart_jsonwebtoken.JWT.decode(jwt2).header!['kid'];
+          expect(kid1, equals(kid2));
         },
       );
 

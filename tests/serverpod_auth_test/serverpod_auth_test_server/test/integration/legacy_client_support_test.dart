@@ -7,7 +7,6 @@ import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_auth_test_client/serverpod_auth_test_client.dart';
 import 'package:test/test.dart';
 
-import '../util/test_tags.dart';
 import 'test_tools/serverpod_test_tools.dart';
 
 void main() {
@@ -24,7 +23,6 @@ void main() {
 
   withServerpod(
     'Given a migrated legacy user,',
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       // Must run before withServerpod boots the server so legacy middleware is
@@ -131,7 +129,6 @@ void main() {
 
   withServerpod(
     'Given a migrated legacy user and a successful legacy authentication,',
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       _configurePublicLegacySupport(sessionBuilder);
@@ -269,7 +266,6 @@ void main() {
 
   withServerpod(
     'Given a migrated user with multiple legacy sessions,',
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       _configurePublicLegacySupport(sessionBuilder);
@@ -360,7 +356,6 @@ void main() {
 
   withServerpod(
     'Given a post-migration user (no legacy record),',
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       _configurePublicLegacySupport(sessionBuilder);
@@ -438,7 +433,6 @@ void main() {
 
   withServerpod(
     'Given unsupported legacy email methods,',
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       _configurePublicLegacySupport(sessionBuilder);
@@ -488,7 +482,6 @@ void main() {
 
   withServerpod(
     'Given legacy endpoints outside the forwarding allowlist,',
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       _configurePublicLegacySupport(sessionBuilder);
@@ -537,7 +530,6 @@ void main() {
 
   withServerpod(
     'Given migrated legacy users and an authenticated admin session,',
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       _configurePublicLegacySupport(sessionBuilder);

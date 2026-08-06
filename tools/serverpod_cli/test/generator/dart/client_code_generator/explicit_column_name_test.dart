@@ -161,13 +161,13 @@ void main() {
         });
       });
 
-      test('then toJsonForProtocol method is not present', () {
+      test('then toJsonForProtocol method is present', () {
         var toJsonForProtocolConstructor =
             CompilationUnitHelpers.tryFindMethodDeclaration(
               maybeClassNamedExample!,
               name: 'toJsonForProtocol',
             );
-        expect(toJsonForProtocolConstructor, isNull);
+        expect(toJsonForProtocolConstructor, isNotNull);
       });
     },
   );

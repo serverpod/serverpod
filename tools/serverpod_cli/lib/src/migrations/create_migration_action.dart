@@ -1,8 +1,12 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
+import 'package:serverpod_cli/src/analytics/migration_metrics.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
+import 'package:serverpod_cli/src/generator/dart_formatters.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -78,6 +82,7 @@ extension MigrationOutcomeExtension on CreateMigrationOutcome {
 Future<CreateMigrationOutcome> createMigrationAction({
   required GeneratorConfig config,
   String? tag,
+  bool empty = false,
   bool force = false,
 }) async {
   if (!config.isFeatureEnabled(ServerpodFeature.database)) {
@@ -101,13 +106,12 @@ Future<CreateMigrationOutcome> createMigrationAction({
   MigrationGenerationContext generationContext;
   try {
     generationContext = await MigrationGenerationContext.load(config);
-  } on GenerateMigrationDatabaseDefinitionException {
-    return const CreateMigrationFailed(
-      'Unable to generate database definition for project.',
-    );
+  } on GenerateMigrationDatabaseDefinitionException catch (e) {
+    return CreateMigrationFailed('$e');
   }
 
-  final hasClientMigrations = generationContext.hasClientDatabaseTables;
+  final hasClientMigrations =
+      generationContext.modelDefinitions.hasHostClientDatabaseTables;
   final serverGenerator = MigrationGenerator(
     directory: serverDirectory,
     projectName: projectName,
@@ -126,8 +130,13 @@ Future<CreateMigrationOutcome> createMigrationAction({
 
   final precomputedVersion = MigrationGenerator.createVersionName(tag);
 
+  if (hasClientMigrations) {
+    await GeneratedDartFormatters.resolve(config);
+  }
+
   final results = await Future.wait([
     _createMigration(
+      empty: empty,
       force: force,
       config: config,
       precomputedVersion: precomputedVersion,
@@ -137,6 +146,7 @@ Future<CreateMigrationOutcome> createMigrationAction({
     if (hasClientMigrations)
       _createMigration(
         config: config,
+        empty: empty,
         force: force,
         precomputedVersion: precomputedVersion,
         generator: clientGenerator!,
@@ -144,19 +154,32 @@ Future<CreateMigrationOutcome> createMigrationAction({
       ),
   ]);
 
-  if (!hasClientMigrations) {
-    return results.first;
-  }
+  final outcome = hasClientMigrations
+      ? CreateMigrationServerClientCreated(
+          serverResult: results.first,
+          clientResult: results.last,
+        )
+      : results.first;
 
-  return CreateMigrationServerClientCreated(
-    serverResult: results.first,
-    clientResult: results.last,
+  // Hooked here rather than in the callers so the `create-migration` command,
+  // the start TUI's Migrate action and the `create_migration` MCP tool are all
+  // covered by one call.
+  // Awaited, not fire-and-forget: the work is local (metadata write plus two
+  // directory scans; the HTTP send is queued, not awaited), and detaching it
+  // would let a short-lived process exit before the event is queued at all.
+  await cliAnalytics.captureMigrationCreated(
+    config: config,
+    flags: MigrationCreatedFlags.fromOutcome(outcome),
+    isRepairMigration: false,
   );
+
+  return outcome;
 }
 
 Future<CreateMigrationOutcome> _createMigration({
   required MigrationGenerator generator,
   required GeneratorConfig config,
+  required bool empty,
   required bool force,
   required MigrationGenerationContext context,
   required String precomputedVersion,
@@ -164,28 +187,16 @@ Future<CreateMigrationOutcome> _createMigration({
   MigrationVersionArtifacts? migration;
   try {
     migration = await generator.createMigration(
+      empty: empty,
       force: force,
       config: config,
       context: context,
       precomputedVersion: precomputedVersion,
     );
-  } on MigrationVersionLoadException catch (e) {
-    return CreateMigrationFailed(
-      'Unable to determine latest database definition due to a corrupted '
-      'migration. Please re-create or remove the migration version and try '
-      'again. Migration version: "${e.versionName}".\n${e.exception}',
-    );
-  } on GenerateMigrationDatabaseDefinitionException {
-    return const CreateMigrationFailed(
-      'Unable to generate database definition for project.',
-    );
-  } on MigrationVersionAlreadyExistsException catch (e) {
-    return CreateMigrationFailed(
-      'Unable to create migration. A directory with the same name already '
-      'exists: "${e.directoryPath}".',
-    );
   } on MigrationAbortedException {
     return const CreateMigrationAborted();
+  } on Exception catch (e) {
+    return CreateMigrationFailed('$e');
   }
 
   if (migration == null) {

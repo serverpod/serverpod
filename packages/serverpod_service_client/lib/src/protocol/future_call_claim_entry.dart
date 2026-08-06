@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Bindings to a future call claim entry in the database.
-abstract class FutureCallClaimEntry implements _i1.SerializableModel {
+abstract class FutureCallClaimEntry
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   FutureCallClaimEntry._({
     this.id,
     this.futureCallId,
@@ -60,6 +61,16 @@ abstract class FutureCallClaimEntry implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod.FutureCallClaimEntry',
+      if (id != null) 'id': id,
+      if (futureCallId != null) 'futureCallId': futureCallId,
+      'lastHeartbeatTime': lastHeartbeatTime.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod.FutureCallClaimEntry',
       if (id != null) 'id': id,

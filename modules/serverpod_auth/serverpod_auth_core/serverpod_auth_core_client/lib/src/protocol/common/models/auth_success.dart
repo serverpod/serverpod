@@ -15,7 +15,8 @@ import 'package:serverpod_auth_core_client/src/protocol/protocol.dart' as _i2;
 
 /// Response model representing a successful authentication result with all
 /// relevant authentication information.
-abstract class AuthSuccess implements _i1.SerializableModel {
+abstract class AuthSuccess
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   AuthSuccess._({
     required this.authStrategy,
     required this.token,
@@ -89,6 +90,19 @@ abstract class AuthSuccess implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_auth_core.AuthSuccess',
+      'authStrategy': authStrategy,
+      'token': token,
+      if (tokenExpiresAt != null) 'tokenExpiresAt': tokenExpiresAt?.toJson(),
+      if (refreshToken != null) 'refreshToken': refreshToken,
+      'authUserId': authUserId.toJson(),
+      'scopeNames': scopeNames.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_auth_core.AuthSuccess',
       'authStrategy': authStrategy,

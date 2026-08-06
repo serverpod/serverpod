@@ -14,7 +14,8 @@ import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 import 'package:serverpod_database/serverpod_database.dart' as _i2;
 
 /// The definition of a (desired) table in the database.
-abstract class TableDefinition implements _i1.SerializableModel {
+abstract class TableDefinition
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   TableDefinition._({
     required this.name,
     this.dartName,
@@ -116,6 +117,24 @@ abstract class TableDefinition implements _i1.SerializableModel {
       'columns': columns.toJson(valueToJson: (v) => v.toJson()),
       'foreignKeys': foreignKeys.toJson(valueToJson: (v) => v.toJson()),
       'indexes': indexes.toJson(valueToJson: (v) => v.toJson()),
+      if (managed != null) 'managed': managed,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod.TableDefinition',
+      'name': name,
+      if (dartName != null) 'dartName': dartName,
+      if (module != null) 'module': module,
+      'schema': schema,
+      if (tableSpace != null) 'tableSpace': tableSpace,
+      'columns': columns.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'foreignKeys': foreignKeys.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
+      'indexes': indexes.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       if (managed != null) 'managed': managed,
     };
   }

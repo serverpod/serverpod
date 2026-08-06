@@ -1,5 +1,6 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:path/path.dart' as path;
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:test/test.dart';
 
@@ -132,13 +133,6 @@ void main() {
           );
         });
 
-        test('that takes the orderDescending bool as an optional param', () {
-          expect(
-            findMethod?.parameters?.toSource(),
-            contains('bool orderDescending'),
-          );
-        });
-
         test('that takes the orderByList as an optional param', () {
           expect(
             findMethod?.parameters?.toSource(),
@@ -233,17 +227,6 @@ void main() {
             contains('OrderByListBuilder<ExampleTable>? orderByList'),
           );
         });
-
-        test(
-          'that takes the orderDescending as a named param with the default value false',
-          () {
-            var params = findRowMethod?.parameters?.toSource();
-            expect(
-              params,
-              contains('bool orderDescending = false'),
-            );
-          },
-        );
 
         test('that takes the transaction object as an optional param', () {
           expect(
@@ -445,6 +428,13 @@ void main() {
             contains('bool ignoreConflicts = false'),
           );
         });
+
+        test('that takes the noReturn bool as an optional param', () {
+          expect(
+            insertMethod?.parameters?.toSource(),
+            contains('bool noReturn = false'),
+          );
+        });
       });
 
       group('has an insert row method', () {
@@ -545,6 +535,13 @@ void main() {
             contains('Transaction? transaction'),
           );
         });
+
+        test('that takes the noReturn bool as an optional param', () {
+          expect(
+            updateMethod?.parameters?.toSource(),
+            contains('bool noReturn = false'),
+          );
+        });
       });
 
       group('has an update row method', () {
@@ -639,13 +636,6 @@ void main() {
           );
         });
 
-        test('that takes the orderDescending bool as an optional param', () {
-          expect(
-            deleteMethod?.parameters?.toSource(),
-            contains('bool orderDescending = false'),
-          );
-        });
-
         test('that takes the orderByList as an optional param', () {
           expect(
             deleteMethod?.parameters?.toSource(),
@@ -657,6 +647,13 @@ void main() {
           expect(
             deleteMethod?.parameters?.toSource(),
             contains('Transaction? transaction'),
+          );
+        });
+
+        test('that takes the noReturn bool as an optional param', () {
+          expect(
+            deleteMethod?.parameters?.toSource(),
+            contains('bool noReturn = false'),
           );
         });
       });
@@ -759,13 +756,6 @@ void main() {
           );
         });
 
-        test('that takes the orderDescending bool as an optional param', () {
-          expect(
-            deleteWhereMethod?.parameters?.toSource(),
-            contains('bool orderDescending = false'),
-          );
-        });
-
         test('that takes the orderByList as an optional param', () {
           expect(
             deleteWhereMethod?.parameters?.toSource(),
@@ -777,6 +767,13 @@ void main() {
           expect(
             deleteWhereMethod?.parameters?.toSource(),
             contains('Transaction? transaction'),
+          );
+        });
+
+        test('that takes the noReturn bool as an optional param', () {
+          expect(
+            deleteWhereMethod?.parameters?.toSource(),
+            contains('bool noReturn = false'),
           );
         });
       });
@@ -984,20 +981,71 @@ void main() {
           );
         });
 
-        test('that takes the orderDescending bool as an optional param', () {
-          expect(
-            updateWhereMethod?.parameters?.toSource(),
-            contains('bool orderDescending'),
-          );
-        });
-
         test('that takes the transaction object as an optional param', () {
           expect(
             updateWhereMethod?.parameters?.toSource(),
             contains('Transaction? transaction'),
           );
         });
+
+        test('that takes the noReturn bool as an optional param', () {
+          expect(
+            updateWhereMethod?.parameters?.toSource(),
+            contains('bool noReturn = false'),
+          );
+        });
       });
     }, skip: repositoryClass == null);
   });
+
+  test(
+    'Given a class with table name declared on the project '
+    'when generating code '
+    'then the DatabaseSession is imported from the serverpod package.',
+    () {
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withFileName(testClassFileName)
+            .withTableName('example_table')
+            .withDatabase(ModelDatabaseDefinition.all)
+            .build(),
+      ];
+
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
+
+      var compilationUnit = parseString(
+        content: codeMap[expectedFilePath]!,
+      ).unit;
+
+      var repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        compilationUnit,
+        name: repositoryClassName,
+      );
+
+      expect(
+        repositoryClass,
+        isNotNull,
+        reason: 'Missing class named $repositoryClassName.',
+      );
+
+      expect(
+        CompilationUnitHelpers.hasImportDirective(
+          compilationUnit,
+          uri: 'package:serverpod/serverpod.dart',
+        ),
+        isTrue,
+      );
+
+      expect(
+        CompilationUnitHelpers.hasImportDirective(
+          compilationUnit,
+          uri: 'package:serverpod_database/serverpod_database.dart',
+        ),
+        isFalse,
+      );
+    },
+  );
 }

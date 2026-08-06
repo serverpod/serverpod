@@ -1,0 +1,19 @@
+### Result of applying database migrations via the Insights endpoint.
+class: MigrationsApplyResult
+fields:
+  ### Versions of regular migrations that were applied. An empty list means
+  ### `applyMigrations` was true but the database was already at the latest
+  ### version. `null` means `applyMigrations` was false — no attempt was
+  ### made to apply regular migrations.
+  migrationsApplied: List<String>?
+
+  ### Version name of the repair migration that was applied, or `null` if
+  ### `applyRepairMigration` was false, no repair migration file exists, or
+  ### the repair migration was already applied to this database.
+  repairMigrationApplied: String?
+
+  ### Whether the live database schema matches the target schema after
+  ### applying migrations. `false` indicates either schema drift between
+  ### the code's target tables and the live database, or that verification
+  ### could not run to completion.
+  databaseMatchesTargetState: bool

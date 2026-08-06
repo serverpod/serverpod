@@ -15,7 +15,8 @@ import '../../long_identifiers/deep_includes/organization_with_long_table_name.d
     as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
 
-abstract class PersonWithLongTableName implements _i1.SerializableModel {
+abstract class PersonWithLongTableName
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   PersonWithLongTableName._({
     this.id,
     required this.name,
@@ -73,6 +74,18 @@ abstract class PersonWithLongTableName implements _i1.SerializableModel {
       'name': name,
       if (organizationId != null) 'organizationId': organizationId,
       if (organization != null) 'organization': organization?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'PersonWithLongTableName',
+      if (id != null) 'id': id,
+      'name': name,
+      if (organizationId != null) 'organizationId': organizationId,
+      if (organization != null)
+        'organization': organization?.toJsonForProtocol(),
     };
   }
 

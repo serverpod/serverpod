@@ -1,0 +1,4 @@
+exception: ExtendedAppException
+extends: BaseAppException
+fields:
+  detail: String

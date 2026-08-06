@@ -6,15 +6,12 @@ import 'package:test/test.dart';
 
 import '../lib/src/util.dart';
 
-const tempDirName = 'temp';
-
 void main() async {
   final rootPath = path.join(Directory.current.path, '..', '..');
   final cliProjectPath = getServerpodCliProjectPath(rootPath: rootPath);
-  final tempPath = path.join(rootPath, tempDirName);
+  final tempPath = Directory.systemTemp.createTempSync('spb_').path;
 
   setUpAll(() async {
-    await Directory(tempPath).create();
     final pubGetProcess = await startProcess('dart', [
       'pub',
       'get',
@@ -46,6 +43,7 @@ void main() async {
                 projectName,
                 '-v',
                 '--no-analytics',
+                '--no-interactive',
               ],
               rootPath: rootPath,
               workingDirectory: tempPath,
@@ -97,6 +95,25 @@ void main() async {
                 );
               });
 
+              test(
+                'has a src/cache_busting.dart file',
+                () {
+                  expect(
+                    File(
+                      path.join(
+                        tempPath,
+                        serverDir,
+                        'lib',
+                        'src',
+                        'cache_busting.dart',
+                      ),
+                    ).existsSync(),
+                    isTrue,
+                    reason: 'Server cache_busting.dart file does not exist.',
+                  );
+                },
+              );
+
               test('has a server.dart file', () {
                 expect(
                   File(
@@ -105,6 +122,93 @@ void main() async {
                   isTrue,
                 );
               });
+
+              test(
+                'then the server.dart contains webapp configurations',
+                () {
+                  final file = File(
+                    path.join(tempPath, serverDir, 'lib', 'server.dart'),
+                  );
+
+                  final content = file.readAsStringSync();
+
+                  expect(
+                    content,
+                    contains("import 'src/cache_busting.dart';"),
+                    reason:
+                        'server.dart does not contain webapp configurations.',
+                  );
+
+                  expect(
+                    content,
+                    contains("import 'src/web/routes/app_config_route.dart';"),
+                    reason:
+                        'server.dart does not contain webapp configurations.',
+                  );
+
+                  expect(
+                    content,
+                    contains(
+                      'StaticRoute.withCacheBusting(cacheBustingConfig)',
+                    ),
+                    reason:
+                        'server.dart does not contain webapp configurations.',
+                  );
+
+                  expect(
+                    content,
+                    contains('AppConfigRoute(apiConfig: pod.config.apiServer)'),
+                    reason:
+                        'server.dart does not contain webapp configurations.',
+                  );
+
+                  expect(
+                    content,
+                    contains(
+                      "final appDir = Directory(Uri(path: 'web/app').toFilePath())",
+                    ),
+                    reason:
+                        'server.dart does not contain webapp configurations.',
+                  );
+
+                  expect(
+                    content,
+                    contains('if (appDir.existsSync()) {'),
+                    reason:
+                        'server.dart does not contain webapp configurations.',
+                  );
+
+                  expect(
+                    content,
+                    contains(
+                      "Uri(path: 'web/pages/build_flutter_app.html').toFilePath()",
+                    ),
+                    reason:
+                        'server.dart does not contain webapp configurations.',
+                  );
+
+                  expect(
+                    content,
+                    contains('pod.webServer.addMiddleware('),
+                    reason:
+                        'server.dart does not contain webapp configurations.',
+                  );
+
+                  expect(
+                    content,
+                    contains('FallbackMiddleware('),
+                    reason:
+                        'server.dart does not contain webapp configurations.',
+                  );
+
+                  expect(
+                    content,
+                    contains('on: (response) => response.statusCode == 404'),
+                    reason:
+                        'server.dart does not contain webapp configurations.',
+                  );
+                },
+              );
 
               test('has an example_endpoint file', () {
                 expect(
@@ -215,31 +319,26 @@ void main() async {
               });
 
               test(
-                'has a web/app directory containing the flutter web app',
+                'has embedded postgres configuration on test run mode',
                 () {
-                  expect(
-                    Directory(
-                      path.join(tempPath, serverDir, 'web', 'app'),
-                    ).existsSync(),
-                    isTrue,
+                  final testConfigFile = File(
+                    path.join(
+                      tempPath,
+                      serverDir,
+                      'config',
+                      'test.yaml',
+                    ),
                   );
+
                   expect(
-                    File(
-                      path.join(
-                        tempPath,
-                        serverDir,
-                        'web',
-                        'app',
-                        'index.html',
-                      ),
-                    ).existsSync(),
-                    isTrue,
+                    testConfigFile.readAsStringSync(),
+                    contains('dataPath: .serverpod/test/pgdata'),
                   );
                 },
               );
 
               test(
-                'has sqlite configurations',
+                'has embedded postgres configuration on development run mode',
                 () {
                   final devConfigFile = File(
                     path.join(
@@ -252,35 +351,48 @@ void main() async {
 
                   expect(
                     devConfigFile.readAsStringSync(),
-                    contains('filePath:'),
+                    contains('dataPath: .serverpod/development/pgdata'),
                   );
+                },
+              );
 
-                  final prodConfigFile = File(
-                    path.join(tempPath, serverDir, 'config', 'production.yaml'),
-                  );
-
-                  expect(
-                    prodConfigFile.readAsStringSync(),
-                    contains('filePath:'),
-                  );
-
+              test(
+                'has normal postgres configuration on staging run mode',
+                () {
                   final stagingConfigFile = File(
-                    path.join(tempPath, serverDir, 'config', 'staging.yaml'),
+                    path.join(
+                      tempPath,
+                      serverDir,
+                      'config',
+                      'staging.yaml',
+                    ),
                   );
 
-                  expect(
-                    stagingConfigFile.readAsStringSync(),
-                    contains('filePath:'),
+                  final content = stagingConfigFile.readAsStringSync();
+                  expect(content, contains('host:'));
+                  expect(content, contains('port:'));
+                  expect(content, contains('user:'));
+                  expect(content, isNot(contains('dataPath:')));
+                },
+              );
+
+              test(
+                'has normal postgres configuration on production run mode',
+                () {
+                  final prodConfigFile = File(
+                    path.join(
+                      tempPath,
+                      serverDir,
+                      'config',
+                      'production.yaml',
+                    ),
                   );
 
-                  final testConfigFile = File(
-                    path.join(tempPath, serverDir, 'config', 'test.yaml'),
-                  );
-
-                  expect(
-                    testConfigFile.readAsStringSync(),
-                    contains('filePath:'),
-                  );
+                  final content = prodConfigFile.readAsStringSync();
+                  expect(content, contains('host:'));
+                  expect(content, contains('port:'));
+                  expect(content, contains('user:'));
+                  expect(content, isNot(contains('dataPath:')));
                 },
               );
             },
@@ -296,14 +408,51 @@ void main() async {
                 );
               });
 
-              test('has a pubspec file', () {
-                expect(
-                  File(
+              test(
+                'has a pubspec file with serverpod_auth_idp_flutter dependency',
+                () {
+                  final pubspec = File(
                     path.join(tempPath, flutterDir, 'pubspec.yaml'),
-                  ).existsSync(),
-                  isTrue,
-                );
-              });
+                  );
+
+                  expect(
+                    pubspec.existsSync(),
+                    isTrue,
+                    reason: 'Flutter pubspec file does not exist.',
+                  );
+
+                  expect(
+                    pubspec.readAsStringSync(),
+                    contains('serverpod_auth_idp_flutter:'),
+                    reason:
+                        'Flutter pubspec file does not have serverpod_auth_idp_flutter dependency.',
+                  );
+                },
+              );
+
+              test(
+                'has a pubspec file with flutter_secure_storage dependency override',
+                () {
+                  final pubspec = File(
+                    path.join(tempPath, flutterDir, 'pubspec.yaml'),
+                  );
+                  final content = pubspec.readAsStringSync();
+
+                  expect(
+                    content,
+                    contains('dependency_overrides:'),
+                    reason:
+                        'Flutter pubspec file does not have dependency overrides.',
+                  );
+
+                  expect(
+                    content,
+                    contains('flutter_secure_storage: ^10.0.0'),
+                    reason:
+                        'Flutter pubspec file does not have flutter_secure_storage override.',
+                  );
+                },
+              );
 
               test('has a main file', () {
                 expect(
@@ -324,14 +473,25 @@ void main() async {
               );
             });
 
-            test('has a pubspec file', () {
-              expect(
-                File(
+            test(
+              'has a pubspec file with serverpod_auth_idp_client dependency',
+              () {
+                final pubspec = File(
                   path.join(tempPath, clientDir, 'pubspec.yaml'),
-                ).existsSync(),
-                isTrue,
-              );
-            });
+                );
+                expect(
+                  pubspec.existsSync(),
+                  isTrue,
+                  reason: 'Client pubspec file does not exist.',
+                );
+                expect(
+                  pubspec.readAsStringSync(),
+                  contains('serverpod_auth_idp_client:'),
+                  reason:
+                      'Client pubspec file does not have serverpod_auth_idp_client dependency.',
+                );
+              },
+            );
 
             test('has a project_client file', () {
               expect(
@@ -427,6 +587,89 @@ void main() async {
                 ).existsSync(),
                 isTrue,
               );
+            });
+
+            test('has AGENTS.md', () {
+              final agentsMd = File(
+                path.join(tempPath, projectName, 'AGENTS.md'),
+              );
+              expect(agentsMd.existsSync(), isTrue);
+              expect(agentsMd.readAsStringSync(), isNotEmpty);
+            });
+
+            test('has CLAUDE.md', () {
+              final claudeMd = File(
+                path.join(tempPath, projectName, 'CLAUDE.md'),
+              );
+              expect(claudeMd.existsSync(), isTrue);
+              expect(claudeMd.readAsStringSync(), '@AGENTS.md\n');
+            });
+
+            test('has agent skills installed', () {
+              expect(
+                Directory(
+                  path.join(tempPath, projectName, '.agents', 'skills'),
+                ).existsSync(),
+                isTrue,
+              );
+              expect(
+                Directory(
+                  path.join(tempPath, projectName, '.claude', 'skills'),
+                ).existsSync(),
+                isTrue,
+              );
+              expect(
+                Directory(
+                  path.join(tempPath, projectName, '.cursor', 'skills'),
+                ).existsSync(),
+                isTrue,
+              );
+            });
+
+            group('has Serverpod and Dart MCP servers configured', () {
+              final serverDirRelative = '${projectName}_server';
+              final genericConfig =
+                  '''
+{
+  "mcpServers": {
+    "serverpod": {
+      "command": "serverpod",
+      "args": ["mcp-server", "--server-dir", "$serverDirRelative"]
+    },
+    "dart": {
+      "command": "dart",
+      "args": ["mcp-server"]
+    }
+  }
+}
+''';
+
+              test('for Claude', () {
+                final claude = File(
+                  path.join(tempPath, projectName, '.mcp.json'),
+                );
+                expect(claude.existsSync(), isTrue);
+                expect(claude.readAsStringSync(), genericConfig);
+              });
+
+              test('for Cursor', () {
+                final cursor = File(
+                  path.join(tempPath, projectName, '.cursor/mcp.json'),
+                );
+                expect(cursor.existsSync(), isTrue);
+                expect(cursor.readAsStringSync(), genericConfig);
+              });
+
+              test('for VS Code', () {
+                final vscode = File(
+                  path.join(tempPath, projectName, '.vscode/mcp.json'),
+                );
+                expect(vscode.existsSync(), isTrue);
+                expect(
+                  vscode.readAsStringSync(),
+                  genericConfig.replaceAll('mcpServers', 'servers'),
+                );
+              });
             });
           });
 
@@ -535,23 +778,6 @@ void main() async {
                       contains('"${projectName} (full stack)"'),
                     );
                   });
-
-                  test('does not have preLaunchTask', () {
-                    expect(
-                      launchJson,
-                      isNot(contains('"preLaunchTask": "docker_compose_up"')),
-                    );
-                  });
-
-                  test(
-                    'does not have SERVERPOD_PASSWORD_database environment variable',
-                    () {
-                      expect(
-                        launchJson,
-                        isNot(contains('"SERVERPOD_PASSWORD_database":')),
-                      );
-                    },
-                  );
                 },
               );
             },

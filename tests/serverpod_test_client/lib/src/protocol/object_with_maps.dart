@@ -15,7 +15,8 @@ import 'simple_data.dart' as _i2;
 import 'dart:typed_data' as _i3;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i4;
 
-abstract class ObjectWithMaps implements _i1.SerializableModel {
+abstract class ObjectWithMaps
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ObjectWithMaps._({
     required this.dataMap,
     required this.intMap,
@@ -166,6 +167,38 @@ abstract class ObjectWithMaps implements _i1.SerializableModel {
       'uuidMap': uuidMap.toJson(valueToJson: (v) => v.toJson()),
       'nullableDataMap': nullableDataMap.toJson(
         valueToJson: (v) => v?.toJson(),
+      ),
+      'nullableIntMap': nullableIntMap.toJson(),
+      'nullableStringMap': nullableStringMap.toJson(),
+      'nullableDateTimeMap': nullableDateTimeMap.toJson(
+        valueToJson: (v) => v?.toJson(),
+      ),
+      'nullableByteDataMap': nullableByteDataMap.toJson(
+        valueToJson: (v) => v?.toJson(),
+      ),
+      'nullableDurationMap': nullableDurationMap.toJson(
+        valueToJson: (v) => v?.toJson(),
+      ),
+      'nullableUuidMap': nullableUuidMap.toJson(
+        valueToJson: (v) => v?.toJson(),
+      ),
+      'intIntMap': intIntMap.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'ObjectWithMaps',
+      'dataMap': dataMap.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'intMap': intMap.toJson(),
+      'stringMap': stringMap.toJson(),
+      'dateTimeMap': dateTimeMap.toJson(valueToJson: (v) => v.toJson()),
+      'byteDataMap': byteDataMap.toJson(valueToJson: (v) => v.toJson()),
+      'durationMap': durationMap.toJson(valueToJson: (v) => v.toJson()),
+      'uuidMap': uuidMap.toJson(valueToJson: (v) => v.toJson()),
+      'nullableDataMap': nullableDataMap.toJson(
+        valueToJson: (v) => v?.toJsonForProtocol(),
       ),
       'nullableIntMap': nullableIntMap.toJson(),
       'nullableStringMap': nullableStringMap.toJson(),

@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i2;
 
-abstract class ObjectWithDynamic implements _i1.SerializableModel {
+abstract class ObjectWithDynamic
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ObjectWithDynamic._({
     this.id,
     required this.payload,
@@ -37,10 +38,10 @@ abstract class ObjectWithDynamic implements _i1.SerializableModel {
   factory ObjectWithDynamic.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithDynamic(
       id: jsonSerialization['id'] as int?,
-      payload: _i2.Protocol().decodeDynamicFieldValue(
+      payload: _i2.Protocol().deserializeDynamicFieldValue(
         jsonSerialization['payload'],
       ),
-      jsonbPayload: _i2.Protocol().decodeDynamicFieldValue(
+      jsonbPayload: _i2.Protocol().deserializeDynamicFieldValue(
         jsonSerialization['jsonbPayload'],
       ),
       payloadList: _i2.Protocol().deserialize<List<dynamic>>(
@@ -93,20 +94,64 @@ abstract class ObjectWithDynamic implements _i1.SerializableModel {
     return {
       '__className__': 'ObjectWithDynamic',
       if (id != null) 'id': id,
-      'payload': _i2.Protocol().encodeWithType(payload),
-      'jsonbPayload': _i2.Protocol().encodeWithType(jsonbPayload),
+      'payload': _i2.Protocol().dynamicFieldToJson(payload),
+      'jsonbPayload': _i2.Protocol().dynamicFieldToJson(jsonbPayload),
       'payloadList': payloadList.toJson(
-        valueToJson: (v) => _i2.Protocol().encodeWithType(v),
+        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(v),
       ),
       'payloadMap': payloadMap.toJson(
-        valueToJson: (v) => _i2.Protocol().encodeWithType(v),
+        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(v),
       ),
       'payloadSet': payloadSet.toJson(
-        valueToJson: (v) => _i2.Protocol().encodeWithType(v),
+        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(v),
       ),
       'payloadMapWithDynamicKeys': payloadMapWithDynamicKeys.toJson(
-        keyToJson: (k) => _i2.Protocol().encodeWithType(k),
-        valueToJson: (v) => _i2.Protocol().encodeWithType(v),
+        keyToJson: (k) => _i2.Protocol().dynamicFieldToJson(k),
+        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(v),
+      ),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'ObjectWithDynamic',
+      if (id != null) 'id': id,
+      'payload': _i2.Protocol().dynamicFieldToJson(
+        payload,
+        forProtocol: true,
+      ),
+      'jsonbPayload': _i2.Protocol().dynamicFieldToJson(
+        jsonbPayload,
+        forProtocol: true,
+      ),
+      'payloadList': payloadList.toJson(
+        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(
+          v,
+          forProtocol: true,
+        ),
+      ),
+      'payloadMap': payloadMap.toJson(
+        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(
+          v,
+          forProtocol: true,
+        ),
+      ),
+      'payloadSet': payloadSet.toJson(
+        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(
+          v,
+          forProtocol: true,
+        ),
+      ),
+      'payloadMapWithDynamicKeys': payloadMapWithDynamicKeys.toJson(
+        keyToJson: (k) => _i2.Protocol().dynamicFieldToJson(
+          k,
+          forProtocol: true,
+        ),
+        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(
+          v,
+          forProtocol: true,
+        ),
       ),
     };
   }
@@ -153,8 +198,8 @@ class _ObjectWithDynamicImpl extends ObjectWithDynamic {
   }) {
     return ObjectWithDynamic(
       id: id is int? ? id : this.id,
-      payload: payload is! _Undefined ? payload : this.payload,
-      jsonbPayload: jsonbPayload is! _Undefined
+      payload: payload != _Undefined ? payload : this.payload,
+      jsonbPayload: jsonbPayload != _Undefined
           ? jsonbPayload
           : this.jsonbPayload,
       payloadList: payloadList ?? this.payloadList.map((e0) => e0).toList(),

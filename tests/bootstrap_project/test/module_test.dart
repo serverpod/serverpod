@@ -7,15 +7,12 @@ import 'package:test/test.dart';
 import '../lib/src/util.dart';
 import '../../serverpod_test_server/lib/test_util/custom_matcher.dart';
 
-const tempDirName = 'temp';
-
 void main() {
   final rootPath = path.join(Directory.current.path, '..', '..');
   final cliProjectPath = getServerpodCliProjectPath(rootPath: rootPath);
-  final tempPath = path.join(rootPath, tempDirName);
+  final tempPath = Directory.systemTemp.createTempSync('spb_').path;
 
   setUpAll(() async {
-    await Directory(tempPath).create();
     final pubGetProcess = await startProcess('dart', [
       'pub',
       'get',
@@ -45,6 +42,7 @@ void main() {
             projectName,
             '-v',
             '--no-analytics',
+            '--no-interactive',
           ],
           rootPath: rootPath,
           workingDirectory: tempPath,
@@ -345,14 +343,143 @@ void main() {
             reason: 'Root pubspec.lock file does not exist.',
           );
         });
+
+        test('does not copy template pubspec lock files into packages', () {
+          final packageDirs = [serverDir, clientDir];
+
+          for (final packageDir in packageDirs) {
+            expect(
+              File(
+                path.join(tempPath, packageDir, 'pubspec.lock'),
+              ).existsSync(),
+              isFalse,
+              reason: 'Template pubspec.lock was copied into $packageDir.',
+            );
+          }
+        });
+
+        test('does not copy template pubspec override files', () {
+          final packageDirs = [projectName, serverDir, clientDir];
+
+          for (final packageDir in packageDirs) {
+            expect(
+              File(
+                path.join(tempPath, packageDir, 'pubspec_overrides.yaml'),
+              ).existsSync(),
+              isFalse,
+              reason:
+                  'Template pubspec_overrides.yaml was copied into $packageDir.',
+            );
+          }
+        });
+
+        test('does not copy template melos project files', () {
+          final packageDirs = [projectName, serverDir, clientDir];
+
+          for (final packageDir in packageDirs) {
+            final directory = Directory(path.join(tempPath, packageDir));
+            final melosProjectFiles = directory
+                .listSync()
+                .whereType<File>()
+                .where((file) {
+                  final fileName = path.basename(file.path);
+                  return fileName.startsWith('melos_') &&
+                      fileName.endsWith('.iml');
+                });
+
+            expect(
+              melosProjectFiles,
+              isEmpty,
+              reason:
+                  'Template melos project file was copied into $packageDir.',
+            );
+          }
+        });
+
+        test('has no AGENTS.md', () {
+          final agentsMd = File(path.join(tempPath, projectName, 'AGENTS.md'));
+          expect(agentsMd.existsSync(), isFalse);
+        });
+
+        test('has no CLAUDE.md', () {
+          final claudeMd = File(path.join(tempPath, projectName, 'CLAUDE.md'));
+          expect(claudeMd.existsSync(), isFalse);
+        });
+
+        test('has agent skills installed', () {
+          expect(
+            Directory(
+              path.join(tempPath, projectName, '.agents', 'skills'),
+            ).existsSync(),
+            isTrue,
+          );
+          expect(
+            Directory(
+              path.join(tempPath, projectName, '.claude', 'skills'),
+            ).existsSync(),
+            isTrue,
+          );
+          expect(
+            Directory(
+              path.join(tempPath, projectName, '.cursor', 'skills'),
+            ).existsSync(),
+            isTrue,
+          );
+        });
+
+        group('has Serverpod and Dart MCP servers configured', () {
+          final serverDirRelative = '${projectName}_server';
+          final genericConfig =
+              '''
+{
+  "mcpServers": {
+    "serverpod": {
+      "command": "serverpod",
+      "args": ["mcp-server", "--server-dir", "$serverDirRelative"]
+    },
+    "dart": {
+      "command": "dart",
+      "args": ["mcp-server"]
+    }
+  }
+}
+''';
+
+          test('for Claude', () {
+            final claude = File(
+              path.join(tempPath, projectName, '.mcp.json'),
+            );
+            expect(claude.existsSync(), isTrue);
+            expect(claude.readAsStringSync(), genericConfig);
+          });
+
+          test('for Cursor', () {
+            final cursor = File(
+              path.join(tempPath, projectName, '.cursor/mcp.json'),
+            );
+            expect(cursor.existsSync(), isTrue);
+            expect(cursor.readAsStringSync(), genericConfig);
+          });
+
+          test('for VS Code', () {
+            final vscode = File(
+              path.join(tempPath, projectName, '.vscode/mcp.json'),
+            );
+            expect(vscode.existsSync(), isTrue);
+            expect(
+              vscode.readAsStringSync(),
+              genericConfig.replaceAll('mcpServers', 'servers'),
+            );
+          });
+        });
       });
     });
   });
 
   group(
-    'Given a created module project and a running docker environment',
+    'Given a created module project',
     () {
-      final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+      final (:projectName, commandRoot: _) = createRandomProjectName(tempPath);
 
       late Process createProcess;
 
@@ -365,6 +492,7 @@ void main() {
             projectName,
             '-v',
             '--no-analytics',
+            '--no-interactive',
           ],
           rootPath: rootPath,
           workingDirectory: tempPath,
@@ -373,28 +501,10 @@ void main() {
           },
         );
         assert((await createProcess.exitCode) == 0);
-
-        final docker = await startProcess(
-          'docker',
-          ['compose', 'up', '--build', '--detach'],
-          workingDirectory: commandRoot,
-          ignorePlatform: true,
-        );
-
-        assert((await docker.exitCode) == 0);
       });
 
-      tearDown(() async {
+      tearDown(() {
         createProcess.kill();
-
-        await runProcess(
-          'docker',
-          ['compose', 'down', '-v'],
-          workingDirectory: commandRoot,
-          skipBatExtentionOnWindows: true,
-        );
-
-        while (!await isNetworkPortAvailable(8090)) ;
       });
 
       test(
@@ -414,8 +524,5 @@ void main() {
         },
       );
     },
-    skip: Platform.isWindows
-        ? 'Windows does not support postgres docker image in github actions'
-        : null,
   );
 }

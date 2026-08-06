@@ -12,9 +12,11 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _i3;
 
 @_i1.immutable
-abstract class ImmutableObjectWithMap implements _i1.SerializableModel {
+abstract class ImmutableObjectWithMap
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   const ImmutableObjectWithMap._({required this.mapVariable});
 
   const factory ImmutableObjectWithMap({
@@ -45,7 +47,7 @@ abstract class ImmutableObjectWithMap implements _i1.SerializableModel {
         ) ||
         other.runtimeType == runtimeType &&
             other is ImmutableObjectWithMap &&
-            const _i1.DeepCollectionEquality().equals(
+            const _i3.DeepCollectionEquality().equals(
               other.mapVariable,
               mapVariable,
             );
@@ -55,12 +57,20 @@ abstract class ImmutableObjectWithMap implements _i1.SerializableModel {
   int get hashCode {
     return Object.hash(
       runtimeType,
-      const _i1.DeepCollectionEquality().hash(mapVariable),
+      const _i3.DeepCollectionEquality().hash(mapVariable),
     );
   }
 
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'ImmutableObjectWithMap',
+      'mapVariable': mapVariable.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ImmutableObjectWithMap',
       'mapVariable': mapVariable.toJson(),

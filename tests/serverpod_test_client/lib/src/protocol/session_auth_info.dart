@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i2;
 
-abstract class SessionAuthInfo implements _i1.SerializableModel {
+abstract class SessionAuthInfo
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   SessionAuthInfo._({
     required this.isAuthenticated,
     this.userId,
@@ -60,6 +61,17 @@ abstract class SessionAuthInfo implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'SessionAuthInfo',
+      'isAuthenticated': isAuthenticated,
+      if (userId != null) 'userId': userId,
+      'scopes': scopes.toJson(),
+      if (authId != null) 'authId': authId,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'SessionAuthInfo',
       'isAuthenticated': isAuthenticated,

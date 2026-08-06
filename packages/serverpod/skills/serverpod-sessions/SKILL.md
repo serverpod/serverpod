@@ -5,7 +5,7 @@ description: Serverpod session types, lifecycle, InternalSession, cleanup callba
 
 # Serverpod Sessions
 
-A Session provides access to database, cache, storage, messages, passwords, and logging. The framework creates and closes sessions automatically; only InternalSession requires manual management.
+A Session provides access to database, cache, storage, messages, passwords, and logging. The framework creates and closes sessions automatically; only InternalSession requires manual management. Do not store a request session for work that outlives the request/stream/future call.
 
 ## Session types
 
@@ -14,7 +14,6 @@ A Session provides access to database, cache, storage, messages, passwords, and 
 | MethodCallSession | Endpoint methods | Single request |
 | WebCallSession | Web server routes | Single request |
 | MethodStreamSession | Stream methods | Stream duration |
-| StreamingSession | WebSocket connections | Connection duration |
 | FutureCallSession | Future calls | Task execution |
 | InternalSession | Manual creation | Until closed |
 
@@ -50,4 +49,4 @@ Sessions close when the endpoint returns. Do not capture for later use:
 Timer(Duration(seconds: 5), () => user.updateLastSeen(session));
 ```
 
-**Fix:** Use a future call (`session.serverpod.futureCalls.callWithDelay(...)`) or create a new InternalSession inside the callback.
+**Fix:** Use a future call (`session.serverpod.futureCalls.callWithDelay(...)`) or create a new InternalSession inside the callback and close it in `finally`.

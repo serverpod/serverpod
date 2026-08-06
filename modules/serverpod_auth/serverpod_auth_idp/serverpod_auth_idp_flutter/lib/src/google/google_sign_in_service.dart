@@ -4,8 +4,12 @@ import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 
-/// Service to manage Google Sign-In and ensure it is only initialized once
-/// throughout the app lifetime.
+import 'google_web_sign_in_service.dart';
+
+/// Service to manage Google Sign-In on native platforms (iOS, Android, macOS)
+/// and ensure it is only initialized once throughout the app lifetime.
+///
+/// On web, [GoogleWebSignInService] is used instead.
 class GoogleSignInService {
   /// Singleton instance of the [GoogleSignInService].
   static final GoogleSignInService instance = GoogleSignInService._internal();
@@ -56,7 +60,7 @@ class GoogleSignInService {
 
       await googleSignIn.initialize(
         clientId: clientId,
-        serverClientId: !kIsWeb ? serverClientId : null,
+        serverClientId: serverClientId,
         nonce: nonce,
         hostedDomain: hostedDomain,
       );
@@ -125,12 +129,45 @@ extension DisconnectGoogleSignIn on FlutterAuthSessionManager {
   /// The parameters [nonce] and [hostedDomain] are optional and will be passed
   /// directly to the [GoogleSignIn] initialize method. See the documentation
   /// of [GoogleSignIn.initialize] for more details.
+  ///
+  /// On web, [redirectUri] is required and configures the OAuth2 PKCE
+  /// redirect flow - the only supported Google sign-in flow on web. Throws
+  /// an [ArgumentError] when absent. On native platforms it is ignored.
   Future<void> initializeGoogleSignIn({
     String? clientId,
     String? serverClientId,
     String? nonce,
     String? hostedDomain,
+    String? redirectUri,
+    Map<String, String> additionalAuthParams = const {},
   }) async {
+    if (kIsWeb) {
+      if (redirectUri == null) {
+        throw ArgumentError(
+          'redirectUri is required when initializing Google Sign-In on web. '
+          'Web sign-in uses the OAuth2 PKCE redirect flow; see '
+          'GoogleWebSignInService for setup details.',
+        );
+      }
+
+      clientId ??= _getClientIdFromEnvVar();
+      if (clientId == null) {
+        throw ArgumentError.notNull(
+          'clientId is required when initializing Google Sign-In on web '
+          'with a redirect URI. Provide clientId parameter or set '
+          'GOOGLE_CLIENT_ID environment variable.',
+        );
+      }
+
+      await GoogleWebSignInService.instance.ensureInitialized(
+        clientId: clientId,
+        redirectUri: redirectUri,
+        additionalAuthParams: additionalAuthParams,
+      );
+
+      return;
+    }
+
     await GoogleSignInService.instance.ensureInitialized(
       auth: this,
       clientId: clientId,
@@ -145,16 +182,19 @@ extension DisconnectGoogleSignIn on FlutterAuthSessionManager {
   /// entirely, meaning the user will need to go through the full authorization
   /// flow again on the next sign-in, including the account picker and consent
   /// screens.
+  ///
+  /// On web, only signs out from the current device without revoking Google
+  /// access (native disconnect is not available in the web flow).
   Future<void> disconnectGoogleAccount() async {
+    if (kIsWeb) {
+      await signOutDevice();
+      return;
+    }
+
     final signIn = await GoogleSignInService.instance.ensureInitialized(
       auth: this,
     );
     await signIn.disconnect();
-
-    // NOTE: This delay prevents the Google Sign-In web button to render before
-    // the disconnect process is complete. Without this, the Sign-In screen will
-    // render the button on web still showing the user as signed in.
-    await Future.delayed(const Duration(milliseconds: 300));
     await signOutDevice();
   }
 }

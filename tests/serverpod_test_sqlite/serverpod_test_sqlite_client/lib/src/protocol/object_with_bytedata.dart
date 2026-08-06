@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
 
-abstract class ObjectWithByteData implements _i1.SerializableModel {
+abstract class ObjectWithByteData
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ObjectWithByteData._({
     this.id,
     required this.byteData,
@@ -49,6 +50,15 @@ abstract class ObjectWithByteData implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'ObjectWithByteData',
+      if (id != null) 'id': id,
+      'byteData': byteData.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ObjectWithByteData',
       if (id != null) 'id': id,

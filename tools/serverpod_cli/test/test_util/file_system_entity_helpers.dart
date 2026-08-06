@@ -27,4 +27,28 @@ extension FileSystemEntityDeleteWithRetry on FileSystemEntity {
       }
     }
   }
+
+  /// Like [deleteWithRetry], but gives up silently if the entity still can't be
+  /// deleted after all attempts instead of throwing.
+  ///
+  /// For test cleanup (tearDown), where a lingering temp dir is harmless - it is
+  /// discarded with the ephemeral runner - and a Windows handle that never quite
+  /// releases shouldn't fail an otherwise-green test.
+  Future<void> deleteBestEffort({
+    bool recursive = false,
+    int attempts = 30,
+    Duration initialDelay = const Duration(milliseconds: 100),
+    Duration maxDelay = const Duration(seconds: 2),
+  }) async {
+    try {
+      await deleteWithRetry(
+        recursive: recursive,
+        attempts: attempts,
+        initialDelay: initialDelay,
+        maxDelay: maxDelay,
+      );
+    } on PathAccessException {
+      // Best effort: give up.
+    }
+  }
 }

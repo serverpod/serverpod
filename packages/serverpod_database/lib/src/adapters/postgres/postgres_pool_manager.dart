@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:meta/meta.dart';
 import 'package:postgres/postgres.dart' as pg;
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -5,6 +7,7 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 import '../../concepts/runtime_parameters.dart';
 import '../../interface/database_pool_manager.dart';
 import '../../interface/serialization_manager.dart';
+import 'embedded_postgres_resolver.dart';
 import 'pgvector_encoder.dart';
 import 'value_encoder.dart';
 
@@ -30,15 +33,25 @@ class PostgresPoolManager implements DatabasePoolManager {
 
   final pg.PoolSettings _poolSettings;
 
+  /// Stops the embedded PostgreSQL this manager launched, or `null` when none
+  /// was launched (no `dataPath`, or it attached to a postmaster another
+  /// supervisor owns). Retained so [stop] can shut it down.
+  Future<void> Function()? _stopEmbeddedPostgres;
+
+  Future<void>? _startedFuture;
+  bool _databaseStopped = false;
+
   /// Postgresql connection pool created from configuration.
   ///
-  /// Throws a [StateError] if the pool has not been started.
-  pg.Pool get pool {
+  /// If the database has not been started yet, this will start it and then
+  /// return the database instance. Throws a [StateError] if the database is
+  /// not started (e.g. after [stop] has been called).
+  Future<pg.Pool> get pool async {
+    await started;
     var pgPool = _pgPool;
     if (pgPool == null) {
       throw StateError('Database pool not started.');
     }
-
     return pgPool;
   }
 
@@ -83,31 +96,72 @@ class PostgresPoolManager implements DatabasePoolManager {
 
   @override
   void start() {
-    // Setup database connection pool
-    _pgPool ??= pg.Pool.withEndpoints(
-      [
-        pg.Endpoint(
-          host: config.host,
-          port: config.port,
-          database: config.name,
-          username: config.user,
-          password: config.password,
-          isUnixSocket: config.isUnixSocket,
-        ),
-      ],
-      settings: _poolSettings,
-    );
+    _databaseStopped = false;
+    _startedFuture ??= _bootstrap();
+  }
+
+  Future<void> _bootstrap() async {
+    if (_databaseStopped) {
+      throw StateError('Database stopped. Call `start()` again to restart.');
+    }
+
+    Future<void> Function()? stopLaunched;
+    try {
+      final resolved = await startOrAttachEmbeddedPostgres(config);
+      stopLaunched = resolved?.stop;
+
+      // stop() may have run while we were spawning the postmaster. Drop the
+      // freshly-launched handle rather than leak the supervised process.
+      if (_databaseStopped) {
+        throw StateError('Database stopped during start.');
+      }
+
+      final effectiveConfig = resolved?.connectivity ?? config;
+      _pgPool = pg.Pool.withEndpoints(
+        [
+          pg.Endpoint(
+            host: effectiveConfig.host,
+            port: effectiveConfig.port,
+            database: effectiveConfig.name,
+            username: effectiveConfig.user,
+            password: effectiveConfig.password,
+            isUnixSocket: effectiveConfig.isUnixSocket,
+          ),
+        ],
+        settings: _poolSettings,
+      );
+      _stopEmbeddedPostgres = stopLaunched;
+      stopLaunched = null;
+    } catch (e, st) {
+      await stopLaunched?.call();
+      await _stopEmbeddedPostgres?.call();
+      _stopEmbeddedPostgres = null;
+      _startedFuture = null;
+      Error.throwWithStackTrace(e, st);
+    }
   }
 
   @override
+  Future<void> get started => _startedFuture ??= _bootstrap();
+
+  @override
   Future<void> stop() async {
-    await _pgPool?.close();
+    _databaseStopped = true;
+    final pgPool = _pgPool;
+    final stopEmbeddedPostgres = _stopEmbeddedPostgres;
+
     _pgPool = null;
+    _stopEmbeddedPostgres = null;
+    _startedFuture = null;
+
+    await pgPool?.close();
+    await stopEmbeddedPostgres?.call();
   }
 
   @override
   Future<bool> testConnection() async {
-    await pool.execute(
+    final connection = await pool;
+    await connection.execute(
       'SELECT 1;',
       timeout: const Duration(seconds: 2),
     );

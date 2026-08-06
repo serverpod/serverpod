@@ -710,6 +710,20 @@ void main() {
     late var content = codeMap[expectedFileName]!;
 
     test(
+      'then target table definitions are generated as a static getter.',
+      () {
+        expect(
+          content,
+          matches(
+            RegExp(
+              r'static List<.*TableDefinition> get targetTableDefinitions =>',
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
       'then the protocol contains non-nullable vector field with correct type and dimension.',
       () {
         expect(content, contains('dartType: \'Vector(384)\''));

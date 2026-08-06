@@ -7,11 +7,23 @@ import 'package:test/test.dart';
 
 void main() {
   late Directory testDir;
-  late TemplateRenderer templateRenderer;
+  const renderer = TemplateRenderer();
+
+  /// Renders every file currently under [testDir] - mirrors how the
+  /// production caller passes the set of files just written by [Copier].
+  Future<void> renderTestDir(TemplateContext context) async {
+    final paths = <String>[];
+    await for (final entity in testDir.list(
+      recursive: true,
+      followLinks: false,
+    )) {
+      if (entity is File) paths.add(entity.path);
+    }
+    await renderer.renderPaths(paths, context);
+  }
 
   setUp(() async {
     testDir = await Directory.systemTemp.createTemp('template_test_');
-    templateRenderer = TemplateRenderer(dir: testDir);
   });
 
   tearDown(() async {
@@ -23,7 +35,7 @@ void main() {
     () {
       late File file;
       setUp(() async {
-        file = File(p.join(testDir.path, '{{#web}}web{{!web}}.dart'));
+        file = File(p.join(testDir.path, '{{#webapp}}web{{!webapp}}.dart'));
         await file.writeAsString('''import 'dart.io';''');
       });
 
@@ -31,7 +43,7 @@ void main() {
         'when rendering the template with a true context value, '
         'then the file name is formatted to remove the template directives',
         () async {
-          await templateRenderer.render(TemplateContext(web: true));
+          await renderTestDir(TemplateContext(webapp: true));
 
           await expectLater(file.exists(), completion(false));
           await expectLater(
@@ -45,7 +57,7 @@ void main() {
         'when rendering the template with a false context value, '
         'then the file is deleted',
         () async {
-          await templateRenderer.render(TemplateContext(web: false));
+          await renderTestDir(TemplateContext(webapp: false));
 
           await expectLater(file.exists(), completion(false));
           await expectLater(
@@ -59,7 +71,7 @@ void main() {
         'when rendering the template with empty context, '
         'then the file is deleted',
         () async {
-          await templateRenderer.render(TemplateContext());
+          await renderTestDir(TemplateContext());
 
           await expectLater(file.exists(), completion(false));
           await expectLater(
@@ -76,7 +88,7 @@ void main() {
     () {
       late File file;
       setUp(() async {
-        file = File(p.join(testDir.path, '{{#web}}web{{+web}}.dart'));
+        file = File(p.join(testDir.path, '{{#webapp}}web{{+webapp}}.dart'));
         await file.writeAsString('''import 'dart.io';''');
       });
 
@@ -84,7 +96,7 @@ void main() {
         'when rendering the template with a true context value, '
         'then the file name is not formatted to remove the template directives',
         () async {
-          await templateRenderer.render(TemplateContext(web: true));
+          await renderTestDir(TemplateContext(webapp: true));
 
           await expectLater(file.exists(), completion(true));
           await expectLater(
@@ -98,7 +110,7 @@ void main() {
         'when rendering the template with a false context value, '
         'then the file name is not formatted to remove the template directives',
         () async {
-          await templateRenderer.render(TemplateContext(web: false));
+          await renderTestDir(TemplateContext(webapp: false));
 
           await expectLater(file.exists(), completion(true));
           await expectLater(
@@ -112,7 +124,7 @@ void main() {
         'when rendering the template with empty context, '
         'then the file name is not formatted to remove the template directives',
         () async {
-          await templateRenderer.render(TemplateContext());
+          await renderTestDir(TemplateContext());
 
           await expectLater(file.exists(), completion(true));
           await expectLater(
@@ -144,7 +156,7 @@ development:
         'when rendering the template with a true context value, '
         'then the template directives are processed correctly',
         () async {
-          await templateRenderer.render(TemplateContext(redis: true));
+          await renderTestDir(TemplateContext(redis: true));
           final content = await file.readAsString();
 
           expect(
@@ -162,7 +174,7 @@ development:
         'when rendering the template with a false context value, '
         'then the template directives are processed correctly',
         () async {
-          await templateRenderer.render(TemplateContext(redis: false));
+          await renderTestDir(TemplateContext(redis: false));
           final content = await file.readAsString();
 
           expect(
@@ -189,17 +201,17 @@ import 'dart:io';
 // {{#postgres}}
 import 'postgres.dart';
 // {{/postgres}}
-// {{#web}}
+// {{#website}}
 import 'web.dart';
-// {{/web}}
+// {{/website}}
 
 void main() {
   // {{#postgres}}
   print('postgres enabled');
   // {{/postgres}}
-  // {{#web}}
+  // {{#website}}
   print('web enabled');
-  // {{/web}}
+  // {{/website}}
 }
 ''');
       });
@@ -208,9 +220,7 @@ void main() {
         'when rendering the template with true context values, '
         'then all the sections with conditional directives are retained in the file',
         () async {
-          await templateRenderer.render(
-            TemplateContext(web: true, postgres: true),
-          );
+          await renderTestDir(TemplateContext(website: true, postgres: true));
           final content = await file.readAsString();
           expect(
             content,
@@ -232,9 +242,7 @@ void main() {
         'when rendering the template with a mix of true and false context values, '
         'then only the sections with true conditional directives are retained in the file',
         () async {
-          await templateRenderer.render(
-            TemplateContext(postgres: true, web: false),
-          );
+          await renderTestDir(TemplateContext(postgres: true, website: false));
           final content = await file.readAsString();
           expect(
             content,
@@ -254,7 +262,7 @@ void main() {
         'when rendering the template with empty context, '
         'then all conditional sections are removed from the file',
         () async {
-          await templateRenderer.render(TemplateContext());
+          await renderTestDir(TemplateContext());
           final content = await file.readAsString();
           expect(
             content,
@@ -298,7 +306,7 @@ void main() {
 }
 ''');
 
-      await templateRenderer.render(TemplateContext());
+      await renderTestDir(TemplateContext());
       final content = await file.readAsString();
       expect(
         content,
@@ -326,8 +334,132 @@ import 'auth.web';
 // {{/web}}
 ''');
 
-      await templateRenderer.render(TemplateContext());
+      await renderTestDir(TemplateContext());
       await expectLater(file.exists(), completion(false));
+    },
+  );
+
+  group(
+    'Given a HTML file with template directives in its content',
+    () {
+      late File file;
+
+      setUp(() async {
+        file = File(p.join(testDir.path, 'test.html'));
+        await file.writeAsString('''
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Built with Serverpod</title>
+    <link rel="stylesheet" href="/web/css/style.css">
+  </head>
+  <body>
+    <!-- {{#webapp}} -->
+      <div>
+        <a class="cta" href="/app">
+            Open Flutter app 
+          </a>
+      </div>
+    <!-- {{/webapp}} -->
+    <!-- {{#website}} -->
+      <div>
+        <a class="cta" href="/">
+            Open Website 
+          </a>
+      </div>
+    <!-- {{/website}} -->
+  </body>
+</html>
+''');
+      });
+
+      test(
+        'when rendering the template with true context values, '
+        'then all the sections with conditional directives are retained in the file',
+        () async {
+          await renderTestDir(TemplateContext(website: true, webapp: true));
+          final content = await file.readAsString();
+          expect(
+            content,
+            matches(
+              r'<!DOCTYPE html>\n'
+              r'<html lang="en">\n'
+              r'  <head>\n'
+              r'    <meta charset="utf-8">\n'
+              r'    <title>Built with Serverpod</title>\n'
+              r'    <link rel="stylesheet" href="/web/css/style.css">\n'
+              r'  </head>\n'
+              r'  <body>\n'
+              r'      <div>\n'
+              r'        <a class="cta" href="/app">\n'
+              r'            Open Flutter app \n'
+              r'          </a>\n'
+              r'      </div>\n'
+              r'      <div>\n'
+              r'        <a class="cta" href="/">\n'
+              r'            Open Website \n'
+              r'          </a>\n'
+              r'      </div>\n'
+              r'  </body>\n'
+              r'</html>\n',
+            ),
+          );
+        },
+      );
+
+      test(
+        'when rendering the template with a mix of true and false context values, '
+        'then only the sections with true conditional directives are retained in the file',
+        () async {
+          await renderTestDir(TemplateContext(website: true, webapp: false));
+          final content = await file.readAsString();
+          expect(
+            content,
+            matches(
+              r'<!DOCTYPE html>\n'
+              r'<html lang="en">\n'
+              r'  <head>\n'
+              r'    <meta charset="utf-8">\n'
+              r'    <title>Built with Serverpod</title>\n'
+              r'    <link rel="stylesheet" href="/web/css/style.css">\n'
+              r'  </head>\n'
+              r'  <body>\n'
+              r'      <div>\n'
+              r'        <a class="cta" href="/">\n'
+              r'            Open Website \n'
+              r'          </a>\n'
+              r'      </div>\n'
+              r'  </body>\n'
+              r'</html>\n',
+            ),
+          );
+        },
+      );
+
+      test(
+        'when rendering the template with empty context, '
+        'then all conditional sections are removed from the file',
+        () async {
+          await renderTestDir(TemplateContext());
+          final content = await file.readAsString();
+          expect(
+            content,
+            matches(
+              r'<!DOCTYPE html>\n'
+              r'<html lang="en">\n'
+              r'  <head>\n'
+              r'    <meta charset="utf-8">\n'
+              r'    <title>Built with Serverpod</title>\n'
+              r'    <link rel="stylesheet" href="/web/css/style.css">\n'
+              r'  </head>\n'
+              r'  <body>\n'
+              r'  </body>\n'
+              r'</html>\n',
+            ),
+          );
+        },
+      );
     },
   );
 }

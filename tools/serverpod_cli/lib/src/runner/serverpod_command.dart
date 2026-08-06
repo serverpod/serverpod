@@ -1,3 +1,4 @@
+import 'package:args/args.dart';
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -18,4 +19,24 @@ abstract class ServerpodCommand<O extends OptionDefinition>
   }) : super(
          wrapTextColumn: log.wrapTextColumn,
        );
+
+  /// The global options (e.g. `--no-interactive`) apply to every command, but
+  /// the `args` package only lists a command's own options in its usage and
+  /// merely points to the top-level help for the rest. Append the global
+  /// options to the command usage so they are discoverable directly from
+  /// `serverpod <command> --help`.
+  @override
+  String get usage {
+    final baseUsage = super.usage;
+
+    final runner = this.runner;
+    if (runner is! ServerpodCommandRunner) return baseUsage;
+
+    final globalOptionsParser = ArgParser(
+      usageLineLength: argParser.usageLineLength,
+    );
+    prepareOptionsForParsing(runner.globalOptions, globalOptionsParser);
+
+    return '$baseUsage\n\nGlobal options:\n${globalOptionsParser.usage}';
+  }
 }

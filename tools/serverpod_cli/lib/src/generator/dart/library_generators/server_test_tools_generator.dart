@@ -743,6 +743,12 @@ class ServerTestToolsGenerator {
           ..named = true
           ..type = refer('ExperimentalFeatures?', serverpodUrl(true)),
       ),
+      Parameter(
+        (p) => p
+          ..name = 'serverDirectory'
+          ..named = true
+          ..type = refer('Directory?', 'dart:io'),
+      ),
       if (config.isFeatureEnabled(ServerpodFeature.database)) ...[
         Parameter(
           (p) => p
@@ -755,6 +761,12 @@ class ServerTestToolsGenerator {
             ..name = 'applyMigrations'
             ..named = true
             ..type = refer('bool?'),
+        ),
+        Parameter(
+          (p) => p
+            ..name = 'databaseInterceptor'
+            ..named = true
+            ..type = refer('DatabaseInterceptor?', serverpodUrl(true)),
         ),
         Parameter(
           (p) => p
@@ -816,12 +828,15 @@ class ServerTestToolsGenerator {
                         ),
                         'serverpodLoggingMode': refer('serverpodLoggingMode'),
                         'testServerOutputMode': refer('testServerOutputMode'),
+                        'serverDirectory': refer('serverDirectory'),
                         'experimentalFeatures': refer('experimentalFeatures'),
                         'configOverride': refer('configOverride'),
                         if (config.isFeatureEnabled(ServerpodFeature.database))
                           'runtimeParametersBuilder': refer(
                             'runtimeParametersBuilder',
                           ),
+                        if (config.isFeatureEnabled(ServerpodFeature.database))
+                          'databaseInterceptor': refer('databaseInterceptor'),
                       },
                     ),
                   ],

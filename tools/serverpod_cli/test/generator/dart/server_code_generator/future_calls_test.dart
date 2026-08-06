@@ -176,12 +176,24 @@ void main() {
             expect(
               futureCallsFile,
               matches(
-                r'var registeredFutureCalls = <String, _i\d.FutureCall>\{\n'
+                r'var registeredFutureCalls = <String, _i\d.InvokableFutureCall>\{\n'
                 r"      \'TestingSayHelloFutureCall\': TestingSayHelloFutureCall\(\),\n"
                 r'    \};\n',
               ),
             );
           });
+
+          test(
+            'contains "ignore_for_file: depend_on_referenced_packages" directive.',
+            () {
+              expect(
+                futureCallsFile,
+                contains(
+                  '// ignore_for_file: depend_on_referenced_packages',
+                ),
+              );
+            },
+          );
 
           test(
             'has the future call instance for the method with a Future return type whose first argument is a Session.',
@@ -409,7 +421,7 @@ void main() {
             expect(
               futureCallsFile,
               matches(
-                r'var registeredFutureCalls = <String, _i\d.FutureCall>\{\n'
+                r'var registeredFutureCalls = <String, _i\d.InvokableFutureCall>\{\n'
                 r"      \'Testing1SayHelloFutureCall\': Testing1SayHelloFutureCall\(\),\n"
                 r"      \'Testing2SayByeFutureCall\': Testing2SayByeFutureCall\(\),\n"
                 r'    \};\n',

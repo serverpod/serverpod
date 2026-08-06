@@ -9,7 +9,8 @@ void main() {
   withServerpod(
     'Given AuthServices is being configured',
     (final sessionBuilder, final endpoints) {
-      late List<IdentityProviderBuilder<Object>> identityProviderBuilders;
+      late List<IdentityProviderBuilder<IdentityProvider>>
+      identityProviderBuilders;
       late List<TokenManagerBuilder> tokenManagerBuilders;
       late FakeTokenStorage fakeTokenStorage;
 
@@ -83,7 +84,8 @@ void main() {
     'Given an AuthServices with identity providers',
     (final sessionBuilder, final endpoints) {
       late FakeTokenManagerBuilder fakeTokenManagerBuilder;
-      late List<IdentityProviderBuilder<Object>> identityProviderBuilders;
+      late List<IdentityProviderBuilder<IdentityProvider>>
+      identityProviderBuilders;
       late List<TokenManagerBuilder> tokenManagerBuilders;
       late FakeTokenStorage fakeTokenStorage;
 
@@ -140,12 +142,12 @@ void main() {
           'then StateError should be thrown for unregistered provider types',
           () {
             expect(
-              () => AuthServices.getIdentityProvider<String>(),
+              () => AuthServices.getIdentityProvider<UnregisteredIdp>(),
               throwsA(
                 isA<StateError>().having(
                   (final e) => e.message,
                   'message',
-                  contains('Provider for String is not registered'),
+                  contains('Provider for UnregisteredIdp is not registered'),
                 ),
               ),
             );
@@ -166,7 +168,7 @@ void main() {
         'when accessing an unregistered provider then a StateError is thrown',
         () {
           expect(
-            () => AuthServices.getIdentityProvider<String>(),
+            () => AuthServices.getIdentityProvider<UnregisteredIdp>(),
             throwsA(isA<StateError>()),
           );
         },
@@ -178,11 +180,7 @@ void main() {
     'Given an AuthServices with multiple identity providers',
     (final sessionBuilder, final endpoints) {
       late FakeTokenManagerBuilder fakeTokenManagerBuilder;
-      late List<IdentityProviderBuilder<Object>> multipleProviderBuilders;
-      late List<TokenManagerBuilder> tokenManagers;
       late FakeTokenStorage fakeTokenStorage;
-      late FakeConfig firstFactory;
-      late FakeConfig secondFactory;
 
       setUp(() {
         fakeTokenStorage = FakeTokenStorage();
@@ -190,28 +188,102 @@ void main() {
           tokenStorage: fakeTokenStorage,
         );
 
-        firstFactory = const FakeConfig();
-        secondFactory = const FakeConfig();
-        multipleProviderBuilders = [firstFactory, secondFactory];
-
-        tokenManagers = [
-          FakeTokenManagerBuilder(tokenStorage: fakeTokenStorage),
-        ];
-
         AuthServices.set(
-          tokenManagerBuilders: [fakeTokenManagerBuilder, ...tokenManagers],
-          identityProviderBuilders: multipleProviderBuilders,
+          tokenManagerBuilders: [fakeTokenManagerBuilder],
+          identityProviderBuilders: [
+            const FakeConfig(),
+            PreBuiltIdpBuilder<_SecondaryIdp>(_SecondaryIdp()),
+          ],
         );
       });
 
-      group('when accessing providers', () {
-        test('then each provider should be accessible independently', () {
-          final provider =
+      test(
+        'when accessing providers'
+        'then each provider should be accessible independently',
+        () {
+          final fakeProvider =
               AuthServices.getIdentityProvider<FakeIdentityProvider>();
-          expect(provider, isA<FakeIdentityProvider>());
-          expect(provider.tokenIssuer, isA<MultiTokenManager>());
-        });
+          expect(fakeProvider, isA<FakeIdentityProvider>());
+          expect(fakeProvider.tokenIssuer, isA<MultiTokenManager>());
+
+          final secondaryProvider =
+              AuthServices.getIdentityProvider<_SecondaryIdp>();
+          expect(secondaryProvider, isA<_SecondaryIdp>());
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given identity provider builders with duplicate authentication methods,',
+    (final sessionBuilder, final endpoints) {
+      late FakeTokenManagerBuilder fakeTokenManagerBuilder;
+      late FakeTokenStorage fakeTokenStorage;
+
+      setUp(() {
+        fakeTokenStorage = FakeTokenStorage();
+        fakeTokenManagerBuilder = FakeTokenManagerBuilder(
+          tokenStorage: fakeTokenStorage,
+        );
       });
+
+      test(
+        'when configuring AuthServices, '
+        'then registration fails with both provider types in the error.',
+        () {
+          expect(
+            () => AuthServices.set(
+              tokenManagerBuilders: [fakeTokenManagerBuilder],
+              identityProviderBuilders: [
+                const FakeConfig(),
+                PreBuiltIdpBuilder<_DuplicateMethodIdentityProvider>(
+                  _DuplicateMethodIdentityProvider(),
+                ),
+              ],
+            ),
+            throwsA(
+              isA<StateError>().having(
+                (final error) => error.message,
+                'message',
+                'Identity provider method "fake" is already registered by '
+                    'FakeIdentityProvider; cannot register '
+                    '_DuplicateMethodIdentityProvider.',
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given an identity provider with an empty authentication method,',
+    (final sessionBuilder, final endpoints) {
+      test(
+        'when configuring AuthServices, '
+        'then registration fails with the provider type in the error.',
+        () {
+          expect(
+            () => AuthServices.set(
+              tokenManagerBuilders: [
+                FakeTokenManagerBuilder(tokenStorage: FakeTokenStorage()),
+              ],
+              identityProviderBuilders: [
+                PreBuiltIdpBuilder<_EmptyMethodIdentityProvider>(
+                  _EmptyMethodIdentityProvider(),
+                ),
+              ],
+            ),
+            throwsA(
+              isA<StateError>().having(
+                (final error) => error.message,
+                'message',
+                'Identity provider _EmptyMethodIdentityProvider has an empty method.',
+              ),
+            ),
+          );
+        },
+      );
     },
   );
 
@@ -219,7 +291,8 @@ void main() {
     'Given an AuthServices with authentication handler',
     (final sessionBuilder, final endpoints) {
       late FakeTokenManagerBuilder fakeTokenManagerBuilder;
-      late List<IdentityProviderBuilder<Object>> identityProviderBuilders;
+      late List<IdentityProviderBuilder<IdentityProvider>>
+      identityProviderBuilders;
       late List<TokenManagerBuilder> tokenManagers;
       late FakeTokenStorage fakeTokenStorage;
       late Session session;
@@ -334,4 +407,56 @@ void main() {
       });
     },
   );
+}
+
+class UnregisteredIdp implements IdentityProvider {
+  @override
+  String get method => 'unregistered';
+
+  @override
+  Future<void> mergeAuthUsers(
+    final Session session, {
+    required final UuidValue userToKeepId,
+    required final UuidValue userToRemoveId,
+    required final Transaction transaction,
+  }) async {}
+}
+
+class _SecondaryIdp implements IdentityProvider {
+  @override
+  String get method => 'secondary';
+
+  @override
+  Future<void> mergeAuthUsers(
+    final Session session, {
+    required final UuidValue userToKeepId,
+    required final UuidValue userToRemoveId,
+    required final Transaction transaction,
+  }) async {}
+}
+
+class _DuplicateMethodIdentityProvider implements IdentityProvider {
+  @override
+  String get method => 'fake';
+
+  @override
+  Future<void> mergeAuthUsers(
+    final Session session, {
+    required final UuidValue userToKeepId,
+    required final UuidValue userToRemoveId,
+    required final Transaction transaction,
+  }) async {}
+}
+
+class _EmptyMethodIdentityProvider implements IdentityProvider {
+  @override
+  String get method => '';
+
+  @override
+  Future<void> mergeAuthUsers(
+    final Session session, {
+    required final UuidValue userToKeepId,
+    required final UuidValue userToRemoveId,
+    required final Transaction transaction,
+  }) async {}
 }

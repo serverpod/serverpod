@@ -147,8 +147,6 @@ abstract class CitizenInt
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CitizenIntTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CitizenIntTable>? orderByList,
     CitizenIntInclude? include,
   }) {
@@ -157,8 +155,6 @@ abstract class CitizenInt
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(CitizenInt.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(CitizenInt.t),
       include: include,
     );
@@ -370,8 +366,6 @@ class CitizenIntIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -420,8 +414,6 @@ class CitizenIntRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CitizenIntTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CitizenIntTable>? orderByList,
     _i1.Transaction? transaction,
     CitizenIntInclude? include,
@@ -432,8 +424,6 @@ class CitizenIntRepository {
       where: where?.call(CitizenInt.t),
       orderBy: orderBy?.call(CitizenInt.t),
       orderByList: orderByList?.call(CitizenInt.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -465,8 +455,6 @@ class CitizenIntRepository {
     _i1.WhereExpressionBuilder<CitizenIntTable>? where,
     int? offset,
     _i1.OrderByBuilder<CitizenIntTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CitizenIntTable>? orderByList,
     _i1.Transaction? transaction,
     CitizenIntInclude? include,
@@ -477,8 +465,6 @@ class CitizenIntRepository {
       where: where?.call(CitizenInt.t),
       orderBy: orderBy?.call(CitizenInt.t),
       orderByList: orderByList?.call(CitizenInt.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -515,16 +501,22 @@ class CitizenIntRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<CitizenInt>> insert(
     _i1.DatabaseSession session,
     List<CitizenInt> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<CitizenInt>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -542,21 +534,96 @@ class CitizenIntRepository {
     );
   }
 
+  /// Upserts all [CitizenInt]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [CitizenInt]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<CitizenInt>> upsert(
+    _i1.DatabaseSession session,
+    List<CitizenInt> rows, {
+    required _i1.ColumnSelections<CitizenIntTable> conflictColumns,
+    _i1.ColumnSelections<CitizenIntTable>? updateColumns,
+    _i1.WhereExpressionBuilder<CitizenIntTable>? updateWhere,
+    _i1.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<CitizenInt>(
+      rows,
+      conflictColumns: conflictColumns(CitizenInt.t),
+      updateColumns: updateColumns?.call(CitizenInt.t),
+      updateWhere: updateWhere?.call(CitizenInt.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [CitizenInt] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [CitizenInt] will have its `id` field set.
+  Future<CitizenInt?> upsertRow(
+    _i1.DatabaseSession session,
+    CitizenInt row, {
+    required _i1.ColumnSelections<CitizenIntTable> conflictColumns,
+    _i1.ColumnSelections<CitizenIntTable>? updateColumns,
+    _i1.WhereExpressionBuilder<CitizenIntTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<CitizenInt>(
+      row,
+      conflictColumns: conflictColumns(CitizenInt.t),
+      updateColumns: updateColumns?.call(CitizenInt.t),
+      updateWhere: updateWhere?.call(CitizenInt.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [CitizenInt]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<CitizenInt>> update(
     _i1.DatabaseSession session,
     List<CitizenInt> rows, {
     _i1.ColumnSelections<CitizenIntTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<CitizenInt>(
       rows,
       columns: columns?.call(CitizenInt.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -593,6 +660,10 @@ class CitizenIntRepository {
 
   /// Updates all [CitizenInt]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<CitizenInt>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<CitizenIntUpdateTable> columnValues,
@@ -601,9 +672,8 @@ class CitizenIntRepository {
     int? offset,
     _i1.OrderByBuilder<CitizenIntTable>? orderBy,
     _i1.OrderByListBuilder<CitizenIntTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<CitizenInt>(
       columnValues: columnValues(CitizenInt.t.updateTable),
@@ -612,9 +682,8 @@ class CitizenIntRepository {
       offset: offset,
       orderBy: orderBy?.call(CitizenInt.t),
       orderByList: orderByList?.call(CitizenInt.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -625,22 +694,24 @@ class CitizenIntRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<CitizenInt>> delete(
     _i1.DatabaseSession session,
     List<CitizenInt> rows, {
     _i1.OrderByBuilder<CitizenIntTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CitizenIntTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<CitizenInt>(
       rows,
       orderBy: orderBy?.call(CitizenInt.t),
       orderByList: orderByList?.call(CitizenInt.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -660,22 +731,24 @@ class CitizenIntRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<CitizenInt>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CitizenIntTable> where,
     _i1.OrderByBuilder<CitizenIntTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CitizenIntTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<CitizenInt>(
       where: where(CitizenInt.t),
       orderBy: orderBy?.call(CitizenInt.t),
       orderByList: orderByList?.call(CitizenInt.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

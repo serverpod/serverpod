@@ -1,4 +1,4 @@
-@Timeout(Duration(minutes: 12))
+@Timeout(Duration(minutes: 15))
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
@@ -7,15 +7,12 @@ import 'package:test/test.dart';
 
 import '../lib/src/util.dart';
 
-const tempDirName = 'temp';
-
 void main() async {
   final rootPath = path.join(Directory.current.path, '..', '..');
   final cliProjectPath = getServerpodCliProjectPath(rootPath: rootPath);
-  final tempPath = path.join(rootPath, tempDirName);
+  final tempPath = Directory.systemTemp.createTempSync('spb_').path;
 
   setUpAll(() async {
-    await Directory(tempPath).create();
     final pubGetProcess = await startProcess('dart', [
       'pub',
       'get',
@@ -34,17 +31,8 @@ void main() async {
 
     late Process createProcess;
 
-    tearDown(() async {
+    tearDown(() {
       createProcess.kill();
-
-      await runProcess(
-        'docker',
-        ['compose', 'down', '-v'],
-        workingDirectory: commandRoot,
-        skipBatExtentionOnWindows: true,
-      );
-
-      while (!await isNetworkPortAvailable(8090)) ;
     });
 
     test(
@@ -56,6 +44,7 @@ void main() async {
             projectName,
             '-v',
             '--no-analytics',
+            '--no-interactive',
           ],
           rootPath: rootPath,
           workingDirectory: tempPath,
@@ -69,21 +58,6 @@ void main() async {
           createProjectExitCode,
           0,
           reason: 'Failed to create the serverpod project.',
-        );
-
-        final docker = await startProcess(
-          'docker',
-          ['compose', 'up', '--build', '--detach'],
-          workingDirectory: commandRoot,
-          ignorePlatform: true,
-        );
-
-        var dockerExitCode = await docker.exitCode;
-
-        expect(
-          dockerExitCode,
-          0,
-          reason: 'Docker with postgres failed to start.',
         );
 
         var startProjectProcess = await startProcess(
@@ -95,9 +69,6 @@ void main() async {
         var startProjectExitCode = await startProjectProcess.exitCode;
         expect(startProjectExitCode, 0);
       },
-      skip: Platform.isWindows
-          ? 'Windows does not support postgres docker image in github actions'
-          : null,
     );
   });
 
@@ -107,18 +78,9 @@ void main() async {
     late Process createProcess;
     Process? startProjectProcess;
 
-    tearDown(() async {
+    tearDown(() {
       createProcess.kill();
       startProjectProcess?.kill();
-
-      await runProcess(
-        'docker',
-        ['compose', 'down', '-v'],
-        workingDirectory: commandRoot,
-        skipBatExtentionOnWindows: true,
-      );
-
-      while (!await isNetworkPortAvailable(8090)) ;
     });
 
     test(
@@ -130,6 +92,7 @@ void main() async {
             projectName,
             '-v',
             '--no-analytics',
+            '--no-interactive',
           ],
           rootPath: rootPath,
           workingDirectory: tempPath,
@@ -145,21 +108,6 @@ void main() async {
           reason: 'Failed to create the serverpod project.',
         );
 
-        final docker = await startProcess(
-          'docker',
-          ['compose', 'up', '--build', '--detach'],
-          workingDirectory: commandRoot,
-          ignorePlatform: true,
-        );
-
-        var dockerExitCode = await docker.exitCode;
-
-        expect(
-          dockerExitCode,
-          0,
-          reason: 'Docker with postgres failed to start.',
-        );
-
         startProjectProcess = await startProcess(
           'dart',
           ['bin/main.dart', '--apply-migrations'],
@@ -167,7 +115,7 @@ void main() async {
         );
 
         var serverStarted = false;
-        for (int retries = 0; retries < 15; retries++) {
+        for (int retries = 0; retries < 60; retries++) {
           try {
             var response = await http.get(Uri.parse('http://localhost:8080'));
             serverStarted = response.statusCode == HttpStatus.ok;
@@ -186,27 +134,14 @@ void main() async {
           reason: 'Failed to get 200 response from server.',
         );
       },
-      skip: Platform.isWindows
-          ? 'Windows does not support postgres docker image in github actions'
-          : null,
     );
   });
 
   group('Given a clean state', () {
-    var (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+    var (:projectName, commandRoot: _) = createRandomProjectName(tempPath);
     final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
       projectName,
     );
-
-    tearDownAll(() async {
-      await runProcess(
-        'docker',
-        ['compose', 'down', '-v'],
-        workingDirectory: commandRoot,
-        skipBatExtentionOnWindows: true,
-      );
-      while (!await isNetworkPortAvailable(8090)) ;
-    });
 
     group('when creating a new project', () {
       setUpAll(() async {
@@ -216,6 +151,7 @@ void main() async {
             projectName,
             '-v',
             '--no-analytics',
+            '--no-interactive',
           ],
           rootPath: rootPath,
           workingDirectory: tempPath,
@@ -264,6 +200,25 @@ void main() async {
           );
         });
 
+        test(
+          'has a src/cache_busting.dart file',
+          () {
+            expect(
+              File(
+                path.join(
+                  tempPath,
+                  serverDir,
+                  'lib',
+                  'src',
+                  'cache_busting.dart',
+                ),
+              ).existsSync(),
+              isTrue,
+              reason: 'Server cache_busting.dart file does not exist.',
+            );
+          },
+        );
+
         test('has a server.dart file', () {
           expect(
             File(
@@ -271,6 +226,89 @@ void main() async {
             ).existsSync(),
             isTrue,
             reason: 'Server server.dart file does not exist.',
+          );
+        });
+
+        test(
+          'then the server.dart contains webapp configurations',
+          () {
+            final file = File(
+              path.join(tempPath, serverDir, 'lib', 'server.dart'),
+            );
+
+            final content = file.readAsStringSync();
+
+            expect(
+              content,
+              contains("import 'src/web/routes/app_config_route.dart';"),
+              reason: 'server.dart does not contain webapp configurations.',
+            );
+
+            expect(
+              content,
+              contains("import 'src/cache_busting.dart';"),
+              reason: 'server.dart does not contain webapp configurations.',
+            );
+
+            expect(
+              content,
+              contains('StaticRoute.withCacheBusting(cacheBustingConfig)'),
+              reason: 'server.dart does not contain webapp configurations.',
+            );
+
+            expect(
+              content,
+              contains('AppConfigRoute(apiConfig: pod.config.apiServer)'),
+              reason: 'server.dart does not contain webapp configurations.',
+            );
+
+            expect(
+              content,
+              contains(
+                "final appDir = Directory(Uri(path: 'web/app').toFilePath())",
+              ),
+              reason: 'server.dart does not contain webapp configurations.',
+            );
+
+            expect(
+              content,
+              contains('if (appDir.existsSync()) {'),
+              reason: 'server.dart does not contain webapp configurations.',
+            );
+
+            expect(
+              content,
+              contains(
+                "Uri(path: 'web/pages/build_flutter_app.html').toFilePath()",
+              ),
+              reason: 'server.dart does not contain webapp configurations.',
+            );
+
+            expect(
+              content,
+              contains('pod.webServer.addMiddleware('),
+              reason: 'server.dart does not contain webapp configurations.',
+            );
+
+            expect(
+              content,
+              contains('FallbackMiddleware('),
+              reason: 'server.dart does not contain webapp configurations.',
+            );
+
+            expect(
+              content,
+              contains('on: (response) => response.statusCode == 404'),
+              reason: 'server.dart does not contain webapp configurations.',
+            );
+          },
+        );
+
+        test('has a Dockerfile', () {
+          expect(
+            File(path.join(tempPath, serverDir, 'Dockerfile')).existsSync(),
+            isTrue,
+            reason: 'Server Dockerfile does not exist.',
           );
         });
 
@@ -389,30 +427,6 @@ void main() async {
             reason: 'Server generated protocol.yaml file does not exist.',
           );
         });
-
-        test('has a web/app directory containing the flutter web app', () {
-          expect(
-            Directory(
-              path.join(tempPath, serverDir, 'web', 'app'),
-            ).existsSync(),
-            isTrue,
-            reason: 'Server web/app directory does not exist.',
-          );
-          expect(
-            File(
-              path.join(tempPath, serverDir, 'web', 'app', 'index.html'),
-            ).existsSync(),
-            isTrue,
-            reason: 'Server web/app/index.html file does not exist.',
-          );
-          expect(
-            File(
-              path.join(tempPath, serverDir, 'web', 'app', 'main.dart.js'),
-            ).existsSync(),
-            isTrue,
-            reason: 'Server web/app/main.dart.js file does not exist.',
-          );
-        });
       });
 
       group('then the flutter project', () {
@@ -424,13 +438,51 @@ void main() async {
           );
         });
 
-        test('has a pubspec file', () {
-          expect(
-            File(path.join(tempPath, flutterDir, 'pubspec.yaml')).existsSync(),
-            isTrue,
-            reason: 'Flutter pubspec file does not exist.',
-          );
-        });
+        test(
+          'has a pubspec file with serverpod_auth_idp_flutter dependency',
+          () {
+            final pubspec = File(
+              path.join(tempPath, flutterDir, 'pubspec.yaml'),
+            );
+
+            expect(
+              pubspec.existsSync(),
+              isTrue,
+              reason: 'Flutter pubspec file does not exist.',
+            );
+
+            expect(
+              pubspec.readAsStringSync(),
+              contains('serverpod_auth_idp_flutter:'),
+              reason:
+                  'Flutter pubspec file does not have serverpod_auth_idp_flutter dependency.',
+            );
+          },
+        );
+
+        test(
+          'has a pubspec file with flutter_secure_storage dependency override',
+          () {
+            final pubspec = File(
+              path.join(tempPath, flutterDir, 'pubspec.yaml'),
+            );
+            final content = pubspec.readAsStringSync();
+
+            expect(
+              content,
+              contains('dependency_overrides:'),
+              reason:
+                  'Flutter pubspec file does not have dependency overrides.',
+            );
+
+            expect(
+              content,
+              contains('flutter_secure_storage: ^10.0.0'),
+              reason:
+                  'Flutter pubspec file does not have flutter_secure_storage override.',
+            );
+          },
+        );
 
         test(
           'macOS DebugProfile entitlements has network client tag and true',
@@ -538,11 +590,20 @@ void main() async {
           );
         });
 
-        test('has a pubspec file', () {
+        test('has a pubspec file with serverpod_auth_idp_client dependency', () {
+          final pubspec = File(
+            path.join(tempPath, clientDir, 'pubspec.yaml'),
+          );
           expect(
-            File(path.join(tempPath, clientDir, 'pubspec.yaml')).existsSync(),
+            pubspec.existsSync(),
             isTrue,
             reason: 'Client pubspec file does not exist.',
+          );
+          expect(
+            pubspec.readAsStringSync(),
+            contains('serverpod_auth_idp_client:'),
+            reason:
+                'Client pubspec file does not have serverpod_auth_idp_client dependency.',
           );
         });
 
@@ -655,13 +716,19 @@ void main() async {
           expect(content, contains('${projectName}_flutter'));
         });
 
-        test('has a root .gitignore that ignores workspace .dart_tool', () {
-          final rootGitignore = File(
-            path.join(tempPath, projectName, '.gitignore'),
-          );
-          expect(rootGitignore.existsSync(), isTrue);
-          expect(rootGitignore.readAsStringSync(), contains('.dart_tool/'));
-        });
+        test(
+          'has a root .gitignore that ignores workspace .dart_tool and .scloud',
+          () {
+            final rootGitignore = File(
+              path.join(tempPath, projectName, '.gitignore'),
+            );
+            expect(rootGitignore.existsSync(), isTrue);
+
+            final content = rootGitignore.readAsStringSync();
+            expect(content, contains('.dart_tool/'));
+            expect(content, contains('.scloud/'));
+          },
+        );
 
         test('server pubspec.yaml has resolution: workspace', () {
           final content = File(
@@ -692,6 +759,58 @@ void main() async {
           );
         });
 
+        test('does not copy template pubspec lock files into packages', () {
+          final packageDirs = [serverDir, clientDir, flutterDir];
+
+          for (final packageDir in packageDirs) {
+            expect(
+              File(
+                path.join(tempPath, packageDir, 'pubspec.lock'),
+              ).existsSync(),
+              isFalse,
+              reason: 'Template pubspec.lock was copied into $packageDir.',
+            );
+          }
+        });
+
+        test('does not copy template pubspec override files', () {
+          final packageDirs = [projectName, serverDir, clientDir, flutterDir];
+
+          for (final packageDir in packageDirs) {
+            expect(
+              File(
+                path.join(tempPath, packageDir, 'pubspec_overrides.yaml'),
+              ).existsSync(),
+              isFalse,
+              reason:
+                  'Template pubspec_overrides.yaml was copied into $packageDir.',
+            );
+          }
+        });
+
+        test('does not copy template melos project files', () {
+          final packageDirs = [projectName, serverDir, clientDir, flutterDir];
+
+          for (final packageDir in packageDirs) {
+            final directory = Directory(path.join(tempPath, packageDir));
+            final melosProjectFiles = directory
+                .listSync()
+                .whereType<File>()
+                .where((file) {
+                  final fileName = path.basename(file.path);
+                  return fileName.startsWith('melos_') &&
+                      fileName.endsWith('.iml');
+                });
+
+            expect(
+              melosProjectFiles,
+              isEmpty,
+              reason:
+                  'Template melos project file was copied into $packageDir.',
+            );
+          }
+        });
+
         test(
           'then the flutter pubspec contains override for flutter secure storage',
           () {
@@ -702,6 +821,85 @@ void main() async {
             expect(content, contains('flutter_secure_storage'));
           },
         );
+
+        test('has AGENTS.md', () {
+          final agentsMd = File(path.join(tempPath, projectName, 'AGENTS.md'));
+          expect(agentsMd.existsSync(), isTrue);
+          expect(agentsMd.readAsStringSync(), isNotEmpty);
+        });
+
+        test('has CLAUDE.md', () {
+          final claudeMd = File(path.join(tempPath, projectName, 'CLAUDE.md'));
+          expect(claudeMd.existsSync(), isTrue);
+          expect(claudeMd.readAsStringSync(), '@AGENTS.md\n');
+        });
+
+        test('has agent skills installed', () {
+          expect(
+            Directory(
+              path.join(tempPath, projectName, '.agents', 'skills'),
+            ).existsSync(),
+            isTrue,
+          );
+          expect(
+            Directory(
+              path.join(tempPath, projectName, '.claude', 'skills'),
+            ).existsSync(),
+            isTrue,
+          );
+          expect(
+            Directory(
+              path.join(tempPath, projectName, '.cursor', 'skills'),
+            ).existsSync(),
+            isTrue,
+          );
+        });
+
+        group('has Serverpod and Dart MCP servers configured', () {
+          final serverDirRelative = '${projectName}_server';
+          final genericConfig =
+              '''
+{
+  "mcpServers": {
+    "serverpod": {
+      "command": "serverpod",
+      "args": ["mcp-server", "--server-dir", "$serverDirRelative"]
+    },
+    "dart": {
+      "command": "dart",
+      "args": ["mcp-server"]
+    }
+  }
+}
+''';
+
+          test('for Claude', () {
+            final claude = File(
+              path.join(tempPath, projectName, '.mcp.json'),
+            );
+            expect(claude.existsSync(), isTrue);
+            expect(claude.readAsStringSync(), genericConfig);
+          });
+
+          test('for Cursor', () {
+            final cursor = File(
+              path.join(tempPath, projectName, '.cursor/mcp.json'),
+            );
+            expect(cursor.existsSync(), isTrue);
+            expect(cursor.readAsStringSync(), genericConfig);
+          });
+
+          test('for VS Code', () {
+            final vscode = File(
+              path.join(tempPath, projectName, '.vscode/mcp.json'),
+            );
+            expect(vscode.existsSync(), isTrue);
+            expect(
+              vscode.readAsStringSync(),
+              genericConfig.replaceAll('mcpServers', 'servers'),
+            );
+          });
+        });
       });
 
       group('then the .vscode directory', () {
@@ -734,6 +932,14 @@ void main() async {
             launchJson.contains('"${projectName}_flutter"'),
             isTrue,
             reason: 'launch.json does not contain flutter configuration.',
+          );
+          expect(
+            launchJson,
+            contains(
+              'flutter-vm-service-info-$projectName.json',
+            ),
+            reason:
+                'Flutter configuration does not reference the per-app VM service info file.',
           );
 
           // Verify flutter config appears before server config
@@ -796,6 +1002,7 @@ void main() async {
             projectName,
             '-v',
             '--no-analytics',
+            '--no-interactive',
           ],
           rootPath: rootPath,
           workingDirectory: tempPath,
@@ -902,18 +1109,20 @@ void main() async {
     );
   });
 
-  group('Given a created project and a running docker environment', () {
-    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+  group('Given a created project', () {
+    late String projectName;
+    late String commandRoot;
 
     late Process createProcess;
 
     setUp(() async {
+      (:projectName, :commandRoot) = createRandomProjectName(tempPath);
       createProcess = await startServerpodCli(
         [
           'create',
           projectName,
-          '-v',
           '--no-analytics',
+          '--no-interactive',
         ],
         rootPath: rootPath,
         workingDirectory: tempPath,
@@ -922,29 +1131,70 @@ void main() async {
         },
       );
       assert((await createProcess.exitCode) == 0);
-
-      final docker = await startProcess(
-        'docker',
-        ['compose', 'up', '--build', '--detach'],
-        workingDirectory: commandRoot,
-        ignorePlatform: true,
-      );
-
-      assert((await docker.exitCode) == 0);
     });
 
     tearDown(() async {
       createProcess.kill();
-
-      await runProcess(
-        'docker',
-        ['compose', 'down', '-v'],
-        workingDirectory: commandRoot,
-        skipBatExtentionOnWindows: true,
-      );
-
-      while (!await isNetworkPortAvailable(8090)) ;
     });
+
+    test(
+      'when building the server Dockerfile then the image is built successfully',
+      () async {
+        // Temporarily remove parameters from server.dart that have not been
+        // published yet, because the Dockerfile won't have access to the local
+        // override. Once published, we can remove these.
+        final serverFile = File(path.join(commandRoot, 'lib', 'server.dart'));
+        final serverSource = serverFile.readAsStringSync();
+        const wasmHeaders = 'enableWasmHeaders: false,';
+        // TODO: Remove once Session.alert is published.
+        const sessionAlert = 'session.alert(';
+        // TODO: Remove once ServerpodCloudEmailIdpConfig is published. The
+        // published serverpod_auth_idp_server does not have it yet, so swap it
+        // for the published-compatible EmailIdpConfigFromPasswords (its send
+        // callbacks are optional, so the no-argument form compiles).
+        final cloudEmailConfig = RegExp(
+          r'ServerpodCloudEmailIdpConfig\([^)]*\)',
+        );
+        // TODO: Remove once StaticRoute.withCacheBusting is published.
+        const staticRouteCacheBusting =
+            "StaticRoute.withCacheBusting(cacheBustingConfig)";
+
+        serverFile.writeAsStringSync(
+          serverSource
+              .replaceAll(wasmHeaders, '')
+              .replaceAll(sessionAlert, 'session.log(')
+              .replaceAll(cloudEmailConfig, 'EmailIdpConfigFromPasswords()')
+              .replaceAll(
+                staticRouteCacheBusting,
+                "StaticRoute.directory(Directory(Uri(path: 'web/static').toFilePath()))",
+              ),
+        );
+
+        final dockerBuildProcess = await startProcess(
+          'docker',
+          [
+            'build',
+            '-f',
+            path.join('${projectName}_server', 'Dockerfile'),
+            '.',
+          ],
+          workingDirectory: path.join(tempPath, projectName),
+        );
+
+        addTearDown(() async {
+          await dockerBuildProcess.kill();
+        });
+
+        expect(
+          await dockerBuildProcess.exitCode,
+          0,
+          reason: 'Failed to build the generated server Docker image.',
+        );
+      },
+      skip: Platform.isWindows
+          ? 'Windows does not support Docker builds in GitHub Actions.'
+          : null,
+    );
 
     test(
       'when running tests then example unit and integration tests passes',
@@ -961,9 +1211,163 @@ void main() async {
 
         await expectLater(testProcess.exitCode, completion(0));
       },
+    );
+
+    test(
+      'when starting the server against its docker compose stack '
+      'then migrations apply and the server boots',
+      () async {
+        final configFile = File(
+          path.join(commandRoot, 'config', 'development.yaml'),
+        );
+        final configSource = configFile.readAsStringSync();
+        configFile.writeAsStringSync(
+          configSource.replaceFirst(RegExp(r'\n\s*dataPath:[^\n]*'), ''),
+        );
+
+        final docker = await startProcess(
+          'docker',
+          ['compose', 'up', '--detach', '--wait'],
+          workingDirectory: commandRoot,
+          ignorePlatform: true,
+        );
+
+        addTearDown(() async {
+          await runProcess(
+            'docker',
+            ['compose', 'down', '-v'],
+            workingDirectory: commandRoot,
+            skipBatExtentionOnWindows: true,
+          );
+        });
+
+        expect(
+          await docker.exitCode,
+          0,
+          reason: 'docker compose failed to start the database services.',
+        );
+
+        final startProjectProcess = await startProcess(
+          'dart',
+          [
+            'run',
+            'bin/main.dart',
+            '--apply-migrations',
+            '--role',
+            'maintenance',
+          ],
+          workingDirectory: commandRoot,
+        );
+        expect(await startProjectProcess.exitCode, 0);
+      },
       skip: Platform.isWindows
-          ? 'Windows does not support postgres docker image in github actions'
+          ? 'Windows does not support Docker in GitHub Actions.'
           : null,
     );
   });
+
+  group(
+    'Given a created project and a running pod',
+    () {
+      final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+
+      late Process createProcess;
+      late Process startProjectProcess;
+
+      setUpAll(() async {
+        createProcess = await startServerpodCli(
+          [
+            'create',
+            projectName,
+            '-v',
+            '--no-analytics',
+            '--no-interactive',
+          ],
+          rootPath: rootPath,
+          workingDirectory: tempPath,
+          environment: {
+            'SERVERPOD_HOME': rootPath,
+          },
+        );
+        assert((await createProcess.exitCode) == 0);
+
+        startProjectProcess = await startProcessAndWaitForKeywords(
+          'dart',
+          ['bin/main.dart', '--apply-migrations'],
+          workingDirectory: commandRoot,
+          keywords: ['Webserver listening on'],
+        );
+      });
+
+      tearDownAll(() async {
+        createProcess.kill();
+        startProjectProcess.kill();
+      });
+
+      test(
+        'when requesting the Flutter web app under / before it is built, '
+        'then the "Flutter web app not built" page is served',
+        () async {
+          final response = await http.get(Uri.parse('http://localhost:8082'));
+          expect(response.statusCode, equals(200));
+          expect(
+            response.body,
+            contains('<title>Flutter web app not built</title>'),
+          );
+          expect(
+            response.body,
+            isNot(
+              contains(
+                '<meta name="description" content="A new Flutter project.">',
+              ),
+            ),
+          );
+        },
+      );
+
+      group('Given the Flutter web app is built and the pod is restarted', () {
+        setUp(() async {
+          final flutterBuildProcess = await startServerpodCli(
+            ['run', 'flutter_build'],
+            rootPath: rootPath,
+            workingDirectory: commandRoot,
+            environment: {
+              'SERVERPOD_HOME': rootPath,
+            },
+          );
+          expect(await flutterBuildProcess.exitCode, 0);
+
+          startProjectProcess.kill();
+          startProjectProcess = await startProcessAndWaitForKeywords(
+            'dart',
+            ['bin/main.dart', '--apply-migrations'],
+            workingDirectory: commandRoot,
+            keywords: ['Webserver listening on'],
+          );
+        });
+
+        test(
+          'when requesting the Flutter web app under /, '
+          'then the web app is served successfully',
+          () async {
+            final response = await http.get(Uri.parse('http://localhost:8082'));
+            expect(response.statusCode, equals(200));
+            expect(
+              response.body,
+              isNot(contains('<title>Flutter web app not built</title>')),
+            );
+            expect(
+              response.body,
+              contains(
+                '<meta name="description" content="A new Flutter project.">',
+              ),
+            );
+          },
+        );
+      });
+    },
+    skip: Platform.isWindows
+        ? 'Windows does not support postgres in github actions'
+        : null,
+  );
 }

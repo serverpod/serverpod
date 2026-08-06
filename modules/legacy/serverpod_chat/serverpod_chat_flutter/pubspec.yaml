@@ -1,9 +1,14 @@
 # This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
 # Mode: development
 
+# Frozen at Serverpod 4.0.0-beta.0: this module depends on the legacy streaming
+# API, which is removed in later releases. No version slots on purpose, see
+# issue #5443.
+# serverpod_chat_client is unpublished at this version, hence the path override.
+
 name: serverpod_chat_flutter
 description: Flutter widgets for the Serverpod chat module.
-version: 3.5.0-beta.5
+version: 4.0.0-beta.0
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
@@ -18,9 +23,9 @@ dependencies:
     sdk: flutter
   intl: '>=0.19.0 <0.21.0'
   path: ^1.8.3
-  serverpod_auth_client: 3.5.0-beta.5
-  serverpod_auth_shared_flutter: 3.5.0-beta.5
-  serverpod_chat_client: 3.5.0-beta.5
+  serverpod_auth_client: 4.0.0-beta.0
+  serverpod_auth_shared_flutter: 4.0.0-beta.0
+  serverpod_chat_client: 4.0.0-beta.0
   url_launcher: ^6.1.10
   web: '>=0.3.0 <2.0.0'
 
@@ -28,18 +33,8 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   mocktail: ^1.0.0
-  serverpod_lints: 3.5.0-beta.5
+  serverpod_lints: 4.0.0-beta.0
 
 dependency_overrides:
-  serverpod_auth_client:
-    path: ../../serverpod_auth/serverpod_auth_client
-  serverpod_auth_shared_flutter:
-    path: ../../serverpod_auth/serverpod_auth_shared_flutter
   serverpod_chat_client:
     path: ../serverpod_chat_client
-  serverpod_client:
-    path: ../../../../packages/serverpod_client
-  serverpod_lints:
-    path: ../../../../packages/serverpod_lints
-  serverpod_serialization:
-    path: ../../../../packages/serverpod_serialization

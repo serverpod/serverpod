@@ -87,13 +87,6 @@ TypeReference typeColumnValueListBuilder(
   );
 }
 
-/// Deprecation annotation for the [orderDescending] parameter.
-Expression deprecatedOrderDescendingAnnotation() {
-  return refer('Deprecated').call([
-    literalString('Use desc() on the orderBy column instead.'),
-  ]);
-}
-
 Expression buildFromJsonForField(
   SerializableModelFieldDefinition field,
   bool serverCode,
@@ -170,6 +163,10 @@ Expression _buildFromJson(
     case ValueType.halfVector:
     case ValueType.sparseVector:
     case ValueType.bit:
+    case ValueType.geographyPoint:
+    case ValueType.geographyLineString:
+    case ValueType.geographyPolygon:
+    case ValueType.geographyGeometryCollection:
       return _buildComplexTypeFromJson(
         type,
         valueExpression,
@@ -191,7 +188,7 @@ Expression _buildFromJson(
               currentSharedPackageName: currentSharedPackageName,
             )
             .call([])
-            .property('decodeDynamicFieldValue')
+            .property('deserializeDynamicFieldValue')
             .call([valueExpression])
             .checkIfNull(type, valueExpression: valueExpression)
             .code,

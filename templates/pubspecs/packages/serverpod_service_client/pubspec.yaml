@@ -11,6 +11,7 @@ environment:
   sdk: DART_VERSION
 
 dependencies:
+  http: '>=1.1.0 <2.0.0'
   meta: ^1.15.0
   serverpod_client: SERVERPOD_VERSION
   serverpod_database: SERVERPOD_VERSION
@@ -24,6 +25,8 @@ dependency_overrides:
     path: ../serverpod_client
   serverpod_database:
     path: ../serverpod_database
+  serverpod_embedded_postgres:
+    path: ../serverpod_embedded_postgres
   serverpod_lints:
     path: ../serverpod_lints
   serverpod_serialization:

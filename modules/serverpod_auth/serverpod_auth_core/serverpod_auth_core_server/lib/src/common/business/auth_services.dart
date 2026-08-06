@@ -1,5 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 
+import '../../common/integrations/identity_provider.dart';
 import '../../common/integrations/provider_builder.dart';
 import '../../common/integrations/token_manager.dart';
 import '../../profile/profile.dart';
@@ -16,7 +17,8 @@ class AuthServices {
     final localInstance = _instance;
     if (localInstance == null) {
       throw StateError(
-        'AuthServices is not set. Call AuthServices.set() to initialize it before accessing the instance.',
+        'AuthServices is not set. Call AuthServices.set() to initialize it '
+        'before accessing the instance.',
       );
     }
 
@@ -42,6 +44,9 @@ class AuthServices {
   /// [userProfileConfig] is the configuration for the user profiles manager
   /// that will be used to create the user profiles manager.
   ///
+  /// [accountMergeConfig] is the configuration for the account merger that
+  /// will resolve conflicts when merging accounts.
+  ///
   /// These are passed to the [AuthServices] constructor to create the instance.
   /// {@endtemplate}
   static void set({
@@ -49,6 +54,7 @@ class AuthServices {
     final List<IdentityProviderBuilder> identityProviderBuilders = const [],
     final AuthUsersConfig authUsersConfig = const AuthUsersConfig(),
     final UserProfileConfig userProfileConfig = const UserProfileConfig(),
+    final AccountMergeConfig accountMergeConfig = const AccountMergeConfig(),
   }) {
     final instance = AuthServices(
       primaryTokenManagerBuilder: tokenManagerBuilders.first,
@@ -56,6 +62,7 @@ class AuthServices {
       additionalTokenManagerBuilders: tokenManagerBuilders.skip(1).toList(),
       authUsers: AuthUsers(config: authUsersConfig),
       userProfiles: UserProfiles(config: userProfileConfig),
+      accountMerger: AccountMerger(config: accountMergeConfig),
     );
     _instance = instance;
   }
@@ -89,6 +96,7 @@ class AuthServices {
     final List<TokenManagerBuilder> additionalTokenManagerBuilders = const [],
     this.authUsers = const AuthUsers(),
     this.userProfiles = const UserProfiles(),
+    this.accountMerger = const AccountMerger(),
   }) {
     tokenManager = MultiTokenManager(
       primaryTokenManager: primaryTokenManagerBuilder.build(
@@ -99,19 +107,37 @@ class AuthServices {
           .toList(),
     );
 
-    for (final provider in identityProviderBuilders) {
-      _providers[provider.type] = provider.build(
+    for (final providerBuilder in identityProviderBuilders) {
+      final provider = providerBuilder.build(
         tokenManager: tokenManager,
         authUsers: authUsers,
         userProfiles: userProfiles,
       );
+      if (provider.method.isEmpty) {
+        throw StateError(
+          'Identity provider ${provider.runtimeType} has an empty method.',
+        );
+      }
+      for (final registeredProvider in _providers.values) {
+        if (registeredProvider.method == provider.method) {
+          throw StateError(
+            'Identity provider method "${provider.method}" is already '
+            'registered by ${registeredProvider.runtimeType}; cannot register '
+            '${provider.runtimeType}.',
+          );
+        }
+      }
+      _providers[providerBuilder.type] = provider;
     }
   }
 
-  final Map<Type, Object> _providers = {};
+  final Map<Type, IdentityProvider> _providers = {};
+
+  /// The collection of initialized identity providers.
+  Iterable<IdentityProvider> get providers => _providers.values;
 
   /// Retrieves the identity provider of type [T].
-  static T getIdentityProvider<T>() {
+  static T getIdentityProvider<T extends IdentityProvider>() {
     final provider = instance._providers[T];
     if (provider == null) {
       throw StateError(
@@ -129,6 +155,9 @@ class AuthServices {
 
   /// Manager for managing user profiles.
   final UserProfiles userProfiles;
+
+  /// Manager for managing account mergers.
+  final AccountMerger accountMerger;
 
   /// The token manager that handles token lifecycle operations.
   late final MultiTokenManager tokenManager;
@@ -158,12 +187,14 @@ extension AuthServicesInit on Serverpod {
     required final List<TokenManagerBuilder> tokenManagerBuilders,
     final List<IdentityProviderBuilder> identityProviderBuilders = const [],
     final AuthUsersConfig authUsersConfig = const AuthUsersConfig(),
+    final AccountMergeConfig accountMergeConfig = const AccountMergeConfig(),
     final UserProfileConfig userProfileConfig = const UserProfileConfig(),
   }) {
     AuthServices.set(
       tokenManagerBuilders: tokenManagerBuilders,
       identityProviderBuilders: identityProviderBuilders,
       authUsersConfig: authUsersConfig,
+      accountMergeConfig: accountMergeConfig,
       userProfileConfig: userProfileConfig,
     );
 

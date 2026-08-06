@@ -15,7 +15,8 @@ import '../../../models_with_relations/self_relation/many_to_many/member.dart'
     as _i2;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
-abstract class Blocking implements _i1.SerializableModel {
+abstract class Blocking
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   Blocking._({
     this.id,
     required this.blockedId,
@@ -82,6 +83,18 @@ abstract class Blocking implements _i1.SerializableModel {
       if (blocked != null) 'blocked': blocked?.toJson(),
       'blockedById': blockedById,
       if (blockedBy != null) 'blockedBy': blockedBy?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Blocking',
+      if (id != null) 'id': id,
+      'blockedId': blockedId,
+      if (blocked != null) 'blocked': blocked?.toJsonForProtocol(),
+      'blockedById': blockedById,
+      if (blockedBy != null) 'blockedBy': blockedBy?.toJsonForProtocol(),
     };
   }
 

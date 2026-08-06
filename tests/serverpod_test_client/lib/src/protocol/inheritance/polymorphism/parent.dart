@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// A parent class.
-class PolymorphicParent implements _i1.SerializableModel {
+class PolymorphicParent
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   PolymorphicParent({required this.parent});
 
   factory PolymorphicParent.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -32,6 +33,14 @@ class PolymorphicParent implements _i1.SerializableModel {
 
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'PolymorphicParent',
+      'parent': parent,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'PolymorphicParent',
       'parent': parent,

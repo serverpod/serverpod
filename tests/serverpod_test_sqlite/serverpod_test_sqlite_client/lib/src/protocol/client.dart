@@ -14,8 +14,15 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/simple_data.dart'
     as _i3;
-import 'protocol.dart' as _i4;
-import 'package:serverpod_database/serverpod_database.dart' as _i5;
+import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
+    as _i4;
+import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
+    as _i5;
+import 'package:serverpod_test_shared_module_client/serverpod_test_shared_module_client.dart'
+    as _i6;
+import 'package:http/http.dart' as _i7;
+import 'protocol.dart' as _i8;
+import 'package:serverpod_database/serverpod_database.dart' as _i9;
 import 'package:serverpod_test_sqlite_client/migrations/migration_registry.dart';
 
 /// {@category Endpoint}
@@ -61,14 +68,24 @@ class EndpointTestTools extends _i1.EndpointRef {
       );
 }
 
+class Modules {
+  Modules(Client client) {
+    auth = _i4.Caller(client);
+    auth_idp = _i5.Caller(client);
+    shared_module = _i6.Caller(client);
+  }
+
+  late final _i4.Caller auth;
+
+  late final _i5.Caller auth_idp;
+
+  late final _i6.Caller shared_module;
+}
+
 class Client extends _i1.ServerpodClientShared {
   Client(
     String host, {
     dynamic securityContext,
-    @Deprecated(
-      'Use authKeyProvider instead. This will be removed in future releases.',
-    )
-    super.authenticationKeyManager,
     Duration? streamingConnectionTimeout,
     Duration? connectionTimeout,
     Function(
@@ -79,9 +96,10 @@ class Client extends _i1.ServerpodClientShared {
     onFailedCall,
     Function(_i1.MethodCallContext)? onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
+    _i7.Client? httpClientOverride,
   }) : super(
          host,
-         _i4.Protocol(),
+         _i8.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -89,11 +107,15 @@ class Client extends _i1.ServerpodClientShared {
          onSucceededCall: onSucceededCall,
          disconnectStreamsOnLostInternetConnection:
              disconnectStreamsOnLostInternetConnection,
+         httpClientOverride: httpClientOverride,
        ) {
     testTools = EndpointTestTools(this);
+    modules = Modules(this);
   }
 
   late final EndpointTestTools testTools;
+
+  late final Modules modules;
 
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
@@ -101,16 +123,35 @@ class Client extends _i1.ServerpodClientShared {
   };
 
   @override
-  Map<String, _i1.ModuleEndpointCaller> get moduleLookup => {};
+  Map<String, _i1.ModuleEndpointCaller> get moduleLookup => {
+    'auth': modules.auth,
+    'auth_idp': modules.auth_idp,
+    'shared_module': modules.shared_module,
+  };
 
-  _i2.Future<_i5.ClientDatabaseSession> createSession(
+  /// Creates a new client-side database session for the given path.
+  ///
+  /// The [path] is the file path to the SQLite database file. Since SQLite uses
+  /// WAL mode, note that `[path]-shm` and `[path]-wal` files might also exist
+  /// transiently for the database while the session is open.
+  ///
+  /// If [runMigrations] is true, pending migrations will be applied when
+  /// opening the database. Be careful when setting this to false, as it might
+  /// lead to inconsistencies between the models and the database.
+  ///
+  /// If [isDebugMode] is true, the database integrity will be verified after
+  /// the migrations are applied to provide feedback of possible issues. On a
+  /// Flutter application, this should be set to [kDebugMode].
+  _i2.Future<_i9.ClientDatabaseSession> createSession(
     String path, {
+    bool runMigrations = true,
     bool isDebugMode = false,
   }) async {
-    return await _i5.ClientDatabaseSession.open(
+    return await _i9.ClientDatabaseSession.open(
       path,
-      _i4.Protocol(),
+      _i8.Protocol(),
       clientMigrations: MigrationRegistry.migrations,
+      runMigrations: runMigrations,
       isDebugMode: isDebugMode,
     );
   }

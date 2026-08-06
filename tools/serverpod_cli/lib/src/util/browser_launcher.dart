@@ -12,6 +12,11 @@ abstract final class BrowserLauncher {
         commandWithArgs.first,
         [...commandWithArgs.sublist(1), url.toString()],
         runInShell: true,
+        // WSL invokes Windows cmd.exe, which may emit CP1252 stderr (e.g.
+        // UNC-path warnings). Default UTF-8 decoding then throws even when
+        // the browser actually opened.
+        stdoutEncoding: null,
+        stderrEncoding: null,
       );
       return result.exitCode == 0;
     } catch (_) {

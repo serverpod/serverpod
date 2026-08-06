@@ -23,6 +23,8 @@ abstract class ChildWithInheritedId extends _i1.ParentWithChangedId
     required this.name,
     this.parent,
     this.parentId,
+    super.createdAt,
+    super.updatedAt,
   }) : id = id ?? const _i2.Uuid().v7obj();
 
   factory ChildWithInheritedId({
@@ -30,6 +32,8 @@ abstract class ChildWithInheritedId extends _i1.ParentWithChangedId
     required String name,
     _i3.ChildWithInheritedId? parent,
     _i2.UuidValue? parentId,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   }) = _ChildWithInheritedIdImpl;
 
   factory ChildWithInheritedId.fromJson(
@@ -48,6 +52,12 @@ abstract class ChildWithInheritedId extends _i1.ParentWithChangedId
       parentId: jsonSerialization['parentId'] == null
           ? null
           : _i2.UuidValueJsonExtension.fromJson(jsonSerialization['parentId']),
+      createdAt: jsonSerialization['createdAt'] == null
+          ? null
+          : _i2.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+      updatedAt: jsonSerialization['updatedAt'] == null
+          ? null
+          : _i2.DateTimeJsonExtension.fromJson(jsonSerialization['updatedAt']),
     );
   }
 
@@ -76,6 +86,8 @@ abstract class ChildWithInheritedId extends _i1.ParentWithChangedId
     String? name,
     _i3.ChildWithInheritedId? parent,
     _i2.UuidValue? parentId,
+    Object? createdAt,
+    Object? updatedAt,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -85,6 +97,8 @@ abstract class ChildWithInheritedId extends _i1.ParentWithChangedId
       'name': name,
       if (parent != null) 'parent': parent?.toJson(),
       if (parentId != null) 'parentId': parentId?.toJson(),
+      if (createdAt != null) 'createdAt': createdAt?.toJson(),
+      if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
     };
   }
 
@@ -104,8 +118,6 @@ abstract class ChildWithInheritedId extends _i1.ParentWithChangedId
     int? limit,
     int? offset,
     _i2.OrderByBuilder<ChildWithInheritedIdTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i2.OrderByListBuilder<ChildWithInheritedIdTable>? orderByList,
     ChildWithInheritedIdInclude? include,
   }) {
@@ -114,8 +126,6 @@ abstract class ChildWithInheritedId extends _i1.ParentWithChangedId
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ChildWithInheritedId.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(ChildWithInheritedId.t),
       include: include,
     );
@@ -135,11 +145,15 @@ class _ChildWithInheritedIdImpl extends ChildWithInheritedId {
     required String name,
     _i3.ChildWithInheritedId? parent,
     _i2.UuidValue? parentId,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   }) : super._(
          id: id,
          name: name,
          parent: parent,
          parentId: parentId,
+         createdAt: createdAt,
+         updatedAt: updatedAt,
        );
 
   /// Returns a shallow copy of this [ChildWithInheritedId]
@@ -151,6 +165,8 @@ class _ChildWithInheritedIdImpl extends ChildWithInheritedId {
     String? name,
     Object? parent = _Undefined,
     Object? parentId = _Undefined,
+    Object? createdAt = _Undefined,
+    Object? updatedAt = _Undefined,
   }) {
     return ChildWithInheritedId(
       id: id ?? this.id,
@@ -159,6 +175,8 @@ class _ChildWithInheritedIdImpl extends ChildWithInheritedId {
           ? parent
           : this.parent?.copyWith(),
       parentId: parentId is _i2.UuidValue? ? parentId : this.parentId,
+      createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
+      updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
     );
   }
 }
@@ -178,6 +196,18 @@ class ChildWithInheritedIdUpdateTable
     table.parentId,
     value,
   );
+
+  _i2.ColumnValue<DateTime, DateTime> createdAt(DateTime? value) =>
+      _i2.ColumnValue(
+        table.createdAt,
+        value,
+      );
+
+  _i2.ColumnValue<DateTime, DateTime> updatedAt(DateTime? value) =>
+      _i2.ColumnValue(
+        table.updatedAt,
+        value,
+      );
 }
 
 class ChildWithInheritedIdTable extends _i2.Table<_i2.UuidValue> {
@@ -192,6 +222,14 @@ class ChildWithInheritedIdTable extends _i2.Table<_i2.UuidValue> {
       'parentId',
       this,
     );
+    createdAt = _i2.ColumnDateTime(
+      'createdAt',
+      this,
+    );
+    updatedAt = _i2.ColumnDateTime(
+      'updatedAt',
+      this,
+    );
   }
 
   late final ChildWithInheritedIdUpdateTable updateTable;
@@ -201,6 +239,10 @@ class ChildWithInheritedIdTable extends _i2.Table<_i2.UuidValue> {
   _i3.ChildWithInheritedIdTable? _parent;
 
   late final _i2.ColumnUuid parentId;
+
+  late final _i2.ColumnDateTime createdAt;
+
+  late final _i2.ColumnDateTime updatedAt;
 
   _i3.ChildWithInheritedIdTable get parent {
     if (_parent != null) return _parent!;
@@ -220,6 +262,8 @@ class ChildWithInheritedIdTable extends _i2.Table<_i2.UuidValue> {
     id,
     name,
     parentId,
+    createdAt,
+    updatedAt,
   ];
 
   @override
@@ -251,8 +295,6 @@ class ChildWithInheritedIdIncludeList extends _i2.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -301,8 +343,6 @@ class ChildWithInheritedIdRepository {
     int? limit,
     int? offset,
     _i2.OrderByBuilder<ChildWithInheritedIdTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i2.OrderByListBuilder<ChildWithInheritedIdTable>? orderByList,
     _i2.Transaction? transaction,
     ChildWithInheritedIdInclude? include,
@@ -313,8 +353,6 @@ class ChildWithInheritedIdRepository {
       where: where?.call(ChildWithInheritedId.t),
       orderBy: orderBy?.call(ChildWithInheritedId.t),
       orderByList: orderByList?.call(ChildWithInheritedId.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -346,8 +384,6 @@ class ChildWithInheritedIdRepository {
     _i2.WhereExpressionBuilder<ChildWithInheritedIdTable>? where,
     int? offset,
     _i2.OrderByBuilder<ChildWithInheritedIdTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i2.OrderByListBuilder<ChildWithInheritedIdTable>? orderByList,
     _i2.Transaction? transaction,
     ChildWithInheritedIdInclude? include,
@@ -358,8 +394,6 @@ class ChildWithInheritedIdRepository {
       where: where?.call(ChildWithInheritedId.t),
       orderBy: orderBy?.call(ChildWithInheritedId.t),
       orderByList: orderByList?.call(ChildWithInheritedId.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -396,16 +430,22 @@ class ChildWithInheritedIdRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChildWithInheritedId>> insert(
     _i2.DatabaseSession session,
     List<ChildWithInheritedId> rows, {
     _i2.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<ChildWithInheritedId>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -423,21 +463,96 @@ class ChildWithInheritedIdRepository {
     );
   }
 
+  /// Upserts all [ChildWithInheritedId]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [ChildWithInheritedId]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<ChildWithInheritedId>> upsert(
+    _i2.DatabaseSession session,
+    List<ChildWithInheritedId> rows, {
+    required _i2.ColumnSelections<ChildWithInheritedIdTable> conflictColumns,
+    _i2.ColumnSelections<ChildWithInheritedIdTable>? updateColumns,
+    _i2.WhereExpressionBuilder<ChildWithInheritedIdTable>? updateWhere,
+    _i2.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<ChildWithInheritedId>(
+      rows,
+      conflictColumns: conflictColumns(ChildWithInheritedId.t),
+      updateColumns: updateColumns?.call(ChildWithInheritedId.t),
+      updateWhere: updateWhere?.call(ChildWithInheritedId.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [ChildWithInheritedId] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [ChildWithInheritedId] will have its `id` field set.
+  Future<ChildWithInheritedId?> upsertRow(
+    _i2.DatabaseSession session,
+    ChildWithInheritedId row, {
+    required _i2.ColumnSelections<ChildWithInheritedIdTable> conflictColumns,
+    _i2.ColumnSelections<ChildWithInheritedIdTable>? updateColumns,
+    _i2.WhereExpressionBuilder<ChildWithInheritedIdTable>? updateWhere,
+    _i2.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<ChildWithInheritedId>(
+      row,
+      conflictColumns: conflictColumns(ChildWithInheritedId.t),
+      updateColumns: updateColumns?.call(ChildWithInheritedId.t),
+      updateWhere: updateWhere?.call(ChildWithInheritedId.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [ChildWithInheritedId]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChildWithInheritedId>> update(
     _i2.DatabaseSession session,
     List<ChildWithInheritedId> rows, {
     _i2.ColumnSelections<ChildWithInheritedIdTable>? columns,
     _i2.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<ChildWithInheritedId>(
       rows,
       columns: columns?.call(ChildWithInheritedId.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -475,6 +590,10 @@ class ChildWithInheritedIdRepository {
 
   /// Updates all [ChildWithInheritedId]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChildWithInheritedId>> updateWhere(
     _i2.DatabaseSession session, {
     required _i2.ColumnValueListBuilder<ChildWithInheritedIdUpdateTable>
@@ -484,9 +603,8 @@ class ChildWithInheritedIdRepository {
     int? offset,
     _i2.OrderByBuilder<ChildWithInheritedIdTable>? orderBy,
     _i2.OrderByListBuilder<ChildWithInheritedIdTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i2.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<ChildWithInheritedId>(
       columnValues: columnValues(ChildWithInheritedId.t.updateTable),
@@ -495,9 +613,8 @@ class ChildWithInheritedIdRepository {
       offset: offset,
       orderBy: orderBy?.call(ChildWithInheritedId.t),
       orderByList: orderByList?.call(ChildWithInheritedId.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -508,22 +625,24 @@ class ChildWithInheritedIdRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChildWithInheritedId>> delete(
     _i2.DatabaseSession session,
     List<ChildWithInheritedId> rows, {
     _i2.OrderByBuilder<ChildWithInheritedIdTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i2.OrderByListBuilder<ChildWithInheritedIdTable>? orderByList,
     _i2.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<ChildWithInheritedId>(
       rows,
       orderBy: orderBy?.call(ChildWithInheritedId.t),
       orderByList: orderByList?.call(ChildWithInheritedId.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -543,22 +662,24 @@ class ChildWithInheritedIdRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChildWithInheritedId>> deleteWhere(
     _i2.DatabaseSession session, {
     required _i2.WhereExpressionBuilder<ChildWithInheritedIdTable> where,
     _i2.OrderByBuilder<ChildWithInheritedIdTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i2.OrderByListBuilder<ChildWithInheritedIdTable>? orderByList,
     _i2.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ChildWithInheritedId>(
       where: where(ChildWithInheritedId.t),
       orderBy: orderBy?.call(ChildWithInheritedId.t),
       orderByList: orderByList?.call(ChildWithInheritedId.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

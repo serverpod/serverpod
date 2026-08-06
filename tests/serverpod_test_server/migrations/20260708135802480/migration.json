@@ -1,0 +1,65 @@
+{
+  "__className__": "serverpod.DatabaseMigration",
+  "actions": [
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "createTable",
+      "createTable": {
+        "__className__": "serverpod.TableDefinition",
+        "name": "shared_table_record",
+        "dartName": "SharedTableRecord",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "id",
+            "fieldName": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "serial",
+            "dartType": "int?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "name",
+            "fieldName": "name",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "sharedEnum",
+            "fieldName": "sharedEnum",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "SharedEnum"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "sharedSubclass",
+            "fieldName": "sharedSubclass",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "SharedSubclass?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "itemCount",
+            "fieldName": "itemCount",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "0",
+            "dartType": "int"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [],
+        "managed": true
+      }
+    }
+  ],
+  "warnings": [],
+  "migrationApiVersion": 1
+}

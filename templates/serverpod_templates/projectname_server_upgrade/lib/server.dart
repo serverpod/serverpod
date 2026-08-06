@@ -1,6 +1,6 @@
-// {{#web}}
+// {{#webapp}}
 import 'dart:io';
-// {{/web}}
+// {{/webapp}}
 
 import 'package:serverpod/serverpod.dart';
 // {{#auth}}
@@ -8,12 +8,17 @@ import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 // {{/auth}}
 
+// {{#webserver}}
+import 'src/cache_busting.dart';
+// {{/webserver}}
 import 'src/generated/endpoints.dart';
 import 'src/generated/protocol.dart';
-// {{#web}}
+// {{#webapp}}
 import 'src/web/routes/app_config_route.dart';
+// {{/webapp}}
+// {{#website}}
 import 'src/web/routes/root.dart';
-// {{/web}}
+// {{/website}}
 
 /// The starting point of the Serverpod server.
 void run(List<String> args) async {
@@ -31,85 +36,101 @@ void run(List<String> args) async {
     ],
     identityProviderBuilders: [
       // Configure the email identity provider for email/password authentication.
-      EmailIdpConfigFromPasswords(
-        sendRegistrationVerificationCode: _sendRegistrationCode,
-        sendPasswordResetVerificationCode: _sendPasswordResetCode,
+      // The default setup works with Serverpod Cloud without configuration. In
+      // development the verification codes are logged to the console, and in
+      // staging and production they are sent through the Serverpod Cloud email
+      // service. If you want to use a custom provider for sending emails, use
+      // `EmailIdpConfigFromPasswords`.
+      ServerpodCloudEmailIdpConfig(
+        appDisplayName: 'projectname',
       ),
     ],
   );
   // {{/auth}}
 
-  // {{#web}}
+  // {{#website}}
   // Setup a default page at the web root.
   // These are used by the default page.
   pod.webServer.addRoute(RootRoute(), '/');
   pod.webServer.addRoute(RootRoute(), '/index.html');
+  // {{/website}}
 
-  // Serve all files in the web/static relative directory under /.
+  // {{#webserver}}
+  // Serve all files in the web/static relative directory under /web.
   // These are used by the default web page.
-  final root = Directory(Uri(path: 'web/static').toFilePath());
-  pod.webServer.addRoute(StaticRoute.directory(root));
+  pod.webServer.addRoute(
+    StaticRoute.withCacheBusting(cacheBustingConfig),
+    cacheBustingConfig.mountPrefix,
+  );
+  // {{/webserver}}
 
+  // {{#webapp}}
   // Setup the app config route.
   // We build this configuration based on the servers api url and serve it to
   // the flutter app.
   pod.webServer.addRoute(
     AppConfigRoute(apiConfig: pod.config.apiServer),
+    // {{#website}}
     '/app/assets/assets/config.json',
+    // {{/website}}
+    // {{^website}}
+    '/assets/assets/config.json',
+    // {{/website}}
   );
 
   // Checks if the flutter web app has been built and serves it if it has.
   final appDir = Directory(Uri(path: 'web/app').toFilePath());
   if (appDir.existsSync()) {
+    // {{#website}}
     // Serve the flutter web app under the /app path.
+    // {{/website}}
+    // {{^website}}
+    // Serve the flutter web app under /.
+    // {{/website}}
     pod.webServer.addRoute(
       FlutterRoute(
-        Directory(
-          Uri(path: 'web/app').toFilePath(),
-        ),
+        appDir,
+        // If building the Flutter app with WASM, set the below parameter to
+        // true and add the --wasm flag to the flutter build command.
+        enableWasmHeaders: false,
       ),
+      // {{#website}}
       '/app',
+      // {{/website}}
+      // {{^website}}
+      '/',
+      // {{/website}}
     );
   } else {
     // If the flutter web app has not been built, serve the build app page.
-    pod.webServer.addRoute(
-      StaticRoute.file(
-        File(
-          Uri(path: 'web/pages/build_flutter_app.html').toFilePath(),
-        ),
+    final defaultRoute = StaticRoute.file(
+      File(
+        Uri(path: 'web/pages/build_flutter_app.html').toFilePath(),
       ),
+    );
+
+    // {{^website}}
+    pod.webServer.addMiddleware(
+      FallbackMiddleware(
+        fallback: defaultRoute,
+        on: (response) => response.statusCode == 404,
+      ).call,
+      '/',
+    );
+    // {{/website}}
+
+    pod.webServer.addRoute(
+      defaultRoute,
+      // {{#website}}
       '/app/**',
+      // {{/website}}
+      // {{^website}}
+      '/**',
+      // {{/website}}
     );
   }
-  // {{/web}}
+  // {{/webapp}}
 
   // Start the server.
   await pod.start();
 }
-
-// {{#auth}}
-void _sendRegistrationCode(
-  Session session, {
-  required String email,
-  required UuidValue accountRequestId,
-  required String verificationCode,
-  required Transaction? transaction,
-}) {
-  // NOTE: Here you call your mail service to send the verification code to
-  // the user. For testing, we will just log the verification code.
-  session.log('[EmailIdp] Registration code ($email): $verificationCode');
-}
-
-void _sendPasswordResetCode(
-  Session session, {
-  required String email,
-  required UuidValue passwordResetRequestId,
-  required String verificationCode,
-  required Transaction? transaction,
-}) {
-  // NOTE: Here you call your mail service to send the verification code to
-  // the user. For testing, we will just log the verification code.
-  session.log('[EmailIdp] Password reset code ($email): $verificationCode');
-}
-
-// {{/auth}}

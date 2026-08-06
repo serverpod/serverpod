@@ -7,6 +7,7 @@ import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/shared_code_generator.dart';
 import 'package:serverpod_cli/src/generator/yaml/endpoint_description_generator.dart';
+import 'package:serverpod_cli/src/generator/yaml/serverpod_manifest_generator.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
@@ -16,6 +17,7 @@ abstract class ServerpodCodeGenerator {
     const DartClientCodeGenerator(),
     const DartSharedCodeGenerator(),
     const EndpointDescriptionGenerator(),
+    const ServerpodManifestGenerator(),
   ];
 
   /// Generate from [CodeGenerator.generateSerializableModelsCode] for all
@@ -95,7 +97,7 @@ abstract class ServerpodCodeGenerator {
 
   /// Removes files from previous generation runs.
   /// By removing old files that are not part of the [generatedFiles].
-  static Future<void> cleanPreviouslyGeneratedDartFiles({
+  static Future<void> cleanPreviouslyGeneratedFiles({
     required Set<String> generatedFiles,
     required ProtocolDefinition protocolDefinition,
     required GeneratorConfig config,
@@ -112,6 +114,17 @@ abstract class ServerpodCodeGenerator {
         generatedFiles,
         ['.dart'],
       );
+    }
+
+    var manifestPath = p.joinAll(
+      config.generatedServerpodManifestFilePathParts,
+    );
+    if (!generatedFiles.contains(manifestPath)) {
+      var manifestFile = File(manifestPath);
+      if (await manifestFile.exists()) {
+        log.debug('Remove: $manifestFile');
+        await manifestFile.delete();
+      }
     }
   }
 }

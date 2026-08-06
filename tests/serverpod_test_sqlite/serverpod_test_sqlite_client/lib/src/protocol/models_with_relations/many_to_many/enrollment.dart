@@ -12,12 +12,13 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
-import '../../models_with_relations/many_to_many/student.dart' as _i2;
-import '../../models_with_relations/many_to_many/course.dart' as _i3;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
-import 'package:serverpod_client/serverpod_client.dart' as _i5;
+import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import '../../models_with_relations/many_to_many/student.dart' as _i3;
+import '../../models_with_relations/many_to_many/course.dart' as _i4;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i5;
 
-abstract class Enrollment implements _i1.TableRow<int?> {
+abstract class Enrollment
+    implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   Enrollment._({
     this.id,
     required this.studentId,
@@ -29,9 +30,9 @@ abstract class Enrollment implements _i1.TableRow<int?> {
   factory Enrollment({
     int? id,
     required int studentId,
-    _i2.Student? student,
+    _i3.Student? student,
     required int courseId,
-    _i3.Course? course,
+    _i4.Course? course,
   }) = _EnrollmentImpl;
 
   factory Enrollment.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -40,13 +41,13 @@ abstract class Enrollment implements _i1.TableRow<int?> {
       studentId: jsonSerialization['studentId'] as int,
       student: jsonSerialization['student'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.Student>(
+          : _i5.Protocol().deserialize<_i3.Student>(
               jsonSerialization['student'],
             ),
       courseId: jsonSerialization['courseId'] as int,
       course: jsonSerialization['course'] == null
           ? null
-          : _i4.Protocol().deserialize<_i3.Course>(jsonSerialization['course']),
+          : _i5.Protocol().deserialize<_i4.Course>(jsonSerialization['course']),
     );
   }
 
@@ -59,24 +60,24 @@ abstract class Enrollment implements _i1.TableRow<int?> {
 
   int studentId;
 
-  _i2.Student? student;
+  _i3.Student? student;
 
   int courseId;
 
-  _i3.Course? course;
+  _i4.Course? course;
 
   @override
   _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Enrollment]
   /// with some or all fields replaced by the given arguments.
-  @_i5.useResult
+  @_i2.useResult
   Enrollment copyWith({
     int? id,
     int? studentId,
-    _i2.Student? student,
+    _i3.Student? student,
     int? courseId,
-    _i3.Course? course,
+    _i4.Course? course,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -90,9 +91,21 @@ abstract class Enrollment implements _i1.TableRow<int?> {
     };
   }
 
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Enrollment',
+      if (id != null) 'id': id,
+      'studentId': studentId,
+      if (student != null) 'student': student?.toJsonForProtocol(),
+      'courseId': courseId,
+      if (course != null) 'course': course?.toJsonForProtocol(),
+    };
+  }
+
   static EnrollmentInclude include({
-    _i2.StudentInclude? student,
-    _i3.CourseInclude? course,
+    _i3.StudentInclude? student,
+    _i4.CourseInclude? course,
   }) {
     return EnrollmentInclude._(
       student: student,
@@ -105,8 +118,6 @@ abstract class Enrollment implements _i1.TableRow<int?> {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EnrollmentTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EnrollmentTable>? orderByList,
     EnrollmentInclude? include,
   }) {
@@ -115,8 +126,6 @@ abstract class Enrollment implements _i1.TableRow<int?> {
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Enrollment.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(Enrollment.t),
       include: include,
     );
@@ -124,7 +133,7 @@ abstract class Enrollment implements _i1.TableRow<int?> {
 
   @override
   String toString() {
-    return _i5.SerializationManager.encode(this);
+    return _i2.SerializationManager.encode(this);
   }
 }
 
@@ -134,9 +143,9 @@ class _EnrollmentImpl extends Enrollment {
   _EnrollmentImpl({
     int? id,
     required int studentId,
-    _i2.Student? student,
+    _i3.Student? student,
     required int courseId,
-    _i3.Course? course,
+    _i4.Course? course,
   }) : super._(
          id: id,
          studentId: studentId,
@@ -147,7 +156,7 @@ class _EnrollmentImpl extends Enrollment {
 
   /// Returns a shallow copy of this [Enrollment]
   /// with some or all fields replaced by the given arguments.
-  @_i5.useResult
+  @_i2.useResult
   @override
   Enrollment copyWith({
     Object? id = _Undefined,
@@ -159,9 +168,9 @@ class _EnrollmentImpl extends Enrollment {
     return Enrollment(
       id: id is int? ? id : this.id,
       studentId: studentId ?? this.studentId,
-      student: student is _i2.Student? ? student : this.student?.copyWith(),
+      student: student is _i3.Student? ? student : this.student?.copyWith(),
       courseId: courseId ?? this.courseId,
-      course: course is _i3.Course? ? course : this.course?.copyWith(),
+      course: course is _i4.Course? ? course : this.course?.copyWith(),
     );
   }
 }
@@ -197,34 +206,34 @@ class EnrollmentTable extends _i1.Table<int?> {
 
   late final _i1.ColumnInt studentId;
 
-  _i2.StudentTable? _student;
+  _i3.StudentTable? _student;
 
   late final _i1.ColumnInt courseId;
 
-  _i3.CourseTable? _course;
+  _i4.CourseTable? _course;
 
-  _i2.StudentTable get student {
+  _i3.StudentTable get student {
     if (_student != null) return _student!;
     _student = _i1.createRelationTable(
       relationFieldName: 'student',
       field: Enrollment.t.studentId,
-      foreignField: _i2.Student.t.id,
+      foreignField: _i3.Student.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.StudentTable(tableRelation: foreignTableRelation),
+          _i3.StudentTable(tableRelation: foreignTableRelation),
     );
     return _student!;
   }
 
-  _i3.CourseTable get course {
+  _i4.CourseTable get course {
     if (_course != null) return _course!;
     _course = _i1.createRelationTable(
       relationFieldName: 'course',
       field: Enrollment.t.courseId,
-      foreignField: _i3.Course.t.id,
+      foreignField: _i4.Course.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.CourseTable(tableRelation: foreignTableRelation),
+          _i4.CourseTable(tableRelation: foreignTableRelation),
     );
     return _course!;
   }
@@ -250,16 +259,16 @@ class EnrollmentTable extends _i1.Table<int?> {
 
 class EnrollmentInclude extends _i1.IncludeObject {
   EnrollmentInclude._({
-    _i2.StudentInclude? student,
-    _i3.CourseInclude? course,
+    _i3.StudentInclude? student,
+    _i4.CourseInclude? course,
   }) {
     _student = student;
     _course = course;
   }
 
-  _i2.StudentInclude? _student;
+  _i3.StudentInclude? _student;
 
-  _i3.CourseInclude? _course;
+  _i4.CourseInclude? _course;
 
   @override
   Map<String, _i1.Include?> get includes => {
@@ -277,8 +286,6 @@ class EnrollmentIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -325,8 +332,6 @@ class EnrollmentRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EnrollmentTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EnrollmentTable>? orderByList,
     _i1.Transaction? transaction,
     EnrollmentInclude? include,
@@ -337,8 +342,6 @@ class EnrollmentRepository {
       where: where?.call(Enrollment.t),
       orderBy: orderBy?.call(Enrollment.t),
       orderByList: orderByList?.call(Enrollment.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -370,8 +373,6 @@ class EnrollmentRepository {
     _i1.WhereExpressionBuilder<EnrollmentTable>? where,
     int? offset,
     _i1.OrderByBuilder<EnrollmentTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EnrollmentTable>? orderByList,
     _i1.Transaction? transaction,
     EnrollmentInclude? include,
@@ -382,8 +383,6 @@ class EnrollmentRepository {
       where: where?.call(Enrollment.t),
       orderBy: orderBy?.call(Enrollment.t),
       orderByList: orderByList?.call(Enrollment.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -420,16 +419,22 @@ class EnrollmentRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Enrollment>> insert(
     _i1.DatabaseSession session,
     List<Enrollment> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<Enrollment>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -447,21 +452,96 @@ class EnrollmentRepository {
     );
   }
 
+  /// Upserts all [Enrollment]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [Enrollment]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<Enrollment>> upsert(
+    _i1.DatabaseSession session,
+    List<Enrollment> rows, {
+    required _i1.ColumnSelections<EnrollmentTable> conflictColumns,
+    _i1.ColumnSelections<EnrollmentTable>? updateColumns,
+    _i1.WhereExpressionBuilder<EnrollmentTable>? updateWhere,
+    _i1.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<Enrollment>(
+      rows,
+      conflictColumns: conflictColumns(Enrollment.t),
+      updateColumns: updateColumns?.call(Enrollment.t),
+      updateWhere: updateWhere?.call(Enrollment.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [Enrollment] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [Enrollment] will have its `id` field set.
+  Future<Enrollment?> upsertRow(
+    _i1.DatabaseSession session,
+    Enrollment row, {
+    required _i1.ColumnSelections<EnrollmentTable> conflictColumns,
+    _i1.ColumnSelections<EnrollmentTable>? updateColumns,
+    _i1.WhereExpressionBuilder<EnrollmentTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<Enrollment>(
+      row,
+      conflictColumns: conflictColumns(Enrollment.t),
+      updateColumns: updateColumns?.call(Enrollment.t),
+      updateWhere: updateWhere?.call(Enrollment.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [Enrollment]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Enrollment>> update(
     _i1.DatabaseSession session,
     List<Enrollment> rows, {
     _i1.ColumnSelections<EnrollmentTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<Enrollment>(
       rows,
       columns: columns?.call(Enrollment.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -498,6 +578,10 @@ class EnrollmentRepository {
 
   /// Updates all [Enrollment]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Enrollment>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<EnrollmentUpdateTable> columnValues,
@@ -506,9 +590,8 @@ class EnrollmentRepository {
     int? offset,
     _i1.OrderByBuilder<EnrollmentTable>? orderBy,
     _i1.OrderByListBuilder<EnrollmentTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<Enrollment>(
       columnValues: columnValues(Enrollment.t.updateTable),
@@ -517,9 +600,8 @@ class EnrollmentRepository {
       offset: offset,
       orderBy: orderBy?.call(Enrollment.t),
       orderByList: orderByList?.call(Enrollment.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -530,22 +612,24 @@ class EnrollmentRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Enrollment>> delete(
     _i1.DatabaseSession session,
     List<Enrollment> rows, {
     _i1.OrderByBuilder<EnrollmentTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EnrollmentTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<Enrollment>(
       rows,
       orderBy: orderBy?.call(Enrollment.t),
       orderByList: orderByList?.call(Enrollment.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -565,22 +649,24 @@ class EnrollmentRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Enrollment>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EnrollmentTable> where,
     _i1.OrderByBuilder<EnrollmentTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EnrollmentTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Enrollment>(
       where: where(Enrollment.t),
       orderBy: orderBy?.call(Enrollment.t),
       orderByList: orderByList?.call(Enrollment.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -624,7 +710,7 @@ class EnrollmentAttachRowRepository {
   Future<void> student(
     _i1.DatabaseSession session,
     Enrollment enrollment,
-    _i2.Student student, {
+    _i3.Student student, {
     _i1.Transaction? transaction,
   }) async {
     if (enrollment.id == null) {
@@ -647,7 +733,7 @@ class EnrollmentAttachRowRepository {
   Future<void> course(
     _i1.DatabaseSession session,
     Enrollment enrollment,
-    _i3.Course course, {
+    _i4.Course course, {
     _i1.Transaction? transaction,
   }) async {
     if (enrollment.id == null) {

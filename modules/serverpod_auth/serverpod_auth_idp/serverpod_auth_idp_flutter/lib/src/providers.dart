@@ -26,6 +26,7 @@ class AvailableIdps {
 
   /// The number of available identity providers.
   int get count => [
+    hasAnonymous,
     hasEmail,
     hasGoogle,
     hasApple,

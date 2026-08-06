@@ -12,7 +12,7 @@ class ModelDependencyResolver {
     List<SerializableModelDefinition> modelDefinitions,
   ) {
     // First resolve inheritance to allow evaluating inherited id fields.
-    modelDefinitions.whereType<ModelClassDefinition>().forEach((
+    modelDefinitions.whereType<ClassDefinition>().forEach((
       classDefinition,
     ) {
       _resolveInheritance(classDefinition, modelDefinitions);
@@ -27,11 +27,7 @@ class ModelDependencyResolver {
 
     // Then resolve everything else, including relations on inherited ids.
     modelDefinitions.whereType<ClassDefinition>().forEach((classDefinition) {
-      var fields = classDefinition is ModelClassDefinition
-          ? classDefinition.fieldsIncludingInherited
-          : classDefinition.fields;
-
-      for (var fieldDefinition in fields) {
+      for (var fieldDefinition in classDefinition.fieldsIncludingInherited) {
         _resolveProtocolReference(fieldDefinition, modelDefinitions);
         _resolveEnumType(fieldDefinition.type, modelDefinitions);
 
@@ -53,7 +49,7 @@ class ModelDependencyResolver {
   }
 
   static void _resolveInheritance(
-    ModelClassDefinition classDefinition,
+    ClassDefinition classDefinition,
     List<SerializableModelDefinition> modelDefinitions,
   ) {
     var extendedClass = classDefinition.extendsClass;
@@ -63,11 +59,12 @@ class ModelDependencyResolver {
     var parentClassName = extendedClass.className;
 
     var parentClass = modelDefinitions
-        .whereType<ModelClassDefinition>()
+        .whereType<ClassDefinition>()
         .where((element) => element.className == parentClassName)
         .firstOrNull;
 
-    if (parentClass == null) {
+    if (parentClass == null ||
+        parentClass.runtimeType != classDefinition.runtimeType) {
       return;
     }
 
@@ -543,13 +540,28 @@ class ModelDependencyResolver {
 
       if (foreignFieldName == null) return;
 
+      // The nullability of the relation is always determined by the foreign
+      // key field, never by the object field. If the foreign class is not yet
+      // resolved, the matched field is the object field and the foreign key
+      // field may not exist yet; in that case the nullability comes from the
+      // explicitly declared foreign key field, or the `optional` keyword when
+      // the foreign key field is implicit.
+      bool nullableRelation;
+      if (foreignRelation is UnresolvedObjectRelationDefinition) {
+        nullableRelation =
+            referenceClass.findField(foreignFieldName)?.type.nullable ??
+            foreignRelation.nullableRelation;
+      } else {
+        nullableRelation = foreignField.type.nullable;
+      }
+
       fieldDefinition.relation = ListRelationDefinition(
         name: relation.name,
         foreignKeyOwnerIdType: referenceClass.idField.type,
         fieldName: defaultPrimaryKeyName,
         foreignFieldName: foreignFieldName,
         foreignContainerField: foreignContainerField,
-        nullableRelation: foreignFields.first.type.nullable,
+        nullableRelation: nullableRelation,
       );
     }
   }

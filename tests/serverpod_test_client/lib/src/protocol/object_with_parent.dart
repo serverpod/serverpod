@@ -12,7 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class ObjectWithParent implements _i1.SerializableModel {
+abstract class ObjectWithParent
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ObjectWithParent._({
     this.id,
     required this.other,
@@ -46,6 +47,15 @@ abstract class ObjectWithParent implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'ObjectWithParent',
+      if (id != null) 'id': id,
+      'other': other,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ObjectWithParent',
       if (id != null) 'id': id,

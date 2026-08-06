@@ -6,7 +6,7 @@ class RuntimeListMigrationArtifactStore
     implements MigrationArtifactStoreReader {
   /// Creates a store from the given [migrations] (same [moduleName] for all).
   RuntimeListMigrationArtifactStore(
-    this.migrations, {
+    List<MigrationVersionSql> migrations, {
     required this.moduleName,
   }) : _byVersion = {for (final m in migrations) m.version: m},
        assert(
@@ -14,9 +14,6 @@ class RuntimeListMigrationArtifactStore
              migrations.every((m) => m.moduleName == moduleName),
          'All migrations must be from the "$moduleName" module',
        );
-
-  /// Migrations in ascending version order.
-  final List<MigrationVersionSql> migrations;
 
   /// The module for all [migrations] (and placeholder definitions).
   final String moduleName;
@@ -26,7 +23,7 @@ class RuntimeListMigrationArtifactStore
 
   @override
   Future<List<String>> listVersions() async {
-    return migrations.map((m) => m.version).toList();
+    return _byVersion.values.map((m) => m.version).toList()..sort();
   }
 
   @override

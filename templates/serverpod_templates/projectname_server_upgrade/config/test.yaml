@@ -21,14 +21,14 @@ insightsServer:
   publicPort: 0
   publicScheme: http
 
-# {{#web}}
+# {{#webserver}}
 # Configuration for the web test server.
 webServer:
   port: 0
   publicHost: localhost
   publicPort: 0
   publicScheme: http
-# {{/web}}
+# {{/webserver}}
 
 # {{#database}}
 # This is the database setup for your test server.
@@ -38,6 +38,7 @@ database:
   port: 9090
   name: projectname_test
   user: postgres
+  dataPath: .serverpod/test/pgdata
   # {{/postgres}}
   # {{#sqlite}}
   filePath: projectname_test.db

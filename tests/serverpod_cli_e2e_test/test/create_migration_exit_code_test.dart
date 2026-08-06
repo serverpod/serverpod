@@ -56,6 +56,35 @@ void main() async {
           );
         },
       );
+
+      test(
+        'when create-migration is called with --empty then an empty migration is created.',
+        () async {
+          var migrationsDirectory = Directory(
+            path.join(serverDir, 'migrations'),
+          );
+          var migrationsBefore = migrationsDirectory
+              .listSync()
+              .whereType<Directory>()
+              .length;
+
+          var result = await runServerpod(
+            ['create-migration', '--empty'],
+            workingDirectory: serverDir,
+          );
+
+          expect(
+            result.exitCode,
+            equals(0),
+            reason: 'Empty migration should be created with exit code 0',
+          );
+          expect(
+            migrationsDirectory.listSync().whereType<Directory>().length,
+            equals(migrationsBefore + 1),
+            reason: 'Should create an additional empty migration directory',
+          );
+        },
+      );
     },
   );
 

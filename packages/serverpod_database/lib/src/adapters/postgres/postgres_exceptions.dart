@@ -67,3 +67,10 @@ final class _PgDatabaseDeleteRowException extends DatabaseDeleteRowException {
 
   _PgDatabaseDeleteRowException(this.message);
 }
+
+final class _PgDatabaseUpsertRowException extends DatabaseUpsertRowException {
+  @override
+  final String message;
+
+  _PgDatabaseUpsertRowException(this.message);
+}

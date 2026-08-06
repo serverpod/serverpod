@@ -38,6 +38,7 @@ void main() async {
             projectName,
             '-v',
             '--no-analytics',
+            '--no-interactive',
           ],
           rootPath: rootPath,
           workingDirectory: d.sandbox,
@@ -111,7 +112,7 @@ void main() async {
       test('then the server server.dart contains auth configuration', () {
         final content = serverFile.readAsStringSync();
         expect(content, contains('initializeAuthServices'));
-        expect(content, contains('EmailIdpConfigFromPasswords'));
+        expect(content, contains('ServerpodCloudEmailIdpConfig'));
         expect(content, contains('JwtConfigFromPasswords'));
       });
 

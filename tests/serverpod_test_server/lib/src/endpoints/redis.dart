@@ -46,7 +46,7 @@ class RedisEndpoint extends Endpoint {
     String channel,
     SimpleData data,
   ) async {
-    session.messages.postMessage(channel, data, global: true);
+    session.messages.postMessage(channel, data, scope: MessageScope.global);
   }
 
   Future<int> countSubscribedChannels(Session session) async {

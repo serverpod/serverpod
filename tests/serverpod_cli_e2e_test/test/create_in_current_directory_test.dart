@@ -29,7 +29,7 @@ void main() async {
         'when create is called with dot then project is created in the current directory.',
         () async {
           var result = await runServerpod(
-            ['create', '.', '--mini'],
+            ['create', '.', '--template', 'server', '--no-interactive'],
             workingDirectory: projectDir,
           );
 
@@ -68,65 +68,15 @@ void main() async {
 
           var allOutput = '${result.stdout}${result.stderr}';
           expect(
-            allOutput.contains('cd ${projectName}_server'),
+            allOutput.contains('cd $projectName'),
             isTrue,
-            reason:
-                'Start instructions should point to the server directory in the current location',
-          );
-          expect(
-            allOutput.contains(
-              'cd ${path.join(projectName, '${projectName}_server')}',
-            ),
-            isFalse,
-            reason:
-                'Start instructions should not point to a nested project directory',
-          );
-        },
-      );
-    },
-  );
-
-  group(
-    'Given a mini Serverpod project',
-    () {
-      late String projectName;
-      late String projectDir;
-      late String serverDir;
-
-      setUp(() async {
-        projectName =
-            'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
-        projectDir = path.join(d.sandbox, projectName);
-        serverDir = path.join(projectDir, '${projectName}_server');
-
-        var result = await runServerpod(
-          ['create', projectName, '--mini'],
-          workingDirectory: d.sandbox,
-        );
-        if (result.exitCode != 0) {
-          fail('Failed to create the serverpod mini project.');
-        }
-      });
-
-      test(
-        'when create is called with dot from the server directory then current project is upgraded.',
-        () async {
-          var result = await runServerpod(
-            ['create', '.', '--template', 'server'],
-            workingDirectory: serverDir,
+            reason: 'Start instructions should point to the project directory.',
           );
 
           expect(
-            result.exitCode,
-            equals(0),
-            reason:
-                'create should still upgrade an existing mini project from the server directory',
-          );
-          expect(
-            Directory(path.join(serverDir, 'config')).existsSync(),
+            allOutput.contains('serverpod start'),
             isTrue,
-            reason:
-                'Upgrade should add the full server configuration to the current project',
+            reason: 'Start instructions should mention serverpod start command',
           );
         },
       );

@@ -14,7 +14,10 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i2;
 
 abstract class ExceptionWithData
-    implements _i1.SerializableException, _i1.SerializableModel {
+    implements
+        _i1.SerializableException,
+        _i1.SerializableModel,
+        _i1.ProtocolSerialization {
   ExceptionWithData._({
     required this.message,
     required this.creationDate,
@@ -61,6 +64,17 @@ abstract class ExceptionWithData
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'ExceptionWithData',
+      'message': message,
+      'creationDate': creationDate.toJson(),
+      'errorFields': errorFields.toJson(),
+      if (someNullableField != null) 'someNullableField': someNullableField,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ExceptionWithData',
       'message': message,

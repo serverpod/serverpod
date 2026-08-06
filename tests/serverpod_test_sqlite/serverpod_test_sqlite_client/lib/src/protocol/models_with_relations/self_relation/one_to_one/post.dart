@@ -12,12 +12,12 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _i2;
 import '../../../models_with_relations/self_relation/one_to_one/post.dart'
-    as _i2;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
-import 'package:serverpod_client/serverpod_client.dart' as _i4;
+    as _i3;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
 
-abstract class Post implements _i1.TableRow<int?> {
+abstract class Post implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   Post._({
     this.id,
     required this.content,
@@ -29,9 +29,9 @@ abstract class Post implements _i1.TableRow<int?> {
   factory Post({
     int? id,
     required String content,
-    _i2.Post? previous,
+    _i3.Post? previous,
     int? nextId,
-    _i2.Post? next,
+    _i3.Post? next,
   }) = _PostImpl;
 
   factory Post.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -40,11 +40,11 @@ abstract class Post implements _i1.TableRow<int?> {
       content: jsonSerialization['content'] as String,
       previous: jsonSerialization['previous'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.Post>(jsonSerialization['previous']),
+          : _i4.Protocol().deserialize<_i3.Post>(jsonSerialization['previous']),
       nextId: jsonSerialization['nextId'] as int?,
       next: jsonSerialization['next'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.Post>(jsonSerialization['next']),
+          : _i4.Protocol().deserialize<_i3.Post>(jsonSerialization['next']),
     );
   }
 
@@ -57,24 +57,24 @@ abstract class Post implements _i1.TableRow<int?> {
 
   String content;
 
-  _i2.Post? previous;
+  _i3.Post? previous;
 
   int? nextId;
 
-  _i2.Post? next;
+  _i3.Post? next;
 
   @override
   _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Post]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   Post copyWith({
     int? id,
     String? content,
-    _i2.Post? previous,
+    _i3.Post? previous,
     int? nextId,
-    _i2.Post? next,
+    _i3.Post? next,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -88,9 +88,21 @@ abstract class Post implements _i1.TableRow<int?> {
     };
   }
 
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Post',
+      if (id != null) 'id': id,
+      'content': content,
+      if (previous != null) 'previous': previous?.toJsonForProtocol(),
+      if (nextId != null) 'nextId': nextId,
+      if (next != null) 'next': next?.toJsonForProtocol(),
+    };
+  }
+
   static PostInclude include({
-    _i2.PostInclude? previous,
-    _i2.PostInclude? next,
+    _i3.PostInclude? previous,
+    _i3.PostInclude? next,
   }) {
     return PostInclude._(
       previous: previous,
@@ -103,8 +115,6 @@ abstract class Post implements _i1.TableRow<int?> {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<PostTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<PostTable>? orderByList,
     PostInclude? include,
   }) {
@@ -113,8 +123,6 @@ abstract class Post implements _i1.TableRow<int?> {
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Post.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(Post.t),
       include: include,
     );
@@ -122,7 +130,7 @@ abstract class Post implements _i1.TableRow<int?> {
 
   @override
   String toString() {
-    return _i4.SerializationManager.encode(this);
+    return _i2.SerializationManager.encode(this);
   }
 }
 
@@ -132,9 +140,9 @@ class _PostImpl extends Post {
   _PostImpl({
     int? id,
     required String content,
-    _i2.Post? previous,
+    _i3.Post? previous,
     int? nextId,
-    _i2.Post? next,
+    _i3.Post? next,
   }) : super._(
          id: id,
          content: content,
@@ -145,7 +153,7 @@ class _PostImpl extends Post {
 
   /// Returns a shallow copy of this [Post]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   @override
   Post copyWith({
     Object? id = _Undefined,
@@ -157,9 +165,9 @@ class _PostImpl extends Post {
     return Post(
       id: id is int? ? id : this.id,
       content: content ?? this.content,
-      previous: previous is _i2.Post? ? previous : this.previous?.copyWith(),
+      previous: previous is _i3.Post? ? previous : this.previous?.copyWith(),
       nextId: nextId is int? ? nextId : this.nextId,
-      next: next is _i2.Post? ? next : this.next?.copyWith(),
+      next: next is _i3.Post? ? next : this.next?.copyWith(),
     );
   }
 }
@@ -195,34 +203,34 @@ class PostTable extends _i1.Table<int?> {
 
   late final _i1.ColumnString content;
 
-  _i2.PostTable? _previous;
+  _i3.PostTable? _previous;
 
   late final _i1.ColumnInt nextId;
 
-  _i2.PostTable? _next;
+  _i3.PostTable? _next;
 
-  _i2.PostTable get previous {
+  _i3.PostTable get previous {
     if (_previous != null) return _previous!;
     _previous = _i1.createRelationTable(
       relationFieldName: 'previous',
       field: Post.t.id,
-      foreignField: _i2.Post.t.nextId,
+      foreignField: _i3.Post.t.nextId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.PostTable(tableRelation: foreignTableRelation),
+          _i3.PostTable(tableRelation: foreignTableRelation),
     );
     return _previous!;
   }
 
-  _i2.PostTable get next {
+  _i3.PostTable get next {
     if (_next != null) return _next!;
     _next = _i1.createRelationTable(
       relationFieldName: 'next',
       field: Post.t.nextId,
-      foreignField: _i2.Post.t.id,
+      foreignField: _i3.Post.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.PostTable(tableRelation: foreignTableRelation),
+          _i3.PostTable(tableRelation: foreignTableRelation),
     );
     return _next!;
   }
@@ -248,16 +256,16 @@ class PostTable extends _i1.Table<int?> {
 
 class PostInclude extends _i1.IncludeObject {
   PostInclude._({
-    _i2.PostInclude? previous,
-    _i2.PostInclude? next,
+    _i3.PostInclude? previous,
+    _i3.PostInclude? next,
   }) {
     _previous = previous;
     _next = next;
   }
 
-  _i2.PostInclude? _previous;
+  _i3.PostInclude? _previous;
 
-  _i2.PostInclude? _next;
+  _i3.PostInclude? _next;
 
   @override
   Map<String, _i1.Include?> get includes => {
@@ -275,8 +283,6 @@ class PostIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -325,8 +331,6 @@ class PostRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<PostTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<PostTable>? orderByList,
     _i1.Transaction? transaction,
     PostInclude? include,
@@ -337,8 +341,6 @@ class PostRepository {
       where: where?.call(Post.t),
       orderBy: orderBy?.call(Post.t),
       orderByList: orderByList?.call(Post.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -370,8 +372,6 @@ class PostRepository {
     _i1.WhereExpressionBuilder<PostTable>? where,
     int? offset,
     _i1.OrderByBuilder<PostTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<PostTable>? orderByList,
     _i1.Transaction? transaction,
     PostInclude? include,
@@ -382,8 +382,6 @@ class PostRepository {
       where: where?.call(Post.t),
       orderBy: orderBy?.call(Post.t),
       orderByList: orderByList?.call(Post.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -420,16 +418,22 @@ class PostRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Post>> insert(
     _i1.DatabaseSession session,
     List<Post> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<Post>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -447,21 +451,96 @@ class PostRepository {
     );
   }
 
+  /// Upserts all [Post]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [Post]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<Post>> upsert(
+    _i1.DatabaseSession session,
+    List<Post> rows, {
+    required _i1.ColumnSelections<PostTable> conflictColumns,
+    _i1.ColumnSelections<PostTable>? updateColumns,
+    _i1.WhereExpressionBuilder<PostTable>? updateWhere,
+    _i1.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<Post>(
+      rows,
+      conflictColumns: conflictColumns(Post.t),
+      updateColumns: updateColumns?.call(Post.t),
+      updateWhere: updateWhere?.call(Post.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [Post] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [Post] will have its `id` field set.
+  Future<Post?> upsertRow(
+    _i1.DatabaseSession session,
+    Post row, {
+    required _i1.ColumnSelections<PostTable> conflictColumns,
+    _i1.ColumnSelections<PostTable>? updateColumns,
+    _i1.WhereExpressionBuilder<PostTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<Post>(
+      row,
+      conflictColumns: conflictColumns(Post.t),
+      updateColumns: updateColumns?.call(Post.t),
+      updateWhere: updateWhere?.call(Post.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [Post]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Post>> update(
     _i1.DatabaseSession session,
     List<Post> rows, {
     _i1.ColumnSelections<PostTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<Post>(
       rows,
       columns: columns?.call(Post.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -498,6 +577,10 @@ class PostRepository {
 
   /// Updates all [Post]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Post>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<PostUpdateTable> columnValues,
@@ -506,9 +589,8 @@ class PostRepository {
     int? offset,
     _i1.OrderByBuilder<PostTable>? orderBy,
     _i1.OrderByListBuilder<PostTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<Post>(
       columnValues: columnValues(Post.t.updateTable),
@@ -517,9 +599,8 @@ class PostRepository {
       offset: offset,
       orderBy: orderBy?.call(Post.t),
       orderByList: orderByList?.call(Post.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -530,22 +611,24 @@ class PostRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Post>> delete(
     _i1.DatabaseSession session,
     List<Post> rows, {
     _i1.OrderByBuilder<PostTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<PostTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<Post>(
       rows,
       orderBy: orderBy?.call(Post.t),
       orderByList: orderByList?.call(Post.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -565,22 +648,24 @@ class PostRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Post>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<PostTable> where,
     _i1.OrderByBuilder<PostTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<PostTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Post>(
       where: where(Post.t),
       orderBy: orderBy?.call(Post.t),
       orderByList: orderByList?.call(Post.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -624,7 +709,7 @@ class PostAttachRowRepository {
   Future<void> previous(
     _i1.DatabaseSession session,
     Post post,
-    _i2.Post previous, {
+    _i3.Post previous, {
     _i1.Transaction? transaction,
   }) async {
     if (previous.id == null) {
@@ -635,9 +720,9 @@ class PostAttachRowRepository {
     }
 
     var $previous = previous.copyWith(nextId: post.id);
-    await session.db.updateRow<_i2.Post>(
+    await session.db.updateRow<_i3.Post>(
       $previous,
-      columns: [_i2.Post.t.nextId],
+      columns: [_i3.Post.t.nextId],
       transaction: transaction,
     );
   }
@@ -647,7 +732,7 @@ class PostAttachRowRepository {
   Future<void> next(
     _i1.DatabaseSession session,
     Post post,
-    _i2.Post next, {
+    _i3.Post next, {
     _i1.Transaction? transaction,
   }) async {
     if (post.id == null) {
@@ -692,9 +777,9 @@ class PostDetachRowRepository {
     }
 
     var $$previous = $previous.copyWith(nextId: null);
-    await session.db.updateRow<_i2.Post>(
+    await session.db.updateRow<_i3.Post>(
       $$previous,
-      columns: [_i2.Post.t.nextId],
+      columns: [_i3.Post.t.nextId],
       transaction: transaction,
     );
   }

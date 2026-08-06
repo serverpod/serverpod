@@ -15,7 +15,8 @@ import '../../models_with_relations/many_to_many/student.dart' as _i2;
 import '../../models_with_relations/many_to_many/course.dart' as _i3;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i4;
 
-abstract class Enrollment implements _i1.SerializableModel {
+abstract class Enrollment
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   Enrollment._({
     this.id,
     required this.studentId,
@@ -80,6 +81,18 @@ abstract class Enrollment implements _i1.SerializableModel {
       if (student != null) 'student': student?.toJson(),
       'courseId': courseId,
       if (course != null) 'course': course?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Enrollment',
+      if (id != null) 'id': id,
+      'studentId': studentId,
+      if (student != null) 'student': student?.toJsonForProtocol(),
+      'courseId': courseId,
+      if (course != null) 'course': course?.toJsonForProtocol(),
     };
   }
 

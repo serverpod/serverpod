@@ -36,6 +36,8 @@ dependency_overrides:
     path: ../../serverpod_auth_core/serverpod_auth_core_server
   serverpod_database:
     path: ../../../../packages/serverpod_database
+  serverpod_embedded_postgres:
+    path: ../../../../packages/serverpod_embedded_postgres
   serverpod_lints:
     path: ../../../../packages/serverpod_lints
   serverpod_serialization:
@@ -47,3 +49,4 @@ dependency_overrides:
 
 false_secrets:
   - test/config/from_passwords_config_test.dart
+  - test/test_utils/profile_image_idp_test_utils.dart

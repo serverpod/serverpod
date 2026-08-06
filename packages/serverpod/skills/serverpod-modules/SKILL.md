@@ -9,7 +9,7 @@ Modules are reusable Serverpod packages with server, client, and optionally Flut
 
 ## Adding a module
 
-**Server:** Add module server package to `pubspec.yaml` (e.g. `serverpod_auth_idp_server: 3.x.x`). Optionally declare in `config/generator.yaml`:
+**Server:** Add module server package to `pubspec.yaml` (e.g. `serverpod_auth_idp_server: <serverpod-version>`). Optionally declare in `config/generator.yaml`:
 
 ```yaml
 modules:
@@ -17,11 +17,11 @@ modules:
     nickname: auth
 ```
 
-Then `dart pub get`, `serverpod generate`. If the module adds tables: `serverpod create-migration` and apply (start server with `--apply-migrations`).
+Then `dart pub get`, `serverpod generate`. If the module adds tables and database generation is enabled, follow [`../serverpod-migrations/SKILL.md`](../serverpod-migrations/SKILL.md).
 
-**Client:** Add module client package (e.g. `serverpod_auth_idp_client: 3.x.x`).
+**Client:** Add module client package (e.g. `serverpod_auth_idp_client: <serverpod-version>`).
 
-**Flutter:** Add module Flutter package if provided (e.g. `serverpod_auth_idp_flutter: 3.x.x`).
+**Flutter:** Add module Flutter package if provided (e.g. `serverpod_auth_idp_flutter: <serverpod-version>`).
 
 Keep Serverpod and module versions aligned.
 
@@ -30,7 +30,7 @@ Keep Serverpod and module versions aligned.
 ```yaml
 class: MyClass
 fields:
-  userInfo: module:serverpod_auth_idp:AuthUser
+  userInfo: module:serverpod_auth_core:AuthUser
   # Or with nickname:
   userInfo: module:auth:AuthUser
 ```

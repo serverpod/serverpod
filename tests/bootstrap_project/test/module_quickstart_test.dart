@@ -6,15 +6,12 @@ import 'package:test/test.dart';
 
 import '../lib/src/util.dart';
 
-const tempDirName = 'temp';
-
 void main() {
   final rootPath = path.join(Directory.current.path, '..', '..');
   final cliProjectPath = getServerpodCliProjectPath(rootPath: rootPath);
-  final tempPath = path.join(rootPath, tempDirName);
+  final tempPath = Directory.systemTemp.createTempSync('spb_').path;
 
   setUpAll(() async {
-    await Directory(tempPath).create();
     final pubGetProcess = await startProcess('dart', [
       'pub',
       'get',
@@ -44,6 +41,7 @@ void main() {
             projectName,
             '-v',
             '--no-analytics',
+            '--no-interactive',
           ],
           rootPath: rootPath,
           workingDirectory: tempPath,
@@ -182,25 +180,33 @@ void main() {
             );
           });
 
-          test('does not have docker compose file', () {
-            final dockerComposeFile = File(
-              path.join(tempPath, serverDir, 'docker-compose.yaml'),
-            );
-            expect(dockerComposeFile.existsSync(), isFalse);
-          });
-
           test(
-            'does not have passwords config file',
+            'has docker compose file with project name replaced',
             () {
-              final config = File(
-                path.join(tempPath, serverDir, 'config', 'passwords.yaml'),
+              final dockerComposeFile = File(
+                path.join(tempPath, serverDir, 'docker-compose.yaml'),
               );
-              expect(config.existsSync(), isFalse);
+              expect(dockerComposeFile.existsSync(), isTrue);
+              expect(
+                dockerComposeFile.readAsStringSync(),
+                contains('${projectName}_test'),
+              );
             },
           );
 
           test(
-            'has test configuration with sqlite',
+            'has passwords config file with postgres configurations',
+            () {
+              final config = File(
+                path.join(tempPath, serverDir, 'config', 'passwords.yaml'),
+              );
+              expect(config.existsSync(), isTrue);
+              expect(config.readAsStringSync(), contains('database:'));
+            },
+          );
+
+          test(
+            'has embedded postgres configuration on test run mode',
             () {
               final testConfigFile = File(
                 path.join(tempPath, serverDir, 'config', 'test.yaml'),
@@ -208,7 +214,7 @@ void main() {
 
               expect(
                 testConfigFile.readAsStringSync(),
-                contains('filePath: ${projectName}_test.db'),
+                contains('dataPath: .serverpod/test/pgdata'),
               );
             },
           );
@@ -334,6 +340,83 @@ void main() {
             File(path.join(tempPath, projectName, 'pubspec.lock')).existsSync(),
             isTrue,
           );
+        });
+
+        test('has no AGENTS.md', () {
+          final agentsMd = File(path.join(tempPath, projectName, 'AGENTS.md'));
+          expect(agentsMd.existsSync(), isFalse);
+        });
+
+        test('has no CLAUDE.md', () {
+          final claudeMd = File(path.join(tempPath, projectName, 'CLAUDE.md'));
+          expect(claudeMd.existsSync(), isFalse);
+        });
+
+        test('has agent skills installed', () {
+          expect(
+            Directory(
+              path.join(tempPath, projectName, '.agents', 'skills'),
+            ).existsSync(),
+            isTrue,
+          );
+          expect(
+            Directory(
+              path.join(tempPath, projectName, '.claude', 'skills'),
+            ).existsSync(),
+            isTrue,
+          );
+          expect(
+            Directory(
+              path.join(tempPath, projectName, '.cursor', 'skills'),
+            ).existsSync(),
+            isTrue,
+          );
+        });
+
+        group('has Serverpod and Dart MCP servers configured', () {
+          final serverDirRelative = '${projectName}_server';
+          final genericConfig =
+              '''
+{
+  "mcpServers": {
+    "serverpod": {
+      "command": "serverpod",
+      "args": ["mcp-server", "--server-dir", "$serverDirRelative"]
+    },
+    "dart": {
+      "command": "dart",
+      "args": ["mcp-server"]
+    }
+  }
+}
+''';
+
+          test('for Claude', () {
+            final claude = File(
+              path.join(tempPath, projectName, '.mcp.json'),
+            );
+            expect(claude.existsSync(), isTrue);
+            expect(claude.readAsStringSync(), genericConfig);
+          });
+
+          test('for Cursor', () {
+            final cursor = File(
+              path.join(tempPath, projectName, '.cursor/mcp.json'),
+            );
+            expect(cursor.existsSync(), isTrue);
+            expect(cursor.readAsStringSync(), genericConfig);
+          });
+
+          test('for VS Code', () {
+            final vscode = File(
+              path.join(tempPath, projectName, '.vscode/mcp.json'),
+            );
+            expect(vscode.existsSync(), isTrue);
+            expect(
+              vscode.readAsStringSync(),
+              genericConfig.replaceAll('mcpServers', 'servers'),
+            );
+          });
         });
       });
     });

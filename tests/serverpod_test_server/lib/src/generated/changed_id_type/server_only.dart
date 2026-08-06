@@ -65,8 +65,6 @@ abstract class ServerOnlyChangedIdFieldClass
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ServerOnlyChangedIdFieldClassTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
     ServerOnlyChangedIdFieldClassInclude? include,
   }) {
@@ -75,8 +73,6 @@ abstract class ServerOnlyChangedIdFieldClass
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ServerOnlyChangedIdFieldClass.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(ServerOnlyChangedIdFieldClass.t),
       include: include,
     );
@@ -137,8 +133,6 @@ class ServerOnlyChangedIdFieldClassIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -183,8 +177,6 @@ class ServerOnlyChangedIdFieldClassRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ServerOnlyChangedIdFieldClassTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -194,8 +186,6 @@ class ServerOnlyChangedIdFieldClassRepository {
       where: where?.call(ServerOnlyChangedIdFieldClass.t),
       orderBy: orderBy?.call(ServerOnlyChangedIdFieldClass.t),
       orderByList: orderByList?.call(ServerOnlyChangedIdFieldClass.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -226,8 +216,6 @@ class ServerOnlyChangedIdFieldClassRepository {
     _i1.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>? where,
     int? offset,
     _i1.OrderByBuilder<ServerOnlyChangedIdFieldClassTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -237,8 +225,6 @@ class ServerOnlyChangedIdFieldClassRepository {
       where: where?.call(ServerOnlyChangedIdFieldClass.t),
       orderBy: orderBy?.call(ServerOnlyChangedIdFieldClass.t),
       orderByList: orderByList?.call(ServerOnlyChangedIdFieldClass.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -272,16 +258,22 @@ class ServerOnlyChangedIdFieldClassRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ServerOnlyChangedIdFieldClass>> insert(
     _i1.DatabaseSession session,
     List<ServerOnlyChangedIdFieldClass> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<ServerOnlyChangedIdFieldClass>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -299,21 +291,98 @@ class ServerOnlyChangedIdFieldClassRepository {
     );
   }
 
+  /// Upserts all [ServerOnlyChangedIdFieldClass]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [ServerOnlyChangedIdFieldClass]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<ServerOnlyChangedIdFieldClass>> upsert(
+    _i1.DatabaseSession session,
+    List<ServerOnlyChangedIdFieldClass> rows, {
+    required _i1.ColumnSelections<ServerOnlyChangedIdFieldClassTable>
+    conflictColumns,
+    _i1.ColumnSelections<ServerOnlyChangedIdFieldClassTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>? updateWhere,
+    _i1.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<ServerOnlyChangedIdFieldClass>(
+      rows,
+      conflictColumns: conflictColumns(ServerOnlyChangedIdFieldClass.t),
+      updateColumns: updateColumns?.call(ServerOnlyChangedIdFieldClass.t),
+      updateWhere: updateWhere?.call(ServerOnlyChangedIdFieldClass.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [ServerOnlyChangedIdFieldClass] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [ServerOnlyChangedIdFieldClass] will have its `id` field set.
+  Future<ServerOnlyChangedIdFieldClass?> upsertRow(
+    _i1.DatabaseSession session,
+    ServerOnlyChangedIdFieldClass row, {
+    required _i1.ColumnSelections<ServerOnlyChangedIdFieldClassTable>
+    conflictColumns,
+    _i1.ColumnSelections<ServerOnlyChangedIdFieldClassTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<ServerOnlyChangedIdFieldClass>(
+      row,
+      conflictColumns: conflictColumns(ServerOnlyChangedIdFieldClass.t),
+      updateColumns: updateColumns?.call(ServerOnlyChangedIdFieldClass.t),
+      updateWhere: updateWhere?.call(ServerOnlyChangedIdFieldClass.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [ServerOnlyChangedIdFieldClass]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ServerOnlyChangedIdFieldClass>> update(
     _i1.DatabaseSession session,
     List<ServerOnlyChangedIdFieldClass> rows, {
     _i1.ColumnSelections<ServerOnlyChangedIdFieldClassTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<ServerOnlyChangedIdFieldClass>(
       rows,
       columns: columns?.call(ServerOnlyChangedIdFieldClass.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -353,6 +422,10 @@ class ServerOnlyChangedIdFieldClassRepository {
 
   /// Updates all [ServerOnlyChangedIdFieldClass]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ServerOnlyChangedIdFieldClass>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<
@@ -365,9 +438,8 @@ class ServerOnlyChangedIdFieldClassRepository {
     int? offset,
     _i1.OrderByBuilder<ServerOnlyChangedIdFieldClassTable>? orderBy,
     _i1.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<ServerOnlyChangedIdFieldClass>(
       columnValues: columnValues(ServerOnlyChangedIdFieldClass.t.updateTable),
@@ -376,9 +448,8 @@ class ServerOnlyChangedIdFieldClassRepository {
       offset: offset,
       orderBy: orderBy?.call(ServerOnlyChangedIdFieldClass.t),
       orderByList: orderByList?.call(ServerOnlyChangedIdFieldClass.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -389,22 +460,24 @@ class ServerOnlyChangedIdFieldClassRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ServerOnlyChangedIdFieldClass>> delete(
     _i1.DatabaseSession session,
     List<ServerOnlyChangedIdFieldClass> rows, {
     _i1.OrderByBuilder<ServerOnlyChangedIdFieldClassTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<ServerOnlyChangedIdFieldClass>(
       rows,
       orderBy: orderBy?.call(ServerOnlyChangedIdFieldClass.t),
       orderByList: orderByList?.call(ServerOnlyChangedIdFieldClass.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -424,23 +497,25 @@ class ServerOnlyChangedIdFieldClassRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ServerOnlyChangedIdFieldClass>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>
     where,
     _i1.OrderByBuilder<ServerOnlyChangedIdFieldClassTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ServerOnlyChangedIdFieldClass>(
       where: where(ServerOnlyChangedIdFieldClass.t),
       orderBy: orderBy?.call(ServerOnlyChangedIdFieldClass.t),
       orderByList: orderByList?.call(ServerOnlyChangedIdFieldClass.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

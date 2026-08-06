@@ -85,8 +85,6 @@ abstract class Employee
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EmployeeTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmployeeTable>? orderByList,
     EmployeeInclude? include,
   }) {
@@ -95,8 +93,6 @@ abstract class Employee
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Employee.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(Employee.t),
       include: include,
     );
@@ -196,8 +192,6 @@ class EmployeeIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -242,8 +236,6 @@ class EmployeeRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EmployeeTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmployeeTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -253,8 +245,6 @@ class EmployeeRepository {
       where: where?.call(Employee.t),
       orderBy: orderBy?.call(Employee.t),
       orderByList: orderByList?.call(Employee.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -285,8 +275,6 @@ class EmployeeRepository {
     _i1.WhereExpressionBuilder<EmployeeTable>? where,
     int? offset,
     _i1.OrderByBuilder<EmployeeTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmployeeTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -296,8 +284,6 @@ class EmployeeRepository {
       where: where?.call(Employee.t),
       orderBy: orderBy?.call(Employee.t),
       orderByList: orderByList?.call(Employee.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -331,16 +317,22 @@ class EmployeeRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Employee>> insert(
     _i1.DatabaseSession session,
     List<Employee> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<Employee>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -358,21 +350,96 @@ class EmployeeRepository {
     );
   }
 
+  /// Upserts all [Employee]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [Employee]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<Employee>> upsert(
+    _i1.DatabaseSession session,
+    List<Employee> rows, {
+    required _i1.ColumnSelections<EmployeeTable> conflictColumns,
+    _i1.ColumnSelections<EmployeeTable>? updateColumns,
+    _i1.WhereExpressionBuilder<EmployeeTable>? updateWhere,
+    _i1.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<Employee>(
+      rows,
+      conflictColumns: conflictColumns(Employee.t),
+      updateColumns: updateColumns?.call(Employee.t),
+      updateWhere: updateWhere?.call(Employee.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [Employee] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [Employee] will have its `id` field set.
+  Future<Employee?> upsertRow(
+    _i1.DatabaseSession session,
+    Employee row, {
+    required _i1.ColumnSelections<EmployeeTable> conflictColumns,
+    _i1.ColumnSelections<EmployeeTable>? updateColumns,
+    _i1.WhereExpressionBuilder<EmployeeTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<Employee>(
+      row,
+      conflictColumns: conflictColumns(Employee.t),
+      updateColumns: updateColumns?.call(Employee.t),
+      updateWhere: updateWhere?.call(Employee.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [Employee]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Employee>> update(
     _i1.DatabaseSession session,
     List<Employee> rows, {
     _i1.ColumnSelections<EmployeeTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<Employee>(
       rows,
       columns: columns?.call(Employee.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -409,6 +476,10 @@ class EmployeeRepository {
 
   /// Updates all [Employee]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Employee>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<EmployeeUpdateTable> columnValues,
@@ -417,9 +488,8 @@ class EmployeeRepository {
     int? offset,
     _i1.OrderByBuilder<EmployeeTable>? orderBy,
     _i1.OrderByListBuilder<EmployeeTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<Employee>(
       columnValues: columnValues(Employee.t.updateTable),
@@ -428,9 +498,8 @@ class EmployeeRepository {
       offset: offset,
       orderBy: orderBy?.call(Employee.t),
       orderByList: orderByList?.call(Employee.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -441,22 +510,24 @@ class EmployeeRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Employee>> delete(
     _i1.DatabaseSession session,
     List<Employee> rows, {
     _i1.OrderByBuilder<EmployeeTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmployeeTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<Employee>(
       rows,
       orderBy: orderBy?.call(Employee.t),
       orderByList: orderByList?.call(Employee.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -476,22 +547,24 @@ class EmployeeRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Employee>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EmployeeTable> where,
     _i1.OrderByBuilder<EmployeeTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmployeeTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Employee>(
       where: where(Employee.t),
       orderBy: orderBy?.call(Employee.t),
       orderByList: orderByList?.call(Employee.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

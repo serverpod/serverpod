@@ -5,7 +5,7 @@ description: File uploads in Serverpod — upload descriptions, verification, st
 
 # Serverpod File Uploads
 
-Flow: server issues upload description → client uploads → server verifies. Default storage is the database; use S3 or GCP for production.
+Flow: server issues upload description → client uploads → server verifies. Default storage is the database; use S3, GCP, R2, or compatible object storage for production.
 
 ## Server: create upload description
 
@@ -18,7 +18,7 @@ Future<String?> getUploadDescription(Session session, String path) async {
 }
 ```
 
-Restrict paths in production (derive from user/session).
+Always authorize the request and derive the path from trusted server-side state (user id, tenant id, object id). Do not accept arbitrary client paths.
 
 ## Server: verify upload
 
@@ -29,7 +29,7 @@ Future<bool> verifyUpload(Session session, String path) async {
 }
 ```
 
-Always verify after client upload when using S3 or GCP.
+Always verify after client upload when using object storage.
 
 ## Client: upload
 
@@ -42,7 +42,14 @@ if (desc != null) {
 }
 ```
 
-Use `Stream` for large files. Paths: no leading slash, S3/GCP compatible.
+Use `Stream` for large files. Paths: no leading slash, object-store compatible, normalized, and scoped to the authenticated user/tenant.
+
+## Security checklist
+
+- Require authentication/authorization for both description and verification endpoints.
+- Validate or derive content type, size, and extension before issuing descriptions.
+- Never let clients choose cross-tenant paths or storage IDs.
+- Store metadata in your database after `verifyDirectFileUpload` succeeds.
 
 ## Accessing stored files
 
@@ -55,5 +62,6 @@ Use `Stream` for large files. Paths: no leading slash, S3/GCP compatible.
 - **Database (default):** `public` and `private` storages. Fine for dev.
 - **Google Cloud Storage:** Add `serverpod_cloud_storage_gcp`, set HMAC keys in `passwords.yaml` or env. Register: `pod.addCloudStorage(GoogleCloudStorage(...))`.
 - **AWS S3:** Add `serverpod_cloud_storage_s3`, set AWS keys. Register: `pod.addCloudStorage(S3CloudStorage(...))`.
+- **S3-compatible/R2:** Use the matching integration package when targeting compatible providers.
 
 Use `storageId: 'public'` or `'private'` when replacing defaults.

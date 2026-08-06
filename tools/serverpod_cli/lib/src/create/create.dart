@@ -1,20 +1,22 @@
+// ignore_for_file: implementation_imports
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:cli_tools/cli_tools.dart';
-import 'package:cli_tools/execute.dart';
 import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
+import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
+import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:serverpod_cli/src/create/database_setup.dart';
 import 'package:serverpod_cli/src/create/generate_files.dart';
+import 'package:serverpod_cli/src/create/ide.dart';
 import 'package:serverpod_cli/src/create/template_context.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
-import 'package:serverpod_cli/src/scripts/script.dart';
-import 'package:serverpod_cli/src/scripts/scripts.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
@@ -24,14 +26,22 @@ import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
+import 'package:skills/skills.dart';
+import 'package:skills/src/core/workspace_resolver.dart';
+import 'package:skills/src/ide/ide.dart';
 import 'package:yaml_edit/yaml_edit.dart';
 
 import 'copier.dart';
 import 'template_renderer.dart';
 
 enum ServerpodTemplateType {
-  mini('mini'),
+  /// Project with a server and a Flutter app.
+  fullstack('fullstack'),
+
+  /// Server only project.
   server('server'),
+
+  /// Module project.
   module('module'),
   ;
 
@@ -48,49 +58,138 @@ enum ServerpodTemplateType {
   }
 }
 
-Future<bool> performCreate(
+extension ServerpodTemplateTypeExtension on ServerpodTemplateType {
+  /// Whether the template is for a server or fullstack project
+  bool get hasServer =>
+      this == ServerpodTemplateType.server ||
+      this == ServerpodTemplateType.fullstack;
+  bool get isModule => this == ServerpodTemplateType.module;
+}
+
+extension TemplateIdeExtension on List<TemplateIde> {
+  List<Ide> get toSkillIdes {
+    return map((templateIde) {
+      return switch (templateIde) {
+        TemplateIde.claude => Ide.claude,
+        TemplateIde.cursor => Ide.cursor,
+        TemplateIde.openCode => Ide.opencode,
+        _ => Ide.generic,
+      };
+    }).toList();
+  }
+}
+
+/// Project creation result type.
+sealed class CreateResult {}
+
+/// Project creation success result type.
+final class CreateSuccess extends CreateResult {
+  CreateSuccess({
+    required this.projectDirectoryPath,
+    required this.serverDirectoryPath,
+  });
+
+  final String projectDirectoryPath;
+  final String serverDirectoryPath;
+}
+
+/// Project creation failure result type.
+final class CreateFailure extends CreateResult {}
+
+/// Holds error messages to be flushed at a later time.
+/// This is typically used to replay logs to the terminal
+/// after exiting the tui's alternate screen
+/// but before killing the Dart process.
+List<String> _errorBuffer = [];
+
+/// Logs a message with error level and adds it to the error buffer.
+void _logError(String message) {
+  _errorBuffer.add(message);
+  log.error(message);
+}
+
+/// Log all messages in the error buffer with error level.
+void flushPerformCreateErrors() {
+  _errorBuffer.forEach(log.error);
+  _errorBuffer.clear();
+}
+
+/// Creates a project for the provided [context].
+/// Returns a future that resolves to [CreateSuccess] if successful.
+/// Otherwise, returns a future that resolves to [CreateFailure.
+Future<CreateResult> performCreate(
   String name,
-  ServerpodTemplateType template,
   bool force, {
+  bool dryRun = false,
   required bool? interactive,
   required TemplateContext context,
+  Directory? workingDirectory,
+
+  /// Whether to create default migration for the upgrade path.
+  bool createDefaultMigrationForUpgrade = true,
+
+  /// Identifies which command scaffolded the project (`create` or `quickstart`)
+  /// for the `cli.project_created` event. Omit to skip the event.
+  String? analyticsMethod,
 }) async {
-  // If the name is a dot, we can either create a new project in the current
-  // directory or upgrade an existing project.
+  _errorBuffer.clear();
+  // Resolve where the project will be created relative to [workingDirectory]
+  // (defaulting to the current directory) without ever mutating the
+  // process-wide current directory. Mutating it would leak into a subsequent
+  // performCreate call within the same process (e.g. the dry-run followed by
+  // the real run in the `create .` TUI flow), resolving the second run
+  // against the wrong directory. An explicit [workingDirectory] also lets
+  // callers such as tests target an isolated temp dir.
+  //
+  // For an explicit name the project lives in a `name` subdirectory of the
+  // working directory. If the name is a dot, we either upgrade the project we
+  // are standing in, or create a new one in place: it takes the working
+  // directory's name and its parent becomes the project root.
+  final cwd = workingDirectory ?? Directory.current;
+  var projectRoot = cwd;
   if (name == '.') {
-    if (findServerDirectory(Directory.current) != null) {
+    if (findServerDirectory(cwd) != null) {
       return await _performUpgrade(
-        template,
+        dryRun: dryRun,
         interactive: interactive,
         context: context,
+        createDefaultMigration: createDefaultMigrationForUpgrade,
+        workingDirectory: cwd,
+        reportAnalytics: analyticsMethod != null,
       );
     }
 
-    // If we are creating a new project in the current directory, we need to
-    // use the parent directory as the project root.
-    name = p.basename(Directory.current.absolute.path);
-    Directory.current = Directory.current.parent;
+    name = p.basename(cwd.absolute.path);
+    projectRoot = cwd.parent;
   }
 
   // check if project name is valid
   if (!StringValidators.isValidProjectName(name)) {
-    log.error(
+    _logError(
       'Invalid project name. Project names can only contain letters, numbers, '
       'and underscores.',
     );
-    return false;
+    return CreateFailure();
   }
 
   var serverpodDirs = ServerpodDirectories(
-    projectDir: Directory(p.join(Directory.current.path, name)),
+    projectDir: Directory(p.join(projectRoot.path, name)),
     name: name,
   );
   var pubspecFile = File(p.join(serverpodDirs.projectDir.path, 'pubspec.yaml'));
   if (pubspecFile.existsSync()) {
-    log.error('Project $name already exists.');
-    return false;
+    _logError('Project $name already exists.');
+    return CreateFailure();
   }
 
+  if (dryRun) {
+    return CreateSuccess(
+      projectDirectoryPath: p.basename(serverpodDirs.projectDir.path),
+      serverDirectoryPath: serverpodDirs.serverDir.path,
+    );
+  }
+
+  final template = context.template;
   if (template == ServerpodTemplateType.module) {
     log.info(
       'Creating Serverpod module "$name".',
@@ -106,52 +205,65 @@ Future<bool> performCreate(
   bool success = await log.progress(
     'Creating project directories.',
     () async {
-      _createProjectDirectories(template, serverpodDirs);
+      _createProjectDirectories(template, serverpodDirs, context);
       return true;
     },
     newParagraph: true,
   );
 
-  if (template == ServerpodTemplateType.server ||
-      template == ServerpodTemplateType.mini) {
+  final writtenPaths = <String>{};
+
+  if (template.hasServer) {
     success &= await log.progress(
       'Writing project files.',
       () async {
-        _copyServerTemplates(
-          serverpodDirs,
-          name: name,
-          customServerpodPath: productionMode ? null : serverpodHome,
+        writtenPaths.addAll(
+          _copyServerTemplates(
+            serverpodDirs,
+            name: name,
+            context: context,
+            customServerpodPath: productionMode ? null : serverpodHome,
+          ),
         );
         return true;
       },
     );
-  } else if (template == ServerpodTemplateType.module) {
-    success &= await log.progress(
-      'Writing project files.',
-      () => Future(() {
+  } else if (template.isModule) {
+    success &= await log.progress('Writing project files.', () async {
+      writtenPaths.addAll(
         _copyModuleTemplates(
           serverpodDirs,
           name: name,
           customServerpodPath: productionMode ? null : serverpodHome,
-        );
-        return true;
-      }),
-    );
+        ),
+      );
+      return true;
+    });
   }
 
-  if (template == ServerpodTemplateType.server) {
+  if (template.hasServer) {
     success &= await log.progress(
       'Writing additional project files.',
       () async {
-        await _copyServerUpgrade(
+        writtenPaths.addAll([
+          ...await _copyServerUpgrade(
+            serverpodDirs,
+            name: name,
+            isUpgrade: false,
+            context: context,
+            customServerpodPath: productionMode ? null : serverpodHome,
+          ),
+          if (context.flutterApp)
+            ...await _copyFlutterUpgrade(
+              serverpodDirs,
+              name: name,
+              context: context,
+              customServerpodPath: productionMode ? null : serverpodHome,
+            ),
+        ]);
+        await _copyClientUpgrade(
           serverpodDirs,
-          name: name,
-          isUpgrade: false,
-          customServerpodPath: productionMode ? null : serverpodHome,
-        );
-        await _copyFlutterUpgrade(
-          serverpodDirs,
-          name: name,
+          context: context,
           customServerpodPath: productionMode ? null : serverpodHome,
         );
         return true;
@@ -159,14 +271,13 @@ Future<bool> performCreate(
     );
   }
 
-  success &= await _renderTemplates(serverpodDirs.projectDir, context);
+  success &= await _renderTemplates(writtenPaths, context);
 
   success &= await log.progress('Getting workspace dependencies.', () {
-    return CommandLineTools.dartPubGet(serverpodDirs.projectDir);
+    return CommandLineTools.pubGet(serverpodDirs.projectDir);
   });
 
-  if (template == ServerpodTemplateType.server ||
-      template == ServerpodTemplateType.mini) {
+  if (context.flutterApp && template.hasServer) {
     success &= await log.progress(
       'Creating Flutter app platform files.',
       () {
@@ -186,8 +297,7 @@ Future<bool> performCreate(
     interactive: interactive,
   );
 
-  if (template == ServerpodTemplateType.server ||
-      template == ServerpodTemplateType.module) {
+  if ((template.hasServer || template.isModule) && context.database) {
     success &= await log.progress('Creating default database migration.', () {
       return DatabaseSetup.createDefaultMigration(
         serverpodDirs.serverDir,
@@ -197,22 +307,61 @@ Future<bool> performCreate(
     });
   }
 
-  if (template == ServerpodTemplateType.server) {
-    await log.progress(
-      'Building Flutter web app (press CTRL+C to skip).',
-      () async {
-        final Script? script;
-        try {
-          script = _locateFlutterBuildScript(serverpodDirs.serverDir);
-        } catch (e) {
-          log.error('Error when locating flutter build script: $e');
-          return false;
+  await _configureAgentSkillsAndMcp(
+    serverpodDirs: serverpodDirs,
+    context: context,
+  );
+
+  if (success || force) {
+    log.info(
+      'Serverpod project created.',
+      newParagraph: true,
+      type: TextLogType.success,
+    );
+
+    var projectDirPath = p.basename(serverpodDirs.projectDir.path);
+
+    if (template.hasServer) logStartInstructions(projectDirPath);
+
+    if (analyticsMethod != null) {
+      await cliAnalytics.captureProjectCreated(
+        serverDir: serverpodDirs.serverDir.path,
+        method: analyticsMethod,
+        template: template,
+        context: context,
+        force: force,
+      );
+    }
+
+    return CreateSuccess(
+      projectDirectoryPath: projectDirPath,
+      serverDirectoryPath: serverpodDirs.serverDir.path,
+    );
+  }
+
+  return CreateFailure();
+}
+
+Future<void> _configureAgentSkillsAndMcp({
+  required ServerpodDirectories serverpodDirs,
+  required TemplateContext context,
+}) async {
+  if (context.ides.isNotEmpty) {
+    await _configureProjectMcpServers(serverpodDirs, context.ides);
+
+    await log.progress('Installing agent skills', () async {
+      try {
+        if (context.template != ServerpodTemplateType.module &&
+            context.ides.contains(TemplateIde.claude)) {
+          await _createFileAndWrite(
+            p.join(serverpodDirs.projectDir.path, 'CLAUDE.md'),
+            '@AGENTS.md\n',
+          );
         }
 
-        if (script == null) {
-          log.error('Failed to locate flutter build script, skipping build.');
-          return false;
-        }
+        final workspace = await const WorkspaceResolver().resolve(
+          serverpodDirs.projectDir.path,
+        );
 
         final stdoutController = StreamController<List<int>>();
         stdoutController.stream
@@ -224,68 +373,155 @@ Future<bool> performCreate(
         stderrController.stream
             .transform(const Utf8Decoder(allowMalformed: true))
             .transform(const LineSplitter())
-            .listen((data) => log.error(data));
+            .listen((data) => _logError(data));
         final toErrorLog = IOSink(stderrController);
 
-        final exitCode = await execute(
-          script.command,
-          workingDirectory: serverpodDirs.serverDir,
+        final success = await getSkills(
+          ides: context.ides.toSkillIdes,
+          workspace: workspace,
           stdout: toDebugLog,
           stderr: toErrorLog,
         );
 
-        return exitCode == 0;
-      },
-    );
+        if (!success) {
+          _logError('Failed to install agent skills');
+          return false;
+        }
+
+        final agentDir = Directory(
+          p.join(serverpodDirs.projectDir.path, '.agent'),
+        );
+        if (await agentDir.exists()) {
+          final agentsDir = Directory(
+            p.join(serverpodDirs.projectDir.path, '.agents'),
+          );
+
+          try {
+            await _moveDirectoryContents(agentDir, agentsDir);
+            await agentDir.delete();
+          } on FileSystemException {
+            //
+          }
+        }
+      } catch (_) {
+        _logError('Failed to install agent skills');
+        return false;
+      }
+      return true;
+    });
   }
-
-  if (success || force) {
-    log.info(
-      'Serverpod project created.',
-      newParagraph: true,
-      type: TextLogType.success,
-    );
-
-    var relativeServerPath = p.relative(
-      serverpodDirs.serverDir.path,
-      from: serverpodDirs.projectDir.path,
-    );
-    if (template == ServerpodTemplateType.server) {
-      _logStartInstructions(relativeServerPath);
-    } else if (template == ServerpodTemplateType.mini) {
-      _logMiniStartInstructions(relativeServerPath);
-    }
-  }
-
-  return success;
 }
 
-Future<bool> _performUpgrade(
-  ServerpodTemplateType template, {
-  required bool? interactive,
-  required TemplateContext context,
-}) async {
-  if (template != ServerpodTemplateType.server) {
-    log.error(
-      'The upgrade command can only be used with server templates.',
-    );
-    return false;
+Future<void> _moveDirectoryContents(
+  Directory source,
+  Directory destination,
+) async {
+  if (!await source.exists()) {
+    throw Exception('Source directory does not exist: ${source.path}');
   }
 
-  var serverDir = findServerDirectory(Directory.current);
-  if (serverDir == null) {
-    log.error(
-      'Could not find a Serverpod project in the current directory.',
+  // Ensure destination exists
+  if (!await destination.exists()) {
+    await destination.create(recursive: true);
+  }
+
+  await for (final entity in source.list()) {
+    final newPath = p.join(destination.path, p.basename(entity.path));
+
+    if (entity is File) {
+      // Never overwrite files already present at the destination, such as the
+      // Antigravity plugin config written under .agents/plugins/ before this
+      // move runs.
+      if (await File(newPath).exists()) {
+        log.debug('Skipped moving ${entity.path}: $newPath already exists.');
+        continue;
+      }
+      await entity.rename(newPath);
+    } else if (entity is Directory) {
+      final newDir = await Directory(newPath).create(recursive: true);
+      await _moveDirectoryContents(entity, newDir);
+      await entity.delete();
+    }
+  }
+}
+
+/// Writes the MCP config files for [ides] under [dirs], showing progress.
+Future<void> _configureProjectMcpServers(
+  ServerpodDirectories dirs,
+  List<TemplateIde> ides,
+) async {
+  if (ides.isEmpty) return;
+  await log.progress('Configuring Serverpod MCP server', () async {
+    await _configureMcpServer(
+      dirs.projectDir.path,
+      ides,
+      serverDirRelative: p.relative(
+        dirs.serverDir.path,
+        from: dirs.projectDir.path,
+      ),
     );
-    return false;
+    return true;
+  });
+}
+
+Future<void> _configureMcpServer(
+  String projectDirPath,
+  List<TemplateIde> ides, {
+  required String serverDirRelative,
+}) {
+  return Future.forEach(
+    ides,
+    (ide) async {
+      await _createFileAndWrite(
+        p.join(projectDirPath, ide.filePath),
+        ide.effectiveConfig(serverDirRelative: serverDirRelative),
+      );
+      for (final entry in ide.additionalFiles.entries) {
+        await _createFileAndWrite(
+          p.join(projectDirPath, entry.key),
+          ide.render(entry.value, serverDirRelative: serverDirRelative),
+        );
+      }
+    },
+  );
+}
+
+Future<void> _createFileAndWrite(String path, String content) async {
+  final file = File(path);
+  try {
+    await file.create(recursive: true);
+    await file.writeAsString(content);
+  } on FileSystemException catch (e) {
+    _logError('Failed to write $path: ${e.osError?.message ?? e.message}');
+  }
+}
+
+/// Upgrades a server project.
+/// Returns a future that resolves to [CreateSuccess] if successful.
+/// Otherwise, returns a future that resolves to [CreateFailure.
+Future<CreateResult> _performUpgrade({
+  bool dryRun = false,
+  required bool? interactive,
+  required TemplateContext context,
+  required bool createDefaultMigration,
+  Directory? workingDirectory,
+  bool reportAnalytics = false,
+}) async {
+  if (!context.template.hasServer) {
+    _logError('The upgrade command can only be used with server templates.');
+    return CreateFailure();
+  }
+
+  var serverDir = findServerDirectory(workingDirectory ?? Directory.current);
+  if (serverDir == null) {
+    _logError('Could not find a Serverpod project in the current directory.');
+    return CreateFailure();
   }
 
   var name = await getProjectName(serverDir);
   if (name == null) {
-    log.error(
-      'Could not find a project name in the pubspec.yaml file.',
-    );
-    return false;
+    _logError('Could not find a project name in the pubspec.yaml file.');
+    return CreateFailure();
   }
 
   var serverpodDir = ServerpodDirectories(
@@ -293,21 +529,51 @@ Future<bool> _performUpgrade(
     projectDir: serverDir.parent,
   );
 
+  if (dryRun) {
+    return CreateSuccess(
+      projectDirectoryPath: name,
+      serverDirectoryPath: serverpodDir.serverDir.path,
+    );
+  }
+
+  final hasFlutterProject = await serverpodDir.flutterDir.exists();
+
+  final writtenPaths = <String>{};
   var success = true;
+
   success &= await log.progress(
     'Upgrading project.',
     () async {
-      await _copyServerUpgrade(
+      writtenPaths.addAll([
+        ...await _copyServerUpgrade(
+          serverpodDir,
+          name: name,
+          isUpgrade: true,
+          context: context,
+          customServerpodPath: productionMode ? null : serverpodHome,
+        ),
+        if (hasFlutterProject)
+          ...await _copyFlutterUpgrade(
+            serverpodDir,
+            name: name,
+            context: context,
+            customServerpodPath: productionMode ? null : serverpodHome,
+          ),
+      ]);
+      await _copyClientUpgrade(
         serverpodDir,
-        name: name,
-        isUpgrade: true,
+        context: context,
         customServerpodPath: productionMode ? null : serverpodHome,
       );
       return true;
     },
   );
 
-  success &= await _renderTemplates(serverpodDir.projectDir, context);
+  success &= await _renderTemplates(writtenPaths, context);
+
+  success &= await log.progress('Getting workspace dependencies.', () {
+    return CommandLineTools.pubGet(serverpodDir.projectDir);
+  });
 
   success &= await _runGenerate(
     serverpodDir.serverDir,
@@ -315,13 +581,22 @@ Future<bool> _performUpgrade(
     interactive: interactive,
   );
 
-  success &= await log.progress('Creating default database migration.', () {
-    return DatabaseSetup.createDefaultMigration(
-      serverpodDir.serverDir,
-      name,
-      interactive: interactive,
-    );
-  });
+  if (createDefaultMigration && context.database) {
+    success &= await log.progress('Creating default database migration.', () {
+      return DatabaseSetup.createDefaultMigration(
+        serverpodDir.serverDir,
+        name,
+        interactive: interactive,
+      );
+    });
+  }
+
+  await _configureAgentSkillsAndMcp(
+    serverpodDirs: serverpodDir,
+    context: context,
+  );
+
+  await _configureProjectMcpServers(serverpodDir, context.ides);
 
   if (success) {
     log.info(
@@ -330,27 +605,44 @@ Future<bool> _performUpgrade(
       type: TextLogType.success,
     );
 
-    _logStartInstructions(name);
+    logStartInstructions(name);
+
+    if (reportAnalytics) {
+      await cliAnalytics.captureProjectUpgraded(
+        serverDir: serverpodDir.serverDir.path,
+        template: context.template,
+        context: context,
+        createdDefaultMigration: createDefaultMigration && context.database,
+      );
+    }
+
+    return CreateSuccess(
+      projectDirectoryPath: name,
+      serverDirectoryPath: serverpodDir.serverDir.path,
+    );
   }
 
-  return success;
+  return CreateFailure();
 }
 
-/// Parses and renders the template files in the given directory.
-Future<bool> _renderTemplates(Directory dir, TemplateContext context) async {
+/// Renders Mustache directives in the file paths the copiers just wrote.
+Future<bool> _renderTemplates(
+  Iterable<String> paths,
+  TemplateContext context,
+) async {
   return await log.progress('Applying template options', () async {
-    await TemplateRenderer(dir: dir).render(context);
+    await const TemplateRenderer().renderPaths(paths, context);
     return true;
   });
 }
 
-void _logMiniStartInstructions(String relativeServerPath) {
+void logStartInstructions(String relativeProjectPath) {
   log.info(
     'All setup. You are ready to rock! 🥳',
     type: TextLogType.header,
   );
   log.info(
-    'If you are using VSCode or Cursor, just hit F5 to start the project!',
+    'If you are using VSCode or Cursor, just hit F5 to start the project.',
     type: TextLogType.header,
   );
   log.info(
@@ -360,72 +652,23 @@ void _logMiniStartInstructions(String relativeServerPath) {
 
   if (Platform.isWindows) {
     log.info(
-      'cd .\\$relativeServerPath\\',
+      'cd .\\$relativeProjectPath\\',
       type: TextLogType.command,
       newParagraph: true,
-    );
-    log.info(
-      'dart .\\bin\\main.dart',
-      type: TextLogType.command,
     );
   } else {
     log.info(
-      'cd $relativeServerPath',
+      'cd $relativeProjectPath',
       type: TextLogType.command,
       newParagraph: true,
-    );
-    log.info(
-      'dart run bin/main.dart',
-      type: TextLogType.command,
     );
   }
 
-  log.info(' ');
-}
-
-void _logStartInstructions(String relativeServerPath) {
   log.info(
-    'All setup. You are ready to rock! 🥳',
-    type: TextLogType.header,
+    'serverpod start',
+    type: TextLogType.command,
+    newParagraph: true,
   );
-  log.info(
-    'If you are using VSCode or Cursor, just hit F5 to start the project!',
-    type: TextLogType.header,
-  );
-  log.info(
-    'Start your Serverpod by running:',
-    type: TextLogType.header,
-  );
-
-  if (Platform.isWindows) {
-    log.info(
-      'cd .\\$relativeServerPath\\',
-      type: TextLogType.command,
-      newParagraph: true,
-    );
-    log.info(
-      'docker compose up --build --detach',
-      type: TextLogType.command,
-    );
-    log.info(
-      'dart .\\bin\\main.dart --apply-migrations',
-      type: TextLogType.command,
-    );
-  } else {
-    log.info(
-      'cd $relativeServerPath',
-      type: TextLogType.command,
-      newParagraph: true,
-    );
-    log.info(
-      'docker compose up --build --detach',
-      type: TextLogType.command,
-    );
-    log.info(
-      'dart run bin/main.dart --apply-migrations',
-      type: TextLogType.command,
-    );
-  }
 
   log.info(' ');
 }
@@ -449,13 +692,14 @@ class ServerpodDirectories {
 void _createProjectDirectories(
   ServerpodTemplateType template,
   ServerpodDirectories serverpodDirs,
+  TemplateContext context,
 ) {
   _createDirectory(serverpodDirs.projectDir);
   _createDirectory(serverpodDirs.serverDir);
   _createDirectory(serverpodDirs.clientDir);
 
-  if (template == ServerpodTemplateType.server) {
-    _createDirectory(serverpodDirs.flutterDir);
+  if (template.hasServer) {
+    if (context.flutterApp) _createDirectory(serverpodDirs.flutterDir);
     _createDirectory(serverpodDirs.githubDir);
     _createDirectory(serverpodDirs.vscodeDir);
   }
@@ -469,9 +713,55 @@ void _createDirectory(Directory dir) {
   dir.createSync();
 }
 
-Future<void> _copyFlutterUpgrade(
+Future<void> _copyClientUpgrade(
+  ServerpodDirectories serverpodDirs, {
+  required TemplateContext context,
+  String? customServerpodPath,
+}) async {
+  if (context.auth) {
+    log.debug('Adding auth dependencies to client pubspec', newParagraph: true);
+    _addDependenciesToPubspec(
+      pubspecFile: File(p.join(serverpodDirs.clientDir.path, 'pubspec.yaml')),
+      additions: [
+        (
+          name: 'serverpod_auth_idp_client',
+          source: DependencySource.version(
+            VersionConstraint.parse(templateVersion),
+          ),
+          type: DependencyType.normal,
+        ),
+      ],
+    );
+  }
+
+  if (customServerpodPath != null && context.auth) {
+    log.debug('Adding auth path overrides to root pubspec', newParagraph: true);
+    _addDependenciesToPubspec(
+      pubspecFile: File(p.join(serverpodDirs.projectDir.path, 'pubspec.yaml')),
+      additions: [
+        (
+          name: 'serverpod_auth_core_client',
+          source: DependencySourcePath(
+            '$customServerpodPath/modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_client',
+          ),
+          type: DependencyType.override,
+        ),
+        (
+          name: 'serverpod_auth_idp_client',
+          source: DependencySourcePath(
+            '$customServerpodPath/modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_client',
+          ),
+          type: DependencyType.override,
+        ),
+      ],
+    );
+  }
+}
+
+Future<List<String>> _copyFlutterUpgrade(
   ServerpodDirectories serverpodDirs, {
   required String name,
+  required TemplateContext context,
   String? customServerpodPath,
 }) async {
   log.debug('Copying Flutter upgrade files.', newParagraph: true);
@@ -492,44 +782,35 @@ Future<void> _copyFlutterUpgrade(
     fileNameReplacements: const [],
     ignoreFileNames: const [],
   );
-  copier.copyFiles();
+  final writtenPaths = [...copier.copyFiles()];
 
-  log.debug('Adding auth dependencies to Flutter pubspec', newParagraph: true);
-  _addDependenciesToPubspec(
-    pubspecFile: File(p.join(serverpodDirs.flutterDir.path, 'pubspec.yaml')),
-    additions: [
-      (
-        name: 'serverpod_auth_idp_flutter',
-        source: DependencySource.version(
-          VersionConstraint.parse(templateVersion),
+  if (context.auth) {
+    log.debug(
+      'Adding auth dependencies to Flutter pubspec',
+      newParagraph: true,
+    );
+    _addDependenciesToPubspec(
+      pubspecFile: File(p.join(serverpodDirs.flutterDir.path, 'pubspec.yaml')),
+      additions: [
+        (
+          name: 'serverpod_auth_idp_flutter',
+          source: DependencySource.version(
+            VersionConstraint.parse(templateVersion),
+          ),
+          type: DependencyType.normal,
         ),
-        type: DependencyType.normal,
-      ),
-      (
-        name: 'flutter_secure_storage',
-        source: DependencySource.version(
-          VersionConstraint.parse('^10.0.0'),
+        (
+          name: 'flutter_secure_storage',
+          source: DependencySource.version(
+            VersionConstraint.parse('^10.0.0'),
+          ),
+          type: DependencyType.override,
         ),
-        type: DependencyType.override,
-      ),
-    ],
-  );
+      ],
+    );
+  }
 
-  log.debug('Adding auth dependencies to client pubspec', newParagraph: true);
-  _addDependenciesToPubspec(
-    pubspecFile: File(p.join(serverpodDirs.clientDir.path, 'pubspec.yaml')),
-    additions: [
-      (
-        name: 'serverpod_auth_idp_client',
-        source: DependencySource.version(
-          VersionConstraint.parse(templateVersion),
-        ),
-        type: DependencyType.normal,
-      ),
-    ],
-  );
-
-  if (customServerpodPath != null) {
+  if (customServerpodPath != null && context.auth) {
     log.debug('Adding auth path overrides to root pubspec', newParagraph: true);
     _addDependenciesToPubspec(
       pubspecFile: File(p.join(serverpodDirs.projectDir.path, 'pubspec.yaml')),
@@ -542,35 +823,23 @@ Future<void> _copyFlutterUpgrade(
           type: DependencyType.override,
         ),
         (
-          name: 'serverpod_auth_core_client',
-          source: DependencySourcePath(
-            '$customServerpodPath/modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_client',
-          ),
-          type: DependencyType.override,
-        ),
-        (
           name: 'serverpod_auth_core_flutter',
           source: DependencySourcePath(
             '$customServerpodPath/modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_flutter',
           ),
           type: DependencyType.override,
         ),
-        (
-          name: 'serverpod_auth_idp_client',
-          source: DependencySourcePath(
-            '$customServerpodPath/modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_client',
-          ),
-          type: DependencyType.override,
-        ),
       ],
     );
   }
+  return writtenPaths;
 }
 
-Future<void> _copyServerUpgrade(
+Future<List<String>> _copyServerUpgrade(
   ServerpodDirectories serverpodDirs, {
   required String name,
   required bool isUpgrade,
+  required TemplateContext context,
   String? customServerpodPath,
 }) async {
   var awsName = name.replaceAll('_', '-');
@@ -708,15 +977,8 @@ Future<void> _copyServerUpgrade(
       ),
     ],
     fileNameReplacements: const [],
-    ignoreFileNames: [
-      if (isUpgrade) ...[
-        'server.dart',
-        'email_idp_endpoint.dart',
-        'jwt_refresh_endpoint.dart',
-      ],
-    ],
   );
-  copier.copyFiles();
+  final writtenPaths = [...copier.copyFiles()];
 
   log.debug('Copying .github files', newParagraph: true);
   copier = Copier(
@@ -743,14 +1005,14 @@ Future<void> _copyServerUpgrade(
         slotName: 'REDIS_TEST_PASSWORD',
         replacement: redisTestPassword,
       ),
-      Replacement(
+      const Replacement(
         slotName: 'CLI_VERSION',
         replacement: templateVersion,
       ),
     ],
     fileNameReplacements: [],
   );
-  copier.copyFiles();
+  writtenPaths.addAll(copier.copyFiles());
 
   if (!isUpgrade) {
     log.debug('Copying .vscode files', newParagraph: true);
@@ -771,10 +1033,10 @@ Future<void> _copyServerUpgrade(
       ],
       fileNameReplacements: [],
     );
-    copier.copyFiles();
+    writtenPaths.addAll(copier.copyFiles());
   }
 
-  if (!isUpgrade) {
+  if (context.auth) {
     log.debug(
       'Adding auth dependencies to server pubspec',
       newParagraph: true,
@@ -820,6 +1082,7 @@ Future<void> _copyServerUpgrade(
       );
     }
   }
+  return writtenPaths;
 }
 
 void _enableWorkspaceInRootPubspec({
@@ -846,11 +1109,13 @@ void _addDependenciesToPubspec({
   pubspecFile.writeAsStringSync(contents);
 }
 
-void _copyServerTemplates(
+List<String> _copyServerTemplates(
   ServerpodDirectories serverpodDirs, {
   required String name,
+  required TemplateContext context,
   String? customServerpodPath,
 }) {
+  final writtenPaths = <String>[];
   log.debug('Copying root workspace pubspec');
   var rootCopier = Copier(
     srcDir: Directory(
@@ -859,7 +1124,7 @@ void _copyServerTemplates(
     dstDir: serverpodDirs.projectDir,
     replacements: [
       // Replace 'name: projectname' with 'name: _' BEFORE general projectname replacement
-      Replacement(
+      const Replacement(
         slotName: 'name: projectname',
         replacement: 'name: _',
       ),
@@ -874,14 +1139,14 @@ void _copyServerTemplates(
         ),
     ],
     fileNameReplacements: [
-      Replacement(
+      const Replacement(
         slotName: 'gitignore',
         replacement: '.gitignore',
       ),
     ],
     ignoreFileNames: const [],
   );
-  rootCopier.copyFiles();
+  writtenPaths.addAll(rootCopier.copyFiles());
 
   log.debug('Copying server files');
   var copier = Copier(
@@ -894,6 +1159,10 @@ void _copyServerTemplates(
         slotName: 'projectname',
         replacement: name,
       ),
+      Replacement(
+        slotName: 'flutter_app_display_name',
+        replacement: formatFlutterAppDisplayName(name),
+      ),
       if (customServerpodPath != null)
         Replacement(
           slotName: 'path: ../../../packages/',
@@ -905,14 +1174,13 @@ void _copyServerTemplates(
         slotName: 'projectname',
         replacement: name,
       ),
-      Replacement(
+      const Replacement(
         slotName: 'gitignore',
         replacement: '.gitignore',
       ),
     ],
-    ignoreFileNames: ['pubspec.lock', 'pubspec_overrides.yaml'],
   );
-  copier.copyFiles();
+  writtenPaths.addAll(copier.copyFiles());
 
   log.debug('Copying client files', newParagraph: true);
   copier = Copier(
@@ -936,53 +1204,52 @@ void _copyServerTemplates(
         slotName: 'projectname',
         replacement: name,
       ),
-      Replacement(
+      const Replacement(
         slotName: 'gitignore',
         replacement: '.gitignore',
       ),
     ],
-    ignoreFileNames: ['pubspec.lock', 'pubspec_overrides.yaml'],
   );
-  copier.copyFiles();
+  writtenPaths.addAll(copier.copyFiles());
 
-  log.debug('Copying Flutter files', newParagraph: true);
-  copier = Copier(
-    srcDir: Directory(
-      p.join(resourceManager.templateDirectory.path, 'projectname_flutter'),
-    ),
-    dstDir: serverpodDirs.flutterDir,
-    replacements: [
-      Replacement(
-        slotName: 'projectname',
-        replacement: name,
+  if (context.flutterApp) {
+    log.debug('Copying Flutter files', newParagraph: true);
+    copier = Copier(
+      srcDir: Directory(
+        p.join(resourceManager.templateDirectory.path, 'projectname_flutter'),
       ),
-      if (customServerpodPath != null)
+      dstDir: serverpodDirs.flutterDir,
+      replacements: [
         Replacement(
-          slotName: 'path: ../../../packages/',
-          replacement: 'path: $customServerpodPath/packages/',
+          slotName: 'projectname',
+          replacement: name,
         ),
-    ],
-    fileNameReplacements: [
-      Replacement(
-        slotName: 'projectname',
-        replacement: name,
-      ),
-      Replacement(
-        slotName: 'gitignore',
-        replacement: '.gitignore',
-      ),
-    ],
-    ignoreFileNames: [
-      'pubspec.lock',
-      'pubspec_overrides.yaml',
-      'ios',
-      'android',
-      'web',
-      'macos',
-      'build',
-    ],
-  );
-  copier.copyFiles();
+        if (customServerpodPath != null)
+          Replacement(
+            slotName: 'path: ../../../packages/',
+            replacement: 'path: $customServerpodPath/packages/',
+          ),
+      ],
+      fileNameReplacements: [
+        Replacement(
+          slotName: 'projectname',
+          replacement: name,
+        ),
+        const Replacement(
+          slotName: 'gitignore',
+          replacement: '.gitignore',
+        ),
+      ],
+      ignoreFileNames: [
+        'ios',
+        'android',
+        'web',
+        'macos',
+        'build',
+      ],
+    );
+    writtenPaths.addAll(copier.copyFiles());
+  }
 
   log.debug('Enabling workspace configuration', newParagraph: true);
   _enableWorkspaceInRootPubspec(
@@ -992,16 +1259,18 @@ void _copyServerTemplates(
     workspaceMembers: [
       '${name}_client',
       '${name}_server',
-      '${name}_flutter',
+      if (context.flutterApp) '${name}_flutter',
     ],
   );
+  return writtenPaths;
 }
 
-void _copyModuleTemplates(
+List<String> _copyModuleTemplates(
   ServerpodDirectories serverpodDirs, {
   required String name,
   String? customServerpodPath,
 }) {
+  final writtenPaths = <String>[];
   log.debug('Copying root workspace pubspec');
   var rootCopier = Copier(
     srcDir: Directory(
@@ -1010,7 +1279,7 @@ void _copyModuleTemplates(
     dstDir: serverpodDirs.projectDir,
     replacements: [
       // Replace 'name: modulename' with 'name: _' BEFORE general modulename replacement
-      Replacement(
+      const Replacement(
         slotName: 'name: modulename',
         replacement: 'name: _',
       ),
@@ -1025,14 +1294,14 @@ void _copyModuleTemplates(
         ),
     ],
     fileNameReplacements: [
-      Replacement(
+      const Replacement(
         slotName: 'gitignore',
         replacement: '.gitignore',
       ),
     ],
     ignoreFileNames: const [],
   );
-  rootCopier.copyFiles();
+  writtenPaths.addAll(rootCopier.copyFiles());
 
   log.debug('Copying server files', newParagraph: true);
   var copier = Copier(
@@ -1056,14 +1325,13 @@ void _copyModuleTemplates(
         slotName: 'modulename',
         replacement: name,
       ),
-      Replacement(
+      const Replacement(
         slotName: 'gitignore',
         replacement: '.gitignore',
       ),
     ],
-    ignoreFileNames: ['pubspec.lock', 'pubspec_overrides.yaml'],
   );
-  copier.copyFiles();
+  writtenPaths.addAll(copier.copyFiles());
 
   log.debug('Copying client files', newParagraph: true);
   copier = Copier(
@@ -1087,14 +1355,13 @@ void _copyModuleTemplates(
         slotName: 'modulename',
         replacement: name,
       ),
-      Replacement(
+      const Replacement(
         slotName: 'gitignore',
         replacement: '.gitignore',
       ),
     ],
-    ignoreFileNames: ['pubspec.lock', 'pubspec_overrides.yaml'],
   );
-  copier.copyFiles();
+  writtenPaths.addAll(copier.copyFiles());
 
   log.debug('Enabling workspace configuration', newParagraph: true);
   _enableWorkspaceInRootPubspec(
@@ -1106,6 +1373,7 @@ void _copyModuleTemplates(
       '${name}_server',
     ],
   );
+  return writtenPaths;
 }
 
 Future<bool> _runGenerate(
@@ -1121,10 +1389,4 @@ Future<bool> _runGenerate(
       interactive: interactive,
     );
   });
-}
-
-Script? _locateFlutterBuildScript(Directory serverDir) {
-  final pubspecFile = File(p.join(serverDir.path, 'pubspec.yaml'));
-  final scripts = Scripts.fromPubspecFile(pubspecFile);
-  return scripts['flutter_build'];
 }

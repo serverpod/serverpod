@@ -31,9 +31,9 @@ class KeywordSearchInStream {
       value = _found;
     }
 
-    _found = null;
-
+    // Coalesce duplicate matches emitted while the stream action settles.
     await Future.delayed(const Duration(milliseconds: 250));
+    _found = null;
     return value;
   }
 

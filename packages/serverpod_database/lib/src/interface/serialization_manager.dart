@@ -7,9 +7,6 @@ import '../../serverpod_database.dart';
 /// overridden by generated code. [DatabaseSerializationManager] is an
 /// extension to also handle [Table]s.
 abstract class DatabaseSerializationManager extends SerializationManager {
-  /// The name of the module that defines the serialization.
-  String getModuleName();
-
   /// Maps [Type]s to subclasses of [Table].
   Table? getTableForType(Type t);
 
@@ -22,7 +19,3 @@ abstract class DatabaseSerializationManager extends SerializationManager {
   /// [DatabaseAnalyzerExtensions.getTargetTableDefinitions].
   List<TableDefinition> getTargetTableDefinitions();
 }
-
-/// Backwards-compatible alias for [DatabaseSerializationManager].
-@Deprecated('Use DatabaseSerializationManager instead.')
-typedef SerializationManagerServer = DatabaseSerializationManager;

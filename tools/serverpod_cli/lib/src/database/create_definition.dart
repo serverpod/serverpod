@@ -25,7 +25,7 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
           schema: 'public',
           columns: [
             for (var column in classDefinition.fieldsIncludingInherited)
-              if (column.shouldSerializeFieldForDatabase(serverCode))
+              if (column.shouldPersist)
                 ColumnDefinition(
                   name: column.columnName,
                   fieldName: column.name,

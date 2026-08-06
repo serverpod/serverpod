@@ -5,7 +5,6 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/create/create.dart';
 import 'package:serverpod_cli/src/create/template_context.dart';
 import 'package:test/test.dart';
-import 'package:uuid/uuid.dart';
 
 import 'util.dart';
 
@@ -23,49 +22,22 @@ void main() {
 
   group(
     'Given a TemplateContext with auth and a database option enabled, '
-    'when performCreate is called with the context and a server template type',
+    'when performCreate is called with the context and a fullstack template type',
     () {
-      late File serverFile;
-
-      final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
-      final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
-        projectName,
+      final project = setUpPerformCreateInTempDir(
+        context: TemplateContext(
+          template: ServerpodTemplateType.fullstack,
+          auth: true,
+          postgres: true,
+        ),
       );
-
-      setUpAll(() async {
-        setupForPerformCreateTest();
-
-        final context = TemplateContext(auth: true, postgres: true);
-
-        await performCreate(
-          projectName,
-          ServerpodTemplateType.server,
-          false,
-          interactive: false,
-          context: context,
-        );
-
-        serverFile = File(
-          p.join(serverDir, 'lib', 'server.dart'),
-        );
-      });
-
-      tearDownAll(() {
-        final dir = Directory(projectName);
-        try {
-          dir.delete(recursive: true);
-        } on FileSystemException {
-          // Gone.
-        }
-      });
 
       test(
         'then the email idp endpoint file is created',
         () async {
           final file = File(
             p.join(
-              serverDir,
+              project.serverDir,
               'lib',
               'src',
               'auth',
@@ -82,7 +54,7 @@ void main() {
         () async {
           final file = File(
             p.join(
-              serverDir,
+              project.serverDir,
               'lib',
               'src',
               'auth',
@@ -97,6 +69,9 @@ void main() {
       test(
         'then the server server.dart file contains auth imports',
         () async {
+          final serverFile = File(
+            p.join(project.serverDir, 'lib', 'server.dart'),
+          );
           final content = await serverFile.readAsString();
 
           expect(
@@ -114,9 +89,12 @@ void main() {
       test(
         'then the server server.dart contains auth configuration',
         () async {
+          final serverFile = File(
+            p.join(project.serverDir, 'lib', 'server.dart'),
+          );
           final content = await serverFile.readAsString();
           expect(content, contains('initializeAuthServices'));
-          expect(content, contains('EmailIdpConfigFromPasswords'));
+          expect(content, contains('ServerpodCloudEmailIdpConfig'));
           expect(content, contains('JwtConfigFromPasswords'));
         },
       );
@@ -125,7 +103,7 @@ void main() {
         'then the server passwords config contains auth secret keys',
         () async {
           final file = File(
-            p.join(serverDir, 'config', 'passwords.yaml'),
+            p.join(project.serverDir, 'config', 'passwords.yaml'),
           );
           final content = await file.readAsString();
           expect(content, contains('emailSecretHashPepper:'));
@@ -133,50 +111,121 @@ void main() {
           expect(content, contains('jwtRefreshTokenHashPepper:'));
         },
       );
+
+      test(
+        'then the server passwords config has the shared section commented out',
+        () async {
+          final file = File(
+            p.join(project.serverDir, 'config', 'passwords.yaml'),
+          );
+          final content = await file.readAsString();
+          expect(content, contains('# shared:'));
+          expect(content, isNot(RegExp(r'^shared:', multiLine: true)));
+          expect(
+            content,
+            isNot(RegExp(r'^  mySharedPassword:', multiLine: true)),
+          );
+        },
+      );
+
+      test(
+        'then the server pubspec.yaml contains serverpod_auth_idp_server dependency',
+        () async {
+          final serverPubspec = File(p.join(project.serverDir, 'pubspec.yaml'));
+          final content = await serverPubspec.readAsString();
+          expect(content, contains('serverpod_auth_idp_server:'));
+        },
+      );
+
+      test(
+        'then the sign in screen file is created',
+        () async {
+          final file = File(
+            p.join(
+              project.flutterDir,
+              'lib',
+              'screens',
+              'sign_in_screen.dart',
+            ),
+          );
+
+          await expectLater(file.exists(), completion(true));
+        },
+      );
+
+      test(
+        'then the flutter main.dart contains auth configurations',
+        () async {
+          final file = File(
+            p.join(project.flutterDir, 'lib', 'main.dart'),
+          );
+          final content = await file.readAsString();
+          expect(
+            content,
+            contains(
+              "import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';",
+            ),
+          );
+          expect(
+            content,
+            contains('..authSessionManager = FlutterAuthSessionManager()'),
+          );
+          expect(content, contains('client.auth.initialize();'));
+          expect(
+            content,
+            contains(
+              '// To test authentication in this example app, uncomment the line below',
+            ),
+          );
+        },
+      );
+
+      test(
+        'then the flutter app pubspec.yaml contains serverpod_auth_idp_flutter dependency',
+        () async {
+          final pubspec = File(p.join(project.flutterDir, 'pubspec.yaml'));
+          final content = await pubspec.readAsString();
+          expect(content, contains('serverpod_auth_idp_flutter:'));
+        },
+      );
+
+      test(
+        'then the flutter app pubspec.yaml contains flutter_secure_storage override',
+        () async {
+          final pubspec = File(p.join(project.flutterDir, 'pubspec.yaml'));
+          final content = await pubspec.readAsString();
+          expect(content, contains('flutter_secure_storage:'));
+        },
+      );
+
+      test(
+        'then the client pubspec.yaml contains serverpod_auth_idp_client dependency',
+        () async {
+          final clientPubspec = File(p.join(project.clientDir, 'pubspec.yaml'));
+          final content = await clientPubspec.readAsString();
+          expect(content, contains('serverpod_auth_idp_client:'));
+        },
+      );
     },
   );
 
   group(
     'Given a TemplateContext with auth disabled, '
-    'when performCreate is called with the context and a server template type',
+    'when performCreate is called with the context and a fullstack template type',
     () {
-      late File serverFile;
-
-      final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
-      final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
-        projectName,
+      final project = setUpPerformCreateInTempDir(
+        context: TemplateContext(
+          template: ServerpodTemplateType.fullstack,
+          auth: false,
+        ),
       );
-
-      setUpAll(() async {
-        setupForPerformCreateTest();
-
-        await performCreate(
-          projectName,
-          ServerpodTemplateType.server,
-          true,
-          interactive: false,
-          context: TemplateContext(auth: false),
-        );
-
-        serverFile = File(p.join(serverDir, 'lib', 'server.dart'));
-      });
-
-      tearDownAll(() {
-        final dir = Directory(projectName);
-        try {
-          dir.delete(recursive: true);
-        } on FileSystemException {
-          // Gone.
-        }
-      });
 
       test(
         'then the email idp endpoint file is not created',
         () async {
           final file = File(
             p.join(
-              serverDir,
+              project.serverDir,
               'lib',
               'src',
               'auth',
@@ -193,7 +242,7 @@ void main() {
         () async {
           final file = File(
             p.join(
-              serverDir,
+              project.serverDir,
               'lib',
               'src',
               'auth',
@@ -208,6 +257,9 @@ void main() {
       test(
         'then the server server.dart file does not contain auth imports',
         () async {
+          final serverFile = File(
+            p.join(project.serverDir, 'lib', 'server.dart'),
+          );
           final content = await serverFile.readAsString();
 
           expect(
@@ -229,10 +281,98 @@ void main() {
       test(
         'then the server server.dart does not contain auth configuration',
         () async {
+          final serverFile = File(
+            p.join(project.serverDir, 'lib', 'server.dart'),
+          );
           final content = await serverFile.readAsString();
           expect(content, isNot(contains('initializeAuthServices')));
-          expect(content, isNot(contains('EmailIdpConfigFromPasswords')));
+          expect(content, isNot(contains('ServerpodCloudEmailIdpConfig')));
           expect(content, isNot(contains('JwtConfigFromPasswords')));
+        },
+      );
+
+      test(
+        'then the server pubspec.yaml does not contain serverpod_auth_idp_server dependency',
+        () async {
+          final serverPubspec = File(p.join(project.serverDir, 'pubspec.yaml'));
+          final content = await serverPubspec.readAsString();
+          expect(content, isNot(contains('serverpod_auth_idp_server:')));
+        },
+      );
+
+      test(
+        'then the sign in screen file is not created',
+        () async {
+          final file = File(
+            p.join(
+              project.flutterDir,
+              'lib',
+              'screens',
+              'sign_in_screen.dart',
+            ),
+          );
+
+          await expectLater(file.exists(), completion(false));
+        },
+      );
+
+      test(
+        'then the flutter main.dart does not contain auth configurations',
+        () async {
+          final file = File(
+            p.join(project.flutterDir, 'lib', 'main.dart'),
+          );
+          final content = await file.readAsString();
+          expect(
+            content,
+            isNot(
+              contains(
+                "import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';",
+              ),
+            ),
+          );
+          expect(
+            content,
+            isNot(
+              contains('..authSessionManager = FlutterAuthSessionManager()'),
+            ),
+          );
+          expect(content, isNot(contains('client.auth.initialize();')));
+          expect(
+            content,
+            isNot(
+              contains(
+                '// To test authentication in this example app, uncomment the line below',
+              ),
+            ),
+          );
+        },
+      );
+
+      test(
+        'then the flutter app pubspec.yaml does not contain serverpod_auth_idp_flutter dependency',
+        () async {
+          final pubspec = File(p.join(project.flutterDir, 'pubspec.yaml'));
+          final content = await pubspec.readAsString();
+          expect(content, isNot(contains('serverpod_auth_idp_flutter:')));
+        },
+      );
+
+      test(
+        'then the flutter app pubspec.yaml does not contain flutter_secure_storage override',
+        () async {
+          final pubspec = File(p.join(project.flutterDir, 'pubspec.yaml'));
+          final content = await pubspec.readAsString();
+          expect(content, isNot(contains('flutter_secure_storage:')));
+        },
+      );
+
+      test(
+        'then the client pubspec.yaml does not contain serverpod_auth_idp_client dependency',
+        () async {
+          final clientPubspec = File(p.join(project.clientDir, 'pubspec.yaml'));
+          final content = await clientPubspec.readAsString();
+          expect(content, isNot(contains('serverpod_auth_idp_client:')));
         },
       );
     },
@@ -240,40 +380,22 @@ void main() {
 
   group(
     'Given a TemplateContext with auth disabled and a database option enabled, '
-    'when performCreate is called with the context and a server template type',
+    'when performCreate is called with the context and a fullstack template type',
     () {
-      final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
-      final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
-        projectName,
+      final project = setUpPerformCreateInTempDir(
+        context: TemplateContext(
+          template: ServerpodTemplateType.fullstack,
+          auth: false,
+          postgres: true,
+        ),
       );
-
-      setUpAll(() async {
-        setupForPerformCreateTest();
-        final context = TemplateContext(auth: false, postgres: true);
-
-        await performCreate(
-          projectName,
-          ServerpodTemplateType.server,
-          true,
-          interactive: false,
-          context: context,
-        );
-      });
-
-      tearDownAll(() {
-        final dir = Directory(projectName);
-        try {
-          dir.delete(recursive: true);
-        } on FileSystemException {
-          // Gone.
-        }
-      });
 
       test(
         'then the server passwords config does not contain auth secret keys',
         () async {
-          final file = File(p.join(serverDir, 'config', 'passwords.yaml'));
+          final file = File(
+            p.join(project.serverDir, 'config', 'passwords.yaml'),
+          );
           final content = await file.readAsString();
           expect(content, isNot(contains('emailSecretHashPepper:')));
           expect(content, isNot(contains('jwtHmacSha512PrivateKey:')));

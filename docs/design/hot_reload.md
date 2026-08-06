@@ -42,10 +42,10 @@ Signal-based shutdown: `Serverpod` listens for `SIGINT` and `SIGTERM` to trigger
 `serverpod start` is the standard way to run a Serverpod server during development. Without flags, it wraps the server subprocess with code generation and Docker Compose management. With `--watch`, it adds file watching, incremental compilation, and hot reload.
 
 ```shell
-serverpod start                   # Start Docker, generate, run
-serverpod start --watch           # Start Docker, generate, compile, run, watch, hot reload
+serverpod start                   # Start Docker, generate, compile, run, watch, hot reload
+serverpod start --no-watch        # Skip the Frontend Server; start via `dart run`
 serverpod start --no-docker       # Skip Docker Compose management
-serverpod start --watch --no-fes  # Watch mode without Frontend Server (for IDE-managed compilation)
+serverpod start --no-tui          # Disable the interactive terminal UI
 ```
 
 Arguments after `--` are passed through to the server process:
@@ -56,20 +56,21 @@ serverpod start -- --apply-migrations --mode production
 
 ## Architecture
 
-### One-shot mode (no `--watch`)
+`serverpod start` always builds a `WatchSession` over the running pod and mounts the vm-service proxy in front of it. The `--watch` flag selects whether the session subscribes to a `FileWatcher` and whether the Frontend Server is running for incremental compiles.
 
-The simplest useful version. The CLI:
+### `--no-watch` mode
+
+`--no-watch` is for users who don't want file-driven recompilation but still want a single command that handles Docker, generation, and the running pod (with TUI / MCP / IDE attach). The CLI:
 
 1. Ensures Docker Compose services are running (see [Docker Compose management](#docker-compose-management)).
-1. Runs code generation in an isolate (`performOneShotGenerate`).
-1. Spawns `dart run bin/main.dart` via `Process.start` (see [Why `Process.start`](#why-processstart-instead-of-the-execute-helper)), forwarding any extra arguments (e.g. `--apply-migrations`, `--role`, `--mode`).
-1. Forwards the subprocess's stdout/stderr to the terminal.
+1. Runs initial code generation if generated outputs are stale.
+1. Spawns the server via `dart run bin/main.dart` with `--enable-vm-service`, forwarding any extra arguments (e.g. `--apply-migrations`, `--role`, `--mode`).
+1. Mounts the vm-service proxy in front of the pod and publishes the proxy URI so the IDE / TUI / MCP can attach.
+1. Constructs a `WatchSession` with no `KernelCompiler` and no file watcher; manual reloads route through the VM's own kernel service via the proxy.
 1. Forwards `SIGTERM` to the subprocess (the OS delivers `SIGINT` to both parent and child), waits for it to exit, then exits with the same code.
 1. On exit, stops Docker Compose services if the CLI started them.
 
-This replaces the multi-step manual workflow (`docker compose up -d`, `serverpod generate`, `dart run bin/main.dart`) with a single command.
-
-### Watch mode (`--watch`)
+### Watch mode (`--watch`, default)
 
 Watch mode runs the entire loop (generation, compilation, reload orchestration) in a single long-lived isolate so analyzers persist and can be updated incrementally on each file change.
 
@@ -88,7 +89,6 @@ On each debounced file change event:
 
 2. **Dart/Model changes**:
    - Run code generation via `updateAnalyzers` + `performGenerate` on the affected paths.
-   - If no compiler (`--no-fes` mode): return after generation - the IDE handles compilation.
    - If `package_config.json` changed: restart the FES process entirely (it reads package config only at startup), then full compile.
    - If dart files changed: incremental compile with changed paths.
    - If model-only changes: return after generation - the generated `.dart` files will trigger the next watcher cycle.
@@ -114,31 +114,18 @@ The compiler tracks whether a full or incremental compile is needed internally. 
 
 The server subprocess is started with `--enable-vm-service=0` (ephemeral port) and `--write-service-info=<path>`. The CLI reads the VM service URI from the service info JSON file (with polling and retries) rather than parsing stderr. This is more reliable and allows IDEs to use the same `vmServiceInfoFile` path in their launch configuration to auto-attach for debugging.
 
-### `--no-fes` mode
+### IDE integration via the vm-service proxy
 
-The `--no-fes` flag disables the Frontend Server compilation pipeline entirely. This is needed when an IDE debugger is managing compilation, due to [dart-lang/sdk#62822](https://github.com/dart-lang/sdk/issues/62822) - the FES and the VM's internal kernel service cannot share incremental state, and registering a custom `reloadSources` service extension interferes with IDE attach workflows.
+The CLI mounts a vm-service proxy in front of the pod's VM service URI. The proxy speaks the standard VM service protocol on its own URI, forwards messages between the IDE and the pod, and intercepts `reloadSources` calls so the CLI can drive the reload through the right pipeline:
 
-In `--no-fes` mode:
+1. CLI starts the server with `--enable-vm-service`, reads the pod's URI from the service-info file, and points the proxy at it.
+1. The proxy publishes its own URI to the user-facing `vm-service-info.json` (the pod's URI stays internal in `vm-service-info.pod.json`).
+1. IDE attaches to the proxy URI for debugging (breakpoints, stepping - all normal).
+1. User presses IDE hot reload button -> IDE calls `reloadSources` against the proxy -> proxy invokes the CLI's reload callback.
+1. In `--watch` mode the callback runs an incremental FES compile and calls `reload(dillPath)`, which sends `reloadSources` with `rootLibUri` pointing at the resulting `.dill`. In `--no-watch` mode the callback calls `reload(null)`, which sends `reloadSources` without `rootLibUri` so the VM's built-in kernel service recompiles changed sources.
+1. The proxy returns the synthetic `ReloadReport` to the IDE.
 
-1. The server is started with `dart run bin/main.dart` (not from a `.dill`), so the VM's own kernel service is active and IDE-initiated `reloadSources` calls work natively.
-2. No `KernelCompiler` is created and no `ServerProcessFactory` is set.
-3. The `WatchSession` still runs code generation on file changes, but skips compilation and reload.
-4. The VM service info file is kept on disk so the IDE can find it.
-5. If a server is already running (detected via the service info file), the CLI attaches to it instead of starting a new one.
-
-### IDE integration via VM service registration
-
-When running with FES (the default), the CLI registers a custom `reloadSources` service extension on the VM service. When the IDE sends a reload request, it is routed through the CLI's incremental compilation pipeline:
-
-1. CLI starts server with `--enable-vm-service`, connects to VM service.
-1. CLI registers a custom `reloadSources` service extension (via `registerService('reloadSources', 'serverpod-cli')`).
-1. IDE attaches for debugging (breakpoints, stepping - all normal).
-1. User presses IDE hot reload button -> IDE calls `reloadSources` -> routed to CLI's handler.
-1. CLI does incremental compile via FES -> produces `.dill` -> calls the real `reloadSources` with the `.dill`.
-1. Returns result to the IDE.
-
-> [!NOTE]
-> Due to [dart-lang/sdk#62822](https://github.com/dart-lang/sdk/issues/62822), IDE attach does not work reliably when the CLI owns the FES. Use `--no-fes` when you need IDE debugging with hot reload. The registered service extension approach works in principle but the SDK bug prevents it in practice.
+The TUI's reload button, MCP's `hot_reload` tool, and IDE attach all converge on the same callback. Earlier iterations registered a custom `reloadSources` service extension on the pod's VM service, which conflicted with IDE attach (see [dart-lang/sdk#62822](https://github.com/dart-lang/sdk/issues/62822)). Mounting the proxy out-of-process avoids that conflict.
 
 ### Browser auto-refresh (web server)
 
@@ -205,13 +192,13 @@ The Frontend Server approach solves both: it maintains incremental compiler stat
 
 Outside the Dart core team's own tooling (Flutter, `build_runner`, `test_core`, DWDS), no third-party projects currently use `frontend_server_client` for incremental compilation and hot reload.
 
-### Why `--no-fes` instead of the external reload detection fallback
+### Why `--watch` bundles file watching with the Frontend Server
 
 The original design proposed detecting external (IDE-initiated) reloads by tracking `kIsolateReload` event counts against CLI-initiated reload counts, then resetting the FES to recover from state divergence. This was not implemented.
 
-Instead, [dart-lang/sdk#62822](https://github.com/dart-lang/sdk/issues/62822) revealed that the FES and IDE compilation pipelines fundamentally conflict - the registered `reloadSources` service extension interferes with IDE attach. The `--no-fes` flag provides a clean separation: either the CLI owns compilation (default) or the IDE does (`--no-fes`), with no attempt to share or recover.
+A short-lived `--no-fes` flag was introduced to let users opt out of the FES compilation pipeline when running with an IDE debugger. It was removed once the vm-service proxy gave both modes the same reload-interception story: there was no longer a reason to have two flags for the same decision. `--watch` (default) means file watching plus the Frontend Server for fast incremental compilation; `--no-watch` means `dart run` plus the VM's own kernel service for reloads. Either way, manual reloads from the IDE, TUI, and MCP all flow through the proxy.
 
-This is simpler and more reliable than the counter-based fallback, at the cost of requiring the user to choose a mode explicitly.
+This is simpler than the counter-based fallback and avoids the `reloadSources` service-extension conflict described in [dart-lang/sdk#62822](https://github.com/dart-lang/sdk/issues/62822).
 
 ### Why no custom CLI-to-server protocol
 
@@ -234,7 +221,7 @@ The CLI manages the server subprocess through a `ServerProcess` class that encap
 Key details:
 - Only forwards `SIGTERM` to the child (not `SIGINT`) because the OS terminal delivers `SIGINT` to both parent and child automatically.
 - VM service URI is read from the `--write-service-info` file with polling and retries (5 attempts, 200ms delay), rather than parsing stderr.
-- Registers a custom `reloadSources` service extension when an `onReloadRequested` callback is provided (FES mode).
+- Exposes a unified `reload(String? dillPath)`: a non-null path passes `rootLibUri` to `vmService.reloadSources` for FES-driven reload (`--watch`); `null` omits it so the VM's own kernel service recompiles changed sources (`--no-watch`). The vm-service proxy's interceptor invokes it in both cases.
 - Exposes `notifyStaticChange()` for triggering browser refresh and template reload via the `ext.relic.notifyStaticChange` VM service extension.
 
 The `StartCommand` orchestrates file watching, code generation, and compilation, but delegates all subprocess and VM service interaction to `ServerProcess`.
@@ -298,9 +285,9 @@ This avoids Serverpod independently probing the VM service or maintaining its ow
 
 ## Resolved Questions
 
-1. **Should `serverpod start` without `--watch` compile to `.dill`?** No. One-shot mode uses `dart run bin/main.dart`. Compilation is only used in watch mode where the FES needs to persist for incremental recompiles.
+1. **Should `serverpod start` without `--watch` compile to `.dill`?** No. `--no-watch` uses `dart run bin/main.dart` so the VM's own kernel service is available for manual reloads via the proxy. Compilation is only used in watch mode where the FES persists for incremental recompiles.
 
-2. **What about `serverpod generate --watch`?** Kept as a lightweight alternative. Both `serverpod generate --watch` and `serverpod start --watch` share the same underlying generator code (`createAnalyzers`, `updateAnalyzers`, `performGenerate`). `generate --watch` is useful for users who run the server separately (e.g., from an IDE debugger with `--no-fes`).
+2. **What about `serverpod generate --watch`?** Kept as a lightweight alternative. Both `serverpod generate --watch` and `serverpod start --watch` share the same underlying generator code (`createAnalyzers`, `updateAnalyzers`, `performGenerate`). `generate --watch` is useful for users who run the server separately (e.g., from an IDE debugger).
 
 ## Open Questions
 

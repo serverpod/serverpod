@@ -1,0 +1,4 @@
+exception: SharedNotFoundException
+extends: SharedSealedAppException
+fields:
+  code: int

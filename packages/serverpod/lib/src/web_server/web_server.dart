@@ -7,6 +7,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_shared/log.dart';
 import 'package:serverpod/src/server/dev_auto_refresh_script.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
+import 'package:serverpod/src/server/health/health_routes.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/session.dart';
 
@@ -28,11 +29,11 @@ class WebServer {
 
   RelicApp? _appOrNull;
 
-  // The __dev/version endpoint returns the static change counter in dev mode.
-  // In production mode the handler returns 404, which tells the injected
-  // polling script to stop polling.
   RelicApp get _app => _appOrNull ??= RelicApp(useHostWhenRouting: true)
+    // Returns the static change counter in dev mode
     ..get('*/__dev/version', _devStaticChangeCount)
+    // Mirrors the probes [Server] exposes on the API/insights ports
+    ..injectAt('*/', HealthRoutes(serverpod))
     ..use('*/', _devHtmlInjection)
     ..inject(_ReportExceptionMiddleware(this))
     ..inject(_SessionMiddleware(serverpod.server));
@@ -452,11 +453,17 @@ abstract class WidgetRoute extends Route {
   /// respond to (defaults to GET only). The [path] parameter specifies the
   /// suffix path (defaults to '/'). The [host] parameter restricts this route
   /// to a specific virtual host (defaults to `null`, matching any host).
-  WidgetRoute({super.methods, super.path, super.host});
+  WidgetRoute({super.methods, super.path, super.host, this.cacheBustingConfig});
+
+  /// Used to cache-bust paths for `{{{@/path/to/asset}}}` patterns in the template.
+  final CacheBustingConfig? cacheBustingConfig;
+
+  /// Matches `@/path/to/asset` patterns in the template.
+  final _cacheBustingPathRegExp = RegExp(r'@/[^}]+');
 
   /// Override this method to build your web widget from the current [session]
   /// and [request].
-  Future<WebWidget> build(Session session, Request request);
+  Future<WebWidget?> build(Session session, Request request);
 
   @override
   FutureOr<Result> handleCall(
@@ -464,6 +471,10 @@ abstract class WidgetRoute extends Route {
     Request req,
   ) async {
     var widget = await build(session, req);
+
+    if (widget == null) {
+      return Response.notFound(body: Body.fromString('Not found'));
+    }
 
     if (widget is RedirectWidget) {
       var uri = Uri.parse(widget.url);
@@ -479,8 +490,43 @@ abstract class WidgetRoute extends Route {
       ),
     );
 
+    // Cache-bust paths for {{{@/path/to/asset}}} patterns in the template.
+    // This warms up CacheBustingConfig's cache so that the
+    // cache-busted paths are available synchronously when rendering.
+    if (cacheBustingConfig case final buster?) {
+      final regex = RegExp(r'\{\{\{@(/[^}]+)\}\}\}');
+      final matches = regex
+          .allMatches(
+            widget.render(
+              onMissingVariable: (name) {
+                if (_cacheBustingPathRegExp.hasMatch(name)) {
+                  return '{{{$name}}}';
+                }
+                return '{{$name}}';
+              },
+            ),
+          )
+          .toList();
+      for (final match in matches) {
+        await buster.tryAssetPath(match.group(1)!);
+      }
+    }
+
+    final renderedContent = widget.render(
+      onMissingVariable: (name) {
+        if (cacheBustingConfig case final buster?) {
+          if (_cacheBustingPathRegExp.hasMatch(name)) {
+            // Strip leading '@' from the path
+            // which is used to indicate that the asset should be cache-busted.
+            return buster.tryAssetPathSync(name.substring(1));
+          }
+        }
+        return null;
+      },
+    );
+
     return Response.ok(
-      body: Body.fromString(widget.toString(), mimeType: mimeType),
+      body: Body.fromString(renderedContent, mimeType: mimeType),
       headers: headers,
     );
   }

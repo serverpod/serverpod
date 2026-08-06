@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
@@ -177,4 +179,29 @@ class GeneratorConfigBuilder {
       relativeServerTestToolsPathParts: _relativeServerTestToolsPathParts,
     );
   }
+}
+
+/// Builds a minimal server [GeneratorConfig] rooted at [projectDir], for
+/// integration tests that generate code from a temporary project.
+GeneratorConfig buildTestServerConfig(
+  Directory projectDir, {
+  Map<String, List<String>> sharedModelsSourcePathsParts = const {},
+  DatabaseDialect databaseDialect = DatabaseDialect.postgres,
+}) {
+  return GeneratorConfigBuilder()
+      .withName('test')
+      .withServerPackageDirectoryPathParts([projectDir.path])
+      .withRelativeDartClientPackagePathParts(['test_client'])
+      .withSharedModelsSourcePathsParts(sharedModelsSourcePathsParts)
+      .withDatabaseDialect(databaseDialect)
+      .withModules([
+        ModuleConfig(
+          type: PackageType.server,
+          name: 'test',
+          nickname: 'test',
+          migrationVersions: [],
+          serverPackageDirectoryPathParts: [projectDir.path],
+        ),
+      ])
+      .build();
 }

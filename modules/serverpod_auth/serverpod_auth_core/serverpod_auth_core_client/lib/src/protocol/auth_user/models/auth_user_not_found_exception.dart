@@ -14,7 +14,10 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Exception thrown when attempting to access an [AuthUser] that does not exist.
 abstract class AuthUserNotFoundException
-    implements _i1.SerializableException, _i1.SerializableModel {
+    implements
+        _i1.SerializableException,
+        _i1.SerializableModel,
+        _i1.ProtocolSerialization {
   AuthUserNotFoundException._();
 
   factory AuthUserNotFoundException() = _AuthUserNotFoundExceptionImpl;
@@ -31,6 +34,11 @@ abstract class AuthUserNotFoundException
   AuthUserNotFoundException copyWith();
   @override
   Map<String, dynamic> toJson() {
+    return {'__className__': 'serverpod_auth_core.AuthUserNotFoundException'};
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {'__className__': 'serverpod_auth_core.AuthUserNotFoundException'};
   }
 

@@ -4,7 +4,6 @@ import 'package:serverpod_auth_idp_server/providers/anonymous.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
 
-import '../../test_tags.dart';
 import '../../test_tools/serverpod_test_tools.dart';
 import '../test_utils/anonymous_idp_test_fixture.dart';
 
@@ -12,7 +11,6 @@ void main() {
   withServerpod(
     'Given login request with no previous attempts',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late AnonymousIdpTestFixture fixture;
@@ -38,7 +36,6 @@ void main() {
   withServerpod(
     'Given login request within configured rate limit with existing request attempt',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late AnonymousIdpTestFixture fixture;
@@ -74,7 +71,6 @@ void main() {
   withServerpod(
     'Given login request exceeding configured rate limit',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late AnonymousIdpTestFixture fixture;
@@ -112,7 +108,6 @@ void main() {
   withServerpod(
     'Given rate limit of 1 and an existing request attempt with a different IP address',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late AnonymousIdpTestFixture fixture;
@@ -168,7 +163,6 @@ void main() {
   withServerpod(
     'Given onBeforeAnonymousAccountCreated callback configured to receive the token',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late AnonymousIdpTestFixture fixture;
@@ -209,7 +203,6 @@ void main() {
   withServerpod(
     'Given onBeforeAnonymousAccountCreated configured to block login attempts',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late AnonymousIdpTestFixture fixture;
@@ -251,7 +244,6 @@ void main() {
     'Given login request with onAfterAuthUserCreated and '
     'onBeforeAuthUserCreated callbacks configured',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late AnonymousIdpTestFixture fixture;

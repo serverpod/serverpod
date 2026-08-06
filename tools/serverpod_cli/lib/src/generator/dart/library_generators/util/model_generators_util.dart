@@ -83,22 +83,22 @@ class ModelAllocatorContext {
     List<SerializableModelDefinition> models,
   ) {
     return models.where(
-      (e) => e is! ModelClassDefinition || e.sealedTopNode == null,
+      (e) => e is! ClassDefinition || e.sealedTopNode == null,
     );
   }
 
   /// Returns all sealed top node classes.
-  static Iterable<ModelClassDefinition> _getSealedTopNodeClasses(
+  static Iterable<ClassDefinition> _getSealedTopNodeClasses(
     List<SerializableModelDefinition> models,
   ) {
-    return models.whereType<ModelClassDefinition>().where(
+    return models.whereType<ClassDefinition>().where(
       (element) => element.isSealedTopNode,
     );
   }
 
   /// Returns a list of sealed hierarchies.
   /// Each hierarchy is represented by a list of classes.
-  static Iterable<Iterable<ModelClassDefinition>> _getSealedHierarchies(
+  static Iterable<Iterable<ClassDefinition>> _getSealedHierarchies(
     List<SerializableModelDefinition> models,
   ) {
     var sealedClasses = _getSealedTopNodeClasses(models);

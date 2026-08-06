@@ -12,12 +12,13 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
-import '../../models_with_relations/one_to_one/address.dart' as _i2;
-import '../../models_with_relations/one_to_one/company.dart' as _i3;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
-import 'package:serverpod_client/serverpod_client.dart' as _i5;
+import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import '../../models_with_relations/one_to_one/address.dart' as _i3;
+import '../../models_with_relations/one_to_one/company.dart' as _i4;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i5;
 
-abstract class Citizen implements _i1.TableRow<int?> {
+abstract class Citizen
+    implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   Citizen._({
     this.id,
     required this.name,
@@ -31,11 +32,11 @@ abstract class Citizen implements _i1.TableRow<int?> {
   factory Citizen({
     int? id,
     required String name,
-    _i2.Address? address,
+    _i3.Address? address,
     required int companyId,
-    _i3.Company? company,
+    _i4.Company? company,
     int? oldCompanyId,
-    _i3.Company? oldCompany,
+    _i4.Company? oldCompany,
   }) = _CitizenImpl;
 
   factory Citizen.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -44,19 +45,19 @@ abstract class Citizen implements _i1.TableRow<int?> {
       name: jsonSerialization['name'] as String,
       address: jsonSerialization['address'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.Address>(
+          : _i5.Protocol().deserialize<_i3.Address>(
               jsonSerialization['address'],
             ),
       companyId: jsonSerialization['companyId'] as int,
       company: jsonSerialization['company'] == null
           ? null
-          : _i4.Protocol().deserialize<_i3.Company>(
+          : _i5.Protocol().deserialize<_i4.Company>(
               jsonSerialization['company'],
             ),
       oldCompanyId: jsonSerialization['oldCompanyId'] as int?,
       oldCompany: jsonSerialization['oldCompany'] == null
           ? null
-          : _i4.Protocol().deserialize<_i3.Company>(
+          : _i5.Protocol().deserialize<_i4.Company>(
               jsonSerialization['oldCompany'],
             ),
     );
@@ -71,30 +72,30 @@ abstract class Citizen implements _i1.TableRow<int?> {
 
   String name;
 
-  _i2.Address? address;
+  _i3.Address? address;
 
   int companyId;
 
-  _i3.Company? company;
+  _i4.Company? company;
 
   int? oldCompanyId;
 
-  _i3.Company? oldCompany;
+  _i4.Company? oldCompany;
 
   @override
   _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Citizen]
   /// with some or all fields replaced by the given arguments.
-  @_i5.useResult
+  @_i2.useResult
   Citizen copyWith({
     int? id,
     String? name,
-    _i2.Address? address,
+    _i3.Address? address,
     int? companyId,
-    _i3.Company? company,
+    _i4.Company? company,
     int? oldCompanyId,
-    _i3.Company? oldCompany,
+    _i4.Company? oldCompany,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -110,10 +111,24 @@ abstract class Citizen implements _i1.TableRow<int?> {
     };
   }
 
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Citizen',
+      if (id != null) 'id': id,
+      'name': name,
+      if (address != null) 'address': address?.toJsonForProtocol(),
+      'companyId': companyId,
+      if (company != null) 'company': company?.toJsonForProtocol(),
+      if (oldCompanyId != null) 'oldCompanyId': oldCompanyId,
+      if (oldCompany != null) 'oldCompany': oldCompany?.toJsonForProtocol(),
+    };
+  }
+
   static CitizenInclude include({
-    _i2.AddressInclude? address,
-    _i3.CompanyInclude? company,
-    _i3.CompanyInclude? oldCompany,
+    _i3.AddressInclude? address,
+    _i4.CompanyInclude? company,
+    _i4.CompanyInclude? oldCompany,
   }) {
     return CitizenInclude._(
       address: address,
@@ -127,8 +142,6 @@ abstract class Citizen implements _i1.TableRow<int?> {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CitizenTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CitizenTable>? orderByList,
     CitizenInclude? include,
   }) {
@@ -137,8 +150,6 @@ abstract class Citizen implements _i1.TableRow<int?> {
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Citizen.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(Citizen.t),
       include: include,
     );
@@ -146,7 +157,7 @@ abstract class Citizen implements _i1.TableRow<int?> {
 
   @override
   String toString() {
-    return _i5.SerializationManager.encode(this);
+    return _i2.SerializationManager.encode(this);
   }
 }
 
@@ -156,11 +167,11 @@ class _CitizenImpl extends Citizen {
   _CitizenImpl({
     int? id,
     required String name,
-    _i2.Address? address,
+    _i3.Address? address,
     required int companyId,
-    _i3.Company? company,
+    _i4.Company? company,
     int? oldCompanyId,
-    _i3.Company? oldCompany,
+    _i4.Company? oldCompany,
   }) : super._(
          id: id,
          name: name,
@@ -173,7 +184,7 @@ class _CitizenImpl extends Citizen {
 
   /// Returns a shallow copy of this [Citizen]
   /// with some or all fields replaced by the given arguments.
-  @_i5.useResult
+  @_i2.useResult
   @override
   Citizen copyWith({
     Object? id = _Undefined,
@@ -187,11 +198,11 @@ class _CitizenImpl extends Citizen {
     return Citizen(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      address: address is _i2.Address? ? address : this.address?.copyWith(),
+      address: address is _i3.Address? ? address : this.address?.copyWith(),
       companyId: companyId ?? this.companyId,
-      company: company is _i3.Company? ? company : this.company?.copyWith(),
+      company: company is _i4.Company? ? company : this.company?.copyWith(),
       oldCompanyId: oldCompanyId is int? ? oldCompanyId : this.oldCompanyId,
-      oldCompany: oldCompany is _i3.Company?
+      oldCompany: oldCompany is _i4.Company?
           ? oldCompany
           : this.oldCompany?.copyWith(),
     );
@@ -238,51 +249,51 @@ class CitizenTable extends _i1.Table<int?> {
 
   late final _i1.ColumnString name;
 
-  _i2.AddressTable? _address;
+  _i3.AddressTable? _address;
 
   late final _i1.ColumnInt companyId;
 
-  _i3.CompanyTable? _company;
+  _i4.CompanyTable? _company;
 
   late final _i1.ColumnInt oldCompanyId;
 
-  _i3.CompanyTable? _oldCompany;
+  _i4.CompanyTable? _oldCompany;
 
-  _i2.AddressTable get address {
+  _i3.AddressTable get address {
     if (_address != null) return _address!;
     _address = _i1.createRelationTable(
       relationFieldName: 'address',
       field: Citizen.t.id,
-      foreignField: _i2.Address.t.inhabitantId,
+      foreignField: _i3.Address.t.inhabitantId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.AddressTable(tableRelation: foreignTableRelation),
+          _i3.AddressTable(tableRelation: foreignTableRelation),
     );
     return _address!;
   }
 
-  _i3.CompanyTable get company {
+  _i4.CompanyTable get company {
     if (_company != null) return _company!;
     _company = _i1.createRelationTable(
       relationFieldName: 'company',
       field: Citizen.t.companyId,
-      foreignField: _i3.Company.t.id,
+      foreignField: _i4.Company.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.CompanyTable(tableRelation: foreignTableRelation),
+          _i4.CompanyTable(tableRelation: foreignTableRelation),
     );
     return _company!;
   }
 
-  _i3.CompanyTable get oldCompany {
+  _i4.CompanyTable get oldCompany {
     if (_oldCompany != null) return _oldCompany!;
     _oldCompany = _i1.createRelationTable(
       relationFieldName: 'oldCompany',
       field: Citizen.t.oldCompanyId,
-      foreignField: _i3.Company.t.id,
+      foreignField: _i4.Company.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.CompanyTable(tableRelation: foreignTableRelation),
+          _i4.CompanyTable(tableRelation: foreignTableRelation),
     );
     return _oldCompany!;
   }
@@ -312,20 +323,20 @@ class CitizenTable extends _i1.Table<int?> {
 
 class CitizenInclude extends _i1.IncludeObject {
   CitizenInclude._({
-    _i2.AddressInclude? address,
-    _i3.CompanyInclude? company,
-    _i3.CompanyInclude? oldCompany,
+    _i3.AddressInclude? address,
+    _i4.CompanyInclude? company,
+    _i4.CompanyInclude? oldCompany,
   }) {
     _address = address;
     _company = company;
     _oldCompany = oldCompany;
   }
 
-  _i2.AddressInclude? _address;
+  _i3.AddressInclude? _address;
 
-  _i3.CompanyInclude? _company;
+  _i4.CompanyInclude? _company;
 
-  _i3.CompanyInclude? _oldCompany;
+  _i4.CompanyInclude? _oldCompany;
 
   @override
   Map<String, _i1.Include?> get includes => {
@@ -344,8 +355,6 @@ class CitizenIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -394,8 +403,6 @@ class CitizenRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CitizenTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CitizenTable>? orderByList,
     _i1.Transaction? transaction,
     CitizenInclude? include,
@@ -406,8 +413,6 @@ class CitizenRepository {
       where: where?.call(Citizen.t),
       orderBy: orderBy?.call(Citizen.t),
       orderByList: orderByList?.call(Citizen.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -439,8 +444,6 @@ class CitizenRepository {
     _i1.WhereExpressionBuilder<CitizenTable>? where,
     int? offset,
     _i1.OrderByBuilder<CitizenTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CitizenTable>? orderByList,
     _i1.Transaction? transaction,
     CitizenInclude? include,
@@ -451,8 +454,6 @@ class CitizenRepository {
       where: where?.call(Citizen.t),
       orderBy: orderBy?.call(Citizen.t),
       orderByList: orderByList?.call(Citizen.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -489,16 +490,22 @@ class CitizenRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Citizen>> insert(
     _i1.DatabaseSession session,
     List<Citizen> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<Citizen>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -516,21 +523,96 @@ class CitizenRepository {
     );
   }
 
+  /// Upserts all [Citizen]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [Citizen]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<Citizen>> upsert(
+    _i1.DatabaseSession session,
+    List<Citizen> rows, {
+    required _i1.ColumnSelections<CitizenTable> conflictColumns,
+    _i1.ColumnSelections<CitizenTable>? updateColumns,
+    _i1.WhereExpressionBuilder<CitizenTable>? updateWhere,
+    _i1.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<Citizen>(
+      rows,
+      conflictColumns: conflictColumns(Citizen.t),
+      updateColumns: updateColumns?.call(Citizen.t),
+      updateWhere: updateWhere?.call(Citizen.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [Citizen] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [Citizen] will have its `id` field set.
+  Future<Citizen?> upsertRow(
+    _i1.DatabaseSession session,
+    Citizen row, {
+    required _i1.ColumnSelections<CitizenTable> conflictColumns,
+    _i1.ColumnSelections<CitizenTable>? updateColumns,
+    _i1.WhereExpressionBuilder<CitizenTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<Citizen>(
+      row,
+      conflictColumns: conflictColumns(Citizen.t),
+      updateColumns: updateColumns?.call(Citizen.t),
+      updateWhere: updateWhere?.call(Citizen.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [Citizen]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Citizen>> update(
     _i1.DatabaseSession session,
     List<Citizen> rows, {
     _i1.ColumnSelections<CitizenTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<Citizen>(
       rows,
       columns: columns?.call(Citizen.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -567,6 +649,10 @@ class CitizenRepository {
 
   /// Updates all [Citizen]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Citizen>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<CitizenUpdateTable> columnValues,
@@ -575,9 +661,8 @@ class CitizenRepository {
     int? offset,
     _i1.OrderByBuilder<CitizenTable>? orderBy,
     _i1.OrderByListBuilder<CitizenTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<Citizen>(
       columnValues: columnValues(Citizen.t.updateTable),
@@ -586,9 +671,8 @@ class CitizenRepository {
       offset: offset,
       orderBy: orderBy?.call(Citizen.t),
       orderByList: orderByList?.call(Citizen.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -599,22 +683,24 @@ class CitizenRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Citizen>> delete(
     _i1.DatabaseSession session,
     List<Citizen> rows, {
     _i1.OrderByBuilder<CitizenTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CitizenTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<Citizen>(
       rows,
       orderBy: orderBy?.call(Citizen.t),
       orderByList: orderByList?.call(Citizen.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -634,22 +720,24 @@ class CitizenRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Citizen>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CitizenTable> where,
     _i1.OrderByBuilder<CitizenTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CitizenTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Citizen>(
       where: where(Citizen.t),
       orderBy: orderBy?.call(Citizen.t),
       orderByList: orderByList?.call(Citizen.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -693,7 +781,7 @@ class CitizenAttachRowRepository {
   Future<void> address(
     _i1.DatabaseSession session,
     Citizen citizen,
-    _i2.Address address, {
+    _i3.Address address, {
     _i1.Transaction? transaction,
   }) async {
     if (address.id == null) {
@@ -704,9 +792,9 @@ class CitizenAttachRowRepository {
     }
 
     var $address = address.copyWith(inhabitantId: citizen.id);
-    await session.db.updateRow<_i2.Address>(
+    await session.db.updateRow<_i3.Address>(
       $address,
-      columns: [_i2.Address.t.inhabitantId],
+      columns: [_i3.Address.t.inhabitantId],
       transaction: transaction,
     );
   }
@@ -716,7 +804,7 @@ class CitizenAttachRowRepository {
   Future<void> company(
     _i1.DatabaseSession session,
     Citizen citizen,
-    _i3.Company company, {
+    _i4.Company company, {
     _i1.Transaction? transaction,
   }) async {
     if (citizen.id == null) {
@@ -739,7 +827,7 @@ class CitizenAttachRowRepository {
   Future<void> oldCompany(
     _i1.DatabaseSession session,
     Citizen citizen,
-    _i3.Company oldCompany, {
+    _i4.Company oldCompany, {
     _i1.Transaction? transaction,
   }) async {
     if (citizen.id == null) {
@@ -784,9 +872,9 @@ class CitizenDetachRowRepository {
     }
 
     var $$address = $address.copyWith(inhabitantId: null);
-    await session.db.updateRow<_i2.Address>(
+    await session.db.updateRow<_i3.Address>(
       $$address,
-      columns: [_i2.Address.t.inhabitantId],
+      columns: [_i3.Address.t.inhabitantId],
       transaction: transaction,
     );
   }

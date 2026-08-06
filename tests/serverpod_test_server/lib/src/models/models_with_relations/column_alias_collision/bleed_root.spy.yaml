@@ -1,0 +1,20 @@
+### Root model used to reproduce the include column-alias collision in
+### https://github.com/serverpod/serverpod/issues/5287
+###
+### Two relations point at the same child table (`bleed_child`). Their relation
+### field names are intentionally long so the generated relation/column aliases
+### are truncated to the Postgres 63 character identifier limit. With these exact
+### names the truncated SELECT alias of the first relation's `id` column collides
+### with the second relation's `bleedingText` column, so the string value bleeds
+### into the int `id` field on deserialization.
+###
+### The two relations are declared with explicit `field=` foreign keys so the FK
+### column names stay short (the long names only affect the relation aliases).
+class: BleedRoot
+table: bleed_root
+fields:
+  name: String
+  firstChildId: int?
+  childRelationWithExtremelyLongFieldNameForcingTrun24: BleedChild?, relation(field=firstChildId)
+  secondChildId: int?
+  childRelationWithExtremelyLongFieldNameForcingTrun23: BleedChild?, relation(field=secondChildId)

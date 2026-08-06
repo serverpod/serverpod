@@ -22,6 +22,7 @@ void main() {
       _TestSerializationManager(),
       SqliteDatabaseConfig(filePath: p.join(tempDir.path, 'test.db')),
     )..start();
+    await poolManager.started;
 
     session = _TestSession(() => database);
     database = DatabaseConstructor.create(

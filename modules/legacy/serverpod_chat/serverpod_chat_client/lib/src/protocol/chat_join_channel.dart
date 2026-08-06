@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// A message indicating an attempt to join a channel.
-abstract class ChatJoinChannel implements _i1.SerializableModel {
+abstract class ChatJoinChannel
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ChatJoinChannel._({
     required this.channel,
     this.userName,
@@ -46,6 +47,15 @@ abstract class ChatJoinChannel implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_chat.ChatJoinChannel',
+      'channel': channel,
+      if (userName != null) 'userName': userName,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_chat.ChatJoinChannel',
       'channel': channel,

@@ -1,0 +1,6 @@
+class: SharedModuleTable
+table: shared_module_table
+database: all
+fields:
+  name: String
+  data: dynamic

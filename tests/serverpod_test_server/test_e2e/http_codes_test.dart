@@ -8,10 +8,6 @@ import 'package:uuid/uuid.dart';
 
 void main() {
   group('Given an HTTP client invoking a serverpod endpoint method', () {
-    setUpAll(() async {});
-
-    tearDownAll(() async {});
-
     test('when calling an endpoint method with correct parameters '
         'then it should respond with 200 ok', () async {
       var response = await http.post(

@@ -18,9 +18,10 @@ import 'firebase_idp_utils.dart';
 ///
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
-class FirebaseIdp {
+class FirebaseIdp implements IdentityProvider {
   /// The method used when authenticating with the Firebase identity provider.
-  static const String method = 'firebase';
+  @override
+  String get method => 'firebase';
 
   /// Admin operations to work with Firebase-backed accounts.
   final FirebaseIdpAdmin admin;
@@ -84,25 +85,16 @@ class FirebaseIdp {
 
         final image = account.details.image;
         if (account.newAccount) {
-          try {
-            await _userProfiles.createUserProfile(
-              session,
-              account.authUserId,
-              UserProfileData(
-                fullName: account.details.fullName?.trim(),
-                email: account.details.email,
-              ),
-              transaction: transaction,
-              imageSource: image != null ? UserImageFromUrl(image) : null,
-            );
-          } catch (e, stackTrace) {
-            session.log(
-              'Failed to create user profile for new Firebase user.',
-              level: LogLevel.error,
-              exception: e,
-              stackTrace: stackTrace,
-            );
-          }
+          await _userProfiles.createUserProfile(
+            session,
+            account.authUserId,
+            UserProfileData(
+              fullName: account.details.fullName?.trim(),
+              email: account.details.email,
+            ),
+            transaction: transaction,
+            imageSource: image != null ? UserImageFromUrl(image) : null,
+          );
         } else if (image != null) {
           try {
             final user = await UserProfile.db.findFirstRow(
@@ -110,7 +102,7 @@ class FirebaseIdp {
               where: (final t) => t.authUserId.equals(account.authUserId),
               transaction: transaction,
             );
-            if (user != null && user.image == null) {
+            if (user != null && user.imageId == null) {
               await _userProfiles.setUserImageFromUrl(
                 session,
                 account.authUserId,
@@ -142,6 +134,24 @@ class FirebaseIdp {
   /// Determines whether the current session has an associated Firebase account.
   Future<bool> hasAccount(final Session session) async =>
       await utils.getAccount(session) != null;
+
+  /// Migrates all [FirebaseAccount]s from [userToRemoveId] to [userToKeepId].
+  @override
+  Future<void> mergeAuthUsers(
+    final Session session, {
+    required final UuidValue userToKeepId,
+    required final UuidValue userToRemoveId,
+    required final Transaction transaction,
+  }) async {
+    await FirebaseAccount.db.updateWhere(
+      session,
+      where: (final t) => t.authUserId.equals(userToRemoveId),
+      columnValues: (final t) => [
+        t.authUserId(userToKeepId),
+      ],
+      transaction: transaction,
+    );
+  }
 }
 
 /// Extension to get the FirebaseIdp instance from the AuthServices.

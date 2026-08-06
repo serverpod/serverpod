@@ -1,0 +1,5 @@
+class: ObjectWithSealedException
+fields:
+  sealedField: SealedAppException
+  nullableSealedField: SealedAppException?
+  sealedList: List<SealedAppException>

@@ -1,18 +1,16 @@
 import 'dart:io';
 
-import 'package:serverpod_test_server/test_util/test_tags.dart';
 import 'package:test/test.dart';
 import 'package:uuid/uuid.dart';
 
 import '../test_tools/serverpod_test_tools.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
-import 'package:serverpod/src/database/server_migration_manager.dart';
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_cli/src/migrations/generator.dart';
 
 void main() {
   withServerpod(
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
     'Given unapplied repair migration that errors if applied multiple times',
     (sessionBuilder, _) async {
       final migrationName = MigrationGenerator.createVersionName(null);
@@ -71,7 +69,7 @@ void main() {
       test(
         'when triggering multiple concurrent repair migrations then migration is successfully applied once',
         () async {
-          var migrationManager = ServerMigrationManager(
+          var migrationManager = MigrationManager.fromDirectory(
             Directory(d.sandbox),
           );
 

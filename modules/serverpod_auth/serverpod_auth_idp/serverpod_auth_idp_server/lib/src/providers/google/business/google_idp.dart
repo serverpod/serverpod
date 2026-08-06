@@ -17,9 +17,10 @@ import 'google_idp_utils.dart';
 ///
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
-class GoogleIdp {
+class GoogleIdp implements IdentityProvider {
   /// The method used when authenticating with the Google identity provider.
-  static const String method = 'google';
+  @override
+  String get method => 'google';
 
   /// Admin operations to work with Google-backed accounts.
   final GoogleIdpAdmin admin;
@@ -85,25 +86,16 @@ class GoogleIdp {
 
         final image = account.details.image;
         if (account.newAccount) {
-          try {
-            await _userProfiles.createUserProfile(
-              session,
-              account.authUserId,
-              UserProfileData(
-                fullName: account.details.fullName?.trim(),
-                email: account.details.email,
-              ),
-              transaction: transaction,
-              imageSource: image != null ? UserImageFromUrl(image) : null,
-            );
-          } catch (e, stackTrace) {
-            session.log(
-              'Failed to create user profile for new Google user.',
-              level: LogLevel.error,
-              exception: e,
-              stackTrace: stackTrace,
-            );
-          }
+          await _userProfiles.createUserProfile(
+            session,
+            account.authUserId,
+            UserProfileData(
+              fullName: account.details.fullName?.trim(),
+              email: account.details.email,
+            ),
+            transaction: transaction,
+            imageSource: image != null ? UserImageFromUrl(image) : null,
+          );
         } else if (image != null) {
           try {
             final user = await UserProfile.db.findFirstRow(
@@ -111,7 +103,7 @@ class GoogleIdp {
               where: (final t) => t.authUserId.equals(account.authUserId),
               transaction: transaction,
             );
-            if (user != null && user.image == null) {
+            if (user != null && user.imageId == null) {
               await _userProfiles.setUserImageFromUrl(
                 session,
                 account.authUserId,
@@ -140,9 +132,50 @@ class GoogleIdp {
     );
   }
 
+  /// {@macro google_idp_base_endpoint.login_with_code}
+  Future<AuthSuccess> loginWithCode(
+    final Session session, {
+    required final String code,
+    required final String codeVerifier,
+    required final String redirectUri,
+    final Transaction? transaction,
+  }) async {
+    final tokens = await utils.exchangeCodeForToken(
+      session,
+      code: code,
+      codeVerifier: codeVerifier,
+      redirectUri: redirectUri,
+    );
+
+    return login(
+      session,
+      idToken: tokens.idToken,
+      accessToken: tokens.accessToken,
+      transaction: transaction,
+    );
+  }
+
   /// Determines whether the current session has an associated Google account.
   Future<bool> hasAccount(final Session session) async =>
       await utils.getAccount(session) != null;
+
+  /// Migrates all [GoogleAccount]s from [userToRemoveId] to [userToKeepId].
+  @override
+  Future<void> mergeAuthUsers(
+    final Session session, {
+    required final UuidValue userToKeepId,
+    required final UuidValue userToRemoveId,
+    required final Transaction transaction,
+  }) async {
+    await GoogleAccount.db.updateWhere(
+      session,
+      where: (final t) => t.authUserId.equals(userToRemoveId),
+      columnValues: (final t) => [
+        t.authUserId(userToKeepId),
+      ],
+      transaction: transaction,
+    );
+  }
 }
 
 /// Extension to get the GoogleIdp instance from the AuthServices.

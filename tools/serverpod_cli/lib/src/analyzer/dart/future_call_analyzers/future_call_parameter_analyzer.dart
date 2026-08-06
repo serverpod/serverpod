@@ -7,6 +7,7 @@ import 'package:serverpod_cli/src/analyzer/dart/parameters.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:serverpod_cli/src/util/type_validators.dart';
 
 abstract class FutureCallParameterAnalyzer {
   /// Parses a list of [FormalParameterElement] into a [Parameters].
@@ -119,40 +120,14 @@ abstract class FutureCallParameterAnalyzer {
     FormalParameterElement parameter,
     List<SerializableModelDefinition> models,
   ) {
-    return _isValidType(
+    return TypeValidators.isValidType(
       TypeDefinition.fromDartType(parameter.type),
-      models,
+      TypeValidationOptions(
+        models: models,
+        allowSerializableGenerics: true,
+        allowSerializableModelBaseType: true,
+      ),
     );
-  }
-
-  static bool _isValidType(
-    TypeDefinition type,
-    List<SerializableModelDefinition> models,
-  ) {
-    return (type.isSerializableDartType &&
-            type.generics.every((t) => _isValidType(t, models))) ||
-        _isSerializableModel(type) ||
-        _isModelType(type, models) ||
-        _isRecordType(type, models);
-  }
-
-  static bool _isSerializableModel(TypeDefinition type) {
-    return type.className == 'SerializableModel';
-  }
-
-  static bool _isModelType(
-    TypeDefinition type,
-    List<SerializableModelDefinition> models,
-  ) {
-    return models.any((model) => model.className == type.className);
-  }
-
-  static bool _isRecordType(
-    TypeDefinition type,
-    List<SerializableModelDefinition> models,
-  ) {
-    return type.isRecordType &&
-        type.generics.every((t) => _isValidType(t, models));
   }
 
   static bool _isRequired(FormalParameterElement parameter) {

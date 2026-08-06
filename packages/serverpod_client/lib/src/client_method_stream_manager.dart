@@ -49,6 +49,9 @@ final class ClientMethodStreamManager {
   /// The serialization manager used to serialize and deserialize messages.
   final SerializationManager _serializationManager;
 
+  /// Optional connector used to override [WebSocketChannel.connect] in tests.
+  final WebSocketChannel Function(Uri uri)? _webSocketConnector;
+
   /// Lock used to synchronize access when establishing websocket connection.
   final Lock _lock = Lock();
 
@@ -67,11 +70,13 @@ final class ClientMethodStreamManager {
     required SerializationManager serializationManager,
     @visibleForTesting Duration? pingInterval,
     @visibleForTesting Duration? idleTimeout,
+    @visibleForTesting WebSocketChannel Function(Uri uri)? webSocketConnector,
   }) : _webSocketHost = webSocketHost,
        _connectionTimeout = connectionTimeout,
        _serializationManager = serializationManager,
        _pingInterval = pingInterval ?? _defaultPingInterval,
-       _idleTimeout = idleTimeout ?? _defaultIdleTimeout;
+       _idleTimeout = idleTimeout ?? _defaultIdleTimeout,
+       _webSocketConnector = webSocketConnector;
 
   /// Closes all open connections and streams
   ///
@@ -189,8 +194,24 @@ final class ClientMethodStreamManager {
 
   void _tryCloseConnection() {
     if (_inboundStreams.isEmpty && _outboundStreams.isEmpty) {
-      closeAllConnections();
+      unawaited(_closeConnectionIfUnused());
     }
+  }
+
+  /// Closes the websocket connection if no streams are using it.
+  ///
+  /// The emptiness check is repeated once the lock is acquired, since a new
+  /// method stream may have been opened while this cleanup was waiting for
+  /// the lock. In that case the connection must be kept open.
+  Future<void> _closeConnectionIfUnused() async {
+    await _lock.synchronized(() async {
+      if (_inboundStreams.isNotEmpty || _outboundStreams.isNotEmpty) return;
+      _cancelConnectionTimer();
+      var webSocket = _webSocket;
+      _webSocket = null;
+      await webSocket?.sink.close();
+      await _webSocketListenerCompleter.future;
+    });
   }
 
   /// Builds a unique key for a stream.
@@ -229,6 +250,7 @@ final class ClientMethodStreamManager {
 
     if (exception != null) {
       for (var c in inputControllers) {
+        if (c.isClosed) continue;
         c.addError(exception);
       }
     }
@@ -385,7 +407,8 @@ final class ClientMethodStreamManager {
     // a close message to the server.
     inboundStreamContext.controller.onCancel = null;
 
-    if (reason == CloseReason.error) {
+    if (reason == CloseReason.error &&
+        !inboundStreamContext.controller.isClosed) {
       inboundStreamContext.controller.addError(
         const ConnectionClosedException(),
       );
@@ -444,7 +467,8 @@ final class ClientMethodStreamManager {
     );
 
     var inboundStreamContext = _inboundStreams[inboundStreamKey];
-    if (inboundStreamContext == null) {
+    if (inboundStreamContext == null ||
+        inboundStreamContext.controller.isClosed) {
       return false;
     }
 
@@ -480,12 +504,15 @@ final class ClientMethodStreamManager {
       return;
     }
 
-    inboundStreamContext.controller.addError(message.exception);
+    if (!inboundStreamContext.controller.isClosed) {
+      inboundStreamContext.controller.addError(message.exception);
+    }
     await _closeControllers([inboundStreamContext.controller]);
   }
 
   Future<void> _listenToWebSocketStream(WebSocketChannel webSocket) async {
-    _webSocketListenerCompleter = Completer();
+    final webSocketListenerCompleter = Completer();
+    _webSocketListenerCompleter = webSocketListenerCompleter;
     MethodStreamException closeException = const WebSocketClosedException();
     try {
       await for (String jsonData in webSocket.stream) {
@@ -548,19 +575,41 @@ final class ClientMethodStreamManager {
       /// Attempt to send close message to server if connection is still open.
       await webSocket.sink.close();
     } finally {
-      _cancelConnectionTimer();
-      _webSocketListenerCompleter.complete();
+      if (!webSocketListenerCompleter.isCompleted) {
+        webSocketListenerCompleter.complete();
+      }
 
       /// Close any still open streams with an exception.
-      await closeAllConnections(closeException);
+      await _cleanUpClosedConnection(webSocket, closeException);
     }
+  }
+
+  /// Cleans up after [webSocket]'s listener has stopped.
+  ///
+  /// If a new connection has already replaced [webSocket], the manager state
+  /// (timers, streams and the current websocket) belongs to the new connection
+  /// and must not be touched. Any streams that belonged to [webSocket] were
+  /// already removed when it was torn down.
+  Future<void> _cleanUpClosedConnection(
+    WebSocketChannel webSocket,
+    Object error,
+  ) async {
+    await _lock.synchronized(() async {
+      if (_webSocket != null && !identical(_webSocket, webSocket)) return;
+      _cancelConnectionTimer();
+      _webSocket = null;
+      await _closeAllStreams(error);
+      await webSocket.sink.close();
+    });
   }
 
   Future<void> _connectSynchronized() async {
     await _lock.synchronized(() async {
       if (_webSocket != null) return;
 
-      var webSocket = WebSocketChannel.connect(_webSocketHost);
+      var webSocket =
+          _webSocketConnector?.call(_webSocketHost) ??
+          WebSocketChannel.connect(_webSocketHost);
 
       await webSocket.ready.onError((e, s) {
         throw WebSocketConnectException(e, s);

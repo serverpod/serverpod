@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:serverpod_cli/src/util/file_ex.dart';
-import 'package:serverpod_cli/src/util/sdk_path.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+import 'package:serverpod_shared/process_io.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:vm_service/vm_service.dart';
 import 'package:vm_service/vm_service_io.dart';
 
@@ -16,12 +16,6 @@ String vmServiceWsUri(String httpUri) {
   final base = uri.replace(scheme: wsScheme).toString();
   return base.endsWith('/') ? '${base}ws' : '$base/ws';
 }
-
-/// Callback for IDE-initiated reload requests.
-///
-/// Should compile changes and return the dill path on success, or `null`
-/// on compilation failure.
-typedef ReloadRequestedCallback = Future<String?> Function();
 
 /// Manages the server subprocess lifecycle.
 ///
@@ -35,13 +29,10 @@ class ServerProcess {
   final IOSink _stdout;
   final IOSink _stderr;
 
-  /// Callback invoked when an IDE requests a reload via the VM service.
-  final ReloadRequestedCallback? _onReloadRequested;
-
-  /// Path to write the VM service info JSON file to. When set, the file
-  /// is passed to the child via `--write-service-info` and the URI is read
-  /// from the file instead of parsing stdout. IDEs can use this path in
-  /// their `vmServiceInfoFile` launch configuration to auto-attach.
+  /// Path to write the VM service info JSON file to. When set, passed
+  /// to the child via `--write-service-info` and the URI is read from
+  /// the file instead of parsing stdout. IDEs use this path in their
+  /// `vmServiceInfoFile` launch configuration to auto-attach.
   final String? _vmServiceInfoFile;
 
   Process? _process;
@@ -54,7 +45,8 @@ class ServerProcess {
 
   /// The HTTP VM service URI, set once [connectToVmService] has read it from
   /// the service info file. `null` before the child has published it (or if
-  /// publication failed).
+  /// publication failed). Used by the `vm_proxy` to point its upstream at
+  /// the live pod.
   String? _vmServiceUri;
 
   final Completer<int> _exitCodeCompleter = Completer<int>();
@@ -68,15 +60,13 @@ class ServerProcess {
     String? vmServiceInfoFile,
     IOSink? stdoutSink,
     IOSink? stderrSink,
-    ReloadRequestedCallback? onReloadRequested,
   }) : _serverDir = serverDir,
        _serverArgs = serverArgs,
        _dartExecutable = dartExecutable ?? p.join(getSdkPath(), 'bin', 'dart'),
        _enableVmService = enableVmService,
        _vmServiceInfoFile = vmServiceInfoFile,
        _stdout = stdoutSink ?? stdout,
-       _stderr = stderrSink ?? stderr,
-       _onReloadRequested = onReloadRequested;
+       _stderr = stderrSink ?? stderr;
 
   /// Whether the server process is currently running.
   bool get isRunning => _process != null;
@@ -180,7 +170,7 @@ class ServerProcess {
 
     final httpUri = await _readVmServiceUri(infoPath);
     if (httpUri == null) {
-      log.warning('VM service URI not found in service info file.');
+      log.warning('VM service URI not found in $infoPath');
       return;
     }
     _vmServiceUri = httpUri;
@@ -204,42 +194,41 @@ class ServerProcess {
 
     log.info('The Dart VM service is listening on $httpUri');
 
-    final vmService = _vmService!;
-    final vm = await vmService.getVM();
-    _mainIsolateId = vm.isolates!.first.id!;
+    // The pod may exit between connect and getVM (crash during init,
+    // race with our exit listener disposing the connection). Treat that
+    // as "no VM service available" so the watch session can keep running.
+    final vmService = _vmService;
+    if (vmService == null) {
+      log.warning('VM service connection lost before initialisation.');
+      return;
+    }
+    try {
+      final vm = await vmService.getVM();
+      _mainIsolateId = vm.isolates!.first.id!;
+    } on RPCError catch (e) {
+      log.warning('VM service connection lost during initialisation: $e');
+      return;
+    }
 
     if (!_vmServiceReady.isCompleted) _vmServiceReady.complete();
-
-    // Register custom reloadSources service so IDE reload requests
-    // go through the FES compilation pipeline.
-    if (_onReloadRequested != null) {
-      vmService.registerServiceCallback('reloadSources', (params) async {
-        final dillPath = await _onReloadRequested();
-        if (dillPath == null) {
-          return {'type': 'ReloadReport', 'success': false};
-        }
-        final dillUri = Uri.file(p.absolute(dillPath)).toString();
-        final report = await vmService.reloadSources(
-          _mainIsolateId!,
-          rootLibUri: dillUri,
-        );
-        return report.json!;
-      });
-      await vmService.registerService('reloadSources', 'serverpod-cli');
-    }
   }
 
-  /// Hot reloads the server with a new kernel file.
+  /// Hot reloads the server with a new kernel file at [dillPath].
+  ///
+  /// Pass `null` if VmService handles compile internally, ie.
+  /// when not using watcher and incremental compilation.
   ///
   /// Returns `true` if the reload was successful.
-  Future<bool> reload(String dillPath) async {
+  Future<bool> reload(String? dillPath) async {
     final vmService = _vmService;
     final isolateId = _mainIsolateId;
     if (vmService == null || isolateId == null) {
       return false;
     }
 
-    final dillUri = Uri.file(p.absolute(dillPath)).toString();
+    final dillUri = dillPath == null
+        ? null
+        : Uri.file(p.absolute(dillPath)).toString();
     final report = await vmService.reloadSources(
       isolateId,
       rootLibUri: dillUri,
@@ -306,7 +295,8 @@ class ServerProcess {
   /// and may not appear immediately. Polls with a short delay.
   Future<String?> _readVmServiceUri(String path) async {
     final file = File(path);
-    const maxAttempts = 50;
+    log.debug('Polling VM service info file: ${file.absolute.path}');
+    const maxAttempts = 300;
     const delay = Duration(milliseconds: 100);
 
     for (var i = 0; i < maxAttempts; i++) {

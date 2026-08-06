@@ -269,6 +269,24 @@ void main() {
             aHalfVector: HalfVector([1.0, 2.0, 3.0]),
             aSparseVector: SparseVector([1.0, 2.0, 3.0]),
             aBit: Bit([true, false, true]),
+            aGeographyPoint: GeographyPoint(longitude: 1.0, latitude: 2.0),
+            aGeographyLineString: GeographyLineString(
+              points: [
+                GeographyPoint(longitude: 0.0, latitude: 0.0),
+                GeographyPoint(longitude: 1.0, latitude: 1.0),
+              ],
+            ),
+            aGeographyPolygon: GeographyPolygon(
+              exteriorRing: [
+                GeographyPoint(longitude: 0.0, latitude: 0.0),
+                GeographyPoint(longitude: 1.0, latitude: 0.0),
+                GeographyPoint(longitude: 1.0, latitude: 1.0),
+                GeographyPoint(longitude: 0.0, latitude: 0.0),
+              ],
+            ),
+            aGeographyGeometryCollection: GeographyGeometryCollection(
+              geometries: [GeographyPoint(longitude: 1.0, latitude: 2.0)],
+            ),
             anEnum: TestEnum.one,
             aStringifiedEnum: TestEnumStringified.one,
             aList: [1, 2, 3],
@@ -306,6 +324,30 @@ void main() {
               t.aHalfVector(HalfVector([4.0, 5.0, 6.0])),
               t.aSparseVector(SparseVector([4.0, 5.0, 6.0])),
               t.aBit(Bit([false, true, false])),
+              t.aGeographyPoint(GeographyPoint(longitude: 3.0, latitude: 4.0)),
+              t.aGeographyLineString(
+                GeographyLineString(
+                  points: [
+                    GeographyPoint(longitude: 2.0, latitude: 2.0),
+                    GeographyPoint(longitude: 3.0, latitude: 3.0),
+                  ],
+                ),
+              ),
+              t.aGeographyPolygon(
+                GeographyPolygon(
+                  exteriorRing: [
+                    GeographyPoint(longitude: 0.0, latitude: 0.0),
+                    GeographyPoint(longitude: 2.0, latitude: 0.0),
+                    GeographyPoint(longitude: 2.0, latitude: 2.0),
+                    GeographyPoint(longitude: 0.0, latitude: 0.0),
+                  ],
+                ),
+              ),
+              t.aGeographyGeometryCollection(
+                GeographyGeometryCollection(
+                  geometries: [GeographyPoint(longitude: 3.0, latitude: 4.0)],
+                ),
+              ),
               t.anEnum(TestEnum.two),
               t.aStringifiedEnum(TestEnumStringified.two),
               t.aList([4, 5, 6]),
@@ -344,6 +386,36 @@ void main() {
           expect(updated!.aHalfVector, HalfVector([4.0, 5.0, 6.0]));
           expect(updated!.aSparseVector, SparseVector([4.0, 5.0, 6.0]));
           expect(updated!.aBit, Bit([false, true, false]));
+          expect(
+            updated!.aGeographyPoint,
+            GeographyPoint(longitude: 3.0, latitude: 4.0),
+          );
+          expect(
+            updated!.aGeographyLineString,
+            GeographyLineString(
+              points: [
+                GeographyPoint(longitude: 2.0, latitude: 2.0),
+                GeographyPoint(longitude: 3.0, latitude: 3.0),
+              ],
+            ),
+          );
+          expect(
+            updated!.aGeographyPolygon,
+            GeographyPolygon(
+              exteriorRing: [
+                GeographyPoint(longitude: 0.0, latitude: 0.0),
+                GeographyPoint(longitude: 2.0, latitude: 0.0),
+                GeographyPoint(longitude: 2.0, latitude: 2.0),
+                GeographyPoint(longitude: 0.0, latitude: 0.0),
+              ],
+            ),
+          );
+          expect(
+            updated!.aGeographyGeometryCollection,
+            GeographyGeometryCollection(
+              geometries: [GeographyPoint(longitude: 3.0, latitude: 4.0)],
+            ),
+          );
           expect(updated!.anEnum, TestEnum.two);
           expect(updated!.aStringifiedEnum, TestEnumStringified.two);
           expect(updated!.aList, [4, 5, 6]);
@@ -382,6 +454,36 @@ void main() {
           expect(dbRow.aHalfVector, HalfVector([4.0, 5.0, 6.0]));
           expect(dbRow.aSparseVector, SparseVector([4.0, 5.0, 6.0]));
           expect(dbRow.aBit, Bit([false, true, false]));
+          expect(
+            dbRow.aGeographyPoint,
+            GeographyPoint(longitude: 3.0, latitude: 4.0),
+          );
+          expect(
+            dbRow.aGeographyLineString,
+            GeographyLineString(
+              points: [
+                GeographyPoint(longitude: 2.0, latitude: 2.0),
+                GeographyPoint(longitude: 3.0, latitude: 3.0),
+              ],
+            ),
+          );
+          expect(
+            dbRow.aGeographyPolygon,
+            GeographyPolygon(
+              exteriorRing: [
+                GeographyPoint(longitude: 0.0, latitude: 0.0),
+                GeographyPoint(longitude: 2.0, latitude: 0.0),
+                GeographyPoint(longitude: 2.0, latitude: 2.0),
+                GeographyPoint(longitude: 0.0, latitude: 0.0),
+              ],
+            ),
+          );
+          expect(
+            dbRow.aGeographyGeometryCollection,
+            GeographyGeometryCollection(
+              geometries: [GeographyPoint(longitude: 3.0, latitude: 4.0)],
+            ),
+          );
           expect(dbRow.anEnum, TestEnum.two);
           expect(dbRow.aStringifiedEnum, TestEnumStringified.two);
           expect(dbRow.aList, [4, 5, 6]);

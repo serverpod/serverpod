@@ -8,8 +8,6 @@ module:
 recordStreaming:
   - streamModuleClass:
 streaming:
-  - wasStreamOpenCalled:
-  - wasStreamClosedCalled:
   - intEchoStream:
   - simpleInputReturnStream:
 unauthenticated:

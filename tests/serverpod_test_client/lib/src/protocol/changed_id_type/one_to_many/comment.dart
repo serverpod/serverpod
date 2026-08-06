@@ -14,7 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../changed_id_type/one_to_many/order.dart' as _i2;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
-abstract class CommentInt implements _i1.SerializableModel {
+abstract class CommentInt
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   CommentInt._({
     this.id,
     required this.description,
@@ -72,6 +73,17 @@ abstract class CommentInt implements _i1.SerializableModel {
       'description': description,
       'orderId': orderId.toJson(),
       if (order != null) 'order': order?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'CommentInt',
+      if (id != null) 'id': id,
+      'description': description,
+      'orderId': orderId.toJson(),
+      if (order != null) 'order': order?.toJsonForProtocol(),
     };
   }
 

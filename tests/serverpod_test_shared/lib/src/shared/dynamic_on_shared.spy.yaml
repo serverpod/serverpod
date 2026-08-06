@@ -1,0 +1,4 @@
+class: DynamicOnShared
+fields:
+  name: String
+  data: dynamic

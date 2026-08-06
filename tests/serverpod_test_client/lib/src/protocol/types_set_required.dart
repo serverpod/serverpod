@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i2;
 
-abstract class TypesSetRequired implements _i1.SerializableModel {
+abstract class TypesSetRequired
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   TypesSetRequired._({required this.anInt});
 
   factory TypesSetRequired({required Set<int> anInt}) = _TypesSetRequiredImpl;
@@ -32,6 +33,14 @@ abstract class TypesSetRequired implements _i1.SerializableModel {
   TypesSetRequired copyWith({Set<int>? anInt});
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'TypesSetRequired',
+      'anInt': anInt.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'TypesSetRequired',
       'anInt': anInt.toJson(),

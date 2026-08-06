@@ -11,6 +11,7 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 
 enum CreateMigrationOption<V> implements OptionDefinition<V> {
+  empty(CreateMigrationCommand.emptyOption),
   force(CreateMigrationCommand.forceOption),
   tag(CreateMigrationCommand.tagOption),
   ;
@@ -22,6 +23,13 @@ enum CreateMigrationOption<V> implements OptionDefinition<V> {
 }
 
 class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
+  static const emptyOption = FlagOption(
+    argName: 'empty',
+    negatable: false,
+    defaultsTo: false,
+    helpText: 'Creates the migration even if there are no database changes.',
+  );
+
   static const forceOption = FlagOption(
     argName: 'force',
     argAbbrev: 'f',
@@ -60,6 +68,7 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
   Future<void> runWithConfig(
     final Configuration<CreateMigrationOption> commandConfig,
   ) async {
+    final empty = commandConfig.value(CreateMigrationOption.empty);
     final force = commandConfig.value(CreateMigrationOption.force);
     final tag = commandConfig.optionalValue(CreateMigrationOption.tag);
 
@@ -81,6 +90,7 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
       outcome = await createMigrationAction(
         config: config,
         tag: tag,
+        empty: empty,
         force: force,
       );
       return outcome.success;

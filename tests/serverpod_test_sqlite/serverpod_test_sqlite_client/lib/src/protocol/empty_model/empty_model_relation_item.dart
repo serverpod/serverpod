@@ -13,7 +13,8 @@
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import 'package:serverpod_client/serverpod_client.dart' as _i2;
 
-abstract class EmptyModelRelationItem implements _i1.TableRow<int?> {
+abstract class EmptyModelRelationItem
+    implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   EmptyModelRelationItem._({
     this.id,
     required this.name,
@@ -69,6 +70,15 @@ abstract class EmptyModelRelationItem implements _i1.TableRow<int?> {
     };
   }
 
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'EmptyModelRelationItem',
+      if (id != null) 'id': id,
+      'name': name,
+    };
+  }
+
   static EmptyModelRelationItemInclude include() {
     return EmptyModelRelationItemInclude._();
   }
@@ -78,8 +88,6 @@ abstract class EmptyModelRelationItem implements _i1.TableRow<int?> {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EmptyModelRelationItemTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmptyModelRelationItemTable>? orderByList,
     EmptyModelRelationItemInclude? include,
   }) {
@@ -88,8 +96,6 @@ abstract class EmptyModelRelationItem implements _i1.TableRow<int?> {
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EmptyModelRelationItem.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(EmptyModelRelationItem.t),
       include: include,
     );
@@ -224,8 +230,6 @@ class EmptyModelRelationItemIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -270,8 +274,6 @@ class EmptyModelRelationItemRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EmptyModelRelationItemTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmptyModelRelationItemTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -281,8 +283,6 @@ class EmptyModelRelationItemRepository {
       where: where?.call(EmptyModelRelationItem.t),
       orderBy: orderBy?.call(EmptyModelRelationItem.t),
       orderByList: orderByList?.call(EmptyModelRelationItem.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -313,8 +313,6 @@ class EmptyModelRelationItemRepository {
     _i1.WhereExpressionBuilder<EmptyModelRelationItemTable>? where,
     int? offset,
     _i1.OrderByBuilder<EmptyModelRelationItemTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmptyModelRelationItemTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -324,8 +322,6 @@ class EmptyModelRelationItemRepository {
       where: where?.call(EmptyModelRelationItem.t),
       orderBy: orderBy?.call(EmptyModelRelationItem.t),
       orderByList: orderByList?.call(EmptyModelRelationItem.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -359,16 +355,22 @@ class EmptyModelRelationItemRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmptyModelRelationItem>> insert(
     _i1.DatabaseSession session,
     List<EmptyModelRelationItem> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<EmptyModelRelationItem>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -386,21 +388,96 @@ class EmptyModelRelationItemRepository {
     );
   }
 
+  /// Upserts all [EmptyModelRelationItem]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [EmptyModelRelationItem]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<EmptyModelRelationItem>> upsert(
+    _i1.DatabaseSession session,
+    List<EmptyModelRelationItem> rows, {
+    required _i1.ColumnSelections<EmptyModelRelationItemTable> conflictColumns,
+    _i1.ColumnSelections<EmptyModelRelationItemTable>? updateColumns,
+    _i1.WhereExpressionBuilder<EmptyModelRelationItemTable>? updateWhere,
+    _i1.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<EmptyModelRelationItem>(
+      rows,
+      conflictColumns: conflictColumns(EmptyModelRelationItem.t),
+      updateColumns: updateColumns?.call(EmptyModelRelationItem.t),
+      updateWhere: updateWhere?.call(EmptyModelRelationItem.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [EmptyModelRelationItem] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [EmptyModelRelationItem] will have its `id` field set.
+  Future<EmptyModelRelationItem?> upsertRow(
+    _i1.DatabaseSession session,
+    EmptyModelRelationItem row, {
+    required _i1.ColumnSelections<EmptyModelRelationItemTable> conflictColumns,
+    _i1.ColumnSelections<EmptyModelRelationItemTable>? updateColumns,
+    _i1.WhereExpressionBuilder<EmptyModelRelationItemTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<EmptyModelRelationItem>(
+      row,
+      conflictColumns: conflictColumns(EmptyModelRelationItem.t),
+      updateColumns: updateColumns?.call(EmptyModelRelationItem.t),
+      updateWhere: updateWhere?.call(EmptyModelRelationItem.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [EmptyModelRelationItem]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmptyModelRelationItem>> update(
     _i1.DatabaseSession session,
     List<EmptyModelRelationItem> rows, {
     _i1.ColumnSelections<EmptyModelRelationItemTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<EmptyModelRelationItem>(
       rows,
       columns: columns?.call(EmptyModelRelationItem.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -438,6 +515,10 @@ class EmptyModelRelationItemRepository {
 
   /// Updates all [EmptyModelRelationItem]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmptyModelRelationItem>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<EmptyModelRelationItemUpdateTable>
@@ -447,9 +528,8 @@ class EmptyModelRelationItemRepository {
     int? offset,
     _i1.OrderByBuilder<EmptyModelRelationItemTable>? orderBy,
     _i1.OrderByListBuilder<EmptyModelRelationItemTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<EmptyModelRelationItem>(
       columnValues: columnValues(EmptyModelRelationItem.t.updateTable),
@@ -458,9 +538,8 @@ class EmptyModelRelationItemRepository {
       offset: offset,
       orderBy: orderBy?.call(EmptyModelRelationItem.t),
       orderByList: orderByList?.call(EmptyModelRelationItem.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -471,22 +550,24 @@ class EmptyModelRelationItemRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmptyModelRelationItem>> delete(
     _i1.DatabaseSession session,
     List<EmptyModelRelationItem> rows, {
     _i1.OrderByBuilder<EmptyModelRelationItemTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmptyModelRelationItemTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<EmptyModelRelationItem>(
       rows,
       orderBy: orderBy?.call(EmptyModelRelationItem.t),
       orderByList: orderByList?.call(EmptyModelRelationItem.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -506,22 +587,24 @@ class EmptyModelRelationItemRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmptyModelRelationItem>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EmptyModelRelationItemTable> where,
     _i1.OrderByBuilder<EmptyModelRelationItemTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmptyModelRelationItemTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<EmptyModelRelationItem>(
       where: where(EmptyModelRelationItem.t),
       orderBy: orderBy?.call(EmptyModelRelationItem.t),
       orderByList: orderByList?.call(EmptyModelRelationItem.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

@@ -1,0 +1,135 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
+    as idp;
+import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
+
+void main() {
+  testWidgets(
+    'Given a SignInWidget without an external Material ancestor, '
+    'when building the available sign-in options, '
+    'then the full component renders on its own default Material surface.',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ColoredBox(
+            color: Colors.red,
+            child: SignInWidget(client: _TestClient()),
+          ),
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+
+      final surfaceFinder = find.ancestor(
+        of: find.byType(AnonymousSignInWidget),
+        matching: find.byType(Material),
+      );
+      final surface = tester.widget<Material>(surfaceFinder.first);
+
+      expect(surface.type, MaterialType.transparency);
+      expect(surface.color, Colors.transparent);
+      expect(surface.borderRadius, isNull);
+      expect(surface.shape, isNull);
+      expect(surface.clipBehavior, Clip.none);
+    },
+  );
+
+  testWidgets(
+    'Given a SignInWidget configured with a shared button style, '
+    'when building the available sign-in options, '
+    'then the style is exposed to the buttons through a provider.',
+    (tester) async {
+      const style = SignInButtonStyle(shape: SignInButtonShape.pill);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: SignInWidget(client: _TestClient(), buttonStyle: style),
+        ),
+      );
+
+      final provider = tester.widget<SignInButtonStyleProvider>(
+        find.byType(SignInButtonStyleProvider),
+      );
+      expect(provider.style, style);
+    },
+  );
+
+  testWidgets(
+    'Given a SignInWidget configured without a shared button style, '
+    'when building the available sign-in options, '
+    'then a default style provider is inserted so buttons share the common style.',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(home: SignInWidget(client: _TestClient())),
+      );
+
+      final provider = tester.widget<SignInButtonStyleProvider>(
+        find.byType(SignInButtonStyleProvider),
+      );
+      expect(provider.style, const SignInButtonStyle());
+    },
+  );
+}
+
+class _TestClient extends ServerpodClientShared {
+  _TestClient()
+    : super(
+        'http://localhost:8080/',
+        _TestSerializationManager(),
+        streamingConnectionTimeout: null,
+        connectionTimeout: null,
+      ) {
+    _caller = Caller(this);
+    _anonymousIdp = _TestAnonymousIdp(_caller);
+    authKeyProvider = FlutterAuthSessionManager(caller: _caller);
+  }
+
+  late final Caller _caller;
+  late final idp.EndpointAnonymousIdpBase _anonymousIdp;
+
+  @override
+  Map<String, EndpointRef> get endpointRefLookup => {
+    'anonymous': _anonymousIdp,
+  };
+
+  @override
+  Map<String, ModuleEndpointCaller> get moduleLookup => {};
+
+  @override
+  Future<T> callServerEndpoint<T>(
+    String endpoint,
+    String method,
+    Map<String, dynamic> args, {
+    bool authenticated = true,
+  }) async {
+    throw UnimplementedError('Not used by this test.');
+  }
+
+  @override
+  dynamic callStreamingServerEndpoint<T, G>(
+    String endpoint,
+    String method,
+    Map<String, dynamic> args,
+    Map<String, Stream> streams, {
+    bool authenticated = true,
+  }) {
+    throw UnimplementedError('Not used by this test.');
+  }
+}
+
+class _TestAnonymousIdp extends idp.EndpointAnonymousIdpBase {
+  _TestAnonymousIdp(super.caller);
+
+  @override
+  String get name => 'anonymous';
+
+  @override
+  Future<AuthSuccess> login({String? token}) async {
+    throw UnimplementedError('Not used by this test.');
+  }
+}
+
+class _TestSerializationManager extends SerializationManager {}

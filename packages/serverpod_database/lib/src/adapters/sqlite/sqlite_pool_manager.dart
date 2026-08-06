@@ -28,10 +28,17 @@ class SqlitePoolManager implements DatabasePoolManager {
 
   SqliteDatabase? _db;
 
+  /// Tracks the PRAGMA future kicked off by [start]
+  Future<void>? _startedFuture;
+  bool _databaseStopped = false;
+
   /// The SQLite database instance.
   ///
-  /// Throws a [StateError] if the database has not been started.
-  SqliteDatabase get database {
+  /// If the database has not been started yet, this will start it and then
+  /// return the database instance. Throws a [StateError] if the database is
+  /// not started (e.g. after [stop] has been called).
+  Future<SqliteDatabase> get database async {
+    await started;
     var db = _db;
     if (db == null) {
       throw StateError('Database not started.');
@@ -44,7 +51,8 @@ class SqlitePoolManager implements DatabasePoolManager {
   SqliteValueEncoder get encoder => const SqliteValueEncoder();
 
   /// Creates a new [SqlitePoolManager]. Typically, this is done automatically
-  /// when starting the [Server] with SQLite configuration.
+  /// when starting the server with SQLite configuration or a client-side
+  /// database session.
   SqlitePoolManager(
     DatabaseSerializationManager serializationManager,
     this.config,
@@ -52,30 +60,47 @@ class SqlitePoolManager implements DatabasePoolManager {
     _serializationManager = serializationManager;
   }
 
-  /// Starts the database connection.
   @override
   void start() {
-    _db ??= SqliteDatabase(
-      path: config.filePath,
-      // This will only be available from 0.14 onwards.
-      // options: SqliteOptions(
-      //   maxReaders:
-      //       config.maxConnectionCount ?? SqliteOptions.defaultMaxReaders,
-      // ),
-    )..execute('PRAGMA foreign_keys = ON');
+    _databaseStopped = false;
+    _startedFuture ??= _bootstrap();
   }
+
+  Future<void> _bootstrap() async {
+    if (_databaseStopped) {
+      throw StateError('Database stopped. Call `start()` again to restart.');
+    }
+    final db = SqliteDatabase(
+      path: config.filePath,
+      options: SqliteOptions(
+        maxReaders:
+            config.maxConnectionCount ?? SqliteOptions.defaultMaxReaders,
+      ),
+    );
+    _db = db;
+    await db.execute('PRAGMA foreign_keys = ON');
+  }
+
+  @override
+  Future<void> get started => _startedFuture ??= _bootstrap();
 
   /// Closes the database.
   @override
   Future<void> stop() async {
-    await _db?.close();
+    _databaseStopped = true;
+    final db = _db;
+
     _db = null;
+    _startedFuture = null;
+
+    await db?.close();
   }
 
   /// Tests the database connection.
   @override
   Future<bool> testConnection() async {
-    await database.get('SELECT 1');
+    final connection = await database;
+    await connection.get('SELECT 1');
     return true;
   }
 }

@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:serverpod_database/serverpod_database.dart';
-import 'package:serverpod/src/database/server_migration_manager.dart';
 import 'package:serverpod/src/hot_reload/hot_reload.dart';
 import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod/src/util/path_util.dart';
@@ -232,6 +231,33 @@ class InsightsEndpoint extends Endpoint {
     return databaseDefinition;
   }
 
+  /// Applies pending database migrations to the running pod, mirroring the
+  /// boot-time path triggered by `--apply-migrations` and
+  /// `--apply-repair-migration`. Verifies database integrity after applying.
+  ///
+  /// Expects pending and/or repair migrations to be available in the
+  /// project's `migrations/` folder. The pod's serialization manager
+  /// (which reflects the latest hot-reloaded code) is used as the source
+  /// of truth for the target schema during verification.
+  ///
+  /// Used by `serverpod start`'s watch loop to apply newly generated
+  /// migrations without restarting the pod.
+  Future<MigrationsApplyResult> applyMigrations(
+    Session session, {
+    required bool applyRepairMigration,
+    required bool applyMigrations,
+  }) async {
+    return session.serverpod.withPausedRequestHandling(() {
+      return applyMigrationsAndVerify(
+        session: session,
+        projectDirectory: session.serverpod.serverDirectory,
+        runMode: session.serverpod.runMode,
+        applyRepairMigration: applyRepairMigration,
+        applyMigrations: applyMigrations,
+      );
+    });
+  }
+
   /// Returns the target and live database definitions. See
   /// [getTargetTableDefinition] and [getLiveDatabaseDefinition] for more
   /// details.
@@ -240,15 +266,17 @@ class InsightsEndpoint extends Endpoint {
     var live = await getLiveDatabaseDefinition(session);
     var installedMigrations = await _getInstalledMigrationVersions(session);
 
-    var versions = await ServerMigrationManager(
-      Directory.current,
+    final serverDir = session.serverpod.serverDirectory;
+    var versions = await MigrationManager.fromDirectory(
+      serverDir,
+      runMode: session.serverpod.runMode,
     ).listAvailableVersions();
 
     var latestAvailableMigrations = <DatabaseMigrationVersionModel>[];
     if (versions.isNotEmpty) {
       var version = versions.last;
       var file = MigrationConstants.databaseDefinitionJSONPath(
-        Directory.current,
+        serverDir,
         version,
       );
       var data = await file.readAsString();

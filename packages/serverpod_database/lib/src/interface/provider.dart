@@ -21,6 +21,9 @@ abstract interface class DatabaseProvider {
   DatabaseDefinitionRestrictions get definitionRestrictions;
 
   /// Creates a new [DatabasePoolManager] for the given parameters.
+  ///
+  /// Relative paths in [config] (SQLite [SqliteDatabaseConfig.filePath],
+  /// Postgres [PostgresDatabaseConfig.dataPath]) must already be resolved.
   DatabasePoolManager createPoolManager(
     DatabaseSerializationManager serializationManager,
     RuntimeParametersListBuilder? runtimeParametersBuilder,

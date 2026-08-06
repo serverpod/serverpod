@@ -8,6 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: dead_code, unnecessary_type_check
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
@@ -23,7 +24,7 @@ class Protocol extends _i1.SerializationManager {
 
   factory Protocol() => _instance;
 
-  static final Protocol _instance = Protocol._();
+  static final Protocol _instance = Protocol._().._registerHostProtocols();
 
   static String? getClassNameFromObjectJson(dynamic data) {
     if (data is! Map) return null;
@@ -93,11 +94,11 @@ class Protocol extends _i1.SerializationManager {
     }
     className = _i4.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth.$className';
+      return className.contains('.') ? className : 'serverpod_auth.$className';
     }
     className = _i5.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_chat.$className';
+      return className.contains('.') ? className : 'serverpod_chat.$className';
     }
     return null;
   }
@@ -121,6 +122,14 @@ class Protocol extends _i1.SerializationManager {
     }
     return super.deserializeByClassName(data);
   }
+
+  void _registerHostProtocols() {
+    _i4.Protocol().registerHostProtocol('chat', this);
+    _i5.Protocol().registerHostProtocol('chat', this);
+  }
+
+  @override
+  String getModuleName() => 'chat';
 
   /// Maps any `Record`s known to this [Protocol] to their JSON representation
   ///

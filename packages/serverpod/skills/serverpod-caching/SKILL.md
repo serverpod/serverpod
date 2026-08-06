@@ -10,8 +10,9 @@ In-memory and optional Redis caches via `session.caches`. Cached objects must be
 ## Cache types
 
 - **`session.caches.local`** — in-memory, current server instance
-- **`session.caches.localPriority`** — in-memory, for frequently accessed entries
-- **`session.caches.global`** — Redis-backed, shared across instances (requires Redis config)
+- **`session.caches.localPrio`** — in-memory, for frequently accessed entries
+- **`session.caches.global`** — Redis-backed, shared across instances (requires Redis config; do not use without Redis enabled)
+- **`session.caches.query`** — local query cache used by generated database helpers
 
 ## Basic usage
 
@@ -46,3 +47,8 @@ var count = await session.caches.local.get<int>('userCount');
 ```
 
 If relevant set a **lifetime** to avoid unbounded growth. Use stable, unique keys (e.g. `'EntityName-$id'`).
+
+## Pitfalls
+
+- `session.caches.global` asserts Redis is enabled; it is not a safe no-op fallback.
+- Cache groups are useful for invalidation, but Redis-backed group invalidation is not available everywhere. Verify before relying on `invalidateGroup` for global cache entries.

@@ -88,8 +88,6 @@ abstract class DoubleDefaultModel
     int? limit,
     int? offset,
     _i1.OrderByBuilder<DoubleDefaultModelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DoubleDefaultModelTable>? orderByList,
     DoubleDefaultModelInclude? include,
   }) {
@@ -98,8 +96,6 @@ abstract class DoubleDefaultModel
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DoubleDefaultModel.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(DoubleDefaultModel.t),
       include: include,
     );
@@ -203,8 +199,6 @@ class DoubleDefaultModelIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -249,8 +243,6 @@ class DoubleDefaultModelRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<DoubleDefaultModelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DoubleDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -260,8 +252,6 @@ class DoubleDefaultModelRepository {
       where: where?.call(DoubleDefaultModel.t),
       orderBy: orderBy?.call(DoubleDefaultModel.t),
       orderByList: orderByList?.call(DoubleDefaultModel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -292,8 +282,6 @@ class DoubleDefaultModelRepository {
     _i1.WhereExpressionBuilder<DoubleDefaultModelTable>? where,
     int? offset,
     _i1.OrderByBuilder<DoubleDefaultModelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DoubleDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -303,8 +291,6 @@ class DoubleDefaultModelRepository {
       where: where?.call(DoubleDefaultModel.t),
       orderBy: orderBy?.call(DoubleDefaultModel.t),
       orderByList: orderByList?.call(DoubleDefaultModel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -338,16 +324,22 @@ class DoubleDefaultModelRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DoubleDefaultModel>> insert(
     _i1.DatabaseSession session,
     List<DoubleDefaultModel> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<DoubleDefaultModel>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -365,21 +357,96 @@ class DoubleDefaultModelRepository {
     );
   }
 
+  /// Upserts all [DoubleDefaultModel]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [DoubleDefaultModel]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<DoubleDefaultModel>> upsert(
+    _i1.DatabaseSession session,
+    List<DoubleDefaultModel> rows, {
+    required _i1.ColumnSelections<DoubleDefaultModelTable> conflictColumns,
+    _i1.ColumnSelections<DoubleDefaultModelTable>? updateColumns,
+    _i1.WhereExpressionBuilder<DoubleDefaultModelTable>? updateWhere,
+    _i1.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<DoubleDefaultModel>(
+      rows,
+      conflictColumns: conflictColumns(DoubleDefaultModel.t),
+      updateColumns: updateColumns?.call(DoubleDefaultModel.t),
+      updateWhere: updateWhere?.call(DoubleDefaultModel.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [DoubleDefaultModel] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [DoubleDefaultModel] will have its `id` field set.
+  Future<DoubleDefaultModel?> upsertRow(
+    _i1.DatabaseSession session,
+    DoubleDefaultModel row, {
+    required _i1.ColumnSelections<DoubleDefaultModelTable> conflictColumns,
+    _i1.ColumnSelections<DoubleDefaultModelTable>? updateColumns,
+    _i1.WhereExpressionBuilder<DoubleDefaultModelTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<DoubleDefaultModel>(
+      row,
+      conflictColumns: conflictColumns(DoubleDefaultModel.t),
+      updateColumns: updateColumns?.call(DoubleDefaultModel.t),
+      updateWhere: updateWhere?.call(DoubleDefaultModel.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [DoubleDefaultModel]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DoubleDefaultModel>> update(
     _i1.DatabaseSession session,
     List<DoubleDefaultModel> rows, {
     _i1.ColumnSelections<DoubleDefaultModelTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<DoubleDefaultModel>(
       rows,
       columns: columns?.call(DoubleDefaultModel.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -417,6 +484,10 @@ class DoubleDefaultModelRepository {
 
   /// Updates all [DoubleDefaultModel]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DoubleDefaultModel>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<DoubleDefaultModelUpdateTable>
@@ -426,9 +497,8 @@ class DoubleDefaultModelRepository {
     int? offset,
     _i1.OrderByBuilder<DoubleDefaultModelTable>? orderBy,
     _i1.OrderByListBuilder<DoubleDefaultModelTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<DoubleDefaultModel>(
       columnValues: columnValues(DoubleDefaultModel.t.updateTable),
@@ -437,9 +507,8 @@ class DoubleDefaultModelRepository {
       offset: offset,
       orderBy: orderBy?.call(DoubleDefaultModel.t),
       orderByList: orderByList?.call(DoubleDefaultModel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -450,22 +519,24 @@ class DoubleDefaultModelRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DoubleDefaultModel>> delete(
     _i1.DatabaseSession session,
     List<DoubleDefaultModel> rows, {
     _i1.OrderByBuilder<DoubleDefaultModelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DoubleDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<DoubleDefaultModel>(
       rows,
       orderBy: orderBy?.call(DoubleDefaultModel.t),
       orderByList: orderByList?.call(DoubleDefaultModel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -485,22 +556,24 @@ class DoubleDefaultModelRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DoubleDefaultModel>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<DoubleDefaultModelTable> where,
     _i1.OrderByBuilder<DoubleDefaultModelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DoubleDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<DoubleDefaultModel>(
       where: where(DoubleDefaultModel.t),
       orderBy: orderBy?.call(DoubleDefaultModel.t),
       orderByList: orderByList?.call(DoubleDefaultModel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

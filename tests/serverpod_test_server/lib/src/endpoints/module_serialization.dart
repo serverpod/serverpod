@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_module_server/serverpod_test_module_server.dart'
     as module;
+import 'package:serverpod_test_shared_module_server/serverpod_test_shared_module_server.dart'
+    as shared_module;
 
 import '../generated/module_datatype.dart';
 
@@ -32,6 +34,14 @@ class ModuleSerializationEndpoint extends Endpoint {
     module.ModuleClass object,
   ) async {
     object.data = 42;
+    return object;
+  }
+
+  Future<shared_module.SharedModuleTable> modifySharedModuleTable(
+    Session session,
+    shared_module.SharedModuleTable object,
+  ) async {
+    object.data = {'modified': true};
     return object;
   }
 

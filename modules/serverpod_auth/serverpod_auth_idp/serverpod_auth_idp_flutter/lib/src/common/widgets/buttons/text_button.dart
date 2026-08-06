@@ -13,17 +13,22 @@ class HyperlinkTextButton extends StatelessWidget {
   /// Padding around the button.
   final EdgeInsets padding;
 
+  /// Font size of the label. Defaults to the theme's bodyMedium font size.
+  final double? fontSize;
+
   /// Creates a [HyperlinkTextButton] widget.
   const HyperlinkTextButton({
     required this.onPressed,
     required this.label,
     this.padding = EdgeInsets.zero,
+    this.fontSize,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
-    final fontSize = Theme.of(context).textTheme.bodyMedium?.fontSize ?? 0;
+    final fontSize =
+        this.fontSize ?? Theme.of(context).textTheme.bodyMedium?.fontSize ?? 0;
 
     return SizedBox(
       height: math.max(24, fontSize),

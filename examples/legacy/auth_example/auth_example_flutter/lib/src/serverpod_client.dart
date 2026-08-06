@@ -11,11 +11,9 @@ Future<void> initializeServerpodClient() async {
   // The client is set up to connect to a Serverpod running on a local server on
   // the default port. You will need to modify this to connect to staging or
   // production servers.
-  client = Client(
-    'http://localhost:8080/',
-    // ignore: deprecated_member_use
-    authenticationKeyManager: FlutterAuthenticationKeyManager(),
-  )..connectivityMonitor = FlutterConnectivityMonitor();
+  client = Client('http://localhost:8080/')
+    ..authKeyProvider = FlutterAuthenticationKeyManager()
+    ..connectivityMonitor = FlutterConnectivityMonitor();
 
   // The session manager keeps track of the signed-in state of the user. You
   // can query it to see if the user is currently signed in and get information

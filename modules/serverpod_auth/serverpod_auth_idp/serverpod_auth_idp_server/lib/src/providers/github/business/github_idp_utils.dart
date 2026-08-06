@@ -154,6 +154,20 @@ class GitHubIdpUtils {
       );
     }
 
+    try {
+      final getExtraInfoCallback = config.getExtraGitHubInfoCallback;
+      if (getExtraInfoCallback != null) {
+        await getExtraInfoCallback(
+          session,
+          accountDetails: accountDetails,
+          accessToken: accessToken,
+          transaction: transaction,
+        );
+      }
+    } catch (e) {
+      session.logAndThrow('Failed to get extra GitHub account info: $e');
+    }
+
     return (
       githubAccountId: githubAccount.id!,
       authUserId: githubAccount.authUserId,
@@ -196,25 +210,41 @@ class GitHubIdpUtils {
       session.logAndThrow('Invalid user info from GitHub: $e');
     }
 
+    if (data['email'] == null) {
+      final emailResponse = await http.get(
+        Uri.https('api.github.com', '/user/emails'),
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Accept': 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+      );
+      if (emailResponse.statusCode == 200) {
+        try {
+          final emails = (jsonDecode(emailResponse.body) as List)
+              .cast<Map<String, dynamic>>();
+          final primary = emails.firstWhere(
+            (final e) => e['primary'] == true && e['verified'] == true,
+            orElse: () => <String, dynamic>{},
+          );
+          if (primary['email'] is String) {
+            data['email'] = primary['email'];
+          }
+        } catch (e) {
+          session.log(
+            'Failed to fetch primary email from GitHub: $e',
+            level: LogLevel.debug,
+            exception: e,
+          );
+        }
+      }
+    }
+
     GitHubAccountDetails details;
     try {
       details = _parseAccountDetails(data);
     } catch (e) {
       session.logAndThrow('Invalid user info from GitHub: $e');
-    }
-
-    try {
-      final getExtraInfoCallback = config.getExtraGitHubInfoCallback;
-      if (getExtraInfoCallback != null) {
-        await getExtraInfoCallback(
-          session,
-          accountDetails: details,
-          accessToken: accessToken,
-          transaction: null,
-        );
-      }
-    } catch (e) {
-      session.logAndThrow('Failed to get extra GitHub account info: $e');
     }
 
     return details;

@@ -74,11 +74,13 @@ void main() {
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  bool\? applyMigrations,\n'
               r'  _i\d\.ServerpodConfig Function\(_i\d\.ServerpodConfig\)\? configOverride,\n'
+              r'  _i\d\.DatabaseInterceptor\? databaseInterceptor,\n'
               r'  bool\? enableSessionLogging,\n'
               r'  _i\d\.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
               r'  _i\d\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
+              r'  _i\d\.Directory\? serverDirectory,\n'
               r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  Duration\? serverpodStartTimeout,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
@@ -120,6 +122,10 @@ void main() {
           );
           expect(
             testToolsFile,
+            contains('\n///\n/// [databaseInterceptor] '),
+          );
+          expect(
+            testToolsFile,
             contains('\n///\n/// [rollbackDatabase] '),
           );
           expect(
@@ -149,6 +155,10 @@ void main() {
           expect(
             testToolsFile,
             contains('\n///\n/// [experimentalFeatures] '),
+          );
+          expect(
+            testToolsFile,
+            contains('\n///\n/// [serverDirectory] '),
           );
         },
       );
@@ -206,9 +216,9 @@ void main() {
   );
 
   group(
-    'Given protocol definition without endpoints when generating test tools file for Serverpod mini',
+    'Given protocol definition without endpoints when generating test tools file without database support',
     () {
-      var serverpodMiniConfig = GeneratorConfigBuilder()
+      var databaseDisabledConfig = GeneratorConfigBuilder()
           .withName(projectName)
           .withRelativeServerTestToolsPathParts(
             [
@@ -226,7 +236,7 @@ void main() {
 
       late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
-        config: serverpodMiniConfig,
+        config: databaseDisabledConfig,
       );
 
       test('then test tools file is created.', () {
@@ -236,7 +246,7 @@ void main() {
       late var testToolsFile = codeMap[expectedFileName];
 
       test(
-        'then test tools file has `withServerpod` function without `rollbackDatabase` and `applyMigrations` parameters',
+        'then test tools file has `withServerpod` function without database configuration parameters',
         () {
           expect(
             testToolsFile,
@@ -249,6 +259,7 @@ void main() {
               r'  bool\? enableSessionLogging,\n'
               r'  _i\d\.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  String\? runMode,\n'
+              r'  _i\d\.Directory\? serverDirectory,\n'
               r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  Duration\? serverpodStartTimeout,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
@@ -316,11 +327,15 @@ void main() {
       );
 
       test(
-        'then doc comments for `applyMigrations` and `rollbackDatabase` are not present',
+        'then doc comments for database configuration parameters are not present',
         () async {
           expect(
             testToolsFile,
             isNot(contains('/// [applyMigrations]')),
+          );
+          expect(
+            testToolsFile,
+            isNot(contains('/// [databaseInterceptor]')),
           );
           expect(
             testToolsFile,
@@ -369,11 +384,13 @@ void main() {
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  bool\? applyMigrations,\n'
               r'  _i\d\.ServerpodConfig Function\(_i\d\.ServerpodConfig\)\? configOverride,\n'
+              r'  _i\d\.DatabaseInterceptor\? databaseInterceptor,\n'
               r'  bool\? enableSessionLogging,\n'
               r'  _i\d\.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
               r'  _i\d\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
+              r'  _i\d\.Directory\? serverDirectory,\n'
               r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  Duration\? serverpodStartTimeout,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
@@ -412,6 +429,10 @@ void main() {
           expect(
             testToolsFile,
             contains('\n///\n/// [enableSessionLogging] '),
+          );
+          expect(
+            testToolsFile,
+            contains('\n///\n/// [databaseInterceptor] '),
           );
           expect(
             testToolsFile,
@@ -516,11 +537,13 @@ void main() {
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  bool\? applyMigrations,\n'
               r'  _i\d\.ServerpodConfig Function\(_i\d\.ServerpodConfig\)\? configOverride,\n'
+              r'  _i\d\.DatabaseInterceptor\? databaseInterceptor,\n'
               r'  bool\? enableSessionLogging,\n'
               r'  _i\d\.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
               r'  _i\d\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
+              r'  _i\d\.Directory\? serverDirectory,\n'
               r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  Duration\? serverpodStartTimeout,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
@@ -559,6 +582,10 @@ void main() {
           expect(
             testToolsFile,
             contains('\n///\n/// [enableSessionLogging] '),
+          );
+          expect(
+            testToolsFile,
+            contains('\n///\n/// [databaseInterceptor] '),
           );
           expect(
             testToolsFile,
@@ -1882,11 +1909,13 @@ void main() {
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  bool\? applyMigrations,\n'
               r'  _i\d\.ServerpodConfig Function\(_i\d\.ServerpodConfig\)\? configOverride,\n'
+              r'  _i\d\.DatabaseInterceptor\? databaseInterceptor,\n'
               r'  bool\? enableSessionLogging,\n'
               r'  _i\d\.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
               r'  _i\d\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
+              r'  _i\d\.Directory\? serverDirectory,\n'
               r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  Duration\? serverpodStartTimeout,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
@@ -1964,11 +1993,13 @@ void main() {
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  bool\? applyMigrations,\n'
               r'  _i\d\.ServerpodConfig Function\(_i\d\.ServerpodConfig\)\? configOverride,\n'
+              r'  _i\d\.DatabaseInterceptor\? databaseInterceptor,\n'
               r'  bool\? enableSessionLogging,\n'
               r'  _i\d\.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
               r'  _i\d\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
+              r'  _i\d\.Directory\? serverDirectory,\n'
               r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  Duration\? serverpodStartTimeout,\n'
               r'  List<String>\? testGroupTagsOverride,\n'

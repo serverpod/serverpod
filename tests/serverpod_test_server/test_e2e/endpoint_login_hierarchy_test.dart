@@ -5,11 +5,8 @@ import 'package:serverpod_test_server/test_util/test_key_manager.dart';
 import 'package:test/test.dart';
 
 void main() {
-  var client = Client(
-    serverUrl,
-    // ignore: deprecated_member_use
-    authenticationKeyManager: TestAuthKeyManager(),
-  );
+  var authKeyProvider = TestAuthKeyManager();
+  var client = Client(serverUrl)..authKeyProvider = authKeyProvider;
 
   setUp(() async {
     await client.authentication.removeAllUsers();
@@ -18,8 +15,7 @@ void main() {
   });
 
   tearDown(() async {
-    // ignore: deprecated_member_use
-    await client.authenticationKeyManager?.remove();
+    await authKeyProvider.remove();
     await client.authentication.removeAllUsers();
     await client.authentication.signOut();
     assert(
@@ -56,8 +52,7 @@ void main() {
             'test@foo.bar',
             'password',
           );
-          // ignore: deprecated_member_use
-          await client.authenticationKeyManager!.put(
+          await authKeyProvider.put(
             '${loginResponse.keyId}:${loginResponse.key}',
           );
 
@@ -97,8 +92,7 @@ void main() {
             'test@foo.bar',
             'password',
           );
-          // ignore: deprecated_member_use
-          await client.authenticationKeyManager!.put(
+          await authKeyProvider.put(
             '${loginResponse.keyId}:${loginResponse.key}',
           );
 
@@ -121,8 +115,7 @@ void main() {
             'password',
             [Scope.admin.name!],
           );
-          // ignore: deprecated_member_use
-          await client.authenticationKeyManager!.put(
+          await authKeyProvider.put(
             '${loginResponse.keyId}:${loginResponse.key}',
           );
 
@@ -162,8 +155,7 @@ void main() {
             'test@foo.bar',
             'password',
           );
-          // ignore: deprecated_member_use
-          await client.authenticationKeyManager!.put(
+          await authKeyProvider.put(
             '${loginResponse.keyId}:${loginResponse.key}',
           );
 
@@ -186,8 +178,7 @@ void main() {
             'password',
             [Scope.admin.name!],
           );
-          // ignore: deprecated_member_use
-          await client.authenticationKeyManager!.put(
+          await authKeyProvider.put(
             '${loginResponse.keyId}:${loginResponse.key}',
           );
 

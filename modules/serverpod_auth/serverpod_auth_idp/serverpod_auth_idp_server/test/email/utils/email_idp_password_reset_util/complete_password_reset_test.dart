@@ -3,7 +3,6 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
 
-import '../../../test_tags.dart';
 import '../../../test_tools/serverpod_test_tools.dart';
 import '../../test_utils/email_idp_test_fixture.dart';
 
@@ -13,7 +12,6 @@ void main() {
   withServerpod(
     'Given password reset request exists',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late UuidValue authUserId;
@@ -190,7 +188,6 @@ void main() {
   withServerpod(
     'Given password reset request exists that has not been verified by calling verifyPasswordResetCode',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
@@ -259,7 +256,6 @@ void main() {
   withServerpod(
     'Given successful password complete request when capturing output from onPasswordResetCompleted callback',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late UuidValue emailAccountId;
@@ -346,7 +342,6 @@ void main() {
   withServerpod(
     'Given already completed password reset request',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
@@ -433,7 +428,6 @@ void main() {
   withServerpod(
     'Given password reset request was validated with expired credentials',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;

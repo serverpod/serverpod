@@ -16,6 +16,7 @@ dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
   path: ^1.8.3
   serverpod_cli: SERVERPOD_VERSION
+  serverpod_shared: SERVERPOD_VERSION
   test: ^1.25.5
   test_descriptor: ^2.0.2
 
@@ -28,6 +29,8 @@ dependency_overrides:
     path: ../../packages/serverpod_client
   serverpod_database:
     path: ../../packages/serverpod_database
+  serverpod_embedded_postgres:
+    path: ../../packages/serverpod_embedded_postgres
   serverpod_serialization:
     path: ../../packages/serverpod_serialization
   serverpod_service_client:

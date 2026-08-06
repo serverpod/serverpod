@@ -18,11 +18,7 @@ void main() async {
 
   group('Given auth key in valid HTTP header format', () {
     var authKeyManager = TestBasicAuthenticationKeyManager();
-    var client = Client(
-      'http://localhost:8080/',
-      // ignore: deprecated_member_use
-      authenticationKeyManager: authKeyManager,
-    );
+    late Client client;
     late Serverpod server;
 
     setUp(() async {
@@ -31,7 +27,8 @@ void main() async {
       server = IntegrationTestServer.create(
         authenticationHandler: authenticationHandler,
       );
-      await server.start();
+      await server.startWithDatabase();
+      client = Client(server.apiUrl)..authKeyProvider = authKeyManager;
     });
 
     tearDown(() async {
@@ -108,11 +105,7 @@ void main() async {
 
   group('Given auth key in invalid Basic HTTP header format', () {
     var incorrectAuthKeyManager = TestIncorrectAuthKeyManager();
-    var client = Client(
-      'http://localhost:8080/',
-      // ignore: deprecated_member_use
-      authenticationKeyManager: incorrectAuthKeyManager,
-    );
+    late Client client;
     late Serverpod server;
 
     setUp(() async {
@@ -121,7 +114,8 @@ void main() async {
       server = IntegrationTestServer.create(
         authenticationHandler: authenticationHandler,
       );
-      await server.start();
+      await server.startWithDatabase();
+      client = Client(server.apiUrl)..authKeyProvider = incorrectAuthKeyManager;
     });
 
     tearDown(() async {
@@ -155,11 +149,7 @@ void main() async {
 
   group('Given auth key with Bearer HTTP header format', () {
     var authKeyManager = TestAuthKeyManager();
-    var client = Client(
-      'http://localhost:8080/',
-      // ignore: deprecated_member_use
-      authenticationKeyManager: authKeyManager,
-    );
+    late Client client;
     late Serverpod server;
 
     setUp(() async {
@@ -168,7 +158,8 @@ void main() async {
       server = IntegrationTestServer.create(
         authenticationHandler: authenticationHandler,
       );
-      await server.start();
+      await server.startWithDatabase();
+      client = Client(server.apiUrl)..authKeyProvider = authKeyManager;
     });
 
     tearDown(() async {

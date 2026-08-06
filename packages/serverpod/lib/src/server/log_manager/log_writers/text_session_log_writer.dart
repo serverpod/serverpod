@@ -38,8 +38,7 @@ class TextSessionLogWriter extends SessionLogWriter {
 
     // Only streaming sessions log an explicit open row; other session
     // types are reported as a single closing row.
-    if (event.kind != SessionKind.stream &&
-        event.kind != SessionKind.methodStream) {
+    if (event.kind != SessionKind.methodStream) {
       return;
     }
 
@@ -66,7 +65,6 @@ class TextSessionLogWriter extends SessionLogWriter {
           context: e.level.name.toUpperCase(),
           id: logId,
           fields: {
-            'messageId': ?e.messageId,
             'message': e.message,
           },
           error: e.error,
@@ -83,22 +81,8 @@ class TextSessionLogWriter extends SessionLogWriter {
           context: null,
           id: logId,
           fields: {
-            'messageId': ?e.messageId,
             'duration': _printDuration(e.duration),
             'query': e.query,
-          },
-          error: e.error,
-          stackTrace: e.stackTrace?.toString(),
-          time: e.time,
-        );
-      case SessionMessageEntry e:
-        _writeFormattedLog(
-          'STREAM MESSAGE',
-          context: e.endpoint,
-          id: logId,
-          fields: {
-            'id': e.messageId,
-            'name': e.messageName,
           },
           error: e.error,
           stackTrace: e.stackTrace?.toString(),
@@ -119,7 +103,6 @@ class TextSessionLogWriter extends SessionLogWriter {
       SessionKind.method => ('METHOD', _endpointMethod(open)),
       SessionKind.futureCall => ('FUTURE', open.futureCallName),
       SessionKind.web => ('WEB', open.endpoint),
-      SessionKind.stream ||
       SessionKind.methodStream => ('STREAM CLOSED', _endpointMethod(open)),
       SessionKind.internal => ('INTERNAL', null),
       SessionKind.unknown => ('UNKNOWN', null),
@@ -132,7 +115,6 @@ class TextSessionLogWriter extends SessionLogWriter {
       fields: {
         if (open.kind == SessionKind.method ||
             open.kind == SessionKind.web ||
-            open.kind == SessionKind.stream ||
             open.kind == SessionKind.methodStream)
           'user': event.authenticatedUserId,
         'queries': event.numQueries,

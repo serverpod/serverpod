@@ -12,7 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class DateTimeDefaultModel implements _i1.SerializableModel {
+abstract class DateTimeDefaultModel
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   DateTimeDefaultModel._({
     this.id,
     DateTime? dateTimeDefaultModelNow,
@@ -81,6 +82,18 @@ abstract class DateTimeDefaultModel implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'DateTimeDefaultModel',
+      if (id != null) 'id': id,
+      'dateTimeDefaultModelNow': dateTimeDefaultModelNow.toJson(),
+      'dateTimeDefaultModelStr': dateTimeDefaultModelStr.toJson(),
+      if (dateTimeDefaultModelStrNull != null)
+        'dateTimeDefaultModelStrNull': dateTimeDefaultModelStrNull?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'DateTimeDefaultModel',
       if (id != null) 'id': id,

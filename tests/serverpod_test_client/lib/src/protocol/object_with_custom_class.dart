@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i2;
 
-abstract class ObjectWithCustomClass implements _i1.SerializableModel {
+abstract class ObjectWithCustomClass
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ObjectWithCustomClass._({
     required this.customClassWithoutProtocolSerialization,
     required this.customClassWithProtocolSerialization,
@@ -77,6 +78,40 @@ abstract class ObjectWithCustomClass implements _i1.SerializableModel {
           customClassWithProtocolSerialization.toJson(),
       'customClassWithProtocolSerializationMethod':
           customClassWithProtocolSerializationMethod.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'ObjectWithCustomClass',
+      'customClassWithoutProtocolSerialization':
+          // ignore: unnecessary_type_check
+          customClassWithoutProtocolSerialization is _i1.ProtocolSerialization
+          ? (customClassWithoutProtocolSerialization
+                    as _i1.ProtocolSerialization)
+                .toJsonForProtocol()
+          :
+            // ignore: dead_code
+            customClassWithoutProtocolSerialization.toJson(),
+      'customClassWithProtocolSerialization':
+          // ignore: unnecessary_type_check
+          customClassWithProtocolSerialization is _i1.ProtocolSerialization
+          ? (customClassWithProtocolSerialization as _i1.ProtocolSerialization)
+                .toJsonForProtocol()
+          :
+            // ignore: dead_code
+            customClassWithProtocolSerialization.toJson(),
+      'customClassWithProtocolSerializationMethod':
+          // ignore: unnecessary_type_check
+          customClassWithProtocolSerializationMethod
+              is _i1.ProtocolSerialization
+          ? (customClassWithProtocolSerializationMethod
+                    as _i1.ProtocolSerialization)
+                .toJsonForProtocol()
+          :
+            // ignore: dead_code
+            customClassWithProtocolSerializationMethod.toJson(),
     };
   }
 

@@ -1,12 +1,20 @@
+import 'dart:io';
+
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod_shared/log.dart';
+import 'package:serverpod_shared/serverpod_shared.dart' show MigrationConstants;
 
 import '../../serverpod_database.dart';
 import '../migrations/table_comparison_warning.dart';
 
-/// The migration manager handles migrations of the database.
-abstract class MigrationManager {
+/// Name of the database table that records installed migration versions.
+/// Schema: `(id, module, version, timestamp)`. Defined in
+/// `packages/serverpod/lib/src/models/database_migration_version.spy.yaml`.
+const _migrationVersionTable = 'serverpod_migrations';
+
+/// Handles applying database migrations.
+class MigrationManager {
   final MigrationArtifactStoreReader _artifactStore;
 
   /// The run mode of the server.
@@ -32,23 +40,57 @@ abstract class MigrationManager {
   /// Creates a new migration manager.
   MigrationManager(this._artifactStore, {this.runMode});
 
+  /// Reads migrations from `<projectDirectory>/migrations/`.
+  MigrationManager.fromDirectory(Directory projectDirectory, {String? runMode})
+    : this(
+        FileSystemMigrationArtifactStore(projectDirectory: projectDirectory),
+        runMode: runMode,
+      );
+
+  /// Reads migrations from an in-memory list. Repair migrations are not
+  /// supported.
+  MigrationManager.fromMigrations({
+    required List<MigrationVersionSql> migrations,
+    required String moduleName,
+    String? runMode,
+  }) : this(
+         RuntimeListMigrationArtifactStore(migrations, moduleName: moduleName),
+         runMode: runMode,
+       );
+
   /// Loads the installed versions of the migrations from the database.
-  ///
-  /// This method depends on the table model that will be available only in the
-  /// server/client package.
   Future<List<DatabaseMigrationVersionModel>> loadInstalledVersions(
     DatabaseSession session, {
     Transaction? transaction,
-  });
+  }) async {
+    final result = await session.db.unsafeQuery(
+      'SELECT module, version FROM $_migrationVersionTable',
+      transaction: transaction,
+    );
+    return [
+      for (final row in result)
+        DatabaseMigrationVersionModel.fromJson(row.toColumnMap()),
+    ];
+  }
 
   /// Loads the installed repair migration from the database.
-  ///
-  /// This method depends on the table model that will be available only in the
-  /// server/client package.
   Future<DatabaseMigrationVersionModel?> loadInstalledRepairMigration(
     DatabaseSession session, {
     Transaction? transaction,
-  });
+  }) async {
+    final result = await session.db.unsafeQuery(
+      'SELECT module, version FROM $_migrationVersionTable '
+      'WHERE module = @module '
+      'LIMIT 1',
+      transaction: transaction,
+      parameters: QueryParameters.named({
+        'module': MigrationConstants.repairMigrationModuleName,
+      }),
+    );
+    if (result.isEmpty) return null;
+    final row = result.first;
+    return DatabaseMigrationVersionModel.fromJson(row.toColumnMap());
+  }
 
   /// Lists all available migration versions.
   Future<List<String>> listAvailableVersions() async {
@@ -59,6 +101,7 @@ abstract class MigrationManager {
   Future<String?> applyRepairMigration(DatabaseSession session) async {
     var repairMigration = await _artifactStore.readRepairMigration();
     if (repairMigration == null) {
+      log.info('No repair migration to apply.');
       return null;
     }
 
@@ -71,6 +114,9 @@ abstract class MigrationManager {
 
       if (appliedRepairMigration != null &&
           appliedRepairMigration.version == repairMigration.version) {
+        log.info(
+          'Repair migration "${repairMigration.version}" already applied.',
+        );
         appliedVersion = null;
         return;
       }
@@ -192,9 +238,7 @@ abstract class MigrationManager {
     var sqlToExecute = <({String version, String sql})>[];
 
     if (fromVersion == null) {
-      var latestArtifacts = await _artifactStore.readVersionSql(
-        latestVersion,
-      );
+      var latestArtifacts = await _artifactStore.readVersionSql(latestVersion);
       var sqlDefinition = latestArtifacts?.definitionSql;
       if (sqlDefinition == null) {
         throw Exception(
@@ -207,9 +251,7 @@ abstract class MigrationManager {
       var newerVersions = _getVersionsToApply(fromVersion);
 
       for (var version in newerVersions) {
-        var versionArtifacts = await _artifactStore.readVersionSql(
-          version,
-        );
+        var versionArtifacts = await _artifactStore.readVersionSql(version);
         var sqlMigration = versionArtifacts?.migrationSql;
         if (sqlMigration == null) {
           throw Exception(
@@ -270,9 +312,7 @@ abstract class MigrationManager {
     availableVersions.clear();
     var warnings = <String>[];
     try {
-      availableVersions.addAll(
-        await _artifactStore.listVersions(),
-      );
+      availableVersions.addAll(await _artifactStore.listVersions());
     } catch (e) {
       warnings.add(
         'Failed to determine migration versions for project: ${e.toString()}',
@@ -330,49 +370,5 @@ abstract class MigrationManager {
     }
 
     return warnings.isEmpty;
-  }
-}
-
-/// Handles migrations for client-side databases.
-class ClientMigrationManager extends MigrationManager {
-  /// Creates a manager for the given in-memory [migrations] and [moduleName].
-  ClientMigrationManager({
-    required super.runMode,
-    required List<MigrationVersionSql> migrations,
-    required String moduleName,
-  }) : super(
-         RuntimeListMigrationArtifactStore(
-           migrations,
-           moduleName: moduleName,
-         ),
-       );
-
-  @override
-  Future<List<DatabaseMigrationVersionModel>> loadInstalledVersions(
-    DatabaseSession session, {
-    Transaction? transaction,
-  }) async {
-    // NOTE: This should be replaced by a proper find on the model once tables
-    // are available for shared package models. Currently, only the server and
-    // client packages have access to the [DatabaseMigrationVersion] model.
-    final result = await session.db.unsafeQuery(
-      'SELECT * FROM "serverpod_migrations";',
-      transaction: transaction,
-    );
-
-    return [
-      for (final row in result)
-        DatabaseMigrationVersionModel.fromJson(
-          row.toColumnMap(),
-        ),
-    ];
-  }
-
-  @override
-  Future<DatabaseMigrationVersionModel?> loadInstalledRepairMigration(
-    DatabaseSession session, {
-    Transaction? transaction,
-  }) async {
-    return null;
   }
 }

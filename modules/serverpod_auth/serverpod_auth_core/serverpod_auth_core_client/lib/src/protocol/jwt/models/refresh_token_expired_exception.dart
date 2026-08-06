@@ -14,7 +14,10 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Exception thrown when attempting to use a refresh token that has expired.
 abstract class RefreshTokenExpiredException
-    implements _i1.SerializableException, _i1.SerializableModel {
+    implements
+        _i1.SerializableException,
+        _i1.SerializableModel,
+        _i1.ProtocolSerialization {
   RefreshTokenExpiredException._();
 
   factory RefreshTokenExpiredException() = _RefreshTokenExpiredExceptionImpl;
@@ -31,6 +34,13 @@ abstract class RefreshTokenExpiredException
   RefreshTokenExpiredException copyWith();
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_auth_core.RefreshTokenExpiredException',
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_auth_core.RefreshTokenExpiredException',
     };

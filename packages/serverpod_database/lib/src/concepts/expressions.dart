@@ -103,7 +103,7 @@ class NotExpression extends Expression<Expression> {
 
   /// Returns the expression as a string wrapped in NOT.
   String wrapExpression(String expression) {
-    return 'NOT $_expression';
+    return 'NOT ($expression)';
   }
 
   @override

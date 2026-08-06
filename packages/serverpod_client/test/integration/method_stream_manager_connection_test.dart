@@ -15,7 +15,23 @@ import 'websocket_extensions.dart';
 import '../test_utils/method_stream_connection_details_builder.dart';
 import '../test_utils/test_web_socket_server.dart';
 
-class TestSerializationManager extends SerializationManager {}
+class TestSerializationManager extends SerializationManager {
+  @override
+  String? getClassNameForObject(Object? data) {
+    if (data is TestSerializableException) return 'TestSerializableException';
+    return super.getClassNameForObject(data);
+  }
+
+  @override
+  dynamic deserializeByClassName(Map<String, dynamic> data) {
+    if (data['className'] == 'TestSerializableException') {
+      return TestSerializableException();
+    }
+    return super.deserializeByClassName(data);
+  }
+}
+
+class TestSerializableException extends SerializableException {}
 
 void main() async {
   test(
@@ -481,6 +497,118 @@ void main() async {
         await subscription.cancel();
 
         await expectLater(webSocketClosed.future, completes);
+      },
+    );
+  });
+
+  group('Given a connected method stream with a closed output controller,', () {
+    Completer<Uri> callbackUrlFuture;
+    late RelicWebSocket testWebSocket;
+    late OpenMethodStreamCommand openMethodStreamCommand;
+    late Completer<void> webSocketClosed;
+    late Future<void> Function() closeServer;
+    late ClientMethodStreamManager streamManager;
+    late MethodStreamConnectionDetails streamConnectionDetails;
+    setUp(() async {
+      webSocketClosed = Completer<void>();
+      callbackUrlFuture = Completer<Uri>();
+      closeServer = await TestWebSocketServer.startServer(
+        webSocketHandler: (webSocket) {
+          testWebSocket = webSocket;
+          webSocket.textEvents.listen(
+            (event) {
+              var message = WebSocketMessage.fromJsonString(
+                event,
+                TestSerializationManager(),
+              );
+              if (message is PingCommand) {
+                webSocket.sendText(PongCommand.buildMessage());
+              } else if (message is OpenMethodStreamCommand) {
+                openMethodStreamCommand = message;
+                webSocket.sendText(
+                  OpenMethodStreamResponse.buildMessage(
+                    connectionId: message.connectionId,
+                    endpoint: message.endpoint,
+                    method: message.method,
+                    responseType: OpenMethodStreamResponseType.success,
+                  ),
+                );
+              }
+            },
+            onDone: () {
+              webSocketClosed.complete();
+            },
+          );
+        },
+        onConnected: (host) {
+          callbackUrlFuture.complete(host);
+        },
+      );
+
+      var webSocketHost = await callbackUrlFuture.future;
+      streamManager = ClientMethodStreamManager(
+        connectionTimeout: const Duration(milliseconds: 100),
+        webSocketHost: webSocketHost,
+        serializationManager: TestSerializationManager(),
+      );
+
+      streamConnectionDetails = MethodStreamConnectionDetailsBuilder().build();
+      await streamManager.openMethodStream(streamConnectionDetails);
+
+      // The controller has no listener, so the close future never completes.
+      // It is still marked closed synchronously, which is the state under test.
+      unawaited(streamConnectionDetails.outputController.close());
+    });
+
+    tearDown(() async => await closeServer());
+
+    test(
+      'when the server closes the method stream command with error reason, '
+      'then the websocket connection is closed without an exception.',
+      () async {
+        testWebSocket.sendText(
+          CloseMethodStreamCommand.buildMessage(
+            endpoint: openMethodStreamCommand.endpoint,
+            connectionId: openMethodStreamCommand.connectionId,
+            method: openMethodStreamCommand.method,
+            reason: CloseReason.error,
+          ),
+        );
+
+        await expectLater(
+          webSocketClosed.future.timeout(const Duration(seconds: 1)),
+          completes,
+        );
+      },
+    );
+
+    test(
+      'when all connections are closed with an exception, '
+      'then closing completes without an exception.',
+      () async {
+        await expectLater(
+          streamManager.closeAllConnections(const ConnectionClosedException()),
+          completes,
+        );
+      },
+    );
+
+    test(
+      'when the server sends a serializable exception, '
+      'then closing all connections completes without an exception.',
+      () async {
+        testWebSocket.sendText(
+          MethodStreamSerializableException.buildMessage(
+            endpoint: openMethodStreamCommand.endpoint,
+            connectionId: openMethodStreamCommand.connectionId,
+            method: openMethodStreamCommand.method,
+            object: TestSerializableException(),
+            serializationManager: TestSerializationManager(),
+          ),
+        );
+
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+        await expectLater(streamManager.closeAllConnections(), completes);
       },
     );
   });

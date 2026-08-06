@@ -13,7 +13,8 @@
 import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 import 'package:serverpod_database/serverpod_database.dart' as _i2;
 
-abstract class DatabaseMigrationWarning implements _i1.SerializableModel {
+abstract class DatabaseMigrationWarning
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   DatabaseMigrationWarning._({
     required this.type,
     required this.message,
@@ -70,6 +71,18 @@ abstract class DatabaseMigrationWarning implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod.DatabaseMigrationWarning',
+      'type': type.toJson(),
+      'message': message,
+      'table': table,
+      'columns': columns.toJson(),
+      'destrucive': destructive,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod.DatabaseMigrationWarning',
       'type': type.toJson(),
