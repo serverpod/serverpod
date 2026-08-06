@@ -5,16 +5,16 @@ name: Publish PostgreSQL image
 # file of newly created projects and by this repo's own docker test stacks.
 # Recipe: docker/postgres/Dockerfile.
 #
-# Publishing is triggered by a push that touches the recipe, on ANY branch, and
-# by workflow_dispatch. Branch pushes publish on purpose: the compose files that
-# consume this image - here and in newly created projects - are useless until it
-# exists, so the PR that introduces or changes the recipe has to be able to
-# publish before it lands. Dispatch alone cannot cover that case, since GitHub
-# only offers workflow_dispatch for workflows already present on main.
+# Publishing happens on main, when a push there changes the recipe, and on
+# workflow_dispatch, which can publish from any branch. Everything else - a pull
+# request touching the recipe - builds and smoke-tests every platform without
+# pushing.
 #
-# What protects the published tags is the smoke gate below, not the branch name.
-# Pull request events build and smoke-test every platform without publishing, so
-# a fork's PR still validates the recipe.
+# One publish means one new package version: the digest changes on every build
+# (the revision label alone guarantees it), the tags move to it, and the version
+# they moved off becomes untagged. So publishing is kept to the events that
+# should mint an image - a merge, or someone deliberately asking - rather than
+# every commit that happens to touch the Dockerfile.
 on:
   workflow_dispatch:
     inputs:
@@ -36,7 +36,7 @@ on:
   # new digest and orphan the old one for nothing; a changed smoke.sh is
   # exercised by the next real publish.
   push:
-    branches: ['**']
+    branches: [main]
     paths:
       - 'docker/postgres/Dockerfile'
       - '.github/workflows/publish-postgres-image.yaml'
@@ -57,11 +57,6 @@ concurrency:
 jobs:
   build:
     name: Build and publish
-    # A same-repo PR already got a run from its branch push; only fork PRs,
-    # whose pushes never reach this repo, need the pull_request event.
-    if: >-
-      github.event_name != 'pull_request' ||
-      github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
     permissions:
       contents: read

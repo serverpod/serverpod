@@ -52,13 +52,31 @@ that the models need.
 ## Publishing
 
 The `.github/workflows/publish-postgres-image.yaml` builds `linux/amd64` and
-`linux/arm64`, smoke-tests that both extensions load, and pushes. It runs on
-any branch push that touches the `Dockerfile` or the workflow itself - the two
-things that determine the published artifact - and on `workflow_dispatch`.
-Publishing from a branch is deliberate: a compose file that points at a tag
-which does not exist yet cannot pass CI, so the branch that changes the recipe
-publishes it first, and the PR that consumes it is green from its first run.
-Fork pull requests build and smoke-test without publishing.
+`linux/arm64`, smoke-tests that both extensions load, and pushes. It publishes
+when a push to `main` changes the `Dockerfile` or the workflow itself - the two
+things that determine the published artifact - and on `workflow_dispatch`,
+which can publish from any branch. A pull request touching either one builds
+and smoke-tests every platform without publishing.
+
+Publishing is kept to those events because each one mints a new package
+version: the digest changes on every build, the tags move to it, and the
+version they moved off becomes untagged. Dispatch covers the case where a
+branch needs its image published before merging - which is how this image was
+bootstrapped, since the compose files referencing it could not pass CI until
+the tag existed.
+
+Do not prune untagged versions, by hand or with a cleanup action. For a
+multi-arch image the per-architecture manifests and the provenance
+attestations appear as untagged versions in the package UI, and they are what
+the tagged index points at - delete them and `:16` still resolves while
+`docker pull` fails with `manifest unknown`, because the index now references
+digests that are gone.
+
+If that happens, republish: the tags move to a fresh index whose children
+exist. Dispatch the workflow, or push a recipe change to `main`. To check the
+package end to end, resolve the index and then fetch every child manifest -
+pulling the tag on a machine that already has the image cached will not catch
+it.
 
 Generated projects pull this image anonymously, so the GHCR package has to stay
 public. It is - verified by an unauthenticated pull of `:16` - but a `denied`
