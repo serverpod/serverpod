@@ -61,17 +61,35 @@ void main() {
   });
 
   test(
-    'Given a client on a platform without cross-tab locks '
+    'Given a client whose transport provides no cross-tab locks '
     'when accessing authRefreshCrossTabLock '
     'then it is null.',
     () {
       final client = TestServerpodClient(
         host: Uri.parse('http://localhost:8080'),
+        requestDelegate: _LocklessDelegate(),
       );
 
       expect(client.authRefreshCrossTabLock, isNull);
     },
   );
+}
+
+/// Uses the base class's [ServerpodClientRequestDelegate.createCrossTabLock],
+/// which returns null.
+class _LocklessDelegate extends ServerpodClientRequestDelegate {
+  @override
+  Future<String> serverRequest<T>(
+    Uri url, {
+    required String body,
+    String? authenticationValue,
+    bool authenticated = true,
+  }) {
+    throw UnimplementedError();
+  }
+
+  @override
+  void close() {}
 }
 
 class _RecordingLockDelegate extends ServerpodClientRequestDelegate {
