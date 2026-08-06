@@ -12,6 +12,8 @@ environment:
   sdk: '^3.10.3'
   flutter: '^3.38.4'
 
+resolution: workspace
+
 dependencies:
   flutter:
     sdk: flutter
@@ -22,24 +24,6 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   serverpod_database: 4.0.0-beta.1
-
-dependency_overrides:
-  serverpod_auth_core_client:
-    path: ../../../modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_client
-  serverpod_auth_idp_client:
-    path: ../../../modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_client
-  serverpod_client:
-    path: ../../../packages/serverpod_client
-  serverpod_database:
-    path: ../../../packages/serverpod_database
-  serverpod_embedded_postgres:
-    path: ../../../packages/serverpod_embedded_postgres
-  serverpod_serialization:
-    path: ../../../packages/serverpod_serialization
-  serverpod_service_client:
-    path: ../../../packages/serverpod_service_client
-  serverpod_shared:
-    path: ../../../packages/serverpod_shared
 
 flutter:
   uses-material-design: true

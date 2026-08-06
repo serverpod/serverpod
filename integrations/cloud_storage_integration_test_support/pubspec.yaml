@@ -9,23 +9,9 @@ version: 0.0.1
 environment:
   sdk: '^3.10.3'
 
+resolution: workspace
+
 dependencies:
   serverpod_client: 4.0.0-beta.1
   serverpod_cloud_storage_s3_compat: 4.0.0-beta.1
   test: ^1.25.5
-
-dependency_overrides:
-  serverpod:
-    path: ../../packages/serverpod
-  serverpod_client:
-    path: ../../packages/serverpod_client
-  serverpod_cloud_storage_s3_compat:
-    path: ../serverpod_cloud_storage_s3_compat
-  serverpod_database:
-    path: ../../packages/serverpod_database
-  serverpod_embedded_postgres:
-    path: ../../packages/serverpod_embedded_postgres
-  serverpod_serialization:
-    path: ../../packages/serverpod_serialization
-  serverpod_shared:
-    path: ../../packages/serverpod_shared

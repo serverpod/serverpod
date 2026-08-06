@@ -11,6 +11,8 @@ issue_tracker: https://github.com/serverpod/serverpod/issues
 environment:
   sdk: '^3.10.3'
 
+resolution: workspace
+
 dependencies:
   crypto: ^3.0.2
   ffi: ^2.1.4
@@ -28,9 +30,3 @@ dev_dependencies:
   serverpod_lints: 4.0.0-beta.1
   test: ^1.25.5
   uuid: ^4.5.3
-
-dependency_overrides:
-  serverpod_lints:
-    path: ../serverpod_lints
-  serverpod_serialization:
-    path: ../serverpod_serialization

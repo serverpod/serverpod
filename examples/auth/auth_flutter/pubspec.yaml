@@ -24,6 +24,8 @@ environment:
   sdk: '^3.10.3'
   flutter: '^3.38.4'
 
+resolution: workspace
+
 dependencies:
   auth_client:
     path: ../auth_client
@@ -43,32 +45,6 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-dependency_overrides:
-  serverpod_auth_core_client:
-    path: ../../../modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_client
-  serverpod_auth_core_flutter:
-    path: ../../../modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_flutter
-  serverpod_auth_idp_client:
-    path: ../../../modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_client
-  serverpod_auth_idp_flutter:
-    path: ../../../modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_flutter
-  serverpod_auth_idp_flutter_facebook:
-    path: ../../../modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_flutter_facebook
-  serverpod_auth_idp_flutter_firebase:
-    path: ../../../modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_flutter_firebase
-  serverpod_client:
-    path: ../../../packages/serverpod_client
-  serverpod_flutter:
-    path: ../../../packages/serverpod_flutter
-  serverpod_lints:
-    path: ../../../packages/serverpod_lints
-  serverpod_serialization:
-    path: ../../../packages/serverpod_serialization
-
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
-
-# The following section is specific to Flutter.
 flutter:
 
   # The following line ensures that the Material Icons font is

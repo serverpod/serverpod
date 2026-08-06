@@ -9,6 +9,8 @@ repository: https://github.com/serverpod/serverpod
 environment:
   sdk: '^3.10.3'
 
+resolution: workspace
+
 dependencies:
   flutter_lints: '>=3.0.0 <7.0.0'
   lints: '>=3.0.0 <7.0.0'

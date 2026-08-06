@@ -10,6 +10,8 @@ issue_tracker: https://github.com/serverpod/serverpod/issues
 environment:
   sdk: DART_VERSION
 
+resolution: workspace
+
 dependencies:
   http: '>=1.1.0 <2.0.0'
   meta: ^1.15.0
@@ -19,17 +21,3 @@ dependencies:
 
 dev_dependencies:
   serverpod_lints: SERVERPOD_VERSION
-
-dependency_overrides:
-  serverpod_client:
-    path: ../serverpod_client
-  serverpod_database:
-    path: ../serverpod_database
-  serverpod_embedded_postgres:
-    path: ../serverpod_embedded_postgres
-  serverpod_lints:
-    path: ../serverpod_lints
-  serverpod_serialization:
-    path: ../serverpod_serialization
-  serverpod_shared:
-    path: ../serverpod_shared
