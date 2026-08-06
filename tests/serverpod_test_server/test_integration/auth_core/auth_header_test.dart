@@ -131,17 +131,22 @@ void main() async {
         var key = 'username-4711:password-4711';
         await incorrectAuthKeyManager.put(key);
 
-        ServerpodClientException? clientException;
+        var clientException;
         try {
           await client.echoRequest.echoAuthenticationKey();
         } catch (e) {
-          clientException = e as ServerpodClientException?;
+          clientException = e;
         }
-        expect(clientException, isNotNull);
-        expect(clientException!.statusCode, equals(400));
+
         expect(
-          clientException.message,
-          startsWith('Bad request: '),
+          clientException,
+          isA<ServerpodClientBadRequest>()
+              .having((e) => e.statusCode, 'statusCode', equals(400))
+              .having(
+                (e) => e.message,
+                'message',
+                startsWith('Bad request: '),
+              ),
         );
       },
     );
@@ -224,17 +229,24 @@ void main() async {
         var key = 'doubled-bearer jwt-token-4712';
         await authKeyManager.put(key);
 
-        ServerpodClientException? clientException;
+        var clientException;
         try {
           await client.echoRequest.echoHttpHeader('authorization');
         } catch (e) {
-          clientException = e as ServerpodClientException?;
+          clientException = e;
         }
-        expect(clientException, isNotNull);
-        expect(clientException!.statusCode, equals(400));
+
         expect(
-          clientException.message,
-          'Bad request: Request has invalid "authorization" header',
+          clientException,
+          isA<ServerpodClientBadRequest>()
+              .having((e) => e.statusCode, 'statusCode', equals(400))
+              .having(
+                (e) => e.message,
+                'message',
+                equals(
+                  'Bad request: Request has invalid "authorization" header',
+                ),
+              ),
         );
       },
     );

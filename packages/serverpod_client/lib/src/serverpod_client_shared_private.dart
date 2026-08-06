@@ -46,6 +46,6 @@ Exception getExceptionFrom({
     HttpStatus.forbidden => ServerpodClientForbidden(),
     HttpStatus.notFound => ServerpodClientNotFound(),
     HttpStatus.internalServerError => ServerpodClientInternalServerError(),
-    _ => ServerpodClientException('Unknown error, data: $data', statusCode),
+    _ => ServerpodClientNetworkException('Unknown error, data: $data'),
   };
 }
