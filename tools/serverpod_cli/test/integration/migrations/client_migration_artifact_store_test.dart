@@ -1,28 +1,18 @@
 import 'dart:io';
 
-import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/migrations/client_side/client_migration_artifact_store.dart';
 import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
+import 'package:test_descriptor/test_descriptor.dart' as d;
 
 void main() {
-  late Directory tempDirectory;
   late ClientMigrationArtifactStore artifactStore;
 
-  setUp(() async {
-    tempDirectory = await Directory.systemTemp.createTemp(
-      'client_lib_migration_artifact_store_',
-    );
+  setUp(() {
     artifactStore = ClientMigrationArtifactStore(
-      clientPackageRoot: tempDirectory,
+      clientPackageRoot: Directory(d.sandbox),
     );
-  });
-
-  tearDown(() async {
-    if (tempDirectory.existsSync()) {
-      await tempDirectory.delete(recursive: true);
-    }
   });
 
   test(
@@ -54,48 +44,30 @@ void main() {
       );
       await artifactStore.writeVersionRegistry([version]);
 
-      final registryContents = await File(
-        path.join(
-          tempDirectory.path,
-          'lib',
-          'migrations',
-          'migration_registry.dart',
-        ),
-      ).readAsString();
-      final migrationPartContents = await File(
-        path.join(
-          tempDirectory.path,
-          'lib',
-          'migrations',
-          version,
-          'migration.dart',
-        ),
-      ).readAsString();
-
-      expect(registryContents, contains('library;'));
-      expect(
-        registryContents,
-        contains("part '$version/migration.dart';"),
-      );
-      expect(
-        registryContents,
-        contains('_Migration$version()'),
-      );
-
-      expect(
-        migrationPartContents,
-        contains("part of '../migration_registry.dart';"),
-      );
-      expect(
-        migrationPartContents,
-        contains(
-          'class _Migration$version implements MigrationVersionSql',
-        ),
-      );
-      expect(
-        migrationPartContents,
-        contains("String get moduleName => 'example_project';"),
-      );
+      await d.dir('lib', [
+        d.dir('migrations', [
+          d.file(
+            'migration_registry.dart',
+            allOf(
+              contains('library;'),
+              contains("part '$version/migration.dart';"),
+              contains('_Migration$version()'),
+            ),
+          ),
+          d.dir(version, [
+            d.file(
+              'migration.dart',
+              allOf(
+                contains("part of '../migration_registry.dart';"),
+                contains(
+                  'class _Migration$version implements MigrationVersionSql',
+                ),
+                contains("String get moduleName => 'example_project';"),
+              ),
+            ),
+          ]),
+        ]),
+      ]).validate();
     },
   );
 
@@ -137,60 +109,128 @@ void main() {
       await writeClientMigration(v2);
       await artifactStore.writeVersionRegistry([v1, v2]);
 
-      final registryContents = await File(
-        path.join(
-          tempDirectory.path,
-          'lib',
-          'migrations',
-          'migration_registry.dart',
-        ),
-      ).readAsString();
-
-      expect(
-        RegExp(
-          r"part '[^']+/migration\.dart';",
-        ).allMatches(registryContents).length,
-        2,
-        reason: 'registry should declare one part per migration version',
-      );
-      expect(registryContents, contains("part '$v1/migration.dart';"));
-      expect(registryContents, contains("part '$v2/migration.dart';"));
-      expect(registryContents, contains('_Migration$v1()'));
-      expect(registryContents, contains('_Migration$v2()'));
+      await d.dir('lib', [
+        d.dir('migrations', [
+          d.file(
+            'migration_registry.dart',
+            allOf(
+              contains("part '$v1/migration.dart';"),
+              contains("part '$v2/migration.dart';"),
+              contains('_Migration$v1()'),
+              contains('_Migration$v2()'),
+              predicate<String>(
+                (contents) =>
+                    RegExp(
+                      r"part '[^']+/migration\.dart';",
+                    ).allMatches(contents).length ==
+                    2,
+                'declares one part per migration version',
+              ),
+            ),
+          ),
+        ]),
+      ]).validate();
     },
   );
 
-  test(
-    'when the last client migration directory is completely empty, '
-    'listVersions removes it and refreshes migration_registry.dart',
-    () async {
-      final libMigrations = Directory(
-        path.join(tempDirectory.path, 'lib', 'migrations'),
-      );
-      await libMigrations.create(recursive: true);
+  group(
+    'Given a client migration artifact store without a migration registry and '
+    'where the last migration version directory is empty,',
+    () {
+      setUp(() async {
+        await d.dir('lib', [
+          d.dir('migrations', [
+            d.dir('10000000000000', [d.file('migration.dart', '')]),
+            d.dir('20000000000000'),
+          ]),
+        ]).create();
+      });
 
-      final first = Directory(path.join(libMigrations.path, '10000000000000'));
-      await first.create();
-      await File(path.join(first.path, 'marker')).writeAsString('');
+      group('when listing migration versions,', () {
+        late List<String> versions;
 
-      final second = Directory(path.join(libMigrations.path, '20000000000000'));
-      await second.create();
+        setUp(() async {
+          versions = await artifactStore.listVersions();
+        });
 
-      await artifactStore.writeVersionRegistry([
-        '10000000000000',
-        '20000000000000',
-      ]);
+        test('then the empty trailing migration version is not listed.', () {
+          expect(versions, ['10000000000000']);
+        });
 
-      final versions = await artifactStore.listVersions();
+        test(
+          'then the empty trailing migration version directory is deleted.',
+          () async {
+            await d.dir('lib', [
+              d.dir('migrations', [d.nothing('20000000000000')]),
+            ]).validate();
+          },
+        );
 
-      expect(versions, ['10000000000000']);
-      expect(second.existsSync(), isFalse);
+        test('then no migration registry is created.', () async {
+          await d.dir('lib', [
+            d.dir('migrations', [d.nothing('migration_registry.dart')]),
+          ]).validate();
+        });
+      });
+    },
+  );
 
-      final registryContents = await File(
-        path.join(libMigrations.path, 'migration_registry.dart'),
-      ).readAsString();
-      expect(registryContents, contains('10000000000000'));
-      expect(registryContents, isNot(contains('20000000000000')));
+  group(
+    'Given a client migration artifact store where the last migration version '
+    'directory is empty,',
+    () {
+      setUp(() async {
+        await d.dir('lib', [
+          d.dir('migrations', [
+            d.dir('10000000000000', [d.file('migration.dart', '')]),
+            d.dir('20000000000000'),
+          ]),
+        ]).create();
+
+        await artifactStore.writeVersionRegistry([
+          '10000000000000',
+          '20000000000000',
+        ]);
+      });
+
+      group('when listing migration versions,', () {
+        late List<String> versions;
+
+        setUp(() async {
+          versions = await artifactStore.listVersions();
+        });
+
+        test('then the empty trailing migration version is not listed.', () {
+          expect(versions, ['10000000000000']);
+        });
+
+        test(
+          'then the empty trailing migration version directory is deleted.',
+          () async {
+            await d.dir('lib', [
+              d.dir('migrations', [d.nothing('20000000000000')]),
+            ]).validate();
+          },
+        );
+
+        test(
+          'then the migration registry no longer references the empty '
+          'trailing migration version.',
+          () async {
+            await d.dir('lib', [
+              d.dir('migrations', [
+                d.file(
+                  'migration_registry.dart',
+                  allOf(
+                    contains("part '10000000000000/migration.dart';"),
+                    isNot(contains('20000000000000')),
+                  ),
+                ),
+              ]),
+            ]).validate();
+          },
+        );
+      });
     },
   );
 }

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../../../serverpod_database.dart';
@@ -45,12 +46,17 @@ class FileSystemMigrationArtifactStore
               .toList()
           ..sort();
 
-    final prunedAny =
-        await _deleteTrailingCompletelyEmptyMigrationVersionDirectories(
-          versions,
-        );
+    var removed = await deleteTrailingEmptyMigrationVersionDirectories(
+      versions,
+      migrationsBaseDirectory: migrationsDirectory,
+      logWarning: log.warning,
+    );
 
-    if (prunedAny && await _migrationRegistryFile().exists()) {
+    // Only an existing registry is refreshed, to drop the removed versions.
+    // Since writeVersionRegistry creates the file when missing, writing it
+    // unconditionally would turn listing the versions into generating a
+    // registry for projects that have none.
+    if (removed.isNotEmpty && await _registryFile.exists()) {
       await writeVersionRegistry(versions);
     }
 
@@ -190,7 +196,7 @@ class FileSystemMigrationArtifactStore
     );
   }
 
-  File _migrationRegistryFile() => File(
+  File get _registryFile => File(
     path.join(
       MigrationConstants.migrationsBaseDirectory(_projectDirectory).path,
       'migration_registry.txt',
@@ -199,7 +205,7 @@ class FileSystemMigrationArtifactStore
 
   @override
   Future<void> writeVersionRegistry(List<String> versions) async {
-    var registryFile = _migrationRegistryFile();
+    var registryFile = _registryFile;
 
     var contents = StringBuffer(_migrationRegistryHeader);
     for (var version in versions) {
@@ -259,44 +265,6 @@ class FileSystemMigrationArtifactStore
     } catch (e) {
       throw MigrationRepairWriteException(exception: e.toString());
     }
-  }
-
-  /// Removes migration version directories from the end of [versions] that
-  /// contain no files or subdirectories (e.g. left over after discarding a
-  /// migration). Directories that contain any entity but are missing required
-  /// migration artifacts are left intact so callers can still report corruption.
-  ///
-  /// Returns `true` if at least one directory was deleted.
-  Future<bool> _deleteTrailingCompletelyEmptyMigrationVersionDirectories(
-    List<String> versions,
-  ) async {
-    var prunedAny = false;
-    while (versions.isNotEmpty) {
-      final version = versions.last;
-      final versionDir = MigrationConstants.migrationVersionDirectory(
-        _projectDirectory,
-        version,
-      );
-      if (!await versionDir.exists()) {
-        versions.removeLast();
-        prunedAny = true;
-        continue;
-      }
-      if (!await _directoryHasNoEntities(versionDir)) {
-        break;
-      }
-      await versionDir.delete(recursive: false);
-      versions.removeLast();
-      prunedAny = true;
-    }
-    return prunedAny;
-  }
-
-  static Future<bool> _directoryHasNoEntities(Directory dir) async {
-    await for (final _ in dir.list(followLinks: false)) {
-      return false;
-    }
-    return true;
   }
 
   static Future<String?> _readFileIfExists(File file) async {
