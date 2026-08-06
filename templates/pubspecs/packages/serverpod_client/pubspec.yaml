@@ -15,7 +15,7 @@ dependencies:
   http: '>=1.1.0 <2.0.0'
   meta: ^1.15.0
   serverpod_serialization: SERVERPOD_VERSION
-  web: ^1.0.0
+  web: '>=0.3.0 <2.0.0'
   web_socket: ^1.0.1
   web_socket_channel: ^3.0.3
 
