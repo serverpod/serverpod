@@ -5,18 +5,19 @@ description: Serverpod message system — postMessage, addListener, createStream
 
 # Serverpod Server Events
 
-Event messaging via `session.messages` on named channels. Messages must be serializable models. Local by default; global (cross-server) with Redis.
+Event messaging via `session.messages` on named channels. Messages must be serializable models. By default (`MessageScope.auto`) messages are delivered across the cluster when Redis is enabled, otherwise locally within the server instance.
 
 ## Sending
 
 ```dart
 await session.messages.postMessage('user_updates', UserUpdate(...));
 
-// Cross-server (requires Redis):
-await session.messages.postMessage('user_updates', message, global: true);
+// Restrict delivery with a scope:
+await session.messages.postMessage('user_updates', message, scope: MessageScope.local);
+await session.messages.postMessage('user_updates', message, scope: MessageScope.global);
 ```
 
-Posting with `global: true` throws if Redis is not enabled. Fall back to local messages only when cross-server delivery is not required.
+`MessageScope.local` delivers synchronously within this server only. `MessageScope.global` requires Redis and throws a `StateError` if it is not enabled. With Redis enabled, delivery is asynchronous and best effort, and listeners receive a deserialized copy of the message rather than the posted instance.
 
 ## Receiving
 

@@ -369,7 +369,7 @@ void main() {
       final result = await session.messages.postMessage(
         channelName,
         messageSent,
-        global: true,
+        scope: MessageScope.global,
       );
 
       expect(result, isTrue);
@@ -380,7 +380,7 @@ void main() {
       await session.messages.postMessage(
         channelName,
         messageSent,
-        global: true,
+        scope: MessageScope.global,
       );
 
       var messageReceived = await messageCompleter.future.timeout(
@@ -397,7 +397,7 @@ void main() {
       var published = await session.messages.postMessage(
         channelName,
         messageSent,
-        global: true,
+        scope: MessageScope.global,
       );
 
       expect(published, true);
@@ -428,7 +428,7 @@ void main() {
         await session.messages.postMessage(
           uniqueChannelName,
           messageSent,
-          global: true,
+          scope: MessageScope.global,
         );
 
         var uniqueChannelMessageReceived = await uniqueChannelMessageCompleter
@@ -448,13 +448,29 @@ void main() {
       });
     });
 
+    test('when a message is published with the default auto scope '
+        'then the message is received', () async {
+      await session.messages.postMessage(
+        channelName,
+        messageSent,
+      );
+
+      var messageReceived = await messageCompleter.future.timeout(
+        Duration(seconds: 10),
+        onTimeout: () => null,
+      );
+
+      expect(messageReceived, isNotNull);
+      expect(messageReceived?.num, messageSent.num);
+    });
+
     test('when a global message is published to a channel with no listeners '
         'then the publish is still successful', () async {
       var uniqueChannelName = Uuid().v4();
       var published = await session.messages.postMessage(
         uniqueChannelName,
         messageSent,
-        global: true,
+        scope: MessageScope.global,
       );
 
       expect(published, true);
@@ -482,7 +498,19 @@ void main() {
       var published = await session.messages.postMessage(
         'testChannel',
         SimpleData(num: 1337),
-        global: true,
+        scope: MessageScope.global,
+      );
+
+      expect(published, false);
+    });
+
+    // Auto scope only falls back to local delivery when Redis is not
+    // enabled, not when the connection is down.
+    test('when publishing a message with auto scope '
+        'then the publish fails', () async {
+      var published = await session.messages.postMessage(
+        'testChannel',
+        SimpleData(num: 1337),
       );
 
       expect(published, false);
@@ -519,7 +547,7 @@ void main() {
           () async => await session.messages.postMessage(
             'testChannel',
             SimpleData(num: 1337),
-            global: true,
+            scope: MessageScope.global,
           ),
           throwsA(
             isA<StateError>().having(
@@ -529,6 +557,31 @@ void main() {
             ),
           ),
         );
+      },
+    );
+
+    test(
+      'when publishing a message with auto scope '
+      'then the message is delivered locally',
+      () async {
+        var messageCompleter = Completer<SimpleData>();
+        MessageCentralListenerCallback listener = (message) {
+          messageCompleter.complete(message as SimpleData);
+        };
+        session.messages.addListener('testChannel', listener);
+        addTearDown(
+          () => session.messages.removeListener('testChannel', listener),
+        );
+
+        var published = await session.messages.postMessage(
+          'testChannel',
+          SimpleData(num: 1337),
+        );
+
+        expect(published, isTrue);
+        await expectLater(messageCompleter.future, completes);
+        var messageReceived = await messageCompleter.future;
+        expect(messageReceived.num, 1337);
       },
     );
   });

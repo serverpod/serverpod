@@ -553,22 +553,23 @@ class MessageCentralAccess {
     );
   }
 
-  /// Posts a [message] to a named channel. If [global] is set to true, the
-  /// message will be posted to all servers in the cluster, otherwise it will
-  /// only be posted locally on the current server. Returns true if the message
-  /// was successfully posted.
+  /// Posts a [message] to a named channel. The [scope] determines whether the
+  /// message is delivered locally on the current server, globally to all
+  /// servers in the cluster, or globally with a local fallback if Redis is
+  /// not enabled (the default).
   ///
   /// Returns true if the message was successfully posted.
   ///
-  /// Throws a [StateError] if Redis is not enabled and [global] is set to true.
+  /// Throws a [StateError] if Redis is not enabled and [scope] is
+  /// [MessageScope.global].
   Future<bool> postMessage(
     String channelName,
     SerializableModel message, {
-    bool global = false,
+    MessageScope scope = MessageScope.auto,
   }) => _session.server.messageCentral.postMessage(
     channelName,
     message,
-    global: global,
+    scope: scope,
   );
 
   /// Creates a stream that listens to a specified channel.
@@ -611,21 +612,9 @@ class MessageCentralAccess {
       );
     }
 
-    try {
-      return await _session.server.messageCentral.postMessage(
-        MessageCentralServerpodChannels.revokedAuthentication(userIdentifier),
-        message,
-        global: true,
-      );
-    } on StateError catch (_) {
-      // Throws StateError if Redis is not enabled that is ignored.
-    }
-
-    // If Redis is not enabled, send the message locally.
     return _session.server.messageCentral.postMessage(
       MessageCentralServerpodChannels.revokedAuthentication(userIdentifier),
       message,
-      global: false,
     );
   }
 }
