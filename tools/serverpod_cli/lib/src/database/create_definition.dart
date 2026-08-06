@@ -53,6 +53,7 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
                 ],
                 type: index.type,
                 isUnique: index.unique,
+                nullsDistinct: index.nullsDistinct,
                 isPrimary: false,
                 ginOperatorClass: index.isGinIndex
                     ? index.ginOperatorClass

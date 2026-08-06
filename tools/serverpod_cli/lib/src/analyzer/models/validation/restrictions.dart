@@ -963,6 +963,30 @@ class Restrictions {
     return [];
   }
 
+  List<SourceSpanSeverityException> validateIndexNullsDistinctKey(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition) return [];
+
+    var index = definition.indexes.firstWhere(
+      (index) => index.name == parentNodeName,
+    );
+
+    if (!index.unique) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.nullsDistinct}" property can only be used with unique indexes.',
+          span,
+        ),
+      ];
+    }
+
+    return [];
+  }
+
   List<SourceSpanSeverityException> validateIndexOperatorClassKey(
     String parentNodeName,
     dynamic content,

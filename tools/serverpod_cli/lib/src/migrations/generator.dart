@@ -67,6 +67,9 @@ class MigrationGenerator {
   /// definition could not be created from project models.
   /// Throws [MigrationVersionAlreadyExistsException] if the migration version
   /// already exists.
+  /// Throws [MigrationUnsupportedByDialectException] if the models declare
+  /// something the target dialect cannot express. Unlike the other failures
+  /// this one is not recoverable with [force].
   Future<MigrationVersionArtifacts?> createMigration({
     String? tag,
     String? precomputedVersion,
@@ -120,14 +123,6 @@ class MigrationGenerator {
     var warnings = migration.warnings;
     _logWarnings(warnings);
 
-    if (warnings.isNotEmpty && !force) {
-      throw const MigrationAbortedException();
-    }
-
-    if (migration.isEmpty && !empty) {
-      return null;
-    }
-
     final dialect = serverCode
         ? config.databaseDialect
         : DatabaseDialect.sqlite;
@@ -140,13 +135,22 @@ class MigrationGenerator {
       dialect,
       logWarnings: log.warning,
     );
+    var definitionSql = sqlGenerator.generateDatabaseDefinitionSql(
+      databaseDefinitionNextForDialect,
+      installedModules: databaseDefinitionNext.installedModules,
+    );
+
+    if (warnings.isNotEmpty && !force) {
+      throw const MigrationAbortedException();
+    }
+
+    if (migration.isEmpty && !empty) {
+      return null;
+    }
 
     var artifacts = MigrationVersionArtifacts(
       version: versionName,
-      definitionSql: sqlGenerator.generateDatabaseDefinitionSql(
-        databaseDefinitionNextForDialect,
-        installedModules: databaseDefinitionNext.installedModules,
-      ),
+      definitionSql: definitionSql,
       migrationSql: sqlGenerator.generateDatabaseMigrationSql(
         migration,
         databaseDefinitionNextForDialect,
@@ -162,12 +166,18 @@ class MigrationGenerator {
     );
 
     if (write) {
-      await _artifactStore.writeVersion(artifacts);
-      versions.add(versionName);
-      await _artifactStore.writeVersionRegistry(versions);
+      await persistMigration(artifacts);
     }
 
     return artifacts;
+  }
+
+  /// Writes [artifacts] to disk and updates the version registry.
+  Future<void> persistMigration(MigrationVersionArtifacts artifacts) async {
+    var versions = await _artifactStore.listVersions();
+    await _artifactStore.writeVersion(artifacts);
+    versions.add(artifacts.version);
+    await _artifactStore.writeVersionRegistry(versions);
   }
 
   Future<Iterable<DatabaseDefinition>> _loadModuleDatabaseDefinitions(

@@ -20,6 +20,7 @@ class Keyword {
 
   static const String type = 'type';
   static const String unique = 'unique';
+  static const String nullsDistinct = 'nulls_distinct';
   static const String per = 'per';
   static const String operatorClass = 'operatorClass';
   static const String distanceFunction = 'distanceFunction';

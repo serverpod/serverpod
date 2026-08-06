@@ -579,6 +579,11 @@ class SerializableModelIndexDefinition {
   /// Whether the [fields] of this index should be unique.
   final bool unique;
 
+  /// Whether null values should be considered distinct in this unique index.
+  ///
+  /// A null value uses the database default behavior.
+  final bool? nullsDistinct;
+
   /// The gin index operator class, if it is a gin index.
   final GinOperatorClass? ginOperatorClass;
 
@@ -594,6 +599,7 @@ class SerializableModelIndexDefinition {
     required this.type,
     required this.unique,
     required this.fields,
+    this.nullsDistinct,
     this.ginOperatorClass,
     this.vectorDistanceFunction,
     this.parameters,
@@ -611,6 +617,7 @@ class SerializableModelIndexDefinition {
       name: '${prefix}_$name',
       type: type,
       unique: unique,
+      nullsDistinct: nullsDistinct,
       fields: fields,
       ginOperatorClass: ginOperatorClass,
       vectorDistanceFunction: vectorDistanceFunction,

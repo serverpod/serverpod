@@ -111,6 +111,7 @@ class SqliteDatabaseAnalyzer extends DatabaseAnalyzer {
       if (indexName == 'sqlite_autoindex_${tableName}_1') {
         continue;
       }
+      var isUnique = (indexRow[2] as int?) == 1;
 
       var indexInfoResult = await database.unsafeQuery(
         'PRAGMA index_info(${_quoteIdentifier(indexName)})',
@@ -128,7 +129,8 @@ class SqliteDatabaseAnalyzer extends DatabaseAnalyzer {
               ),
           ],
           type: 'btree',
-          isUnique: (indexRow[2] as int?) == 1,
+          isUnique: isUnique,
+          nullsDistinct: isUnique ? true : null,
           isPrimary: indexRow[3] == 'pk',
           predicate: null,
           vectorDistanceFunction: null,

@@ -286,6 +286,11 @@ extension PostgresIndexDefinitionPgSqlGeneration on IndexDefinition {
     var out = '';
 
     var uniqueStr = isUnique ? ' UNIQUE' : '';
+    var nullsDistinctStr = switch (nullsDistinct) {
+      true => ' NULLS DISTINCT',
+      false => ' NULLS NOT DISTINCT',
+      null => '',
+    };
     var elementStrs = elements.map((e) => '"${e.definition}"');
     var ifNotExistsStr = ifNotExists ? ' IF NOT EXISTS' : '';
 
@@ -310,7 +315,7 @@ extension PostgresIndexDefinitionPgSqlGeneration on IndexDefinition {
 
     out +=
         'CREATE$uniqueStr INDEX$ifNotExistsStr "$indexName" ON "$tableName" '
-        'USING $type (${elementStrs.join(', ')}$ginOperatorClassStr$distanceStr)$pgvectorParams;\n';
+        'USING $type (${elementStrs.join(', ')}$ginOperatorClassStr$distanceStr)$nullsDistinctStr$pgvectorParams;\n';
 
     return out;
   }
