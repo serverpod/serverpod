@@ -84,6 +84,7 @@ cp CHANGELOG.md integrations/serverpod_cloud_storage_s3_compat/CHANGELOG.md
 cp CHANGELOG.md integrations/serverpod_cloud_storage_s3/CHANGELOG.md
 cp CHANGELOG.md integrations/serverpod_cloud_storage_gcp/CHANGELOG.md
 cp CHANGELOG.md integrations/serverpod_cloud_storage_r2/CHANGELOG.md
+cp CHANGELOG.md integrations/serverpod_cloud_storage_local/CHANGELOG.md
 
 echo "Copying README.md"
 cp README.md packages/serverpod/README.md
@@ -141,3 +142,4 @@ cp README_subpackage.md integrations/serverpod_cloud_storage_s3_compat/README.md
 cp README_subpackage.md integrations/serverpod_cloud_storage_s3/README.md
 cp README_subpackage.md integrations/serverpod_cloud_storage_gcp/README.md
 cp README_subpackage.md integrations/serverpod_cloud_storage_r2/README.md
+cp README_subpackage.md integrations/serverpod_cloud_storage_local/README.md
