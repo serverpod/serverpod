@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
-import 'package:serverpod_cli/src/util/string_manipulation.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 class ModelDependencyResolver {

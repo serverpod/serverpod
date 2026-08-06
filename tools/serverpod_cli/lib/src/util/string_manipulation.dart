@@ -1,30 +1,4 @@
-extension StringManipulationExtension on String {
-  Iterable<String> get iterable => runes.map(String.fromCharCode);
-
-  String get first => String.fromCharCode(runes.first);
-
-  String capitalize() =>
-      isNotEmpty ? '${first.toUpperCase()}${substring(1).toLowerCase()}' : this;
-
-  int count(String value, [int start = 0, int? end]) =>
-      value.allMatches(substring(start, end)).length;
-
-  String toCamelCase({bool isLowerCamelCase = false}) {
-    var separator = RegExp(r'[ _]');
-    var parts = split(separator);
-
-    if (!contains(separator)) {
-      return isLowerCamelCase ? toLowerCase() : capitalize();
-    }
-
-    return [
-      isLowerCamelCase ? parts.first.toLowerCase() : parts.first.capitalize(),
-      ...parts.skip(1).map((part) => part.capitalize()),
-    ].join();
-  }
-
-  bool containsAny(Iterable<String> values) => values.any(contains);
-}
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Splits a string on the separator token unless the token is inside
 /// brackets, angle brackets, ( ) and < >, square brackets, [ ], curly braces, { }, single quotes '', or double quotes "".

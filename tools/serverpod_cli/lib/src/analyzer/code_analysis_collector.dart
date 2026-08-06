@@ -1,4 +1,4 @@
-import 'package:serverpod_cli/src/util/string_manipulation.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:source_span/source_span.dart';
 
 abstract class CodeAnalysisCollector {
