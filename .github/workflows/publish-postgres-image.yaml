@@ -12,10 +12,9 @@ name: Publish PostgreSQL image
 # publish before it lands. Dispatch alone cannot cover that case, since GitHub
 # only offers workflow_dispatch for workflows already present on main.
 #
-# What protects the rolling tags is the smoke gate below, not the branch name;
-# only `latest` is restricted to main and manual dispatch. Pull request events
-# build and smoke-test every platform without publishing, so a fork's PR still
-# validates the recipe.
+# What protects the published tags is the smoke gate below, not the branch name.
+# Pull request events build and smoke-test every platform without publishing, so
+# a fork's PR still validates the recipe.
 on:
   workflow_dispatch:
     inputs:
@@ -65,9 +64,6 @@ jobs:
       packages: write
     env:
       DEFAULT_BASE_IMAGE: pgvector/pgvector:pg16
-      # The major version that also gets the `latest` tag. Bump when a newer
-      # major becomes the one new projects are created with.
-      LATEST_PG_MAJOR: '16'
       PLATFORMS: linux/amd64,linux/arm64
       LOCAL_TAG: serverpod-postgres:smoke
     steps:
@@ -82,7 +78,6 @@ jobs:
           EXTRA_TAG_INPUT: ${{ inputs.extra_tag }}
           DRY_RUN: ${{ inputs.dry_run }}
           EVENT: ${{ github.event_name }}
-          REF: ${{ github.ref }}
           OWNER: ${{ github.repository_owner }}
         run: |
           set -euo pipefail
@@ -91,10 +86,12 @@ jobs:
           # GHCR namespaces are lowercase; the org name may not be.
           image="ghcr.io/$(echo "$OWNER" | tr '[:upper:]' '[:lower:]')/postgres"
 
-          # The published tags name the PostgreSQL version the image actually
-          # carries, so read it from the base rather than trust the tag it was
-          # requested under. --entrypoint bypasses docker-entrypoint.sh, which
-          # would otherwise reason about initialising a data directory.
+          # The tag names the major the image actually carries, so read the
+          # version off the base rather than trust the tag it was requested
+          # under - `pgvector/pgvector:pg16` is a promise about the base's
+          # contents, not a guarantee. --entrypoint bypasses
+          # docker-entrypoint.sh, which would otherwise reason about
+          # initialising a data directory.
           docker pull --quiet "$base" >/dev/null
           version="$(docker run --rm --entrypoint postgres "$base" --version | awk '{print $3}')"
           case "$version" in
@@ -103,14 +100,14 @@ jobs:
           esac
           major="${version%%.*}"
 
-          # Version tags roll forward from any branch that changes the recipe;
-          # `latest` is the one tag a work-in-progress branch must not move, so
-          # it takes main or a deliberate manual dispatch.
-          tags="$image:pg$major"$'\n'"$image:$major"$'\n'"$image:$version"
-          if [ "$major" = "$LATEST_PG_MAJOR" ] &&
-             { [ "$REF" = 'refs/heads/main' ] || [ "$EVENT" = 'workflow_dispatch' ]; }; then
-            tags="$tags"$'\n'"$image:latest"
-          fi
+          # Major-version tags only. A project pins the major it was created
+          # against and gets patch and extension updates within it; nothing we
+          # publish can ever move it to a different major. That rules out
+          # `latest`, which would do exactly that to a compose file nobody
+          # revisits, and it rules out patch tags like 16.14, which read as
+          # pins but still change whenever the image is rebuilt - pin by digest
+          # when a project genuinely needs a frozen database.
+          tags="$image:pg$major"$'\n'"$image:$major"
           if [ -n "${EXTRA_TAG_INPUT:-}" ]; then
             # A dispatch input joins a newline-separated tag list, so hold it
             # to what a docker tag may actually contain.
@@ -131,6 +128,7 @@ jobs:
             echo "base=$base"
             echo "image=$image"
             echo "version=$version"
+            echo "major=$major"
             echo "push=$push"
             echo "tags<<TAGS_EOF"
             echo "$tags"
@@ -219,7 +217,7 @@ jobs:
       - name: Verify the published manifest
         if: steps.cfg.outputs.push == 'true'
         env:
-          REF: ${{ steps.cfg.outputs.image }}:${{ steps.cfg.outputs.version }}
+          REF: ${{ steps.cfg.outputs.image }}:${{ steps.cfg.outputs.major }}
         run: |
           set -euo pipefail
           out="$(docker buildx imagetools inspect "$REF")"

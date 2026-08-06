@@ -14,15 +14,22 @@ generate - no local image build required.
 
 ## Tags
 
-| Tag                | Points at                                          |
-| ------------------ | -------------------------------------------------- |
-| `latest`           | The major version new projects are created with.   |
-| `16`, `pg16`       | Latest build of the PostgreSQL 16 line.            |
-| `16.<patch>`       | Latest build of that PostgreSQL patch release.     |
+| Tag          | Points at                                                     |
+| ------------ | ------------------------------------------------------------- |
+| `16`, `pg16` | Latest build of the PostgreSQL 16 line (`pg16` mirrors pgvector's naming). |
 
-All tags are rolling: a rebuild picks up new PostGIS/pgvector packages under
-the same tag. Pin by digest (`ghcr.io/serverpod/postgres@sha256:...`) when you
-need a bit-for-bit reproducible database.
+Major versions only, on purpose. A project pins the major it was created
+against and keeps receiving patch and extension updates within it, and nothing
+published here can move it to a different major. That is why there is no
+`latest` - it would silently carry a compose file nobody revisits onto the next
+major - and no patch-level tags either: `16.14` reads like a pin but still
+changes whenever the image is rebuilt against newer PostGIS/pgvector packages.
+
+For a database that genuinely never moves, pin the digest:
+
+```yaml
+image: ghcr.io/serverpod/postgres@sha256:...
+```
 
 ## Usage
 
@@ -51,13 +58,12 @@ branch push that touches this directory or the workflow itself, and on
 `workflow_dispatch`. Publishing from a branch is deliberate: a compose file that
 points at a tag which does not exist yet cannot pass CI, so the branch that
 changes the recipe publishes it first, and the PR that consumes it is green from
-its first run. `latest` is the exception and only moves from `main` or a manual
-dispatch. Fork pull requests build and smoke-test without publishing.
+its first run. Fork pull requests build and smoke-test without publishing.
 
-A new tag is not pullable by anyone until the package itself is public: the
-first publish creates `serverpod/postgres` as a **private** GHCR package, and it
-has to be switched to public once (organization → Packages → `postgres` →
-Package settings → Change visibility). Generated projects pull it anonymously.
+Generated projects pull this image anonymously, so the GHCR package has to stay
+public. It is - verified by an unauthenticated pull of `:16` - but a `denied` or
+403 on pull is what a flipped visibility looks like, and it is fixed under
+organization → Packages → `postgres` → Package settings → Change visibility.
 
 Building it locally, e.g. to try a different base:
 
