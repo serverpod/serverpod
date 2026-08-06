@@ -62,7 +62,7 @@ workspace:
   - tools/serverpod_cli
 
 dev_dependencies:
-  melos: ^7.0.0
+  melos: ^8.0.0
   sort_pubspec_dependencies: ^0.0.2
 
 melos:
