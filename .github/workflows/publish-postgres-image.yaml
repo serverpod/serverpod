@@ -31,14 +31,18 @@ on:
         description: 'Build and smoke-test only, do not push.'
         type: boolean
         default: false
+  # Only what determines the published artifact triggers a publish. Editing the
+  # README or smoke.sh changes no layer, and rebuilding for them would mint a
+  # new digest and orphan the old one for nothing; a changed smoke.sh is
+  # exercised by the next real publish.
   push:
     branches: ['**']
     paths:
-      - 'docker/postgres/**'
+      - 'docker/postgres/Dockerfile'
       - '.github/workflows/publish-postgres-image.yaml'
   pull_request:
     paths:
-      - 'docker/postgres/**'
+      - 'docker/postgres/Dockerfile'
       - '.github/workflows/publish-postgres-image.yaml'
 
 permissions:
@@ -168,35 +172,9 @@ jobs:
           cache-to: type=gha,mode=max
 
       # Gate: an image that cannot load both extensions must never be pushed.
+      # Same script a developer runs against a local build or a published tag.
       - name: Smoke-test the image
-        run: |
-          set -euo pipefail
-          name=serverpod-postgres-smoke
-          trap 'docker rm -f "$name" >/dev/null 2>&1 || true' EXIT
-          docker run -d --name "$name" -e POSTGRES_PASSWORD=postgres "$LOCAL_TAG" >/dev/null
-
-          # The image's own initialisation runs a socket-only temporary server
-          # first, so readiness is checked over TCP to be sure the real server
-          # is up rather than the init-time one.
-          ready=0
-          for _ in $(seq 60); do
-            if docker exec "$name" pg_isready -h 127.0.0.1 -U postgres -q; then ready=1; break; fi
-            sleep 1
-          done
-          if [ "$ready" != 1 ]; then
-            echo "::error::postgres never became ready"
-            docker logs "$name"
-            exit 1
-          fi
-
-          docker exec -e PGPASSWORD=postgres "$name" \
-            psql -h 127.0.0.1 -U postgres -v ON_ERROR_STOP=1 \
-              -c 'CREATE EXTENSION vector' \
-              -c 'CREATE EXTENSION postgis' \
-              -c 'CREATE TABLE smoke (id serial primary key, embedding vector(3), location geography(Point, 4326))' \
-              -c "INSERT INTO smoke (embedding, location) VALUES ('[1,2,3]', ST_Point(11.1, 22.2))" \
-              -c "SELECT id, embedding <-> '[3,2,1]' AS distance, ST_AsText(location) FROM smoke" \
-              -c 'SELECT extname, extversion FROM pg_extension ORDER BY 1'
+        run: docker/postgres/smoke.sh "$LOCAL_TAG"
 
       - name: Build and push
         id: publish
