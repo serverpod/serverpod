@@ -942,7 +942,7 @@ jobs:
           flutter drive
           --driver=test_driver/integration_test.dart
           --target=integration_test/cookie_auth_browser_test.dart
-          -d chrome
+          -d web-server
           --web-port=8083
         working-directory: ${{ matrix.module.client }}
       - name: Run cookie-auth browser E2E tests (rejected origin)
@@ -950,7 +950,7 @@ jobs:
           flutter drive
           --driver=test_driver/integration_test.dart
           --target=integration_test/cookie_auth_browser_test.dart
-          -d chrome
+          -d web-server
           --web-port=8084
           --dart-define=SERVERPOD_COOKIE_CORS_REJECTION=true
         working-directory: ${{ matrix.module.client }}
