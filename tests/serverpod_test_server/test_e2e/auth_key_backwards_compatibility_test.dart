@@ -70,7 +70,6 @@ void main() {
         expect(response.statusCode, 401);
         expect(response.body, '');
       });
-
     },
   );
 }
