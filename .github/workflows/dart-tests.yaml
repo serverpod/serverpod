@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.38.4"]
+        flutter-version: ["3.41.5"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: ./.github/actions/use-flutter
@@ -70,13 +70,13 @@ jobs:
       matrix:
         check:
           - name: strict, floor
-            flutter-version: "3.38.4"
+            flutter-version: "3.41.5"
             lint: lint_strict
           - name: latest
             flutter-version: "3.44.4"
             lint: lint
           - name: downgrade, floor
-            flutter-version: "3.38.4"
+            flutter-version: "3.41.5"
             downgrade: true
             lint: lint_loose
           - name: downgrade, latest
@@ -278,7 +278,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.38.4", "3.44.4"]
+        flutter-version: ["3.41.5", "3.44.4"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: ./.github/actions/use-flutter
@@ -646,7 +646,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sdk: ["3.10.3", "3.12.2"]
+        sdk: ["3.11.3", "3.12.2"]
         os: [windows-latest, ubuntu-latest]
         project:
           - packages/serverpod
@@ -698,7 +698,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sdk: ["3.10.3", "3.12.2"]
+        sdk: ["3.11.3", "3.12.2"]
         os: [windows-latest, ubuntu-latest]
         shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
@@ -732,7 +732,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.44.4"]
+        flutter-version: ["3.41.5", "3.44.4"]
         os: [ubuntu-latest, windows-latest]
         include:
           - compiler: dart2js
@@ -764,7 +764,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        flutter-version: ["3.38.4", "3.44.4"]
+        flutter-version: ["3.41.5", "3.44.4"]
         os: [windows-latest, ubuntu-latest]
         path: ["packages/serverpod_flutter"]
     steps:
@@ -784,7 +784,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sdk: ["3.10.3", "3.12.2"]
+        sdk: ["3.11.3", "3.12.2"]
         shard: [0, 1, 2, 3, 4]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -818,7 +818,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sdk: ["3.10.3", "3.12.2"]
+        sdk: ["3.11.3", "3.12.2"]
         shard: [0, 1, 2, 3, 4]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -856,7 +856,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.44.4"]
+        flutter-version: ["3.41.5", "3.44.4"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: ./.github/actions/use-flutter
@@ -885,7 +885,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        sdk: ["3.10.3", "3.12.2"]
+        sdk: ["3.11.3", "3.12.2"]
         path: ["packages/serverpod_shared"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -901,7 +901,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.38.4", "3.44.4"]
+        flutter-version: ["3.41.5", "3.44.4"]
         module:
           - server: tests/serverpod_auth_test/serverpod_auth_test_server
             client: tests/serverpod_auth_test/serverpod_auth_test_flutter
@@ -947,7 +947,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        dart-version: ["3.10.3", "3.12.2"]
+        dart-version: ["3.11.3", "3.12.2"]
         shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -979,7 +979,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        dart-version: ["3.10.3", "3.12.2"]
+        dart-version: ["3.11.3", "3.12.2"]
         shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -1009,7 +1009,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dart-version: ["3.10.3", "3.12.2"]
+        dart-version: ["3.11.3", "3.12.2"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
@@ -1029,7 +1029,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.44.4"]
+        flutter-version: ["3.41.5", "3.44.4"]
         os: [windows-latest, ubuntu-latest]
         shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
     steps:
@@ -1079,7 +1079,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sdk: ["3.10.3", "3.12.2"]
+        sdk: ["3.11.3", "3.12.2"]
         shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -1111,7 +1111,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sdk: ["3.10.3", "3.12.2"]
+        sdk: ["3.11.3", "3.12.2"]
         shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -1133,7 +1133,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.44.4"]
+        flutter-version: ["3.41.5", "3.44.4"]
         os: [ubuntu-latest]
         shard: [0, 1, 2]
         path: ["tests/serverpod_cli_e2e_test"]
@@ -1180,7 +1180,7 @@ jobs:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: ./.github/actions/use-flutter
         with:
-          flutter-version: "3.38.4"
+          flutter-version: "3.41.5"
           cache: false
       - name: Install melos
         uses: ./.github/actions/retry
@@ -1305,7 +1305,7 @@ jobs:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: ./.github/actions/use-flutter
         with:
-          flutter-version: "3.38.4"
+          flutter-version: "3.41.5"
           cache: false
       - uses: ./.github/actions/use-dart-test-retry
       - name: Install melos
@@ -1327,7 +1327,7 @@ jobs:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: ./.github/actions/use-flutter
         with:
-          flutter-version: "3.38.4"
+          flutter-version: "3.41.5"
           cache: false
       - name: Install melos
         uses: ./.github/actions/retry

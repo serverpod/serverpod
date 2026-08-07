@@ -2,7 +2,7 @@ name: serverpod_workspace
 publish_to: none
 
 environment:
-  sdk: '^3.10.3'
+  sdk: '^3.11.3'
 
 workspace:
   - examples/auth/auth_client
