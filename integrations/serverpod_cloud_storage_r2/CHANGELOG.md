@@ -1,5 +1,6 @@
 ## 4.0.0-beta.1
 
+- feat: Adds `Module.onStartup` hooks invoked after migrations and before servers start.
 - feat: Exposes flags on the `serverpod create` command to customize the created project.
 - feat: Unifies and customizes social sign-in button styling.
 - feat: Adds support for cache busting with dedicated syntax in templating system.
