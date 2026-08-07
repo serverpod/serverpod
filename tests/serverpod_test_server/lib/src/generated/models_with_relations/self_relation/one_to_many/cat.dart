@@ -118,8 +118,6 @@ abstract class Cat implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CatTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CatTable>? orderByList,
     CatInclude? include,
   }) {
@@ -128,8 +126,6 @@ abstract class Cat implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Cat.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(Cat.t),
       include: include,
     );
@@ -313,8 +309,6 @@ class CatIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -367,8 +361,6 @@ class CatRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CatTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CatTable>? orderByList,
     _i1.Transaction? transaction,
     CatInclude? include,
@@ -379,8 +371,6 @@ class CatRepository {
       where: where?.call(Cat.t),
       orderBy: orderBy?.call(Cat.t),
       orderByList: orderByList?.call(Cat.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -412,8 +402,6 @@ class CatRepository {
     _i1.WhereExpressionBuilder<CatTable>? where,
     int? offset,
     _i1.OrderByBuilder<CatTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CatTable>? orderByList,
     _i1.Transaction? transaction,
     CatInclude? include,
@@ -424,8 +412,6 @@ class CatRepository {
       where: where?.call(Cat.t),
       orderBy: orderBy?.call(Cat.t),
       orderByList: orderByList?.call(Cat.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -462,16 +448,22 @@ class CatRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Cat>> insert(
     _i1.DatabaseSession session,
     List<Cat> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<Cat>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -505,6 +497,10 @@ class CatRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Cat>> upsert(
     _i1.DatabaseSession session,
     List<Cat> rows, {
@@ -512,6 +508,7 @@ class CatRepository {
     _i1.ColumnSelections<CatTable>? updateColumns,
     _i1.WhereExpressionBuilder<CatTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<Cat>(
       rows,
@@ -519,6 +516,7 @@ class CatRepository {
       updateColumns: updateColumns?.call(Cat.t),
       updateWhere: updateWhere?.call(Cat.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -557,16 +555,22 @@ class CatRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Cat>> update(
     _i1.DatabaseSession session,
     List<Cat> rows, {
     _i1.ColumnSelections<CatTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<Cat>(
       rows,
       columns: columns?.call(Cat.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -603,6 +607,10 @@ class CatRepository {
 
   /// Updates all [Cat]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Cat>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<CatUpdateTable> columnValues,
@@ -611,9 +619,8 @@ class CatRepository {
     int? offset,
     _i1.OrderByBuilder<CatTable>? orderBy,
     _i1.OrderByListBuilder<CatTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<Cat>(
       columnValues: columnValues(Cat.t.updateTable),
@@ -622,9 +629,8 @@ class CatRepository {
       offset: offset,
       orderBy: orderBy?.call(Cat.t),
       orderByList: orderByList?.call(Cat.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -635,22 +641,24 @@ class CatRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Cat>> delete(
     _i1.DatabaseSession session,
     List<Cat> rows, {
     _i1.OrderByBuilder<CatTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CatTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<Cat>(
       rows,
       orderBy: orderBy?.call(Cat.t),
       orderByList: orderByList?.call(Cat.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -670,22 +678,24 @@ class CatRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Cat>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CatTable> where,
     _i1.OrderByBuilder<CatTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CatTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Cat>(
       where: where(Cat.t),
       orderBy: orderBy?.call(Cat.t),
       orderByList: orderByList?.call(Cat.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 
-import '../localization/sign_in_localization_provider.dart';
+import '../common/sign_in_button_style.dart';
+import '../common/sign_in_flow_coordinator.dart';
 import 'anonymous_auth_controller.dart';
-import 'anonymous_sign_in_style.dart';
+import 'anonymous_sign_in_button.dart';
 
 /// A widget that provides anonymous-based authentication functionality.
 ///
 /// This is a placeholder widget to trigger a workflow that you would
 /// probably trigger in the background after a certain threshold of user
 /// activity. It is not a real sign-in widget.
+///
+/// The button is text-only (it has no provider logo) but shares the same
+/// [SignInButtonBase] as the provider buttons, so [size], [shape],
+/// [minimumWidth], and [textStyle] fall back to the shared [SignInButtonStyle]
+/// in scope when a [SignInWidget] provides one.
 class AnonymousSignInWidget extends StatefulWidget {
   /// Controls the authentication state and behavior.
   ///
@@ -39,14 +45,18 @@ class AnonymousSignInWidget extends StatefulWidget {
   final Function(Object error)? onError;
 
   /// The button size.
-  ///
-  /// For example, small or large.
-  final AnonymousButtonSize size;
+  final SignInButtonSize size;
 
   /// The button shape.
+  final SignInButtonShape shape;
+
+  /// The minimum button width, in pixels.
   ///
-  /// For example, rectangular or pill.
-  final AnonymousButtonShape shape;
+  /// The maximum width is 400 pixels.
+  final double minimumWidth;
+
+  /// The text style applied to the button label.
+  final TextStyle? textStyle;
 
   /// Creates an anonymous sign-in widget.
   const AnonymousSignInWidget({
@@ -56,8 +66,10 @@ class AnonymousSignInWidget extends StatefulWidget {
     this.onAuthenticated,
     this.createAnonymousToken,
     this.onError,
-    this.size = AnonymousButtonSize.large,
-    this.shape = AnonymousButtonShape.pill,
+    this.size = SignInButtonSize.large,
+    this.shape = SignInButtonShape.pill,
+    this.minimumWidth = 240,
+    this.textStyle,
   }) : assert(
          (controller == null || client == null),
          'Either controller or client must be provided, but not both. When '
@@ -75,8 +87,6 @@ class AnonymousSignInWidget extends StatefulWidget {
 }
 
 class _AnonymousSignInWidgetState extends State<AnonymousSignInWidget> {
-  static const _defaultButtonText = 'Continue without account';
-
   late final AnonymousAuthController _controller;
 
   @override
@@ -102,37 +112,31 @@ class _AnonymousSignInWidgetState extends State<AnonymousSignInWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final texts = context.anonymousSignInTexts;
-    final buttonStyle = AnonymousSignInStyle.fromConfiguration(
-      shape: widget.shape,
-      size: widget.size,
-      width: 0,
-    );
-
     return ListenableBuilder(
       listenable: _controller,
-      builder: (context, _) {
-        if (_controller.isLoading) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        return ConstrainedBox(
-          constraints: BoxConstraints(
-            minWidth: 240,
-            maxWidth: 400,
-            minHeight: buttonStyle.size.height,
-            maxHeight: buttonStyle.size.height,
-          ),
-          child: TextButton(
-            style: TextButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                borderRadius: buttonStyle.borderRadius,
-              ),
-            ),
-            onPressed: _controller.login,
-            child: Text(texts.signInButton ?? _defaultButtonText),
-          ),
-        );
-      },
+      builder: (context, _) => AnonymousSignInButton(
+        onPressed: _login,
+        isLoading: _controller.isLoading,
+        isDisabled: _controller.isLoading,
+        size: widget.size,
+        shape: widget.shape,
+        minimumWidth: widget.minimumWidth,
+        textStyle: widget.textStyle,
+      ),
     );
+  }
+
+  Future<void> _login() async {
+    final coordinator = SignInFlowCoordinatorWidget.of(context);
+    if (coordinator?.isAuthenticating == true) return;
+
+    coordinator?.lockUI();
+    try {
+      await _controller.login();
+    } finally {
+      if (mounted) {
+        coordinator?.unlockUI();
+      }
+    }
   }
 }

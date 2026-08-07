@@ -5,6 +5,7 @@ import 'package:serverpod_database/serverpod_database.dart';
 // [SqliteSqlGenerator] gets moved to the database package.
 // ignore: implementation_imports
 import 'package:serverpod_database/src/adapters/sqlite/sqlite_default_value.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../sql_generator.dart';
 
@@ -160,6 +161,10 @@ extension SqliteColumnDefinitionSqlGeneration on ColumnDefinition {
       case ColumnType.halfvec:
       case ColumnType.sparsevec:
       case ColumnType.bit:
+      case ColumnType.geography:
+      case ColumnType.geographyLineString:
+      case ColumnType.geographyPolygon:
+      case ColumnType.geographyGeometryCollection:
         type = 'TEXT';
       case ColumnType.unknown:
         throw const FormatException('Unknown column type');
@@ -196,6 +201,16 @@ extension SqliteIndexDefinitionSqlGeneration on IndexDefinition {
     // out by the migration manager.
     if (type != 'btree') {
       return '';
+    }
+
+    // A plain SQLite unique index would silently change this constraint.
+    if (nullsDistinct == false) {
+      throw MigrationUnsupportedByDialectException(
+        dialect: DatabaseDialect.sqlite.name,
+        reason:
+            'Index "$indexName" on table "$tableName" treats null values as '
+            'equal, which "${DatabaseDialect.sqlite.name}" cannot express.',
+      );
     }
 
     var uniqueStr = isUnique ? ' UNIQUE' : '';

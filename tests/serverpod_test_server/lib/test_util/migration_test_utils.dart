@@ -5,6 +5,11 @@ import 'package:path/path.dart' as path;
 import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod/protocol.dart' as serverProtocol;
+import 'package:serverpod_cli/src/config/config.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
+import 'package:serverpod_cli/src/migrations/create_migration_action.dart';
+
+import 'serverpod_cli_runner.dart';
 
 var _moduleName = 'serverpod_test';
 
@@ -38,6 +43,48 @@ abstract class MigrationTestUtils {
     String tag = 'test',
     bool force = false,
   }) async {
+    _writeMigrationProtocols(protocols);
+
+    var exitCode = await runServerpodCli([
+      'create-migration',
+      '--tag',
+      tag,
+      if (force) '--force',
+      // '--verbose',
+      '--no-analytics',
+      '--experimental-features=all',
+    ]);
+
+    // Ensures that another migration is never created with the same millisecond.
+    await Future.delayed(Duration(milliseconds: 2));
+
+    return exitCode;
+  }
+
+  /// Creates migration artifacts through the production action without
+  /// exercising the CLI process wrapper.
+  static Future<bool> createMigrationFromProtocolsInProcess({
+    required Map<String, String> protocols,
+    String tag = 'test',
+    bool force = false,
+  }) async {
+    _writeMigrationProtocols(protocols);
+
+    CommandLineExperimentalFeatures.initialize([ExperimentalFeature.all]);
+    final config = await GeneratorConfig.load(interactive: false);
+    final outcome = await createMigrationAction(
+      config: config,
+      tag: tag,
+      force: force,
+    );
+
+    // Ensures that another migration is never created with the same millisecond.
+    await Future.delayed(Duration(milliseconds: 2));
+
+    return outcome.success;
+  }
+
+  static void _writeMigrationProtocols(Map<String, String> protocols) {
     _removeMigrationTestProtocolFolder();
     _migrationProtocolTestDirectory().createSync(recursive: true);
 
@@ -51,24 +98,6 @@ abstract class MigrationTestUtils {
 
       protocolFile.writeAsStringSync(contents);
     });
-
-    var exitCode = await _runProcess(
-      'serverpod',
-      arguments: [
-        'create-migration',
-        '--tag',
-        tag,
-        if (force) '--force',
-        // '--verbose',
-        '--no-analytics',
-        '--experimental-features=all',
-      ],
-    );
-
-    // Ensures that another migration is never created with the same millisecond.
-    await Future.delayed(Duration(milliseconds: 2));
-
-    return exitCode;
   }
 
   static String readMigrationRegistryFile() {
@@ -194,20 +223,17 @@ abstract class MigrationTestUtils {
     bool force = false,
     String? targetVersion,
   }) async {
-    return await _runProcess(
-      'serverpod',
-      arguments: [
-        'create-repair-migration',
-        '--tag',
-        tag,
-        '--mode',
-        'production',
-        if (targetVersion != null) ...['--version', targetVersion],
-        if (force) '--force',
-        // '--verbose',
-        '--no-analytics',
-      ],
-    );
+    return await runServerpodCli([
+      'create-repair-migration',
+      '--tag',
+      tag,
+      '--mode',
+      'production',
+      if (targetVersion != null) ...['--version', targetVersion],
+      if (force) '--force',
+      // '--verbose',
+      '--no-analytics',
+    ]);
   }
 
   static File? tryLoadRepairMigrationFile() {
@@ -300,7 +326,7 @@ INSERT INTO "${serverProtocol.DatabaseMigrationVersion.t.tableName}"
       arguments ?? [],
       workingDirectory: workingDirectory?.path ?? Directory.current.path,
       environment: {
-        'SERVERPOD_HOME': path.join(Directory.current.path, '..', '..'),
+        'SERVERPOD_HOME': serverpodHome,
       },
     );
 

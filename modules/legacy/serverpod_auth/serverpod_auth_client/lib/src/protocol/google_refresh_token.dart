@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Database bindings for a Google refresh token.
-abstract class GoogleRefreshToken implements _i1.SerializableModel {
+abstract class GoogleRefreshToken
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   GoogleRefreshToken._({
     this.id,
     required this.userId,
@@ -55,6 +56,16 @@ abstract class GoogleRefreshToken implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_auth.GoogleRefreshToken',
+      if (id != null) 'id': id,
+      'userId': userId,
+      'refreshToken': refreshToken,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_auth.GoogleRefreshToken',
       if (id != null) 'id': id,

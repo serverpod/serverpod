@@ -100,8 +100,6 @@ abstract class TownInt
     int? limit,
     int? offset,
     _i1.OrderByBuilder<TownIntTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<TownIntTable>? orderByList,
     TownIntInclude? include,
   }) {
@@ -110,8 +108,6 @@ abstract class TownInt
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(TownInt.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(TownInt.t),
       include: include,
     );
@@ -241,8 +237,6 @@ class TownIntIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -291,8 +285,6 @@ class TownIntRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<TownIntTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<TownIntTable>? orderByList,
     _i1.Transaction? transaction,
     TownIntInclude? include,
@@ -303,8 +295,6 @@ class TownIntRepository {
       where: where?.call(TownInt.t),
       orderBy: orderBy?.call(TownInt.t),
       orderByList: orderByList?.call(TownInt.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -336,8 +326,6 @@ class TownIntRepository {
     _i1.WhereExpressionBuilder<TownIntTable>? where,
     int? offset,
     _i1.OrderByBuilder<TownIntTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<TownIntTable>? orderByList,
     _i1.Transaction? transaction,
     TownIntInclude? include,
@@ -348,8 +336,6 @@ class TownIntRepository {
       where: where?.call(TownInt.t),
       orderBy: orderBy?.call(TownInt.t),
       orderByList: orderByList?.call(TownInt.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -386,16 +372,22 @@ class TownIntRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<TownInt>> insert(
     _i1.DatabaseSession session,
     List<TownInt> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<TownInt>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -429,6 +421,10 @@ class TownIntRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<TownInt>> upsert(
     _i1.DatabaseSession session,
     List<TownInt> rows, {
@@ -436,6 +432,7 @@ class TownIntRepository {
     _i1.ColumnSelections<TownIntTable>? updateColumns,
     _i1.WhereExpressionBuilder<TownIntTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<TownInt>(
       rows,
@@ -443,6 +440,7 @@ class TownIntRepository {
       updateColumns: updateColumns?.call(TownInt.t),
       updateWhere: updateWhere?.call(TownInt.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -481,16 +479,22 @@ class TownIntRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<TownInt>> update(
     _i1.DatabaseSession session,
     List<TownInt> rows, {
     _i1.ColumnSelections<TownIntTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<TownInt>(
       rows,
       columns: columns?.call(TownInt.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -527,6 +531,10 @@ class TownIntRepository {
 
   /// Updates all [TownInt]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<TownInt>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<TownIntUpdateTable> columnValues,
@@ -535,9 +543,8 @@ class TownIntRepository {
     int? offset,
     _i1.OrderByBuilder<TownIntTable>? orderBy,
     _i1.OrderByListBuilder<TownIntTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<TownInt>(
       columnValues: columnValues(TownInt.t.updateTable),
@@ -546,9 +553,8 @@ class TownIntRepository {
       offset: offset,
       orderBy: orderBy?.call(TownInt.t),
       orderByList: orderByList?.call(TownInt.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -559,22 +565,24 @@ class TownIntRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<TownInt>> delete(
     _i1.DatabaseSession session,
     List<TownInt> rows, {
     _i1.OrderByBuilder<TownIntTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<TownIntTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<TownInt>(
       rows,
       orderBy: orderBy?.call(TownInt.t),
       orderByList: orderByList?.call(TownInt.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -594,22 +602,24 @@ class TownIntRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<TownInt>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<TownIntTable> where,
     _i1.OrderByBuilder<TownIntTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<TownIntTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<TownInt>(
       where: where(TownInt.t),
       orderBy: orderBy?.call(TownInt.t),
       orderByList: orderByList?.call(TownInt.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

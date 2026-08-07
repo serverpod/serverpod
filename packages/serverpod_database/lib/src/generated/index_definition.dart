@@ -14,7 +14,8 @@ import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 import 'package:serverpod_database/serverpod_database.dart' as _i2;
 
 /// The definition of a (desired) index in the database.
-abstract class IndexDefinition implements _i1.SerializableModel {
+abstract class IndexDefinition
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   IndexDefinition._({
     required this.indexName,
     this.tableSpace,
@@ -22,6 +23,7 @@ abstract class IndexDefinition implements _i1.SerializableModel {
     required this.type,
     required this.isUnique,
     required this.isPrimary,
+    this.nullsDistinct,
     this.predicate,
     this.ginOperatorClass,
     this.vectorDistanceFunction,
@@ -36,6 +38,7 @@ abstract class IndexDefinition implements _i1.SerializableModel {
     required String type,
     required bool isUnique,
     required bool isPrimary,
+    bool? nullsDistinct,
     String? predicate,
     _i2.GinOperatorClass? ginOperatorClass,
     _i2.VectorDistanceFunction? vectorDistanceFunction,
@@ -53,6 +56,9 @@ abstract class IndexDefinition implements _i1.SerializableModel {
       type: jsonSerialization['type'] as String,
       isUnique: _i1.BoolJsonExtension.fromJson(jsonSerialization['isUnique']),
       isPrimary: _i1.BoolJsonExtension.fromJson(jsonSerialization['isPrimary']),
+      nullsDistinct: jsonSerialization['nullsDistinct'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(jsonSerialization['nullsDistinct']),
       predicate: jsonSerialization['predicate'] as String?,
       ginOperatorClass: jsonSerialization['ginOperatorClass'] == null
           ? null
@@ -97,6 +103,10 @@ abstract class IndexDefinition implements _i1.SerializableModel {
   /// Whether this index is the one for the primary key.
   bool isPrimary;
 
+  /// Whether null values should be considered distinct in this unique index.
+  /// If null, the database default behavior is used.
+  bool? nullsDistinct;
+
   /// The predicate of this partial index, if it is one.
   String? predicate;
 
@@ -122,6 +132,7 @@ abstract class IndexDefinition implements _i1.SerializableModel {
     String? type,
     bool? isUnique,
     bool? isPrimary,
+    bool? nullsDistinct,
     String? predicate,
     _i2.GinOperatorClass? ginOperatorClass,
     _i2.VectorDistanceFunction? vectorDistanceFunction,
@@ -138,6 +149,29 @@ abstract class IndexDefinition implements _i1.SerializableModel {
       'type': type,
       'isUnique': isUnique,
       'isPrimary': isPrimary,
+      if (nullsDistinct != null) 'nullsDistinct': nullsDistinct,
+      if (predicate != null) 'predicate': predicate,
+      if (ginOperatorClass != null)
+        'ginOperatorClass': ginOperatorClass?.toJson(),
+      if (vectorDistanceFunction != null)
+        'vectorDistanceFunction': vectorDistanceFunction?.toJson(),
+      if (vectorColumnType != null)
+        'vectorColumnType': vectorColumnType?.toJson(),
+      if (parameters != null) 'parameters': parameters?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod.IndexDefinition',
+      'indexName': indexName,
+      if (tableSpace != null) 'tableSpace': tableSpace,
+      'elements': elements.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'type': type,
+      'isUnique': isUnique,
+      'isPrimary': isPrimary,
+      if (nullsDistinct != null) 'nullsDistinct': nullsDistinct,
       if (predicate != null) 'predicate': predicate,
       if (ginOperatorClass != null)
         'ginOperatorClass': ginOperatorClass?.toJson(),
@@ -165,6 +199,7 @@ class _IndexDefinitionImpl extends IndexDefinition {
     required String type,
     required bool isUnique,
     required bool isPrimary,
+    bool? nullsDistinct,
     String? predicate,
     _i2.GinOperatorClass? ginOperatorClass,
     _i2.VectorDistanceFunction? vectorDistanceFunction,
@@ -177,6 +212,7 @@ class _IndexDefinitionImpl extends IndexDefinition {
          type: type,
          isUnique: isUnique,
          isPrimary: isPrimary,
+         nullsDistinct: nullsDistinct,
          predicate: predicate,
          ginOperatorClass: ginOperatorClass,
          vectorDistanceFunction: vectorDistanceFunction,
@@ -195,6 +231,7 @@ class _IndexDefinitionImpl extends IndexDefinition {
     String? type,
     bool? isUnique,
     bool? isPrimary,
+    Object? nullsDistinct = _Undefined,
     Object? predicate = _Undefined,
     Object? ginOperatorClass = _Undefined,
     Object? vectorDistanceFunction = _Undefined,
@@ -208,6 +245,9 @@ class _IndexDefinitionImpl extends IndexDefinition {
       type: type ?? this.type,
       isUnique: isUnique ?? this.isUnique,
       isPrimary: isPrimary ?? this.isPrimary,
+      nullsDistinct: nullsDistinct is bool?
+          ? nullsDistinct
+          : this.nullsDistinct,
       predicate: predicate is String? ? predicate : this.predicate,
       ginOperatorClass: ginOperatorClass is _i2.GinOperatorClass?
           ? ginOperatorClass

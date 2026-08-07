@@ -298,6 +298,53 @@ void main() {
     );
 
     test(
+      'when a client sends a request while still waiting '
+      'then the request reaches the upstream once one is set',
+      () async {
+        final upstream = await _FakeUpstream.start();
+        addTearDown(upstream.close);
+
+        final client = await _connectClient(proxy);
+        addTearDown(client.close);
+        final responses = StreamController<Map<String, Object?>>();
+        client.listen(
+          (data) =>
+              responses.add(jsonDecode(data as String) as Map<String, Object?>),
+          onDone: responses.close,
+        );
+
+        // A real IDE/DAP client sends its handshake request immediately
+        // upon connecting - it does not wait for a signal that upstream
+        // is ready, because it has no way of knowing that. This mirrors
+        // that: send before setUpstream is ever called.
+        client.add(
+          jsonEncode({
+            'jsonrpc': '2.0',
+            'id': 42,
+            'method': 'getVersion',
+            'params': <String, Object?>{},
+          }),
+        );
+
+        // Give the event loop a beat to deliver the frame to the proxy's
+        // waiting-client handler before upstream shows up.
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+
+        await proxy.setUpstream(upstream.wsUri);
+        await upstream.connectionAttached;
+
+        final response = await responses.stream.first.timeout(
+          const Duration(seconds: 3),
+          onTimeout: () => throw TimeoutException(
+            'Response never arrived - the request sent while waiting was '
+            'silently dropped instead of being forwarded once paired.',
+          ),
+        );
+        expect(response['id'], 42);
+      },
+    );
+
+    test(
       'when a client waits past the timeout with no upstream ever set '
       'then the WS is closed cleanly so the IDE attach surfaces an error '
       'instead of hanging forever',

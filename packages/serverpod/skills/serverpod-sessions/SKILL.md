@@ -14,7 +14,6 @@ A Session provides access to database, cache, storage, messages, passwords, and 
 | MethodCallSession | Endpoint methods | Single request |
 | WebCallSession | Web server routes | Single request |
 | MethodStreamSession | Stream methods | Stream duration |
-| StreamingSession | WebSocket connections | Connection duration |
 | FutureCallSession | Future calls | Task execution |
 | InternalSession | Manual creation | Until closed |
 

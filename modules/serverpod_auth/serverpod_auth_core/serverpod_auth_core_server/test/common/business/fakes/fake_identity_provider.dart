@@ -1,7 +1,11 @@
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 
 /// A fake identity provider for testing purposes.
-class FakeIdentityProvider {
+class FakeIdentityProvider implements IdentityProvider {
+  @override
+  String get method => 'fake';
+
   final TokenIssuer tokenIssuer;
   final AuthUsers authUsers;
   final UserProfiles userProfiles;
@@ -11,4 +15,12 @@ class FakeIdentityProvider {
     required this.authUsers,
     required this.userProfiles,
   });
+
+  @override
+  Future<void> mergeAuthUsers(
+    final Session session, {
+    required final UuidValue userToKeepId,
+    required final UuidValue userToRemoveId,
+    required final Transaction transaction,
+  }) async {}
 }

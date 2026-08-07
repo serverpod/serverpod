@@ -1,0 +1,60 @@
+#!/bin/bash
+
+# Generates the serverpod template servers (modulename_server, projectname_server
+# and projectname_server_upgrade). Shared by util/generate_all (local dev) and the
+# CI "serverpod generate (templates)" job, so the bespoke upgrade-template logic
+# lives in one place.
+#
+# The serverpod CLI to run is taken from $SERVERPOD_CLI_EXE (exported by the
+# use-cli-bundle action in CI to point at the prebuilt bundle); it defaults to
+# running the CLI from source for local use.
+
+if [ ! -f util/.serverpod_util_root ]; then
+    echo "Run this script from the root of the Serverpod repository"
+    echo "I.e. util/generate_templates"
+    exit 1
+fi
+
+# Makes script exit on first non-zero error code
+set -e
+
+BASE=$(pwd)
+CLI_CMD="${SERVERPOD_CLI_EXE:-dart $BASE/tools/serverpod_cli/bin/serverpod_cli.dart}"
+
+echo "### modulename_server"
+cd "$BASE/templates/serverpod_templates/modulename_server"
+$CLI_CMD generate --no-analytics
+
+echo "### projectname_server"
+cd "$BASE/templates/serverpod_templates/projectname_server"
+$CLI_CMD generate --no-analytics
+
+generateServerUpgradeFiles() {
+    # The upgrade folder doesn't have all the files needed to
+    # run `serverpod generate`. Therefore some project files have
+    # to temporarily be copied over from the base projectname_server template.
+
+    # Save current files
+    find . -type f | sort > before.txt
+
+    # Copy over project files temporarily from base projectname_server template
+    cp -rn "$BASE/templates/serverpod_templates/projectname_server/lib/src/"* lib/src/
+    cp "$BASE/templates/serverpod_templates/projectname_server/pubspec.yaml" pubspec.yaml
+    cp -r "$BASE/templates/serverpod_templates/projectname_server/.dart_tool" .
+
+    $CLI_CMD generate --no-analytics
+
+    # Save files after generation
+    find . -type f | sort > after.txt
+
+    # Remove all generated files except the test tools file.
+    # The generated endpoint files are already tracked in projectname_server,
+    # and should not be tracked again in the upgrade template.
+    test_tools_file="test/integration/test_tools/serverpod_test_tools.dart"
+    comm -13 before.txt after.txt | grep -v "$test_tools_file" | xargs rm
+    rm before.txt
+}
+
+echo "### projectname_server_upgrade"
+cd "$BASE/templates/serverpod_templates/projectname_server_upgrade"
+generateServerUpgradeFiles

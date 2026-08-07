@@ -52,14 +52,23 @@ base class ServerpodMcpServer extends MCPServer
   /// Returns the current log history snapshot.
   List<Object> Function()? getLogHistory;
 
-  /// Returns the current Flutter raw log line snapshot.
-  List<String> Function()? getFlutterLogHistory;
+  /// Returns configured Flutter app ids.
+  List<String> Function()? getFlutterAppIds;
+
+  /// Returns raw Flutter log lines for a configured app id.
+  List<String> Function(String appId)? getFlutterLogHistory;
+
+  /// Launches a configured Flutter app by id. Completes with `true` when the
+  /// app was already running (so no new process was spawned) and `false` when
+  /// a launch was started.
+  Future<bool> Function(String appId)? onSpawnFlutterApp;
 
   /// Returns the current HTTP VM service URI, or `null` if not yet available.
   String? Function()? getVmServiceUri;
 
-  /// Returns the current Flutter app DTD URI, or `null` if not yet available.
-  String? Function()? getFlutterDtdUri;
+  /// Returns DTD URIs keyed by launched app id. Apps not launched are absent;
+  /// a launched app that has not published its DTD yet maps to `null`.
+  Map<String, String?> Function()? getFlutterDtdUris;
 
   StreamSubscription<void>? _vmServiceUriSub;
 
@@ -80,6 +89,7 @@ base class ServerpodMcpServer extends MCPServer
     registerTool(hotRestartTool, _hotRestart);
     registerTool(tailLogsTool, _tailLogs);
     registerTool(tailFlutterLogsTool, _tailFlutterLogs);
+    registerTool(spawnFlutterAppTool, _spawnFlutterApp);
     registerTool(getFlutterAppDtdTool, _getFlutterAppDtd);
 
     addResource(vmServiceResource, _readVmService);
@@ -244,23 +254,86 @@ base class ServerpodMcpServer extends MCPServer
   }
 
   Future<CallToolResult> _tailFlutterLogs(CallToolRequest request) async {
-    final get = getFlutterLogHistory;
-    if (get == null) {
+    final getIds = getFlutterAppIds;
+    final getLines = getFlutterLogHistory;
+    if (getIds == null || getLines == null) {
       return CallToolResult(
         content: [TextContent(text: 'Flutter log history not available.')],
         isError: true,
       );
     }
+    final ids = getIds();
+    if (ids.isEmpty) {
+      return CallToolResult(
+        content: [TextContent(text: 'No Flutter apps are configured.')],
+        isError: true,
+      );
+    }
+
+    // Resolve which app to read. The result shape is always a single list of
+    // lines, so a null appId with more than one app is an explicit error that
+    // names the available ids rather than a differently-shaped payload.
+    final (appId, error) = _resolveFlutterAppId(request, ids);
+    if (error != null) return error;
+
+    final lines = getLines(appId!);
+
     final limit = _tailLimit(request);
-    final all = get();
-    final tail = all.length <= limit ? all : all.sublist(all.length - limit);
+    final tail = lines.length <= limit
+        ? lines
+        : lines.sublist(lines.length - limit);
     return CallToolResult(
       content: [TextContent(text: jsonEncode(tail))],
     );
   }
 
+  Future<CallToolResult> _spawnFlutterApp(CallToolRequest request) async {
+    final getIds = getFlutterAppIds;
+    final spawn = onSpawnFlutterApp;
+    if (getIds == null || spawn == null) {
+      return CallToolResult(
+        content: [TextContent(text: 'Flutter app launching is not available.')],
+        isError: true,
+      );
+    }
+    final ids = getIds();
+    if (ids.isEmpty) {
+      return CallToolResult(
+        content: [TextContent(text: 'No Flutter apps are configured.')],
+        isError: true,
+      );
+    }
+
+    // Resolve which app to launch using the same single-app/multi-app rules as
+    // `tail_flutter_logs`: one configured app is implicit, a missing `appId`
+    // with more than one app is an error naming the options.
+    final (appId, error) = _resolveFlutterAppId(request, ids);
+    if (error != null) return error;
+
+    try {
+      final alreadyRunning = await spawn(appId!);
+      return CallToolResult(
+        content: [
+          TextContent(
+            text: alreadyRunning
+                ? 'Flutter app "$appId" is already running.'
+                : 'Launching Flutter app "$appId". Use `tail_flutter_logs` to '
+                      'follow its startup output.',
+          ),
+        ],
+      );
+    } catch (e) {
+      return CallToolResult(
+        content: [
+          TextContent(text: 'Failed to launch Flutter app "$appId": $e'),
+        ],
+        isError: true,
+      );
+    }
+  }
+
   Future<CallToolResult> _getFlutterAppDtd(CallToolRequest request) async {
-    final get = getFlutterDtdUri;
+    final get = getFlutterDtdUris;
     if (get == null) {
       return CallToolResult(
         content: [TextContent(text: 'Flutter DTD not available.')],
@@ -268,11 +341,58 @@ base class ServerpodMcpServer extends MCPServer
       );
     }
     return CallToolResult(
-      content: [
-        TextContent(text: jsonEncode({'uri': get()})),
-      ],
+      content: [TextContent(text: jsonEncode(get()))],
     );
   }
+}
+
+/// Resolves the Flutter app id for a tool call against the configured [ids],
+/// applying the rules shared by `tail_flutter_logs` and `spawn_flutter_app`: a
+/// single configured app is used implicitly, a missing `appId` with more than
+/// one app is an error naming the options, and an unknown id is an error.
+///
+/// Returns the resolved id with a null error, or a null id with the error
+/// [CallToolResult] to return to the caller.
+(String?, CallToolResult?) _resolveFlutterAppId(
+  CallToolRequest request,
+  List<String> ids,
+) {
+  var appId = _stringArg(request, 'appId');
+  if (appId == null) {
+    if (ids.length > 1) {
+      return (
+        null,
+        CallToolResult(
+          content: [
+            TextContent(
+              text:
+                  'Multiple Flutter apps are available. Pass `appId` to '
+                  'choose one of: ${ids.join(', ')}.',
+            ),
+          ],
+          isError: true,
+        ),
+      );
+    }
+    appId = ids.first;
+  }
+
+  if (!ids.contains(appId)) {
+    return (
+      null,
+      CallToolResult(
+        content: [
+          TextContent(
+            text:
+                'Unknown Flutter app id "$appId". Available: ${ids.join(', ')}.',
+          ),
+        ],
+        isError: true,
+      ),
+    );
+  }
+
+  return (appId, null);
 }
 
 int _tailLimit(CallToolRequest request) {

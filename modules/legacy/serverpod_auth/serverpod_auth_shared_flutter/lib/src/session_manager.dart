@@ -32,15 +32,12 @@ class SessionManager with ChangeNotifier {
     Storage? storage,
   }) : _storage = storage ?? SharedPreferenceStorage() {
     _instance = this;
+    final authKeyProvider = caller.client.authKeyProvider;
     assert(
-      // ignore: deprecated_member_use
-      caller.client.authenticationKeyManager != null,
-      'The client needs an associated key manager',
+      authKeyProvider is FlutterAuthenticationKeyManager,
+      'The client needs a FlutterAuthenticationKeyManager auth key provider',
     );
-    keyManager =
-        // ignore: deprecated_member_use
-        caller.client.authenticationKeyManager!
-            as FlutterAuthenticationKeyManager;
+    keyManager = authKeyProvider as FlutterAuthenticationKeyManager;
   }
 
   /// Returns a singleton instance of the session manager
@@ -58,8 +55,7 @@ class SessionManager with ChangeNotifier {
   /// currently signed in.
   UserInfo? get signedInUser => _signedInUser;
 
-  /// Registers the signed in user, updates the [keyManager], and upgrades the
-  /// streaming connection if it is open.
+  /// Registers the signed in user and updates the [keyManager].
   Future<void> registerSignedInUser(
     UserInfo userInfo,
     int authenticationKeyId,
@@ -72,9 +68,6 @@ class SessionManager with ChangeNotifier {
     await keyManager.put(key);
     await _storeSharedPrefs();
 
-    // Update streaming connection, if it's open.
-    // ignore: deprecated_member_use
-    await caller.client.updateStreamingConnectionAuthenticationKey();
     notifyListeners();
   }
 
@@ -107,11 +100,6 @@ class SessionManager with ChangeNotifier {
       _signedInUser = null;
       await _storeSharedPrefs();
       await keyManager.remove();
-
-      // Must be called after updating the `keyManager`, since it will recover
-      // the auth key from it.
-      // ignore: deprecated_member_use
-      await caller.client.updateStreamingConnectionAuthenticationKey();
 
       notifyListeners();
       return true;

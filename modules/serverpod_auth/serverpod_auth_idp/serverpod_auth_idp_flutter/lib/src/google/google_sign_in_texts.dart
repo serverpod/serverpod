@@ -2,10 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import '../localization/sign_in_localization_provider_widget.dart';
 
-/// Texts for the Google Sign-In button on native platforms.
-///
-/// On web, Google renders its own localized text based on [GSIButtonText] and
-/// locale, so this value is only applied for native buttons.
+/// Texts for the Google Sign-In button.
 @immutable
 class GoogleSignInTexts {
   /// Creates a new [GoogleSignInTexts] configuration.

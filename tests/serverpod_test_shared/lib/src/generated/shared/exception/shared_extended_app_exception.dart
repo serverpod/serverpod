@@ -14,7 +14,10 @@ import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i1;
 import 'package:serverpod_serialization/serverpod_serialization.dart' as _i2;
 
 abstract class SharedExtendedAppException extends _i1.SharedBaseAppException
-    implements _i2.SerializableException, _i2.SerializableModel {
+    implements
+        _i2.SerializableException,
+        _i2.SerializableModel,
+        _i2.ProtocolSerialization {
   SharedExtendedAppException._({
     required super.message,
     required this.detail,
@@ -46,6 +49,15 @@ abstract class SharedExtendedAppException extends _i1.SharedBaseAppException
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'SharedExtendedAppException',
+      'message': message,
+      'detail': detail,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'SharedExtendedAppException',
       'message': message,

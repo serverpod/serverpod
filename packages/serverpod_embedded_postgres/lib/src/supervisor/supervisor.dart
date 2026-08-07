@@ -2,10 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
+
 import '../binary/executable.dart';
 import '../exceptions.dart';
 import '../transport.dart';
 import 'log_buffer.dart';
+import 'pg_ctl.dart';
 import 'process_identity.dart';
 import 'supervised_process.dart';
 
@@ -25,10 +28,12 @@ class Supervisor implements SupervisedProcess {
   final File _pidFile;
   final LogBuffer _ring;
   final IOSink _logSink;
+  final Future<void> _outputDone;
   final List<StreamSubscription<ProcessSignal>> _signalSubs;
   final Completer<int> _exitCompleter = Completer();
 
   Future<void>? _stopFuture;
+  Future<void>? _closeOutputFuture;
 
   Supervisor._({
     required Process process,
@@ -36,13 +41,24 @@ class Supervisor implements SupervisedProcess {
     required File pidFile,
     required LogBuffer ring,
     required IOSink logSink,
+    required Future<void> outputDone,
     required List<StreamSubscription<ProcessSignal>> signalSubs,
   }) : _process = process,
        _pidFile = pidFile,
        _ring = ring,
        _logSink = logSink,
+       _outputDone = outputDone,
        _signalSubs = signalSubs {
-    unawaited(_process.exitCode.then(_exitCompleter.complete));
+    unawaited(
+      _process.exitCode
+          .then((exitCode) {
+            if (!_exitCompleter.isCompleted) {
+              _exitCompleter.complete(exitCode);
+            }
+            return _closeOutput();
+          })
+          .catchError((_) {}),
+    );
   }
 
   /// PID of the running postmaster, or null once [stop] has been called.
@@ -84,25 +100,47 @@ class Supervisor implements SupervisedProcess {
       '\n=== supervisor start @ ${DateTime.now().toIso8601String()} ===',
     );
 
+    // Serverpod bundles ship PostGIS, whose PROJ has the build-time data dir
+    // baked in. Point PROJ_LIB at the bundle's own copy so coordinate
+    // transforms resolve after the install tree was relocated by the cache.
+    // (No-op for bundles without a share/proj, e.g. plain Zonky binaries.)
+    var projData = Directory(p.join(installDir.path, 'share', 'proj'));
+    var environment = <String, String>{
+      ...Platform.environment,
+      if (projData.existsSync()) 'PROJ_LIB': projData.path,
+    };
+
     var process = await Process.start(
       executable,
       ['-D', dataDir.path],
       mode: ProcessStartMode.normal,
+      environment: environment,
     );
 
+    // Diagnostic: when SERVERPOD_PG_LOG_STDERR=1, mirror the postmaster log to
+    // this process's stderr so a backend crash ("server process ... was
+    // terminated by signal N", PANIC, out-of-memory, etc.) shows up inline in
+    // CI output. Otherwise it only lands in the per-datadir postgres.log, which
+    // a test runner never surfaces.
+    var mirrorLog = Platform.environment['SERVERPOD_PG_LOG_STDERR'] == '1';
     void handleLine(String line) {
       logSink.writeln(line);
       ring.add(line);
+      if (mirrorLog) stderr.writeln('[pg] $line');
     }
 
-    process.stdout
+    var stdoutSub = process.stdout
         .transform(utf8.decoder)
         .transform(const LineSplitter())
         .listen(handleLine);
-    process.stderr
+    var stderrSub = process.stderr
         .transform(utf8.decoder)
         .transform(const LineSplitter())
         .listen(handleLine);
+    var outputDone = [
+      stdoutSub.asFuture<void>().catchError((_) {}),
+      stderrSub.asFuture<void>().catchError((_) {}),
+    ].wait;
 
     var identity = ProcessIdentity.capture(
       process: process,
@@ -118,6 +156,7 @@ class Supervisor implements SupervisedProcess {
       pidFile: pidFile,
       ring: ring,
       logSink: logSink,
+      outputDone: outputDone,
       signalSubs: signalSubs,
     );
 
@@ -149,10 +188,9 @@ class Supervisor implements SupervisedProcess {
     return supervisor;
   }
 
-  /// Smart shutdown of the postmaster:
-  ///   1. SIGINT (PG fast smart-shutdown).
-  ///   2. After [timeout]/2, SIGTERM (immediate fast-shutdown).
-  ///   3. After [timeout], SIGKILL (last resort).
+  /// Smart shutdown of the postmaster. Windows uses `pg_ctl`, because Dart
+  /// cannot deliver POSIX signals there. POSIX escalates from SIGINT to
+  /// SIGTERM and finally SIGKILL.
   ///
   /// Removes the pidfile and closes the log sink. Idempotent: subsequent
   /// callers share the first call's future and only return once the
@@ -166,24 +204,37 @@ class Supervisor implements SupervisedProcess {
       await sub.cancel();
     }
 
-    if (!_exitCompleter.isCompleted) {
-      _process.kill(ProcessSignal.sigint);
+    if (Platform.isWindows && !_exitCompleter.isCompleted) {
+      var stoppedCleanly = await stopWithPgCtl(
+        pgCtl: pgCtlForPostgresExecutable(identity.executable),
+        dataDir: Directory(identity.dataDir),
+        timeout: timeout,
+      );
+      if (stoppedCleanly) {
+        await _waitWithDeadline(
+          _exitCompleter.future,
+          const Duration(seconds: 1),
+        );
+      }
     }
 
-    var halfway = timeout ~/ 2;
-    var firstWait = await _waitWithDeadline(_exitCompleter.future, halfway);
-    if (firstWait == null && !_exitCompleter.isCompleted) {
-      _process.kill(ProcessSignal.sigterm);
-      var secondWait = await _waitWithDeadline(
-        _exitCompleter.future,
-        timeout - halfway,
-      );
-      if (secondWait == null && !_exitCompleter.isCompleted) {
-        _process.kill(ProcessSignal.sigkill);
-        await _exitCompleter.future.timeout(
-          const Duration(seconds: 5),
-          onTimeout: () => -1,
+    if (!_exitCompleter.isCompleted) {
+      _process.kill(ProcessSignal.sigint);
+      var halfway = timeout ~/ 2;
+      var firstWait = await _waitWithDeadline(_exitCompleter.future, halfway);
+      if (firstWait == null && !_exitCompleter.isCompleted) {
+        _process.kill(ProcessSignal.sigterm);
+        var secondWait = await _waitWithDeadline(
+          _exitCompleter.future,
+          timeout - halfway,
         );
+        if (secondWait == null && !_exitCompleter.isCompleted) {
+          _process.kill(ProcessSignal.sigkill);
+          await _exitCompleter.future.timeout(
+            const Duration(seconds: 5),
+            onTimeout: () => -1,
+          );
+        }
       }
     }
 
@@ -195,9 +246,14 @@ class Supervisor implements SupervisedProcess {
         // user's problem (they got the orphan-detection mismatch already).
       }
     }
+    await _waitWithDeadline(_closeOutput(), const Duration(seconds: 2));
+  }
+
+  Future<void> _closeOutput() => _closeOutputFuture ??= () async {
+    await _outputDone;
     await _logSink.flush();
     await _logSink.close();
-  }
+  }();
 }
 
 void _rotateLog(File logFile) {
@@ -286,7 +342,8 @@ bool _isReady(Supervisor supervisor) {
 bool _logTailIndicatesLockBusy(List<String> logTail) {
   for (var line in logTail) {
     var lower = line.toLowerCase();
-    if (lower.contains('postmaster.pid') && lower.contains('already exists')) {
+    if (lower.contains('already exists') &&
+        (lower.contains('postmaster.pid') || lower.contains('.s.pgsql'))) {
       return true;
     }
   }

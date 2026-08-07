@@ -15,7 +15,10 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 /// Exception to be thrown if a registration or login attempt was made after
 /// the challenge used has expired.
 abstract class PasskeyChallengeExpiredException
-    implements _i1.SerializableException, _i1.SerializableModel {
+    implements
+        _i1.SerializableException,
+        _i1.SerializableModel,
+        _i1.ProtocolSerialization {
   PasskeyChallengeExpiredException._();
 
   factory PasskeyChallengeExpiredException() =
@@ -33,6 +36,13 @@ abstract class PasskeyChallengeExpiredException
   PasskeyChallengeExpiredException copyWith();
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_auth_idp.PasskeyChallengeExpiredException',
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_auth_idp.PasskeyChallengeExpiredException',
     };

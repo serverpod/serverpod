@@ -13,7 +13,8 @@
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import 'package:serverpod_client/serverpod_client.dart' as _i2;
 
-abstract class EmptyModelWithTable implements _i1.TableRow<int?> {
+abstract class EmptyModelWithTable
+    implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   EmptyModelWithTable._({this.id});
 
   factory EmptyModelWithTable({int? id}) = _EmptyModelWithTableImpl;
@@ -44,6 +45,14 @@ abstract class EmptyModelWithTable implements _i1.TableRow<int?> {
     };
   }
 
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'EmptyModelWithTable',
+      if (id != null) 'id': id,
+    };
+  }
+
   static EmptyModelWithTableInclude include() {
     return EmptyModelWithTableInclude._();
   }
@@ -53,8 +62,6 @@ abstract class EmptyModelWithTable implements _i1.TableRow<int?> {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EmptyModelWithTableTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
     EmptyModelWithTableInclude? include,
   }) {
@@ -63,8 +70,6 @@ abstract class EmptyModelWithTable implements _i1.TableRow<int?> {
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EmptyModelWithTable.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(EmptyModelWithTable.t),
       include: include,
     );
@@ -123,8 +128,6 @@ class EmptyModelWithTableIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -169,8 +172,6 @@ class EmptyModelWithTableRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EmptyModelWithTableTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -180,8 +181,6 @@ class EmptyModelWithTableRepository {
       where: where?.call(EmptyModelWithTable.t),
       orderBy: orderBy?.call(EmptyModelWithTable.t),
       orderByList: orderByList?.call(EmptyModelWithTable.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -212,8 +211,6 @@ class EmptyModelWithTableRepository {
     _i1.WhereExpressionBuilder<EmptyModelWithTableTable>? where,
     int? offset,
     _i1.OrderByBuilder<EmptyModelWithTableTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -223,8 +220,6 @@ class EmptyModelWithTableRepository {
       where: where?.call(EmptyModelWithTable.t),
       orderBy: orderBy?.call(EmptyModelWithTable.t),
       orderByList: orderByList?.call(EmptyModelWithTable.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -258,16 +253,22 @@ class EmptyModelWithTableRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmptyModelWithTable>> insert(
     _i1.DatabaseSession session,
     List<EmptyModelWithTable> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<EmptyModelWithTable>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -301,6 +302,10 @@ class EmptyModelWithTableRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmptyModelWithTable>> upsert(
     _i1.DatabaseSession session,
     List<EmptyModelWithTable> rows, {
@@ -308,6 +313,7 @@ class EmptyModelWithTableRepository {
     _i1.ColumnSelections<EmptyModelWithTableTable>? updateColumns,
     _i1.WhereExpressionBuilder<EmptyModelWithTableTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<EmptyModelWithTable>(
       rows,
@@ -315,6 +321,7 @@ class EmptyModelWithTableRepository {
       updateColumns: updateColumns?.call(EmptyModelWithTable.t),
       updateWhere: updateWhere?.call(EmptyModelWithTable.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -353,16 +360,22 @@ class EmptyModelWithTableRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmptyModelWithTable>> update(
     _i1.DatabaseSession session,
     List<EmptyModelWithTable> rows, {
     _i1.ColumnSelections<EmptyModelWithTableTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<EmptyModelWithTable>(
       rows,
       columns: columns?.call(EmptyModelWithTable.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -400,6 +413,10 @@ class EmptyModelWithTableRepository {
 
   /// Updates all [EmptyModelWithTable]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmptyModelWithTable>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<EmptyModelWithTableUpdateTable>
@@ -409,9 +426,8 @@ class EmptyModelWithTableRepository {
     int? offset,
     _i1.OrderByBuilder<EmptyModelWithTableTable>? orderBy,
     _i1.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<EmptyModelWithTable>(
       columnValues: columnValues(EmptyModelWithTable.t.updateTable),
@@ -420,9 +436,8 @@ class EmptyModelWithTableRepository {
       offset: offset,
       orderBy: orderBy?.call(EmptyModelWithTable.t),
       orderByList: orderByList?.call(EmptyModelWithTable.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -433,22 +448,24 @@ class EmptyModelWithTableRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmptyModelWithTable>> delete(
     _i1.DatabaseSession session,
     List<EmptyModelWithTable> rows, {
     _i1.OrderByBuilder<EmptyModelWithTableTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<EmptyModelWithTable>(
       rows,
       orderBy: orderBy?.call(EmptyModelWithTable.t),
       orderByList: orderByList?.call(EmptyModelWithTable.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -468,22 +485,24 @@ class EmptyModelWithTableRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmptyModelWithTable>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EmptyModelWithTableTable> where,
     _i1.OrderByBuilder<EmptyModelWithTableTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<EmptyModelWithTable>(
       where: where(EmptyModelWithTable.t),
       orderBy: orderBy?.call(EmptyModelWithTable.t),
       orderByList: orderByList?.call(EmptyModelWithTable.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

@@ -14,7 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../empty_model/empty_model_relation_item.dart' as _i2;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
-abstract class RelationEmptyModel implements _i1.SerializableModel {
+abstract class RelationEmptyModel
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   RelationEmptyModel._({
     this.id,
     this.items,
@@ -56,6 +57,16 @@ abstract class RelationEmptyModel implements _i1.SerializableModel {
       '__className__': 'RelationEmptyModel',
       if (id != null) 'id': id,
       if (items != null) 'items': items?.toJson(valueToJson: (v) => v.toJson()),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'RelationEmptyModel',
+      if (id != null) 'id': id,
+      if (items != null)
+        'items': items?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
   }
 

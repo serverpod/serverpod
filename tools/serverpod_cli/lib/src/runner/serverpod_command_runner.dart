@@ -1,12 +1,17 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:args/args.dart';
 import 'package:ci/ci.dart' as ci;
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:pub_semver/pub_semver.dart';
+import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
 import 'package:serverpod_cli/src/commands/language_server.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/update_prompt/prompt_to_update.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
+import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 import '../commands/version.dart' show VersionCommand;
@@ -63,6 +68,12 @@ class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {
 
   @override
   Future<void> runCommand(ArgResults topLevelResults) async {
+    // `--no-analytics` is resolved by [BetterCommandRunner.run] before this
+    // point, so this is the one place the opt-out state is final. Every `cli.*`
+    // call site reads it from the singleton instead of taking a flag. Set
+    // before the `--version` early return so the state is never stale.
+    cliAnalytics.enabled = analyticsEnabled();
+
     if (globalConfiguration.value(GlobalOption.version)) {
       await commands['version']?.run();
       return; // Exit early to prevent showing help text
@@ -76,6 +87,23 @@ class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {
       log.info('Enabling experimental feature: ${feature.name}.');
     }
     CommandLineExperimentalFeatures.initialize(experimentalFeatures);
+
+    // Counted straight off the registered command list, so a renamed or newly
+    // added command is picked up without touching the analytics code.
+    final commandName = topLevelResults.command?.name;
+    if (commandName != null &&
+        commands.containsKey(commandName) &&
+        cliAnalytics.enabled) {
+      final serverDir = findServerDirectory(Directory.current);
+      if (serverDir != null) {
+        unawaited(
+          cliAnalytics.recordCommandInvocation(
+            serverDir: serverDir.path,
+            commandName: commandName,
+          ),
+        );
+      }
+    }
 
     await super.runCommand(topLevelResults);
   }

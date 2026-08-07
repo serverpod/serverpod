@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// A pair of refresh and access tokens, in their external format.
-abstract class TokenPair implements _i1.SerializableModel {
+abstract class TokenPair
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   TokenPair._({
     required this.refreshToken,
     required this.accessToken,
@@ -48,6 +49,15 @@ abstract class TokenPair implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_auth_core.TokenPair',
+      'refreshToken': refreshToken,
+      'accessToken': accessToken,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_auth_core.TokenPair',
       'refreshToken': refreshToken,

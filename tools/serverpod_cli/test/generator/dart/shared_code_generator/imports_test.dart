@@ -3,6 +3,7 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/shared_code_generator.dart';
+import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:test/test.dart';
 
@@ -224,6 +225,312 @@ void main() {
       test('then the shared package is not generated', () {
         expect(codeMap, isEmpty);
       });
+    },
+  );
+
+  group(
+    'Given a shared model when generating code,',
+    () {
+      const modelFileName = 'shared_example';
+
+      late final models = [
+        ModelClassDefinitionBuilder()
+            .withClassName('SharedExample')
+            .withFileName(modelFileName)
+            .withSimpleField('name', 'String')
+            .withSharedPackageName(sharedPackageName)
+            .build(),
+      ];
+
+      late final codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
+
+      late final modelSource = codeMap[getExpectedFilePath(modelFileName)]!;
+
+      late final modelCompilationUnit = parseString(
+        content: modelSource,
+      ).unit;
+
+      test(
+        'then the generated model does not import serverpod_client.',
+        () {
+          expect(modelSource, isNot(contains(serverpodUrl(false))));
+          expect(modelSource, isNot(contains(serverpodProtocolUrl(false))));
+        },
+      );
+
+      test(
+        'then SerializableModel is imported from serverpod_serialization.',
+        () {
+          expect(
+            CompilationUnitHelpers.hasImportDirective(
+              modelCompilationUnit,
+              uri: serverpodSerializationUrl,
+            ),
+            isTrue,
+          );
+          expect(modelSource, contains('implements'));
+          expect(modelSource, contains('SerializableModel'));
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a shared package protocol when generating code,',
+    () {
+      late final protocolDefinition = ProtocolDefinition(
+        endpoints: [],
+        models: [
+          ModelClassDefinitionBuilder()
+              .withClassName('SharedExample')
+              .withFileName('shared_example')
+              .withSimpleField('name', 'String')
+              .withSharedPackageName(sharedPackageName)
+              .build(),
+        ],
+        futureCalls: [],
+      );
+
+      late final codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      late final protocolSource = codeMap[getExpectedFilePath('protocol')]!;
+
+      late final protocolCompilationUnit = parseString(
+        content: protocolSource,
+      ).unit;
+
+      test(
+        'then the generated protocol does not import serverpod_client.',
+        () {
+          expect(protocolSource, isNot(contains(serverpodUrl(false))));
+          expect(protocolSource, isNot(contains(serverpodProtocolUrl(false))));
+        },
+      );
+
+      test(
+        'then SerializationManager is imported from serverpod_serialization.',
+        () {
+          expect(
+            CompilationUnitHelpers.hasImportDirective(
+              protocolCompilationUnit,
+              uri: serverpodSerializationUrl,
+            ),
+            isTrue,
+          );
+          expect(
+            protocolSource,
+            contains('extends _i1.SerializationManager'),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a shared model with a database table when generating code,',
+    () {
+      const tableModelFileName = 'shared_table_record';
+
+      late final models = [
+        ModelClassDefinitionBuilder()
+            .withClassName('SharedTableRecord')
+            .withFileName(tableModelFileName)
+            .withTableName('shared_table_record')
+            .withDatabase(ModelDatabaseDefinition.all)
+            .withSharedPackageName(sharedPackageName)
+            .build(),
+      ];
+
+      late final modelCodeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
+
+      late final modelSource =
+          modelCodeMap[getExpectedFilePath(tableModelFileName)]!;
+
+      late final modelCompilationUnit = parseString(
+        content: modelSource,
+      ).unit;
+
+      late final protocolCodeMap = generator.generateProtocolCode(
+        protocolDefinition: ProtocolDefinition(
+          endpoints: [],
+          models: models,
+          futureCalls: [],
+        ),
+        config: config,
+      );
+
+      late final protocolSource =
+          protocolCodeMap[getExpectedFilePath('protocol')]!;
+
+      late final protocolCompilationUnit = parseString(
+        content: protocolSource,
+      ).unit;
+
+      test(
+        'then the generated model does not import serverpod_client.',
+        () {
+          expect(modelSource, isNot(contains(serverpodUrl(false))));
+          expect(modelSource, isNot(contains(serverpodProtocolUrl(false))));
+        },
+      );
+
+      test(
+        'then the generated table class is imported from serverpod_database.',
+        () {
+          expect(
+            CompilationUnitHelpers.hasImportDirective(
+              modelCompilationUnit,
+              uri: serverpodDatabaseUrl(false),
+            ),
+            isTrue,
+          );
+          expect(
+            CompilationUnitHelpers.hasExtendsClause(
+              CompilationUnitHelpers.tryFindClassDeclaration(
+                modelCompilationUnit,
+                name: 'SharedTableRecordTable',
+              )!,
+              name: 'Table',
+            ),
+            isTrue,
+          );
+        },
+      );
+
+      test(
+        'then the generated protocol does not import serverpod_client.',
+        () {
+          expect(protocolSource, isNot(contains(serverpodUrl(false))));
+          expect(protocolSource, isNot(contains(serverpodProtocolUrl(false))));
+        },
+      );
+
+      test(
+        'then the generated protocol extends DatabaseSerializationManager from serverpod_database.',
+        () {
+          expect(
+            CompilationUnitHelpers.hasImportDirective(
+              protocolCompilationUnit,
+              uri: serverpodDatabaseUrl(false),
+            ),
+            isTrue,
+          );
+          expect(
+            protocolSource,
+            contains('extends'),
+          );
+          expect(
+            protocolSource,
+            contains('DatabaseSerializationManager'),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a shared package protocol for a project whose Dart client depends on serverpod_service_client when generating code,',
+    () {
+      const serviceClientProjectName = 'serverpod_test_sqlite';
+      const serviceClientSharedPackageName = 'serverpod_test_shared';
+
+      late final serviceClientConfig = GeneratorConfigBuilder()
+          .withName(serviceClientProjectName)
+          .withDartClientDependsOnServiceClient(true)
+          .withSharedModelsSourcePathsParts({
+            serviceClientSharedPackageName: [
+              '..',
+              serviceClientSharedPackageName,
+            ],
+          })
+          .build();
+
+      late final serviceClientProtocolDefinition = ProtocolDefinition(
+        endpoints: [],
+        models: [
+          ModelClassDefinitionBuilder()
+              .withClassName('SharedModel')
+              .withSharedPackageName(serviceClientSharedPackageName)
+              .build(),
+        ],
+        futureCalls: [],
+      );
+
+      late final serviceClientCodeMap = generator.generateProtocolCode(
+        protocolDefinition: serviceClientProtocolDefinition,
+        config: serviceClientConfig,
+      );
+
+      late final serviceClientProtocolSource =
+          serviceClientCodeMap[p.join(
+            '..',
+            serviceClientSharedPackageName,
+            'lib',
+            'src',
+            'generated',
+            'protocol.dart',
+          )]!;
+
+      late final serviceClientProtocolCompilationUnit = parseString(
+        content: serviceClientProtocolSource,
+      ).unit;
+
+      test(
+        'then the generated protocol does not import serverpod_service_client.',
+        () {
+          expect(
+            CompilationUnitHelpers.hasImportDirective(
+              serviceClientProtocolCompilationUnit,
+              uri: serverpodServiceClientUrl(false),
+            ),
+            isFalse,
+          );
+          expect(
+            serviceClientProtocolSource,
+            isNot(contains(serverpodUrl(false))),
+          );
+          expect(
+            serviceClientProtocolSource,
+            isNot(contains(serverpodProtocolUrl(false))),
+          );
+        },
+      );
+
+      test(
+        'then deserialization delegates to Protocol from serverpod_database.',
+        () {
+          expect(
+            serviceClientProtocolSource,
+            contains('Protocol().deserialize<T>(data, t)'),
+          );
+          expect(
+            CompilationUnitHelpers.hasImportDirective(
+              serviceClientProtocolCompilationUnit,
+              uri: serverpodDatabaseUrl(false),
+            ),
+            isTrue,
+          );
+        },
+      );
+
+      test(
+        'then mapRecordToJson delegates to Protocol from serverpod_database.',
+        () {
+          expect(
+            serviceClientProtocolSource,
+            contains('Protocol().mapRecordToJson(record)'),
+          );
+        },
+      );
     },
   );
 }

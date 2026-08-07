@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
@@ -103,6 +104,91 @@ void main() {
     },
   );
 
+  group('Given a FileWatcher tracking a missing pub artifact,', () {
+    late File packageGraph;
+    late FileWatcher watcher;
+
+    setUp(() async {
+      final dartToolDir = p.join(tempDir.path, '.dart_tool');
+      await Directory(dartToolDir).create();
+      packageGraph = File(p.join(dartToolDir, 'package_graph.json'));
+      watcher = FileWatcher(
+        watchPaths: [packageGraph.path],
+        packageGraphPaths: [packageGraph.path],
+        debounceDelay: const Duration(milliseconds: 50),
+        missingFilePollingDelay: const Duration(milliseconds: 20),
+      );
+    });
+
+    test(
+      'when the artifact is created, '
+      'then it emits a Flutter dependency change.',
+      () async {
+        final firstEvent = watcher.onFilesChanged.first;
+        await watcher.ready;
+
+        await packageGraph.writeAsString('{"roots":[],"packages":[]}');
+
+        final event = await firstEvent.timeout(const Duration(seconds: 3));
+        expect(event.flutterDependenciesChanged, isTrue);
+      },
+    );
+  });
+
+  group('Given a FileWatcher tracking an existing pub artifact,', () {
+    late File packageGraph;
+    late FileWatcher watcher;
+
+    setUp(() async {
+      final dartToolDir = p.join(tempDir.path, '.dart_tool');
+      await Directory(dartToolDir).create();
+      packageGraph = File(p.join(dartToolDir, 'package_graph.json'));
+      await packageGraph.writeAsString('{"roots":[],"packages":[]}');
+      watcher = FileWatcher(
+        watchPaths: [packageGraph.path],
+        packageGraphPaths: [packageGraph.path],
+        debounceDelay: const Duration(milliseconds: 50),
+        missingFilePollingDelay: const Duration(milliseconds: 20),
+      );
+    });
+
+    test(
+      'when the artifact is deleted and recreated, '
+      'then subsequent changes continue to emit Flutter dependency changes.',
+      () async {
+        final events = StreamIterator(watcher.onFilesChanged);
+        addTearDown(events.cancel);
+        var nextEvent = events.moveNext();
+        await watcher.ready;
+
+        await packageGraph.delete();
+        expect(
+          await nextEvent.timeout(const Duration(seconds: 3)),
+          isTrue,
+        );
+        expect(events.current.flutterDependenciesChanged, isTrue);
+
+        nextEvent = events.moveNext();
+        await packageGraph.writeAsString('{"roots":[],"packages":[]}');
+        expect(
+          await nextEvent.timeout(const Duration(seconds: 3)),
+          isTrue,
+        );
+        expect(events.current.flutterDependenciesChanged, isTrue);
+
+        nextEvent = events.moveNext();
+        await packageGraph.writeAsString(
+          '{"roots":[],"packages":[{"name":"new_dependency"}]}',
+        );
+        expect(
+          await nextEvent.timeout(const Duration(seconds: 3)),
+          isTrue,
+        );
+        expect(events.current.flutterDependenciesChanged, isTrue);
+      },
+    );
+  });
+
   group('Given a FileWatcher watching a .dart_tool directory', () {
     late FileWatcher watcher;
     late String dartToolDir;
@@ -113,6 +199,8 @@ void main() {
 
       watcher = FileWatcher(
         watchPaths: [dartToolDir],
+        packageConfigPath: p.join(dartToolDir, 'package_config.json'),
+        packageGraphPaths: [p.join(dartToolDir, 'package_graph.json')],
         debounceDelay: const Duration(milliseconds: 200),
       );
     });
@@ -140,29 +228,160 @@ void main() {
     );
 
     test(
-      'when package_config.json and other .dart_tool files change alongside package_graph.json, '
-      'then only flutterDependenciesChanged is set',
+      'when package_config.json changes, '
+      'then it emits a FileChangeEvent with only packageConfigChanged set',
       () async {
         final firstEvent = watcher.onFilesChanged.first;
         await watcher.ready;
 
-        // All within one debounce window. package_config.json and the build
-        // artifact must be ignored inside .dart_tool.
         await File(
           p.join(dartToolDir, 'package_config.json'),
         ).writeAsString('{"configVersion":2,"packages":[]}');
+
+        final event = await firstEvent;
+
+        expect(event.packageConfigChanged, isTrue);
+        expect(event.flutterDependenciesChanged, isFalse);
+        expect(event.staticFilesChanged, isFalse);
+        expect(event.dartFiles, isEmpty);
+      },
+    );
+
+    test(
+      'when package_config and package_graph change alongside other .dart_tool files, '
+      'then only packageConfigChanged and flutterDependenciesChanged are set',
+      () async {
+        final firstEvent = watcher.onFilesChanged.first;
+        await watcher.ready;
+
+        // A `pub get` rewrites both pub artifacts within one debounce window
         await File(
-          p.join(dartToolDir, 'version'),
-        ).writeAsString('3.12.0');
+          p.join(dartToolDir, 'package_config.json'),
+        ).writeAsString('{"configVersion":2,"packages":[]}');
         await File(
           p.join(dartToolDir, 'package_graph.json'),
         ).writeAsString('{"roots":[],"packages":[]}');
 
         final event = await firstEvent;
 
+        expect(event.packageConfigChanged, isTrue);
+        expect(event.flutterDependenciesChanged, isTrue);
+        expect(event.staticFilesChanged, isFalse);
+      },
+    );
+  });
+
+  group('Given separate server and Flutter .dart_tool directories', () {
+    late FileWatcher watcher;
+    late String serverDartTool;
+    late String flutterDartTool;
+
+    setUp(() async {
+      serverDartTool = p.join(tempDir.path, 'server', '.dart_tool');
+      flutterDartTool = p.join(tempDir.path, 'flutter', '.dart_tool');
+      await Directory(serverDartTool).create(recursive: true);
+      await Directory(flutterDartTool).create(recursive: true);
+
+      watcher = FileWatcher(
+        watchPaths: [serverDartTool, flutterDartTool],
+        packageConfigPath: p.join(serverDartTool, 'package_config.json'),
+        packageGraphPaths: [p.join(flutterDartTool, 'package_graph.json')],
+        debounceDelay: const Duration(milliseconds: 200),
+      );
+    });
+
+    test(
+      "when the Flutter app's package_config.json changes, "
+      'then it does not trigger a server reload',
+      () async {
+        final firstEvent = watcher.onFilesChanged.first;
+        await watcher.ready;
+
+        // A `pub get` in the Flutter app rewrites its own pub artifacts.
+        await File(
+          p.join(flutterDartTool, 'package_config.json'),
+        ).writeAsString('{"configVersion":2,"packages":[]}');
+        await File(
+          p.join(flutterDartTool, 'package_graph.json'),
+        ).writeAsString('{"roots":[],"packages":[]}');
+
+        final event = await firstEvent;
+
+        expect(event.flutterDependenciesChanged, isTrue);
+        expect(
+          event.packageConfigChanged,
+          isFalse,
+          reason: "the Flutter app's package_config must not reload the server",
+        );
+      },
+    );
+
+    test(
+      "when the server's package_graph.json changes, "
+      'then it does not trigger the Flutter dependency check',
+      () async {
+        final firstEvent = watcher.onFilesChanged.first;
+        await watcher.ready;
+
+        await File(
+          p.join(serverDartTool, 'package_config.json'),
+        ).writeAsString('{"configVersion":2,"packages":[]}');
+        await File(
+          p.join(serverDartTool, 'package_graph.json'),
+        ).writeAsString('{"roots":[],"packages":[]}');
+
+        final event = await firstEvent;
+
+        expect(event.packageConfigChanged, isTrue);
+        expect(
+          event.flutterDependenciesChanged,
+          isFalse,
+          reason: "the server's package_graph must not refresh the Flutter app",
+        );
+      },
+    );
+  });
+
+  group('Given multiple Flutter app resolutions (non-workspace layout)', () {
+    late FileWatcher watcher;
+    late String serverDartTool;
+    late String appADartTool;
+    late String appBDartTool;
+
+    setUp(() async {
+      serverDartTool = p.join(tempDir.path, 'server', '.dart_tool');
+      appADartTool = p.join(tempDir.path, 'app_a', '.dart_tool');
+      appBDartTool = p.join(tempDir.path, 'app_b', '.dart_tool');
+      for (final dir in [serverDartTool, appADartTool, appBDartTool]) {
+        await Directory(dir).create(recursive: true);
+      }
+
+      watcher = FileWatcher(
+        watchPaths: [serverDartTool, appADartTool, appBDartTool],
+        packageConfigPath: p.join(serverDartTool, 'package_config.json'),
+        packageGraphPaths: [
+          p.join(appADartTool, 'package_graph.json'),
+          p.join(appBDartTool, 'package_graph.json'),
+        ],
+        debounceDelay: const Duration(milliseconds: 200),
+      );
+    });
+
+    test(
+      "when any tracked Flutter app's package_graph.json changes, "
+      'then it sets flutterDependenciesChanged',
+      () async {
+        final firstEvent = watcher.onFilesChanged.first;
+        await watcher.ready;
+
+        await File(
+          p.join(appBDartTool, 'package_graph.json'),
+        ).writeAsString('{"roots":[],"packages":[]}');
+
+        final event = await firstEvent;
+
         expect(event.flutterDependenciesChanged, isTrue);
         expect(event.packageConfigChanged, isFalse);
-        expect(event.staticFilesChanged, isFalse);
       },
     );
   });
@@ -237,4 +456,42 @@ void main() {
       },
     );
   });
+
+  group(
+    'Given a FileWatcher watching a pubspec.yaml file',
+    () {
+      late FileWatcher watcher;
+      late File pubspec;
+
+      setUp(() async {
+        final path = p.join(tempDir.path, 'pubspec.yaml');
+        pubspec = File(path);
+        await pubspec.create();
+
+        watcher = FileWatcher(
+          watchPaths: [path],
+          debounceDelay: const Duration(milliseconds: 200),
+        );
+      });
+
+      test(
+        'when the file changes, '
+        'then it emits a FileChangeEvent with only pubspecChanged set',
+        () async {
+          final firstEvent = watcher.onFilesChanged.first;
+          await watcher.ready;
+
+          await pubspec.writeAsString('name: example');
+
+          final event = await firstEvent;
+
+          expect(event.pubspecChanged, isTrue);
+          expect(event.flutterDependenciesChanged, isFalse);
+          expect(event.packageConfigChanged, isFalse);
+          expect(event.staticFilesChanged, isFalse);
+          expect(event.dartFiles, isEmpty);
+        },
+      );
+    },
+  );
 }

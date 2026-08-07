@@ -5,11 +5,8 @@ import 'package:serverpod_test_server/test_util/test_key_manager.dart';
 import 'package:test/test.dart';
 
 void main() {
-  var client = Client(
-    serverUrl,
-    // ignore: deprecated_member_use
-    authenticationKeyManager: TestAuthKeyManager(),
-  );
+  var authKeyProvider = TestAuthKeyManager();
+  var client = Client(serverUrl)..authKeyProvider = authKeyProvider;
 
   setUp(() {});
 
@@ -62,8 +59,7 @@ void main() {
         'password',
       );
       if (response.success) {
-        // ignore: deprecated_member_use
-        await client.authenticationKeyManager!.put(
+        await authKeyProvider.put(
           '${response.keyId}:${response.key}',
         );
       }
@@ -126,8 +122,7 @@ void main() {
         'password',
       );
       assert(response.success, 'Failed to authenticate user');
-      // ignore: deprecated_member_use
-      await client.authenticationKeyManager?.put(
+      await authKeyProvider.put(
         '${response.keyId}:${response.key}',
       );
       assert(
@@ -137,8 +132,7 @@ void main() {
     });
 
     tearDown(() async {
-      // ignore: deprecated_member_use
-      await client.authenticationKeyManager?.remove();
+      await authKeyProvider.remove();
       await client.authentication.removeAllUsers();
       await client.authentication.signOut();
       assert(
@@ -171,8 +165,7 @@ void main() {
         [Scope.admin.name!],
       );
       assert(response.success, 'Failed to authenticate user');
-      // ignore: deprecated_member_use
-      await client.authenticationKeyManager?.put(
+      await authKeyProvider.put(
         '${response.keyId}:${response.key}',
       );
       assert(
@@ -182,8 +175,7 @@ void main() {
     });
 
     tearDown(() async {
-      // ignore: deprecated_member_use
-      await client.authenticationKeyManager?.remove();
+      await authKeyProvider.remove();
       await client.authentication.removeAllUsers();
       await client.authentication.signOut();
       assert(
@@ -207,8 +199,7 @@ void main() {
         'password',
       );
       assert(response.success, 'Failed to authenticate user');
-      // ignore: deprecated_member_use
-      await client.authenticationKeyManager?.put(
+      await authKeyProvider.put(
         '${response.keyId}:${response.key}',
       );
       assert(
@@ -218,8 +209,7 @@ void main() {
     });
 
     tearDown(() async {
-      // ignore: deprecated_member_use
-      await client.authenticationKeyManager?.remove();
+      await authKeyProvider.remove();
       await client.authentication.removeAllUsers();
       await client.authentication.signOut();
       assert(

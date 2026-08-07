@@ -13,7 +13,8 @@
 import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i2;
 
-abstract class DynamicOnShared implements _i1.SerializableModel {
+abstract class DynamicOnShared
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   DynamicOnShared._({
     required this.name,
     required this.data,
@@ -50,6 +51,18 @@ abstract class DynamicOnShared implements _i1.SerializableModel {
       '__className__': 'DynamicOnShared',
       'name': name,
       'data': _i2.Protocol().dynamicFieldToJson(data),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'DynamicOnShared',
+      'name': name,
+      'data': _i2.Protocol().dynamicFieldToJson(
+        data,
+        forProtocol: true,
+      ),
     };
   }
 

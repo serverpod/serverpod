@@ -1,0 +1,18 @@
+class: NullsDistinctData
+table: nulls_distinct_data
+fields:
+  tenantId: int
+  category: String
+  ### Indexed with nulls distinct, so rows with a null here never collide.
+  archivedAt: String?
+  ### Indexed with nulls not distinct, so rows with a null here do collide.
+  deletedAt: String?
+indexes:
+  nulls_distinct_data_unique_idx:
+    fields: tenantId, category, archivedAt
+    unique: true
+    nulls_distinct: true
+  nulls_distinct_data_not_distinct_idx:
+    fields: tenantId, category, deletedAt
+    unique: true
+    nulls_distinct: false

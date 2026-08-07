@@ -16,7 +16,6 @@ void main() {
           'serverpod_test_sqlite',
           sqlite.Protocol(),
         );
-        // The `serverpod_test` is the owner of the class and is not registered.
       });
 
       test(
@@ -25,7 +24,7 @@ void main() {
         () {
           final sharedModel = shared.SharedModel(name: 'test', data: 42);
           final payload = {
-            'className': 'serverpod_test_shared.SharedModel',
+            'className': 'unknown_project.SharedModel',
             'data': sharedModel.toJson(),
           };
 
@@ -38,9 +37,6 @@ void main() {
     },
   );
 
-  // NOTE: This test must come after the previous, since registering a host
-  // protocol can not be undone. Otherwise, the test would not throw because
-  // the previous registration would leak to the next test.
   group(
     'Given a module protocol with two registered host protocols,',
     () {
@@ -59,20 +55,25 @@ void main() {
         'when deserializing a qualified className only known to the second host, '
         'then the first host failure is caught and deserialization succeeds.',
         () {
-          final sharedModel = shared.SharedModel(name: 'test', data: 42);
+          final serverModel = server.ExceptionWithData(
+            message: 'test',
+            creationDate: DateTime.utc(2026, 7, 7),
+            errorFields: ['data'],
+          );
           final payload = {
-            'className': 'serverpod_test_shared.SharedModel',
-            'data': sharedModel.toJson(),
+            'className': 'serverpod_test.ExceptionWithData',
+            'data': serverModel.toJson(),
           };
 
           final decoded = module.Protocol().deserializeDynamicFieldValue(
             payload,
           );
 
-          expect(decoded, isA<shared.SharedModel>());
-          final model = decoded as shared.SharedModel;
-          expect(model.name, 'test');
-          expect(model.data, 42);
+          expect(decoded, isA<server.ExceptionWithData>());
+          final model = decoded as server.ExceptionWithData;
+          expect(model.message, 'test');
+          expect(model.creationDate, DateTime.utc(2026, 7, 7));
+          expect(model.errorFields, ['data']);
         },
       );
     },

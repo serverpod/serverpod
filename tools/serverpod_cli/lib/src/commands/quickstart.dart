@@ -3,7 +3,6 @@ import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:serverpod_cli/src/commands/create/tui/config.dart';
 import 'package:serverpod_cli/src/commands/create/tui/runner.dart';
-import 'package:serverpod_cli/src/commands/create/tui/state.dart';
 import 'package:serverpod_cli/src/create/create.dart';
 import 'package:serverpod_cli/src/create/ide.dart';
 import 'package:serverpod_cli/src/create/template_context.dart';
@@ -27,18 +26,22 @@ enum QuickstartOption<V> implements OptionDefinition<V> {
   template(
     EnumOption(
       enumParser: EnumParser([
+        ServerpodTemplateType.fullstack,
         ServerpodTemplateType.server,
         ServerpodTemplateType.module,
       ]),
       argName: 'template',
       argAbbrev: 't',
-      defaultsTo: ServerpodTemplateType.server,
+      defaultsTo: ServerpodTemplateType.fullstack,
       helpText: 'Template to use when creating a new project',
       allowedValues: [
+        ServerpodTemplateType.fullstack,
         ServerpodTemplateType.server,
         ServerpodTemplateType.module,
       ],
       allowedHelp: {
+        'fullstack':
+            'Fullstack project including a server and a companion Flutter app',
         'server': 'Server project with standard features including database',
         'module': 'Serverpod Module project',
       },
@@ -126,7 +129,7 @@ class QuickstartCommand extends ServerpodCommand<QuickstartOption> {
       auth: true,
       redis: true,
       postgres: true,
-      web: true,
+      webapp: true,
       ides: [TemplateIde.claude, TemplateIde.cursor, TemplateIde.vscode],
     );
 
@@ -136,30 +139,30 @@ class QuickstartCommand extends ServerpodCommand<QuickstartOption> {
       await performCreateWithTui(
         name,
         force,
-        state: CreateConfigState(
-          template,
-          configs: const [ServerpodCreateConfig.ide],
-          defaults: TemplateContext(
-            auth: true,
-            redis: true,
-            postgres: true,
-            web: true,
-          ),
-          requireIde: true,
-        ),
+        template: template,
+        configs: const [ServerpodCreateConfig.ide],
+        requireIde: true,
         interactive: true,
+        defaultContext: TemplateContext(
+          auth: true,
+          redis: true,
+          postgres: true,
+          webapp: true,
+        ),
+        analyticsMethod: 'quickstart',
       );
       return;
     }
 
-    final projectPath = await performCreate(
+    final result = await performCreate(
       name,
       force,
       interactive: interactive,
       context: context,
+      analyticsMethod: 'quickstart',
     );
 
-    if (projectPath == null) {
+    if (result is! CreateSuccess) {
       throw ExitException.error();
     }
   }

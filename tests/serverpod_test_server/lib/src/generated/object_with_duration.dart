@@ -79,8 +79,6 @@ abstract class ObjectWithDuration
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectWithDurationTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
     ObjectWithDurationInclude? include,
   }) {
@@ -89,8 +87,6 @@ abstract class ObjectWithDuration
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithDuration.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(ObjectWithDuration.t),
       include: include,
     );
@@ -176,8 +172,6 @@ class ObjectWithDurationIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -222,8 +216,6 @@ class ObjectWithDurationRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectWithDurationTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -233,8 +225,6 @@ class ObjectWithDurationRepository {
       where: where?.call(ObjectWithDuration.t),
       orderBy: orderBy?.call(ObjectWithDuration.t),
       orderByList: orderByList?.call(ObjectWithDuration.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -265,8 +255,6 @@ class ObjectWithDurationRepository {
     _i1.WhereExpressionBuilder<ObjectWithDurationTable>? where,
     int? offset,
     _i1.OrderByBuilder<ObjectWithDurationTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -276,8 +264,6 @@ class ObjectWithDurationRepository {
       where: where?.call(ObjectWithDuration.t),
       orderBy: orderBy?.call(ObjectWithDuration.t),
       orderByList: orderByList?.call(ObjectWithDuration.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -311,16 +297,22 @@ class ObjectWithDurationRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithDuration>> insert(
     _i1.DatabaseSession session,
     List<ObjectWithDuration> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<ObjectWithDuration>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -354,6 +346,10 @@ class ObjectWithDurationRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithDuration>> upsert(
     _i1.DatabaseSession session,
     List<ObjectWithDuration> rows, {
@@ -361,6 +357,7 @@ class ObjectWithDurationRepository {
     _i1.ColumnSelections<ObjectWithDurationTable>? updateColumns,
     _i1.WhereExpressionBuilder<ObjectWithDurationTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<ObjectWithDuration>(
       rows,
@@ -368,6 +365,7 @@ class ObjectWithDurationRepository {
       updateColumns: updateColumns?.call(ObjectWithDuration.t),
       updateWhere: updateWhere?.call(ObjectWithDuration.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -406,16 +404,22 @@ class ObjectWithDurationRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithDuration>> update(
     _i1.DatabaseSession session,
     List<ObjectWithDuration> rows, {
     _i1.ColumnSelections<ObjectWithDurationTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<ObjectWithDuration>(
       rows,
       columns: columns?.call(ObjectWithDuration.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -453,6 +457,10 @@ class ObjectWithDurationRepository {
 
   /// Updates all [ObjectWithDuration]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithDuration>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<ObjectWithDurationUpdateTable>
@@ -462,9 +470,8 @@ class ObjectWithDurationRepository {
     int? offset,
     _i1.OrderByBuilder<ObjectWithDurationTable>? orderBy,
     _i1.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithDuration>(
       columnValues: columnValues(ObjectWithDuration.t.updateTable),
@@ -473,9 +480,8 @@ class ObjectWithDurationRepository {
       offset: offset,
       orderBy: orderBy?.call(ObjectWithDuration.t),
       orderByList: orderByList?.call(ObjectWithDuration.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -486,22 +492,24 @@ class ObjectWithDurationRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithDuration>> delete(
     _i1.DatabaseSession session,
     List<ObjectWithDuration> rows, {
     _i1.OrderByBuilder<ObjectWithDurationTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<ObjectWithDuration>(
       rows,
       orderBy: orderBy?.call(ObjectWithDuration.t),
       orderByList: orderByList?.call(ObjectWithDuration.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -521,22 +529,24 @@ class ObjectWithDurationRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithDuration>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ObjectWithDurationTable> where,
     _i1.OrderByBuilder<ObjectWithDurationTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithDuration>(
       where: where(ObjectWithDuration.t),
       orderBy: orderBy?.call(ObjectWithDuration.t),
       orderByList: orderByList?.call(ObjectWithDuration.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

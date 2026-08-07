@@ -14,11 +14,11 @@ ALWAYS use the MCP server instead of the command line. Use the MCP server to:
 
 Checklist after doing changes:
 
-1. `dart analyze` (`dart` MCP)
-2. `dart format` (`dart` MCP)
-3. `create_migration` and `apply_migrations` (only if necessary)
+1. `dart analyze` (CLI)
+2. `dart format` (CLI)
+3. `create_migration` and `apply_migrations` (MCP - only if necessary)
 4. Do `serverpod` MCP `hot_restart` if required (hot reload is done automatically). Will also hot restart Flutter app
-5. Run tests, if applicable (`dart` MCP)
+5. Run tests, if applicable (`dart` CLI)
 6. Check `serverpod` MCP `tail_server_logs` and `tail_flutter_logs` for any issues.
 
 If the user asks you to test the app:

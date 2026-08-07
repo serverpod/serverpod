@@ -8,7 +8,9 @@ import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
 import 'anonymous/anonymous_sign_in_widget.dart';
 import 'apple/apple_sign_in_widget.dart';
 import 'common/external_idp_registry.dart';
+import 'common/sign_in_button_style.dart';
 import 'common/widgets/column.dart';
+import 'common/sign_in_flow_coordinator.dart';
 import 'common/widgets/divider.dart';
 import 'common/widgets/gaps.dart';
 import 'email/email_sign_in_widget.dart';
@@ -100,6 +102,13 @@ class SignInWidget extends StatefulWidget {
   /// Customized widget to use for Microsoft sign-in.
   final MicrosoftSignInWidget? microsoftSignInWidget;
 
+  /// Customizes the common styling applied to every sign-in button.
+  ///
+  /// Buttons inside [SignInWidget] always adopt a shared common appearance
+  /// instead of their brand colors; set this to customize that appearance for
+  /// all of them — including external ones. See [SignInButtonStyle].
+  final SignInButtonStyle? buttonStyle;
+
   /// Creates an authentication onboarding widget.
   const SignInWidget({
     required this.client,
@@ -118,6 +127,7 @@ class SignInWidget extends StatefulWidget {
     this.appleSignInWidget,
     this.githubSignInWidget,
     this.microsoftSignInWidget,
+    this.buttonStyle,
     super.key,
   });
 
@@ -152,6 +162,7 @@ class _SignInWidgetState extends State<SignInWidget> {
     if (!auth.idp.hasAny) {
       return Material(
         type: MaterialType.transparency,
+        color: Colors.transparent,
         child: Center(
           child: Text(
             texts.noAuthenticationProvidersConfigured,
@@ -227,31 +238,42 @@ class _SignInWidgetState extends State<SignInWidget> {
       );
     }
 
-    // TODO: Make this adaptative.
-    return Material(
-      type: MaterialType.transparency,
-      child: SignInWidgetsColumn(
-        spacing: 12,
-        children: [
-          if (hasEmail)
-            widget.emailSignInWidget ??
-                EmailSignInWidget(
-                  client: widget.client,
-                  onAuthenticated: widget.onAuthenticated,
-                  onError: widget.onError,
-                ),
-          if (socialProviders.isNotEmpty && hasEmail) const _SignInSeparator(),
-          ...socialProviders,
-          if (hasAnonymous) ...[
-            widget.anonymousSignInWidget ??
-                AnonymousSignInWidget(
-                  client: widget.client,
-                  onAuthenticated: widget.onAuthenticated,
-                  onError: widget.onError,
-                ),
+    // TODO: Make this adaptive.
+    Widget child = SignInFlowCoordinatorWidget(
+      child: Material(
+        type: MaterialType.transparency,
+        color: Colors.transparent,
+        child: SignInWidgetsColumn(
+          spacing: 12,
+          children: [
+            if (hasEmail)
+              widget.emailSignInWidget ??
+                  EmailSignInWidget(
+                    client: widget.client,
+                    onAuthenticated: widget.onAuthenticated,
+                    onError: widget.onError,
+                  ),
+            if (socialProviders.isNotEmpty && hasEmail)
+              const _SignInSeparator(),
+            ...socialProviders,
+            if (hasAnonymous) ...[
+              widget.anonymousSignInWidget ??
+                  AnonymousSignInWidget(
+                    client: widget.client,
+                    onAuthenticated: widget.onAuthenticated,
+                    onError: widget.onError,
+                  ),
+            ],
           ],
-        ],
+        ),
       ),
+    );
+
+    // Always provide a shared style so every button inside adopts the common
+    // appearance; [buttonStyle] customizes it when given.
+    return SignInButtonStyleProvider(
+      style: widget.buttonStyle ?? const SignInButtonStyle(),
+      child: child,
     );
   }
 }

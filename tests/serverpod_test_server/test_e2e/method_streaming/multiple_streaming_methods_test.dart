@@ -7,11 +7,7 @@ import 'package:serverpod_test_server/test_util/test_key_manager.dart';
 import 'package:test/test.dart';
 
 void main() {
-  var client = Client(
-    serverUrl,
-    // ignore: deprecated_member_use
-    authenticationKeyManager: TestAuthKeyManager(),
-  );
+  var client = Client(serverUrl)..authKeyProvider = TestAuthKeyManager();
 
   test(
     'Given multiple streaming method connections when one is finished then the open method stream can still transmit messages.',

@@ -14,7 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_auth_core_client/src/protocol/protocol.dart' as _i2;
 
 /// DTO for transferring server-side session information between server and client.
-abstract class ServerSideSessionInfo implements _i1.SerializableModel {
+abstract class ServerSideSessionInfo
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ServerSideSessionInfo._({
     required this.id,
     required this.authUserId,
@@ -112,6 +113,22 @@ abstract class ServerSideSessionInfo implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_auth_core.ServerSideSessionInfo',
+      'id': id.toJson(),
+      'authUserId': authUserId.toJson(),
+      'scopeNames': scopeNames.toJson(),
+      'created': created.toJson(),
+      'lastUsed': lastUsed.toJson(),
+      if (expiresAt != null) 'expiresAt': expiresAt?.toJson(),
+      if (expireAfterUnusedFor != null)
+        'expireAfterUnusedFor': expireAfterUnusedFor?.toJson(),
+      'method': method,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_auth_core.ServerSideSessionInfo',
       'id': id.toJson(),

@@ -24,9 +24,6 @@ void run(List<String> args) async {
     authenticationHandler: auth.authenticationHandler,
   );
 
-  // If you are using any future calls, they need to be registered here.
-  // pod.registerFutureCall(ExampleFutureCall(), 'exampleFutureCall');
-
   // Setup a default page at the web root.
   pod.webServer.addRoute(RootRoute(), '/');
   pod.webServer.addRoute(RootRoute(), '/index.html');

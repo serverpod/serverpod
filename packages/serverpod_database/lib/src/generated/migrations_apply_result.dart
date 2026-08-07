@@ -14,7 +14,8 @@ import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 import 'package:serverpod_database/serverpod_database.dart' as _i2;
 
 /// Result of applying database migrations via the Insights endpoint.
-abstract class MigrationsApplyResult implements _i1.SerializableModel {
+abstract class MigrationsApplyResult
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   MigrationsApplyResult._({
     this.migrationsApplied,
     this.repairMigrationApplied,
@@ -71,6 +72,18 @@ abstract class MigrationsApplyResult implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod.MigrationsApplyResult',
+      if (migrationsApplied != null)
+        'migrationsApplied': migrationsApplied?.toJson(),
+      if (repairMigrationApplied != null)
+        'repairMigrationApplied': repairMigrationApplied,
+      'databaseMatchesTargetState': databaseMatchesTargetState,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod.MigrationsApplyResult',
       if (migrationsApplied != null)

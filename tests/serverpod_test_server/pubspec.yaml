@@ -14,13 +14,15 @@ dependencies:
   clock: ^1.1.1
   http: '>=1.1.0 <2.0.0'
   relic: ^1.2.0
-  serverpod: 3.5.0-beta.10
-  serverpod_auth_server: 3.5.0-beta.10
-  serverpod_cloud_storage_s3: 3.5.0-beta.10
+  serverpod: 4.0.0-beta.1
+  serverpod_auth_server: 4.0.0-beta.1
+  serverpod_cloud_storage_s3: 4.0.0-beta.1
   serverpod_test_module_server:
     path: ../serverpod_test_module/serverpod_test_module_server
   serverpod_test_shared:
     path: ../serverpod_test_shared
+  serverpod_test_shared_module_server:
+    path: ../serverpod_test_shared_module/serverpod_test_shared_module_server
   uuid: ^4.5.3
   web: '>=0.3.0 <2.0.0'
   web_socket: ^1.0.1
@@ -28,13 +30,15 @@ dependencies:
 dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
   path: ^1.8.3
-  serverpod_cli: 3.5.0-beta.10
-  serverpod_service_client: 3.5.0-beta.10
-  serverpod_test: 3.5.0-beta.10
+  serverpod_cli: 4.0.0-beta.1
+  serverpod_service_client: 4.0.0-beta.1
+  serverpod_test: 4.0.0-beta.1
   serverpod_test_client:
     path: ../serverpod_test_client
   serverpod_test_module_client:
     path: ../serverpod_test_module/serverpod_test_module_client
+  serverpod_test_shared_module_client:
+    path: ../serverpod_test_shared_module/serverpod_test_shared_module_client
   test: ^1.25.5
   test_descriptor: ^2.0.2
 

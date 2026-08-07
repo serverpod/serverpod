@@ -89,8 +89,6 @@ abstract class StringDefaultModel
     int? limit,
     int? offset,
     _i1.OrderByBuilder<StringDefaultModelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<StringDefaultModelTable>? orderByList,
     StringDefaultModelInclude? include,
   }) {
@@ -99,8 +97,6 @@ abstract class StringDefaultModel
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(StringDefaultModel.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(StringDefaultModel.t),
       include: include,
     );
@@ -204,8 +200,6 @@ class StringDefaultModelIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -250,8 +244,6 @@ class StringDefaultModelRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<StringDefaultModelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<StringDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -261,8 +253,6 @@ class StringDefaultModelRepository {
       where: where?.call(StringDefaultModel.t),
       orderBy: orderBy?.call(StringDefaultModel.t),
       orderByList: orderByList?.call(StringDefaultModel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -293,8 +283,6 @@ class StringDefaultModelRepository {
     _i1.WhereExpressionBuilder<StringDefaultModelTable>? where,
     int? offset,
     _i1.OrderByBuilder<StringDefaultModelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<StringDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -304,8 +292,6 @@ class StringDefaultModelRepository {
       where: where?.call(StringDefaultModel.t),
       orderBy: orderBy?.call(StringDefaultModel.t),
       orderByList: orderByList?.call(StringDefaultModel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -339,16 +325,22 @@ class StringDefaultModelRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<StringDefaultModel>> insert(
     _i1.DatabaseSession session,
     List<StringDefaultModel> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<StringDefaultModel>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -382,6 +374,10 @@ class StringDefaultModelRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<StringDefaultModel>> upsert(
     _i1.DatabaseSession session,
     List<StringDefaultModel> rows, {
@@ -389,6 +385,7 @@ class StringDefaultModelRepository {
     _i1.ColumnSelections<StringDefaultModelTable>? updateColumns,
     _i1.WhereExpressionBuilder<StringDefaultModelTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<StringDefaultModel>(
       rows,
@@ -396,6 +393,7 @@ class StringDefaultModelRepository {
       updateColumns: updateColumns?.call(StringDefaultModel.t),
       updateWhere: updateWhere?.call(StringDefaultModel.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -434,16 +432,22 @@ class StringDefaultModelRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<StringDefaultModel>> update(
     _i1.DatabaseSession session,
     List<StringDefaultModel> rows, {
     _i1.ColumnSelections<StringDefaultModelTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<StringDefaultModel>(
       rows,
       columns: columns?.call(StringDefaultModel.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -481,6 +485,10 @@ class StringDefaultModelRepository {
 
   /// Updates all [StringDefaultModel]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<StringDefaultModel>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<StringDefaultModelUpdateTable>
@@ -490,9 +498,8 @@ class StringDefaultModelRepository {
     int? offset,
     _i1.OrderByBuilder<StringDefaultModelTable>? orderBy,
     _i1.OrderByListBuilder<StringDefaultModelTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<StringDefaultModel>(
       columnValues: columnValues(StringDefaultModel.t.updateTable),
@@ -501,9 +508,8 @@ class StringDefaultModelRepository {
       offset: offset,
       orderBy: orderBy?.call(StringDefaultModel.t),
       orderByList: orderByList?.call(StringDefaultModel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -514,22 +520,24 @@ class StringDefaultModelRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<StringDefaultModel>> delete(
     _i1.DatabaseSession session,
     List<StringDefaultModel> rows, {
     _i1.OrderByBuilder<StringDefaultModelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<StringDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<StringDefaultModel>(
       rows,
       orderBy: orderBy?.call(StringDefaultModel.t),
       orderByList: orderByList?.call(StringDefaultModel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -549,22 +557,24 @@ class StringDefaultModelRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<StringDefaultModel>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<StringDefaultModelTable> where,
     _i1.OrderByBuilder<StringDefaultModelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<StringDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<StringDefaultModel>(
       where: where(StringDefaultModel.t),
       orderBy: orderBy?.call(StringDefaultModel.t),
       orderByList: orderByList?.call(StringDefaultModel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

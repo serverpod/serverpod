@@ -34,3 +34,11 @@ values:
   - bit
   ### Esp. for serializable objects as [jsonb].
   - jsonb
+  ### Dart type: [GeographyPoint]
+  - geography
+  ### Dart type: [GeographyLineString]
+  - geographyLineString
+  ### Dart type: [GeographyPolygon]
+  - geographyPolygon
+  ### Dart type: [GeographyGeometryCollection]
+  - geographyGeometryCollection

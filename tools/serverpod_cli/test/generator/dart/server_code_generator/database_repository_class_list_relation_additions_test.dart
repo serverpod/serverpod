@@ -560,4 +560,130 @@ void main() {
       });
     },
   );
+
+  group(
+    'Given a class with table name and explicit non-nullable list relation field, '
+    'when generating code',
+    () {
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName(testClassName)
+            .withFileName(testClassFileName)
+            .withTableName('example_table')
+            .withListRelationField(
+              'people',
+              'Person',
+              'organizationId',
+              nullableRelation: false,
+            )
+            .build(),
+      ];
+
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
+
+      var compilationUnit = parseString(
+        content: codeMap[expectedFilePath]!,
+      ).unit;
+
+      var repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        compilationUnit,
+        name: '${testClassName}Repository',
+      );
+
+      group(
+        'then the class name ${testClassName}Repository',
+        () {
+          test('has a final attach field', () {
+            var field = CompilationUnitHelpers.tryFindFieldDeclaration(
+              repositoryClass!,
+              name: 'attach',
+            );
+
+            expect(
+              field?.toSource(),
+              'final attach = const ${testClassName}AttachRepository._();',
+              reason: 'Missing final attach field.',
+            );
+          });
+
+          test('has no detachRow field', () {
+            var field = CompilationUnitHelpers.tryFindFieldDeclaration(
+              repositoryClass!,
+              name: 'detachRow',
+            );
+
+            expect(
+              field,
+              isNull,
+              reason:
+                  'The field detachRow was found but was expected to not exist.',
+            );
+          });
+
+          test('has no detach field', () {
+            var field = CompilationUnitHelpers.tryFindFieldDeclaration(
+              repositoryClass!,
+              name: 'detach',
+            );
+
+            expect(
+              field,
+              isNull,
+              reason:
+                  'The field detach was found but was expected to not exist.',
+            );
+          });
+        },
+        skip: repositoryClass == null,
+      );
+
+      test(
+        'then a class named ${testClassName}AttachRepository is generated',
+        () {
+          expect(
+            CompilationUnitHelpers.hasClassDeclaration(
+              compilationUnit,
+              name: '${testClassName}AttachRepository',
+            ),
+            isTrue,
+            reason:
+                'Expected the class ${testClassName}AttachRepository to be generated.',
+          );
+        },
+      );
+
+      test(
+        'then a class named ${testClassName}DetachRepository is not generated',
+        () {
+          expect(
+            CompilationUnitHelpers.hasClassDeclaration(
+              compilationUnit,
+              name: '${testClassName}DetachRepository',
+            ),
+            isFalse,
+            reason:
+                'The class ${testClassName}DetachRepository was found but was expected to not exist.',
+          );
+        },
+      );
+
+      test(
+        'then a class named ${testClassName}DetachRowRepository is not generated',
+        () {
+          expect(
+            CompilationUnitHelpers.hasClassDeclaration(
+              compilationUnit,
+              name: '${testClassName}DetachRowRepository',
+            ),
+            isFalse,
+            reason:
+                'The class ${testClassName}DetachRowRepository was found but was expected to not exist.',
+          );
+        },
+      );
+    },
+  );
 }

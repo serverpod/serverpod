@@ -12,7 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class MyFeatureModel implements _i1.SerializableModel {
+abstract class MyFeatureModel
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   MyFeatureModel._({required this.name});
 
   factory MyFeatureModel({required String name}) = _MyFeatureModelImpl;
@@ -29,6 +30,14 @@ abstract class MyFeatureModel implements _i1.SerializableModel {
   MyFeatureModel copyWith({String? name});
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'MyFeatureModel',
+      'name': name,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'MyFeatureModel',
       'name': name,

@@ -16,7 +16,7 @@ import '../../long_identifiers/models_with_relations/user_note_with_a_long_name.
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
 
 abstract class UserNoteCollectionWithALongName
-    implements _i1.SerializableModel {
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   UserNoteCollectionWithALongName._({
     this.id,
     required this.name,
@@ -67,6 +67,17 @@ abstract class UserNoteCollectionWithALongName
       if (id != null) 'id': id,
       'name': name,
       if (notes != null) 'notes': notes?.toJson(valueToJson: (v) => v.toJson()),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'UserNoteCollectionWithALongName',
+      if (id != null) 'id': id,
+      'name': name,
+      if (notes != null)
+        'notes': notes?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
   }
 

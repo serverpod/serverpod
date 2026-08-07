@@ -483,7 +483,7 @@ void main() {
         });
       });
 
-      group('when updating with orderDescending', () {
+      group('when updating in descending order', () {
         late List<Types> updated;
 
         setUp(() async {
@@ -761,6 +761,46 @@ void main() {
           expect(unchangedRow.anEnum, TestEnum.two);
         });
       });
+    },
+  );
+
+  withServerpod(
+    'Given an inserted entry,',
+    (sessionBuilder, endpoints) {
+      var session = sessionBuilder.build();
+
+      setUp(() async {
+        await UniqueData.db.insert(session, [
+          UniqueData(number: 1, email: 'a@serverpod.dev'),
+        ]);
+      });
+
+      tearDown(() async {
+        await UniqueData.db.deleteWhere(
+          session,
+          where: (t) => Constant.bool(true),
+        );
+      });
+
+      test(
+        'when updating rows matching a where expression with noReturn set to true '
+        'then an empty list is returned but the matching rows are updated.',
+        () async {
+          var result = await UniqueData.db.updateWhere(
+            session,
+            columnValues: (t) => [t.number(42)],
+            where: (t) => t.email.equals('a@serverpod.dev'),
+            noReturn: true,
+          );
+
+          expect(result, isEmpty);
+          var found = await UniqueData.db.findFirstRow(
+            session,
+            where: (t) => t.email.equals('a@serverpod.dev'),
+          );
+          expect(found?.number, 42);
+        },
+      );
     },
   );
 }

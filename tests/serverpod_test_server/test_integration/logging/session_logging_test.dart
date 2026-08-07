@@ -45,7 +45,7 @@ void main() async {
             ),
           ),
         );
-        await server.start();
+        await server.startWithDatabase();
         session = await server.createSession(enableLogging: false);
         await LoggingUtil.clearAllLogs(session);
       });
@@ -137,7 +137,7 @@ void main() async {
             ),
           ),
         );
-        await server.start();
+        await server.startWithDatabase();
         session = await server.createSession(enableLogging: false);
         await LoggingUtil.clearAllLogs(session);
       });
@@ -203,7 +203,7 @@ void main() async {
           ),
         ),
       );
-      await server.start();
+      await server.startWithDatabase();
       session = await server.createSession(enableLogging: false);
       await LoggingUtil.clearAllLogs(session);
     });
@@ -290,7 +290,7 @@ void main() async {
           ),
         ),
       );
-      await server.start();
+      await server.startWithDatabase();
       session = await server.createSession(enableLogging: false);
       await LoggingUtil.clearAllLogs(session);
     });
@@ -324,7 +324,7 @@ void main() async {
           ),
         ),
       );
-      await server.start();
+      await server.startWithDatabase();
     });
 
     tearDown(() async {

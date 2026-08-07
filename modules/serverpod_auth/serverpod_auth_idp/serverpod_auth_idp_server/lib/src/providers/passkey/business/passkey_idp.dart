@@ -9,9 +9,10 @@ import 'passkey_idp_config.dart';
 import 'passkey_idp_utils.dart';
 
 /// Passkey account management functions.
-class PasskeyIdp {
+class PasskeyIdp implements IdentityProvider {
   /// The method used when authenticating with the Passkey identity provider.
-  static const String method = 'passkey';
+  @override
+  String get method => 'passkey';
 
   /// Administrative methods for working with Passkey-backed accounts.
   final PasskeyIdpAdmin admin;
@@ -136,6 +137,24 @@ class PasskeyIdp {
   /// Determines whether the current session has an associated Passkey account.
   Future<bool> hasAccount(final Session session) async =>
       await utils.getAccount(session) != null;
+
+  /// Migrates [PasskeyAccount]s from [userToRemoveId] to [userToKeepId].
+  @override
+  Future<void> mergeAuthUsers(
+    final Session session, {
+    required final UuidValue userToKeepId,
+    required final UuidValue userToRemoveId,
+    required final Transaction transaction,
+  }) async {
+    await PasskeyAccount.db.updateWhere(
+      session,
+      where: (final t) => t.authUserId.equals(userToRemoveId),
+      columnValues: (final t) => [
+        t.authUserId(userToKeepId),
+      ],
+      transaction: transaction,
+    );
+  }
 }
 
 /// A challenge to be used for a passkey registration or login.

@@ -200,8 +200,6 @@ logging:
   - streamLogging:
   - streamQueryLogging:
   - streamException:
-streamLogging:
-streamQueryLogging:
 loggingDisabled:
   - logInfo:
 mapParameters:
@@ -326,6 +324,7 @@ moduleEndpointExtension:
 moduleSerialization:
   - serializeModuleObject:
   - modifyModuleObject:
+  - modifySharedModuleTable:
   - serializeNestedModuleObject:
 namedParameters:
   - namedParametersMethod:
@@ -403,7 +402,6 @@ sessionAuthentication:
   - isAuthenticated:
   - streamAuthenticatedUserId:
   - streamIsAuthenticated:
-sessionAuthenticationStreaming:
 setParameters:
   - returnIntSet:
   - returnIntSetSet:
@@ -436,8 +434,6 @@ simple:
   - addToGlobalInt:
   - getGlobalInt:
   - hello:
-streaming:
-streamingLogging:
 subSubDirTest:
   - testMethod:
 subDirTest:

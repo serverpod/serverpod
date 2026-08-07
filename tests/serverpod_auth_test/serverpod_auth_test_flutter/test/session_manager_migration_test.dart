@@ -38,11 +38,8 @@ void main() {
         storage: legacyStorage,
       );
 
-      final legacySessionClient = Client(
-        'http://localhost:8080/',
-        // ignore: deprecated_member_use
-        authenticationKeyManager: keyManager,
-      );
+      final legacySessionClient = Client('http://localhost:8080/')
+        ..authKeyProvider = keyManager;
 
       final legacySessionManager = legacy_auth_flutter.SessionManager(
         caller: legacySessionClient.modules.auth,

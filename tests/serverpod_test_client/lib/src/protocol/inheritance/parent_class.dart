@@ -14,7 +14,7 @@ import '../protocol.dart' as _i1;
 import 'package:serverpod_client/serverpod_client.dart' as _i2;
 
 class ParentClass extends _i1.GrandparentClass
-    implements _i2.SerializableModel {
+    implements _i2.SerializableModel, _i2.ProtocolSerialization {
   ParentClass({
     this.id,
     required super.grandParentField,
@@ -53,6 +53,16 @@ class ParentClass extends _i1.GrandparentClass
 
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'ParentClass',
+      if (id != null) 'id': id,
+      'grandParentField': grandParentField,
+      'parentField': parentField,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ParentClass',
       if (id != null) 'id': id,

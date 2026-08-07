@@ -15,7 +15,8 @@ import 'log_entry.dart' as _i2;
 import 'package:serverpod_service_client/src/protocol/protocol.dart' as _i3;
 
 /// A list of log entries, used to return logging data.
-abstract class LogResult implements _i1.SerializableModel {
+abstract class LogResult
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   LogResult._({required this.entries});
 
   factory LogResult({required List<_i2.LogEntry> entries}) = _LogResultImpl;
@@ -40,6 +41,14 @@ abstract class LogResult implements _i1.SerializableModel {
     return {
       '__className__': 'serverpod.LogResult',
       'entries': entries.toJson(valueToJson: (v) => v.toJson()),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod.LogResult',
+      'entries': entries.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
   }
 

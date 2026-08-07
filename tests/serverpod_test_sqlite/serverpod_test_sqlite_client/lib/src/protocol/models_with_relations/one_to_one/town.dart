@@ -12,11 +12,11 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
-import '../../models_with_relations/one_to_one/citizen.dart' as _i2;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
-import 'package:serverpod_client/serverpod_client.dart' as _i4;
+import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import '../../models_with_relations/one_to_one/citizen.dart' as _i3;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
 
-abstract class Town implements _i1.TableRow<int?> {
+abstract class Town implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   Town._({
     this.id,
     required this.name,
@@ -28,7 +28,7 @@ abstract class Town implements _i1.TableRow<int?> {
     int? id,
     required String name,
     int? mayorId,
-    _i2.Citizen? mayor,
+    _i3.Citizen? mayor,
   }) = _TownImpl;
 
   factory Town.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -38,7 +38,7 @@ abstract class Town implements _i1.TableRow<int?> {
       mayorId: jsonSerialization['mayorId'] as int?,
       mayor: jsonSerialization['mayor'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.Citizen>(jsonSerialization['mayor']),
+          : _i4.Protocol().deserialize<_i3.Citizen>(jsonSerialization['mayor']),
     );
   }
 
@@ -53,19 +53,19 @@ abstract class Town implements _i1.TableRow<int?> {
 
   int? mayorId;
 
-  _i2.Citizen? mayor;
+  _i3.Citizen? mayor;
 
   @override
   _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Town]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   Town copyWith({
     int? id,
     String? name,
     int? mayorId,
-    _i2.Citizen? mayor,
+    _i3.Citizen? mayor,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -78,7 +78,18 @@ abstract class Town implements _i1.TableRow<int?> {
     };
   }
 
-  static TownInclude include({_i2.CitizenInclude? mayor}) {
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Town',
+      if (id != null) 'id': id,
+      'name': name,
+      if (mayorId != null) 'mayorId': mayorId,
+      if (mayor != null) 'mayor': mayor?.toJsonForProtocol(),
+    };
+  }
+
+  static TownInclude include({_i3.CitizenInclude? mayor}) {
     return TownInclude._(mayor: mayor);
   }
 
@@ -87,8 +98,6 @@ abstract class Town implements _i1.TableRow<int?> {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<TownTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<TownTable>? orderByList,
     TownInclude? include,
   }) {
@@ -97,8 +106,6 @@ abstract class Town implements _i1.TableRow<int?> {
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Town.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(Town.t),
       include: include,
     );
@@ -106,7 +113,7 @@ abstract class Town implements _i1.TableRow<int?> {
 
   @override
   String toString() {
-    return _i4.SerializationManager.encode(this);
+    return _i2.SerializationManager.encode(this);
   }
 }
 
@@ -117,7 +124,7 @@ class _TownImpl extends Town {
     int? id,
     required String name,
     int? mayorId,
-    _i2.Citizen? mayor,
+    _i3.Citizen? mayor,
   }) : super._(
          id: id,
          name: name,
@@ -127,7 +134,7 @@ class _TownImpl extends Town {
 
   /// Returns a shallow copy of this [Town]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   @override
   Town copyWith({
     Object? id = _Undefined,
@@ -139,7 +146,7 @@ class _TownImpl extends Town {
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       mayorId: mayorId is int? ? mayorId : this.mayorId,
-      mayor: mayor is _i2.Citizen? ? mayor : this.mayor?.copyWith(),
+      mayor: mayor is _i3.Citizen? ? mayor : this.mayor?.copyWith(),
     );
   }
 }
@@ -177,17 +184,17 @@ class TownTable extends _i1.Table<int?> {
 
   late final _i1.ColumnInt mayorId;
 
-  _i2.CitizenTable? _mayor;
+  _i3.CitizenTable? _mayor;
 
-  _i2.CitizenTable get mayor {
+  _i3.CitizenTable get mayor {
     if (_mayor != null) return _mayor!;
     _mayor = _i1.createRelationTable(
       relationFieldName: 'mayor',
       field: Town.t.mayorId,
-      foreignField: _i2.Citizen.t.id,
+      foreignField: _i3.Citizen.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.CitizenTable(tableRelation: foreignTableRelation),
+          _i3.CitizenTable(tableRelation: foreignTableRelation),
     );
     return _mayor!;
   }
@@ -209,11 +216,11 @@ class TownTable extends _i1.Table<int?> {
 }
 
 class TownInclude extends _i1.IncludeObject {
-  TownInclude._({_i2.CitizenInclude? mayor}) {
+  TownInclude._({_i3.CitizenInclude? mayor}) {
     _mayor = mayor;
   }
 
-  _i2.CitizenInclude? _mayor;
+  _i3.CitizenInclude? _mayor;
 
   @override
   Map<String, _i1.Include?> get includes => {'mayor': _mayor};
@@ -228,8 +235,6 @@ class TownIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -278,8 +283,6 @@ class TownRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<TownTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<TownTable>? orderByList,
     _i1.Transaction? transaction,
     TownInclude? include,
@@ -290,8 +293,6 @@ class TownRepository {
       where: where?.call(Town.t),
       orderBy: orderBy?.call(Town.t),
       orderByList: orderByList?.call(Town.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -323,8 +324,6 @@ class TownRepository {
     _i1.WhereExpressionBuilder<TownTable>? where,
     int? offset,
     _i1.OrderByBuilder<TownTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<TownTable>? orderByList,
     _i1.Transaction? transaction,
     TownInclude? include,
@@ -335,8 +334,6 @@ class TownRepository {
       where: where?.call(Town.t),
       orderBy: orderBy?.call(Town.t),
       orderByList: orderByList?.call(Town.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -373,16 +370,22 @@ class TownRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Town>> insert(
     _i1.DatabaseSession session,
     List<Town> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<Town>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -416,6 +419,10 @@ class TownRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Town>> upsert(
     _i1.DatabaseSession session,
     List<Town> rows, {
@@ -423,6 +430,7 @@ class TownRepository {
     _i1.ColumnSelections<TownTable>? updateColumns,
     _i1.WhereExpressionBuilder<TownTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<Town>(
       rows,
@@ -430,6 +438,7 @@ class TownRepository {
       updateColumns: updateColumns?.call(Town.t),
       updateWhere: updateWhere?.call(Town.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -468,16 +477,22 @@ class TownRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Town>> update(
     _i1.DatabaseSession session,
     List<Town> rows, {
     _i1.ColumnSelections<TownTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<Town>(
       rows,
       columns: columns?.call(Town.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -514,6 +529,10 @@ class TownRepository {
 
   /// Updates all [Town]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Town>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<TownUpdateTable> columnValues,
@@ -522,9 +541,8 @@ class TownRepository {
     int? offset,
     _i1.OrderByBuilder<TownTable>? orderBy,
     _i1.OrderByListBuilder<TownTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<Town>(
       columnValues: columnValues(Town.t.updateTable),
@@ -533,9 +551,8 @@ class TownRepository {
       offset: offset,
       orderBy: orderBy?.call(Town.t),
       orderByList: orderByList?.call(Town.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -546,22 +563,24 @@ class TownRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Town>> delete(
     _i1.DatabaseSession session,
     List<Town> rows, {
     _i1.OrderByBuilder<TownTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<TownTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<Town>(
       rows,
       orderBy: orderBy?.call(Town.t),
       orderByList: orderByList?.call(Town.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -581,22 +600,24 @@ class TownRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Town>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<TownTable> where,
     _i1.OrderByBuilder<TownTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<TownTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Town>(
       where: where(Town.t),
       orderBy: orderBy?.call(Town.t),
       orderByList: orderByList?.call(Town.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -640,7 +661,7 @@ class TownAttachRowRepository {
   Future<void> mayor(
     _i1.DatabaseSession session,
     Town town,
-    _i2.Citizen mayor, {
+    _i3.Citizen mayor, {
     _i1.Transaction? transaction,
   }) async {
     if (town.id == null) {

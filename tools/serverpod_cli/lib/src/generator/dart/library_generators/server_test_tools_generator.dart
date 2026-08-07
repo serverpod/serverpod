@@ -764,6 +764,12 @@ class ServerTestToolsGenerator {
         ),
         Parameter(
           (p) => p
+            ..name = 'databaseInterceptor'
+            ..named = true
+            ..type = refer('DatabaseInterceptor?', serverpodUrl(true)),
+        ),
+        Parameter(
+          (p) => p
             ..name = 'runtimeParametersBuilder'
             ..named = true
             ..type = refer('RuntimeParametersListBuilder?', serverpodUrl(true)),
@@ -829,6 +835,8 @@ class ServerTestToolsGenerator {
                           'runtimeParametersBuilder': refer(
                             'runtimeParametersBuilder',
                           ),
+                        if (config.isFeatureEnabled(ServerpodFeature.database))
+                          'databaseInterceptor': refer('databaseInterceptor'),
                       },
                     ),
                   ],

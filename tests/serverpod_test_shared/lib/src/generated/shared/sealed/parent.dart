@@ -14,7 +14,8 @@ import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i1;
 import 'package:serverpod_serialization/serverpod_serialization.dart' as _i2;
 part 'child.dart';
 
-sealed class SharedSealedParent implements _i2.SerializableModel {
+sealed class SharedSealedParent
+    implements _i2.SerializableModel, _i2.ProtocolSerialization {
   SharedSealedParent({required this.sharedSealedField});
 
   String sharedSealedField;

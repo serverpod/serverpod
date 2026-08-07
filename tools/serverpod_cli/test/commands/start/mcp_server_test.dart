@@ -71,6 +71,7 @@ void main() {
             'hot_restart',
             'tail_server_logs',
             'tail_flutter_logs',
+            'spawn_flutter_app',
             'get_flutter_app_dtd',
           ]),
         );
@@ -169,6 +170,22 @@ void main() {
           expect(
             (result.content.first as TextContent).text,
             contains('Flutter DTD not available'),
+          );
+        },
+      );
+
+      test(
+        'when calling spawn_flutter_app without a callback, '
+        'then it returns an error',
+        () async {
+          final result = await connection.callTool(
+            CallToolRequest(name: 'spawn_flutter_app'),
+          );
+
+          expect(result.isError, isTrue);
+          expect(
+            (result.content.first as TextContent).text,
+            contains('Flutter app launching is not available'),
           );
         },
       );
@@ -478,68 +495,313 @@ void main() {
           );
         },
       );
-      test(
-        'when calling tail_flutter_logs with a callback, '
-        'then it returns the most recent lines as JSON',
-        () async {
-          server.getFlutterLogHistory = () => [
-            'line 1',
-            'line 2',
-            'line 3',
-          ];
+      group('with Flutter log history for one app', () {
+        setUp(() {
+          server.getFlutterAppIds = () => ['admin'];
+          server.getFlutterLogHistory = (appId) => switch (appId) {
+            'admin' => [
+              'line 1',
+              'line 2',
+              'line 3',
+            ],
+            _ => <String>[],
+          };
+        });
 
-          final result = await connection.callTool(
-            CallToolRequest(
-              name: 'tail_flutter_logs',
-              arguments: {'limit': 2},
-            ),
-          );
+        test(
+          'when calling tail_flutter_logs with an appId and a limit, '
+          'then it returns the most recent lines as JSON',
+          () async {
+            final result = await connection.callTool(
+              CallToolRequest(
+                name: 'tail_flutter_logs',
+                arguments: {'limit': 2, 'appId': 'admin'},
+              ),
+            );
 
-          expect(result.isError, isNull);
-          final lines =
-              jsonDecode(
-                    (result.content.first as TextContent).text,
-                  )
-                  as List<dynamic>;
-          expect(lines, ['line 2', 'line 3']);
-        },
-      );
+            expect(result.isError, isNull);
+            final lines =
+                jsonDecode((result.content.first as TextContent).text)
+                    as List<dynamic>;
+            expect(lines, ['line 2', 'line 3']);
+          },
+        );
 
-      test(
-        'when calling get_flutter_app_dtd with a callback, '
-        'then it returns the URI as JSON',
-        () async {
-          server.getFlutterDtdUri = () => 'ws://127.0.0.1:9100/ws';
+        test(
+          'when calling tail_flutter_logs without an appId, '
+          'then it returns that app\'s lines',
+          () async {
+            final result = await connection.callTool(
+              CallToolRequest(name: 'tail_flutter_logs'),
+            );
 
-          final result = await connection.callTool(
-            CallToolRequest(name: 'get_flutter_app_dtd'),
-          );
+            expect(result.isError, isNull);
+            expect(
+              jsonDecode((result.content.first as TextContent).text),
+              ['line 1', 'line 2', 'line 3'],
+            );
+          },
+        );
+      });
 
-          expect(result.isError, isNull);
-          expect(
-            jsonDecode((result.content.first as TextContent).text),
-            {'uri': 'ws://127.0.0.1:9100/ws'},
-          );
-        },
-      );
+      group('with Flutter log history for several apps', () {
+        setUp(() {
+          server.getFlutterAppIds = () => ['admin', 'customer'];
+          server.getFlutterLogHistory = (appId) => switch (appId) {
+            'admin' => ['a'],
+            'customer' => ['b', 'c'],
+            _ => <String>[],
+          };
+        });
 
-      test(
-        'when calling get_flutter_app_dtd before the app publishes DTD, '
-        'then it returns a null URI',
-        () async {
-          server.getFlutterDtdUri = () => null;
+        test(
+          'when calling tail_flutter_logs without an appId, '
+          'then it errors listing the available app ids',
+          () async {
+            final result = await connection.callTool(
+              CallToolRequest(name: 'tail_flutter_logs'),
+            );
 
-          final result = await connection.callTool(
-            CallToolRequest(name: 'get_flutter_app_dtd'),
-          );
+            expect(result.isError, isTrue);
+            final text = (result.content.first as TextContent).text;
+            expect(text, contains('admin'));
+            expect(text, contains('customer'));
+          },
+        );
 
-          expect(result.isError, isNull);
-          expect(
-            jsonDecode((result.content.first as TextContent).text),
-            {'uri': null},
-          );
-        },
-      );
+        test(
+          'when calling tail_flutter_logs with an unknown appId, '
+          'then it errors listing the available app ids',
+          () async {
+            final result = await connection.callTool(
+              CallToolRequest(
+                name: 'tail_flutter_logs',
+                arguments: {'appId': 'nope'},
+              ),
+            );
+
+            expect(result.isError, isTrue);
+            final text = (result.content.first as TextContent).text;
+            expect(text, contains('nope'));
+            expect(text, contains('admin'));
+            expect(text, contains('customer'));
+          },
+        );
+      });
+
+      group('with spawn_flutter_app wired to a single app', () {
+        late List<String> spawnCalls;
+        late bool reportAlreadyRunning;
+
+        setUp(() {
+          spawnCalls = [];
+          reportAlreadyRunning = false;
+          server.getFlutterAppIds = () => ['admin'];
+          server.onSpawnFlutterApp = (appId) async {
+            spawnCalls.add(appId);
+            return reportAlreadyRunning;
+          };
+        });
+
+        test(
+          'when calling spawn_flutter_app without an appId, '
+          'then it launches the only configured app',
+          () async {
+            final result = await connection.callTool(
+              CallToolRequest(name: 'spawn_flutter_app'),
+            );
+
+            expect(result.isError, isNull);
+            expect(spawnCalls, ['admin']);
+            expect(
+              (result.content.first as TextContent).text,
+              contains('Launching Flutter app "admin"'),
+            );
+          },
+        );
+
+        test(
+          'when the app is already running, '
+          'then it reports that without an error',
+          () async {
+            reportAlreadyRunning = true;
+
+            final result = await connection.callTool(
+              CallToolRequest(
+                name: 'spawn_flutter_app',
+                arguments: {'appId': 'admin'},
+              ),
+            );
+
+            expect(result.isError, isNull);
+            expect(spawnCalls, ['admin']);
+            expect(
+              (result.content.first as TextContent).text,
+              contains('already running'),
+            );
+          },
+        );
+
+        test(
+          'when the launch callback throws, '
+          'then it returns an error naming the app',
+          () async {
+            server.onSpawnFlutterApp = (_) async =>
+                throw StateError('flutter missing');
+
+            final result = await connection.callTool(
+              CallToolRequest(name: 'spawn_flutter_app'),
+            );
+
+            expect(result.isError, isTrue);
+            expect(
+              (result.content.first as TextContent).text,
+              contains('Failed to launch Flutter app "admin"'),
+            );
+          },
+        );
+      });
+
+      group('with spawn_flutter_app wired to several apps', () {
+        late List<String> spawnCalls;
+
+        setUp(() {
+          spawnCalls = [];
+          server.getFlutterAppIds = () => ['admin', 'customer'];
+          server.onSpawnFlutterApp = (appId) async {
+            spawnCalls.add(appId);
+            return false;
+          };
+        });
+
+        test(
+          'when calling spawn_flutter_app without an appId, '
+          'then it errors listing the available app ids and launches nothing',
+          () async {
+            final result = await connection.callTool(
+              CallToolRequest(name: 'spawn_flutter_app'),
+            );
+
+            expect(result.isError, isTrue);
+            final text = (result.content.first as TextContent).text;
+            expect(text, contains('admin'));
+            expect(text, contains('customer'));
+            expect(spawnCalls, isEmpty);
+          },
+        );
+
+        test(
+          'when calling spawn_flutter_app with an explicit appId, '
+          'then it launches that app',
+          () async {
+            final result = await connection.callTool(
+              CallToolRequest(
+                name: 'spawn_flutter_app',
+                arguments: {'appId': 'customer'},
+              ),
+            );
+
+            expect(result.isError, isNull);
+            expect(spawnCalls, ['customer']);
+            expect(
+              (result.content.first as TextContent).text,
+              contains('Launching Flutter app "customer"'),
+            );
+          },
+        );
+
+        test(
+          'when calling spawn_flutter_app with an unknown appId, '
+          'then it errors listing the available app ids and launches nothing',
+          () async {
+            final result = await connection.callTool(
+              CallToolRequest(
+                name: 'spawn_flutter_app',
+                arguments: {'appId': 'nope'},
+              ),
+            );
+
+            expect(result.isError, isTrue);
+            final text = (result.content.first as TextContent).text;
+            expect(text, contains('nope'));
+            expect(text, contains('admin'));
+            expect(text, contains('customer'));
+            expect(spawnCalls, isEmpty);
+          },
+        );
+      });
+
+      group('with spawn_flutter_app but no configured apps', () {
+        setUp(() {
+          server.getFlutterAppIds = () => [];
+          server.onSpawnFlutterApp = (_) async => false;
+        });
+
+        test(
+          'when calling spawn_flutter_app, '
+          'then it errors that no apps are configured',
+          () async {
+            final result = await connection.callTool(
+              CallToolRequest(name: 'spawn_flutter_app'),
+            );
+
+            expect(result.isError, isTrue);
+            expect(
+              (result.content.first as TextContent).text,
+              contains('No Flutter apps are configured'),
+            );
+          },
+        );
+      });
+
+      group('with launched Flutter apps', () {
+        setUp(() {
+          // "portal" is launched but not ready (null); "admin" is ready (URI).
+          // A non-launched app would simply be absent from the map.
+          server.getFlutterDtdUris = () => {
+            'admin': 'ws://127.0.0.1:9100/ws',
+            'portal': null,
+          };
+        });
+
+        test(
+          'when calling get_flutter_app_dtd, '
+          'then it returns the map of launched apps to DTD URIs',
+          () async {
+            final result = await connection.callTool(
+              CallToolRequest(name: 'get_flutter_app_dtd'),
+            );
+
+            expect(result.isError, isNull);
+            expect(
+              jsonDecode((result.content.first as TextContent).text),
+              {'admin': 'ws://127.0.0.1:9100/ws', 'portal': null},
+            );
+          },
+        );
+      });
+
+      group('with no launched Flutter apps', () {
+        setUp(() {
+          server.getFlutterDtdUris = () => {};
+        });
+
+        test(
+          'when calling get_flutter_app_dtd, '
+          'then it returns an empty map',
+          () async {
+            final result = await connection.callTool(
+              CallToolRequest(name: 'get_flutter_app_dtd'),
+            );
+
+            expect(result.isError, isNull);
+            expect(
+              jsonDecode((result.content.first as TextContent).text),
+              <String, Object?>{},
+            );
+          },
+        );
+      });
     });
   });
 }

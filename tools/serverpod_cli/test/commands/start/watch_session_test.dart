@@ -1,10 +1,15 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:cli_tools/cli_tools.dart';
+import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
-import 'package:serverpod_cli/src/commands/start/flutter_dependency_tracker.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_app_manager.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
+import 'package:serverpod_cli/src/commands/start/native_assets_builder.dart';
+import 'package:serverpod_cli/src/commands/start/package_dependency_tracker.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
 import 'package:serverpod_cli/src/commands/start/watch_session.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -39,17 +44,21 @@ class _FakeCompiler extends Fake implements KernelCompiler {
   String get outputDill => '/tmp/fake.dill';
 
   @override
-  Future<CompileResult> compile({Set<String> changedPaths = const {}}) async {
+  Future<CompileResult> compile({
+    Set<String> changedPaths = const {},
+    bool invalidatePackageConfig = false,
+  }) async {
+    final suffix = invalidatePackageConfig ? '+package_config' : '';
     if (changedPaths.isEmpty) {
-      calls.add('compile');
+      calls.add('compile$suffix');
       return nextCompileResult;
     }
-    calls.add('compile(changed):${changedPaths.toList()..sort()}');
+    calls.add('compile(changed):${changedPaths.toList()..sort()}$suffix');
     return nextIncrementalResult;
   }
 
   @override
-  void accept() => calls.add('accept');
+  Future<void> accept() async => calls.add('accept');
 
   @override
   Future<void> reject() async => calls.add('reject');
@@ -62,6 +71,42 @@ class _FakeCompiler extends Fake implements KernelCompiler {
 
   @override
   Future<void> dispose() async => calls.add('dispose');
+}
+
+/// Stand-in for [NativeAssetsBuilder] so the session's hook/restart bookkeeping
+/// can be driven without running real build hooks. [nextOutcome] controls what
+/// the next [applyTo] reports; `restarted: true` simulates a native-assets
+/// manifest change that restarted the Frontend Server.
+class _FakeNativeAssetsApplier implements NativeAssetsApplier {
+  final List<String> calls = [];
+  NativeAssetsApplyOutcome nextOutcome = const NativeAssetsApplySuccess();
+
+  @override
+  Future<NativeAssetsApplyOutcome> applyTo(KernelCompiler compiler) async {
+    calls.add('applyTo');
+    return nextOutcome;
+  }
+
+  @override
+  void reset() => calls.add('reset');
+}
+
+/// Stand-in for the server's [PackageDependencyTracker] whose closure verdict is
+/// scripted via [next]. The base constructor reads a nonexistent `.dart_tool`,
+/// which seeds an empty (null) closure without throwing; [refreshClosure] is
+/// overridden so file contents never matter.
+class _FakeServerDependencyTracker extends PackageDependencyTracker {
+  _FakeServerDependencyTracker()
+    : super(dartToolDir: '/nonexistent', packageName: 'app_server');
+
+  PackageDependencyChange next = PackageDependencyChange.dartOnly;
+  int refreshCalls = 0;
+
+  @override
+  PackageDependencyChange refreshClosure() {
+    refreshCalls++;
+    return next;
+  }
 }
 
 class _FakeServer extends Fake implements ServerProcess {
@@ -145,9 +190,148 @@ class _FakeFlutter extends Fake implements FlutterProcess {
   }
 }
 
+Future<
+  ({
+    FlutterAppManager manager,
+    _FakeFlutter process,
+    Directory tempDir,
+  })
+>
+_createFlutterManagerHarness({
+  _FakeFlutter? flutter,
+  PackageDependencyChange Function(String appId)? dependencyChange,
+  Future<void> Function(String appId)? restartOverride,
+  Future<void> Function(String appId)? launchOverride,
+}) async {
+  final tempDir = await Directory.systemTemp.createTemp(
+    'watch_session_flutter_',
+  );
+  final serverDir = Directory(p.join(tempDir.path, 'project_server'))
+    ..createSync(recursive: true);
+  final flutterDir = Directory(p.join(tempDir.path, 'app_flutter'))
+    ..createSync(recursive: true);
+  File(p.join(flutterDir.path, 'pubspec.yaml')).writeAsStringSync('''
+name: app
+dependencies:
+  flutter:
+    sdk: flutter
+''');
+
+  final serverPubspecFile = File(p.join(serverDir.path, 'pubspec.yaml'));
+  serverPubspecFile.writeAsStringSync('''
+name: server
+serverpod:
+  flutter_apps:
+    app:
+      path: ../app_flutter
+''');
+
+  final process = flutter ?? _FakeFlutter();
+  final manager = FlutterAppManager(
+    projectName: 'project',
+    launchFlutterApp: false,
+    serverPubspecFile: serverPubspecFile,
+    serverPackageDirectoryPathParts: p.split(serverDir.path),
+    serverpodToolDir: p.join(tempDir.path, '.serverpod'),
+    runMode: 'development',
+    onProgress: (_, _) {},
+    onReady: (_, _) {},
+    onStart: (_, _) async {},
+    onStop: (_) {},
+    onLaunchFailed: (_) {},
+    onEnsureAppTab: (_) {},
+    onLog: (_, _) {},
+    stdoutSinkFor: (_) => stdout,
+    stderrSinkFor: (_) => stderr,
+  );
+  manager.dependencyChangeOverrideForTesting = dependencyChange;
+  manager.restartOverrideForTesting = restartOverride;
+  manager.launchOverrideForTesting = launchOverride;
+  await manager.initialize();
+  manager.setProcessForTesting('app', process);
+
+  return (manager: manager, process: process, tempDir: tempDir);
+}
+
+Future<
+  ({
+    FlutterAppManager manager,
+    _FakeFlutter processA,
+    _FakeFlutter processB,
+    Directory flutterDirA,
+    Directory flutterDirB,
+    Directory tempDir,
+  })
+>
+_createTwoAppFlutterManagerHarness() async {
+  final tempDir = await Directory.systemTemp.createTemp(
+    'watch_session_multi_flutter_',
+  );
+  final serverDir = Directory(p.join(tempDir.path, 'project_server'))
+    ..createSync(recursive: true);
+  final flutterDirA = Directory(p.join(tempDir.path, 'app_a_flutter'))
+    ..createSync(recursive: true);
+  final flutterDirB = Directory(p.join(tempDir.path, 'app_b_flutter'))
+    ..createSync(recursive: true);
+
+  final serverPubspecFile = File(p.join(serverDir.path, 'pubspec.yaml'));
+  serverPubspecFile.writeAsStringSync('''
+name: server
+serverpod:
+  flutter_apps:
+    app-a:
+      path: ../app_a_flutter
+    app-b:
+      path: ../app_b_flutter
+''');
+
+  final processA = _FakeFlutter();
+  final processB = _FakeFlutter();
+  final manager = FlutterAppManager(
+    projectName: 'project',
+    launchFlutterApp: false,
+    runMode: 'development',
+    serverPubspecFile: serverPubspecFile,
+    serverpodToolDir: p.join(tempDir.path, '.serverpod'),
+    serverPackageDirectoryPathParts: p.split(serverDir.path),
+    onProgress: (_, _) {},
+    onReady: (_, _) {},
+    onStart: (_, _) async {},
+    onStop: (_) {},
+    onLaunchFailed: (_) {},
+    onEnsureAppTab: (_) {},
+    onLog: (_, _) {},
+    stdoutSinkFor: (_) => stdout,
+    stderrSinkFor: (_) => stderr,
+  );
+  await manager.initialize();
+  manager.setProcessForTesting('app-a', processA);
+  manager.setProcessForTesting('app-b', processB);
+
+  return (
+    manager: manager,
+    processA: processA,
+    processB: processB,
+    flutterDirA: flutterDirA,
+    flutterDirB: flutterDirB,
+    tempDir: tempDir,
+  );
+}
+
+class _TestLogger extends VoidLogger {
+  final List<String> infoMessages = [];
+
+  @override
+  void info(String message, {bool newParagraph = false, LogType? type}) {
+    infoMessages.add(message);
+  }
+}
+
 void main() {
+  final testLogger = _TestLogger();
+
   setUpAll(() {
-    initializeLogger();
+    initializeLoggerWith(testLogger);
   });
 
   tearDownAll(() async {
@@ -164,18 +348,22 @@ void main() {
   late WatchSession session;
 
   WatchSession buildSession({
-    required KernelCompiler compiler,
-    required ServerProcess initialServer,
+    required KernelCompiler? compiler,
+    required ServerProcess? initialServer,
     ServerProcessFactory? createServer,
     GenerateAction? generate,
+    FullGenerateAction? fullGenerate,
     ApplyMigrationsAction? applyMigrationsAction,
     ProtocolChangeClassifier? classifyProtocolChange,
-    FlutterProcess? flutterProcess,
-    Future<void> Function()? flutterAppRestartAction,
-    FlutterDependencyChange Function()? checkFlutterDependencyChange,
+    NativeAssetsApplier? nativeAssetsBuilder,
+    PackageDependencyTracker? serverDependencyTracker,
+    FlutterAppManager? flutterManager,
+    FlutterAppsLoader? flutterAppsLoader,
   }) {
     return WatchSession(
       compiler: compiler,
+      nativeAssetsBuilder: nativeAssetsBuilder,
+      serverDependencyTracker: serverDependencyTracker,
       generate:
           generate ??
           (affectedPaths, requirements) async {
@@ -183,8 +371,10 @@ void main() {
             return (
               success: generateSuccess,
               generatedFiles: generatedFiles,
+              protocolAnalyticsSnapshot: null,
             );
           },
+      fullGenerate: fullGenerate,
       createServer:
           createServer ??
           (String? dillPath) async {
@@ -196,9 +386,8 @@ void main() {
       applyMigrationsAction: applyMigrationsAction ?? () async {},
       classifyProtocolChange:
           classifyProtocolChange ?? defaultProtocolChangeClassifier,
-      flutterProcessProvider: () => flutterProcess,
-      flutterAppRestartAction: flutterAppRestartAction,
-      checkFlutterDependencyChange: checkFlutterDependencyChange,
+      flutterManager: flutterManager,
+      flutterAppsLoader: flutterAppsLoader,
     );
   }
 
@@ -210,6 +399,7 @@ void main() {
     generateCalls = [];
     generateSuccess = true;
     generatedFiles = {};
+    testLogger.infoMessages.clear();
 
     session = buildSession(compiler: compiler, initialServer: server);
   });
@@ -291,6 +481,10 @@ void main() {
         // The browser refresh must follow the reload so the page re-fetches
         // the newly loaded server code.
         expect(server.calls, ['reload:/out.dill', 'notifyStaticChange']);
+        expect(
+          testLogger.infoMessages,
+          contains(browserRefreshTriggered),
+        );
       },
     );
   });
@@ -502,7 +696,7 @@ void main() {
   group('Given package_config.json changed', () {
     test(
       'when dart files also changed, '
-      'then it runs codegen, restarts compiler, and does a full compile',
+      'then it recompiles incrementally and invalidates the package config',
       () async {
         final event = FileChangeEvent(
           dartFiles: {'/lib/a.dart'},
@@ -514,13 +708,16 @@ void main() {
         expect(generateCalls, [
           {'/lib/a.dart'},
         ]);
-        expect(compiler.calls, ['restart', 'compile', 'accept']);
+        expect(compiler.calls, [
+          'compile(changed):[/lib/a.dart]+package_config',
+          'accept',
+        ]);
       },
     );
 
     test(
-      'when both package_config and model files changed, '
-      'then it runs codegen and restarts compiler',
+      'when package_config and model files changed, '
+      'then it recompiles and invalidates the package config',
       () async {
         final event = FileChangeEvent(
           dartFiles: {},
@@ -533,7 +730,214 @@ void main() {
         expect(generateCalls, [
           {'/models/user.spy.yaml'},
         ]);
-        expect(compiler.calls, ['restart', 'compile', 'accept']);
+        expect(compiler.calls, ['compile+package_config', 'accept']);
+      },
+    );
+
+    test(
+      'when the package_config compile fails, '
+      'then the package config is re-invalidated on the next compile',
+      () async {
+        // First cycle: package_config changed, but the compile fails and is
+        // rolled back - the new package map never took effect.
+        compiler.nextIncrementalResult = _failResult();
+        await session.handleFileChange(
+          FileChangeEvent(
+            dartFiles: {'/lib/a.dart'},
+            packageConfigChanged: true,
+          ),
+        );
+        expect(compiler.calls, contains('reject'));
+        expect(compiler.calls, isNot(contains('accept')));
+
+        // Next cycle: an unrelated dart change that does NOT set
+        // packageConfigChanged. The dropped invalidation must ride along.
+        compiler.calls.clear();
+        compiler.nextIncrementalResult = _successResult();
+        await session.handleFileChange(
+          FileChangeEvent(dartFiles: {'/lib/b.dart'}),
+        );
+
+        expect(
+          compiler.calls.where((c) => c.contains('+package_config')),
+          isNotEmpty,
+          reason: 'a failed package_config compile must not drop the signal',
+        );
+        expect(compiler.calls, contains('accept'));
+      },
+    );
+  });
+
+  group('Given a native-assets builder', () {
+    late _FakeNativeAssetsApplier builder;
+    late WatchSession nativeSession;
+
+    setUp(() {
+      builder = _FakeNativeAssetsApplier();
+      nativeSession = buildSession(
+        compiler: compiler,
+        initialServer: server,
+        nativeAssetsBuilder: builder,
+      );
+    });
+
+    test(
+      'when the native-assets manifest changed (the FES was restarted), '
+      'then the pod is restarted with the full dill instead of hot reloaded',
+      () async {
+        builder.nextOutcome = const NativeAssetsApplySuccess(restarted: true);
+
+        await nativeSession.handleFileChange(
+          FileChangeEvent(dartFiles: const {}, packageConfigChanged: true),
+        );
+
+        // A hot reload would never re-link native assets, so the pod is
+        // process-restarted via the factory; the old server only gets `stop`.
+        expect(builder.calls, ['reset', 'applyTo']);
+        expect(compiler.calls, contains('accept'));
+        expect(server.calls, ['stop']);
+        expect(server.calls, isNot(contains('reload:/out.dill')));
+        expect(factoryCalls, ['createServer:/out.dill']);
+        expect(testLogger.infoMessages, contains(serverNativeAssetsChanged));
+      },
+    );
+
+    test(
+      'when the native-assets manifest is unchanged, '
+      'then the pod is hot reloaded as usual',
+      () async {
+        builder.nextOutcome = const NativeAssetsApplySuccess();
+
+        await nativeSession.handleFileChange(
+          FileChangeEvent(dartFiles: {'/lib/a.dart'}),
+        );
+
+        expect(server.calls, contains('reload:/out.dill'));
+        expect(factoryCalls, isEmpty);
+        expect(
+          testLogger.infoMessages,
+          isNot(contains(serverNativeAssetsChanged)),
+        );
+      },
+    );
+
+    test(
+      'when the build hooks fail, '
+      'then the server is not reloaded or restarted',
+      () async {
+        builder.nextOutcome = const NativeAssetsApplyFailure('boom');
+
+        await nativeSession.handleFileChange(
+          FileChangeEvent(dartFiles: {'/lib/a.dart'}),
+        );
+
+        expect(server.calls, isEmpty);
+        expect(factoryCalls, isEmpty);
+      },
+    );
+  });
+
+  group('Given a server dependency tracker', () {
+    late _FakeServerDependencyTracker tracker;
+    late WatchSession gatedSession;
+
+    setUp(() {
+      tracker = _FakeServerDependencyTracker();
+      gatedSession = buildSession(
+        compiler: compiler,
+        initialServer: server,
+        serverDependencyTracker: tracker,
+      );
+    });
+
+    test(
+      'when package_config changed but the server closure did not, '
+      'then nothing is recompiled or reloaded',
+      () async {
+        tracker.next = PackageDependencyChange.none;
+
+        await gatedSession.handleFileChange(
+          FileChangeEvent(dartFiles: const {}, packageConfigChanged: true),
+        );
+
+        expect(tracker.refreshCalls, 1);
+        expect(compiler.calls, isEmpty);
+        expect(server.calls, isEmpty);
+      },
+    );
+
+    test(
+      'when the server closure changed, '
+      'then it recompiles and invalidates the package config',
+      () async {
+        tracker.next = PackageDependencyChange.dartOnly;
+
+        await gatedSession.handleFileChange(
+          FileChangeEvent(dartFiles: const {}, packageConfigChanged: true),
+        );
+
+        expect(tracker.refreshCalls, 1);
+        expect(compiler.calls, ['compile+package_config', 'accept']);
+        expect(server.calls, contains('reload:/out.dill'));
+      },
+    );
+
+    test(
+      'when package_config changed without a closure change but dart files '
+      'also changed, '
+      'then it recompiles the dart files without invalidating the package config',
+      () async {
+        tracker.next = PackageDependencyChange.none;
+
+        await gatedSession.handleFileChange(
+          FileChangeEvent(
+            dartFiles: {'/lib/a.dart'},
+            packageConfigChanged: true,
+          ),
+        );
+
+        // Source files always compile; only the dependency-driven invalidation
+        // is suppressed when the server's closure is untouched.
+        expect(compiler.calls, ['compile(changed):[/lib/a.dart]', 'accept']);
+        expect(server.calls, contains('reload:/out.dill'));
+      },
+    );
+
+    test(
+      'when a package_config compile fails and the next event has no closure '
+      'change, '
+      'then the pending invalidation still rides along',
+      () async {
+        // First cycle: a real closure change whose compile fails and rolls back.
+        tracker.next = PackageDependencyChange.dartOnly;
+        compiler.nextIncrementalResult = _failResult();
+        await gatedSession.handleFileChange(
+          FileChangeEvent(
+            dartFiles: {'/lib/a.dart'},
+            packageConfigChanged: true,
+          ),
+        );
+        expect(compiler.calls, contains('reject'));
+
+        // Next cycle: the closure is unchanged, so the gate downgrades the event
+        // flag - but the dropped invalidation must still ride along.
+        compiler.calls.clear();
+        compiler.nextIncrementalResult = _successResult();
+        tracker.next = PackageDependencyChange.none;
+        await gatedSession.handleFileChange(
+          FileChangeEvent(
+            dartFiles: {'/lib/b.dart'},
+            packageConfigChanged: true,
+          ),
+        );
+
+        expect(
+          compiler.calls.where((c) => c.contains('+package_config')),
+          isNotEmpty,
+          reason:
+              'a pending invalidation must survive a no-closure-change gate',
+        );
+        expect(compiler.calls, contains('accept'));
       },
     );
   });
@@ -943,14 +1347,23 @@ void main() {
 
   group('Given a Flutter process with a connected VM service,', () {
     late _FakeFlutter flutter;
+    late FlutterAppManager flutterManager;
+    late Directory tempDir;
 
-    setUp(() {
+    setUp(() async {
       flutter = _FakeFlutter();
+      final harness = await _createFlutterManagerHarness(flutter: flutter);
+      flutterManager = harness.manager;
+      tempDir = harness.tempDir;
       session = buildSession(
         compiler: compiler,
         initialServer: server,
-        flutterProcess: flutter,
+        flutterManager: flutterManager,
       );
+    });
+
+    tearDown(() {
+      tempDir.deleteSync(recursive: true);
     });
 
     test(
@@ -966,20 +1379,73 @@ void main() {
     );
   });
 
+  group('Given two running Flutter apps with connected VM services,', () {
+    late _FakeFlutter flutterA;
+    late _FakeFlutter flutterB;
+    late Directory flutterDirA;
+    late FlutterAppManager flutterManager;
+    late Directory tempDir;
+
+    setUp(() async {
+      final harness = await _createTwoAppFlutterManagerHarness();
+      flutterA = harness.processA;
+      flutterB = harness.processB;
+      flutterDirA = harness.flutterDirA;
+      flutterManager = harness.manager;
+      tempDir = harness.tempDir;
+      session = buildSession(
+        compiler: compiler,
+        initialServer: server,
+        flutterManager: flutterManager,
+        // The changed file lives in a Flutter package, not the server protocol.
+        classifyProtocolChange: (_) async => false,
+      );
+    });
+
+    tearDown(() async {
+      await flutterManager.dispose();
+      tempDir.deleteSync(recursive: true);
+    });
+
+    test(
+      'when a file under one app\'s lib changes, '
+      'then only that app is hot-reloaded',
+      () async {
+        final event = FileChangeEvent(
+          dartFiles: {p.join(flutterDirA.path, 'lib', 'main.dart')},
+        );
+
+        await session.handleFileChange(event);
+
+        expect(flutterA.calls, contains('reload'));
+        expect(flutterB.calls, isEmpty);
+      },
+    );
+  });
+
   group(
     'Given a Flutter process with a connected VM service and a next compile that fails,',
     () {
       late _FakeFlutter flutter;
+      late FlutterAppManager flutterManager;
+      late Directory tempDir;
 
-      setUp(() {
+      setUp(() async {
         flutter = _FakeFlutter();
+        final harness = await _createFlutterManagerHarness(flutter: flutter);
+        flutterManager = harness.manager;
+        tempDir = harness.tempDir;
         session = buildSession(
           compiler: compiler,
           initialServer: server,
-          flutterProcess: flutter,
+          flutterManager: flutterManager,
         );
 
         compiler.nextCompileResult = _failResult();
+      });
+
+      tearDown(() {
+        tempDir.deleteSync(recursive: true);
       });
 
       test(
@@ -997,14 +1463,23 @@ void main() {
 
   group('Given a Flutter process with a disconnected VM service,', () {
     late _FakeFlutter flutter;
+    late FlutterAppManager flutterManager;
+    late Directory tempDir;
 
-    setUp(() {
+    setUp(() async {
       flutter = _FakeFlutter()..isVmServiceConnected = false;
+      final harness = await _createFlutterManagerHarness(flutter: flutter);
+      flutterManager = harness.manager;
+      tempDir = harness.tempDir;
       session = buildSession(
         compiler: compiler,
         initialServer: server,
-        flutterProcess: flutter,
+        flutterManager: flutterManager,
       );
+    });
+
+    tearDown(() {
+      tempDir.deleteSync(recursive: true);
     });
 
     test(
@@ -1022,18 +1497,28 @@ void main() {
   group('Given a watch session with a Flutter app restart action,', () {
     late int restartActionCalls;
     late _FakeFlutter flutter;
+    late FlutterAppManager flutterManager;
+    late Directory tempDir;
 
-    setUp(() {
+    setUp(() async {
       restartActionCalls = 0;
-      flutter = _FakeFlutter();
-      session = buildSession(
-        compiler: compiler,
-        initialServer: server,
-        flutterProcess: flutter,
-        flutterAppRestartAction: () async {
+      final harness = await _createFlutterManagerHarness(
+        restartOverride: (_) async {
           restartActionCalls++;
         },
       );
+      flutterManager = harness.manager;
+      flutter = harness.process;
+      tempDir = harness.tempDir;
+      session = buildSession(
+        compiler: compiler,
+        initialServer: server,
+        flutterManager: flutterManager,
+      );
+    });
+
+    tearDown(() {
+      tempDir.deleteSync(recursive: true);
     });
 
     test(
@@ -1072,26 +1557,239 @@ void main() {
     );
   });
 
-  group('Given a watch session without a Flutter app restart action,', () {
+  group('Given a watch session without a Flutter app manager,', () {
     test(
       'when restartFlutterApp is called, '
       'then it completes without error.',
       () async {
-        // No action injected (non-Flutter session); the call is a no-op.
         await session.restartFlutterApp();
+
+        expect(server.calls, isEmpty);
+      },
+    );
+
+    test(
+      'when spawnFlutterApp is called, '
+      'then it returns false without error.',
+      () async {
+        final alreadyRunning = await session.spawnFlutterApp('app');
+
+        expect(alreadyRunning, isFalse);
+      },
+    );
+
+    test(
+      'when relaunchFlutterApp is called, '
+      'then it completes without error.',
+      () async {
+        await session.relaunchFlutterApp('app');
+
+        expect(server.calls, isEmpty);
+      },
+    );
+
+    test(
+      'when stopFlutterApp is called, '
+      'then it completes without error.',
+      () async {
+        await session.stopFlutterApp('app');
 
         expect(server.calls, isEmpty);
       },
     );
   });
 
-  group('Given a watch session with a running Flutter process,', () {
-    setUp(() {
+  group('Given a watch session with Flutter app session actions,', () {
+    late int launchCalls;
+    late int restartCalls;
+    late _FakeFlutter flutter;
+    late FlutterAppManager flutterManager;
+    late Directory tempDir;
+
+    setUp(() async {
+      launchCalls = 0;
+      restartCalls = 0;
+      final harness = await _createFlutterManagerHarness(
+        launchOverride: (_) async {
+          launchCalls++;
+        },
+        restartOverride: (_) async {
+          restartCalls++;
+        },
+      );
+      flutterManager = harness.manager;
+      flutter = harness.process;
+      tempDir = harness.tempDir;
       session = buildSession(
         compiler: compiler,
         initialServer: server,
-        flutterProcess: _FakeFlutter(),
+        flutterManager: flutterManager,
       );
+    });
+
+    tearDown(() {
+      tempDir.deleteSync(recursive: true);
+    });
+
+    test(
+      'when spawnFlutterApp is called on a running app, '
+      'then it reports already running without launching.',
+      () async {
+        final alreadyRunning = await session.spawnFlutterApp('app');
+
+        expect(alreadyRunning, isTrue);
+        expect(launchCalls, 0);
+      },
+    );
+
+    test(
+      'when spawnFlutterApp is called on a stopped app, '
+      'then it launches the app.',
+      () async {
+        flutter.isRunning = false;
+
+        final alreadyRunning = await session.spawnFlutterApp('app');
+
+        expect(alreadyRunning, isFalse);
+        expect(launchCalls, 1);
+      },
+    );
+
+    test(
+      'when relaunchFlutterApp is called on a running app, '
+      'then it restarts the app.',
+      () async {
+        await session.relaunchFlutterApp('app');
+
+        expect(restartCalls, 1);
+        expect(launchCalls, 0);
+      },
+    );
+
+    test(
+      'when relaunchFlutterApp is called on a stopped app, '
+      'then it launches the app.',
+      () async {
+        flutter.isRunning = false;
+
+        await session.relaunchFlutterApp('app');
+
+        expect(launchCalls, 1);
+        expect(restartCalls, 0);
+      },
+    );
+
+    test(
+      'when stopFlutterApp is called on a running app, '
+      'then it stops the app.',
+      () async {
+        await session.stopFlutterApp('app');
+
+        expect(flutter.calls, ['stop']);
+      },
+    );
+
+    test(
+      'when stopFlutterApp is called on a stopped app, '
+      'then it is a no-op.',
+      () async {
+        flutter.isRunning = false;
+
+        await session.stopFlutterApp('app');
+
+        expect(flutter.calls, isEmpty);
+      },
+    );
+
+    test(
+      'when spawnFlutterApp is called after dispose, '
+      'then it throws a StateError without invoking the action.',
+      () async {
+        await session.dispose();
+
+        expect(
+          () => session.spawnFlutterApp('app'),
+          throwsA(
+            isA<StateError>().having(
+              (e) => e.message,
+              'message',
+              contains('disposed'),
+            ),
+          ),
+        );
+        expect(launchCalls, 0);
+      },
+    );
+  });
+
+  group(
+    'Given an in-flight forceReload and a Flutter relaunch request,',
+    () {
+      late List<String> order;
+      late Future<void> reload;
+      late WatchSession chainedSession;
+      late int restartCalls;
+      late FlutterAppManager flutterManager;
+      late Directory tempDir;
+
+      setUp(() async {
+        order = <String>[];
+        restartCalls = 0;
+        final harness = await _createFlutterManagerHarness(
+          restartOverride: (_) async {
+            restartCalls++;
+          },
+        );
+        flutterManager = harness.manager;
+        tempDir = harness.tempDir;
+        chainedSession = buildSession(
+          compiler: compiler,
+          initialServer: server,
+          flutterManager: flutterManager,
+        );
+        reload = chainedSession.forceReload().then((_) => order.add('reload'));
+      });
+
+      tearDown(() {
+        tempDir.deleteSync(recursive: true);
+      });
+
+      test(
+        'when relaunchFlutterApp is called, '
+        'then it runs after the reload completes.',
+        () async {
+          final relaunch = chainedSession
+              .relaunchFlutterApp('app')
+              .then(
+                (_) => order.add('relaunch'),
+              );
+
+          await Future.wait([reload, relaunch]);
+
+          expect(order, ['reload', 'relaunch']);
+          expect(restartCalls, 1);
+        },
+      );
+    },
+  );
+
+  group('Given a watch session with a running Flutter process,', () {
+    late FlutterAppManager flutterManager;
+    late Directory tempDir;
+
+    setUp(() async {
+      final harness = await _createFlutterManagerHarness();
+      flutterManager = harness.manager;
+      tempDir = harness.tempDir;
+      session = buildSession(
+        compiler: compiler,
+        initialServer: server,
+        flutterManager: flutterManager,
+      );
+    });
+
+    tearDown(() {
+      tempDir.deleteSync(recursive: true);
     });
 
     test(
@@ -1104,12 +1802,24 @@ void main() {
   });
 
   group('Given a watch session whose Flutter process has stopped,', () {
-    setUp(() {
+    late FlutterAppManager flutterManager;
+    late Directory tempDir;
+
+    setUp(() async {
+      final harness = await _createFlutterManagerHarness(
+        flutter: _FakeFlutter()..isRunning = false,
+      );
+      flutterManager = harness.manager;
+      tempDir = harness.tempDir;
       session = buildSession(
         compiler: compiler,
         initialServer: server,
-        flutterProcess: _FakeFlutter()..isRunning = false,
+        flutterManager: flutterManager,
       );
+    });
+
+    tearDown(() {
+      tempDir.deleteSync(recursive: true);
     });
 
     test(
@@ -1121,7 +1831,7 @@ void main() {
     );
   });
 
-  group('Given a watch session with no Flutter process,', () {
+  group('Given a watch session with no running Flutter process,', () {
     test(
       'when checking whether the Flutter app is running, '
       'then it reports false',
@@ -1136,19 +1846,30 @@ void main() {
     () {
       late int restartActionCalls;
       late _FakeFlutter flutter;
+      late FlutterAppManager flutterManager;
+      late Directory tempDir;
 
-      setUp(() {
+      setUp(() async {
         restartActionCalls = 0;
         flutter = _FakeFlutter();
+        final harness = await _createFlutterManagerHarness(
+          flutter: flutter,
+          dependencyChange: (_) => PackageDependencyChange.native,
+          restartOverride: (_) async {
+            restartActionCalls++;
+          },
+        );
+        flutterManager = harness.manager;
+        tempDir = harness.tempDir;
         session = buildSession(
           compiler: compiler,
           initialServer: server,
-          flutterProcess: flutter,
-          flutterAppRestartAction: () async {
-            restartActionCalls++;
-          },
-          checkFlutterDependencyChange: () => FlutterDependencyChange.native,
+          flutterManager: flutterManager,
         );
+      });
+
+      tearDown(() {
+        tempDir.deleteSync(recursive: true);
       });
 
       test(
@@ -1196,19 +1917,30 @@ void main() {
     () {
       late int restartActionCalls;
       late _FakeFlutter flutter;
+      late FlutterAppManager flutterManager;
+      late Directory tempDir;
 
-      setUp(() {
+      setUp(() async {
         restartActionCalls = 0;
         flutter = _FakeFlutter();
+        final harness = await _createFlutterManagerHarness(
+          flutter: flutter,
+          dependencyChange: (_) => PackageDependencyChange.dartOnly,
+          restartOverride: (_) async {
+            restartActionCalls++;
+          },
+        );
+        flutterManager = harness.manager;
+        tempDir = harness.tempDir;
         session = buildSession(
           compiler: compiler,
           initialServer: server,
-          flutterProcess: flutter,
-          flutterAppRestartAction: () async {
-            restartActionCalls++;
-          },
-          checkFlutterDependencyChange: () => FlutterDependencyChange.dartOnly,
+          flutterManager: flutterManager,
         );
+      });
+
+      tearDown(() {
+        tempDir.deleteSync(recursive: true);
       });
 
       test(
@@ -1253,19 +1985,30 @@ void main() {
     () {
       late int restartActionCalls;
       late _FakeFlutter flutter;
+      late FlutterAppManager flutterManager;
+      late Directory tempDir;
 
-      setUp(() {
+      setUp(() async {
         restartActionCalls = 0;
         flutter = _FakeFlutter();
+        final harness = await _createFlutterManagerHarness(
+          flutter: flutter,
+          dependencyChange: (_) => PackageDependencyChange.none,
+          restartOverride: (_) async {
+            restartActionCalls++;
+          },
+        );
+        flutterManager = harness.manager;
+        tempDir = harness.tempDir;
         session = buildSession(
           compiler: compiler,
           initialServer: server,
-          flutterProcess: flutter,
-          flutterAppRestartAction: () async {
-            restartActionCalls++;
-          },
-          checkFlutterDependencyChange: () => FlutterDependencyChange.none,
+          flutterManager: flutterManager,
         );
+      });
+
+      tearDown(() {
+        tempDir.deleteSync(recursive: true);
       });
 
       test(
@@ -1305,22 +2048,177 @@ void main() {
   );
 
   group(
-    'Given an in-flight forceReload and a Flutter app restart action,',
+    'Given a watch session where the Flutter pubspec assets/fonts changed,',
+    () {
+      late int restartActionCalls;
+      late _FakeFlutter flutter;
+      late FlutterAppManager flutterManager;
+      late Directory tempDir;
+
+      setUp(() async {
+        restartActionCalls = 0;
+        flutter = _FakeFlutter();
+        final harness = await _createFlutterManagerHarness(
+          flutter: flutter,
+          dependencyChange: (_) => PackageDependencyChange.assets,
+          restartOverride: (_) async {
+            restartActionCalls++;
+          },
+        );
+        flutterManager = harness.manager;
+        tempDir = harness.tempDir;
+        session = buildSession(
+          compiler: compiler,
+          initialServer: server,
+          flutterManager: flutterManager,
+        );
+      });
+
+      tearDown(() {
+        tempDir.deleteSync(recursive: true);
+      });
+
+      test(
+        'when only the pubspec changed, '
+        'then the Flutter app is relaunched without recompiling the server.',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {},
+            pubspecChanged: true,
+          );
+
+          await session.handleFileChange(event);
+
+          expect(restartActionCalls, 1);
+          expect(compiler.calls, isEmpty);
+          expect(flutter.calls, isEmpty);
+          expect(server.calls, isEmpty);
+        },
+      );
+
+      test(
+        'when the pubspec and dart files change together, '
+        'then the server reloads and the app is relaunched instead of hot reloaded.',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {'/lib/a.dart'},
+            pubspecChanged: true,
+          );
+
+          await session.handleFileChange(event);
+
+          expect(server.calls, contains('reload:/out.dill'));
+          expect(restartActionCalls, 1);
+          expect(flutter.calls, isEmpty);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a watch session where the server pubspec flutter_apps section changed,',
+    () {
+      late int reloadAppsCalls;
+      late _FakeFlutter flutter;
+      late FlutterAppManager flutterManager;
+      late Directory tempDir;
+
+      setUp(() async {
+        reloadAppsCalls = 0;
+        flutter = _FakeFlutter();
+        final harness = await _createFlutterManagerHarness(
+          flutter: flutter,
+        );
+        flutterManager = harness.manager;
+        tempDir = harness.tempDir;
+
+        session = buildSession(
+          compiler: compiler,
+          initialServer: server,
+          flutterManager: flutterManager,
+          flutterAppsLoader: () async {
+            reloadAppsCalls++;
+          },
+        );
+
+        flutterManager.serverPubspecFile.writeAsStringSync('''
+name: server
+serverpod:
+  flutter_apps:
+    app:
+      path: ../app_flutter
+      device: chrome
+''');
+      });
+
+      tearDown(() {
+        tempDir.deleteSync(recursive: true);
+      });
+
+      test(
+        'when pubspecChanged is set without dart changes, '
+        'then the flutter apps reload callback is invoked and server is not recompiled.',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {},
+            pubspecChanged: true,
+          );
+
+          await session.handleFileChange(event);
+
+          expect(reloadAppsCalls, 1);
+          expect(compiler.calls, isEmpty);
+          expect(testLogger.infoMessages, contains(flutterAppsConfigChanged));
+        },
+      );
+
+      test(
+        'when pubspecChanged and dart files change together, '
+        'then the flutter apps reload callback is invoked and the server is reloaded.',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {'/lib/a.dart'},
+            pubspecChanged: true,
+          );
+
+          await session.handleFileChange(event);
+
+          expect(reloadAppsCalls, 1);
+          expect(server.calls, contains('reload:/out.dill'));
+          expect(testLogger.infoMessages, contains(flutterAppsConfigChanged));
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an in-flight forceReload and a Flutter app manager,',
     () {
       late List<String> order;
       late Future<void> reload;
       late WatchSession flutterRestartSession;
+      late FlutterAppManager flutterManager;
+      late Directory tempDir;
 
-      setUp(() {
+      setUp(() async {
         order = <String>[];
+        final harness = await _createFlutterManagerHarness(
+          restartOverride: (_) async {},
+        );
+        flutterManager = harness.manager;
+        tempDir = harness.tempDir;
         flutterRestartSession = buildSession(
           compiler: compiler,
           initialServer: server,
-          flutterAppRestartAction: () async {},
+          flutterManager: flutterManager,
         );
         reload = flutterRestartSession.forceReload().then(
           (_) => order.add('reload'),
         );
+      });
+
+      tearDown(() {
+        tempDir.deleteSync(recursive: true);
       });
 
       test(
@@ -1383,7 +2281,11 @@ void main() {
           initialServer: classifierServer,
           generate: (affectedPaths, requirements) async {
             classifierGenerateCalls.add(affectedPaths);
-            return (success: true, generatedFiles: <String>{});
+            return (
+              success: true,
+              generatedFiles: <String>{},
+              protocolAnalyticsSnapshot: null,
+            );
           },
           createServer: (String? dillPath) async => classifierServer,
           classifyProtocolChange: (_) async => false,
@@ -1449,7 +2351,11 @@ void main() {
           initialServer: classifierServer,
           generate: (affectedPaths, requirements) async {
             classifierGenerateCalls.add(affectedPaths);
-            return (success: true, generatedFiles: <String>{});
+            return (
+              success: true,
+              generatedFiles: <String>{},
+              protocolAnalyticsSnapshot: null,
+            );
           },
           createServer: (String? dillPath) async => classifierServer,
           classifyProtocolChange: (_) async => true,
@@ -1585,7 +2491,11 @@ class Counter {
       noCompilerSession = WatchSession(
         generate: (affectedPaths, requirements) async {
           noCompilerGenerateCalls.add(affectedPaths);
-          return (success: true, generatedFiles: noCompilerGeneratedFiles);
+          return (
+            success: true,
+            generatedFiles: noCompilerGeneratedFiles,
+            protocolAnalyticsSnapshot: null,
+          );
         },
         createServer: (String? dillPath) async {
           noCompilerFactoryCalls.add('createServer:$dillPath');
@@ -1713,8 +2623,11 @@ class Counter {
     setUp(() {
       noFactoryServer = _FakeServer();
       noFactorySession = WatchSession(
-        generate: (affectedPaths, requirements) async =>
-            (success: true, generatedFiles: <String>{}),
+        generate: (affectedPaths, requirements) async => (
+          success: true,
+          generatedFiles: <String>{},
+          protocolAnalyticsSnapshot: null,
+        ),
         initialServer: noFactoryServer,
         generatedDirPaths: {'/generated'},
         applyMigrationsAction: () async {},
@@ -1736,6 +2649,199 @@ class Counter {
       'then it throws a StateError',
       () {
         expect(() => noFactorySession.forceRestart(), throwsStateError);
+      },
+    );
+  });
+
+  group('Given a degraded session that booted with no server', () {
+    late int fullGenerateCalls;
+    late bool fullGenerateSuccess;
+    late WatchSession degradedSession;
+
+    setUp(() {
+      fullGenerateCalls = 0;
+      fullGenerateSuccess = true;
+      degradedSession = buildSession(
+        compiler: compiler,
+        initialServer: null,
+        fullGenerate: () async {
+          fullGenerateCalls++;
+          return (
+            success: fullGenerateSuccess,
+            generatedFiles: <String>{},
+            protocolAnalyticsSnapshot: null,
+          );
+        },
+      );
+    });
+
+    test(
+      'when checking its state, '
+      'then it reports not running with no VM service URI',
+      () {
+        expect(degradedSession.isRunning, isFalse);
+        expect(degradedSession.vmServiceUri, isNull);
+      },
+    );
+
+    test(
+      'when a dart file change generates and compiles successfully, '
+      'then it boots the server with a fresh full compile',
+      () async {
+        await degradedSession.handleFileChange(
+          FileChangeEvent(dartFiles: {'/lib/a.dart'}),
+        );
+
+        expect(generateCalls, [
+          {'/lib/a.dart'},
+        ]);
+        // A from-scratch full compile (reset + compile), not an incremental
+        // one, since there is no running server to hot reload into.
+        expect(compiler.calls, ['reset', 'compile', 'accept']);
+        expect(factoryCalls, ['createServer:/out.dill']);
+        expect(degradedSession.isRunning, isTrue);
+      },
+    );
+
+    test(
+      'when generation fails on a file change, '
+      'then it stays degraded without compiling or booting',
+      () async {
+        generateSuccess = false;
+
+        await degradedSession.handleFileChange(
+          FileChangeEvent(dartFiles: {'/lib/a.dart'}),
+        );
+
+        expect(compiler.calls, isEmpty);
+        expect(factoryCalls, isEmpty);
+        expect(degradedSession.isRunning, isFalse);
+      },
+    );
+
+    test(
+      'when the compile fails on a file change, '
+      'then it stays degraded without booting',
+      () async {
+        compiler.nextCompileResult = _failResult();
+
+        await degradedSession.handleFileChange(
+          FileChangeEvent(dartFiles: {'/lib/a.dart'}),
+        );
+
+        expect(compiler.calls, ['reset', 'compile', 'reject']);
+        expect(factoryCalls, isEmpty);
+        expect(degradedSession.isRunning, isFalse);
+      },
+    );
+
+    test(
+      'when retryStart regenerates and compiles successfully, '
+      'then it boots the server',
+      () async {
+        await degradedSession.retryStart();
+
+        expect(fullGenerateCalls, 1);
+        expect(compiler.calls, ['reset', 'compile', 'accept']);
+        expect(factoryCalls, ['createServer:/out.dill']);
+        expect(degradedSession.isRunning, isTrue);
+      },
+    );
+
+    test(
+      'when retryStart full generation fails, '
+      'then it stays degraded without compiling or booting',
+      () async {
+        fullGenerateSuccess = false;
+
+        await degradedSession.retryStart();
+
+        expect(fullGenerateCalls, 1);
+        expect(compiler.calls, isEmpty);
+        expect(factoryCalls, isEmpty);
+        expect(degradedSession.isRunning, isFalse);
+      },
+    );
+
+    test(
+      'when the server booted from a degraded start later crashes, '
+      'then done completes with its exit code',
+      () async {
+        await degradedSession.handleFileChange(
+          FileChangeEvent(dartFiles: {'/lib/a.dart'}),
+        );
+        expect(degradedSession.isRunning, isTrue);
+
+        factoryServer.simulateExit(7);
+
+        await expectLater(degradedSession.done, completion(7));
+      },
+    );
+
+    test(
+      'when disposed, '
+      'then done completes with zero without stopping a server',
+      () async {
+        await degradedSession.dispose();
+
+        await expectLater(degradedSession.done, completion(0));
+      },
+    );
+
+    test(
+      'when retryStart is called after dispose, '
+      'then it throws a StateError',
+      () async {
+        await degradedSession.dispose();
+
+        expect(() => degradedSession.retryStart(), throwsStateError);
+      },
+    );
+  });
+
+  group('Given a degraded session with no compiler', () {
+    late int fullGenerateCalls;
+    late WatchSession degradedNoCompilerSession;
+
+    setUp(() {
+      fullGenerateCalls = 0;
+      degradedNoCompilerSession = buildSession(
+        compiler: null,
+        initialServer: null,
+        fullGenerate: () async {
+          fullGenerateCalls++;
+          return (
+            success: true,
+            generatedFiles: <String>{},
+            protocolAnalyticsSnapshot: null,
+          );
+        },
+      );
+    });
+
+    test(
+      'when retryStart regenerates successfully, '
+      'then it boots the server via dart run with a null dill',
+      () async {
+        await degradedNoCompilerSession.retryStart();
+
+        expect(fullGenerateCalls, 1);
+        expect(factoryCalls, ['createServer:null']);
+        expect(degradedNoCompilerSession.isRunning, isTrue);
+      },
+    );
+  });
+
+  group('Given a running session', () {
+    test(
+      'when retryStart is called, '
+      'then it is a no-op (recovery only applies while degraded)',
+      () async {
+        await session.retryStart();
+
+        expect(factoryCalls, isEmpty);
+        expect(compiler.calls, isEmpty);
+        expect(server.calls, isEmpty);
       },
     );
   });

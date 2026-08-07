@@ -122,8 +122,6 @@ abstract class RuntimeSettings
     int? limit,
     int? offset,
     _i1.OrderByBuilder<RuntimeSettingsTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
     RuntimeSettingsInclude? include,
   }) {
@@ -132,8 +130,6 @@ abstract class RuntimeSettings
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(RuntimeSettings.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(RuntimeSettings.t),
       include: include,
     );
@@ -276,8 +272,6 @@ class RuntimeSettingsIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -322,8 +316,6 @@ class RuntimeSettingsRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<RuntimeSettingsTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -333,8 +325,6 @@ class RuntimeSettingsRepository {
       where: where?.call(RuntimeSettings.t),
       orderBy: orderBy?.call(RuntimeSettings.t),
       orderByList: orderByList?.call(RuntimeSettings.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -365,8 +355,6 @@ class RuntimeSettingsRepository {
     _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
     int? offset,
     _i1.OrderByBuilder<RuntimeSettingsTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -376,8 +364,6 @@ class RuntimeSettingsRepository {
       where: where?.call(RuntimeSettings.t),
       orderBy: orderBy?.call(RuntimeSettings.t),
       orderByList: orderByList?.call(RuntimeSettings.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -411,16 +397,22 @@ class RuntimeSettingsRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<RuntimeSettings>> insert(
     _i1.DatabaseSession session,
     List<RuntimeSettings> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<RuntimeSettings>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -454,6 +446,10 @@ class RuntimeSettingsRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<RuntimeSettings>> upsert(
     _i1.DatabaseSession session,
     List<RuntimeSettings> rows, {
@@ -461,6 +457,7 @@ class RuntimeSettingsRepository {
     _i1.ColumnSelections<RuntimeSettingsTable>? updateColumns,
     _i1.WhereExpressionBuilder<RuntimeSettingsTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<RuntimeSettings>(
       rows,
@@ -468,6 +465,7 @@ class RuntimeSettingsRepository {
       updateColumns: updateColumns?.call(RuntimeSettings.t),
       updateWhere: updateWhere?.call(RuntimeSettings.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -506,16 +504,22 @@ class RuntimeSettingsRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<RuntimeSettings>> update(
     _i1.DatabaseSession session,
     List<RuntimeSettings> rows, {
     _i1.ColumnSelections<RuntimeSettingsTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<RuntimeSettings>(
       rows,
       columns: columns?.call(RuntimeSettings.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -553,6 +557,10 @@ class RuntimeSettingsRepository {
 
   /// Updates all [RuntimeSettings]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<RuntimeSettings>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<RuntimeSettingsUpdateTable>
@@ -562,9 +570,8 @@ class RuntimeSettingsRepository {
     int? offset,
     _i1.OrderByBuilder<RuntimeSettingsTable>? orderBy,
     _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<RuntimeSettings>(
       columnValues: columnValues(RuntimeSettings.t.updateTable),
@@ -573,9 +580,8 @@ class RuntimeSettingsRepository {
       offset: offset,
       orderBy: orderBy?.call(RuntimeSettings.t),
       orderByList: orderByList?.call(RuntimeSettings.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -586,22 +592,24 @@ class RuntimeSettingsRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<RuntimeSettings>> delete(
     _i1.DatabaseSession session,
     List<RuntimeSettings> rows, {
     _i1.OrderByBuilder<RuntimeSettingsTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<RuntimeSettings>(
       rows,
       orderBy: orderBy?.call(RuntimeSettings.t),
       orderByList: orderByList?.call(RuntimeSettings.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -621,22 +629,24 @@ class RuntimeSettingsRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<RuntimeSettings>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<RuntimeSettingsTable> where,
     _i1.OrderByBuilder<RuntimeSettingsTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<RuntimeSettings>(
       where: where(RuntimeSettings.t),
       orderBy: orderBy?.call(RuntimeSettings.t),
       orderByList: orderByList?.call(RuntimeSettings.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

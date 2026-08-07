@@ -12,7 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class MultipleMaxFieldName implements _i1.SerializableModel {
+abstract class MultipleMaxFieldName
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   MultipleMaxFieldName._({
     this.id,
     required this.thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1,
@@ -60,6 +61,18 @@ abstract class MultipleMaxFieldName implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'MultipleMaxFieldName',
+      if (id != null) 'id': id,
+      'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1':
+          thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1,
+      'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2':
+          thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'MultipleMaxFieldName',
       if (id != null) 'id': id,

@@ -14,7 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../changed_id_type/one_to_one/citizen.dart' as _i2;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
-abstract class TownInt implements _i1.SerializableModel {
+abstract class TownInt
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   TownInt._({
     this.id,
     required this.name,
@@ -70,6 +71,17 @@ abstract class TownInt implements _i1.SerializableModel {
       'name': name,
       if (mayorId != null) 'mayorId': mayorId,
       if (mayor != null) 'mayor': mayor?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'TownInt',
+      if (id != null) 'id': id,
+      'name': name,
+      if (mayorId != null) 'mayorId': mayorId,
+      if (mayor != null) 'mayor': mayor?.toJsonForProtocol(),
     };
   }
 

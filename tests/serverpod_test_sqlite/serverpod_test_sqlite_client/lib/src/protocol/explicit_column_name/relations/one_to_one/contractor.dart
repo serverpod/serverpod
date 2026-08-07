@@ -14,7 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../../explicit_column_name/relations/one_to_one/service.dart' as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
 
-abstract class Contractor implements _i1.SerializableModel {
+abstract class Contractor
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   Contractor._({
     this.id,
     required this.name,
@@ -70,6 +71,17 @@ abstract class Contractor implements _i1.SerializableModel {
       'name': name,
       if (serviceIdField != null) 'serviceIdField': serviceIdField,
       if (service != null) 'service': service?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Contractor',
+      if (id != null) 'id': id,
+      'name': name,
+      if (serviceIdField != null) 'serviceIdField': serviceIdField,
+      if (service != null) 'service': service?.toJsonForProtocol(),
     };
   }
 

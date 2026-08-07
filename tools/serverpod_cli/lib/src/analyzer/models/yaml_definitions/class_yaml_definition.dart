@@ -232,6 +232,18 @@ class ClassYamlDefinition {
               ),
               ValidateNode(
                 Keyword.unique,
+                valueRestriction: restrictions.validateFieldUniqueValue,
+                allowEmptyNestedValue: true,
+                nested: {
+                  ValidateNode(
+                    Keyword.per,
+                    valueRestriction: restrictions.validateUniquePerFieldsValue,
+                  ),
+                },
+              ),
+              ValidateNode(
+                Keyword.tail,
+                keyRestriction: restrictions.validateTailKey,
                 valueRestriction: BooleanValueRestriction().validate,
               ),
             },
@@ -257,6 +269,11 @@ class ClassYamlDefinition {
               ValidateNode(
                 Keyword.unique,
                 keyRestriction: restrictions.validateIndexUniqueKey,
+                valueRestriction: BooleanValueRestriction().validate,
+              ),
+              ValidateNode(
+                Keyword.nullsDistinct,
+                keyRestriction: restrictions.validateIndexNullsDistinctKey,
                 valueRestriction: BooleanValueRestriction().validate,
               ),
               ValidateNode(

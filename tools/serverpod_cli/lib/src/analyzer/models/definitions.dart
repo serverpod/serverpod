@@ -2,6 +2,7 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/analyzer/models/serialization_data_type.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_database/serverpod_database.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 export 'package:serverpod_database/src/definition/default_keywords.dart';
 
@@ -100,11 +101,13 @@ sealed class ClassDefinition extends SerializableModelDefinition {
       parentClass?.fieldsIncludingInherited.toList() ?? [];
 
   /// Returns a list of all fields in this class, including inherited fields.
+  /// Non-tail fields are ordered top-down through the inheritance chain. Tail
+  /// fields are ordered bottom-up so that root parent tail fields appear last.
   List<SerializableModelFieldDefinition> get fieldsIncludingInherited {
-    return [
-      ...inheritedFields,
-      ...fields,
-    ];
+    return _fieldsWithTailFieldsLast(
+      inheritedFields: inheritedFields,
+      fields: fields,
+    );
   }
 
   /// Returns `true` if this class is a parent class or sealed.
@@ -254,17 +257,21 @@ final class ModelClassDefinition extends ClassDefinition {
       parentClass?.fieldsIncludingInherited.any((f) => f.name == 'id') ?? false;
 
   /// Returns a list of all fields in this class, including inherited fields.
-  /// It ensures that the 'id' field, if present, is always included at the
-  /// beginning of the list.
+  /// It ensures that the 'id' field, if present on this class, is always
+  /// included at the beginning of the list. Non-tail fields are ordered
+  /// top-down through the inheritance chain. Tail fields are ordered bottom-up
+  /// so that root parent tail fields appear last.
   @override
   List<SerializableModelFieldDefinition> get fieldsIncludingInherited {
-    bool hasIdField = fields.any((element) => element.name == 'id');
+    final idField = fields
+        .where((element) => element.name == defaultPrimaryKeyName)
+        .firstOrNull;
 
-    return [
-      if (hasIdField) fields.firstWhere((element) => element.name == 'id'),
-      ...inheritedFields,
-      ...fields.where((element) => element.name != 'id'),
-    ];
+    return _fieldsWithTailFieldsLast(
+      firstField: idField,
+      inheritedFields: inheritedFields,
+      fields: fields.where((element) => element.name != defaultPrimaryKeyName),
+    );
   }
 
   /// Returns a list of all indexes declared in the parent class.
@@ -370,6 +377,11 @@ class SerializableModelFieldDefinition {
   /// When true, nullable fields will be marked as required named parameters.
   final bool isRequired;
 
+  /// When true, this field is placed at the end of the combined field list
+  /// when inherited. Tail fields from child classes appear before tail fields
+  /// from parent classes.
+  final bool isTail;
+
   /// Name of the column in the database
   final String? _columnNameOverride;
 
@@ -393,8 +405,12 @@ class SerializableModelFieldDefinition {
   /// Indexes that this field is part of.
   List<SerializableModelIndexDefinition> indexes = [];
 
+  /// Prefix field names for a composite unique index, or an empty list for a
+  /// single-column unique index. `null` means this field is not unique.
+  final List<String>? uniquePerFieldNames;
+
   /// Whether this field should have a unique index auto-generated for it.
-  final bool shouldCreateUniqueIndex;
+  bool get shouldCreateUniqueIndex => uniquePerFieldNames != null;
 
   /// Create a new [SerializableModelFieldDefinition].
   SerializableModelFieldDefinition({
@@ -407,9 +423,10 @@ class SerializableModelFieldDefinition {
     this.relation,
     this.documentation,
     this.isRequired = false,
+    this.isTail = false,
     String? columnNameOverride,
     String? jsonKeyOverride,
-    this.shouldCreateUniqueIndex = false,
+    this.uniquePerFieldNames,
   }) : _columnNameOverride = columnNameOverride,
        _jsonKeyOverride = jsonKeyOverride;
 
@@ -418,7 +435,6 @@ class SerializableModelFieldDefinition {
   ///
   /// See also:
   /// - [shouldSerializeField]
-  /// - [shouldSerializeFieldForDatabase]
   bool shouldIncludeField(bool serverCode) {
     return scope == ModelFieldScopeDefinition.all ||
         (serverCode && scope == ModelFieldScopeDefinition.serverOnly);
@@ -429,37 +445,22 @@ class SerializableModelFieldDefinition {
   ///
   /// See also:
   /// - [shouldIncludeField]
-  /// - [shouldSerializeFieldForDatabase]
   bool shouldSerializeField(bool serverCode) {
     return scope == ModelFieldScopeDefinition.all;
   }
 
-  /// Returns true, if this field should be added to the serialization for the
-  /// database.
-  /// [serverCode] specifies if it's code on the server or client side.
+  /// Whether this field is persisted in the database but hidden from the
+  /// protocol (`toJsonForProtocol`) output.
   ///
-  /// See also:
-  /// - [shouldIncludeField]
-  /// - [shouldSerializeField]
-  bool shouldSerializeFieldForDatabase(bool serverCode) {
-    if (serverCode) {
-      return shouldPersist;
-    }
-    if (shouldPersist && scope == ModelFieldScopeDefinition.all) {
-      return true;
-    }
-
-    // Client: one-to-many implicit "child" FKs only.
-    final relation = this.relation;
-    return shouldPersist &&
-        scope == ModelFieldScopeDefinition.none &&
-        relation is ForeignRelationDefinition &&
-        relation.containerField == null;
-  }
-
-  /// Fields with !persist or scope [ModelFieldScopeDefinition.none] are hidden
-  /// from the wire protocol but stored in the database. On the client, implicit
-  /// one-to-many child keys are hidden.
+  /// This is only about persisted [ModelFieldScopeDefinition.none] fields, such
+  /// as the implicit relation FKs generated for object relations. Those are
+  /// stored in the database and kept in [SerializableModel.toJson], but must be
+  /// omitted from protocol serialization.
+  ///
+  /// Note this is unrelated to `!persist` (`shouldPersist == false`): a
+  /// `!persist` field with `scope: all` is *not* stored in the database but
+  /// *is* sent over the wire. On the client, only implicit one-to-many child
+  /// keys qualify as hidden.
   bool hiddenSerializableField(bool serverCode) {
     if (serverCode) {
       return shouldPersist && scope == ModelFieldScopeDefinition.none;
@@ -494,14 +495,57 @@ class SerializableModelFieldDefinition {
   /// auto-created for this field on [tableName]; otherwise `null`.
   SerializableModelIndexDefinition? autoGeneratedUniqueIndexDefinition(
     String tableName,
+    List<SerializableModelFieldDefinition> allFields,
   ) {
     if (!shouldCreateUniqueIndex) return null;
+
+    var indexColumnNames = [
+      for (var perFieldName in uniquePerFieldNames!)
+        _resolveUniqueIndexColumnName(perFieldName, allFields),
+      columnName,
+    ];
+
     return SerializableModelIndexDefinition(
-      name: '${tableName}__${columnName}__unique_idx',
+      name: buildAutoGeneratedUniqueIndexName(tableName, indexColumnNames),
       type: 'btree',
       unique: true,
-      fields: [columnName],
+      fields: indexColumnNames,
     );
+  }
+
+  /// Resolves a `per` field name to its database column name. Falls back to the
+  /// name itself when no matching field exists; that case is an authoring error
+  /// reported separately by validation, so the generated name is never used.
+  static String _resolveUniqueIndexColumnName(
+    String fieldName,
+    List<SerializableModelFieldDefinition> allFields,
+  ) {
+    for (var field in allFields) {
+      if (field.name == fieldName) return field.columnName;
+    }
+    return fieldName;
+  }
+
+  /// Builds the auto-generated unique index name, keeping it within the
+  /// PostgreSQL identifier limit.
+  ///
+  /// Composite indexes can easily exceed the limit, so when the full
+  /// `<table>__<col>__…__unique_idx` name is too long the middle is replaced
+  /// with a deterministic digest while the readable head and the
+  /// `__unique_idx` suffix are preserved.
+  static String buildAutoGeneratedUniqueIndexName(
+    String tableName,
+    List<String> indexColumnNames,
+  ) {
+    const suffix = '__unique_idx';
+    var baseName = '${tableName}__${indexColumnNames.join('__')}';
+
+    return truncateIdentifier(
+          baseName,
+          DatabaseConstants.pgsqlMaxNameLimitation - suffix.length,
+          hashLength: 10,
+        ) +
+        suffix;
   }
 }
 
@@ -535,6 +579,11 @@ class SerializableModelIndexDefinition {
   /// Whether the [fields] of this index should be unique.
   final bool unique;
 
+  /// Whether null values should be considered distinct in this unique index.
+  ///
+  /// A null value uses the database default behavior.
+  final bool? nullsDistinct;
+
   /// The gin index operator class, if it is a gin index.
   final GinOperatorClass? ginOperatorClass;
 
@@ -550,6 +599,7 @@ class SerializableModelIndexDefinition {
     required this.type,
     required this.unique,
     required this.fields,
+    this.nullsDistinct,
     this.ginOperatorClass,
     this.vectorDistanceFunction,
     this.parameters,
@@ -567,6 +617,7 @@ class SerializableModelIndexDefinition {
       name: '${prefix}_$name',
       type: type,
       unique: unique,
+      nullsDistinct: nullsDistinct,
       fields: fields,
       ginOperatorClass: ginOperatorClass,
       vectorDistanceFunction: vectorDistanceFunction,
@@ -868,3 +919,15 @@ const ForeignKeyAction onDeleteDefault = ForeignKeyAction.noAction;
 const ForeignKeyAction onDeleteDefaultOld = ForeignKeyAction.cascade;
 
 const ForeignKeyAction onUpdateDefault = ForeignKeyAction.noAction;
+
+List<SerializableModelFieldDefinition> _fieldsWithTailFieldsLast({
+  SerializableModelFieldDefinition? firstField,
+  required Iterable<SerializableModelFieldDefinition> inheritedFields,
+  required Iterable<SerializableModelFieldDefinition> fields,
+}) => [
+  ?firstField,
+  ...inheritedFields.where((field) => !field.isTail),
+  ...fields.where((field) => !field.isTail),
+  ...fields.where((field) => field.isTail),
+  ...inheritedFields.where((field) => field.isTail),
+];

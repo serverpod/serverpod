@@ -12,7 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class EmptyModelWithTable implements _i1.SerializableModel {
+abstract class EmptyModelWithTable
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   EmptyModelWithTable._({this.id});
 
   factory EmptyModelWithTable({int? id}) = _EmptyModelWithTableImpl;
@@ -32,6 +33,14 @@ abstract class EmptyModelWithTable implements _i1.SerializableModel {
   EmptyModelWithTable copyWith({int? id});
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'EmptyModelWithTable',
+      if (id != null) 'id': id,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'EmptyModelWithTable',
       if (id != null) 'id': id,

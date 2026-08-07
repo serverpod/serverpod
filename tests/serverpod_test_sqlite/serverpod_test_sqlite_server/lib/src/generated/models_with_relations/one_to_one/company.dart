@@ -99,8 +99,6 @@ abstract class Company
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CompanyTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CompanyTable>? orderByList,
     CompanyInclude? include,
   }) {
@@ -109,8 +107,6 @@ abstract class Company
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Company.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(Company.t),
       include: include,
     );
@@ -240,8 +236,6 @@ class CompanyIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -288,8 +282,6 @@ class CompanyRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CompanyTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CompanyTable>? orderByList,
     _i1.Transaction? transaction,
     CompanyInclude? include,
@@ -300,8 +292,6 @@ class CompanyRepository {
       where: where?.call(Company.t),
       orderBy: orderBy?.call(Company.t),
       orderByList: orderByList?.call(Company.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -333,8 +323,6 @@ class CompanyRepository {
     _i1.WhereExpressionBuilder<CompanyTable>? where,
     int? offset,
     _i1.OrderByBuilder<CompanyTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CompanyTable>? orderByList,
     _i1.Transaction? transaction,
     CompanyInclude? include,
@@ -345,8 +333,6 @@ class CompanyRepository {
       where: where?.call(Company.t),
       orderBy: orderBy?.call(Company.t),
       orderByList: orderByList?.call(Company.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -383,16 +369,22 @@ class CompanyRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Company>> insert(
     _i1.DatabaseSession session,
     List<Company> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<Company>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -426,6 +418,10 @@ class CompanyRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Company>> upsert(
     _i1.DatabaseSession session,
     List<Company> rows, {
@@ -433,6 +429,7 @@ class CompanyRepository {
     _i1.ColumnSelections<CompanyTable>? updateColumns,
     _i1.WhereExpressionBuilder<CompanyTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<Company>(
       rows,
@@ -440,6 +437,7 @@ class CompanyRepository {
       updateColumns: updateColumns?.call(Company.t),
       updateWhere: updateWhere?.call(Company.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -478,16 +476,22 @@ class CompanyRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Company>> update(
     _i1.DatabaseSession session,
     List<Company> rows, {
     _i1.ColumnSelections<CompanyTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<Company>(
       rows,
       columns: columns?.call(Company.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -524,6 +528,10 @@ class CompanyRepository {
 
   /// Updates all [Company]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Company>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<CompanyUpdateTable> columnValues,
@@ -532,9 +540,8 @@ class CompanyRepository {
     int? offset,
     _i1.OrderByBuilder<CompanyTable>? orderBy,
     _i1.OrderByListBuilder<CompanyTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<Company>(
       columnValues: columnValues(Company.t.updateTable),
@@ -543,9 +550,8 @@ class CompanyRepository {
       offset: offset,
       orderBy: orderBy?.call(Company.t),
       orderByList: orderByList?.call(Company.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -556,22 +562,24 @@ class CompanyRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Company>> delete(
     _i1.DatabaseSession session,
     List<Company> rows, {
     _i1.OrderByBuilder<CompanyTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CompanyTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<Company>(
       rows,
       orderBy: orderBy?.call(Company.t),
       orderByList: orderByList?.call(Company.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -591,22 +599,24 @@ class CompanyRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Company>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CompanyTable> where,
     _i1.OrderByBuilder<CompanyTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CompanyTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Company>(
       where: where(Company.t),
       orderBy: orderBy?.call(Company.t),
       orderByList: orderByList?.call(Company.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

@@ -123,8 +123,6 @@ abstract class TeamInt
     int? limit,
     int? offset,
     _i1.OrderByBuilder<TeamIntTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<TeamIntTable>? orderByList,
     TeamIntInclude? include,
   }) {
@@ -133,8 +131,6 @@ abstract class TeamInt
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(TeamInt.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(TeamInt.t),
       include: include,
     );
@@ -319,8 +315,6 @@ class TeamIntIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -373,8 +367,6 @@ class TeamIntRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<TeamIntTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<TeamIntTable>? orderByList,
     _i1.Transaction? transaction,
     TeamIntInclude? include,
@@ -385,8 +377,6 @@ class TeamIntRepository {
       where: where?.call(TeamInt.t),
       orderBy: orderBy?.call(TeamInt.t),
       orderByList: orderByList?.call(TeamInt.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -418,8 +408,6 @@ class TeamIntRepository {
     _i1.WhereExpressionBuilder<TeamIntTable>? where,
     int? offset,
     _i1.OrderByBuilder<TeamIntTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<TeamIntTable>? orderByList,
     _i1.Transaction? transaction,
     TeamIntInclude? include,
@@ -430,8 +418,6 @@ class TeamIntRepository {
       where: where?.call(TeamInt.t),
       orderBy: orderBy?.call(TeamInt.t),
       orderByList: orderByList?.call(TeamInt.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -468,16 +454,22 @@ class TeamIntRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<TeamInt>> insert(
     _i1.DatabaseSession session,
     List<TeamInt> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<TeamInt>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -511,6 +503,10 @@ class TeamIntRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<TeamInt>> upsert(
     _i1.DatabaseSession session,
     List<TeamInt> rows, {
@@ -518,6 +514,7 @@ class TeamIntRepository {
     _i1.ColumnSelections<TeamIntTable>? updateColumns,
     _i1.WhereExpressionBuilder<TeamIntTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<TeamInt>(
       rows,
@@ -525,6 +522,7 @@ class TeamIntRepository {
       updateColumns: updateColumns?.call(TeamInt.t),
       updateWhere: updateWhere?.call(TeamInt.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -563,16 +561,22 @@ class TeamIntRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<TeamInt>> update(
     _i1.DatabaseSession session,
     List<TeamInt> rows, {
     _i1.ColumnSelections<TeamIntTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<TeamInt>(
       rows,
       columns: columns?.call(TeamInt.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -609,6 +613,10 @@ class TeamIntRepository {
 
   /// Updates all [TeamInt]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<TeamInt>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<TeamIntUpdateTable> columnValues,
@@ -617,9 +625,8 @@ class TeamIntRepository {
     int? offset,
     _i1.OrderByBuilder<TeamIntTable>? orderBy,
     _i1.OrderByListBuilder<TeamIntTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<TeamInt>(
       columnValues: columnValues(TeamInt.t.updateTable),
@@ -628,9 +635,8 @@ class TeamIntRepository {
       offset: offset,
       orderBy: orderBy?.call(TeamInt.t),
       orderByList: orderByList?.call(TeamInt.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -641,22 +647,24 @@ class TeamIntRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<TeamInt>> delete(
     _i1.DatabaseSession session,
     List<TeamInt> rows, {
     _i1.OrderByBuilder<TeamIntTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<TeamIntTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<TeamInt>(
       rows,
       orderBy: orderBy?.call(TeamInt.t),
       orderByList: orderByList?.call(TeamInt.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -676,22 +684,24 @@ class TeamIntRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<TeamInt>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<TeamIntTable> where,
     _i1.OrderByBuilder<TeamIntTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<TeamIntTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<TeamInt>(
       where: where(TeamInt.t),
       orderBy: orderBy?.call(TeamInt.t),
       orderByList: orderByList?.call(TeamInt.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

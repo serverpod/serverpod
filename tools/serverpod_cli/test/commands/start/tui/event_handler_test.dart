@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:nocterm/nocterm.dart' show ClipboardManager;
+import 'package:serverpod_cli/src/commands/start/flutter_log_event.dart';
 import 'package:serverpod_cli/src/commands/start/tui/app.dart';
 import 'package:serverpod_cli/src/commands/start/tui/event_handler.dart';
 import 'package:serverpod_cli/src/commands/start/tui/state.dart';
+import 'package:serverpod_cli/src/commands/start/tui/tab_model.dart';
 import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_tui/serverpod_tui.dart';
 import 'package:test/test.dart';
@@ -14,6 +16,15 @@ Event _logEvent(Map<String, Object?> data) {
     kind: EventKind.kExtension,
     timestamp: 0,
     extensionKind: 'ext.serverpod.log',
+    extensionData: ExtensionData.parse(data),
+  );
+}
+
+Event _flutterErrorEvent(Map<String, Object?> data) {
+  return Event(
+    kind: EventKind.kExtension,
+    timestamp: 0,
+    extensionKind: 'Flutter.Error',
     extensionData: ExtensionData.parse(data),
   );
 }
@@ -319,6 +330,251 @@ void main() {
 
       expect(state.logHistory, isEmpty);
     });
+  });
+
+  group('Given a Flutter app tab and a framework error event,', () {
+    late AppLogTab appTab;
+
+    setUp(() {
+      appTab = state.getOrCreateAppLogTab(
+        appId: 'serverpod-app',
+        label: 'Serverpod app',
+      );
+    });
+
+    test(
+      'when the event is dispatched, '
+      'then the complete error is added to the app as one structured entry.',
+      () {
+        const error =
+            "'package:flutter/src/widgets/framework.dart': Failed assertion: "
+            "line 2168 pos 12: '_elements.contains(element)': is not true.\n"
+            'See also: https://docs.flutter.dev/testing/errors';
+
+        handleFlutterExtensionEvent(
+          holder,
+          'serverpod-app',
+          _flutterErrorEvent({
+            'errorsSinceReload': 0,
+            'renderedErrorText': error,
+          }),
+        );
+
+        expect(appTab.logHistory, hasLength(1));
+        final entry = appTab.logHistory.single as LogEntry;
+        expect(entry.level, LogLevel.error);
+        expect(entry.time, DateTime.fromMillisecondsSinceEpoch(0));
+        expect(entry.message, error);
+        expect(entry.metadata, {
+          'errorsSinceReload': 0,
+          'source': 'flutterError',
+          'levelIsInferred': false,
+          'timestampIsInferred': false,
+        });
+        expect(appTab.lines, error.split('\n'));
+        expect(state.logHistory, isEmpty);
+      },
+    );
+
+    test(
+      'when a Flutter error event has no rendered error text, '
+      'then it is ignored.',
+      () {
+        handleFlutterExtensionEvent(
+          holder,
+          'serverpod-app',
+          _flutterErrorEvent({'errorsSinceReload': 0}),
+        );
+
+        expect(appTab.logHistory, isEmpty);
+        expect(appTab.lines, isEmpty);
+      },
+    );
+
+    test(
+      'when the error text contains ANSI styling, '
+      'then both structured and raw histories contain plain text.',
+      () {
+        handleFlutterExtensionEvent(
+          holder,
+          'serverpod-app',
+          _flutterErrorEvent({
+            'renderedErrorText': '\x1b[31mA framework error\x1b[0m',
+          }),
+        );
+
+        final entry = appTab.logHistory.single as LogEntry;
+        expect(entry.message, 'A framework error');
+        expect(appTab.lines, ['A framework error']);
+      },
+    );
+  });
+
+  group('Given a Flutter app tab and a structured application log event,', () {
+    late AppLogTab appTab;
+
+    setUp(() {
+      appTab = state.getOrCreateAppLogTab(
+        appId: 'serverpod-app',
+        label: 'Serverpod app',
+      );
+    });
+
+    test(
+      'when the event is dispatched, '
+      'then it is added to the app instead of the server log.',
+      () {
+        handleFlutterExtensionEvent(
+          holder,
+          'serverpod-app',
+          _logEvent({
+            'type': 'log',
+            'level': 'warning',
+            'message': 'Application warning',
+            'timestamp': '2026-07-14T03:00:00.000Z',
+          }),
+        );
+
+        expect(appTab.logHistory, hasLength(1));
+        final entry = appTab.logHistory.single as LogEntry;
+        expect(entry.level, LogLevel.warning);
+        expect(entry.message, 'Application warning');
+        expect(appTab.lines, ['Application warning']);
+        expect(state.logHistory, isEmpty);
+      },
+    );
+  });
+
+  group('Given a Flutter app tab receiving unstructured output,', () {
+    late AppLogTab appTab;
+
+    setUp(() {
+      appTab = state.getOrCreateAppLogTab(
+        appId: 'serverpod-app',
+        label: 'Serverpod app',
+      );
+    });
+
+    test(
+      'when an stderr line is received, '
+      'then it is retained without inventing a second structured entry.',
+      () {
+        handleFlutterOutput(
+          holder,
+          'serverpod-app',
+          'libEGL warning: failed to create dri2 screen',
+        );
+
+        expect(appTab.lines, [
+          'libEGL warning: failed to create dri2 screen',
+        ]);
+        expect(appTab.logHistory, isEmpty);
+      },
+    );
+  });
+
+  group('Given a Flutter app tab and a framework error without a count,', () {
+    late AppLogTab appTab;
+
+    setUp(() {
+      appTab = state.getOrCreateAppLogTab(
+        appId: 'serverpod-app',
+        label: 'Serverpod app',
+      );
+    });
+
+    test(
+      'when the event is dispatched, '
+      'then its metadata does not contain a null value.',
+      () {
+        handleFlutterExtensionEvent(
+          holder,
+          'serverpod-app',
+          _flutterErrorEvent({'renderedErrorText': 'A framework error'}),
+        );
+
+        final entry = appTab.logHistory.single as LogEntry;
+        expect(entry.metadata, {
+          'source': 'flutterError',
+          'levelIsInferred': false,
+          'timestampIsInferred': false,
+        });
+      },
+    );
+  });
+
+  group('Given a Flutter app tab receiving a source-structured log event,', () {
+    late AppLogTab appTab;
+
+    setUp(() {
+      appTab = state.getOrCreateAppLogTab(
+        appId: 'serverpod-app',
+        label: 'Serverpod app',
+      );
+    });
+
+    test(
+      'when the event is dispatched, '
+      'then its severity, timestamp, logger, error, and stack trace are preserved.',
+      () {
+        final time = DateTime.utc(2026, 7, 14, 3);
+
+        handleFlutterLogEvent(
+          holder,
+          'serverpod-app',
+          FlutterLogEvent(
+            time: time,
+            level: LogLevel.warning,
+            message: 'Connection is slow',
+            source: FlutterLogSource.vmLogging,
+            loggerName: 'sync',
+            error: 'TimeoutException',
+            stackTrace: '#0 sync (package:app/sync.dart:10:3)',
+          ),
+        );
+
+        final entry = appTab.logHistory.single as LogEntry;
+        expect(entry.level, LogLevel.warning);
+        expect(entry.time, time);
+        expect(entry.message, '[sync] Connection is slow');
+        expect(entry.error, 'TimeoutException');
+        expect(
+          entry.stackTrace.toString(),
+          '#0 sync (package:app/sync.dart:10:3)',
+        );
+        expect(entry.metadata, {
+          'source': 'vmLogging',
+          'loggerName': 'sync',
+          'levelIsInferred': false,
+          'timestampIsInferred': false,
+        });
+      },
+    );
+
+    test(
+      'when the event contains ANSI styling, '
+      'then the rendered message, error, and stack trace contain plain text.',
+      () {
+        handleFlutterLogEvent(
+          holder,
+          'serverpod-app',
+          FlutterLogEvent(
+            time: DateTime.utc(2026, 7, 14, 3),
+            level: LogLevel.error,
+            message: '\x1b[31mFailed\x1b[0m',
+            source: FlutterLogSource.processStderr,
+            loggerName: '\x1b[33mflutter\x1b[0m',
+            error: '\x1b[31mBad state\x1b[0m',
+            stackTrace: '\x1b[2m#0 main (app.dart:1)\x1b[0m',
+          ),
+        );
+
+        final entry = appTab.logHistory.single as LogEntry;
+        expect(entry.message, '[flutter] Failed');
+        expect(entry.error, 'Bad state');
+        expect(entry.stackTrace.toString(), '#0 main (app.dart:1)');
+      },
+    );
   });
 
   group('Given parseLogLevel', () {

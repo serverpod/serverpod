@@ -14,7 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'unique_data.dart' as _i2;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
-abstract class RelatedUniqueData implements _i1.SerializableModel {
+abstract class RelatedUniqueData
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   RelatedUniqueData._({
     this.id,
     required this.uniqueDataId,
@@ -69,6 +70,17 @@ abstract class RelatedUniqueData implements _i1.SerializableModel {
       if (id != null) 'id': id,
       'uniqueDataId': uniqueDataId,
       if (uniqueData != null) 'uniqueData': uniqueData?.toJson(),
+      'number': number,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'RelatedUniqueData',
+      if (id != null) 'id': id,
+      'uniqueDataId': uniqueDataId,
+      if (uniqueData != null) 'uniqueData': uniqueData?.toJsonForProtocol(),
       'number': number,
     };
   }

@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
+import 'package:serverpod_cli/src/analytics/migration_metrics.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -61,14 +64,32 @@ Future<File?> createRepairMigrationAction({
     );
   }
 
-  return MigrationGenerator(
-    directory: serverDirectory,
-    projectName: projectName,
-  ).repairMigration(
-    tag: tag,
-    force: force,
-    runMode: runMode,
-    dialect: config.databaseDialect,
-    targetMigrationVersion: targetMigrationVersion,
-  );
+  final migration =
+      await MigrationGenerator(
+        directory: serverDirectory,
+        projectName: projectName,
+      ).repairMigration(
+        tag: tag,
+        force: force,
+        runMode: runMode,
+        dialect: config.databaseDialect,
+        targetMigrationVersion: targetMigrationVersion,
+      );
+
+  // Hooked here rather than in the callers so the `create-repair-migration`
+  // command, the start TUI's repair action and the `create_repair_migration`
+  // MCP tool are all covered by one call. A null migration means no drift was
+  // detected and nothing was written.
+  if (migration != null) {
+    await cliAnalytics.captureMigrationCreated(
+      config: config,
+      flags: const MigrationCreatedFlags(
+        serverMigrationCreated: true,
+        clientMigrationCreated: false,
+      ),
+      isRepairMigration: true,
+    );
+  }
+
+  return migration;
 }

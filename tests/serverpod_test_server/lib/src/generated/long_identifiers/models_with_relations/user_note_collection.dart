@@ -102,8 +102,6 @@ abstract class UserNoteCollection
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UserNoteCollectionTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UserNoteCollectionTable>? orderByList,
     UserNoteCollectionInclude? include,
   }) {
@@ -112,8 +110,6 @@ abstract class UserNoteCollection
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UserNoteCollection.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(UserNoteCollection.t),
       include: include,
     );
@@ -262,8 +258,6 @@ class UserNoteCollectionIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -316,8 +310,6 @@ class UserNoteCollectionRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UserNoteCollectionTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UserNoteCollectionTable>? orderByList,
     _i1.Transaction? transaction,
     UserNoteCollectionInclude? include,
@@ -328,8 +320,6 @@ class UserNoteCollectionRepository {
       where: where?.call(UserNoteCollection.t),
       orderBy: orderBy?.call(UserNoteCollection.t),
       orderByList: orderByList?.call(UserNoteCollection.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -361,8 +351,6 @@ class UserNoteCollectionRepository {
     _i1.WhereExpressionBuilder<UserNoteCollectionTable>? where,
     int? offset,
     _i1.OrderByBuilder<UserNoteCollectionTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UserNoteCollectionTable>? orderByList,
     _i1.Transaction? transaction,
     UserNoteCollectionInclude? include,
@@ -373,8 +361,6 @@ class UserNoteCollectionRepository {
       where: where?.call(UserNoteCollection.t),
       orderBy: orderBy?.call(UserNoteCollection.t),
       orderByList: orderByList?.call(UserNoteCollection.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -411,16 +397,22 @@ class UserNoteCollectionRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserNoteCollection>> insert(
     _i1.DatabaseSession session,
     List<UserNoteCollection> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<UserNoteCollection>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -454,6 +446,10 @@ class UserNoteCollectionRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserNoteCollection>> upsert(
     _i1.DatabaseSession session,
     List<UserNoteCollection> rows, {
@@ -461,6 +457,7 @@ class UserNoteCollectionRepository {
     _i1.ColumnSelections<UserNoteCollectionTable>? updateColumns,
     _i1.WhereExpressionBuilder<UserNoteCollectionTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<UserNoteCollection>(
       rows,
@@ -468,6 +465,7 @@ class UserNoteCollectionRepository {
       updateColumns: updateColumns?.call(UserNoteCollection.t),
       updateWhere: updateWhere?.call(UserNoteCollection.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -506,16 +504,22 @@ class UserNoteCollectionRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserNoteCollection>> update(
     _i1.DatabaseSession session,
     List<UserNoteCollection> rows, {
     _i1.ColumnSelections<UserNoteCollectionTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<UserNoteCollection>(
       rows,
       columns: columns?.call(UserNoteCollection.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -553,6 +557,10 @@ class UserNoteCollectionRepository {
 
   /// Updates all [UserNoteCollection]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserNoteCollection>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<UserNoteCollectionUpdateTable>
@@ -562,9 +570,8 @@ class UserNoteCollectionRepository {
     int? offset,
     _i1.OrderByBuilder<UserNoteCollectionTable>? orderBy,
     _i1.OrderByListBuilder<UserNoteCollectionTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<UserNoteCollection>(
       columnValues: columnValues(UserNoteCollection.t.updateTable),
@@ -573,9 +580,8 @@ class UserNoteCollectionRepository {
       offset: offset,
       orderBy: orderBy?.call(UserNoteCollection.t),
       orderByList: orderByList?.call(UserNoteCollection.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -586,22 +592,24 @@ class UserNoteCollectionRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserNoteCollection>> delete(
     _i1.DatabaseSession session,
     List<UserNoteCollection> rows, {
     _i1.OrderByBuilder<UserNoteCollectionTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UserNoteCollectionTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<UserNoteCollection>(
       rows,
       orderBy: orderBy?.call(UserNoteCollection.t),
       orderByList: orderByList?.call(UserNoteCollection.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -621,22 +629,24 @@ class UserNoteCollectionRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserNoteCollection>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UserNoteCollectionTable> where,
     _i1.OrderByBuilder<UserNoteCollectionTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UserNoteCollectionTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UserNoteCollection>(
       where: where(UserNoteCollection.t),
       orderBy: orderBy?.call(UserNoteCollection.t),
       orderByList: orderByList?.call(UserNoteCollection.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

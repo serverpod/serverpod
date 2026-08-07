@@ -109,8 +109,6 @@ abstract class BoolDefault
     int? limit,
     int? offset,
     _i1.OrderByBuilder<BoolDefaultTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<BoolDefaultTable>? orderByList,
     BoolDefaultInclude? include,
   }) {
@@ -119,8 +117,6 @@ abstract class BoolDefault
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(BoolDefault.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(BoolDefault.t),
       include: include,
     );
@@ -241,8 +237,6 @@ class BoolDefaultIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -287,8 +281,6 @@ class BoolDefaultRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<BoolDefaultTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<BoolDefaultTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -298,8 +290,6 @@ class BoolDefaultRepository {
       where: where?.call(BoolDefault.t),
       orderBy: orderBy?.call(BoolDefault.t),
       orderByList: orderByList?.call(BoolDefault.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -330,8 +320,6 @@ class BoolDefaultRepository {
     _i1.WhereExpressionBuilder<BoolDefaultTable>? where,
     int? offset,
     _i1.OrderByBuilder<BoolDefaultTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<BoolDefaultTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -341,8 +329,6 @@ class BoolDefaultRepository {
       where: where?.call(BoolDefault.t),
       orderBy: orderBy?.call(BoolDefault.t),
       orderByList: orderByList?.call(BoolDefault.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -376,16 +362,22 @@ class BoolDefaultRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<BoolDefault>> insert(
     _i1.DatabaseSession session,
     List<BoolDefault> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<BoolDefault>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -419,6 +411,10 @@ class BoolDefaultRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<BoolDefault>> upsert(
     _i1.DatabaseSession session,
     List<BoolDefault> rows, {
@@ -426,6 +422,7 @@ class BoolDefaultRepository {
     _i1.ColumnSelections<BoolDefaultTable>? updateColumns,
     _i1.WhereExpressionBuilder<BoolDefaultTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<BoolDefault>(
       rows,
@@ -433,6 +430,7 @@ class BoolDefaultRepository {
       updateColumns: updateColumns?.call(BoolDefault.t),
       updateWhere: updateWhere?.call(BoolDefault.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -471,16 +469,22 @@ class BoolDefaultRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<BoolDefault>> update(
     _i1.DatabaseSession session,
     List<BoolDefault> rows, {
     _i1.ColumnSelections<BoolDefaultTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<BoolDefault>(
       rows,
       columns: columns?.call(BoolDefault.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -517,6 +521,10 @@ class BoolDefaultRepository {
 
   /// Updates all [BoolDefault]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<BoolDefault>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<BoolDefaultUpdateTable> columnValues,
@@ -525,9 +533,8 @@ class BoolDefaultRepository {
     int? offset,
     _i1.OrderByBuilder<BoolDefaultTable>? orderBy,
     _i1.OrderByListBuilder<BoolDefaultTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<BoolDefault>(
       columnValues: columnValues(BoolDefault.t.updateTable),
@@ -536,9 +543,8 @@ class BoolDefaultRepository {
       offset: offset,
       orderBy: orderBy?.call(BoolDefault.t),
       orderByList: orderByList?.call(BoolDefault.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -549,22 +555,24 @@ class BoolDefaultRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<BoolDefault>> delete(
     _i1.DatabaseSession session,
     List<BoolDefault> rows, {
     _i1.OrderByBuilder<BoolDefaultTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<BoolDefaultTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<BoolDefault>(
       rows,
       orderBy: orderBy?.call(BoolDefault.t),
       orderByList: orderByList?.call(BoolDefault.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -584,22 +592,24 @@ class BoolDefaultRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<BoolDefault>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<BoolDefaultTable> where,
     _i1.OrderByBuilder<BoolDefaultTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<BoolDefaultTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<BoolDefault>(
       where: where(BoolDefault.t),
       orderBy: orderBy?.call(BoolDefault.t),
       orderByList: orderByList?.call(BoolDefault.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

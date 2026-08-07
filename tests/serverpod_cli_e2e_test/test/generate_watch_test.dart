@@ -156,6 +156,7 @@ fields:
         reason:
             'Incremental code generation did not complete before timeout was reached.',
       );
+      await waitForFileDeletion(entityFile);
 
       entityFiles = entityDirectory.listSync();
       expect(
@@ -306,6 +307,7 @@ fields:
           reason:
               'Incremental code generation did not complete before timeout was reached.',
         );
+        await waitForFileDeletion(entityFile);
 
         entityFiles = entityDirectory.listSync();
         expect(
@@ -913,6 +915,16 @@ String createRandomProjectName() {
   var clientDir = path.join(projectName, '${projectName}_client');
 
   return (serverDir, flutterDir, clientDir);
+}
+
+Future<void> waitForFileDeletion(
+  File file, {
+  Duration timeout = const Duration(seconds: 30),
+}) async {
+  final deadline = DateTime.now().add(timeout);
+  while (file.existsSync() && DateTime.now().isBefore(deadline)) {
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+  }
 }
 
 String createClientModelDirectoryPath(

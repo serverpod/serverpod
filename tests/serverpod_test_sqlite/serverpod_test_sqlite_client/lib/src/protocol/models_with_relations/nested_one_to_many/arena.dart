@@ -12,11 +12,11 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
-import '../../models_with_relations/nested_one_to_many/team.dart' as _i2;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
-import 'package:serverpod_client/serverpod_client.dart' as _i4;
+import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import '../../models_with_relations/nested_one_to_many/team.dart' as _i3;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
 
-abstract class Arena implements _i1.TableRow<int?> {
+abstract class Arena implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   Arena._({
     this.id,
     required this.name,
@@ -26,7 +26,7 @@ abstract class Arena implements _i1.TableRow<int?> {
   factory Arena({
     int? id,
     required String name,
-    _i2.Team? team,
+    _i3.Team? team,
   }) = _ArenaImpl;
 
   factory Arena.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -35,7 +35,7 @@ abstract class Arena implements _i1.TableRow<int?> {
       name: jsonSerialization['name'] as String,
       team: jsonSerialization['team'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.Team>(jsonSerialization['team']),
+          : _i4.Protocol().deserialize<_i3.Team>(jsonSerialization['team']),
     );
   }
 
@@ -48,18 +48,18 @@ abstract class Arena implements _i1.TableRow<int?> {
 
   String name;
 
-  _i2.Team? team;
+  _i3.Team? team;
 
   @override
   _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Arena]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   Arena copyWith({
     int? id,
     String? name,
-    _i2.Team? team,
+    _i3.Team? team,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -71,7 +71,17 @@ abstract class Arena implements _i1.TableRow<int?> {
     };
   }
 
-  static ArenaInclude include({_i2.TeamInclude? team}) {
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Arena',
+      if (id != null) 'id': id,
+      'name': name,
+      if (team != null) 'team': team?.toJsonForProtocol(),
+    };
+  }
+
+  static ArenaInclude include({_i3.TeamInclude? team}) {
     return ArenaInclude._(team: team);
   }
 
@@ -80,8 +90,6 @@ abstract class Arena implements _i1.TableRow<int?> {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ArenaTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ArenaTable>? orderByList,
     ArenaInclude? include,
   }) {
@@ -90,8 +98,6 @@ abstract class Arena implements _i1.TableRow<int?> {
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Arena.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(Arena.t),
       include: include,
     );
@@ -99,7 +105,7 @@ abstract class Arena implements _i1.TableRow<int?> {
 
   @override
   String toString() {
-    return _i4.SerializationManager.encode(this);
+    return _i2.SerializationManager.encode(this);
   }
 }
 
@@ -109,7 +115,7 @@ class _ArenaImpl extends Arena {
   _ArenaImpl({
     int? id,
     required String name,
-    _i2.Team? team,
+    _i3.Team? team,
   }) : super._(
          id: id,
          name: name,
@@ -118,7 +124,7 @@ class _ArenaImpl extends Arena {
 
   /// Returns a shallow copy of this [Arena]
   /// with some or all fields replaced by the given arguments.
-  @_i4.useResult
+  @_i2.useResult
   @override
   Arena copyWith({
     Object? id = _Undefined,
@@ -128,7 +134,7 @@ class _ArenaImpl extends Arena {
     return Arena(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      team: team is _i2.Team? ? team : this.team?.copyWith(),
+      team: team is _i3.Team? ? team : this.team?.copyWith(),
     );
   }
 }
@@ -155,17 +161,17 @@ class ArenaTable extends _i1.Table<int?> {
 
   late final _i1.ColumnString name;
 
-  _i2.TeamTable? _team;
+  _i3.TeamTable? _team;
 
-  _i2.TeamTable get team {
+  _i3.TeamTable get team {
     if (_team != null) return _team!;
     _team = _i1.createRelationTable(
       relationFieldName: 'team',
       field: Arena.t.id,
-      foreignField: _i2.Team.t.arenaId,
+      foreignField: _i3.Team.t.arenaId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.TeamTable(tableRelation: foreignTableRelation),
+          _i3.TeamTable(tableRelation: foreignTableRelation),
     );
     return _team!;
   }
@@ -186,11 +192,11 @@ class ArenaTable extends _i1.Table<int?> {
 }
 
 class ArenaInclude extends _i1.IncludeObject {
-  ArenaInclude._({_i2.TeamInclude? team}) {
+  ArenaInclude._({_i3.TeamInclude? team}) {
     _team = team;
   }
 
-  _i2.TeamInclude? _team;
+  _i3.TeamInclude? _team;
 
   @override
   Map<String, _i1.Include?> get includes => {'team': _team};
@@ -205,8 +211,6 @@ class ArenaIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -255,8 +259,6 @@ class ArenaRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ArenaTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ArenaTable>? orderByList,
     _i1.Transaction? transaction,
     ArenaInclude? include,
@@ -267,8 +269,6 @@ class ArenaRepository {
       where: where?.call(Arena.t),
       orderBy: orderBy?.call(Arena.t),
       orderByList: orderByList?.call(Arena.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -300,8 +300,6 @@ class ArenaRepository {
     _i1.WhereExpressionBuilder<ArenaTable>? where,
     int? offset,
     _i1.OrderByBuilder<ArenaTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ArenaTable>? orderByList,
     _i1.Transaction? transaction,
     ArenaInclude? include,
@@ -312,8 +310,6 @@ class ArenaRepository {
       where: where?.call(Arena.t),
       orderBy: orderBy?.call(Arena.t),
       orderByList: orderByList?.call(Arena.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -350,16 +346,22 @@ class ArenaRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Arena>> insert(
     _i1.DatabaseSession session,
     List<Arena> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<Arena>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -393,6 +395,10 @@ class ArenaRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Arena>> upsert(
     _i1.DatabaseSession session,
     List<Arena> rows, {
@@ -400,6 +406,7 @@ class ArenaRepository {
     _i1.ColumnSelections<ArenaTable>? updateColumns,
     _i1.WhereExpressionBuilder<ArenaTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<Arena>(
       rows,
@@ -407,6 +414,7 @@ class ArenaRepository {
       updateColumns: updateColumns?.call(Arena.t),
       updateWhere: updateWhere?.call(Arena.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -445,16 +453,22 @@ class ArenaRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Arena>> update(
     _i1.DatabaseSession session,
     List<Arena> rows, {
     _i1.ColumnSelections<ArenaTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<Arena>(
       rows,
       columns: columns?.call(Arena.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -491,6 +505,10 @@ class ArenaRepository {
 
   /// Updates all [Arena]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Arena>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<ArenaUpdateTable> columnValues,
@@ -499,9 +517,8 @@ class ArenaRepository {
     int? offset,
     _i1.OrderByBuilder<ArenaTable>? orderBy,
     _i1.OrderByListBuilder<ArenaTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<Arena>(
       columnValues: columnValues(Arena.t.updateTable),
@@ -510,9 +527,8 @@ class ArenaRepository {
       offset: offset,
       orderBy: orderBy?.call(Arena.t),
       orderByList: orderByList?.call(Arena.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -523,22 +539,24 @@ class ArenaRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Arena>> delete(
     _i1.DatabaseSession session,
     List<Arena> rows, {
     _i1.OrderByBuilder<ArenaTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ArenaTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<Arena>(
       rows,
       orderBy: orderBy?.call(Arena.t),
       orderByList: orderByList?.call(Arena.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -558,22 +576,24 @@ class ArenaRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Arena>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ArenaTable> where,
     _i1.OrderByBuilder<ArenaTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ArenaTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Arena>(
       where: where(Arena.t),
       orderBy: orderBy?.call(Arena.t),
       orderByList: orderByList?.call(Arena.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -617,7 +637,7 @@ class ArenaAttachRowRepository {
   Future<void> team(
     _i1.DatabaseSession session,
     Arena arena,
-    _i2.Team team, {
+    _i3.Team team, {
     _i1.Transaction? transaction,
   }) async {
     if (team.id == null) {
@@ -628,9 +648,9 @@ class ArenaAttachRowRepository {
     }
 
     var $team = team.copyWith(arenaId: arena.id);
-    await session.db.updateRow<_i2.Team>(
+    await session.db.updateRow<_i3.Team>(
       $team,
-      columns: [_i2.Team.t.arenaId],
+      columns: [_i3.Team.t.arenaId],
       transaction: transaction,
     );
   }
@@ -662,9 +682,9 @@ class ArenaDetachRowRepository {
     }
 
     var $$team = $team.copyWith(arenaId: null);
-    await session.db.updateRow<_i2.Team>(
+    await session.db.updateRow<_i3.Team>(
       $$team,
-      columns: [_i2.Team.t.arenaId],
+      columns: [_i3.Team.t.arenaId],
       transaction: transaction,
     );
   }

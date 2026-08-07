@@ -24,5 +24,7 @@ util/run_tests_update_pubspecs
 echo "### Running dart analyze"
 util/run_tests_analyze
 
-echo "### Running unit tests"
-util/run_tests_e2e
+echo "### Running e2e tests (IO)"
+# Host-based now (embedded PG + build_pod fallback); needs a
+# `127.0.0.1 serverpod_test_server` /etc/hosts alias, like the CI job sets up.
+util/run_tests_e2e_host vm

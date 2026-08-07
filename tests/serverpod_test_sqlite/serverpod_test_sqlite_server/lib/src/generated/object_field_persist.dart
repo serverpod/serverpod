@@ -100,8 +100,6 @@ abstract class ObjectFieldPersist
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
     ObjectFieldPersistInclude? include,
   }) {
@@ -110,8 +108,6 @@ abstract class ObjectFieldPersist
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectFieldPersist.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(ObjectFieldPersist.t),
       include: include,
     );
@@ -204,8 +200,6 @@ class ObjectFieldPersistIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -250,8 +244,6 @@ class ObjectFieldPersistRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -261,8 +253,6 @@ class ObjectFieldPersistRepository {
       where: where?.call(ObjectFieldPersist.t),
       orderBy: orderBy?.call(ObjectFieldPersist.t),
       orderByList: orderByList?.call(ObjectFieldPersist.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -293,8 +283,6 @@ class ObjectFieldPersistRepository {
     _i1.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
     int? offset,
     _i1.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -304,8 +292,6 @@ class ObjectFieldPersistRepository {
       where: where?.call(ObjectFieldPersist.t),
       orderBy: orderBy?.call(ObjectFieldPersist.t),
       orderByList: orderByList?.call(ObjectFieldPersist.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -339,16 +325,22 @@ class ObjectFieldPersistRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectFieldPersist>> insert(
     _i1.DatabaseSession session,
     List<ObjectFieldPersist> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<ObjectFieldPersist>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -382,6 +374,10 @@ class ObjectFieldPersistRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectFieldPersist>> upsert(
     _i1.DatabaseSession session,
     List<ObjectFieldPersist> rows, {
@@ -389,6 +385,7 @@ class ObjectFieldPersistRepository {
     _i1.ColumnSelections<ObjectFieldPersistTable>? updateColumns,
     _i1.WhereExpressionBuilder<ObjectFieldPersistTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<ObjectFieldPersist>(
       rows,
@@ -396,6 +393,7 @@ class ObjectFieldPersistRepository {
       updateColumns: updateColumns?.call(ObjectFieldPersist.t),
       updateWhere: updateWhere?.call(ObjectFieldPersist.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -434,16 +432,22 @@ class ObjectFieldPersistRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectFieldPersist>> update(
     _i1.DatabaseSession session,
     List<ObjectFieldPersist> rows, {
     _i1.ColumnSelections<ObjectFieldPersistTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<ObjectFieldPersist>(
       rows,
       columns: columns?.call(ObjectFieldPersist.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -481,6 +485,10 @@ class ObjectFieldPersistRepository {
 
   /// Updates all [ObjectFieldPersist]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectFieldPersist>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<ObjectFieldPersistUpdateTable>
@@ -490,9 +498,8 @@ class ObjectFieldPersistRepository {
     int? offset,
     _i1.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
     _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectFieldPersist>(
       columnValues: columnValues(ObjectFieldPersist.t.updateTable),
@@ -501,9 +508,8 @@ class ObjectFieldPersistRepository {
       offset: offset,
       orderBy: orderBy?.call(ObjectFieldPersist.t),
       orderByList: orderByList?.call(ObjectFieldPersist.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -514,22 +520,24 @@ class ObjectFieldPersistRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectFieldPersist>> delete(
     _i1.DatabaseSession session,
     List<ObjectFieldPersist> rows, {
     _i1.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<ObjectFieldPersist>(
       rows,
       orderBy: orderBy?.call(ObjectFieldPersist.t),
       orderByList: orderByList?.call(ObjectFieldPersist.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -549,22 +557,24 @@ class ObjectFieldPersistRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectFieldPersist>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ObjectFieldPersistTable> where,
     _i1.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectFieldPersist>(
       where: where(ObjectFieldPersist.t),
       orderBy: orderBy?.call(ObjectFieldPersist.t),
       orderByList: orderByList?.call(ObjectFieldPersist.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

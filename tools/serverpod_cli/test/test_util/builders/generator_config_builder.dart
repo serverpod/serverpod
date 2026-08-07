@@ -25,7 +25,6 @@ class GeneratorConfigBuilder {
   DatabaseDialect _databaseDialect;
   List<ExperimentalFeature> _enabledExperimentalFeatures;
   List<String>? _relativeServerTestToolsPathParts;
-  List<String> _relativeFlutterPackagePathParts;
 
   GeneratorConfigBuilder()
     : _name = _defaultName,
@@ -36,7 +35,6 @@ class GeneratorConfigBuilder {
       _serverPackageDirectoryPathParts = [],
       _sharedModelsSourcePathsParts = {},
       _relativeDartClientPackagePathParts = ['..', 'example_client'],
-      _relativeFlutterPackagePathParts = ['..', 'example_flutter'],
       _modules = [
         ModuleConfig(
           type: PackageType.internal,
@@ -162,13 +160,6 @@ class GeneratorConfigBuilder {
     return this;
   }
 
-  GeneratorConfigBuilder withRelativeFlutterPackagePathParts(
-    List<String> relativeFlutterPackagePathParts,
-  ) {
-    _relativeFlutterPackagePathParts = relativeFlutterPackagePathParts;
-    return this;
-  }
-
   GeneratorConfig build() {
     return GeneratorConfig(
       name: _name,
@@ -179,7 +170,6 @@ class GeneratorConfigBuilder {
       serverPackageDirectoryPathParts: _serverPackageDirectoryPathParts,
       sharedModelsSourcePathsParts: _sharedModelsSourcePathsParts,
       relativeDartClientPackagePathParts: _relativeDartClientPackagePathParts,
-      relativeFlutterPackagePathParts: _relativeFlutterPackagePathParts,
       modules: _modules,
       extraClasses: _extraClasses,
       serializeAsJsonbByDefault: _serializeAsJsonbByDefault,
@@ -193,11 +183,17 @@ class GeneratorConfigBuilder {
 
 /// Builds a minimal server [GeneratorConfig] rooted at [projectDir], for
 /// integration tests that generate code from a temporary project.
-GeneratorConfig buildTestServerConfig(Directory projectDir) {
+GeneratorConfig buildTestServerConfig(
+  Directory projectDir, {
+  Map<String, List<String>> sharedModelsSourcePathsParts = const {},
+  DatabaseDialect databaseDialect = DatabaseDialect.postgres,
+}) {
   return GeneratorConfigBuilder()
       .withName('test')
       .withServerPackageDirectoryPathParts([projectDir.path])
       .withRelativeDartClientPackagePathParts(['test_client'])
+      .withSharedModelsSourcePathsParts(sharedModelsSourcePathsParts)
+      .withDatabaseDialect(databaseDialect)
       .withModules([
         ModuleConfig(
           type: PackageType.server,

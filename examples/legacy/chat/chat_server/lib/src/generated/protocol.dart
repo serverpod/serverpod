@@ -8,6 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: dead_code, unnecessary_type_check
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -25,7 +26,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
 
   static final Protocol _instance = Protocol._().._registerHostProtocols();
 
-  static final List<_i2.TableDefinition> targetTableDefinitions = [
+  static List<_i2.TableDefinition> get targetTableDefinitions => [
     _i2.TableDefinition(
       name: 'channel',
       dartName: 'Channel',

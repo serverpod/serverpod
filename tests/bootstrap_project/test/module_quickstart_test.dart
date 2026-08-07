@@ -6,15 +6,12 @@ import 'package:test/test.dart';
 
 import '../lib/src/util.dart';
 
-const tempDirName = 'temp';
-
 void main() {
   final rootPath = path.join(Directory.current.path, '..', '..');
   final cliProjectPath = getServerpodCliProjectPath(rootPath: rootPath);
-  final tempPath = path.join(rootPath, tempDirName);
+  final tempPath = Directory.systemTemp.createTempSync('spb_').path;
 
   setUpAll(() async {
-    await Directory(tempPath).create();
     final pubGetProcess = await startProcess('dart', [
       'pub',
       'get',
@@ -44,6 +41,7 @@ void main() {
             projectName,
             '-v',
             '--no-analytics',
+            '--no-interactive',
           ],
           rootPath: rootPath,
           workingDirectory: tempPath,

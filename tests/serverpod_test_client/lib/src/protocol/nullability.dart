@@ -15,7 +15,8 @@ import 'dart:typed_data' as _i2;
 import 'simple_data.dart' as _i3;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i4;
 
-abstract class Nullability implements _i1.SerializableModel {
+abstract class Nullability
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   Nullability._({
     required this.anInt,
     this.aNullableInt,
@@ -475,6 +476,104 @@ abstract class Nullability implements _i1.SerializableModel {
       if (aNullableListWithNullableObjects != null)
         'aNullableListWithNullableObjects': aNullableListWithNullableObjects
             ?.toJson(valueToJson: (v) => v?.toJson()),
+      'aDateTimeList': aDateTimeList.toJson(valueToJson: (v) => v.toJson()),
+      if (aNullableDateTimeList != null)
+        'aNullableDateTimeList': aNullableDateTimeList?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
+      'aListWithNullableDateTimes': aListWithNullableDateTimes.toJson(
+        valueToJson: (v) => v?.toJson(),
+      ),
+      if (aNullableListWithNullableDateTimes != null)
+        'aNullableListWithNullableDateTimes': aNullableListWithNullableDateTimes
+            ?.toJson(valueToJson: (v) => v?.toJson()),
+      'aByteDataList': aByteDataList.toJson(valueToJson: (v) => v.toJson()),
+      if (aNullableByteDataList != null)
+        'aNullableByteDataList': aNullableByteDataList?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
+      'aListWithNullableByteDatas': aListWithNullableByteDatas.toJson(
+        valueToJson: (v) => v?.toJson(),
+      ),
+      if (aNullableListWithNullableByteDatas != null)
+        'aNullableListWithNullableByteDatas': aNullableListWithNullableByteDatas
+            ?.toJson(valueToJson: (v) => v?.toJson()),
+      'aDurationList': aDurationList.toJson(valueToJson: (v) => v.toJson()),
+      if (aNullableDurationList != null)
+        'aNullableDurationList': aNullableDurationList?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
+      'aListWithNullableDurations': aListWithNullableDurations.toJson(
+        valueToJson: (v) => v?.toJson(),
+      ),
+      if (aNullableListWithNullableDurations != null)
+        'aNullableListWithNullableDurations': aNullableListWithNullableDurations
+            ?.toJson(valueToJson: (v) => v?.toJson()),
+      'aUuidList': aUuidList.toJson(valueToJson: (v) => v.toJson()),
+      if (aNullableUuidList != null)
+        'aNullableUuidList': aNullableUuidList?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
+      'aListWithNullableUuids': aListWithNullableUuids.toJson(
+        valueToJson: (v) => v?.toJson(),
+      ),
+      if (aNullableListWithNullableUuids != null)
+        'aNullableListWithNullableUuids': aNullableListWithNullableUuids
+            ?.toJson(valueToJson: (v) => v?.toJson()),
+      'anIntMap': anIntMap.toJson(),
+      if (aNullableIntMap != null) 'aNullableIntMap': aNullableIntMap?.toJson(),
+      'aMapWithNullableInts': aMapWithNullableInts.toJson(),
+      if (aNullableMapWithNullableInts != null)
+        'aNullableMapWithNullableInts': aNullableMapWithNullableInts?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Nullability',
+      'anInt': anInt,
+      if (aNullableInt != null) 'aNullableInt': aNullableInt,
+      'aDouble': aDouble,
+      if (aNullableDouble != null) 'aNullableDouble': aNullableDouble,
+      'aBool': aBool,
+      if (aNullableBool != null) 'aNullableBool': aNullableBool,
+      'aString': aString,
+      if (aNullableString != null) 'aNullableString': aNullableString,
+      'aDateTime': aDateTime.toJson(),
+      if (aNullableDateTime != null)
+        'aNullableDateTime': aNullableDateTime?.toJson(),
+      'aByteData': aByteData.toJson(),
+      if (aNullableByteData != null)
+        'aNullableByteData': aNullableByteData?.toJson(),
+      'aDuration': aDuration.toJson(),
+      if (aNullableDuration != null)
+        'aNullableDuration': aNullableDuration?.toJson(),
+      'aUuid': aUuid.toJson(),
+      if (aNullableUuid != null) 'aNullableUuid': aNullableUuid?.toJson(),
+      'anObject': anObject.toJsonForProtocol(),
+      if (aNullableObject != null)
+        'aNullableObject': aNullableObject?.toJsonForProtocol(),
+      'anIntList': anIntList.toJson(),
+      if (aNullableIntList != null)
+        'aNullableIntList': aNullableIntList?.toJson(),
+      'aListWithNullableInts': aListWithNullableInts.toJson(),
+      if (aNullableListWithNullableInts != null)
+        'aNullableListWithNullableInts': aNullableListWithNullableInts
+            ?.toJson(),
+      'anObjectList': anObjectList.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
+      if (aNullableObjectList != null)
+        'aNullableObjectList': aNullableObjectList?.toJson(
+          valueToJson: (v) => v.toJsonForProtocol(),
+        ),
+      'aListWithNullableObjects': aListWithNullableObjects.toJson(
+        valueToJson: (v) => v?.toJsonForProtocol(),
+      ),
+      if (aNullableListWithNullableObjects != null)
+        'aNullableListWithNullableObjects': aNullableListWithNullableObjects
+            ?.toJson(valueToJson: (v) => v?.toJsonForProtocol()),
       'aDateTimeList': aDateTimeList.toJson(valueToJson: (v) => v.toJson()),
       if (aNullableDateTimeList != null)
         'aNullableDateTimeList': aNullableDateTimeList?.toJson(

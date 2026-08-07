@@ -12,7 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class GrandparentClassWithId implements _i1.SerializableModel {
+class GrandparentClassWithId
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   GrandparentClassWithId({
     this.id,
     required this.grandParentField,
@@ -48,6 +49,15 @@ class GrandparentClassWithId implements _i1.SerializableModel {
 
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'GrandparentClassWithId',
+      if (id != null) 'id': id?.toJson(),
+      'grandParentField': grandParentField,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'GrandparentClassWithId',
       if (id != null) 'id': id?.toJson(),

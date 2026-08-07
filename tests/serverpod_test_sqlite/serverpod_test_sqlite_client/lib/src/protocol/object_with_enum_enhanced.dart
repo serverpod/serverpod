@@ -15,7 +15,8 @@ import 'test_enum_enhanced.dart' as _i2;
 import 'test_enum_enhanced_by_name.dart' as _i3;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
 
-abstract class ObjectWithEnumEnhanced implements _i1.SerializableModel {
+abstract class ObjectWithEnumEnhanced
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ObjectWithEnumEnhanced._({
     this.id,
     required this.byIndex,
@@ -97,6 +98,20 @@ abstract class ObjectWithEnumEnhanced implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'ObjectWithEnumEnhanced',
+      if (id != null) 'id': id,
+      'byIndex': byIndex.toJson(),
+      if (nullableByIndex != null) 'nullableByIndex': nullableByIndex?.toJson(),
+      'byIndexList': byIndexList.toJson(valueToJson: (v) => v.toJson()),
+      'byName': byName.toJson(),
+      if (nullableByName != null) 'nullableByName': nullableByName?.toJson(),
+      'byNameList': byNameList.toJson(valueToJson: (v) => v.toJson()),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ObjectWithEnumEnhanced',
       if (id != null) 'id': id,

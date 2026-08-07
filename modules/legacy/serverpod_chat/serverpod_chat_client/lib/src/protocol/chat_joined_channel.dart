@@ -16,7 +16,8 @@ import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i3;
 import 'package:serverpod_chat_client/src/protocol/protocol.dart' as _i4;
 
 /// A message passed to a user when it joins a channel.
-abstract class ChatJoinedChannel implements _i1.SerializableModel {
+abstract class ChatJoinedChannel
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ChatJoinedChannel._({
     required this.channel,
     required this.initialMessageChunk,
@@ -71,6 +72,17 @@ abstract class ChatJoinedChannel implements _i1.SerializableModel {
       '__className__': 'serverpod_chat.ChatJoinedChannel',
       'channel': channel,
       'initialMessageChunk': initialMessageChunk.toJson(),
+      'lastReadMessageId': lastReadMessageId,
+      'userInfo': userInfo.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod_chat.ChatJoinedChannel',
+      'channel': channel,
+      'initialMessageChunk': initialMessageChunk.toJsonForProtocol(),
       'lastReadMessageId': lastReadMessageId,
       'userInfo': userInfo.toJson(),
     };

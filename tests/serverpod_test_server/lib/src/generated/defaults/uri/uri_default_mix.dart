@@ -118,8 +118,6 @@ abstract class UriDefaultMix
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UriDefaultMixTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UriDefaultMixTable>? orderByList,
     UriDefaultMixInclude? include,
   }) {
@@ -128,8 +126,6 @@ abstract class UriDefaultMix
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UriDefaultMix.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(UriDefaultMix.t),
       include: include,
     );
@@ -255,8 +251,6 @@ class UriDefaultMixIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -301,8 +295,6 @@ class UriDefaultMixRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UriDefaultMixTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UriDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -312,8 +304,6 @@ class UriDefaultMixRepository {
       where: where?.call(UriDefaultMix.t),
       orderBy: orderBy?.call(UriDefaultMix.t),
       orderByList: orderByList?.call(UriDefaultMix.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -344,8 +334,6 @@ class UriDefaultMixRepository {
     _i1.WhereExpressionBuilder<UriDefaultMixTable>? where,
     int? offset,
     _i1.OrderByBuilder<UriDefaultMixTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UriDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -355,8 +343,6 @@ class UriDefaultMixRepository {
       where: where?.call(UriDefaultMix.t),
       orderBy: orderBy?.call(UriDefaultMix.t),
       orderByList: orderByList?.call(UriDefaultMix.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -390,16 +376,22 @@ class UriDefaultMixRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UriDefaultMix>> insert(
     _i1.DatabaseSession session,
     List<UriDefaultMix> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<UriDefaultMix>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -433,6 +425,10 @@ class UriDefaultMixRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UriDefaultMix>> upsert(
     _i1.DatabaseSession session,
     List<UriDefaultMix> rows, {
@@ -440,6 +436,7 @@ class UriDefaultMixRepository {
     _i1.ColumnSelections<UriDefaultMixTable>? updateColumns,
     _i1.WhereExpressionBuilder<UriDefaultMixTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<UriDefaultMix>(
       rows,
@@ -447,6 +444,7 @@ class UriDefaultMixRepository {
       updateColumns: updateColumns?.call(UriDefaultMix.t),
       updateWhere: updateWhere?.call(UriDefaultMix.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -485,16 +483,22 @@ class UriDefaultMixRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UriDefaultMix>> update(
     _i1.DatabaseSession session,
     List<UriDefaultMix> rows, {
     _i1.ColumnSelections<UriDefaultMixTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<UriDefaultMix>(
       rows,
       columns: columns?.call(UriDefaultMix.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -531,6 +535,10 @@ class UriDefaultMixRepository {
 
   /// Updates all [UriDefaultMix]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UriDefaultMix>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<UriDefaultMixUpdateTable> columnValues,
@@ -539,9 +547,8 @@ class UriDefaultMixRepository {
     int? offset,
     _i1.OrderByBuilder<UriDefaultMixTable>? orderBy,
     _i1.OrderByListBuilder<UriDefaultMixTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<UriDefaultMix>(
       columnValues: columnValues(UriDefaultMix.t.updateTable),
@@ -550,9 +557,8 @@ class UriDefaultMixRepository {
       offset: offset,
       orderBy: orderBy?.call(UriDefaultMix.t),
       orderByList: orderByList?.call(UriDefaultMix.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -563,22 +569,24 @@ class UriDefaultMixRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UriDefaultMix>> delete(
     _i1.DatabaseSession session,
     List<UriDefaultMix> rows, {
     _i1.OrderByBuilder<UriDefaultMixTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UriDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<UriDefaultMix>(
       rows,
       orderBy: orderBy?.call(UriDefaultMix.t),
       orderByList: orderByList?.call(UriDefaultMix.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -598,22 +606,24 @@ class UriDefaultMixRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UriDefaultMix>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UriDefaultMixTable> where,
     _i1.OrderByBuilder<UriDefaultMixTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UriDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UriDefaultMix>(
       where: where(UriDefaultMix.t),
       orderBy: orderBy?.call(UriDefaultMix.t),
       orderByList: orderByList?.call(UriDefaultMix.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

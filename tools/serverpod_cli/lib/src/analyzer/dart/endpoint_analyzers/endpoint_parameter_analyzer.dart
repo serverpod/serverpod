@@ -1,12 +1,15 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/annotation.dart';
+import 'package:serverpod_cli/src/analyzer/dart/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/dart/parameters.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:serverpod_cli/src/util/type_validators.dart';
 
 abstract class EndpointParameterAnalyzer {
   /// Parses a [ParameterElement] into a [ParameterDefinition].
@@ -46,6 +49,8 @@ abstract class EndpointParameterAnalyzer {
   /// Validates a list of [ParameterElement] and returns a list of errors.
   static List<SourceSpanSeverityException> validate(
     List<FormalParameterElement> parameters,
+    List<TypeDefinition> extraClasses,
+    List<SerializableModelDefinition> models,
   ) {
     List<SourceSpanSeverityException> exceptions = [];
 
@@ -105,11 +110,34 @@ abstract class EndpointParameterAnalyzer {
           }
         }
 
+        final TypeDefinition typeDefinition;
         try {
-          TypeDefinition.fromDartType(parameter.type);
+          typeDefinition = TypeDefinition.fromDartType(parameter.type);
         } on FromDartTypeClassNameException catch (e) {
           return SourceSpanSeverityException(
             'The type "${e.type}" is not a supported endpoint parameter type.',
+            parameter.span,
+          );
+        }
+
+        if (parameter.type.element?.displayName == Keyword.sessionClassName) {
+          return null;
+        }
+
+        if (!TypeValidators.isValidType(
+          typeDefinition,
+          TypeValidationOptions(
+            extraClasses: extraClasses,
+            models: models,
+            allowSerializableGenerics: true,
+            allowStreamType: true,
+          ),
+        )) {
+          var typeName = typeDefinition.className;
+          return SourceSpanSeverityException(
+            'The type has an invalid datatype "$typeName". If this is a '
+            'custom model, make sure it is added to config/generator.yaml so '
+            'Serverpod can generate the necessary serialization code.',
             parameter.span,
           );
         }

@@ -12,7 +12,13 @@ environment:
 
 dependencies:
   serverpod: SERVERPOD_VERSION
+  serverpod_auth_core_server: SERVERPOD_VERSION
+  serverpod_auth_idp_server: SERVERPOD_VERSION
   serverpod_service_client: SERVERPOD_VERSION
+  serverpod_test_shared_module_server:
+    path: ../../serverpod_test_shared_module/serverpod_test_shared_module_server
+  serverpod_test_sqlite_shared:
+    path: ../serverpod_test_sqlite_shared
 
 dev_dependencies:
   serverpod_cli: SERVERPOD_VERSION
@@ -22,6 +28,8 @@ dev_dependencies:
     path: ../../serverpod_test_client
   serverpod_test_server:
     path: ../../serverpod_test_server
+  serverpod_test_shared_module_client:
+    path: ../../serverpod_test_shared_module/serverpod_test_shared_module_client
   serverpod_test_sqlite_client: SERVERPOD_VERSION
   test: ^1.25.5
   test_descriptor: ^2.0.2
@@ -31,6 +39,14 @@ dependency_overrides:
     path: ../../../packages/serverpod
   serverpod_auth_client:
     path: ../../../modules/legacy/serverpod_auth/serverpod_auth_client
+  serverpod_auth_core_client:
+    path: ../../../modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_client
+  serverpod_auth_core_server:
+    path: ../../../modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_server
+  serverpod_auth_idp_client:
+    path: ../../../modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_client
+  serverpod_auth_idp_server:
+    path: ../../../modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server
   serverpod_auth_server:
     path: ../../../modules/legacy/serverpod_auth/serverpod_auth_server
   serverpod_cli:

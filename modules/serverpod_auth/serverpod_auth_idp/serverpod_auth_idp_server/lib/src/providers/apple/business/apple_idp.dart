@@ -22,9 +22,10 @@ import 'routes/apple_server_notification_route.dart';
 ///
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
-class AppleIdp {
+class AppleIdp implements IdentityProvider {
   /// The method used when authenticating with the Apple identity provider.
-  static const String method = 'apple';
+  @override
+  String get method => utils.method;
 
   /// Admin operations to work with Apple-backed accounts.
   late final AppleIdpAdmin admin;
@@ -133,6 +134,24 @@ class AppleIdp {
   /// Determines whether the current session has an associated Apple account.
   Future<bool> hasAccount(final Session session) async =>
       await utils.getAccount(session) != null;
+
+  /// Migrates all [AppleAccount]s from [userToRemoveId] to [userToKeepId].
+  @override
+  Future<void> mergeAuthUsers(
+    final Session session, {
+    required final UuidValue userToKeepId,
+    required final UuidValue userToRemoveId,
+    required final Transaction transaction,
+  }) async {
+    await AppleAccount.db.updateWhere(
+      session,
+      where: (final t) => t.authUserId.equals(userToRemoveId),
+      columnValues: (final t) => [
+        t.authUserId(userToKeepId),
+      ],
+      transaction: transaction,
+    );
+  }
 
   /// {@macro apple_idp.revokedNotificationRoute}
   Route revokedNotificationRoute() =>

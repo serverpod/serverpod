@@ -117,18 +117,6 @@ class EndpointStreaming extends _i1.EndpointRef {
   @override
   String get name => 'serverpod_test_module.streaming';
 
-  _i2.Future<bool> wasStreamOpenCalled() => caller.callServerEndpoint<bool>(
-    'serverpod_test_module.streaming',
-    'wasStreamOpenCalled',
-    {},
-  );
-
-  _i2.Future<bool> wasStreamClosedCalled() => caller.callServerEndpoint<bool>(
-    'serverpod_test_module.streaming',
-    'wasStreamClosedCalled',
-    {},
-  );
-
   _i2.Stream<int> intEchoStream(_i2.Stream<int> stream) =>
       caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
         'serverpod_test_module.streaming',

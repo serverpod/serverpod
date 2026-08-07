@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// An unrelated class with the same fields as the Parent class.
-abstract class SimilarButNotParent implements _i1.SerializableModel {
+abstract class SimilarButNotParent
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   SimilarButNotParent._({required this.parent});
 
   factory SimilarButNotParent({required String parent}) =
@@ -32,6 +33,14 @@ abstract class SimilarButNotParent implements _i1.SerializableModel {
   SimilarButNotParent copyWith({String? parent});
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'SimilarButNotParent',
+      'parent': parent,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'SimilarButNotParent',
       'parent': parent,

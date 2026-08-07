@@ -1,0 +1,16 @@
+class: ObjectWithGeographyLineString
+table: object_with_geography_line_string
+fields:
+  lineString: GeographyLineString
+  lineStringIndexedGist: GeographyLineString
+  lineStringIndexedSpgist: GeographyLineString
+
+indexes:
+  geography_line_string_index_default:
+    fields: lineString
+  geography_line_string_index_gist:
+    fields: lineStringIndexedGist
+    type: gist
+  geography_line_string_index_spgist:
+    fields: lineStringIndexedSpgist
+    type: spgist

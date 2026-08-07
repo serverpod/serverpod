@@ -141,6 +141,7 @@ void main() {
               CompilationUnitHelpers.hasMethodDeclaration(
                 exampleIncludeClass,
                 name: 'table',
+                isGetter: true,
                 functionExpression: 'Example.t',
               ),
               isTrue,
@@ -153,6 +154,7 @@ void main() {
                 CompilationUnitHelpers.tryFindMethodDeclaration(
                   exampleIncludeClass,
                   name: 'table',
+                  isGetter: true,
                 );
 
             var typeArguments = maybeTableGetter?.returnType as NamedType?;
@@ -212,7 +214,6 @@ void main() {
             expect(params, contains('super.limit'));
             expect(params, contains('super.offset'));
             expect(params, contains('super.orderBy'));
-            expect(params, contains('super.orderDescending'));
             expect(params, contains('super.orderByList'));
             expect(params, contains('super.include'));
           });
@@ -233,6 +234,7 @@ void main() {
               CompilationUnitHelpers.hasMethodDeclaration(
                 exampleIncludeListClass,
                 name: 'table',
+                isGetter: true,
                 functionExpression: 'Example.t',
               ),
               isTrue,
@@ -245,6 +247,7 @@ void main() {
                 CompilationUnitHelpers.tryFindMethodDeclaration(
                   exampleIncludeListClass,
                   name: 'table',
+                  isGetter: true,
                 );
 
             var typeArguments = maybeTableGetter?.returnType as NamedType?;

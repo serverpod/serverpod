@@ -25,7 +25,7 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
           schema: 'public',
           columns: [
             for (var column in classDefinition.fieldsIncludingInherited)
-              if (column.shouldSerializeFieldForDatabase(serverCode))
+              if (column.shouldPersist)
                 ColumnDefinition(
                   name: column.columnName,
                   fieldName: column.name,
@@ -53,6 +53,7 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
                 ],
                 type: index.type,
                 isUnique: index.unique,
+                nullsDistinct: index.nullsDistinct,
                 isPrimary: false,
                 ginOperatorClass: index.isGinIndex
                     ? index.ginOperatorClass

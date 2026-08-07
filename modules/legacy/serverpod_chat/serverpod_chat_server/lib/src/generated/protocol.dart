@@ -8,6 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: dead_code, unnecessary_type_check
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -43,7 +44,9 @@ class Protocol extends _i1.DatabaseSerializationManager {
 
   static final Protocol _instance = Protocol._();
 
-  static final List<_i2.TableDefinition> targetTableDefinitions = [
+  final Set<_i1.SerializationManager> _hostProtocols = {};
+
+  static List<_i2.TableDefinition> get targetTableDefinitions => [
     _i2.TableDefinition(
       name: 'serverpod_chat_message',
       dartName: 'ChatMessage',
@@ -168,8 +171,6 @@ class Protocol extends _i1.DatabaseSerializationManager {
     ),
     ..._i3.Protocol.targetTableDefinitions,
   ];
-
-  final Set<_i1.SerializationManager> _hostProtocols = {};
 
   void registerHostProtocol(
     String projectName,

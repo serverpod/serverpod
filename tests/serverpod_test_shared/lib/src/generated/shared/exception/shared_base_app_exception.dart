@@ -13,7 +13,10 @@
 import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 
 class SharedBaseAppException
-    implements _i1.SerializableException, _i1.SerializableModel {
+    implements
+        _i1.SerializableException,
+        _i1.SerializableModel,
+        _i1.ProtocolSerialization {
   SharedBaseAppException({required this.message});
 
   factory SharedBaseAppException.fromJson(
@@ -35,6 +38,14 @@ class SharedBaseAppException
 
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'SharedBaseAppException',
+      'message': message,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'SharedBaseAppException',
       'message': message,

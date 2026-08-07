@@ -15,7 +15,8 @@ import '../models_with_list_relations/person.dart' as _i2;
 import '../models_with_list_relations/city.dart' as _i3;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i4;
 
-abstract class Organization implements _i1.SerializableModel {
+abstract class Organization
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   Organization._({
     this.id,
     required this.name,
@@ -81,6 +82,19 @@ abstract class Organization implements _i1.SerializableModel {
         'people': people?.toJson(valueToJson: (v) => v.toJson()),
       if (cityId != null) 'cityId': cityId,
       if (city != null) 'city': city?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Organization',
+      if (id != null) 'id': id,
+      'name': name,
+      if (people != null)
+        'people': people?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      if (cityId != null) 'cityId': cityId,
+      if (city != null) 'city': city?.toJsonForProtocol(),
     };
   }
 

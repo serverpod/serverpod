@@ -41,15 +41,13 @@ class PostgresDatabaseConnection
     int? offset,
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     Include? include,
     Transaction? transaction,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'find');
-    var orderByCols = _resolveOrderBy(orderByList, orderBy, orderDescending);
+    var orderByCols = _resolveOrderBy(orderByList, orderBy);
 
     var query = SelectQueryBuilder(table: table)
         .withSelectFields(table.columns)
@@ -78,8 +76,6 @@ class PostgresDatabaseConnection
     int? offset,
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     Transaction? transaction,
     Include? include,
     LockMode? lockMode,
@@ -92,8 +88,6 @@ class PostgresDatabaseConnection
       offset: offset,
       orderBy: orderBy,
       orderByList: orderByList,
-      // ignore: deprecated_member_use_from_same_package
-      orderDescending: orderDescending,
       limit: 1,
       transaction: transaction,
       include: include,
@@ -156,6 +150,7 @@ class PostgresDatabaseConnection
     List<T> rows, {
     Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     if (rows.isEmpty) return [];
 
@@ -177,6 +172,7 @@ class PostgresDatabaseConnection
               [row],
               transaction: tx,
               ignoreConflicts: ignoreConflicts,
+              noReturn: noReturn,
             ).then((results) => results.firstOrNull),
         ].whereType<T>().toList(),
       );
@@ -188,6 +184,7 @@ class PostgresDatabaseConnection
       table: table,
       rows: rows,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     ).build();
 
     return (await _mappedResultsQuery(
@@ -228,6 +225,7 @@ class PostgresDatabaseConnection
     List<Column>? updateColumns,
     Expression? updateWhere,
     Transaction? transaction,
+    bool noReturn = false,
   }) async {
     if (rows.isEmpty) return [];
 
@@ -246,6 +244,7 @@ class PostgresDatabaseConnection
               updateColumns: updateColumns,
               updateWhere: updateWhere,
               transaction: tx,
+              noReturn: noReturn,
             ),
         ],
         settings: const TransactionSettings(),
@@ -260,6 +259,7 @@ class PostgresDatabaseConnection
       conflictColumns: conflictColumns,
       updateColumns: updateColumns,
       updateWhere: updateWhere,
+      noReturn: noReturn,
     ).build();
 
     return (await _mappedResultsQuery(
@@ -310,6 +310,7 @@ class PostgresDatabaseConnection
     List<T> rows, {
     List<Column>? columns,
     Transaction? transaction,
+    bool noReturn = false,
   }) async {
     if (rows.isEmpty) return [];
     if (rows.any((column) => column.id == null)) {
@@ -338,10 +339,13 @@ class PostgresDatabaseConnection
         .join(', ');
 
     const tableAlias = 't';
-    var returning = buildReturningClause(table, tableAlias: tableAlias);
 
     var query =
-        'UPDATE "${table.tableName}" AS $tableAlias SET $setColumns FROM (VALUES $values) AS data($columnNames) WHERE data.id = $tableAlias.id RETURNING $returning';
+        'UPDATE "${table.tableName}" AS $tableAlias SET $setColumns FROM (VALUES $values) AS data($columnNames) WHERE data.id = $tableAlias.id';
+    if (!noReturn) {
+      var returning = buildReturningClause(table, tableAlias: tableAlias);
+      query += ' RETURNING $returning';
+    }
 
     return (await _mappedResultsQuery(
           session,
@@ -426,9 +430,8 @@ class PostgresDatabaseConnection
     int? offset,
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     Transaction? transaction,
+    bool noReturn = false,
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'updateWhere');
 
@@ -452,7 +455,7 @@ class PostgresDatabaseConnection
         orderByList != null;
 
     if (requiresFilteredSubquery) {
-      var orders = _resolveOrderBy(orderByList, orderBy, orderDescending);
+      var orders = _resolveOrderBy(orderByList, orderBy);
       var subquery = SelectQueryBuilder(table: table)
           .withSelectFields([table.id])
           .withWhere(where)
@@ -463,26 +466,33 @@ class PostgresDatabaseConnection
 
       var idAlias = '${table.tableName}.${table.id.columnName}';
 
-      var orderByClause = switch (orders) {
-        != null when orders.isNotEmpty =>
-          ' ORDER BY '
-              '${orders.map((o) => o.toString().replaceAll('"${table.tableName}".', '')).join(', ')}',
-        _ => '',
-      };
+      if (noReturn) {
+        // No rows are returned, so the wrapping SELECT and its ordering are
+        // unnecessary: run the UPDATE directly against the selected ids.
+        updateQuery =
+            'WITH rows_to_update AS ($subquery) '
+            'UPDATE "${table.tableName}" SET $setClause '
+            'WHERE "${table.id.columnName}" IN (SELECT "$idAlias" FROM rows_to_update)';
+      } else {
+        var orderByClause = switch (orders) {
+          != null when orders.isNotEmpty =>
+            ' ORDER BY '
+                '${orders.map((o) => o.toString().replaceAll('"${table.tableName}".', '')).join(', ')}',
+          _ => '',
+        };
 
-      updateQuery =
-          'WITH rows_to_update AS ($subquery), '
-          'updated AS ('
-          'UPDATE "${table.tableName}" SET $setClause '
-          'WHERE "${table.id.columnName}" IN (SELECT "$idAlias" FROM rows_to_update) '
-          'RETURNING *'
-          ') '
-          'SELECT * FROM updated$orderByClause';
+        updateQuery =
+            'WITH rows_to_update AS ($subquery), '
+            'updated AS ('
+            'UPDATE "${table.tableName}" SET $setClause '
+            'WHERE "${table.id.columnName}" IN (SELECT "$idAlias" FROM rows_to_update) '
+            'RETURNING *'
+            ') '
+            'SELECT * FROM updated$orderByClause';
+      }
     } else {
-      updateQuery =
-          'UPDATE "${table.tableName}" SET $setClause'
-          ' WHERE $where'
-          ' RETURNING *';
+      updateQuery = 'UPDATE "${table.tableName}" SET $setClause WHERE $where';
+      if (!noReturn) updateQuery += ' RETURNING *';
     }
 
     var result = await _mappedResultsQuery(
@@ -500,9 +510,8 @@ class PostgresDatabaseConnection
     List<T> rows, {
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     Transaction? transaction,
+    bool noReturn = false,
   }) async {
     if (rows.isEmpty) return [];
     if (rows.any((column) => column.id == null)) {
@@ -516,9 +525,8 @@ class PostgresDatabaseConnection
       table.id.inSet(rows.map((row) => row.id!).castToIdType().toSet()),
       orderBy: orderBy,
       orderByList: orderByList,
-      // ignore: deprecated_member_use_from_same_package
-      orderDescending: orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -549,16 +557,16 @@ class PostgresDatabaseConnection
     Expression where, {
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     Transaction? transaction,
+    bool noReturn = false,
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'deleteWhere');
-    var orderByCols = _resolveOrderBy(orderByList, orderBy, orderDescending);
+    // Ordering applies to the returned deleted rows, not to which rows are
+    // deleted, so it is irrelevant when nothing is returned.
+    var orderByCols = noReturn ? null : _resolveOrderBy(orderByList, orderBy);
 
-    // Ordering applies to the returned deleted rows, not to which rows are deleted.
     var query = DeleteQueryBuilder(table: table)
-        .withReturn(Returning.all)
+        .withReturn(noReturn ? Returning.none : Returning.all)
         .withWhere(where)
         .withOrderBy(orderByCols)
         .build();
@@ -858,17 +866,27 @@ class PostgresDatabaseConnection
     );
 
     final connection = await _postgresConnection;
-    return connection.runTx<R>(
-      (ctx) {
-        var transaction = _PostgresTransaction(
-          ctx,
-          session,
-          this,
-        );
-        return transactionFunction(transaction);
-      },
-      settings: pgTransactionSettings,
-    );
+    try {
+      return await connection.runTx<R>(
+        (ctx) {
+          var transaction = _PostgresTransaction(
+            ctx,
+            session,
+            this,
+          );
+          return transactionFunction(transaction);
+        },
+        settings: pgTransactionSettings,
+      );
+    } on pg.ServerException catch (exception, trace) {
+      var serverpodException = _PgDatabaseQueryException.fromServerException(
+        exception,
+      );
+      Error.throwWithStackTrace(serverpodException, trace);
+    } on pg.PgException catch (exception, trace) {
+      var serverpodException = _PgDatabaseQueryException(exception.message);
+      Error.throwWithStackTrace(serverpodException, trace);
+    }
   }
 
   Future<Map<String, Map<Object, List<Map<String, dynamic>>>>>
@@ -907,8 +925,6 @@ class PostgresDatabaseConnection
         var orderBy = _resolveOrderBy(
           nestedInclude.orderByList,
           nestedInclude.orderBy,
-          // ignore: deprecated_member_use_from_same_package
-          nestedInclude.orderDescending,
         );
 
         var query = SelectQueryBuilder(table: relationTable)
@@ -990,12 +1006,10 @@ class PostgresDatabaseConnection
   List<Order>? _resolveOrderBy(
     List<Column>? orderByList,
     Column<dynamic>? orderBy,
-    bool orderDescending,
   ) {
     assert(orderByList == null || orderBy == null);
     if (orderBy != null) {
-      if (orderBy is Order) return [orderBy];
-      return [orderDescending ? orderBy.desc() : orderBy.asc()];
+      return [orderBy is Order ? orderBy : orderBy.asc()];
     }
     if (orderByList == null || orderByList.isEmpty) return null;
     return orderByList.asOrderBy();
@@ -1040,6 +1054,18 @@ class PostgresDatabaseConnection
     if (column is ColumnHalfVector) return 'halfvec(${column.dimension})';
     if (column is ColumnSparseVector) return 'sparsevec(${column.dimension})';
     if (column is ColumnBit) return 'bit(${column.dimension})';
+    if (column is ColumnGeographyPoint) {
+      return 'geography(Point,${Geography.defaultSrid})';
+    }
+    if (column is ColumnGeographyLineString) {
+      return 'geography(LineString,${Geography.defaultSrid})';
+    }
+    if (column is ColumnGeographyPolygon) {
+      return 'geography(Polygon,${Geography.defaultSrid})';
+    }
+    if (column is ColumnGeographyGeometryCollection) {
+      return 'geography(GeometryCollection,${Geography.defaultSrid})';
+    }
     if (column is ColumnStructured) return 'jsonb';
     if (column is ColumnSerializable) return 'json';
     if (column is ColumnEnumExtended) {

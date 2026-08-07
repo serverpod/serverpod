@@ -106,8 +106,6 @@ abstract class LegacyEmailPassword
     int? limit,
     int? offset,
     _i1.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
     LegacyEmailPasswordInclude? include,
   }) {
@@ -116,8 +114,6 @@ abstract class LegacyEmailPassword
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(LegacyEmailPassword.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(LegacyEmailPassword.t),
       include: include,
     );
@@ -257,8 +253,6 @@ class LegacyEmailPasswordIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -305,8 +299,6 @@ class LegacyEmailPasswordRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
     _i1.Transaction? transaction,
     LegacyEmailPasswordInclude? include,
@@ -317,8 +309,6 @@ class LegacyEmailPasswordRepository {
       where: where?.call(LegacyEmailPassword.t),
       orderBy: orderBy?.call(LegacyEmailPassword.t),
       orderByList: orderByList?.call(LegacyEmailPassword.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -350,8 +340,6 @@ class LegacyEmailPasswordRepository {
     _i1.WhereExpressionBuilder<LegacyEmailPasswordTable>? where,
     int? offset,
     _i1.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
     _i1.Transaction? transaction,
     LegacyEmailPasswordInclude? include,
@@ -362,8 +350,6 @@ class LegacyEmailPasswordRepository {
       where: where?.call(LegacyEmailPassword.t),
       orderBy: orderBy?.call(LegacyEmailPassword.t),
       orderByList: orderByList?.call(LegacyEmailPassword.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -400,16 +386,22 @@ class LegacyEmailPasswordRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<LegacyEmailPassword>> insert(
     _i1.DatabaseSession session,
     List<LegacyEmailPassword> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<LegacyEmailPassword>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -443,6 +435,10 @@ class LegacyEmailPasswordRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<LegacyEmailPassword>> upsert(
     _i1.DatabaseSession session,
     List<LegacyEmailPassword> rows, {
@@ -450,6 +446,7 @@ class LegacyEmailPasswordRepository {
     _i1.ColumnSelections<LegacyEmailPasswordTable>? updateColumns,
     _i1.WhereExpressionBuilder<LegacyEmailPasswordTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<LegacyEmailPassword>(
       rows,
@@ -457,6 +454,7 @@ class LegacyEmailPasswordRepository {
       updateColumns: updateColumns?.call(LegacyEmailPassword.t),
       updateWhere: updateWhere?.call(LegacyEmailPassword.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -495,16 +493,22 @@ class LegacyEmailPasswordRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<LegacyEmailPassword>> update(
     _i1.DatabaseSession session,
     List<LegacyEmailPassword> rows, {
     _i1.ColumnSelections<LegacyEmailPasswordTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<LegacyEmailPassword>(
       rows,
       columns: columns?.call(LegacyEmailPassword.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -542,6 +546,10 @@ class LegacyEmailPasswordRepository {
 
   /// Updates all [LegacyEmailPassword]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<LegacyEmailPassword>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<LegacyEmailPasswordUpdateTable>
@@ -551,9 +559,8 @@ class LegacyEmailPasswordRepository {
     int? offset,
     _i1.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
     _i1.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<LegacyEmailPassword>(
       columnValues: columnValues(LegacyEmailPassword.t.updateTable),
@@ -562,9 +569,8 @@ class LegacyEmailPasswordRepository {
       offset: offset,
       orderBy: orderBy?.call(LegacyEmailPassword.t),
       orderByList: orderByList?.call(LegacyEmailPassword.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -575,22 +581,24 @@ class LegacyEmailPasswordRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<LegacyEmailPassword>> delete(
     _i1.DatabaseSession session,
     List<LegacyEmailPassword> rows, {
     _i1.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<LegacyEmailPassword>(
       rows,
       orderBy: orderBy?.call(LegacyEmailPassword.t),
       orderByList: orderByList?.call(LegacyEmailPassword.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -610,22 +618,24 @@ class LegacyEmailPasswordRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<LegacyEmailPassword>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<LegacyEmailPasswordTable> where,
     _i1.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<LegacyEmailPassword>(
       where: where(LegacyEmailPassword.t),
       orderBy: orderBy?.call(LegacyEmailPassword.t),
       orderByList: orderByList?.call(LegacyEmailPassword.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

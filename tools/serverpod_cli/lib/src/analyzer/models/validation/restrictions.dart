@@ -9,6 +9,7 @@ import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
+import 'package:serverpod_cli/src/util/type_validators.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:source_span/source_span.dart';
@@ -236,10 +237,14 @@ class Restrictions {
     String _,
     SourceSpan? span,
   ) {
-    if (documentDefinition?.isSharedModel ?? false) {
+    var definition = documentDefinition;
+    if (definition is ModelClassDefinition &&
+        definition.isSharedModel &&
+        definition.database != ModelDatabaseDefinition.all) {
       return [
         SourceSpanSeverityException(
-          'The "table" property is not allowed in shared packages.',
+          'The "table" property in shared packages requires the "database" '
+          'property to be set to "all".',
           span,
         ),
       ];
@@ -600,7 +605,7 @@ class Restrictions {
         return [
           SourceSpanSeverityException(
             'The index name "$indexName" is reserved for the field '
-            '"${reservedIndex.index.fields.first}" of the model '
+            '"${reservedIndex.field.name}" of the model '
             '"${reservedIndex.model.className}" marked as unique '
             '(auto-generated). Either remove the unique modifier from the '
             'field or use a different name for this index.',
@@ -950,6 +955,30 @@ class Restrictions {
         SourceSpanSeverityException(
           'The "unique" property cannot be used with vector indexes of '
           'type "${index.type}".',
+          span,
+        ),
+      ];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validateIndexNullsDistinctKey(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition) return [];
+
+    var index = definition.indexes.firstWhere(
+      (index) => index.name == parentNodeName,
+    );
+
+    if (!index.unique) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.nullsDistinct}" property can only be used with unique indexes.',
           span,
         ),
       ];
@@ -1438,7 +1467,14 @@ class Restrictions {
       return errors;
     }
 
-    if (!_isValidType(fieldType)) {
+    if (!TypeValidators.isValidType(
+      fieldType,
+      TypeValidationOptions(
+        extraClasses: config.extraClasses,
+        modelTypeValidator: _isModelType,
+        allowSerializableDartType: true,
+      ),
+    )) {
       var typeName = fieldType.className;
       errors.add(
         SourceSpanSeverityException(
@@ -1598,6 +1634,89 @@ class Restrictions {
     return errors;
   }
 
+  List<SourceSpanSeverityException> validateFieldUniqueValue(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    if (content is bool) return [];
+
+    if (content is String) {
+      if (content.toLowerCase() == 'true') return [];
+      if (content.toLowerCase() == 'false') {
+        return [
+          SourceSpanSeverityException(
+            'The "${Keyword.unique}" property must be true when specified as a string.',
+            span,
+          ),
+        ];
+      }
+    }
+
+    if (content is YamlMap) {
+      if (content.nodes.isEmpty) return [];
+
+      if (!content.containsKey(Keyword.per)) {
+        return [
+          SourceSpanSeverityException(
+            'The "${Keyword.unique}" property must include a "${Keyword.per}" '
+            'key when defined as a map.',
+            span,
+          ),
+        ];
+      }
+
+      return [];
+    }
+
+    return [
+      SourceSpanSeverityException(
+        'The "${Keyword.unique}" property must be a bool or a map with a '
+        '"${Keyword.per}" key.',
+        span,
+      ),
+    ];
+  }
+
+  List<SourceSpanSeverityException> validateUniquePerFieldsValue(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    var perFields = parseUniquePerFields(content);
+    if (perFields == null) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.per}" property must be a field name, a comma '
+          'separated list of field names, or a list of field names.',
+          span,
+        ),
+      ];
+    }
+
+    if (perFields.isEmpty) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.per}" property must contain at least one field. '
+          'Use bare "${Keyword.unique}" for a single-column unique index.',
+          span,
+        ),
+      ];
+    }
+
+    if (perFields.contains(parentNodeName)) {
+      return [
+        SourceSpanSeverityException(
+          'The field "$parentNodeName" cannot be included in its own '
+          '"${Keyword.unique}" "${Keyword.per}" list.',
+          span,
+        ),
+      ];
+    }
+
+    return _validateIndexFieldNames(perFields, span);
+  }
+
   List<SourceSpanSeverityException> validateIndexFieldsValue(
     String parentNodeName,
     dynamic content,
@@ -1612,15 +1731,24 @@ class Restrictions {
       ];
     }
 
+    return _validateIndexFieldNames(convertIndexList(content), span);
+  }
+
+  /// Validates that [indexFields] reference persisted fields of the current
+  /// model, contain no duplicates, and respect the vector-index constraints.
+  /// Shared by explicit `indexes` and the `unique(per=...)` shorthand.
+  List<SourceSpanSeverityException> _validateIndexFieldNames(
+    List<String> indexFields,
+    SourceSpan? span,
+  ) {
     var definition = documentDefinition;
     if (definition is! ModelClassDefinition) return [];
 
     var fields = definition.fieldsIncludingInherited;
-    var indexFields = convertIndexList(content);
-
     var validDatabaseFieldNames = fields
         .where((field) => field.shouldPersist)
-        .fold(<String>{}, (output, field) => output..add(field.name));
+        .map((field) => field.name)
+        .toSet();
 
     var missingFieldErrors = indexFields
         .where((field) => !validDatabaseFieldNames.contains(field))
@@ -1631,13 +1759,11 @@ class Restrictions {
           ),
         );
 
-    var duplicatesCount = _duplicatesCount(indexFields);
-
-    var duplicateFieldErrors = duplicatesCount.entries
+    var duplicateFieldErrors = _duplicatesCount(indexFields).entries
         .where((entry) => entry.value > 1)
         .map(
           (entry) => SourceSpanSeverityException(
-            'Duplicated field name "name", can only reference a field once per index.',
+            'Duplicated field name "${entry.key}", can only reference a field once per index.',
             span,
           ),
         );
@@ -1660,10 +1786,25 @@ class Restrictions {
         ),
     ];
 
+    var hasGeographyField = fields
+        .where((f) => indexFields.contains(f.name))
+        .map((f) => f.type.isGeographyType)
+        .toSet();
+
+    var geographyErrors = [
+      if (hasGeographyField.length > 1)
+        SourceSpanSeverityException(
+          'Mixing geography and non-geography fields in the same index is not '
+          'allowed.',
+          span,
+        ),
+    ];
+
     return [
       ...missingFieldErrors,
       ...duplicateFieldErrors,
       ...vectorErrors,
+      ...geographyErrors,
     ];
   }
 
@@ -1852,6 +1993,10 @@ class Restrictions {
         validIndexTypes = VectorIndexType.values.map((e) => e.name).toSet();
       }
 
+      if (indexFields.any((e) => e.type.isGeographyType)) {
+        validIndexTypes = {'gist', 'spgist'};
+      }
+
       if (content == 'gin') {
         var nonJsonbFields = indexFields
             .where((f) => !f.type.isJsonbSerialized)
@@ -1963,6 +2108,23 @@ class Restrictions {
         SourceSpanSeverityException(
           'The "required" keyword can only be used with nullable fields. '
           'Non-nullable fields are already required by default.',
+          span,
+        ),
+      ];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validateTailKey(
+    String parentNodeName,
+    String key,
+    SourceSpan? span,
+  ) {
+    if (parentNodeName == defaultPrimaryKeyName) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.tail}" keyword is not allowed on the "id" field.',
           span,
         ),
       ];
@@ -2605,13 +2767,6 @@ class Restrictions {
     return type.startsWith('package:') || type.startsWith('project:');
   }
 
-  bool _isValidType(TypeDefinition type) {
-    return type.isSerializableDartType ||
-        _isModelType(type) ||
-        _isCustomType(type) ||
-        _isRecordType(type);
-  }
-
   bool _isUnresolvedModuleType(TypeDefinition type) {
     if (!type.isModuleType) return false;
 
@@ -2642,14 +2797,6 @@ class Restrictions {
     }
 
     return true;
-  }
-
-  bool _isCustomType(TypeDefinition type) {
-    return config.extraClasses.any((c) => c.className == type.className);
-  }
-
-  bool _isRecordType(TypeDefinition type) {
-    return type.isRecordType && type.generics.every(_isValidType);
   }
 
   bool _hasTableDefined(SerializableModelDefinition classDefinition) {

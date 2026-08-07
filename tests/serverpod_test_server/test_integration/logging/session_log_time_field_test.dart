@@ -6,7 +6,7 @@ import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
 void main() async {
-  var client = Client('http://localhost:8080/');
+  late Client client;
   late Serverpod server;
   late Session session;
 
@@ -15,7 +15,8 @@ void main() async {
     () {
       setUp(() async {
         server = IntegrationTestServer.create();
-        await server.start();
+        await server.startWithDatabase();
+        client = Client(server.apiUrl);
 
         session = await server.createSession(enableLogging: false);
         await LoggingUtil.clearAllLogs(session);

@@ -27,26 +27,20 @@ void main() {
     late SessionManager secondarySessionManager;
 
     setUp(() async {
-      primaryClient = Client(
-        serverUrl,
-        // ignore: deprecated_member_use
-        authenticationKeyManager: FlutterAuthenticationKeyManager(
+      primaryClient = Client(serverUrl)
+        ..authKeyProvider = FlutterAuthenticationKeyManager(
           storage: MockStorage(),
-        ),
-      );
+        );
       primarySessionManager = SessionManager(
         caller: primaryClient.modules.auth,
         storage: MockStorage(),
       );
       await primarySessionManager.initialize();
 
-      secondaryClient = Client(
-        serverUrl,
-        // ignore: deprecated_member_use
-        authenticationKeyManager: FlutterAuthenticationKeyManager(
+      secondaryClient = Client(serverUrl)
+        ..authKeyProvider = FlutterAuthenticationKeyManager(
           storage: MockStorage(),
-        ),
-      );
+        );
       secondarySessionManager = SessionManager(
         caller: secondaryClient.modules.auth,
         storage: MockStorage(),

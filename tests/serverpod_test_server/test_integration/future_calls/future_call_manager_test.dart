@@ -5,13 +5,13 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/logging_utils.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
-import 'package:serverpod_test_server/test_util/test_tags.dart';
 import 'package:test/test.dart';
 
 import '../test_tools/serverpod_test_tools.dart';
 import '../utils/future_call_manager_builder.dart';
 
-class CompleterTestCall extends FutureCall<SimpleData> {
+class CompleterTestCall extends FutureCall<SimpleData>
+    implements InvokableFutureCall<SimpleData> {
   final Completer<SimpleData?> completer = Completer<SimpleData?>();
 
   @override
@@ -20,7 +20,8 @@ class CompleterTestCall extends FutureCall<SimpleData> {
   }
 }
 
-class CounterTestCall extends FutureCall<SimpleData> {
+class CounterTestCall extends FutureCall<SimpleData>
+    implements InvokableFutureCall<SimpleData> {
   int counter = 0;
 
   @override
@@ -29,7 +30,8 @@ class CounterTestCall extends FutureCall<SimpleData> {
   }
 }
 
-class ListTestCall extends FutureCall<SimpleData> {
+class ListTestCall extends FutureCall<SimpleData>
+    implements InvokableFutureCall<SimpleData> {
   List<SimpleData?> list = [];
 
   @override
@@ -38,7 +40,8 @@ class ListTestCall extends FutureCall<SimpleData> {
   }
 }
 
-class DelayedListTestCall extends FutureCall<SimpleData> {
+class DelayedListTestCall extends FutureCall<SimpleData>
+    implements InvokableFutureCall<SimpleData> {
   List<SimpleData?> completed = [];
 
   @override
@@ -261,7 +264,6 @@ void main() async {
 
   withServerpod(
     'Given FutureCallManager with registered future call that is not due',
-    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
     (sessionBuilder, _) {
       late FutureCallManager futureCallManager;
       late CompleterTestCall testCall;
@@ -293,7 +295,7 @@ void main() async {
 
       group('when start is called', () {
         setUp(() async {
-          futureCallManager.start();
+          await futureCallManager.start();
           // Wait briefly to allow processing to occur (or not occur)
           await Future.delayed(Duration(milliseconds: 10));
         });
@@ -332,7 +334,7 @@ void main() async {
       testCall = CompleterTestCall();
       futureCallManager.registerFutureCall(testCall, testCallName);
 
-      futureCallManager.start();
+      await futureCallManager.start();
     });
 
     tearDown(() async {
@@ -396,7 +398,7 @@ void main() async {
           identifier,
         );
 
-        futureCallManager.start();
+        await futureCallManager.start();
 
         // Wait for the canary call to be processed
         await canaryCall.completer.future;
@@ -552,7 +554,6 @@ void main() async {
 
   withServerpod(
     'Given FutureCallManager with concurrency limit 2 and 2 FutureCalls are scheduled',
-    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, _) {
       late Session session;
@@ -649,7 +650,7 @@ void main() async {
 
         setUp(() async {
           // Start the manager with no registered calls
-          futureCallManager.start();
+          await futureCallManager.start();
 
           // Schedule a future call that is already due
           await futureCallManager.scheduleFutureCall(
@@ -709,7 +710,7 @@ void main() async {
 
       group('when start is called without registering any future calls', () {
         setUp(() async {
-          futureCallManager.start();
+          await futureCallManager.start();
           // Wait briefly to allow any potential scanning to occur
           await Future.delayed(Duration(milliseconds: 50));
         });
@@ -744,7 +745,7 @@ void main() async {
 
       setUp(() async {
         server = IntegrationTestServer.create();
-        await server.start();
+        await server.startWithDatabase();
 
         session = await server.createSession(enableLogging: false);
         logSession = await server.createSession();
@@ -794,8 +795,8 @@ void main() async {
             matches(
               'Attempted to run a FutureCall that was not registered. This is likely due '
               'to changing a FutureCall method after it was scheduled, leading to an '
-              'entry that no longer has a matching method. For legacy future calls, '
-              r'make sure they are registered in the server start. Entry: \{.*\"name\":\s*\"scheduled-but-unregistered-call\".*\}',
+              'entry that no longer has a matching method. '
+              r'Entry: \{.*\"name\":\s*\"scheduled-but-unregistered-call\".*\}',
             ),
           );
         },

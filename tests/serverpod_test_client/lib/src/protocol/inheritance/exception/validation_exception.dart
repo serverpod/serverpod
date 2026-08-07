@@ -12,7 +12,10 @@
 part of 'sealed_app_exception.dart';
 
 abstract class ValidationException extends _i1.SealedAppException
-    implements _i2.SerializableException, _i2.SerializableModel {
+    implements
+        _i2.SerializableException,
+        _i2.SerializableModel,
+        _i2.ProtocolSerialization {
   ValidationException._({
     required super.message,
     required this.field,
@@ -42,6 +45,15 @@ abstract class ValidationException extends _i1.SealedAppException
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'ValidationException',
+      'message': message,
+      'field': field,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ValidationException',
       'message': message,

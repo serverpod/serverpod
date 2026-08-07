@@ -14,7 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
 
 /// Data to be sent when adding a Passkey to an existing user.
-abstract class PasskeyRegistrationRequest implements _i1.SerializableModel {
+abstract class PasskeyRegistrationRequest
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   PasskeyRegistrationRequest._({
     required this.challengeId,
     required this.keyId,
@@ -69,6 +70,17 @@ abstract class PasskeyRegistrationRequest implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_auth_idp.PasskeyRegistrationRequest',
+      'challengeId': challengeId.toJson(),
+      'keyId': keyId.toJson(),
+      'clientDataJSON': clientDataJSON.toJson(),
+      'attestationObject': attestationObject.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_auth_idp.PasskeyRegistrationRequest',
       'challengeId': challengeId.toJson(),

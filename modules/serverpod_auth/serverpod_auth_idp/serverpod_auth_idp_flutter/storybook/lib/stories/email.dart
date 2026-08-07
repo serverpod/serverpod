@@ -96,20 +96,17 @@ Widget _buildEmailStory(BuildContext context, EmailFlowScreen screen) {
   );
 
   return wrapWidgetInDefaultColumn([
-    Theme(
-      data: ThemeData(canvasColor: Colors.white),
-      child: EmailSignInWidget(
-        client: context.read<Client>(),
-        startScreen: screen,
-        onError: (error) {
-          context.showErrorSnackBar(error.toString());
-        },
-        onAuthenticated: () {
-          context.showSuccessSnackBar('Authenticated with email!');
-        },
-        onTermsAndConditionsPressed: showTermsAndConditions ? () {} : null,
-        onPrivacyPolicyPressed: showPrivacyPolicy ? () {} : null,
-      ),
+    EmailSignInWidget(
+      client: context.read<Client>(),
+      startScreen: screen,
+      onError: (error) {
+        context.showErrorSnackBar(error.toString());
+      },
+      onAuthenticated: () {
+        context.showSuccessSnackBar('Authenticated with email!');
+      },
+      onTermsAndConditionsPressed: showTermsAndConditions ? () {} : null,
+      onPrivacyPolicyPressed: showPrivacyPolicy ? () {} : null,
     ),
   ], width: width.toDouble());
 }
