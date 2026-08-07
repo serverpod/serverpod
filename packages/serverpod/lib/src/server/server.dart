@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_shared/log.dart';
 import 'package:serverpod/src/cache/caches.dart';
+import 'package:serverpod/src/server/cookie_auth_cors.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/health/health_routes.dart';
 import 'package:serverpod/src/server/response_output.dart';
@@ -292,38 +293,11 @@ class Server implements RouterInjectable {
               for (final h in httpOptionsResponseHeaders.entries) {
                 mh[h.key] = h.value;
               }
-              // Cookie-auth web clients send the marker and base-path headers
-              // on every request, so a cross-origin preflight must allow-list
-              // them or the browser blocks the request before it reaches the
-              // server.
-              //
-              // The default OPTIONS headers include them,
-              // but a custom httpOptionsResponseHeaders may not.
-              //
-              // Ensure they are present whenever cookie auth is enabled so
-              // the feature can't be silently disabled by a header override.
               if (serverpod.config.authCookie != null) {
-                const cookieAuthHeaders = [
-                  webAuthModeHeaderName,
-                  webBasePathHeaderName,
-                ];
-                final allow = mh.accessControlAllowHeaders;
-                if (allow == null) {
-                  mh.accessControlAllowHeaders =
-                      AccessControlAllowHeadersHeader.headers(
-                        cookieAuthHeaders,
-                      );
-                } else if (!allow.isWildcard) {
-                  final missing = cookieAuthHeaders.where(
-                    (h) => !allow.headers.contains(h),
-                  );
-                  if (missing.isNotEmpty) {
-                    mh.accessControlAllowHeaders =
-                        AccessControlAllowHeadersHeader.headers(
-                          [...allow.headers, ...missing],
-                        );
-                  }
-                }
+                ensureCookieAuthAllowedHeaders(
+                  mh,
+                  requestedHeaders: req.headers.accessControlRequestHeaders,
+                );
               }
             })
           : httpResponseHeaders;
