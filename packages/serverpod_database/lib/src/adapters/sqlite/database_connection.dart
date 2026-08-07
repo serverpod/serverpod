@@ -440,23 +440,15 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       selectedColumns.add(table.id);
     }
 
-    var encoder = poolManager.encoder;
     var results = <Map<String, dynamic>>[];
 
     for (var row in rows) {
-      var rowJson = row.toJsonForDatabase() as Map<String, dynamic>;
-      var setParts = <String>[];
-      var idValue = encoder.convert(row.id);
-
-      for (var col in selectedColumns) {
-        if (col.columnName == 'id') continue;
-        final rawValue = rowJson[col.columnName];
-        setParts.add(_buildSetExpression(col, rawValue));
-      }
-      if (setParts.isEmpty) {
-        // No columns to update (e.g. columns: (t) => [t.id]); keep SQL valid.
-        setParts.add('"${table.id.columnName}" = $idValue');
-      }
+      var query = UpdateQueryBuilder.forRows(
+        table: table,
+        dialect: DatabaseDialect.sqlite,
+        rows: [row],
+        columns: selectedColumns,
+      ).withReturn(noReturn ? Returning.none : Returning.all).build();
 
       // No need to run in transaction or savepoint here, since we are already
       // ensure that any batch with more than 1 row has a transaction or
@@ -464,12 +456,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       results.addAll(
         await _mappedResultsQuery(
           session,
-          _buildSqlUpdateWhereId(
-            table: table,
-            setClause: setParts.join(', '),
-            idSqlValue: idValue,
-            noReturn: noReturn,
-          ),
+          query,
           transaction: transaction,
           table: table,
         ),
@@ -516,16 +503,15 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       throw ArgumentError('columnValues cannot be empty');
     }
 
-    var encoder = poolManager.encoder;
-    var setClause = _buildSetClause(columnValues);
+    var query = UpdateQueryBuilder.forColumnValues(
+      table: table,
+      dialect: DatabaseDialect.sqlite,
+      columnValues: columnValues,
+    ).withId(id).build();
 
     var result = await _mappedResultsQuery(
       session,
-      _buildSqlUpdateWhereId(
-        table: table,
-        setClause: setClause,
-        idSqlValue: encoder.convert(id),
-      ),
+      query,
       transaction: transaction,
       table: table,
     );
@@ -604,16 +590,19 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
         .whereType<Object>()
         .toList();
 
-    var idList = ids.map(poolManager.encoder.convert).join(', ');
+    var query =
+        UpdateQueryBuilder.forColumnValues(
+              table: table,
+              dialect: DatabaseDialect.sqlite,
+              columnValues: columnValues,
+            )
+            .withIds(ids)
+            .withReturn(noReturn ? Returning.none : Returning.all)
+            .build();
 
     var result = await _mappedResultsQuery(
       session,
-      _buildSqlUpdateWhereIdIn(
-        table: table,
-        setClause: _buildSetClause(columnValues),
-        idListSql: idList,
-        noReturn: noReturn,
-      ),
+      query,
       transaction: transaction,
       table: table,
     );
@@ -1114,22 +1103,6 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     });
   }
 
-  String _buildSetClause(List<ColumnValue> columnValues) {
-    return columnValues
-        .map((columnValue) {
-          return _buildSetExpression(
-            columnValue.column,
-            columnValue.value,
-          );
-        })
-        .join(', ');
-  }
-
-  String _buildSetExpression(Column column, dynamic value) {
-    final encodedValue = poolManager.encoder.encodeColumnValue(column, value);
-    return '"${column.columnName}" = $encodedValue';
-  }
-
   /// SQLite applies `ORDER BY`, `LIMIT`, and `OFFSET` in the preliminary
   /// `SELECT id ...` used by `updateWhere`, but the subsequent
   /// `UPDATE ... WHERE id IN (...) RETURNING *` does not preserve that row
@@ -1465,30 +1438,6 @@ String _buildSqlSingleRowInsert({
   final values = encodedValues.join(', ');
   return 'INSERT INTO "${table.tableName}" ($columnNames) VALUES ($values)'
       '$onConflict$returning';
-}
-
-String _buildSqlUpdateWhereId({
-  required Table table,
-  required String setClause,
-  required String idSqlValue,
-  bool noReturn = false,
-}) {
-  final returning = noReturn ? '' : ' RETURNING *';
-  return 'UPDATE "${table.tableName}" SET $setClause '
-      'WHERE "${table.id.columnName}" = $idSqlValue'
-      '$returning';
-}
-
-String _buildSqlUpdateWhereIdIn({
-  required Table table,
-  required String setClause,
-  required String idListSql,
-  bool noReturn = false,
-}) {
-  final returning = noReturn ? '' : ' RETURNING *';
-  return 'UPDATE "${table.tableName}" SET $setClause '
-      'WHERE "${table.id.columnName}" IN ($idListSql)'
-      '$returning';
 }
 
 Table _getTableOrAssert<T>(
