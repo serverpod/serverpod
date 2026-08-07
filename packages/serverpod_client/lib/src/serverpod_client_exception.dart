@@ -20,7 +20,7 @@ class ServerpodClientNetworkException extends ServerpodClientException {
   const ServerpodClientNetworkException(super.message);
 }
 
-/// [Exception] thrown when HTTP errors in communication with the server occurs.
+/// [Exception] thrown when HTTP errors occur in communication with the server.
 class ServerpodClientHttpException extends ServerpodClientException {
   /// Http status code associated with the error.
   final int statusCode;
