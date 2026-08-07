@@ -91,19 +91,18 @@ void main() {
     );
   });
 
-  group('Given a SameSite mapping', () {
-    test(
-      'when each CookieSameSite is built then it maps to the relic value.',
-      () {
-        SetCookie build(CookieSameSite s) =>
-            WebAuthCookieConfig(sameSite: s).buildSetCookieHeader('v');
+  test(
+    'Given a SameSite mapping when each CookieSameSite is built '
+    'then it maps to the relic value.',
+    () {
+      SetCookie build(CookieSameSite s) =>
+          WebAuthCookieConfig(sameSite: s).buildSetCookieHeader('v');
 
-        expect(build(CookieSameSite.lax).sameSite, SameSite.lax);
-        expect(build(CookieSameSite.strict).sameSite, SameSite.strict);
-        expect(build(CookieSameSite.none).sameSite, SameSite.none);
-      },
-    );
-  });
+      expect(build(CookieSameSite.lax).sameSite, SameSite.lax);
+      expect(build(CookieSameSite.strict).sameSite, SameSite.strict);
+      expect(build(CookieSameSite.none).sameSite, SameSite.none);
+    },
+  );
 
   group('Given a configured domain', () {
     test('when it has a leading dot then the dot is stripped (host-only).', () {
@@ -143,17 +142,21 @@ void main() {
     });
   });
 
-  group('Given a malformed cookie path', () {
-    test('when building a header then a clear ArgumentError is thrown.', () {
+  test(
+    'Given a malformed cookie path when building a header '
+    'then a clear ArgumentError is thrown.',
+    () {
       expect(
         () => const WebAuthCookieConfig(path: 'a;b').buildSetCookieHeader('v'),
         throwsA(isA<ArgumentError>()),
       );
-    });
-  });
+    },
+  );
 
-  group('Given a non-default config', () {
-    test('when built then secure/path/name are taken from the config.', () {
+  test(
+    'Given a non-default config when built '
+    'then secure/path/name are taken from the config.',
+    () {
       var cookie = const WebAuthCookieConfig(
         name: 'my_auth',
         refreshName: 'my_refresh',
@@ -166,8 +169,8 @@ void main() {
       expect(cookie.path?.toString(), '/app');
       expect(cookie.secure, isFalse);
       expect(cookie.sameSite, SameSite.strict);
-    });
-  });
+    },
+  );
 
   group('Given a web-auth-cookie session', () {
     late ServerpodConfig serverpodConfig;

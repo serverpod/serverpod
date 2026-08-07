@@ -16,7 +16,9 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   if (_corsRejectionCase) {
-    testWidgets('rejects a non-allow-listed browser origin', (_) async {
+    testWidgets('Given a browser app on a non-allow-listed origin '
+        'when calling the server '
+        'then the call is rejected.', (_) async {
       final client = _newClient(TestStorage());
       addTearDown(client.close);
 
@@ -29,7 +31,9 @@ void main() {
   }
 
   testWidgets(
-    'SAS cookie auth keeps unauthenticated calls and streams anonymous',
+    'Given an SAS cookie sign-in '
+    'when making unauthenticated calls and streams '
+    'then they remain anonymous.',
     (_) async {
       final client = _newClient(TestStorage());
       addTearDown(client.close);
@@ -56,7 +60,9 @@ void main() {
   );
 
   testWidgets(
-    'cookie authentication reconnects modern streams on sign-in, switch, and sign-out',
+    'Given cookie authentication '
+    'when signing in, switching users, and signing out '
+    'then method streams reconnect with the current identity.',
     (_) async {
       final client = _newClient(TestStorage());
       addTearDown(client.close);
@@ -119,7 +125,9 @@ void main() {
   );
 
   testWidgets(
-    'JWT cookie refresh restores access and serializes independent clients',
+    'Given a JWT cookie session shared by two clients '
+    'when both restore and refresh '
+    'then access is restored and the refreshes are serialized.',
     (_) async {
       final firstStorage = TestStorage();
       final firstClient = _newClient(firstStorage);

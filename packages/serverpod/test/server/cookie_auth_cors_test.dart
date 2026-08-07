@@ -12,20 +12,19 @@ Headers _apply(Headers base, {List<String>? requestedHeaders}) {
 }
 
 void main() {
-  group('Given a preflight response without allowed headers', () {
-    test(
-      'when ensuring the cookie-auth headers '
-      'then they are set as the allowed headers.',
-      () {
-        final headers = _apply(Headers.empty());
+  test(
+    'Given a preflight response without allowed headers '
+    'when ensuring the cookie-auth headers '
+    'then they are set as the allowed headers.',
+    () {
+      final headers = _apply(Headers.empty());
 
-        expect(
-          headers.accessControlAllowHeaders?.headers,
-          containsAll(cookieAuthRequestHeaders),
-        );
-      },
-    );
-  });
+      expect(
+        headers.accessControlAllowHeaders?.headers,
+        containsAll(cookieAuthRequestHeaders),
+      );
+    },
+  );
 
   group(
     'Given a preflight response with a wildcard allowed headers override',

@@ -21,23 +21,22 @@ void main() {
   late List<String?> receivedAuthHeaders;
   late List<String?> receivedBasePaths;
 
-  group('Given a cookie-auth client on a transport without a cookie jar', () {
-    test(
-      'when cookie auth is enabled '
-      'then it fails loudly at configuration time.',
-      () {
-        client = TestServerpodClient(
-          host: Uri.parse('http://localhost:8080'),
-        );
+  test(
+    'Given a client on a transport without a cookie jar '
+    'when cookie auth is enabled '
+    'then it fails loudly at configuration time.',
+    () {
+      client = TestServerpodClient(
+        host: Uri.parse('http://localhost:8080'),
+      );
 
-        expect(
-          () => client.cookieAuth = true,
-          throwsA(isA<UnsupportedError>()),
-        );
-        expect(client.cookieAuth, isFalse);
-      },
-    );
-  });
+      expect(
+        () => client.cookieAuth = true,
+        throwsA(isA<UnsupportedError>()),
+      );
+      expect(client.cookieAuth, isFalse);
+    },
+  );
 
   group('Given a cookie-auth client on a cookie-capable transport', () {
     setUp(() async {

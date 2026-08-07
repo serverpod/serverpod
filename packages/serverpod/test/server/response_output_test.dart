@@ -3,8 +3,10 @@ import 'package:serverpod/src/server/response_output.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given nothing queued', () {
-    test('when applying response output then the response is unchanged.', () {
+  test(
+    'Given nothing queued when applying response output '
+    'then the response is unchanged.',
+    () {
       var response = Response.ok();
       var result = applyResponseOutput(
         response,
@@ -12,11 +14,13 @@ void main() {
         cookies: const [],
       );
       expect(identical(result, response), isTrue);
-    });
-  });
+    },
+  );
 
-  group('Given a queued cookie', () {
-    test('when applying response output then a Set-Cookie is set.', () {
+  test(
+    'Given a queued cookie when applying response output '
+    'then a Set-Cookie is set.',
+    () {
       var result = applyResponseOutput(
         Response.ok(),
         headers: const {},
@@ -37,32 +41,33 @@ void main() {
       expect(setCookie.single, contains('HttpOnly'));
       expect(setCookie.single, contains('Secure'));
       expect(setCookie.single, contains('SameSite=Lax'));
-    });
-  });
+    },
+  );
 
-  group('Given multiple queued cookies', () {
-    test(
-      'when applying response output then each gets its own Set-Cookie.',
-      () {
-        var result = applyResponseOutput(
-          Response.ok(),
-          headers: const {},
-          cookies: [
-            SetCookie(name: 'a', value: '1'),
-            SetCookie(name: 'b', value: '2'),
-          ],
-        );
+  test(
+    'Given multiple queued cookies when applying response output '
+    'then each gets its own Set-Cookie.',
+    () {
+      var result = applyResponseOutput(
+        Response.ok(),
+        headers: const {},
+        cookies: [
+          SetCookie(name: 'a', value: '1'),
+          SetCookie(name: 'b', value: '2'),
+        ],
+      );
 
-        var setCookie = result.headers[Headers.setCookieHeader]!.toList();
-        expect(setCookie, hasLength(2));
-        expect(setCookie[0], contains('a=1'));
-        expect(setCookie[1], contains('b=2'));
-      },
-    );
-  });
+      var setCookie = result.headers[Headers.setCookieHeader]!.toList();
+      expect(setCookie, hasLength(2));
+      expect(setCookie[0], contains('a=1'));
+      expect(setCookie[1], contains('b=2'));
+    },
+  );
 
-  group('Given a queued header', () {
-    test('when applying response output then the header is set.', () {
+  test(
+    'Given a queued header when applying response output '
+    'then the header is set.',
+    () {
       var result = applyResponseOutput(
         Response.ok(),
         headers: const {'cache-control': 'no-store'},
@@ -70,6 +75,6 @@ void main() {
       );
 
       expect(result.headers['cache-control'], ['no-store']);
-    });
-  });
+    },
+  );
 }
