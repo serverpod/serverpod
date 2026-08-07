@@ -296,10 +296,10 @@ abstract class ServerpodClientShared extends EndpointCaller {
             ServerpodClientForbidden(),
           OpenMethodStreamResponseType.invalidArguments =>
             ServerpodClientBadRequest(),
-          OpenMethodStreamResponseType.success => ServerpodClientException(
-            'Unknown error, data: $e',
-            -1,
-          ),
+          OpenMethodStreamResponseType.success =>
+            ServerpodClientNetworkException(
+              'Unknown error, data: $e',
+            ),
         };
       } else {
         error = e;

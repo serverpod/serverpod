@@ -33,7 +33,7 @@ void main() {
           await expectLater(
             () async => await client.myLoggedIn.echo('hello'),
             throwsA(
-              isA<ServerpodClientException>()
+              isA<ServerpodClientHttpException>()
                   .having(
                     (e) => e.message,
                     'statusCode',
@@ -73,7 +73,7 @@ void main() {
           await expectLater(
             () async => await client.myAdmin.echo('hello'),
             throwsA(
-              isA<ServerpodClientException>()
+              isA<ServerpodClientHttpException>()
                   .having(
                     (e) => e.message,
                     'statusCode',
@@ -99,7 +99,7 @@ void main() {
           await expectLater(
             () async => await client.myAdmin.echo('hello'),
             throwsA(
-              isA<ServerpodClientException>()
+              isA<ServerpodClientHttpException>()
                   .having((e) => e.message, 'statusCode', contains('Forbidden'))
                   .having((e) => e.statusCode, 'statusCode', 403),
             ),
@@ -136,7 +136,7 @@ void main() {
           await expectLater(
             () async => await client.myConcreteAdmin.echo('hello'),
             throwsA(
-              isA<ServerpodClientException>()
+              isA<ServerpodClientHttpException>()
                   .having(
                     (e) => e.message,
                     'statusCode',
@@ -162,7 +162,7 @@ void main() {
           await expectLater(
             () async => await client.myConcreteAdmin.echo('hello'),
             throwsA(
-              isA<ServerpodClientException>()
+              isA<ServerpodClientHttpException>()
                   .having((e) => e.message, 'statusCode', contains('Forbidden'))
                   .having((e) => e.statusCode, 'statusCode', 403),
             ),

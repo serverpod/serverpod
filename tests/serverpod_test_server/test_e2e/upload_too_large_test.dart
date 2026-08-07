@@ -13,12 +13,12 @@ void main() {
     expectLater(
       client.upload.uploadByteData('path', ByteData(1 << 20)),
       throwsA(
-        isA<ServerpodClientException>()
+        isA<ServerpodClientHttpException>()
             .having((e) => e.statusCode, 'statusCode', 413)
             .having(
               (e) => e.message,
               'message',
-              'Unknown error, data: Request size exceeds the maximum allowed size of 524288 bytes.',
+              'Request size exceeds the maximum allowed size of 524288 bytes',
             ),
       ),
     );

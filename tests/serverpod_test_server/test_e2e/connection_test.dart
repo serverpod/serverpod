@@ -829,27 +829,29 @@ void main() {
 
   group('Failed calls', () {
     test('Exception in call', () async {
-      ServerpodClientException? clientException;
-      try {
-        await client.failedCalls.failedCall();
-      } catch (e) {
-        clientException = e as ServerpodClientException?;
-      }
-
-      expect(clientException, isNotNull);
-      expect(clientException!.statusCode, equals(500));
+      await expectLater(
+        () async => await client.failedCalls.failedCall(),
+        throwsA(
+          isA<ServerpodClientHttpException>().having(
+            (e) => e.statusCode,
+            'statusCode',
+            equals(500),
+          ),
+        ),
+      );
     });
 
     test('Exception in call from database', () async {
-      ServerpodClientException? clientException;
-      try {
-        await client.failedCalls.failedDatabaseQuery();
-      } catch (e) {
-        clientException = e as ServerpodClientException?;
-      }
-
-      expect(clientException, isNotNull);
-      expect(clientException!.statusCode, equals(500));
+      await expectLater(
+        () async => await client.failedCalls.failedDatabaseQuery(),
+        throwsA(
+          isA<ServerpodClientHttpException>().having(
+            (e) => e.statusCode,
+            'statusCode',
+            equals(500),
+          ),
+        ),
+      );
     });
 
     test('Exception in call from database being caught', () async {
