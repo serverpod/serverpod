@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/generator/dart_formatters.dart';
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_database/serverpod_database.dart';
 // ignore: implementation_imports
 import 'package:serverpod_database/src/definition/definition_normalizer.dart';
@@ -26,18 +27,38 @@ class ClientMigrationArtifactStore implements MigrationArtifactStoreWriter {
   Directory get _migrationsBase =>
       MigrationConstants.clientMigrationsBaseDirectory(_projectDirectory);
 
+  File get _registryFile =>
+      File(path.join(_migrationsBase.path, 'migration_registry.dart'));
+
   @override
   Future<List<String>> listVersions() async {
     if (!await _migrationsBase.exists()) {
       return [];
     }
-    return await _migrationsBase
-          .list()
-          .where((entity) => entity is Directory)
-          .cast<Directory>()
-          .map((dir) => path.basename(dir.path))
-          .toList()
-      ..sort();
+    var versions =
+        await _migrationsBase
+              .list()
+              .where((entity) => entity is Directory)
+              .cast<Directory>()
+              .map((dir) => path.basename(dir.path))
+              .toList()
+          ..sort();
+
+    var removed = await deleteTrailingEmptyMigrationVersionDirectories(
+      versions,
+      migrationsBaseDirectory: _migrationsBase,
+      logWarning: log.warning,
+    );
+
+    // Only an existing registry is refreshed, to drop the part directives
+    // pointing at the removed directories. Since writeVersionRegistry creates
+    // the file when missing, writing it unconditionally would turn listing the
+    // versions into generating a registry for projects that have none.
+    if (removed.isNotEmpty && await _registryFile.exists()) {
+      await writeVersionRegistry(versions);
+    }
+
+    return versions;
   }
 
   @override
@@ -112,15 +133,12 @@ class ClientMigrationArtifactStore implements MigrationArtifactStoreWriter {
 
   @override
   Future<void> writeVersionRegistry(List<String> versions) async {
-    var registryFile = path.join(
-      _migrationsBase.path,
-      'migration_registry.dart',
-    );
+    var registryFile = _registryFile;
     await _migrationsBase.create(recursive: true);
-    await File(registryFile).writeAsString(
+    await registryFile.writeAsString(
       _dartEmitter.emitRegistry(
         versions,
-        formatter: GeneratedDartFormatters.of(registryFile),
+        formatter: GeneratedDartFormatters.of(registryFile.path),
       ),
     );
   }
