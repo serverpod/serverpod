@@ -81,7 +81,10 @@ class ServerpodClientRequestEntityTooLarge
     extends ServerpodClientHttpException {
   /// Creates a Request Entity Too Large Exception
   ServerpodClientRequestEntityTooLarge()
-    : super('Request entity too large', HttpStatus.requestEntityTooLarge);
+    : super(
+        'Request size exceeds the maximum allowed size of 524288 bytes',
+        HttpStatus.requestEntityTooLarge,
+      );
 }
 
 /// Thrown if the server encountered an internal error.
