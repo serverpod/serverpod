@@ -443,6 +443,76 @@ void main() {
     );
 
     test(
+      'when the refresh cookie is rejected, '
+      'then a repeated refresh fails without calling the endpoint again.',
+      () async {
+        refreshEndpoint.error = RefreshTokenNotFoundException();
+
+        final firstResult = await authKeyProvider.refreshAuthKey();
+        final secondResult = await authKeyProvider.refreshAuthKey();
+
+        expect(firstResult, RefreshAuthKeyResult.failedUnauthorized);
+        expect(secondResult, RefreshAuthKeyResult.failedUnauthorized);
+        expect(refreshEndpoint.refreshTokens, hasLength(1));
+      },
+    );
+
+    test(
+      'when the refresh cookie is rejected and a refresh is forced, '
+      'then the endpoint is called again.',
+      () async {
+        refreshEndpoint.error = RefreshTokenNotFoundException();
+        await authKeyProvider.refreshAuthKey();
+
+        final result = await authKeyProvider.refreshAuthKey(force: true);
+
+        expect(result, RefreshAuthKeyResult.failedUnauthorized);
+        expect(refreshEndpoint.refreshTokens, hasLength(2));
+      },
+    );
+
+    test(
+      'when the refresh cookie is rejected and the user signs in again, '
+      'then the next refresh calls the endpoint again.',
+      () async {
+        refreshEndpoint.error = RefreshTokenNotFoundException();
+        await authKeyProvider.refreshAuthKey();
+
+        refreshEndpoint.error = null;
+        refreshEndpoint.authSuccess = _authSuccess(
+          authStrategy: AuthStrategy.jwt.name,
+          token: 'new-access-token',
+          refreshToken: null,
+        );
+        authInfo = _authSuccess(
+          authStrategy: AuthStrategy.jwt.name,
+          token: '',
+          refreshToken: null,
+        );
+
+        final result = await authKeyProvider.refreshAuthKey();
+
+        expect(result, RefreshAuthKeyResult.success);
+        expect(refreshEndpoint.refreshTokens, hasLength(2));
+      },
+    );
+
+    test(
+      'when a refresh fails with a transient error, '
+      'then a repeated refresh calls the endpoint again.',
+      () async {
+        refreshEndpoint.error = Exception('network');
+
+        final firstResult = await authKeyProvider.refreshAuthKey();
+        final secondResult = await authKeyProvider.refreshAuthKey();
+
+        expect(firstResult, RefreshAuthKeyResult.failedOther);
+        expect(secondResult, RefreshAuthKeyResult.failedOther);
+        expect(refreshEndpoint.refreshTokens, hasLength(2));
+      },
+    );
+
+    test(
       'when the platform provides no cross-tab lock, '
       'then refreshing throws a StateError.',
       () async {
@@ -767,6 +837,7 @@ class _TestRefreshJwtTokensEndpoint extends EndpointRefreshJwtTokens {
   _TestRefreshJwtTokensEndpoint() : super(_EndpointCaller());
 
   AuthSuccess? authSuccess;
+  Object? error;
   final refreshTokens = <String?>[];
   int _inFlightRefreshes = 0;
   int maxConcurrentRefreshes = 0;
@@ -783,6 +854,8 @@ class _TestRefreshJwtTokensEndpoint extends EndpointRefreshJwtTokens {
     }
     await Future<void>.delayed(Duration.zero);
     _inFlightRefreshes--;
+    final error = this.error;
+    if (error != null) throw error;
     final authSuccess = this.authSuccess;
     if (authSuccess == null) throw StateError('No authSuccess configured.');
     return authSuccess;

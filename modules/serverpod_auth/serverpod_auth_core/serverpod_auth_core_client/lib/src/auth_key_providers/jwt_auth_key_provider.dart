@@ -52,6 +52,9 @@ class _JwtAuthKeyProviderDelegate implements RefresherClientAuthKeyProvider {
   final bool Function() usesCookieAuth;
   final CrossTabLock? Function() getCrossTabRefreshLock;
 
+  bool _cookieRefreshUnauthorized = false;
+  AuthSuccess? _unauthorizedCookieAuthInfo;
+
   _JwtAuthKeyProviderDelegate({
     required this.getAuthInfo,
     required this.invalidateCachedAuthInfo,
@@ -92,6 +95,16 @@ class _JwtAuthKeyProviderDelegate implements RefresherClientAuthKeyProvider {
           currentExpiresAt?.isExpiring(refreshJwtTokenBefore) == true;
       if (!shouldRefresh) return RefreshAuthKeyResult.skipped;
 
+      // A rejected refresh cookie stays rejected until the auth state
+      // changes (a sign-in or successful refresh replaces the auth info
+      // instance), so repeat the failure without a server round-trip per
+      // call. A forced refresh and transient failures are not suppressed.
+      if (!force &&
+          _cookieRefreshUnauthorized &&
+          identical(currentAuthInfo, _unauthorizedCookieAuthInfo)) {
+        return RefreshAuthKeyResult.failedUnauthorized;
+      }
+
       // The refresh cookie is shared between tabs and its secret is
       // single-use, so an uncoordinated concurrent refresh from another tab
       // would be treated as credential reuse and revoke the session.
@@ -103,7 +116,17 @@ class _JwtAuthKeyProviderDelegate implements RefresherClientAuthKeyProvider {
           'Web Locks API).',
         );
       }
-      return crossTabLock.synchronize(() => _refresh(refreshToken: null));
+      final result = await crossTabLock.synchronize(
+        () => _refresh(refreshToken: null),
+      );
+      if (result == RefreshAuthKeyResult.failedUnauthorized) {
+        _cookieRefreshUnauthorized = true;
+        _unauthorizedCookieAuthInfo = currentAuthInfo;
+      } else if (result == RefreshAuthKeyResult.success) {
+        _cookieRefreshUnauthorized = false;
+        _unauthorizedCookieAuthInfo = null;
+      }
+      return result;
     }
 
     if ((!force &&
