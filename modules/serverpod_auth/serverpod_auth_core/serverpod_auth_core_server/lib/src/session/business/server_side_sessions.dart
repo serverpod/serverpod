@@ -210,12 +210,20 @@ class ServerSideSessions {
     final secondsUntilExpiry = effectiveExpiresAt
         ?.difference(clock.now())
         .inSeconds;
-    final issuedAsCookie = session.writeWebAuthCookie(
-      token,
-      maxAgeSeconds: secondsUntilExpiry != null && secondsUntilExpiry > 0
-          ? secondsUntilExpiry
-          : null,
-    );
+    // Only the caller's own session may be issued as the browser cookie;
+    // minting for another user (e.g. an admin flow) returns the token in the
+    // body instead of replacing the caller's cookie identity.
+    final callerIdentifier = session.authenticated?.userIdentifier;
+    final isCallerSession =
+        callerIdentifier == null || callerIdentifier == authUserId.toString();
+    final issuedAsCookie =
+        isCallerSession &&
+        session.writeWebAuthCookie(
+          token,
+          maxAgeSeconds: secondsUntilExpiry != null && secondsUntilExpiry > 0
+              ? secondsUntilExpiry
+              : null,
+        );
 
     return AuthSuccess(
       authStrategy: AuthStrategy.session.name,

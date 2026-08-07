@@ -52,6 +52,14 @@ class JwtTokenManager implements TokenManager {
     );
     if (!session.isWebAuthCookieRequest) return authSuccess;
 
+    // Only the caller's own tokens may be issued via the browser cookie;
+    // minting for another user (e.g. an admin flow) returns the refresh token
+    // in the body instead of replacing the caller's cookie identity.
+    final callerIdentifier = session.authenticated?.userIdentifier;
+    if (callerIdentifier != null && callerIdentifier != authUserId.toString()) {
+      return authSuccess;
+    }
+
     final refreshToken = authSuccess.refreshToken;
     if (refreshToken == null) return authSuccess;
 

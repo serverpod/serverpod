@@ -68,6 +68,50 @@ void main() {
     );
 
     test(
+      'when JwtTokenManager issues a token for the authenticated caller, '
+      'then the refresh token is set as a cookie.',
+      () async {
+        session.authenticated = AuthenticationInfo(
+          authUserId.toString(),
+          const {},
+          authId: 'test',
+        );
+        final tokenManager = JwtTokenManager(config: jwtConfig, jwt: jwt);
+
+        final authSuccess = await tokenManager.issueToken(
+          session,
+          authUserId: authUserId,
+          method: 'test',
+        );
+
+        expect(authSuccess.refreshToken, isNull);
+        expect(session.responseCookies, hasLength(1));
+      },
+    );
+
+    test(
+      'when JwtTokenManager issues a token for another user than the caller, '
+      'then the refresh token stays in the body and no cookie is written.',
+      () async {
+        session.authenticated = AuthenticationInfo(
+          const Uuid().v4obj().toString(),
+          const {},
+          authId: 'test',
+        );
+        final tokenManager = JwtTokenManager(config: jwtConfig, jwt: jwt);
+
+        final authSuccess = await tokenManager.issueToken(
+          session,
+          authUserId: authUserId,
+          method: 'test',
+        );
+
+        expect(authSuccess.refreshToken, 'refresh-token');
+        expect(session.responseCookies, isEmpty);
+      },
+    );
+
+    test(
       'when JwtTokenManager issues a token for a client behind a URL prefix '
       '(declared via the base-path header), then the refresh cookie path '
       'includes the prefix.',
@@ -245,6 +289,9 @@ class _FakeSession implements Session {
   final _FakeServer _server;
 
   final responseCookies = <SetCookie>[];
+
+  @override
+  AuthenticationInfo? authenticated;
 
   @override
   final Request? request;
