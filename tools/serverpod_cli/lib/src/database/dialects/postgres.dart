@@ -264,6 +264,9 @@ extension PostgresColumnDefinitionPgSqlGeneration on ColumnDefinition {
 
     // The id column is special.
     if (isPrimary) {
+      if (isNullable) {
+        throw const FormatException('The id column must be non-nullable');
+      }
       type = '$type PRIMARY KEY';
       nullable = '';
     }
@@ -608,6 +611,14 @@ extension PostgresColumnMigrationPgSqlGenerator on ColumnMigration {
             'ALTER TABLE "$tableName" ALTER COLUMN "$physicalName"'
             ' DROP DEFAULT;\n';
         return out;
+      } else if (newDefault == defaultIntSerial) {
+        // Adding a serial default requires creating a sequence via the serial
+        // pseudo-type on column (re)create. SET DEFAULT cannot express this.
+        throw StateError(
+          'Cannot SET DEFAULT "$defaultIntSerial" on column "$physicalName" '
+          'of table "$tableName". Auto-increment defaults must be applied by '
+          'recreating the column with the serial type.',
+        );
       } else {
         var newDefaultSql = columnDefinition.columnType.getPgColumnDefault(
           newDefault,
