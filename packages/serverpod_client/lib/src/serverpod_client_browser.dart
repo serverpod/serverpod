@@ -38,11 +38,10 @@ class ServerpodClientRequestDelegateImpl
   @override
   set cookieAuth(bool value) {
     super.cookieAuth = value;
-    if (value) {
-      // Send auth cookies with requests and accept Set-Cookie responses.
-      var client = _httpClient;
-      if (client is BrowserClient) client.withCredentials = true;
-    }
+    // Send auth cookies with requests and accept Set-Cookie responses;
+    // disabling cookie auth reverts to uncredentialed requests.
+    var client = _httpClient;
+    if (client is BrowserClient) client.withCredentials = value;
   }
 
   @override
