@@ -21,6 +21,7 @@ import 'package:serverpod_test_module_server/src/generated/module_class.dart'
     as _i8;
 import 'package:serverpod_test_module_server/src/generated/module_streaming_class.dart'
     as _i9;
+import '../test_module_module.dart' as _i10;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -345,5 +346,10 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+  }
+
+  @override
+  Future<void> onStartup(_i1.Session session) async {
+    await _i10.TestModuleModule().onStartup(session);
   }
 }

@@ -1,5 +1,6 @@
 ## 4.0.0-beta.1
 
+- feat: Generates `Endpoints.onStartup` to invoke package `Module` startup hooks.
 - feat: Exposes flags on the `serverpod create` command to customize the created project.
 - feat: Unifies and customizes social sign-in button styling.
 - feat: Adds support for cache busting with dedicated syntax in templating system.
