@@ -131,7 +131,7 @@ the existing handle.
 
 ```
 EmbeddedPostgres (facade)
-  ├── BinaryStore   - fetch + verify + extract Zonky tarballs (per-user cache)
+  ├── BinaryStore   - fetch + verify + extract Serverpod PG bundles (per-user cache)
   ├── ClusterStore  - initdb, postgresql.conf / pg_hba.conf rewrites (per-project)
   ├── Supervisor    - spawn `postgres`, pidfile, signals, orphan reaper
   └── Transport     - UDS path / TCP port -> connection URI
@@ -141,98 +141,109 @@ EmbeddedPostgres (facade)
 
 ### Source
 
-Zonky's `embedded-postgres-binaries-<platform>-<arch>` JARs on Maven Central.
+Serverpod-built PostgreSQL bundles (PostgreSQL + PostGIS + pgvector), published
+as GitHub Release assets under `serverpod/serverpod`. Built natively per
+`(OS, arch)` by `tool/build_postgres/` (Zig on Linux, Apple clang on macOS,
+mingw-w64 on Windows) and published by
+`.github/workflows/build-embedded-postgres.yaml`.
 
 ```
-https://repo1.maven.org/maven2/io/zonky/test/postgres/
-  embedded-postgres-binaries-<platform>-<arch>/<bom>/
-  embedded-postgres-binaries-<platform>-<arch>-<bom>.jar
+https://github.com/serverpod/serverpod/releases/download/
+  embedded-postgres-v<bom>-r<rev>/
+  serverpod-postgres-<bom>-r<rev>-<os>-<arch>.tar.xz
+  serverpod-postgres-<bom>-r<rev>-<os>-<arch>.tar.xz.sha256
 ```
 
-Each JAR contains exactly one `.txz` at its root. The inner filename does
-**not** match the outer artifact's `<platform>-<arch>` suffix - Zonky uses
-a different naming inside the JAR (e.g. outer `darwin-amd64` -> inner
-`postgres-darwin-x86_64.txz`; outer `darwin-arm64v8` -> inner
-`postgres-darwin-arm_64.txz`). Glob for the single root-level `.txz` rather
-than constructing the name.
+Bundle identity is append-only: `<bom>-r<revision>` (e.g. `16.13.0-r1`). Any
+change that alters shipped bytes while the PG version stays the same must bump
+the revision so a fixed bundle reaches users whose cache already holds the
+previous one. Keep `lib/src/binary/bundle_spec.dart` in sync with
+`tool/build_postgres/versions.env`.
 
-Linux: Zonky compiles from source. Darwin/Windows: Zonky repackages
-EnterpriseDB binaries. Always fetch + verify the `.sha256` sidecar before
-unpacking.
+Always fetch + verify the `.sha256` sidecar before unpacking, then validate
+the embedded `serverpod-bundle-manifest.json` (postgres / revision / platform /
+postgis / pgvector) so a mislabeled archive cannot be promoted into the cache.
+
+Default acquisition mode is download-only (`BinarySource.download`); a missing
+release asset is an error. `BinarySource.build` (or `SERVERPOD_PG_SOURCE=build`)
+forces a local rebuild for development/CI and requires the native toolchain.
+`BinarySource.auto` downloads and falls back to build only on a definitive
+"not available" response.
 
 ### Extraction
 
-Pure Dart via `package:archive` (`XZDecoder` + `TarDecoder`). Two patterns
-are required, both validated by the spike:
+Pure Dart via `package:archive` (`XZDecoder` + `TarDecoder`) over the
+downloaded `.tar.xz`. Two patterns are required for correctness:
 
 1. **Symlinks must be deferred to a second pass** and created via `Link()`.
    The naive single-pass loop writes 0-byte regular files for symlink
-   entries, which breaks PG's versioned dylib chain
-   (`libicudata.68.dylib` -> `.68.2.dylib`) and yields
+   entries, which breaks versioned dylib chains and yields
    `dyld: Library not loaded` at the first `initdb` invocation.
 2. **Restore exec bits after writing.** `OutputFileStream` does not preserve
    TAR mode bits; after writing each file, set the executable bit if
    `entry.mode & 0o111 != 0`. Cheap shell-out to `chmod` on POSIX; no-op on
    Windows (which doesn't honor POSIX exec bits).
 
-Spike measured ~40s for 1048 entries / 17 symlinks on macOS-amd64 - XZ
-decompression dominates and is fundamentally serial. `OutputFileStream`
-already streams content to disk without buffering.
+XZ decompression dominates and is fundamentally serial.
+`OutputFileStream` already streams content to disk without buffering.
 
 ### Platform mapping
 
-| OS      | Arch  | Zonky `<platform>-<arch>` |
-| ------- | ----- | ------------------------- |
-| linux   | x64   | `linux-amd64`             |
-| linux   | arm64 | `linux-arm64v8`           |
-| macos   | x64   | `darwin-amd64`            |
-| macos   | arm64 | `darwin-arm64v8`          |
-| windows | x64   | `windows-amd64`           |
+| OS      | Arch  | Bundle `<os>-<arch>` |
+| ------- | ----- | -------------------- |
+| linux   | x64   | `linux-x64`          |
+| linux   | arm64 | `linux-arm64`        |
+| macos   | x64   | `macos-x64`          |
+| macos   | arm64 | `macos-arm64`        |
+| windows | x64   | `windows-x64`        |
 
-Detect via `Abi.current()`. Fail loudly on unsupported tuples.
+Detect via `Abi.current()`. Fail loudly on unsupported tuples (including
+Windows ARM64, which is not yet published). Bundles are native per target -
+not cross-compiled, not universal macOS binaries.
 
 ### Pinned PG version
 
-Default: **latest 16.x patch**, matching `ghcr.io/serverpod/postgres:16` used
-by the project templates (and by the primary test docker-composes). Some older
-test/example compose files still pin `postgres:16.3` or `pgvector/pgvector:pg16`.
-PG 14-17 ship universal binaries on macOS via EDB; only PG 18.0-18.2 had a
-regression ([edb-installers#409](https://github.com/EnterpriseDB/edb-installers/issues/409)).
-Bump in lockstep with Serverpod Cloud.
+Default: **latest 16.x patch** (currently `16.13.0`), matching
+`ghcr.io/serverpod/postgres:16` used by the project templates (and by the
+primary test docker-composes). Some older test/example compose files still
+pin `postgres:16.3` or `pgvector/pgvector:pg16`. Bump in lockstep with
+Serverpod Cloud and the published bundle BOM.
 
 ### Cache layout
 
 ```
-<userCache>/serverpod/pg-binaries/<pg-version>/<platform>-<arch>/
-  bin/  lib/  share/  .meta.json   # source URL, sha256, install timestamp
+<cacheRoot>/<bundleId>/<os>-<arch>/
+  bin/  lib/  share/  serverpod-bundle-manifest.json  meta.json
 ```
 
-`<userCache>`:
+`<cacheRoot>` (`BinaryStore.defaultCacheRoot()`):
 
-- Linux: `$XDG_CACHE_HOME/serverpod` or `~/.cache/serverpod`
-- macOS: `~/Library/Caches/serverpod`
-- Windows: `%LOCALAPPDATA%\serverpod\Cache`
+- Linux: `$XDG_CACHE_HOME/serverpod/pg-binaries` or `~/.cache/serverpod/pg-binaries`
+- macOS: `~/Library/Caches/serverpod/pg-binaries`
+- Windows: `%LOCALAPPDATA%\serverpod\Cache\pg-binaries`
+- Override: `SERVERPOD_PG_CACHE_DIR` (used by CI to stage a portable cache)
+
+`<bundleId>` is `<bom>-r<revision>` so two revisions of the same PG version
+never share a cache entry.
 
 ### Concurrency
 
-Per-cache file lock (`flock` POSIX, `LockFileEx` Windows, or `<cache>/.lock`
-with O_EXCL retry) prevents two `start()` calls from extracting the same
-tarball. Installed dir is treated read-only.
+Per-artifact claim/lease under the install dir prevents two `start()` calls
+from extracting the same tarball. A loser polls for the winner's `meta.json`;
+stale claims are stolen after a timeout. Installed dir is treated read-only.
 
 ### Acquisition triggers
 
 Downloaded on demand via `BinaryStore.ensure()`; never bundled in the pub
-package (~30-50 MB/platform). `serverpod_cli start` calls `ensure()` before
-launching, with progress reported through the existing CLI progress UI via
-`onProgress`.
+package. Progress is reported through `onProgress`.
 
 `dart run serverpod_embedded_postgres:prefetch` is exposed for CI warm-up
-and offline prep. Accepts a target `(os, arch)` so CI hosts can prefetch
-artifacts for other platforms.
+and offline prep. Accepts a target `<os>-<arch>` so CI hosts can prefetch
+artifacts for other platforms (validated against `serverpodPlatformSuffixes`).
 
 ### Eviction
 
-Never auto-evict. Different versions add `<pg-version>/` subdirs alongside
+Never auto-evict. Different bundle IDs add sibling subdirs alongside
 existing ones. Removal only via explicit `prune` command.
 
 ## 6. Filesystem layout (per project)
@@ -353,8 +364,9 @@ URI: `postgres:///<db>?host=<shortest socket file path>&user=<user>`
 
 - **Linux/macOS**: works out of the box.
 - **Windows**: PG 13+ on Win10 1803+. The relative form `../run` works
-  the same way; PG `chdir`s to PGDATA on Windows too. AF_UNIX support in
-  Zonky's Windows binaries manually verified.
+  the same way; PG `chdir`s to PGDATA on Windows too. The Windows bundle is
+  built with AF_UNIX enabled; Dart 3.11+ is required for
+  `InternetAddressType.unix` on Windows.
 
 ### TCP (opt-in)
 
@@ -426,20 +438,18 @@ shared_preload_libraries = ''
 
 `initdb` flags: `--username=postgres --encoding=UTF8 --no-locale
 --auth-local=trust --auth-host=scram-sha-256 --no-sync`. `--no-locale`
-yields byte-wise-stable collation across machines and avoids Zonky-locale
+yields byte-wise-stable collation across machines and avoids host-locale
 availability surprises.
 
 ## 11. Out of scope for v1
 
 Ships with Serverpod 3.5.
 
-- **PostgreSQL extensions.** No pgvector, PostGIS, or others beyond what
-  Zonky's stock binaries include. **Note**: the default Serverpod project
-  template uses `ghcr.io/serverpod/postgres:16`, which includes pgvector and
-  PostGIS, so this package cannot be a drop-in replacement for newly-created
-  projects until the required extensions land. The intended path: ship
-  extension artifacts compiled against the pinned Zonky PG version, fetched on
-  demand. Tracked separately for v1.1.
+- **PostgreSQL extensions beyond PostGIS and pgvector.** The Serverpod-built
+  bundles already ship PostGIS and pgvector (matching
+  `ghcr.io/serverpod/postgres:16`), so newly created projects can use
+  embedded Postgres as a drop-in for the template docker-compose DB. Other
+  extensions would need to be added to `tool/build_postgres/`.
 - Replication, logical decoding, hot standby.
 - Backup/restore tooling - use `pg_dump` directly.
 - pgAdmin / web UI.
@@ -536,16 +546,15 @@ complaint.
 
 ## 15. Verification plan
 
-- Unit tests: URL construction, sha verification, config-block rewrite
-  (idempotence + preservation of unmanaged lines).
-- Integration matrix on each (OS, arch) tuple in CI. Spike measurements on
-  macOS-amd64 + residential broadband set the budgets:
-  1. **Cold network** (empty binary cache): target < 90 s. Spike: 75 s
-     (20 s download, 40 s extract, 14 s initdb). Network-bound; CI tunes
-     by mirroring Maven internally.
-  2. **Cold local** (binaries cached, no cluster): target < 5 s. Spike: 2.5 s
+- Unit tests: URL construction, sha verification, manifest validation,
+  config-block rewrite (idempotence + preservation of unmanaged lines).
+- Integration matrix on each published `(OS, arch)` tuple in CI
+  (`linux-x64`, `linux-arm64`, `macos-x64`, `macos-arm64`, `windows-x64`).
+  Budgets (network-bound cold path varies with GitHub Releases latency):
+  1. **Cold network** (empty binary cache): target < 90 s.
+  2. **Cold local** (binaries cached, no cluster): target < 5 s
      (initdb dominates).
-  3. **Warm** (binaries + cluster cached): target < 2 s. Spike: 0.9 s.
+  3. **Warm** (binaries + cluster cached): target < 2 s.
   4. UDS round-trip `SELECT 1`.
   5. TCP round-trip `SELECT 1`.
   6. Hard-kill PG process; restart succeeds via orphan cleanup.
@@ -553,7 +562,8 @@ complaint.
   8. `reset()` produces a clean cluster.
   9. Two parallel `start()` calls share the binary cache safely.
   10. Idempotent `start()`: second call returns same handle, no second PG.
-- **macOS arch check on every PG bump:** `lipo -archs <cache>/.../bin/postgres`
-  must show both `x86_64` and `arm64`. If not, flag in release notes or pick
-  a different patch version.
-- Benchmarks: cold start, warm start, query latency vs. Docker `postgres:16`.
+  11. Bundle smoke: `CREATE EXTENSION postgis` / `vector` plus the supported
+      spatial/vector contract (`tool/smoke_bundle.sql`) before every release
+      publish.
+- Benchmarks: cold start, warm start, query latency vs.
+  `ghcr.io/serverpod/postgres:16`.
