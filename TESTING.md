@@ -15,8 +15,8 @@ requires Redis at `redis:6379` with password `password`; redis-tagged tests fail
 when it is unavailable. Each group also has its own script -
 `melos run test_unit`, `test_bootstrap`, `test_integration_server`,
 `test_integration_modules`, and `test_integration_sqlite_server` (see
-`melos.yaml`). The sections below are for running suites directly with
-`dart test`.
+the `melos:` section in `pubspec.yaml`). The sections below are for running
+suites directly with `dart test`.
 
 ## tests/serverpod_test_server
 

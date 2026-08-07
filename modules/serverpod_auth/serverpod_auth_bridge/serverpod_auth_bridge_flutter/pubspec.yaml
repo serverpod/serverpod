@@ -7,7 +7,9 @@ version: 4.0.0-beta.1
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '^3.10.3'
+  sdk: '^3.11.3'
+
+resolution: workspace
 
 dependencies:
   flutter:
@@ -22,19 +24,3 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   serverpod_lints: 4.0.0-beta.1
-
-dependency_overrides:
-  serverpod_auth_bridge_client:
-    path: ../serverpod_auth_bridge_client
-  serverpod_auth_core_client:
-    path: ../../serverpod_auth_core/serverpod_auth_core_client
-  serverpod_auth_core_flutter:
-    path: ../../serverpod_auth_core/serverpod_auth_core_flutter
-  serverpod_auth_idp_client:
-    path: ../../serverpod_auth_idp/serverpod_auth_idp_client
-  serverpod_client:
-    path: ../../../../packages/serverpod_client
-  serverpod_lints:
-    path: ../../../../packages/serverpod_lints
-  serverpod_serialization:
-    path: ../../../../packages/serverpod_serialization

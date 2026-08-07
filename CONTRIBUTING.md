@@ -176,8 +176,8 @@ scope of a direct test run:
 integration tests—and is the quickest way to validate a change across
 packages. On non-Windows hosts, its bootstrap group includes generated-project
 Dockerfile and Compose checks, so the complete workflow requires Docker. It
-also requires Redis at `redis:6379` with password `password`. See `melos.yaml`
-for the individual `test_*` scripts.
+also requires Redis at `redis:6379` with password `password`. See the `melos:`
+section in `pubspec.yaml` for the individual `test_*` scripts.
 
 Scripts that run groups of tests are located in the `util` directory and their
 names start with `run_tests`. Common test scripts include:

@@ -2,7 +2,7 @@
 # docker build -f projectname_server/Dockerfile .
 
 # Build stage
-FROM dart:3.10.3 AS build
+FROM dart:3.11.3 AS build
 
 # Create a minimal workspace that preserves locked server dependency versions.
 WORKDIR /app
@@ -11,7 +11,7 @@ COPY projectname_server projectname_server
 RUN printf '%s\n' \
   'name: _' \
   'environment:' \
-  '  sdk: ^3.10.3' \
+  '  sdk: ^3.11.3' \
   'workspace:' \
   '  - projectname_server' \
   > pubspec.yaml

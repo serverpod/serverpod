@@ -34,8 +34,8 @@ packages:
     source: hosted
     version: "1.18.0"
 sdks:
-  dart: "^3.10.3"
-  flutter: "^3.38.4"
+  dart: "^3.11.3"
+  flutter: "^3.41.5"
 ''';
 
     group('when calling PubspecLockParser.parse', () {
@@ -59,8 +59,8 @@ sdks:
       });
 
       test('then it returns correct SDK constraints', () {
-        expect(parser.dartSdkConstraint?.toString(), '^3.10.3');
-        expect(parser.flutterSdkConstraint?.toString(), '^3.38.4');
+        expect(parser.dartSdkConstraint?.toString(), '^3.11.3');
+        expect(parser.flutterSdkConstraint?.toString(), '^3.41.5');
       });
 
       test('then analyzer package has correct dependency type', () {

@@ -5,7 +5,7 @@ description: Upgrade Serverpod — minor/patch updates, major upgrade to v3. Use
 
 # Serverpod minor/patch upgrade
 
-Requirements: Dart 3.10.3+, Flutter 3.38.4+.
+Requirements: Dart 3.11.3+, Flutter 3.41.5+.
 
 Use the same pinned Serverpod version across all packages. Use the CLI to do the upgrade. Ask the user to start the server with `serverpod start` after the upgrade. NEVER update the CLI tooling, instead STOP and ask the user to do it.
 
@@ -16,7 +16,7 @@ Use the same pinned Serverpod version across all packages. Use the CLI to do the
 5. Run `serverpod generate`.
 6. Run `serverpod create-migration`.
 7. Run `dart analyze` in the root of the project and address any issues.
-8. Ensure that the Dockerfile uses at least `FROM dart:3.10.3 AS build`.
+8. Ensure that the Dockerfile uses at least `FROM dart:3.11.3 AS build`.
 9. Inform the user that the upgrade is complete and they should start the server with `serverpod start`.
 
 ## Major upgrade: Serverpod 2.x to 3.0
@@ -41,4 +41,3 @@ After following the regular upgrade process, ensure that the following breaking 
 **Auth:** `session.authenticated` is now synchronous. `AuthenticationInfo.authId` non-nullable, `userIdentifier` is `String`. Client: `authenticationKeyManager` → `authKeyProvider`. Custom handlers receive unwrapped Bearer token.
 
 **Deprecated:** Legacy streaming endpoints; use streaming methods.
-

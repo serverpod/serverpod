@@ -9,7 +9,9 @@ description: Client for the Serverpod module fixture that owns a shared table pa
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '^3.10.3'
+  sdk: '^3.11.3'
+
+resolution: workspace
 
 dependencies:
   serverpod_client: 4.0.0-beta.1
@@ -19,11 +21,3 @@ dependencies:
 
 dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
-
-dependency_overrides:
-  serverpod_client:
-    path: ../../../packages/serverpod_client
-  serverpod_database:
-    path: ../../../packages/serverpod_database
-  serverpod_serialization:
-    path: ../../../packages/serverpod_serialization

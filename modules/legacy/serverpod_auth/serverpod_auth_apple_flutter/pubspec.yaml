@@ -9,8 +9,8 @@ homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
 
 environment:
-  sdk: '^3.10.3'
-  flutter: '^3.38.4'
+  sdk: '^3.11.3'
+  flutter: '^3.41.5'
 
 dependencies:
   flutter:
