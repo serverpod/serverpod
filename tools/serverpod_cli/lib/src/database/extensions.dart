@@ -43,6 +43,16 @@ extension ColumnComparisons on ColumnDefinition {
       return false;
     }
 
+    // Adding a serial (auto-increment) default requires creating a sequence,
+    // which can only be done by (re)creating the column with the serial
+    // pseudo-type. An in-place "ALTER COLUMN ... SET DEFAULT" would reference a
+    // sequence that is never created, so the column must be dropped and
+    // recreated instead.
+    if (other.columnDefault == db.defaultIntSerial &&
+        columnDefault != db.defaultIntSerial) {
+      return false;
+    }
+
     // Vector dimension changes require dropping and recreating the column.
     if (vectorDimension != other.vectorDimension) {
       return false;

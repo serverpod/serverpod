@@ -275,6 +275,22 @@ class DefaultValueRestriction extends ValueRestriction {
       return errors;
     }
 
+    if (value == defaultIntSerial) {
+      if (key == Keyword.defaultPersistKey) {
+        return errors;
+      }
+
+      errors.add(
+        SourceSpanSeverityException(
+          'The default value "$defaultIntSerial" can not be set using the '
+          '"$key" keyword. Use the "${Keyword.defaultPersistKey}" keyword '
+          'instead.',
+          span,
+        ),
+      );
+      return errors;
+    }
+
     int? parsedValue = int.tryParse(value);
     if (parsedValue == null) {
       errors.add(

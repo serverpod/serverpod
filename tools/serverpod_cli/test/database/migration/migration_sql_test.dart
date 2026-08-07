@@ -1,6 +1,9 @@
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_database/serverpod_database.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
+import '../../test_util/builders/database/column_definition_builder.dart';
 import '../../test_util/builders/database/database_definition_builder.dart';
 import '../../test_util/builders/database/table_definition_builder.dart';
 
@@ -64,6 +67,81 @@ void main() {
       );
 
       expect(sql, contains('"id" INTEGER PRIMARY KEY'));
+    },
+  );
+
+  test(
+    'Given database table definition with a serial int column, '
+    'when generating PostgreSQL SQL, '
+    'then the column uses bigserial without an explicit sequence.',
+    () {
+      const tableName = 'example_table';
+      const columnName = 'syncVersion';
+
+      var serialColumn = ColumnDefinitionBuilder()
+          .withName(columnName)
+          .withColumnType(ColumnType.bigint)
+          .withIsNullable(false)
+          .withColumnDefault(defaultIntSerial)
+          .withDartType('int?')
+          .build();
+
+      var databaseDefinition = DatabaseDefinitionBuilder()
+          .withTable(
+            TableDefinitionBuilder()
+                .withName(tableName)
+                .withColumn(serialColumn)
+                .build(),
+          )
+          .build();
+
+      var sql = databaseDefinition.toPgSql(installedModules: []);
+
+      expect(sql, contains('"syncVersion" bigserial NOT NULL'));
+      expect(sql, isNot(contains('CREATE SEQUENCE')));
+      expect(sql, isNot(contains('nextval')));
+    },
+  );
+
+  test(
+    'Given a SQLite database table definition with a serial int column, '
+    'when generating SQL for SQLite, '
+    'then the unsupported dialect configuration is rejected.',
+    () {
+      var databaseDefinition = DatabaseDefinitionBuilder()
+          .withDefaultModules()
+          .withTable(
+            TableDefinitionBuilder()
+                .withName('example_table')
+                .withColumn(
+                  ColumnDefinitionBuilder()
+                      .withName('syncVersion')
+                      .withColumnType(ColumnType.bigint)
+                      .withIsNullable(false)
+                      .withColumnDefault(defaultIntSerial)
+                      .withDartType('int?')
+                      .build(),
+                )
+                .build(),
+          )
+          .build();
+
+      expect(
+        () => databaseDefinition.toSqliteSql(
+          installedModules: databaseDefinition.installedModules,
+        ),
+        throwsA(
+          isA<MigrationUnsupportedByDialectException>()
+              .having((error) => error.dialect, 'dialect', 'sqlite')
+              .having(
+                (error) => error.reason,
+                'reason',
+                'Column "syncVersion" on table "example_table" uses "serial" '
+                    'as its default value, but "sqlite" only supports '
+                    'auto-increment on the "id" column.',
+              ),
+        ),
+      );
     },
   );
 

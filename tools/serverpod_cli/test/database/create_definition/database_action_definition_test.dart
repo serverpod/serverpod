@@ -262,4 +262,46 @@ void main() {
       });
     },
   );
+
+  group(
+    'Given a class definition with a serial int field when generating a database definition',
+    () {
+      var field = FieldDefinitionBuilder()
+          .withName('syncVersion')
+          .withTypeDefinition('int', true)
+          .withDefaults(defaultPersistValue: defaultIntSerial)
+          .build();
+      var model = ModelClassDefinitionBuilder()
+          .withTableName('example')
+          .withField(field)
+          .build();
+
+      late var databaseDefinition = createDatabaseDefinitionFromModels(
+        [model],
+        'example',
+        [],
+      );
+
+      test('then the serial column is not primary.', () {
+        var serialColumn = databaseDefinition.tables.first.columns.firstWhere(
+          (c) => c.name == 'syncVersion',
+        );
+        expect(serialColumn.isPrimary, isFalse);
+      });
+
+      test('then the serial column has default "serial".', () {
+        var serialColumn = databaseDefinition.tables.first.columns.firstWhere(
+          (c) => c.name == 'syncVersion',
+        );
+        expect(serialColumn.columnDefault, defaultIntSerial);
+      });
+
+      test('then the serial column is not nullable.', () {
+        var serialColumn = databaseDefinition.tables.first.columns.firstWhere(
+          (c) => c.name == 'syncVersion',
+        );
+        expect(serialColumn.isNullable, isFalse);
+      });
+    },
+  );
 }
