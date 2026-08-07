@@ -2,9 +2,12 @@
 library;
 
 import 'package:http/browser_client.dart';
+import 'package:http/http.dart' as http;
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:serverpod_client/src/serverpod_client_browser.dart';
 import 'package:test/test.dart';
+
+import '../test_utils/test_serverpod_client.dart';
 
 class TestSerializationManager extends SerializationManager {}
 
@@ -45,4 +48,40 @@ void main() {
       },
     );
   });
+
+  group('Given a browser client with a non-BrowserClient http override', () {
+    late TestServerpodClient client;
+
+    setUp(() {
+      client = TestServerpodClient(
+        host: Uri.parse('http://localhost:8080'),
+        requestDelegate: ServerpodClientRequestDelegateImpl(
+          connectionTimeout: const Duration(seconds: 20),
+          serializationManager: TestSerializationManager(),
+          httpClientOverride: _NonBrowserHttpClient(),
+        ),
+      );
+    });
+
+    tearDown(() => client.close());
+
+    test(
+      'when cookie auth is enabled '
+      'then it fails loudly instead of sending uncredentialed requests.',
+      () {
+        expect(
+          () => client.cookieAuth = true,
+          throwsA(isA<UnsupportedError>()),
+        );
+        expect(client.cookieAuth, isFalse);
+      },
+    );
+  });
+}
+
+class _NonBrowserHttpClient extends http.BaseClient {
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) {
+    throw UnimplementedError();
+  }
 }

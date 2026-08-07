@@ -198,7 +198,9 @@ abstract class ServerpodClientShared extends EndpointCaller {
     if (value && !_requestDelegate.supportsCookieAuth) {
       throw UnsupportedError(
         'Cookie-based web auth is only supported by browser clients. '
-        'The dart:io client cannot store or resend HttpOnly cookies. '
+        'The dart:io client cannot store or resend HttpOnly cookies, and a '
+        'custom httpClientOverride must be a BrowserClient so credentialed '
+        'requests can be enabled on it. '
         'Set cookieAuth only on web clients, immediately after constructing '
         'the client and before making any calls.',
       );

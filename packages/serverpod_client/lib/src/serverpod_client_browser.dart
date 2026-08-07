@@ -28,8 +28,11 @@ class ServerpodClientRequestDelegateImpl
     _httpClient = httpClientOverride ?? http.Client();
   }
 
+  // A custom httpClientOverride that is not a BrowserClient cannot have
+  // credentialed requests enabled on it, so cookie auth would silently send
+  // marker headers without the cookies themselves.
   @override
-  bool get supportsCookieAuth => true;
+  bool get supportsCookieAuth => _httpClient is BrowserClient;
 
   @override
   CrossTabLock? createCrossTabLock(String name) =>
