@@ -10,7 +10,8 @@ void main() {
   withServerpod(
     'Given a database entry with all basic fields',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       const originalBool = true;
       const originalInt = 1;
@@ -164,7 +165,8 @@ void main() {
   withServerpod(
     'Given a database entry with non-null values',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       const originalInt = 1;
       const originalString = 'original';
@@ -208,7 +210,8 @@ void main() {
   withServerpod(
     'Given a database entry with null values',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       late Types existingEntry;
 
@@ -247,7 +250,8 @@ void main() {
   withServerpod(
     'Given a database entry with all supported data types',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       late Types existingEntry;
 
@@ -399,7 +403,8 @@ void main() {
   withServerpod(
     'Given a non-existent database entry',
     (testSession, endpoints) {
-      var session = testSession.build();
+      late Session session;
+      setUp(() => session = testSession.build());
 
       test(
         'when updating by non-existent id then DatabaseUpdateRowException is thrown',
