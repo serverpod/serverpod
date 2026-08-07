@@ -76,6 +76,14 @@ class ServerpodClientNotFound extends ServerpodClientHttpException {
   ServerpodClientNotFound() : super('Not found', HttpStatus.notFound);
 }
 
+/// Thrown if the request entity is too large for the server to process.
+class ServerpodClientRequestEntityTooLarge
+    extends ServerpodClientHttpException {
+  /// Creates a Request Entity Too Large Exception
+  ServerpodClientRequestEntityTooLarge()
+    : super('Request entity too large', HttpStatus.requestEntityTooLarge);
+}
+
 /// Thrown if the server encountered an internal error.
 /// This is typically a bug in the server code.
 class ServerpodClientInternalServerError extends ServerpodClientHttpException {
