@@ -24,13 +24,7 @@ extension StringManipulationExtension on String {
 
   /// Converts space- or underscore-separated words to camel case.
   String toCamelCase({bool isLowerCamelCase = false}) {
-    var separator = RegExp(r'[ _]');
-    var parts = split(separator);
-
-    if (!contains(separator)) {
-      return isLowerCamelCase ? toLowerCase() : capitalize();
-    }
-
+    var parts = split(RegExp(r'[ _]'));
     return [
       isLowerCamelCase ? parts.first.toLowerCase() : parts.first.capitalize(),
       ...parts.skip(1).map((part) => part.capitalize()),
