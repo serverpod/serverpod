@@ -3,6 +3,7 @@
 import 'dart:async';
 
 import 'package:http/http.dart' as http;
+import 'package:meta/meta.dart';
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:serverpod_client/src/client_method_stream_manager.dart';
 import 'package:serverpod_client/src/method_stream/method_stream_connection_details.dart';
@@ -42,11 +43,43 @@ class MethodCallContext {
 /// is available.
 abstract class ServerpodClientRequestDelegate {
   /// Performs the actual request to the server and returns the response data.
+  ///
+  /// [authenticated] is the per-call authentication intent (false for
+  /// `@unauthenticatedClientCall` methods); in cookie auth mode it selects
+  /// between the [webAuthModeCookie] and [webAuthModeCookieTransport] markers.
   Future<String> serverRequest<T>(
     Uri url, {
     required String body,
     String? authenticationValue,
+    bool authenticated = true,
   });
+
+  /// Whether the transport can carry an `HttpOnly` auth cookie.
+  bool get supportsCookieAuth => false;
+
+  /// Whether requests should use browser-managed cookie auth transport.
+  bool cookieAuth = false;
+
+  /// The browser-visible base path of the server, declared to the server on
+  /// cookie-auth requests (via [webBasePathHeaderName]) so it can scope the
+  /// refresh cookie `Path` correctly behind a prefix-stripping reverse proxy.
+  /// Derived from the client's host; `/` when the server is at the root.
+  String cookieAuthBasePath = '/';
+
+  /// Creates a lock with the given [name] shared across browser tabs of the
+  /// same origin, or null when the platform has no cross-tab coordination.
+  CrossTabLock? createCrossTabLock(String name) => null;
+
+  /// The cookie-auth request headers for a call with the given [authenticated]
+  /// intent: the [webAuthModeHeaderName] marker and the declared base path,
+  /// or empty when [cookieAuth] is disabled.
+  Map<String, String> webAuthHeaders({required bool authenticated}) => {
+    if (cookieAuth)
+      webAuthModeHeaderName: authenticated
+          ? webAuthModeCookie
+          : webAuthModeCookieTransport,
+    if (cookieAuth) webBasePathHeaderName: cookieAuthBasePath,
+  };
 
   /// Closes the connection to the server.
   /// This delegate should not be used after calling this.
@@ -141,6 +174,52 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// unauthenticated.
   ClientAuthKeyProvider? authKeyProvider;
 
+  /// Whether the client should use browser-managed cookie auth transport.
+  ///
+  /// Set this immediately after constructing the client, before making any
+  /// calls. Cookie auth is only supported by browser clients.
+  bool get cookieAuth => _requestDelegate.cookieAuth;
+
+  set cookieAuth(bool value) {
+    if (value && !_requestDelegate.supportsCookieAuth) {
+      throw UnsupportedError(
+        'Cookie-based web auth is only supported by browser clients. '
+        'The dart:io client cannot store or resend HttpOnly cookies, and a '
+        'custom httpClientOverride must be a BrowserClient so credentialed '
+        'requests can be enabled on it. '
+        'Set cookieAuth only on web clients, immediately after constructing '
+        'the client and before making any calls.',
+      );
+    }
+    _requestDelegate.cookieAuth = value;
+    _requestDelegate.cookieAuthBasePath = _hostBasePath;
+  }
+
+  /// The path component of [host] without a trailing slash (`/` at the root),
+  /// i.e. the browser-visible base path under which the server's endpoints
+  /// live.
+  String get _hostBasePath {
+    var path = Uri.parse(host).path.replaceFirst(RegExp(r'/+$'), '');
+    return path.isEmpty ? '/' : path;
+  }
+
+  bool _authRefreshCrossTabLockCreated = false;
+  CrossTabLock? _authRefreshCrossTabLock;
+
+  /// A lock serializing authentication refreshes against this server across
+  /// browser tabs, or null when the platform has no cross-tab coordination.
+  /// The lock name is derived from the host origin and base path and carries
+  /// no secrets.
+  CrossTabLock? get authRefreshCrossTabLock {
+    if (!_authRefreshCrossTabLockCreated) {
+      _authRefreshCrossTabLockCreated = true;
+      _authRefreshCrossTabLock = _requestDelegate.createCrossTabLock(
+        'serverpod-auth-refresh:${Uri.parse(host).origin}$_hostBasePath',
+      );
+    }
+    return _authRefreshCrossTabLock;
+  }
+
   /// Creates a new ServerpodClientShared.
   ServerpodClientShared(
     String host,
@@ -152,6 +231,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     this.onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
     http.Client? httpClientOverride,
+    @visibleForTesting ServerpodClientRequestDelegate? requestDelegate,
   }) : host = host.endsWith('/') ? host : '$host/',
        connectionTimeout = connectionTimeout ?? const Duration(seconds: 20),
        streamingConnectionTimeout =
@@ -160,12 +240,14 @@ abstract class ServerpodClientShared extends EndpointCaller {
       this.host.startsWith('http://') || this.host.startsWith('https://'),
       'host must include protocol, eg: https://example.com/',
     );
-    _requestDelegate = ServerpodClientRequestDelegateImpl(
-      connectionTimeout: this.connectionTimeout,
-      serializationManager: serializationManager,
-      securityContext: securityContext,
-      httpClientOverride: httpClientOverride,
-    );
+    _requestDelegate =
+        requestDelegate ??
+        ServerpodClientRequestDelegateImpl(
+          connectionTimeout: this.connectionTimeout,
+          serializationManager: serializationManager,
+          securityContext: securityContext,
+          httpClientOverride: httpClientOverride,
+        );
     disconnectStreamsOnLostInternetConnection ??= false;
     _disconnectMethodStreamsOnLostInternetConnection =
         disconnectStreamsOnLostInternetConnection;
@@ -238,8 +320,9 @@ abstract class ServerpodClientShared extends EndpointCaller {
     );
 
     try {
+      var provider = authKeyProvider;
       var authenticationValue = authenticated
-          ? await authKeyProvider?.authHeaderValue
+          ? await provider?.authHeaderValue
           : null;
       var body = formatArgs(args);
       var url = method.isEmpty
@@ -250,6 +333,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
         url,
         body: body,
         authenticationValue: authenticationValue,
+        authenticated: authenticated,
       );
 
       T result;
@@ -282,6 +366,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
       parameterStreams: streams,
       outputController: StreamController<G>(),
       authKeyProvider: authenticated ? authKeyProvider : null,
+      webAuthMode: cookieAuth && authenticated ? webAuthModeCookie : null,
     );
 
     _methodStreamManager.openMethodStream(connectionDetails).catchError((e, _) {

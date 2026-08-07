@@ -54,6 +54,12 @@ class Endpoints extends _i1.EndpointDispatch {
           'authTest',
           null,
         ),
+      'unauthenticatedRequireLoginAuthTest':
+          _i3.UnauthenticatedRequireLoginAuthTestEndpoint()..initialize(
+            server,
+            'unauthenticatedRequireLoginAuthTest',
+            null,
+          ),
       'authenticatedStreamingTest': _i4.AuthenticatedStreamingTestEndpoint()
         ..initialize(
           server,
@@ -309,6 +315,80 @@ class Endpoints extends _i1.EndpointDispatch {
                     params['authUserId'],
                   ),
         ),
+        'checkSessionUnauthenticated': _i1.MethodConnector(
+          name: 'checkSessionUnauthenticated',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['authTest'] as _i3.AuthTestEndpoint)
+                  .checkSessionUnauthenticated(session),
+        ),
+        'resetJwtRefreshConcurrency': _i1.MethodConnector(
+          name: 'resetJwtRefreshConcurrency',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['authTest'] as _i3.AuthTestEndpoint)
+                  .resetJwtRefreshConcurrency(session),
+        ),
+        'getMaxConcurrentJwtRefreshes': _i1.MethodConnector(
+          name: 'getMaxConcurrentJwtRefreshes',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['authTest'] as _i3.AuthTestEndpoint)
+                  .getMaxConcurrentJwtRefreshes(session),
+        ),
+        'checkSessionUnauthenticatedStream': _i1.MethodStreamConnector(
+          name: 'checkSessionUnauthenticatedStream',
+          params: {},
+          streamParams: {},
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+                Map<String, Stream> streamParams,
+              ) => (endpoints['authTest'] as _i3.AuthTestEndpoint)
+                  .checkSessionUnauthenticatedStream(session),
+        ),
+        'openPublicUserStream': _i1.MethodStreamConnector(
+          name: 'openPublicUserStream',
+          params: {},
+          streamParams: {},
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+                Map<String, Stream> streamParams,
+              ) => (endpoints['authTest'] as _i3.AuthTestEndpoint)
+                  .openPublicUserStream(session),
+        ),
+      },
+    );
+    connectors['unauthenticatedRequireLoginAuthTest'] = _i1.EndpointConnector(
+      name: 'unauthenticatedRequireLoginAuthTest',
+      endpoint: endpoints['unauthenticatedRequireLoginAuthTest']!,
+      methodConnectors: {
+        'call': _i1.MethodConnector(
+          name: 'call',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['unauthenticatedRequireLoginAuthTest']
+                          as _i3.UnauthenticatedRequireLoginAuthTestEndpoint)
+                      .call(session),
+        ),
       },
     );
     connectors['authenticatedStreamingTest'] = _i1.EndpointConnector(
@@ -329,6 +409,21 @@ class Endpoints extends _i1.EndpointDispatch {
                   (endpoints['authenticatedStreamingTest']
                           as _i4.AuthenticatedStreamingTestEndpoint)
                       .openAuthenticatedStream(session),
+        ),
+        'watchAuthenticatedUserId': _i1.MethodStreamConnector(
+          name: 'watchAuthenticatedUserId',
+          params: {},
+          streamParams: {},
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+                Map<String, Stream> streamParams,
+              ) =>
+                  (endpoints['authenticatedStreamingTest']
+                          as _i4.AuthenticatedStreamingTestEndpoint)
+                      .watchAuthenticatedUserId(session),
         ),
       },
     );
@@ -928,8 +1023,8 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'refreshToken': _i1.ParameterDescription(
               name: 'refreshToken',
-              type: _i1.getType<String>(),
-              nullable: false,
+              type: _i1.getType<String?>(),
+              nullable: true,
             ),
           },
           call:

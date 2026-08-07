@@ -22,6 +22,8 @@ dev_dependencies:
   flutter_lints: '>=3.0.0 <7.0.0'
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
 
 dependency_overrides:
   serverpod_auth_bridge_client:

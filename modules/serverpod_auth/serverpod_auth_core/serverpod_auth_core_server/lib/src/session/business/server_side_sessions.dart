@@ -202,12 +202,24 @@ class ServerSideSessions {
       transaction: transaction,
     );
 
+    final token = buildServerSideSessionToken(
+      secret: secret,
+      serverSideSessionId: serverSideSession.id!,
+    );
+
+    final secondsUntilExpiry = effectiveExpiresAt
+        ?.difference(clock.now())
+        .inSeconds;
+    final issuedAsCookie = session.writeWebAuthCookie(
+      token,
+      maxAgeSeconds: secondsUntilExpiry != null && secondsUntilExpiry > 0
+          ? secondsUntilExpiry
+          : null,
+    );
+
     return AuthSuccess(
       authStrategy: AuthStrategy.session.name,
-      token: buildServerSideSessionToken(
-        secret: secret,
-        serverSideSessionId: serverSideSession.id!,
-      ),
+      token: issuedAsCookie ? '' : token,
       tokenExpiresAt: effectiveExpiresAt,
       authUserId: authUserId,
       scopeNames: scopeNames,

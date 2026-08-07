@@ -1,7 +1,9 @@
+import 'package:http/browser_client.dart';
 import 'package:http/http.dart' as http;
 import 'package:serverpod_client/serverpod_client.dart';
 
 import 'serverpod_client_shared_private.dart';
+import 'web_locks_cross_tab_lock.dart';
 
 /// Handles communication with the server.
 /// This is the concrete implementation using the http library
@@ -26,11 +28,31 @@ class ServerpodClientRequestDelegateImpl
     _httpClient = httpClientOverride ?? http.Client();
   }
 
+  // A custom httpClientOverride that is not a BrowserClient cannot have
+  // credentialed requests enabled on it, so cookie auth would silently send
+  // marker headers without the cookies themselves.
+  @override
+  bool get supportsCookieAuth => _httpClient is BrowserClient;
+
+  @override
+  CrossTabLock? createCrossTabLock(String name) =>
+      WebLocksCrossTabLock.isSupported ? WebLocksCrossTabLock(name) : null;
+
+  @override
+  set cookieAuth(bool value) {
+    super.cookieAuth = value;
+    // Send auth cookies with requests and accept Set-Cookie responses;
+    // disabling cookie auth reverts to uncredentialed requests.
+    var client = _httpClient;
+    if (client is BrowserClient) client.withCredentials = value;
+  }
+
   @override
   Future<String> serverRequest<T>(
     Uri url, {
     required String body,
     String? authenticationValue,
+    bool authenticated = true,
   }) async {
     try {
       var response = await _httpClient
@@ -39,6 +61,7 @@ class ServerpodClientRequestDelegateImpl
             body: body,
             headers: {
               'authorization': ?authenticationValue,
+              ...webAuthHeaders(authenticated: authenticated),
             },
           )
           .timeout(connectionTimeout);

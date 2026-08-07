@@ -196,6 +196,11 @@ class OpenMethodStreamCommand extends WebSocketMessage
   /// The authentication value as it is sent across the transport layer.
   final String? authentication;
 
+  /// The web auth mode of the call, mirroring the HTTP [webAuthModeHeaderName]
+  /// header: [webAuthModeCookie] permits authenticating the stream from the
+  /// handshake auth cookie, absent forbids it.
+  final String? authMode;
+
   /// Creates a new [OpenMethodStreamCommand] message.
   OpenMethodStreamCommand(Map data)
     : endpoint = data[WebSocketMessageDataKey.endpoint],
@@ -205,6 +210,7 @@ class OpenMethodStreamCommand extends WebSocketMessage
         data[WebSocketMessageDataKey.connectionId],
       ),
       authentication = data[WebSocketMessageDataKey.authentication],
+      authMode = data[WebSocketMessageDataKey.authMode],
       inputStreams = List<String>.from(
         data[WebSocketMessageDataKey.inputStreams],
       );
@@ -217,6 +223,7 @@ class OpenMethodStreamCommand extends WebSocketMessage
     required UuidValue connectionId,
     required List<String> inputStreams,
     String? authentication,
+    String? authMode,
   }) {
     return WebSocketMessage._buildMessage(_messageType, {
       WebSocketMessageDataKey.endpoint: endpoint,
@@ -227,6 +234,7 @@ class OpenMethodStreamCommand extends WebSocketMessage
       ),
       WebSocketMessageDataKey.inputStreams: inputStreams,
       WebSocketMessageDataKey.authentication: ?authentication,
+      WebSocketMessageDataKey.authMode: ?authMode,
     });
   }
 
@@ -240,6 +248,7 @@ class OpenMethodStreamCommand extends WebSocketMessage
     WebSocketMessageDataKey.inputStreams: inputStreams,
     if (authentication != null)
       WebSocketMessageDataKey.authentication: authentication,
+    if (authMode != null) WebSocketMessageDataKey.authMode: authMode,
   }).toString();
 }
 

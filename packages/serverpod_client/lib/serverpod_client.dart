@@ -2,6 +2,7 @@ export 'package:serverpod_serialization/serverpod_serialization.dart';
 export 'src/auth_key_manager.dart';
 export 'src/auth_key_provider.dart';
 export 'src/connectivity_monitor.dart';
+export 'src/cross_tab_lock.dart';
 export 'src/serverpod_client_exception.dart';
 export 'src/serverpod_client_shared.dart';
 export 'src/method_stream/method_stream_manager_exceptions.dart';

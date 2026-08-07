@@ -247,6 +247,59 @@ void main() {
   );
 
   test(
+    'Given an open method stream command with an auth mode when building '
+    'websocket message from string then the auth mode is preserved.',
+    () {
+      var message = OpenMethodStreamCommand.buildMessage(
+        endpoint: 'endpoint',
+        method: 'method',
+        args: {},
+        connectionId: const Uuid().v4obj(),
+        inputStreams: [],
+        authMode: webAuthModeCookie,
+      );
+      var result = WebSocketMessage.fromJsonString(
+        message,
+        _TestSerializationManager(),
+      );
+      expect(
+        result,
+        isA<OpenMethodStreamCommand>().having(
+          (m) => m.authMode,
+          'authMode',
+          webAuthModeCookie,
+        ),
+      );
+    },
+  );
+
+  test(
+    'Given an open method stream command without an auth mode when building '
+    'websocket message from string then the auth mode is null.',
+    () {
+      var message = OpenMethodStreamCommand.buildMessage(
+        endpoint: 'endpoint',
+        method: 'method',
+        args: {},
+        connectionId: const Uuid().v4obj(),
+        inputStreams: [],
+      );
+      var result = WebSocketMessage.fromJsonString(
+        message,
+        _TestSerializationManager(),
+      );
+      expect(
+        result,
+        isA<OpenMethodStreamCommand>().having(
+          (m) => m.authMode,
+          'authMode',
+          isNull,
+        ),
+      );
+    },
+  );
+
+  test(
     'Given an invalid open method stream command json String that has int for input stream when building websocket message from string then UnknownMessageException is thrown having TypeError error type.',
     () {
       var message = OpenMethodStreamCommand.buildMessage(

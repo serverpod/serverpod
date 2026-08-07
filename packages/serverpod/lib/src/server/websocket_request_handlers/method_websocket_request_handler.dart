@@ -326,6 +326,18 @@ class MethodWebsocketRequestHandler {
       );
     }
 
+    // The in-band value (a wrapped header) takes precedence. The handshake
+    // auth cookie (a raw token) may only authenticate a stream whose open
+    // command permits it, since browsers attach the cookie to every
+    // connection from a cookie-mode origin.
+    final authenticationKey =
+        unwrapAuthHeaderValue(authentication) ??
+        (message.authMode == webAuthModeCookie
+            ? webSocket.request.getAuthCookieValue(
+                server.serverpod.config.authCookie,
+              )
+            : null);
+
     MethodStreamSession? maybeSession;
     MethodStreamCallContext methodStreamCallContext;
     bool keepSessionOpen = false;
@@ -336,9 +348,7 @@ class MethodWebsocketRequestHandler {
               maybeSession =
                   await SessionInternalMethods.createMethodStreamSession(
                     server: server,
-                    authenticationKey: unwrapAuthHeaderValue(
-                      authentication,
-                    ),
+                    authenticationKey: authenticationKey,
                     endpoint: message.endpoint,
                     method: message.method,
                     connectionId: message.connectionId,

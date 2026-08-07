@@ -84,6 +84,8 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
           // required for web if another tab has rotated the refresh token,
           // since the storage is shared between tabs.
           invalidateCachedAuthInfo: _resetCachedAuthInfo,
+          usesCookieAuth: () => _usesCookieAuth,
+          getCrossTabRefreshLock: () => caller.client.authRefreshCrossTabLock,
           refreshEndpoint: caller.client
               .getEndpointOfType<EndpointRefreshJwtTokens>(),
         );
@@ -100,6 +102,8 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
     _authKeyProviderDelegates[authStrategyName] = authKeyProvider;
     return authKeyProvider;
   }
+
+  bool get _usesCookieAuth => _caller?.client.cookieAuth ?? false;
 
   @override
   Future<String?> get authHeaderValue async =>
@@ -160,9 +164,47 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
 
   /// Updates the signed in user on the storage.
   Future<void> updateSignedInUser(AuthSuccess? authInfo) async {
-    await storage.set(authInfo);
+    final persistedAuthInfo = _usesCookieAuth && authInfo != null
+        ? _validateAndSanitizeCookieAuthInfo(authInfo)
+        : authInfo;
+    final identityChanged =
+        _authInfo?.authUserId != authInfo?.authUserId ||
+        _authInfo?.authStrategy != authInfo?.authStrategy;
+    await storage.set(persistedAuthInfo);
     _authInfo = authInfo;
+    if (_usesCookieAuth && identityChanged) {
+      // The method-stream WebSocket authenticates from the cookie captured at
+      // handshake time, so a socket from before the identity change would
+      // keep the old identity. Closing it makes the next stream reconnect
+      // with a fresh handshake; a same-identity update (e.g. a JWT token
+      // rotation) keeps streams running.
+      await _caller?.client.closeStreamingMethodConnections(exception: null);
+    }
     onAuthInfoChanged?.call(_authInfo);
+  }
+
+  AuthSuccess _validateAndSanitizeCookieAuthInfo(AuthSuccess authInfo) {
+    final authStrategy = AuthStrategy.fromJson(authInfo.authStrategy);
+
+    if (authStrategy == AuthStrategy.session && authInfo.token.isNotEmpty) {
+      throw StateError(
+        'cookieAuth is enabled but the server returned the auth token in the '
+        'response body instead of an HttpOnly cookie. Configure `authCookie` '
+        'on the server, or run the client in header mode (cookieAuth: false).',
+      );
+    }
+
+    if (authStrategy == AuthStrategy.jwt &&
+        (authInfo.refreshToken?.isNotEmpty ?? false)) {
+      throw StateError(
+        'cookieAuth is enabled but the server returned the JWT refresh token in '
+        'the response body instead of an HttpOnly cookie. Configure '
+        '`authCookie` on the server, or run the client in header mode '
+        '(cookieAuth: false).',
+      );
+    }
+
+    return authInfo.copyWith(token: '', refreshToken: null);
   }
 
   /// Verifies the current sign in status of the user with the server and
@@ -189,6 +231,12 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
   }
 
   Future<bool> _signOut({required bool allDevices}) async {
+    // In cookie mode, close streams before the server revokes the session:
+    // revocation error-closes any stream still open on the socket, racing the
+    // clean close that updateSignedInUser performs afterwards.
+    if (_usesCookieAuth) {
+      await _caller?.client.closeStreamingMethodConnections(exception: null);
+    }
     try {
       switch (allDevices) {
         case true:

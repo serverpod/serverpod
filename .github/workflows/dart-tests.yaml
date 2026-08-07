@@ -935,6 +935,25 @@ jobs:
       - name: Run E2E tests (concurrently)
         run: flutter test --reporter=failures-only
         working-directory: ${{ matrix.module.client }}
+      - name: Start chromedriver
+        run: chromedriver --port=4444 &
+      - name: Run cookie-auth browser E2E tests (allow-listed origin)
+        run: >-
+          flutter drive
+          --driver=test_driver/integration_test.dart
+          --target=integration_test/cookie_auth_browser_test.dart
+          -d web-server
+          --web-port=8083
+        working-directory: ${{ matrix.module.client }}
+      - name: Run cookie-auth browser E2E tests (rejected origin)
+        run: >-
+          flutter drive
+          --driver=test_driver/integration_test.dart
+          --target=integration_test/cookie_auth_browser_test.dart
+          -d web-server
+          --web-port=8084
+          --dart-define=SERVERPOD_COOKIE_CORS_REJECTION=true
+        working-directory: ${{ matrix.module.client }}
       - name: Stop containers
         if: always()
         run: docker compose down -v
