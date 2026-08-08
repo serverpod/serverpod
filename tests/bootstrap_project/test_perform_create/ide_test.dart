@@ -1,3 +1,4 @@
+@Timeout(Duration(minutes: 5))
 import 'dart:io';
 
 import 'package:bootstrap_project/src/util.dart';
