@@ -401,26 +401,25 @@ Future<bool> _configureAgentSkillsAndMcp({
           return false;
         }
 
-        // Generic/Antigravity skills install to `.agent/skills`. Antigravity's
-        // MCP plugin already lives under `.agents/plugins`, so promote only the
-        // skills tree into `.agents/skills` (leave plugins untouched).
+        // Generic IDE skills land in `.agent/skills`, while Antigravity MCP
+        // config already lives under `.agents/plugins`. Ensure `.agents/skills`
+        // exists via copy (never rename — EXDEV breaks rename on some CI
+        // runners) and fall back to another IDE's identical skill tree.
         final projectRoot = serverpodDirs.projectDir.path;
-        final agentSkills = Directory(p.join(projectRoot, '.agent', 'skills'));
-        if (await agentSkills.exists()) {
-          final agentsSkills = Directory(
-            p.join(projectRoot, '.agents', 'skills'),
-          );
-          await agentsSkills.parent.create(recursive: true);
-          if (await agentsSkills.exists()) {
-            await agentsSkills.delete(recursive: true);
-          }
-          try {
-            await agentSkills.rename(agentsSkills.path);
-          } on FileSystemException {
-            await _moveDirectoryContents(agentSkills, agentsSkills);
-            if (await agentSkills.exists()) {
-              await agentSkills.delete(recursive: true);
-            }
+        final agentsSkills = Directory(
+          p.join(projectRoot, '.agents', 'skills'),
+        );
+        if (!await agentsSkills.exists()) {
+          final sources = [
+            Directory(p.join(projectRoot, '.agent', 'skills')),
+            Directory(p.join(projectRoot, '.cursor', 'skills')),
+            Directory(p.join(projectRoot, '.claude', 'skills')),
+            Directory(p.join(projectRoot, '.opencode', 'skills')),
+          ];
+          for (final source in sources) {
+            if (!await source.exists()) continue;
+            await _copyDirectoryContents(source, agentsSkills);
+            break;
           }
         }
         final agentDir = Directory(p.join(projectRoot, '.agent'));
@@ -441,41 +440,19 @@ Future<bool> _configureAgentSkillsAndMcp({
   });
 }
 
-Future<void> _moveDirectoryContents(
+/// Recursively copies [source] into [destination] (created if needed).
+Future<void> _copyDirectoryContents(
   Directory source,
   Directory destination,
 ) async {
-  if (!await source.exists()) {
-    throw Exception('Source directory does not exist: ${source.path}');
-  }
-
-  if (!await destination.exists()) {
-    await destination.create(recursive: true);
-  }
-
-  // Snapshot entries first — mutating the tree while listing is unsafe.
+  await destination.create(recursive: true);
   final entities = await source.list().toList();
   for (final entity in entities) {
     final newPath = p.join(destination.path, p.basename(entity.path));
-
     if (entity is File) {
-      // Never overwrite files already present at the destination, such as the
-      // Antigravity plugin config written under .agents/plugins/ before this
-      // move runs.
-      if (await File(newPath).exists()) {
-        log.debug('Skipped moving ${entity.path}: $newPath already exists.');
-        await entity.delete();
-        continue;
-      }
-      // Always copy+delete: rename fails with EXDEV across filesystems (common
-      // when the project lives on a different mount than temp skill staging).
       await entity.copy(newPath);
-      await entity.delete();
     } else if (entity is Directory) {
-      final newDir = Directory(newPath);
-      await newDir.create(recursive: true);
-      await _moveDirectoryContents(entity, newDir);
-      await entity.delete(recursive: true);
+      await _copyDirectoryContents(entity, Directory(newPath));
     }
   }
 }
