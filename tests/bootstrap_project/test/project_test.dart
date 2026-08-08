@@ -1170,6 +1170,22 @@ void main() async {
               ),
         );
 
+        // TODO: Remove once EndpointDispatch.onStartup / Module hooks are
+        // published. Docker pub-gets published packages that do not yet define
+        // onStartup, so the generated @override fails to compile.
+        final endpointsFile = File(
+          path.join(commandRoot, 'lib', 'src', 'generated', 'endpoints.dart'),
+        );
+        final endpointsSource = endpointsFile.readAsStringSync();
+        endpointsFile.writeAsStringSync(
+          endpointsSource.replaceFirst(
+            RegExp(
+              r'\n  @override\n  Future<void> onStartup\([^\)]*\) async \{\n(?:    .*\n)*  \}\n',
+            ),
+            '\n',
+          ),
+        );
+
         final dockerBuildProcess = await startProcess(
           'docker',
           [
