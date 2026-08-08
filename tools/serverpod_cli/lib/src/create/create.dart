@@ -71,7 +71,7 @@ extension TemplateIdeExtension on List<TemplateIde> {
   List<Ide> get toSkillIdes {
     // Antigravity/Codex/VSCode all map to Ide.generic — dedupe so getSkills
     // does not reinstall the same target multiple times.
-    return [
+    return {
       for (final templateIde in this)
         switch (templateIde) {
           TemplateIde.claude => Ide.claude,
@@ -79,7 +79,7 @@ extension TemplateIdeExtension on List<TemplateIde> {
           TemplateIde.openCode => Ide.opencode,
           _ => Ide.generic,
         },
-    ].toSet().toList();
+    }.toList();
   }
 }
 
@@ -311,10 +311,11 @@ Future<CreateResult> performCreate(
     });
   }
 
-  await _configureAgentSkillsAndMcp(
+  final skillsConfigured = await _configureAgentSkillsAndMcp(
     serverpodDirs: serverpodDirs,
     context: context,
   );
+  success &= skillsConfigured;
 
   if (success || force) {
     log.info(
@@ -346,14 +347,15 @@ Future<CreateResult> performCreate(
   return CreateFailure();
 }
 
-Future<void> _configureAgentSkillsAndMcp({
+Future<bool> _configureAgentSkillsAndMcp({
   required ServerpodDirectories serverpodDirs,
   required TemplateContext context,
 }) async {
-  if (context.ides.isNotEmpty) {
-    await _configureProjectMcpServers(serverpodDirs, context.ides);
+  if (context.ides.isEmpty) return true;
 
-    await log.progress('Installing agent skills', () async {
+  await _configureProjectMcpServers(serverpodDirs, context.ides);
+
+  return log.progress('Installing agent skills', () async {
       try {
         if (context.template != ServerpodTemplateType.module &&
             context.ides.contains(TemplateIde.claude)) {
@@ -381,45 +383,48 @@ Future<void> _configureAgentSkillsAndMcp({
             .listen((data) => log.debug(data));
         final toErrorLog = IOSink(stderrController);
 
-        final success = await getSkills(
-          ides: context.ides.toSkillIdes,
-          workspace: workspace,
-          // Create must stay offline-friendly: only install skills shipped with
-          // resolved packages (e.g. package:serverpod). Cloning GitHub registries
-          // during scaffold is slow, flaky on CI, and can be done later via
-          // `skills get`.
-          gitRunner: GitRunner(isAvailableOverride: () async => false),
-          stdout: toDebugLog,
-          stderr: toErrorLog,
-        );
-
-        if (!success) {
-          _logError('Failed to install agent skills');
-          return false;
-        }
-
-        final agentDir = Directory(
-          p.join(serverpodDirs.projectDir.path, '.agent'),
-        );
-        if (await agentDir.exists()) {
-          final agentsDir = Directory(
-            p.join(serverpodDirs.projectDir.path, '.agents'),
+        try {
+          final success = await getSkills(
+            ides: context.ides.toSkillIdes,
+            workspace: workspace,
+            // Create must stay offline-friendly: only install skills shipped with
+            // resolved packages (e.g. package:serverpod). Cloning GitHub registries
+            // during scaffold is slow, flaky on CI, and can be done later via
+            // `skills get`.
+            gitRunner: GitRunner(isAvailableOverride: () async => false),
+            stdout: toDebugLog,
+            stderr: toErrorLog,
           );
 
-          try {
-            await _moveDirectoryContents(agentDir, agentsDir);
-            await agentDir.delete(recursive: true);
-          } on FileSystemException {
-            //
+          if (!success) {
+            _logError('Failed to install agent skills');
+            return false;
           }
+
+          final agentDir = Directory(
+            p.join(serverpodDirs.projectDir.path, '.agent'),
+          );
+          if (await agentDir.exists()) {
+            final agentsDir = Directory(
+              p.join(serverpodDirs.projectDir.path, '.agents'),
+            );
+            await _moveDirectoryContents(agentDir, agentsDir);
+            if (await agentDir.exists()) {
+              await agentDir.delete(recursive: true);
+            }
+          }
+        } finally {
+          await toDebugLog.close();
+          await toErrorLog.close();
+          await stdoutController.close();
+          await stderrController.close();
         }
-      } catch (_) {
-        _logError('Failed to install agent skills');
+      } catch (e) {
+        _logError('Failed to install agent skills: $e');
         return false;
       }
       return true;
-    });
-  }
+  });
 }
 
 Future<void> _moveDirectoryContents(
@@ -430,12 +435,13 @@ Future<void> _moveDirectoryContents(
     throw Exception('Source directory does not exist: ${source.path}');
   }
 
-  // Ensure destination exists
   if (!await destination.exists()) {
     await destination.create(recursive: true);
   }
 
-  await for (final entity in source.list()) {
+  // Snapshot entries first — mutating the tree while listing is unsafe.
+  final entities = await source.list().toList();
+  for (final entity in entities) {
     final newPath = p.join(destination.path, p.basename(entity.path));
 
     if (entity is File) {
@@ -444,19 +450,18 @@ Future<void> _moveDirectoryContents(
       // move runs.
       if (await File(newPath).exists()) {
         log.debug('Skipped moving ${entity.path}: $newPath already exists.');
+        await entity.delete();
         continue;
       }
-      try {
-        await entity.rename(newPath);
-      } on FileSystemException {
-        // rename fails across filesystems (EXDEV); copy then delete instead.
-        await entity.copy(newPath);
-        await entity.delete();
-      }
-    } else if (entity is Directory) {
-      final newDir = await Directory(newPath).create(recursive: true);
-      await _moveDirectoryContents(entity, newDir);
+      // Always copy+delete: rename fails with EXDEV across filesystems (common
+      // when the project lives on a different mount than temp skill staging).
+      await entity.copy(newPath);
       await entity.delete();
+    } else if (entity is Directory) {
+      final newDir = Directory(newPath);
+      await newDir.create(recursive: true);
+      await _moveDirectoryContents(entity, newDir);
+      await entity.delete(recursive: true);
     }
   }
 }
