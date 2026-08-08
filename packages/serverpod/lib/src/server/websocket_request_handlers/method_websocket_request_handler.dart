@@ -8,7 +8,6 @@ import 'package:serverpod_shared/log.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/session.dart';
-import 'package:web_socket/web_socket.dart';
 
 import 'helpers/method_stream_manager.dart';
 

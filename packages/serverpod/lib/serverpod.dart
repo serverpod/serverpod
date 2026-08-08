@@ -16,6 +16,8 @@ export 'package:serverpod/server.dart';
 // Web server
 export 'package:serverpod/web_server.dart';
 export 'package:relic/relic.dart' hide QueryParameters;
+export 'package:web_socket/web_socket.dart'
+    show WebSocketEvent, TextDataReceived, BinaryDataReceived, CloseReceived;
 
 // Database
 export 'package:serverpod/database.dart';
