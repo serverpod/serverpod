@@ -356,74 +356,88 @@ Future<bool> _configureAgentSkillsAndMcp({
   await _configureProjectMcpServers(serverpodDirs, context.ides);
 
   return log.progress('Installing agent skills', () async {
-      try {
-        if (context.template != ServerpodTemplateType.module &&
-            context.ides.contains(TemplateIde.claude)) {
-          await _createFileAndWrite(
-            p.join(serverpodDirs.projectDir.path, 'CLAUDE.md'),
-            '@AGENTS.md\n',
-          );
-        }
+    try {
+      if (context.template != ServerpodTemplateType.module &&
+          context.ides.contains(TemplateIde.claude)) {
+        await _createFileAndWrite(
+          p.join(serverpodDirs.projectDir.path, 'CLAUDE.md'),
+          '@AGENTS.md\n',
+        );
+      }
 
-        final workspace = await const WorkspaceResolver().resolve(
-          serverpodDirs.projectDir.path,
+      final workspace = await const WorkspaceResolver().resolve(
+        serverpodDirs.projectDir.path,
+      );
+
+      final stdoutController = StreamController<List<int>>();
+      final stdoutSub = stdoutController.stream
+          .transform(const Utf8Decoder(allowMalformed: true))
+          .transform(const LineSplitter())
+          .listen((data) => log.debug(data));
+      final toDebugLog = IOSink(stdoutController);
+      final stderrController = StreamController<List<int>>();
+      final stderrSub = stderrController.stream
+          .transform(const Utf8Decoder(allowMalformed: true))
+          .transform(const LineSplitter())
+          // skills writes non-fatal warnings (e.g. skipping registry) to stderr
+          .listen((data) => log.debug(data));
+      final toErrorLog = IOSink(stderrController);
+
+      try {
+        final success = await getSkills(
+          ides: context.ides.toSkillIdes,
+          workspace: workspace,
+          // Create must stay offline-friendly: only install skills shipped with
+          // resolved packages (e.g. package:serverpod). Cloning GitHub registries
+          // during scaffold is slow, flaky on CI, and can be done later via
+          // `skills get`.
+          gitRunner: GitRunner(isAvailableOverride: () async => false),
+          stdout: toDebugLog,
+          stderr: toErrorLog,
         );
 
-        final stdoutController = StreamController<List<int>>();
-        stdoutController.stream
-            .transform(const Utf8Decoder(allowMalformed: true))
-            .transform(const LineSplitter())
-            .listen((data) => log.debug(data));
-        final toDebugLog = IOSink(stdoutController);
-        final stderrController = StreamController<List<int>>();
-        stderrController.stream
-            .transform(const Utf8Decoder(allowMalformed: true))
-            .transform(const LineSplitter())
-            // skills writes non-fatal warnings (e.g. skipping registry) to stderr
-            .listen((data) => log.debug(data));
-        final toErrorLog = IOSink(stderrController);
+        if (!success) {
+          _logError('Failed to install agent skills');
+          return false;
+        }
 
-        try {
-          final success = await getSkills(
-            ides: context.ides.toSkillIdes,
-            workspace: workspace,
-            // Create must stay offline-friendly: only install skills shipped with
-            // resolved packages (e.g. package:serverpod). Cloning GitHub registries
-            // during scaffold is slow, flaky on CI, and can be done later via
-            // `skills get`.
-            gitRunner: GitRunner(isAvailableOverride: () async => false),
-            stdout: toDebugLog,
-            stderr: toErrorLog,
+        // Generic/Antigravity skills install to `.agent/skills`. Antigravity's
+        // MCP plugin already lives under `.agents/plugins`, so promote only the
+        // skills tree into `.agents/skills` (leave plugins untouched).
+        final projectRoot = serverpodDirs.projectDir.path;
+        final agentSkills = Directory(p.join(projectRoot, '.agent', 'skills'));
+        if (await agentSkills.exists()) {
+          final agentsSkills = Directory(
+            p.join(projectRoot, '.agents', 'skills'),
           );
-
-          if (!success) {
-            _logError('Failed to install agent skills');
-            return false;
+          await agentsSkills.parent.create(recursive: true);
+          if (await agentsSkills.exists()) {
+            await agentsSkills.delete(recursive: true);
           }
-
-          final agentDir = Directory(
-            p.join(serverpodDirs.projectDir.path, '.agent'),
-          );
-          if (await agentDir.exists()) {
-            final agentsDir = Directory(
-              p.join(serverpodDirs.projectDir.path, '.agents'),
-            );
-            await _moveDirectoryContents(agentDir, agentsDir);
-            if (await agentDir.exists()) {
-              await agentDir.delete(recursive: true);
+          try {
+            await agentSkills.rename(agentsSkills.path);
+          } on FileSystemException {
+            await _moveDirectoryContents(agentSkills, agentsSkills);
+            if (await agentSkills.exists()) {
+              await agentSkills.delete(recursive: true);
             }
           }
-        } finally {
-          await toDebugLog.close();
-          await toErrorLog.close();
-          await stdoutController.close();
-          await stderrController.close();
         }
-      } catch (e) {
-        _logError('Failed to install agent skills: $e');
-        return false;
+        final agentDir = Directory(p.join(projectRoot, '.agent'));
+        if (await agentDir.exists()) {
+          await agentDir.delete(recursive: true);
+        }
+      } finally {
+        await stdoutSub.cancel();
+        await stderrSub.cancel();
+        await toDebugLog.close();
+        await toErrorLog.close();
       }
-      return true;
+    } catch (e) {
+      _logError('Failed to install agent skills: $e');
+      return false;
+    }
+    return true;
   });
 }
 
