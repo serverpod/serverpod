@@ -1,7 +1,6 @@
 // ignore_for_file: implementation_imports
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 import 'dart:math' as math;
 
@@ -27,6 +26,7 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:skills/skills.dart';
+import 'package:skills/src/core/git_runner.dart';
 import 'package:skills/src/core/workspace_resolver.dart';
 import 'package:skills/src/ide/ide.dart';
 import 'package:yaml_edit/yaml_edit.dart';
@@ -68,14 +68,17 @@ extension ServerpodTemplateTypeExtension on ServerpodTemplateType {
 
 extension TemplateIdeExtension on List<TemplateIde> {
   List<Ide> get toSkillIdes {
-    return map((templateIde) {
-      return switch (templateIde) {
-        TemplateIde.claude => Ide.claude,
-        TemplateIde.cursor => Ide.cursor,
-        TemplateIde.openCode => Ide.opencode,
-        _ => Ide.generic,
-      };
-    }).toList();
+    // Antigravity/Codex/VSCode all map to Ide.generic — dedupe so getSkills
+    // does not reinstall the same target multiple times.
+    return {
+      for (final templateIde in this)
+        switch (templateIde) {
+          TemplateIde.claude => Ide.claude,
+          TemplateIde.cursor => Ide.cursor,
+          TemplateIde.openCode => Ide.opencode,
+          _ => Ide.generic,
+        },
+    }.toList();
   }
 }
 
@@ -307,6 +310,9 @@ Future<CreateResult> performCreate(
     });
   }
 
+  // Skills/MCP setup is best-effort for create success: a missing IDE tree
+  // should not fail scaffolding after generate already succeeded. Tests and
+  // `_ensureAgentSkillsInstalled` still guarantee `.agents/skills` when possible.
   await _configureAgentSkillsAndMcp(
     serverpodDirs: serverpodDirs,
     context: context,
@@ -346,103 +352,147 @@ Future<void> _configureAgentSkillsAndMcp({
   required ServerpodDirectories serverpodDirs,
   required TemplateContext context,
 }) async {
-  if (context.ides.isNotEmpty) {
-    await _configureProjectMcpServers(serverpodDirs, context.ides);
+  if (context.ides.isEmpty) return;
 
-    await log.progress('Installing agent skills', () async {
-      try {
-        if (context.template != ServerpodTemplateType.module &&
-            context.ides.contains(TemplateIde.claude)) {
-          await _createFileAndWrite(
-            p.join(serverpodDirs.projectDir.path, 'CLAUDE.md'),
-            '@AGENTS.md\n',
-          );
-        }
+  await _configureProjectMcpServers(serverpodDirs, context.ides);
 
-        final workspace = await const WorkspaceResolver().resolve(
-          serverpodDirs.projectDir.path,
+  await log.progress('Installing agent skills', () async {
+    try {
+      if (context.template != ServerpodTemplateType.module &&
+          context.ides.contains(TemplateIde.claude)) {
+        await _createFileAndWrite(
+          p.join(serverpodDirs.projectDir.path, 'CLAUDE.md'),
+          '@AGENTS.md\n',
         );
+      }
 
-        final stdoutController = StreamController<List<int>>();
-        stdoutController.stream
-            .transform(const Utf8Decoder(allowMalformed: true))
-            .transform(const LineSplitter())
-            .listen((data) => log.debug(data));
-        final toDebugLog = IOSink(stdoutController);
-        final stderrController = StreamController<List<int>>();
-        stderrController.stream
-            .transform(const Utf8Decoder(allowMalformed: true))
-            .transform(const LineSplitter())
-            .listen((data) => _logError(data));
-        final toErrorLog = IOSink(stderrController);
+      final workspace = await const WorkspaceResolver().resolve(
+        serverpodDirs.projectDir.path,
+      );
 
+      // Discard skills CLI chatter instead of piping through IsolatedLogWriter.
+      // Piping via StreamController+IOSink nested under log.progress has hung
+      // create on Ubuntu CI (bootstrap ide_test) while Windows stayed fine.
+      final discard = IOSink(_DiscardingByteSink());
+
+      try {
         final success = await getSkills(
           ides: context.ides.toSkillIdes,
           workspace: workspace,
-          stdout: toDebugLog,
-          stderr: toErrorLog,
+          // Create must stay offline-friendly: only install skills shipped with
+          // resolved packages (e.g. package:serverpod). Cloning GitHub registries
+          // during scaffold is slow, flaky on CI, and can be done later via
+          // `skills get`.
+          gitRunner: GitRunner(isAvailableOverride: () async => false),
+          stdout: discard,
+          stderr: discard,
         );
 
         if (!success) {
-          _logError('Failed to install agent skills');
-          return false;
+          _logError('Failed to install agent skills from package dependencies');
         }
-
-        final agentDir = Directory(
-          p.join(serverpodDirs.projectDir.path, '.agent'),
-        );
-        if (await agentDir.exists()) {
-          final agentsDir = Directory(
-            p.join(serverpodDirs.projectDir.path, '.agents'),
-          );
-
-          try {
-            await _moveDirectoryContents(agentDir, agentsDir);
-            await agentDir.delete();
-          } on FileSystemException {
-            //
-          }
-        }
-      } catch (_) {
-        _logError('Failed to install agent skills');
-        return false;
+      } finally {
+        await discard.close();
       }
-      return true;
-    });
+
+      await _ensureAgentSkillsInstalled(serverpodDirs.projectDir.path);
+    } catch (e) {
+      _logError('Failed to install agent skills: $e');
+      try {
+        await _ensureAgentSkillsInstalled(serverpodDirs.projectDir.path);
+      } catch (_) {
+        // Best-effort fallback only.
+      }
+      return false;
+    }
+    return true;
+  });
+}
+
+/// Promotes/copies skills into `.agents/skills` (and other IDE trees if empty).
+///
+/// `package:skills` writes generic IDE skills to `.agent/skills`. Antigravity
+/// MCP config already lives under `.agents/plugins`, so we copy (never rename
+/// — EXDEV breaks rename across mounts) into `.agents/skills`, then remove
+/// `.agent`. If package install produced nothing, seed from the local
+/// `package:serverpod` skills tree when [serverpodHome] is available.
+Future<void> _ensureAgentSkillsInstalled(String projectRoot) async {
+  final ideSkillsDirs = [
+    Directory(p.join(projectRoot, '.agents', 'skills')),
+    Directory(p.join(projectRoot, '.claude', 'skills')),
+    Directory(p.join(projectRoot, '.cursor', 'skills')),
+    Directory(p.join(projectRoot, '.opencode', 'skills')),
+  ];
+
+  final localSources = [
+    Directory(p.join(projectRoot, '.agent', 'skills')),
+    ...ideSkillsDirs,
+  ];
+
+  Directory? populatedSource;
+  for (final source in localSources) {
+    if (await _directoryHasEntries(source)) {
+      populatedSource = source;
+      break;
+    }
+  }
+
+  if (populatedSource == null && !productionMode) {
+    final shipped = Directory(
+      p.join(serverpodHome, 'packages', 'serverpod', 'skills'),
+    );
+    if (await _directoryHasEntries(shipped)) {
+      populatedSource = shipped;
+    }
+  }
+
+  if (populatedSource != null) {
+    for (final target in ideSkillsDirs) {
+      if (await _directoryHasEntries(target)) continue;
+      await _copyDirectoryContents(populatedSource, target);
+    }
+  }
+
+  final agentDir = Directory(p.join(projectRoot, '.agent'));
+  if (await agentDir.exists()) {
+    await agentDir.delete(recursive: true);
   }
 }
 
-Future<void> _moveDirectoryContents(
+Future<bool> _directoryHasEntries(Directory directory) async {
+  if (!await directory.exists()) return false;
+  await for (final _ in directory.list(followLinks: false)) {
+    return true;
+  }
+  return false;
+}
+
+/// Recursively copies [source] into [destination] (created if needed).
+Future<void> _copyDirectoryContents(
   Directory source,
   Directory destination,
 ) async {
-  if (!await source.exists()) {
-    throw Exception('Source directory does not exist: ${source.path}');
-  }
-
-  // Ensure destination exists
-  if (!await destination.exists()) {
-    await destination.create(recursive: true);
-  }
-
-  await for (final entity in source.list()) {
+  await destination.create(recursive: true);
+  await for (final entity in source.list(followLinks: false)) {
     final newPath = p.join(destination.path, p.basename(entity.path));
-
-    if (entity is File) {
-      // Never overwrite files already present at the destination, such as the
-      // Antigravity plugin config written under .agents/plugins/ before this
-      // move runs.
-      if (await File(newPath).exists()) {
-        log.debug('Skipped moving ${entity.path}: $newPath already exists.');
-        continue;
-      }
-      await entity.rename(newPath);
-    } else if (entity is Directory) {
-      final newDir = await Directory(newPath).create(recursive: true);
-      await _moveDirectoryContents(entity, newDir);
-      await entity.delete();
+    final type = await entity.stat().then((s) => s.type);
+    if (type == FileSystemEntityType.file) {
+      await File(entity.path).copy(newPath);
+    } else if (type == FileSystemEntityType.directory) {
+      await _copyDirectoryContents(Directory(entity.path), Directory(newPath));
     }
   }
+}
+
+/// Byte consumer that drops all writes (for silencing embedded skills CLI I/O).
+class _DiscardingByteSink implements StreamConsumer<List<int>> {
+  @override
+  Future<void> addStream(Stream<List<int>> stream) async {
+    await stream.drain<void>();
+  }
+
+  @override
+  Future<void> close() async {}
 }
 
 /// Writes the MCP config files for [ides] under [dirs], showing progress.

@@ -5,6 +5,7 @@ export 'src/server/health/health.dart';
 export 'src/server/endpoint.dart';
 export 'src/server/endpoint_dispatch.dart';
 export 'src/server/future_call_dispatch.dart';
+export 'src/server/module.dart';
 export 'src/server/future_call_manager/cron.dart';
 export 'src/server/future_call_manager/future_call.dart';
 export 'src/server/future_call_manager/future_call_manager.dart';
