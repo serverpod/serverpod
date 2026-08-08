@@ -90,9 +90,13 @@ class ModulesAnalyzer {
 
   /// Analyze files in the [AnalysisContextCollection].
   ///
-  /// On the first call, analyzes every Dart file. On subsequent calls, only
-  /// re-analyzes files listed in [changedFiles], reusing cached results for
-  /// unchanged files.
+  /// On the first call, considers every Dart file under the package. On
+  /// subsequent calls, only re-considers files listed in [changedFiles],
+  /// reusing cached results for unchanged files.
+  ///
+  /// Files that cannot contain a `Module` subclass (no `extends Module`) are
+  /// skipped without calling the analyzer — Module hooks are rare, so this
+  /// avoids doubling endpoint/future-call resolve cost on every generate.
   Future<List<ModuleDefinition>> analyze({
     required CodeAnalysisCollector collector,
     Set<String>? changedFiles,
@@ -120,6 +124,11 @@ class ModulesAnalyzer {
     for (var path in filesToAnalyze) {
       if (!path.endsWith('.dart') || path.endsWith('_test.dart')) continue;
       if (!File(path).existsSync()) continue;
+      // Cheap text gate before getResolvedLibrary — most packages have no Module.
+      if (!_isModuleFile(File(path))) {
+        _fileCache.remove(path);
+        continue;
+      }
 
       var library = await _resolveLibrary(path);
       if (library == null) continue;
@@ -281,11 +290,14 @@ class ModulesAnalyzer {
     return moduleDefinitions;
   }
 
+  static final _extendsModulePattern = RegExp(r'extends\s+Module\b');
+
   bool _isModuleFile(File file) {
     if (!file.absolute.path.startsWith(absoluteIncludedPaths)) return false;
     if (!file.path.endsWith('.dart')) return false;
     if (!file.existsSync()) return false;
-    return file.readAsStringSync().contains('extends Module');
+    // Word-boundary avoids false positives like `extends ModuleUtil`.
+    return _extendsModulePattern.hasMatch(file.readAsStringSync());
   }
 
   Map<String, List<SourceSpanSeverityException>> _validateLibrary(

@@ -27,6 +27,7 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:skills/skills.dart';
+import 'package:skills/src/core/git_runner.dart';
 import 'package:skills/src/core/workspace_resolver.dart';
 import 'package:skills/src/ide/ide.dart';
 import 'package:yaml_edit/yaml_edit.dart';
@@ -68,14 +69,17 @@ extension ServerpodTemplateTypeExtension on ServerpodTemplateType {
 
 extension TemplateIdeExtension on List<TemplateIde> {
   List<Ide> get toSkillIdes {
-    return map((templateIde) {
-      return switch (templateIde) {
-        TemplateIde.claude => Ide.claude,
-        TemplateIde.cursor => Ide.cursor,
-        TemplateIde.openCode => Ide.opencode,
-        _ => Ide.generic,
-      };
-    }).toList();
+    // Antigravity/Codex/VSCode all map to Ide.generic — dedupe so getSkills
+    // does not reinstall the same target multiple times.
+    return [
+      for (final templateIde in this)
+        switch (templateIde) {
+          TemplateIde.claude => Ide.claude,
+          TemplateIde.cursor => Ide.cursor,
+          TemplateIde.openCode => Ide.opencode,
+          _ => Ide.generic,
+        },
+    ].toSet().toList();
   }
 }
 
@@ -373,12 +377,18 @@ Future<void> _configureAgentSkillsAndMcp({
         stderrController.stream
             .transform(const Utf8Decoder(allowMalformed: true))
             .transform(const LineSplitter())
-            .listen((data) => _logError(data));
+            // skills writes non-fatal warnings (e.g. skipping registry) to stderr
+            .listen((data) => log.debug(data));
         final toErrorLog = IOSink(stderrController);
 
         final success = await getSkills(
           ides: context.ides.toSkillIdes,
           workspace: workspace,
+          // Create must stay offline-friendly: only install skills shipped with
+          // resolved packages (e.g. package:serverpod). Cloning GitHub registries
+          // during scaffold is slow, flaky on CI, and can be done later via
+          // `skills get`.
+          gitRunner: GitRunner(isAvailableOverride: () async => false),
           stdout: toDebugLog,
           stderr: toErrorLog,
         );
@@ -398,7 +408,7 @@ Future<void> _configureAgentSkillsAndMcp({
 
           try {
             await _moveDirectoryContents(agentDir, agentsDir);
-            await agentDir.delete();
+            await agentDir.delete(recursive: true);
           } on FileSystemException {
             //
           }
@@ -436,7 +446,13 @@ Future<void> _moveDirectoryContents(
         log.debug('Skipped moving ${entity.path}: $newPath already exists.');
         continue;
       }
-      await entity.rename(newPath);
+      try {
+        await entity.rename(newPath);
+      } on FileSystemException {
+        // rename fails across filesystems (EXDEV); copy then delete instead.
+        await entity.copy(newPath);
+        await entity.delete();
+      }
     } else if (entity is Directory) {
       final newDir = await Directory(newPath).create(recursive: true);
       await _moveDirectoryContents(entity, newDir);

@@ -59,7 +59,12 @@ abstract class ModuleClassAnalyzer {
 
   /// Returns `true` if the class extends the Serverpod `Module` base class.
   static bool isModuleInterface(ClassElement element) {
-    return element.allSupertypes.any((s) => s.element.name == 'Module');
+    return element.allSupertypes.any((s) {
+      final superElement = s.element;
+      if (superElement.name != 'Module') return false;
+      // Require Serverpod's Module, not an unrelated class with the same name.
+      return superElement.library.identifier.contains('serverpod');
+    });
   }
 
   /// Validates the [ClassElement] and returns a list of errors.
