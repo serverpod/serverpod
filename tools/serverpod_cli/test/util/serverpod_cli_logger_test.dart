@@ -20,14 +20,13 @@ Future<void> _logGlobally(
 void main() {
   late TestLogWriter writer;
 
+  setUp(() {
+    writer = TestLogWriter();
+    initializeLoggerWith(ServerpodCliLogger(writer));
+  });
   tearDown(closeLogger);
 
   group('Given a CLI logger is installed,', () {
-    setUp(() {
-      writer = TestLogWriter();
-      initializeLoggerWith(ServerpodCliLogger(writer));
-    });
-
     test(
       'when a shared package writes a warning to the global log, '
       'then the record reaches the CLI logger.',
@@ -97,9 +96,6 @@ void main() {
     'when a shared package writes a debug record to the global log, '
     'then it is filtered out.',
     () async {
-      writer = TestLogWriter();
-      initializeLoggerWith(ServerpodCliLogger(writer));
-
       await _logGlobally((log) => log.debug('Noisy detail.'));
 
       expect(writer.entries, isEmpty);
@@ -111,8 +107,6 @@ void main() {
     'when a shared package writes a debug record to the global log, '
     'then the record reaches the CLI logger.',
     () async {
-      writer = TestLogWriter();
-      initializeLoggerWith(ServerpodCliLogger(writer));
       log.logLevel = cli.LogLevel.debug;
 
       await _logGlobally((log) => log.debug('Noisy detail.'));
@@ -127,8 +121,6 @@ void main() {
     'when a shared package writes an error to the global log, '
     'then it is suppressed.',
     () async {
-      writer = TestLogWriter();
-      initializeLoggerWith(ServerpodCliLogger(writer));
       log.logLevel = cli.LogLevel.nothing;
 
       await _logGlobally((log) => log.error('Suppress me.'));
@@ -139,8 +131,6 @@ void main() {
 
   group('Given a CLI logger has been closed,', () {
     setUp(() async {
-      writer = TestLogWriter();
-      initializeLoggerWith(ServerpodCliLogger(writer));
       await closeLogger();
     });
 
