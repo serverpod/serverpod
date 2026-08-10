@@ -1,32 +1,15 @@
 part of 'database_connection.dart';
 
 final class _PgDatabaseQueryException extends DatabaseQueryException {
-  @override
-  final String message;
-  @override
-  final String? code;
-  @override
-  final String? detail;
-  @override
-  final String? hint;
-  @override
-  final String? tableName;
-  @override
-  final String? columnName;
-  @override
-  final String? constraintName;
-  @override
-  final int? position;
-
   _PgDatabaseQueryException(
-    this.message, {
-    this.code,
-    this.detail,
-    this.hint,
-    this.tableName,
-    this.columnName,
-    this.constraintName,
-    this.position,
+    super.message, {
+    super.code,
+    super.detail,
+    super.hint,
+    super.tableName,
+    super.columnName,
+    super.constraintName,
+    super.position,
   });
 
   factory _PgDatabaseQueryException.fromServerException(
@@ -45,32 +28,4 @@ final class _PgDatabaseQueryException extends DatabaseQueryException {
       position: e.position,
     );
   }
-}
-
-final class _PgDatabaseInsertRowException extends DatabaseInsertRowException {
-  @override
-  final String message;
-
-  _PgDatabaseInsertRowException(this.message);
-}
-
-final class _PgDatabaseUpdateRowException extends DatabaseUpdateRowException {
-  @override
-  final String message;
-
-  _PgDatabaseUpdateRowException(this.message);
-}
-
-final class _PgDatabaseDeleteRowException extends DatabaseDeleteRowException {
-  @override
-  final String message;
-
-  _PgDatabaseDeleteRowException(this.message);
-}
-
-final class _PgDatabaseUpsertRowException extends DatabaseUpsertRowException {
-  @override
-  final String message;
-
-  _PgDatabaseUpsertRowException(this.message);
 }

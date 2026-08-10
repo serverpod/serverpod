@@ -209,7 +209,7 @@ class PostgresDatabaseConnection
     );
 
     if (result.length != 1) {
-      throw _PgDatabaseInsertRowException(
+      throw DatabaseException(
         'Failed to insert row, updated number of rows is ${result.length} != 1',
       );
     }
@@ -296,7 +296,7 @@ class PostgresDatabaseConnection
     // Defensive: upsertRow passes a single row, so the underlying upsert can
     // never return more than one row. Guards against future adapter bugs.
     if (result.length > 1) {
-      throw _PgDatabaseUpsertRowException(
+      throw DatabaseException(
         'Failed to upsert row, affected number of rows is ${result.length} != 1',
       );
     }
@@ -371,9 +371,7 @@ class PostgresDatabaseConnection
     );
 
     if (updated.isEmpty) {
-      throw _PgDatabaseUpdateRowException(
-        'Failed to update row, no rows updated',
-      );
+      throw DatabaseException('Failed to update row, no rows updated');
     }
 
     return updated.first;
@@ -411,9 +409,7 @@ class PostgresDatabaseConnection
     );
 
     if (result.isEmpty) {
-      throw _PgDatabaseUpdateRowException(
-        'Failed to update row, no rows updated',
-      );
+      throw DatabaseException('Failed to update row, no rows updated');
     }
 
     return poolManager.serializationManager.deserialize<T>(
@@ -543,9 +539,7 @@ class PostgresDatabaseConnection
     );
 
     if (result.isEmpty) {
-      throw _PgDatabaseDeleteRowException(
-        'Failed to delete row, no rows deleted.',
-      );
+      throw DatabaseException('Failed to delete row, no rows deleted.');
     }
 
     return result.first;

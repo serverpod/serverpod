@@ -17,7 +17,7 @@ void main() {
             session,
             SimpleData(id: 1, num: 1),
           ),
-          throwsA(isA<DatabaseDeleteRowException>()),
+          throwsA(isA<DatabaseException>()),
         );
       },
     );

@@ -504,7 +504,7 @@ void main() {
       var session = testSession.build();
 
       test(
-        'when updating by non-existent id then DatabaseUpdateRowException is thrown',
+        'when updating by non-existent id then an exception is thrown',
         () async {
           var updated = Types.db.updateById(
             session,
@@ -512,7 +512,7 @@ void main() {
             columnValues: (t) => [t.anInt(123)],
           );
 
-          expect(updated, throwsA(isA<DatabaseUpdateRowException>()));
+          expect(updated, throwsA(isA<DatabaseException>()));
         },
       );
     },

@@ -1,34 +1,49 @@
 /// Exception thrown when an error occurs in the database.
-abstract class DatabaseException implements Exception {
-  /// Returns the message of the exception.
-  String get message;
+class DatabaseException implements Exception {
+  /// Creates a new [DatabaseException] with the given [message].
+  DatabaseException(this.message);
+
+  /// Error message from the database.
+  final String message;
 
   @override
   String toString() => 'DatabaseException: $message';
 }
 
 /// Exception thrown when an exception occurs during a database query.
-abstract class DatabaseQueryException implements DatabaseException {
-  /// Returns the error code of the exception.
-  String? get code;
+class DatabaseQueryException extends DatabaseException {
+  /// Creates a new [DatabaseQueryException].
+  DatabaseQueryException(
+    super.message, {
+    this.code,
+    this.detail,
+    this.hint,
+    this.tableName,
+    this.columnName,
+    this.constraintName,
+    this.position,
+  });
+
+  /// The error code of the exception.
+  final String? code;
 
   /// Additional details if provided by the database.
-  String? get detail;
+  final String? detail;
 
   /// A hint on how to remedy an error, if provided by the database.
-  String? get hint;
+  final String? hint;
 
-  /// Returns the name of the table where the error occurred.
-  String? get tableName;
+  /// The name of the table where the error occurred.
+  final String? tableName;
 
-  /// Returns the name of the column where the error occurred.
-  String? get columnName;
+  /// The name of the column where the error occurred.
+  final String? columnName;
 
-  /// Returns the name of the constraint that was violated.
-  String? get constraintName;
+  /// The name of the constraint that was violated.
+  final String? constraintName;
 
-  /// Returns the position in the query where the error occurred.
-  int? get position;
+  /// The position in the query where the error occurred.
+  final int? position;
 
   @override
   String toString() {
@@ -44,30 +59,6 @@ abstract class DatabaseQueryException implements DatabaseException {
     ].join(', ');
     return 'DatabaseQueryException: { $details }';
   }
-}
-
-/// Exception thrown when an insert row operation fails.
-abstract base class DatabaseInsertRowException implements DatabaseException {
-  @override
-  String toString() => 'DatabaseInsertRowException: $message';
-}
-
-/// Exception thrown when an update row operation fails.
-abstract base class DatabaseUpdateRowException implements DatabaseException {
-  @override
-  String toString() => 'DatabaseUpdateRowException: $message';
-}
-
-/// Exception thrown when a delete row operation fails.
-abstract base class DatabaseDeleteRowException implements DatabaseException {
-  @override
-  String toString() => 'DatabaseDeleteRowException: $message';
-}
-
-/// Exception thrown when an upsert row operation fails.
-abstract base class DatabaseUpsertRowException implements DatabaseException {
-  @override
-  String toString() => 'DatabaseUpsertRowException: $message';
 }
 
 /// Thrown when SQLite [PRAGMA foreign_key_check](https://www.sqlite.org/pragma.html#pragma_foreign_key_check)
