@@ -110,7 +110,7 @@ We recommend [forking](https://docs.github.com/en/pull-requests/collaborating-wi
 After the repository is cloned, run the following command from the root of the repository to install all dependencies:
 
 ```bash
-$ melos bootstrap
+$ dart pub get
 ```
 
 > [!TIP]

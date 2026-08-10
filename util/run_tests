@@ -12,8 +12,7 @@ set -e
 echo "### Checking dart format"
 dart format -o none --set-exit-if-changed .
 echo ""
-
-melos bootstrap
+dart pub get
 
 echo "### Running serverpod generate tests"
 util/run_tests_serverpod_generate

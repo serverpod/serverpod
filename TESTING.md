@@ -6,7 +6,7 @@ zero-setup `dart test` from their package directory; the exceptions are listed
 last.
 
 One-time prerequisite: resolve the workspace with [Melos](https://melos.invertase.dev)
-(`dart pub global activate melos`, then `melos bootstrap` from the repo root -
+(`dart pub global activate melos`, then `dart pub get` from the repo root -
 re-run it after dependency changes). `melos run test` runs the primary host
 workflow: unit, bootstrap, and integration tests. The bootstrap group includes
 generated-project Dockerfile and Compose checks on non-Windows hosts, while the

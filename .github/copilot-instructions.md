@@ -42,7 +42,7 @@ When working with pull requests in this repository, **ALWAYS**:
 
 **REQUIRES DART/FLUTTER** (cannot validate without network access):
 
-- ⚠️ `melos test_unit` - Requires Dart SDK
+- ⚠️ `melos run test_unit` - Requires Dart SDK
 - ⚠️ `util/run_tests_analyze` - Requires Dart SDK
 - ⚠️ `melos` commands - Requires Dart SDK and Melos package
 - ⚠️ `dart pub get` operations - Require network access
@@ -101,11 +101,11 @@ git --version      # Should work
 ### Initial Setup (Run from repository root)
 
 ```bash
-# Alternative: melos bootstrap
+# Alternative: dart pub get
 dart pub global activate melos
 
 # Install all dependencies - NEVER CANCEL.
-melos bootstrap
+dart pub get
 
 # Activate CLI from source (required for development)
 cd tools/serverpod_cli
@@ -117,7 +117,7 @@ cd ../..
 export SERVERPOD_HOME=$(pwd)
 ```
 
-**TIMING**: `melos bootstrap` takes 10-15 minutes. Set timeout to 30+ minutes.
+**TIMING**: `dart pub get` takes 1-2 minutes. Set timeout to 30+ minutes.
 
 ### Build Commands
 
@@ -129,7 +129,7 @@ util/generate_all
 util/update_pubspecs
 
 # Full repository dependency installation - NEVER CANCEL.
-melos bootstrap
+dart pub get
 ```
 
 ## Testing Infrastructure
@@ -143,8 +143,8 @@ melos bootstrap
 
 **CRITICAL TIMING NOTES** (Based on CI Analysis):
 
-- **Repository setup**: `melos bootstrap` - 10-15 minutes - Set timeout to 30+ minutes
-- **Unit tests**: `melos test_unit` - 5-15 minutes - Set timeout to 30+ minutes
+- **Repository setup**: `dart pub get` - 1-2 minutes - Set timeout to 5 minutes
+- **Unit tests**: `melos run test_unit` - 5-15 minutes - Set timeout to 30+ minutes
 - **Integration tests**: `util/run_tests_integration` - 15-30 minutes - Set timeout to 45+ minutes
 - **E2E tests**: `util/run_tests_e2e` - 20-45 minutes - Set timeout to 60+ minutes
 - **Bootstrap tests**: `util/run_tests_bootstrap` - 30-60 minutes - Set timeout to 90+ minutes
@@ -155,7 +155,7 @@ melos bootstrap
 
 ```bash
 # Unit tests (Dart-only packages)
-melos test_unit
+melos run test_unit
 # NEVER CANCEL - Takes 5-10 minutes
 
 # Integration tests (requires Docker)
@@ -232,9 +232,9 @@ util/run_tests_analyze --allow-infos     # Less strict
 util/run_tests_analyze --allow-warnings  # Least strict
 
 # Alternative: Melos-based analysis
-melos lint_strict  # Matches CI strict mode
-melos lint         # Standard linting
-melos lint_loose   # For downgrade tests
+melos run lint_strict  # Matches CI strict mode
+melos run lint         # Standard linting
+melos run lint_loose   # For downgrade tests
 
 # Single package analysis
 dart analyze --fatal-infos package_name/
@@ -328,7 +328,7 @@ export SERVERPOD_HOME=$(pwd)
 dart pub global activate melos
 
 # 3. Install dependencies (10-15 minutes - NEVER CANCEL)
-melos bootstrap
+dart pub get
 
 # 4. Activate CLI
 cd tools/serverpod_cli
@@ -382,7 +382,7 @@ dart format .
 util/run_tests_analyze
 
 # 2. Run unit tests (5-15 minutes)
-melos test_unit
+melos run test_unit
 
 # 3. Test example project still works
 cd examples/legacy/auth_example/auth_example_server
@@ -404,7 +404,7 @@ dart test --reporter=failures-only
 util/run_tests_integration
 
 # Always run full CI suite before major PRs
-melos test_unit && util/run_tests_integration
+melos run test_unit && util/run_tests_integration
 ```
 
 ### Working on CLI
@@ -443,14 +443,14 @@ dart test -t integration --reporter=failures-only
 
    ```bash
    dart format .
-   melos lint_strict
+   melos run lint_strict
    ```
 
 2. **Test affected components**:
 
    ```bash
    # For core changes
-   melos test_unit
+   melos run test_unit
 
    # For integration changes
    util/run_tests_integration
@@ -521,7 +521,7 @@ Before submitting a PR, ensure:
 
 1. **Title follows conventional commits format**
 2. **Code is formatted**: `dart format .`
-3. **Linting passes**: `melos lint_strict`
+3. **Linting passes**: `melos run lint_strict`
 4. **Tests pass**: Run relevant test suites for your changes
 5. **Examples still work**: Verify at least one example project starts successfully
 6. **Documentation updated**: If adding features or changing APIs
@@ -530,7 +530,7 @@ Before submitting a PR, ensure:
 
 - **"Dart not found"**: Ensure Flutter is installed and in PATH
 - **"Docker connection failed"**: Ensure Docker daemon is running
-- **"pub get failed"**: Run `melos bootstrap --offline` for cached deps
+- **"pub get failed"**: Run `dart pub get --offline` for cached deps
 - **"Tests hanging"**: Wait full timeout period - tests can take 45+ minutes
 - **"CLI not updated"**: Rerun `dart pub global activate --source path tools/serverpod_cli`
 - **"Template not found"**: Ensure `SERVERPOD_HOME` environment variable is set

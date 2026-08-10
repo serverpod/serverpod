@@ -46,7 +46,7 @@ resolved_version() {
     local package="$1"
     local dependency="$2"
     if [ ! -f "$package/pubspec.lock" ]; then
-        echo "### $package is not resolved - run 'melos bootstrap' first" >&2
+        echo "### $package is not resolved - run 'dart pub get' first" >&2
         exit 1
     fi
     awk -v dependency="  $dependency:" '

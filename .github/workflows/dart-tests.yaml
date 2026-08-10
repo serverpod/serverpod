@@ -48,13 +48,6 @@ jobs:
         uses: ./.github/actions/retry
         with:
           command: dart pub get
-      - name: Bootstrap
-        uses: ./.github/actions/retry
-        with:
-          command: dart run melos bootstrap
-      # The frozen chat module is not part of the melos workspace; without
-      # package resolution, dart format cannot read the package includes in
-      # its analysis_options.yaml files and would apply default settings.
       - name: Resolve frozen legacy chat packages
         uses: ./.github/actions/retry
         with:
@@ -93,17 +86,17 @@ jobs:
         uses: ./.github/actions/retry
         with:
           command: dart pub global activate melos
-      - name: Bootstrap
+      - name: Resolve dependencies
         uses: ./.github/actions/retry
         with:
-          command: melos bootstrap
+          command: dart pub get
       - name: Downgrade dependencies
         if: matrix.check.downgrade
         uses: ./.github/actions/retry
         with:
-          command: melos downgrade
+          command: dart pub downgrade
       - name: Run lint
-        run: melos ${{ matrix.check.lint }}
+        run: melos run ${{ matrix.check.lint }}
 
   # Build serverpod_cli ONCE per OS and share it as an artifact, so the generate
   # jobs below don't each re-resolve and compile it.
@@ -124,10 +117,6 @@ jobs:
       - uses: ./.github/actions/retry
         with:
           command: dart pub get
-      - name: Bootstrap serverpod_cli
-        uses: ./.github/actions/retry
-        with:
-          command: dart run melos bootstrap --scope='serverpod_cli' --include-dependencies
       - name: Build the serverpod CLI bundle
         # bash also on Windows: pwsh expands $GITHUB_WORKSPACE to empty.
         shell: bash
@@ -166,10 +155,6 @@ jobs:
       - uses: ./.github/actions/retry
         with:
           command: dart pub get
-      - name: Bootstrap ${{ matrix.pod }}
-        uses: ./.github/actions/retry
-        with:
-          command: dart run melos bootstrap --scope='${{ matrix.pod }}' --include-dependencies
       - name: Build the server bundle
         working-directory: ${{ matrix.path }}
         run: dart build cli -t bin/main.dart -o "$GITHUB_WORKSPACE/.pod-build"
@@ -212,16 +197,16 @@ jobs:
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: "3.12.2"
-      - name: Resolve melos
+      - name: Resolve workspace
         uses: ./.github/actions/retry
         with:
           command: dart pub get
-      - name: Bootstrap the project
+      - name: Resolve project dependencies
         uses: ./.github/actions/retry
         env:
           PROJECT: ${{ matrix.project }}
         with:
-          command: dart run melos bootstrap --scope="$(basename "$PROJECT")" --include-dependencies
+          command: cd "$PROJECT" && dart pub get
           shell: bash
       - uses: ./.github/actions/use-cli-bundle
       - name: Generate and verify no changes
@@ -251,15 +236,17 @@ jobs:
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: "3.12.2"
-      - name: Resolve melos
+      - name: Resolve workspace
         uses: ./.github/actions/retry
         with:
           command: dart pub get
-      - name: Bootstrap the template servers + serverpod_test_server
-        # serverpod_test_server is needed by the "verify generate from scratch" step.
+      - name: Resolve template dependencies
         uses: ./.github/actions/retry
         with:
-          command: dart run melos bootstrap --scope='projectname_server' --scope='modulename_server' --scope='serverpod_test_server' --include-dependencies
+          command: |
+            cd templates/serverpod_templates/modulename_server && dart pub get
+            cd ../projectname_server && dart pub get
+          shell: bash
       - uses: ./.github/actions/use-cli-bundle
       - name: Generate template servers and verify no changes
         shell: bash
@@ -567,10 +554,10 @@ jobs:
         uses: ./.github/actions/retry
         with:
           command: dart pub global activate melos
-      - name: Bootstrap
+      - name: Resolve dependencies
         uses: ./.github/actions/retry
         with:
-          command: melos bootstrap --scope='${{ matrix.suite.scope }}' --include-dependencies
+          command: dart pub get
       # windows-latest runs as runneradmin (elevated), and Postgres refuses to
       # start under an Administrators-group token. Run the suite as the standard
       # test account prepared below.
@@ -810,11 +797,6 @@ jobs:
         uses: ./.github/actions/retry
         with:
           command: dart pub get
-      - name: Bootstrap
-        uses: ./.github/actions/retry
-        with:
-          command: dart run melos bootstrap --scope='serverpod_test_server' --include-dependencies
-      # The e2e client's URLs (test_util/config.dart) hardcode host `serverpod_test_server`
       - name: Alias serverpod_test_server to localhost
         run: echo "127.0.0.1 serverpod_test_server" | sudo tee -a /etc/hosts
       - name: Run e2e IO tests
@@ -845,11 +827,6 @@ jobs:
         uses: ./.github/actions/retry
         with:
           command: dart pub get
-      - name: Bootstrap
-        uses: ./.github/actions/retry
-        with:
-          command: dart run melos bootstrap --scope='serverpod_test_server' --include-dependencies
-      # The e2e client's URLs (test_util/config.dart) hardcode host `serverpod_test_server`
       - name: Alias serverpod_test_server to localhost
         run: echo "127.0.0.1 serverpod_test_server" | sudo tee -a /etc/hosts
       # Firefox for the browser run; xvfb provides the virtual display (xvfb-run).
@@ -883,10 +860,6 @@ jobs:
           command: dart pub get
       # The run also covers serverpod_test_sqlite_client, which comes along as a
       # path dependency of the Flutter package under --include-dependencies.
-      - name: Bootstrap
-        uses: ./.github/actions/retry
-        with:
-          command: dart run melos bootstrap --scope='serverpod_test_sqlite_flutter' --include-dependencies
       - name: Run client database web tests
         run: util/run_tests_client_database_web
         timeout-minutes: 20
@@ -973,10 +946,10 @@ jobs:
         uses: ./.github/actions/retry
         with:
           command: dart pub global activate melos
-      - name: Bootstrap
+      - name: Resolve dependencies
         uses: ./.github/actions/retry
         with:
-          command: melos bootstrap --scope='serverpod_test_server' --include-dependencies
+          command: dart pub get
       - name: Start Redis
         uses: ./.github/actions/use-redis
         with:
@@ -1006,10 +979,10 @@ jobs:
         uses: ./.github/actions/retry
         with:
           command: dart pub global activate melos
-      - name: Bootstrap
+      - name: Resolve dependencies
         uses: ./.github/actions/retry
         with:
-          command: melos bootstrap --scope='serverpod_test_server' --include-dependencies
+          command: dart pub get
       - name: Start Redis
         uses: ./.github/actions/use-redis
         with:
@@ -1109,10 +1082,6 @@ jobs:
       - uses: ./.github/actions/retry
         with:
           command: dart pub get
-      - name: Bootstrap
-        uses: ./.github/actions/retry
-        with:
-          command: dart run melos bootstrap --scope='serverpod_test_server' --include-dependencies
       - uses: ./.github/actions/use-cli-bundle
       - uses: ./.github/actions/use-pod-bundle
         with:
@@ -1333,10 +1302,10 @@ jobs:
         uses: ./.github/actions/retry
         with:
           command: dart pub global activate melos
-      - name: Bootstrap
+      - name: Resolve dependencies
         uses: ./.github/actions/retry
         with:
-          command: melos bootstrap
+          command: dart pub get
       - name: Run transactional email integration tests
         run: dart test test/integration/serverpod_cloud_email_integration_test.dart --reporter=failures-only
         working-directory: modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server
