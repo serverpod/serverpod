@@ -106,7 +106,7 @@ class FlutterRoute extends Route {
         Platform.environment[_flutterCacheControlEnvironmentVariable];
     if (cacheControl == null) return StaticRoute.privateNoCache();
 
-    final parsedCacheControl = CacheControlHeader.parse([cacheControl]);
+    final parsedCacheControl = CacheControlHeader.parseStrict([cacheControl]);
     return (_, _) => parsedCacheControl;
   }
 
