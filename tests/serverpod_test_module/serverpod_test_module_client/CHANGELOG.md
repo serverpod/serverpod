@@ -1,3 +1,32 @@
+## 4.0.0-beta.2
+
+- feat: BREAKING. Changes default message central delivery to global with fallback to local.
+- feat: Honors the selected device on VS Code IDEs when launching the Flutter app from `serverpod start`.
+- feat: Replaces the docker image for PostgreSQL by the official `ghcr.io/serverpod/postgres:16`.
+- feat: Allows using `serial` on regular `int` columns on PostgreSQL.
+- feat: Adds support for the `nulls_distinct` key on unique indexes on PostgreSQL.
+- feat: Adds account merging mechanics to the auth module. ([@craiglabenz](https://github.com/craiglabenz))
+- feat: Allows overriding the default cache header for `FlutterRoute` from env vars.
+- feat: Forwards shared package models through the owning module's server/client packages.
+- fix: BREAKING. Removes dead email-related exceptions. ([@realmeylisdev](https://github.com/realmeylisdev))
+- fix: BREAKING. Removes the deprecated `authenticationKeyManager` client parameter.
+- fix: BREAKING. Removes the legacy streaming session and deprecated streaming APIs.
+- fix: BREAKING. Removes deprecated future call methods.
+- fix: Fixes MCP server not being able to fetch logs when using `--no-tui`.
+- fix: Makes shared-package logs visible in the CLI.
+- fix: Exports WebSocket event types. ([@loopassembly](https://github.com/loopassembly))
+- fix: Prunes trailing empty migration dirs. ([@Moe1211](https://github.com/Moe1211))
+- fix: Makes generated Dart code `dart format` clean respecting the project options.
+- fix: Makes `TermsAndPrivacyText` sign-in widget respond to app theming.
+- fix: Keeps target schema fresh after hot reload. ([@Aabdulawalarif](https://github.com/Aabdulawalarif))
+- fix: Serves Flutter app config file on the correct path when project uses only webapp.
+- fix: Generates `detach` and `detachRow` for named list relations without order dependence.
+- fix: Updates language server state when model files change on disk.
+- fix: Ensures client-side databases can be used on Flutter web apps.
+- fix: Skips docker auto-start if using a remote Postgres host.
+- chore: Avoid exposing unnecessary secrets on the template.
+- chore: Improves the analytics reporting on used Serverpod features.
+
 ## 4.0.0-beta.1
 
 - feat: Exposes flags on the `serverpod create` command to customize the created project.

@@ -12,10 +12,10 @@ environment:
   sdk: '^3.10.3'
 
 dependencies:
-  serverpod_auth_core_client: 4.0.0-beta.1
-  serverpod_auth_idp_client: 4.0.0-beta.1
-  serverpod_client: 4.0.0-beta.1
-  serverpod_service_client: 4.0.0-beta.1
+  serverpod_auth_core_client: 4.0.0-beta.2
+  serverpod_auth_idp_client: 4.0.0-beta.2
+  serverpod_client: 4.0.0-beta.2
+  serverpod_service_client: 4.0.0-beta.2
   serverpod_test_shared_module_client:
     path: ../../serverpod_test_shared_module/serverpod_test_shared_module_client
   serverpod_test_sqlite_shared:
@@ -23,7 +23,7 @@ dependencies:
 
 dev_dependencies:
   path: ^1.8.3
-  serverpod_database: 4.0.0-beta.1
+  serverpod_database: 4.0.0-beta.2
   test: ^1.25.5
 
 dependency_overrides:
