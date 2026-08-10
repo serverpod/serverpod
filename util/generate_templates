@@ -42,6 +42,24 @@ generateServerUpgradeFiles() {
     cp "$BASE/templates/serverpod_templates/projectname_server/pubspec.yaml" pubspec.yaml
     cp -r "$BASE/templates/serverpod_templates/projectname_server/.dart_tool" .
 
+    # The upgrade endpoints extend auth identity provider classes, so add the
+    # module dependency that the base template does not include, then resolve it
+    # so the generator can discover the module.
+    python3 - <<'PY'
+import re
+with open('pubspec.yaml', 'r') as f:
+    content = f.read()
+match = re.search(r'dependencies:\n  serverpod: ([^\n]+)', content)
+if match:
+    content = content.replace(
+        match.group(0),
+        match.group(0) + '\n  serverpod_auth_idp_server: ' + match.group(1)
+    )
+    with open('pubspec.yaml', 'w') as f:
+        f.write(content)
+PY
+    dart pub get
+
     $CLI_CMD generate --no-analytics
 
     # Save files after generation
