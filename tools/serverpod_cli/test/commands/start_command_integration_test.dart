@@ -519,15 +519,7 @@ database:
             .transform(utf8.decoder)
             .listen(output.write, onError: output.write);
 
-        addTearDown(() async {
-          process.kill(ProcessSignal.sigint);
-          try {
-            await process.exitCode.timeout(const Duration(seconds: 10));
-          } on TimeoutException {
-            process.kill(ProcessSignal.sigkill);
-            await process.exitCode;
-          }
-        });
+        addTearDown(() => _terminateStartProcessTree(process));
 
         final socket = await _connectToStartedMcpSocket(
           serverDirectory: serverDirectory,
@@ -727,11 +719,7 @@ fields:
       }),
     );
 
-    addTearDown(() async {
-      if (await projectRoot.exists()) {
-        await projectRoot.delete(recursive: true);
-      }
-    });
+    addTearDown(() => _deleteProjectRoot(projectRoot));
     return projectRoot;
   } catch (error, stackTrace) {
     try {
@@ -907,6 +895,47 @@ Future<({int exitCode, String output})> _runStartInSubprocess({
     exitCode: result.exitCode,
     output: '${result.stdout}\n${result.stderr}',
   );
+}
+
+/// Deletes a test project, retrying while Windows still reports the directory
+/// as in use.
+///
+/// Windows releases a terminated process's handles asynchronously, so a
+/// deletion right after the last process exits can still fail even though
+/// nothing holds the directory any more.
+Future<void> _deleteProjectRoot(Directory projectRoot) async {
+  final deadline = DateTime.now().add(const Duration(seconds: 10));
+  while (true) {
+    if (!await projectRoot.exists()) return;
+    try {
+      await projectRoot.delete(recursive: true);
+      return;
+    } on FileSystemException {
+      if (DateTime.now().isAfter(deadline)) rethrow;
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+    }
+  }
+}
+
+/// Shuts down a `serverpod start` [process] together with the pod it spawned.
+///
+/// On POSIX, SIGINT reaches the CLI's own shutdown path, which stops the pod
+/// for us. Windows has no such signal - `Process.kill` terminates the CLI
+/// outright, leaving the pod running with its working directory inside the
+/// test project, which then cannot be deleted (see the Job Object TODO in
+/// `ServerProcess.start`). `taskkill /T` takes down the whole tree instead.
+Future<void> _terminateStartProcessTree(Process process) async {
+  if (Platform.isWindows) {
+    await Process.run('taskkill', ['/T', '/F', '/PID', '${process.pid}']);
+  } else {
+    process.kill(ProcessSignal.sigint);
+  }
+  try {
+    await process.exitCode.timeout(const Duration(seconds: 10));
+  } on TimeoutException {
+    process.kill(ProcessSignal.sigkill);
+    await process.exitCode;
+  }
 }
 
 String _prependToPath(String directory) {
