@@ -18,7 +18,7 @@ void main() {
             .having(
               (e) => e.message,
               'message',
-              'Unknown error, data: Request size exceeds the maximum allowed size of 524288 bytes',
+              'Unknown error, data: Request size exceeds the maximum allowed size of 524288 bytes.',
             ),
       ),
     );
