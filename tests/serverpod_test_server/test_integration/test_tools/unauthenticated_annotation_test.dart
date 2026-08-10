@@ -15,11 +15,7 @@ void main() {
     await server.startWithDatabase();
 
     authKeyManager = TestAuthKeyManager();
-    client = Client(
-      server.apiUrl,
-      // ignore: deprecated_member_use
-      authenticationKeyManager: authKeyManager,
-    );
+    client = Client(server.apiUrl)..authKeyProvider = authKeyManager;
 
     await client.authentication.removeAllUsers();
 

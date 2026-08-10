@@ -91,11 +91,19 @@ Future<DartFormatter> _formatterFor(
 ) async {
   final outputFile = File(p.join(directory, 'protocol.dart')).absolute;
 
-  // Package config discovery starts from the file's parent directory, which
-  // may not exist before the first generation.
+  // Package config discovery needs a path inside an existing directory. The
+  // generated output folder (e.g. lib/src/protocol) may not exist yet on the
+  // first run, so walk up to the nearest existing parent. In a real project
+  // that parent is always within the target package (e.g. lib/src or the
+  // package root); only test teardown races or a missing package can climb
+  // further, in which case language-version lookup falls back below.
   var languageVersionDirectory = outputFile.parent;
-  while (!await languageVersionDirectory.exists()) {
-    languageVersionDirectory = languageVersionDirectory.parent;
+  while (!await _directoryExists(languageVersionDirectory)) {
+    final parent = languageVersionDirectory.parent;
+    if (parent.path == languageVersionDirectory.path) {
+      break;
+    }
+    languageVersionDirectory = parent;
   }
   final languageVersionFile = File(
     p.join(languageVersionDirectory.path, p.basename(outputFile.path)),
@@ -112,4 +120,13 @@ Future<DartFormatter> _formatterFor(
     pageWidth: await configCache.findPageWidth(outputFile),
     trailingCommas: await configCache.findTrailingCommas(outputFile),
   );
+}
+
+Future<bool> _directoryExists(Directory directory) async {
+  try {
+    return await directory.exists();
+  } on PathAccessException {
+    // Windows can deny access while a directory is being deleted.
+    return false;
+  }
 }

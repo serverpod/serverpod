@@ -110,56 +110,64 @@ Future<CreateMigrationOutcome> createMigrationAction({
     return CreateMigrationFailed('$e');
   }
 
-  final hasClientMigrations =
-      generationContext.modelDefinitions.hasHostClientDatabaseTables;
   final serverGenerator = MigrationGenerator(
     directory: serverDirectory,
     projectName: projectName,
   );
-  final clientDirectory = hasClientMigrations
-      ? Directory(path.joinAll(config.clientPackagePathParts))
-      : null;
-
-  final clientGenerator = clientDirectory != null
-      ? MigrationGenerator(
-          directory: clientDirectory,
-          projectName: projectName,
-          serverCode: false,
-        )
-      : null;
-
   final precomputedVersion = MigrationGenerator.createVersionName(tag);
 
-  if (hasClientMigrations) {
-    await GeneratedDartFormatters.resolve(config);
-  }
-
-  final results = await Future.wait([
-    _createMigration(
-      empty: empty,
-      force: force,
-      config: config,
-      precomputedVersion: precomputedVersion,
-      generator: serverGenerator,
-      context: generationContext,
-    ),
-    if (hasClientMigrations)
-      _createMigration(
+  late final CreateMigrationOutcome outcome;
+  try {
+    final (pendingServerResult, pendingClientResult) = await (
+      _prepareMigration(
         config: config,
         empty: empty,
         force: force,
         precomputedVersion: precomputedVersion,
-        generator: clientGenerator!,
+        generator: serverGenerator,
         context: generationContext,
       ),
-  ]);
+      _prepareClientMigration(
+        config: config,
+        empty: empty,
+        force: force,
+        precomputedVersion: precomputedVersion,
+        context: generationContext,
+        projectName: projectName,
+      ),
+    ).wait;
 
-  final outcome = hasClientMigrations
-      ? CreateMigrationServerClientCreated(
-          serverResult: results.first,
-          clientResult: results.last,
-        )
-      : results.first;
+    final (serverResult, clientResult) = await (
+      _persistMigration(pendingServerResult),
+      _persistNullableMigration(pendingClientResult),
+    ).wait;
+
+    outcome = clientResult == null
+        ? serverResult
+        : CreateMigrationServerClientCreated(
+            serverResult: serverResult,
+            clientResult: clientResult,
+          );
+  } on ParallelWaitError catch (e) {
+    final errors = switch (e.errors) {
+      (AsyncError? serverError, AsyncError? clientError) => [
+        serverError,
+        clientError,
+      ].nonNulls.toList(),
+      _ => const <AsyncError>[],
+    };
+
+    if (errors.isEmpty ||
+        errors.any(
+          (error) => error.error is! MigrationUnsupportedByDialectException,
+        )) {
+      rethrow;
+    }
+
+    outcome = CreateMigrationFailed('${errors.first.error}');
+  } on MigrationUnsupportedByDialectException catch (e) {
+    outcome = CreateMigrationFailed('$e');
+  }
 
   // Hooked here rather than in the callers so the `create-migration` command,
   // the start TUI's Migrate action and the `create_migration` MCP tool are all
@@ -176,7 +184,7 @@ Future<CreateMigrationOutcome> createMigrationAction({
   return outcome;
 }
 
-Future<CreateMigrationOutcome> _createMigration({
+Future<CreateMigrationOutcome> _prepareMigration({
   required MigrationGenerator generator,
   required GeneratorConfig config,
   required bool empty,
@@ -192,9 +200,12 @@ Future<CreateMigrationOutcome> _createMigration({
       config: config,
       context: context,
       precomputedVersion: precomputedVersion,
+      write: false,
     );
   } on MigrationAbortedException {
     return const CreateMigrationAborted();
+  } on MigrationUnsupportedByDialectException {
+    rethrow;
   } on Exception catch (e) {
     return CreateMigrationFailed('$e');
   }
@@ -203,16 +214,81 @@ Future<CreateMigrationOutcome> _createMigration({
     return const CreateMigrationNoChanges();
   }
 
-  return CreateMigrationCreated(
-    versionName: migration.version,
-    migrationDirectory: generator.serverCode
-        ? MigrationConstants.migrationVersionDirectory(
-            generator.directory,
-            migration.version,
-          ).path
-        : MigrationConstants.clientMigrationVersionDirectory(
-            generator.directory,
-            migration.version,
-          ).path,
+  final migrationDirectory = generator.serverCode
+      ? MigrationConstants.migrationVersionDirectory(
+          generator.directory,
+          migration.version,
+        ).path
+      : MigrationConstants.clientMigrationVersionDirectory(
+          generator.directory,
+          migration.version,
+        ).path;
+
+  return _CreateMigrationPending(
+    generator: generator,
+    migration: migration,
+    migrationDirectory: migrationDirectory,
   );
+}
+
+Future<CreateMigrationOutcome?> _prepareClientMigration({
+  required GeneratorConfig config,
+  required bool empty,
+  required bool force,
+  required MigrationGenerationContext context,
+  required String precomputedVersion,
+  required String projectName,
+}) async {
+  if (!context.modelDefinitions.hasHostClientDatabaseTables) return null;
+
+  // Client migrations are Dart code and must follow the project's formatting.
+  await GeneratedDartFormatters.resolve(config);
+
+  return _prepareMigration(
+    generator: MigrationGenerator(
+      directory: Directory(path.joinAll(config.clientPackagePathParts)),
+      projectName: projectName,
+      serverCode: false,
+    ),
+    config: config,
+    empty: empty,
+    force: force,
+    context: context,
+    precomputedVersion: precomputedVersion,
+  );
+}
+
+class _CreateMigrationPending extends CreateMigrationCreated {
+  _CreateMigrationPending({
+    required this.generator,
+    required this.migration,
+    required super.migrationDirectory,
+  }) : super(versionName: migration.version);
+
+  final MigrationGenerator generator;
+  final MigrationVersionArtifacts migration;
+}
+
+Future<CreateMigrationOutcome> _persistMigration(
+  CreateMigrationOutcome result,
+) async {
+  if (result is! _CreateMigrationPending) return result;
+
+  try {
+    await result.generator.persistMigration(result.migration);
+  } on Exception catch (e) {
+    return CreateMigrationFailed('$e');
+  }
+
+  return CreateMigrationCreated(
+    versionName: result.migration.version,
+    migrationDirectory: result.migrationDirectory,
+  );
+}
+
+Future<CreateMigrationOutcome?> _persistNullableMigration(
+  CreateMigrationOutcome? result,
+) async {
+  if (result == null) return null;
+  return _persistMigration(result);
 }

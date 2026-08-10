@@ -1,0 +1,12 @@
+class: NullsDistinctData
+table: nulls_distinct_data
+database: all
+fields:
+  tenantId: int
+  category: String
+  archivedAt: String?
+indexes:
+  nulls_distinct_data_unique_idx:
+    fields: tenantId, category, archivedAt
+    unique: true
+    nulls_distinct: true

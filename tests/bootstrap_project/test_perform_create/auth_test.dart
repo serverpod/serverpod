@@ -113,6 +113,22 @@ void main() {
       );
 
       test(
+        'then the server passwords config has the shared section commented out',
+        () async {
+          final file = File(
+            p.join(project.serverDir, 'config', 'passwords.yaml'),
+          );
+          final content = await file.readAsString();
+          expect(content, contains('# shared:'));
+          expect(content, isNot(RegExp(r'^shared:', multiLine: true)));
+          expect(
+            content,
+            isNot(RegExp(r'^  mySharedPassword:', multiLine: true)),
+          );
+        },
+      );
+
+      test(
         'then the server pubspec.yaml contains serverpod_auth_idp_server dependency',
         () async {
           final serverPubspec = File(p.join(project.serverDir, 'pubspec.yaml'));

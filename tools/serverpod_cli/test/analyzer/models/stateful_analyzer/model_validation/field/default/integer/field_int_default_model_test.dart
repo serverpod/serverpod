@@ -100,6 +100,39 @@ void main() {
     );
 
     test(
+      'when the field is of type int and the defaultModel is set to "serial", '
+      'then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            intType: int?, defaultModel=serial
+          ''',
+          ).build(),
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
+          'The default value "serial" can not be set using the "defaultModel" '
+          'keyword. Use the "defaultPersist" keyword instead.',
+        );
+      },
+    );
+
+    test(
       'when the field is of type int with an invalid default value "TEN", then an error is generated',
       () {
         var models = [

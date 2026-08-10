@@ -10,11 +10,8 @@ import 'package:serverpod_test_server/test_util/test_service_key_manager.dart';
 final _serviceServerUrl =
     Platform.environment['SERVERPOD_TEST_SERVICE_URL'] ?? serviceServerUrl;
 
-var serviceClient = Client(
-  _serviceServerUrl,
-  // ignore: deprecated_member_use
-  authenticationKeyManager: TestServiceKeyManager(
+var serviceClient = Client(_serviceServerUrl)
+  ..authKeyProvider = TestServiceKeyManager(
     '0',
     'super_SECRET_password',
-  ),
-);
+  );

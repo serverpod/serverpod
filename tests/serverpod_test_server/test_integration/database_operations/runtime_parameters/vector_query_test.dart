@@ -8,6 +8,19 @@ import '../../test_tools/serverpod_test_tools.dart';
 const totalVectors = 5000;
 const vectorDimension = 512;
 
+/// The number of vectors each query asks for.
+const resultLimit = 30;
+
+/// An efSearch below [resultLimit]. Without an iterative scan, the HNSW scan
+/// cannot return more rows than the size of its dynamic candidate list, so this
+/// caps the query below the requested [resultLimit].
+const smallEfSearch = 10;
+
+/// An efSearch well above [resultLimit], leaving the scan free to return the
+/// full [resultLimit] and to explore a superset of the candidates visited with
+/// [smallEfSearch].
+const largeEfSearch = 500;
+
 void main() {
   withServerpod(
     'Given a large number of vectors with very similar distances',
@@ -21,9 +34,9 @@ void main() {
         final random = math.Random(42);
         final zeroFilledVector = Vector(List.filled(vectorDimension, 0.0));
 
-        // Create 5000 vectors with very similar distances around the query point
-        // [0.5, 0.5, ...]. This creates many borderline cases where low efSearch
-        // might miss some vectors.
+        // Create 5000 vectors with very similar distances around the query
+        // point [0.5, 0.5, ...]. This creates many borderline cases where a low
+        // efSearch misses vectors that a high efSearch finds.
         final testVectors = [
           for (int i = 0; i < totalVectors; i++)
             ObjectWithVector(
@@ -38,92 +51,152 @@ void main() {
         await ObjectWithVector.db.insert(session, testVectors);
       });
 
-      group('when using conservative and aggressive index query parameters', () {
-        late List<ObjectWithVector> conservativeResults;
-        late List<ObjectWithVector> aggressiveResults;
+      group(
+        'when the same nearest neighbor query runs with different HNSW index query parameters,',
+        () {
+          late List<ObjectWithVector> smallEfSearchResults;
+          late List<ObjectWithVector> largeEfSearchResults;
+          late List<ObjectWithVector> relaxedIterativeScanResults;
+          late List<ObjectWithVector> strictIterativeScanResults;
 
-        /// Runs a vector query with the given efSearch and iterativeScan
-        /// parameters. Sequential scan is disabled to ensure that the queries
-        /// only use the HNSW index and are affected by the efSearch parameter.
-        Future<List<ObjectWithVector>> runVectorQuery({
-          required int efSearch,
-          required IterativeScan iterativeScan,
-        }) async {
-          return session.db.transaction((transaction) async {
-            await transaction.setRuntimeParameters(
-              (params) => [
-                params.vectorIndexQuery(enableSeqScan: false),
-                params.hnswIndexQuery(
-                  efSearch: efSearch,
-                  iterativeScan: iterativeScan,
-                ),
-              ],
+          /// Runs a vector query with the given efSearch and iterativeScan
+          /// parameters. Sequential scan is disabled to ensure that the queries
+          /// only use the HNSW index and are affected by the efSearch parameter.
+          Future<List<ObjectWithVector>> runVectorQuery({
+            required int efSearch,
+            required IterativeScan iterativeScan,
+          }) async {
+            return session.db.transaction((transaction) async {
+              await transaction.setRuntimeParameters(
+                (params) => [
+                  params.vectorIndexQuery(enableSeqScan: false),
+                  params.hnswIndexQuery(
+                    efSearch: efSearch,
+                    iterativeScan: iterativeScan,
+                  ),
+                ],
+              );
+
+              return ObjectWithVector.db.find(
+                session,
+                orderBy: (t) => t.vectorIndexedHnsw.distanceL2(queryVector),
+                limit: resultLimit,
+                transaction: transaction,
+              );
+            });
+          }
+
+          setUpAll(() async {
+            smallEfSearchResults = await runVectorQuery(
+              efSearch: smallEfSearch,
+              iterativeScan: IterativeScan.off,
             );
 
-            return ObjectWithVector.db.find(
-              session,
-              orderBy: (t) => t.vectorIndexedHnsw.distanceL2(queryVector),
-              limit: 30,
-              transaction: transaction,
+            largeEfSearchResults = await runVectorQuery(
+              efSearch: largeEfSearch,
+              iterativeScan: IterativeScan.off,
+            );
+
+            relaxedIterativeScanResults = await runVectorQuery(
+              efSearch: smallEfSearch,
+              iterativeScan: IterativeScan.relaxed,
+            );
+
+            strictIterativeScanResults = await runVectorQuery(
+              efSearch: smallEfSearch,
+              iterativeScan: IterativeScan.strict,
             );
           });
-        }
 
-        setUpAll(() async {
-          conservativeResults = await runVectorQuery(
-            efSearch: 2,
-            iterativeScan: IterativeScan.relaxed,
+          test(
+            'then a small efSearch returns no more vectors than its candidate list size.',
+            () {
+              expect(smallEfSearchResults, hasLength(smallEfSearch));
+            },
           );
 
-          aggressiveResults = await runVectorQuery(
-            efSearch: 500,
-            iterativeScan: IterativeScan.strict,
+          test(
+            'then a large efSearch returns as many vectors as the query limit.',
+            () {
+              expect(largeEfSearchResults, hasLength(resultLimit));
+            },
           );
-        });
 
-        test('then intersection ratio of found vectors is less than 0.5.', () {
-          var conservativeIds = conservativeResults.map((v) => v.id).toSet();
-          var aggressiveIds = aggressiveResults.map((v) => v.id).toSet();
+          test(
+            'then a relaxed iterative scan lifts the small efSearch cap on returned vectors.',
+            () {
+              expect(relaxedIterativeScanResults, hasLength(resultLimit));
+            },
+          );
 
-          var intersection = conservativeIds.intersection(aggressiveIds);
-          var unionSize = conservativeIds.union(aggressiveIds).length;
-          var intersectionRatio = intersection.length / unionSize;
+          test(
+            'then a strict iterative scan lifts the small efSearch cap on returned vectors.',
+            () {
+              expect(strictIterativeScanResults, hasLength(resultLimit));
+            },
+          );
 
-          print('Conservative IDs: $conservativeIds');
-          print('Aggressive IDs: $aggressiveIds');
-          print('Intersection ratio: $intersectionRatio');
-          // Usually less than 0.1, but we allow up to 0.5 to avoid flakiness.
-          expect(intersectionRatio, lessThan(0.5));
-        });
+          test(
+            'then a small efSearch and a large efSearch find mostly different vectors.',
+            () {
+              var smallEfSearchIds = smallEfSearchResults
+                  .map((v) => v.id)
+                  .toSet();
+              var largeEfSearchIds = largeEfSearchResults
+                  .map((v) => v.id)
+                  .toSet();
 
-        test(
-          'then aggressive efSearch top vector is at least as close to query vector.',
-          () {
-            final conservativeFirst =
-                conservativeResults.first.vectorIndexedHnsw;
-            final aggressiveFirst = aggressiveResults.first.vectorIndexedHnsw;
+              var intersection = smallEfSearchIds.intersection(
+                largeEfSearchIds,
+              );
+              var unionSize = smallEfSearchIds.union(largeEfSearchIds).length;
+              var intersectionRatio = intersection.length / unionSize;
 
-            final conservativeBest = l2(conservativeFirst, queryVector);
-            final aggressiveBest = l2(aggressiveFirst, queryVector);
+              printOnFailure('Small efSearch IDs: $smallEfSearchIds');
+              printOnFailure('Large efSearch IDs: $largeEfSearchIds');
+              printOnFailure('Intersection ratio: $intersectionRatio');
 
-            print('Best conservative distance: $conservativeBest');
-            print('Best aggressive distance: $aggressiveBest');
-            expect(aggressiveBest, lessThanOrEqualTo(conservativeBest));
-          },
-        );
+              // The small efSearch scan returns at most [smallEfSearch] rows,
+              // so it can never overlap more than that fraction of the
+              // [resultLimit] rows the large efSearch scan returns.
+              expect(
+                intersectionRatio,
+                lessThanOrEqualTo(smallEfSearch / resultLimit),
+              );
+            },
+          );
 
-        test(
-          'then aggressive efSearch average results are closer to query vector.',
-          () {
-            final conservativeAvg = avgL2(conservativeResults, queryVector);
-            final aggressiveAvg = avgL2(aggressiveResults, queryVector);
+          test(
+            'then a large efSearch finds vectors at least as close to the query vector at every rank.',
+            () {
+              // A larger dynamic candidate list visits a superset of the nodes
+              // visited by a smaller one, so its result at any given rank can
+              // never be farther away from the query vector.
+              var smallEfSearchDistances = smallEfSearchResults
+                  .map((v) => l2(v.vectorIndexedHnsw, queryVector))
+                  .toList();
+              var largeEfSearchDistances = largeEfSearchResults
+                  .map((v) => l2(v.vectorIndexedHnsw, queryVector))
+                  .toList();
 
-            print('Average conservative distance: $conservativeAvg');
-            print('Average aggressive distance: $aggressiveAvg');
-            expect(aggressiveAvg, lessThan(conservativeAvg));
-          },
-        );
-      });
+              printOnFailure(
+                'Small efSearch distances: $smallEfSearchDistances',
+              );
+              printOnFailure(
+                'Large efSearch distances: $largeEfSearchDistances',
+              );
+
+              for (var rank = 0; rank < smallEfSearchDistances.length; rank++) {
+                expect(
+                  largeEfSearchDistances[rank],
+                  lessThanOrEqualTo(smallEfSearchDistances[rank]),
+                  reason: 'Rank $rank should not be farther from the query.',
+                );
+              }
+            },
+          );
+        },
+      );
     },
   );
 }
@@ -169,13 +242,4 @@ double l2(Vector a, Vector b) {
     sum += d * d;
   }
   return math.sqrt(sum);
-}
-
-/// Calculates the average L2 distance of a list of results against a query vector.
-double avgL2(List<ObjectWithVector> results, Vector query) {
-  if (results.isEmpty) return double.infinity;
-  return results
-          .map((v) => l2(v.vectorIndexedHnsw, query))
-          .reduce((a, b) => a + b) /
-      results.length;
 }

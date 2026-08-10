@@ -32,8 +32,11 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
                   columnType: ColumnType.values.byName(
                     column.type.databaseTypeEnum,
                   ),
-                  // The id column is not null, since it is auto generated.
-                  isNullable: column.name != 'id' && column.type.nullable,
+                  // Serial and id columns are not null, since they are auto generated.
+                  isNullable:
+                      column.defaultPersistValue != defaultIntSerial &&
+                      column.name != 'id' &&
+                      column.type.nullable,
                   dartType: column.type.toString(),
                   columnDefault: _parseColumnDefault(column),
                   vectorDimension: column.type.vectorDimension,
@@ -53,6 +56,7 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
                 ],
                 type: index.type,
                 isUnique: index.unique,
+                nullsDistinct: index.nullsDistinct,
                 isPrimary: false,
                 ginOperatorClass: index.isGinIndex
                     ? index.ginOperatorClass

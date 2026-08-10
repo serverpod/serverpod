@@ -126,20 +126,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// The [SerializationManager] used to serialize objects sent to the server.
   final SerializationManager serializationManager;
 
-  /// Optional [AuthenticationKeyManager] if the client needs to sign the user in.
-  @Deprecated(
-    'Use authKeyProvider instead. This will be removed in future releases.',
-  )
-  AuthenticationKeyManager? get authenticationKeyManager {
-    final provider = authKeyProvider;
-    if (provider == null) return null;
-    if (provider is AuthenticationKeyManager) return provider;
-    throw StateError(
-      'The authKeyProvider is not an AuthenticationKeyManager. '
-      'Use authKeyProvider directly instead of authenticationKeyManager.',
-    );
-  }
-
   /// Looks up module callers by their name. Overridden by generated code.
   Map<String, ModuleEndpointCaller> get moduleLookup;
 
@@ -239,10 +225,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
     String host,
     this.serializationManager, {
     dynamic securityContext,
-    @Deprecated(
-      'Use authKeyProvider instead. This will be removed in future releases.',
-    )
-    AuthenticationKeyManager? authenticationKeyManager,
     required Duration? streamingConnectionTimeout,
     required Duration? connectionTimeout,
     this.onFailedCall,
@@ -269,10 +251,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
     disconnectStreamsOnLostInternetConnection ??= false;
     _disconnectMethodStreamsOnLostInternetConnection =
         disconnectStreamsOnLostInternetConnection;
-
-    // Use authKeyProvider if provided, otherwise fall back to deprecated
-    // authenticationKeyManager for backwards compatibility.
-    authKeyProvider ??= authenticationKeyManager;
   }
 
   /// Closes all open connections to the server.

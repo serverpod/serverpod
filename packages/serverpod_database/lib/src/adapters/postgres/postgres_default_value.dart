@@ -3,13 +3,8 @@ import '../../../serverpod_database.dart';
 /// Extension methods for [ColumnType] to convert default values to PostgreSQL.
 extension PostgresColumnTypeDefault on ColumnType {
   /// Converts abstract default values to PostgreSQL column default SQL.
-  String? getPgColumnDefault(dynamic defaultValue, String tableName) {
+  String? getPgColumnDefault(dynamic defaultValue) {
     if (defaultValue == null) return null;
-
-    if ((this == ColumnType.integer || this == ColumnType.bigint) &&
-        defaultValue == defaultIntSerial) {
-      return "nextval('${tableName}_id_seq'::regclass)";
-    }
 
     switch (this) {
       case ColumnType.timestampWithoutTimeZone:

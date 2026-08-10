@@ -866,17 +866,27 @@ class PostgresDatabaseConnection
     );
 
     final connection = await _postgresConnection;
-    return connection.runTx<R>(
-      (ctx) {
-        var transaction = _PostgresTransaction(
-          ctx,
-          session,
-          this,
-        );
-        return transactionFunction(transaction);
-      },
-      settings: pgTransactionSettings,
-    );
+    try {
+      return await connection.runTx<R>(
+        (ctx) {
+          var transaction = _PostgresTransaction(
+            ctx,
+            session,
+            this,
+          );
+          return transactionFunction(transaction);
+        },
+        settings: pgTransactionSettings,
+      );
+    } on pg.ServerException catch (exception, trace) {
+      var serverpodException = _PgDatabaseQueryException.fromServerException(
+        exception,
+      );
+      Error.throwWithStackTrace(serverpodException, trace);
+    } on pg.PgException catch (exception, trace) {
+      var serverpodException = _PgDatabaseQueryException(exception.message);
+      Error.throwWithStackTrace(serverpodException, trace);
+    }
   }
 
   Future<Map<String, Map<Object, List<Map<String, dynamic>>>>>

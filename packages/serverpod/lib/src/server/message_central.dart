@@ -18,6 +18,20 @@ abstract class MessageCentralServerpodChannels {
 typedef MessageCentralListenerCallback =
     void Function(SerializableModel message);
 
+/// Determines how a message posted to the [MessageCentral] is delivered.
+enum MessageScope {
+  /// The message is only delivered within this server instance.
+  local,
+
+  /// The message is delivered across the cluster via Redis. Requires Redis
+  /// to be enabled.
+  global,
+
+  /// The message is delivered across the cluster if Redis is enabled,
+  /// otherwise it is delivered locally within this server instance.
+  auto,
+}
+
 /// The [MessageCentral] handles communication within the server, and between
 /// servers in a cluster. It is especially useful when working with streaming
 /// endpoints. The message central can pass on any serializable to a channel.
@@ -29,40 +43,54 @@ class MessageCentral {
       <Session, Set<MessageCentralListenerCallback>>{};
   final _sessionToCleanupCallbacksLookup = <Session, Set<Function()>>{};
 
-  /// Posts a [message] to a named channel. Optionally a [destinationServerId]
-  /// can be provided, in which case the message is sent only to that specific
-  /// server within the cluster. If no [destinationServerId] is provided, the
-  /// message is passed on to all servers in the cluster.
+  /// Posts a [message] to a named channel. The [scope] determines whether the
+  /// message is delivered locally within this server instance, globally across
+  /// the cluster, or globally with a local fallback if Redis is not enabled
+  /// (the default).
   ///
   /// Returns true if the message was successfully posted.
   ///
-  /// Throws a [StateError] if Redis is not enabled and [global] is set to true.
+  /// Throws a [StateError] if Redis is not enabled and [scope] is
+  /// [MessageScope.global].
   Future<bool> postMessage(
     String channelName,
     SerializableModel message, {
-    bool global = false,
+    MessageScope scope = MessageScope.auto,
   }) async {
-    if (global) {
-      // Send to Redis
-      var data = Serverpod.instance.serializationManager.encodeWithType(
-        message,
-      );
-      var redisController = Serverpod.instance.redisController;
-      if (redisController == null) {
-        throw StateError('Redis needs to be enabled to use this method');
-      }
-
-      return await redisController.publish(channelName, data);
-    } else {
-      // Handle internally in this server instance
-      var channel = _channels[channelName];
-      if (channel == null) return true;
-
-      for (var callback in channel.toList()) {
-        callback(message);
-      }
-      return true;
+    var redisController = Serverpod.instance.redisController;
+    switch (scope) {
+      case MessageScope.local:
+        return _postLocal(channelName, message);
+      case MessageScope.global:
+        if (redisController == null) {
+          throw StateError('Redis needs to be enabled to use this method');
+        }
+        return _postGlobal(redisController, channelName, message);
+      case MessageScope.auto:
+        if (redisController == null) {
+          return _postLocal(channelName, message);
+        }
+        return _postGlobal(redisController, channelName, message);
     }
+  }
+
+  Future<bool> _postGlobal(
+    RedisController redisController,
+    String channelName,
+    SerializableModel message,
+  ) async {
+    var data = Serverpod.instance.serializationManager.encodeWithType(message);
+    return await redisController.publish(channelName, data);
+  }
+
+  bool _postLocal(String channelName, SerializableModel message) {
+    var channel = _channels[channelName];
+    if (channel == null) return true;
+
+    for (var callback in channel.toList()) {
+      callback(message);
+    }
+    return true;
   }
 
   Set<MessageCentralListenerCallback> _getChannel(String channelName) {
@@ -116,7 +144,12 @@ class MessageCentral {
     if (messageObj == null) {
       return;
     }
-    postMessage(channelName, messageObj as SerializableModel, global: false);
+    // Local scope prevents received messages from being republished to Redis.
+    postMessage(
+      channelName,
+      messageObj as SerializableModel,
+      scope: MessageScope.local,
+    );
   }
 
   /// Removes a listener from a named channel.

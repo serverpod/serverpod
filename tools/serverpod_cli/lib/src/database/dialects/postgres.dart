@@ -123,7 +123,7 @@ extension PostgresTableDefinitionPgSqlGeneration on TableDefinition {
 
     var columnsPgSql = <String>[];
     for (var column in columns) {
-      columnsPgSql.add('    ${column.toPgSqlFragment(tableName: name)}');
+      columnsPgSql.add('    ${column.toPgSqlFragment()}');
     }
     out += columnsPgSql.join(',\n');
 
@@ -169,12 +169,10 @@ extension PostgresTableDefinitionPgSqlGeneration on TableDefinition {
 }
 
 extension PostgresColumnDefinitionPgSqlGeneration on ColumnDefinition {
-  /// Whether the column is a primary key of type int serial.
-  bool get isIntSerialIdColumn =>
-      isPrimary &&
+  /// Whether the column uses a serial auto-increment default.
+  bool get isIntSerialColumn =>
       (columnType == ColumnType.integer || columnType == ColumnType.bigint) &&
-      ((columnDefault?.startsWith('nextval') ?? false) ||
-          columnDefault == defaultIntSerial);
+      columnDefault == defaultIntSerial;
 
   /// Whether the column is of a vector type.
   bool get isVectorColumn =>
@@ -190,7 +188,7 @@ extension PostgresColumnDefinitionPgSqlGeneration on ColumnDefinition {
       columnType == ColumnType.geographyPolygon ||
       columnType == ColumnType.geographyGeometryCollection;
 
-  String toPgSqlFragment({String tableName = ''}) {
+  String toPgSqlFragment() {
     String type;
     switch (columnType) {
       case ColumnType.bigint:
@@ -252,24 +250,23 @@ extension PostgresColumnDefinitionPgSqlGeneration on ColumnDefinition {
     }
 
     var nullable = isNullable ? '' : ' NOT NULL';
-    var defaultSql = columnType.getPgColumnDefault(
-      columnDefault,
-      tableName,
-    );
+    var defaultSql = columnType.getPgColumnDefault(columnDefault);
 
     var defaultValue = defaultSql != null ? ' DEFAULT $defaultSql' : '';
+
+    if (isIntSerialColumn) {
+      type = columnType == ColumnType.bigint || isPrimary
+          ? 'bigserial'
+          : 'serial';
+      defaultValue = '';
+      nullable = ' NOT NULL';
+    }
 
     // The id column is special.
     if (isPrimary) {
       if (isNullable) {
         throw const FormatException('The id column must be non-nullable');
       }
-
-      if (isIntSerialIdColumn) {
-        type = 'bigserial';
-        defaultValue = '';
-      }
-
       type = '$type PRIMARY KEY';
       nullable = '';
     }
@@ -286,6 +283,11 @@ extension PostgresIndexDefinitionPgSqlGeneration on IndexDefinition {
     var out = '';
 
     var uniqueStr = isUnique ? ' UNIQUE' : '';
+    var nullsDistinctStr = switch (nullsDistinct) {
+      true => ' NULLS DISTINCT',
+      false => ' NULLS NOT DISTINCT',
+      null => '',
+    };
     var elementStrs = elements.map((e) => '"${e.definition}"');
     var ifNotExistsStr = ifNotExists ? ' IF NOT EXISTS' : '';
 
@@ -310,7 +312,7 @@ extension PostgresIndexDefinitionPgSqlGeneration on IndexDefinition {
 
     out +=
         'CREATE$uniqueStr INDEX$ifNotExistsStr "$indexName" ON "$tableName" '
-        'USING $type (${elementStrs.join(', ')}$ginOperatorClassStr$distanceStr)$pgvectorParams;\n';
+        'USING $type (${elementStrs.join(', ')}$ginOperatorClassStr$distanceStr)$nullsDistinctStr$pgvectorParams;\n';
 
     return out;
   }
@@ -549,8 +551,7 @@ extension PostgresTableMigrationPgSqlGenerator on TableMigration {
 
     // Add columns
     for (var addColumn in addColumns) {
-      out +=
-          'ALTER TABLE "$name" ADD COLUMN ${addColumn.toPgSqlFragment(tableName: name)};\n';
+      out += 'ALTER TABLE "$name" ADD COLUMN ${addColumn.toPgSqlFragment()};\n';
     }
 
     // Modify columns
@@ -610,10 +611,17 @@ extension PostgresColumnMigrationPgSqlGenerator on ColumnMigration {
             'ALTER TABLE "$tableName" ALTER COLUMN "$physicalName"'
             ' DROP DEFAULT;\n';
         return out;
+      } else if (newDefault == defaultIntSerial) {
+        // Adding a serial default requires creating a sequence via the serial
+        // pseudo-type on column (re)create. SET DEFAULT cannot express this.
+        throw StateError(
+          'Cannot SET DEFAULT "$defaultIntSerial" on column "$physicalName" '
+          'of table "$tableName". Auto-increment defaults must be applied by '
+          'recreating the column with the serial type.',
+        );
       } else {
         var newDefaultSql = columnDefinition.columnType.getPgColumnDefault(
           newDefault,
-          tableName,
         );
         out +=
             'ALTER TABLE "$tableName" ALTER COLUMN "$physicalName"'

@@ -1,4 +1,5 @@
 @Timeout(Duration(minutes: 5))
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:bootstrap_project/src/util.dart';
@@ -224,10 +225,6 @@ void main() {
           );
           expect(
             content,
-            contains('/app/assets/assets/config.json'),
-          );
-          expect(
-            content,
             contains(
               "final appDir = Directory(Uri(path: 'web/app').toFilePath());",
             ),
@@ -350,6 +347,17 @@ void main() {
       );
 
       test(
+        'then the server server.dart serves the app config under the root asset path',
+        () async {
+          final serverFile = File(
+            p.join(project.serverDir, 'lib', 'server.dart'),
+          );
+          final content = await serverFile.readAsString();
+          expect(content, contains("'/assets/assets/config.json'"));
+        },
+      );
+
+      test(
         'then the server.dart has a fallback middleware for the default route',
         () async {
           final serverFile = File(
@@ -408,6 +416,17 @@ void main() {
           );
           expect(content, contains("'/app'"));
           expect(content, contains("'/app/**'"));
+        },
+      );
+
+      test(
+        'then the server server.dart serves the app config under the /app asset path',
+        () async {
+          final serverFile = File(
+            p.join(project.serverDir, 'lib', 'server.dart'),
+          );
+          final content = await serverFile.readAsString();
+          expect(content, contains("'/app/assets/assets/config.json'"));
         },
       );
 
@@ -577,10 +596,123 @@ void main() {
   );
 
   group(
-    'Given a project is created with fullstack template and webapp and website enabled, '
-    'and the pod is running',
+    'Given a project is created with fullstack template and webapp enabled with an injected config asset, '
+    'and the pod is running with managed public hosts',
     () {
-      late Process startProjectProcess;
+      Process? startProjectProcess;
+      HttpClient? client;
+
+      final project = setUpPerformCreateInTempDir(
+        context: TemplateContext(
+          template: ServerpodTemplateType.fullstack,
+          webapp: true,
+        ),
+      );
+
+      setUpAll(() async {
+        final appDir = Directory(p.join(project.serverDir, 'web', 'app'));
+        final configAsset = File(
+          p.join(appDir.path, 'assets', 'assets', 'config.json'),
+        );
+        await configAsset.parent.create(recursive: true);
+        await File(p.join(appDir.path, 'index.html')).writeAsString(
+          '<html><body>Flutter app</body></html>',
+        );
+        await configAsset.writeAsString(
+          jsonEncode({'apiUrl': 'https://invalid.url'}),
+        );
+
+        final testConfig = File(
+          p.join(project.serverDir, 'config', 'test.yaml'),
+        );
+        // Templates checked out on Windows use CRLF. Normalize before matching
+        // the multiline YAML blocks below so the replacements work on every
+        // platform.
+        final config = (await testConfig.readAsString()).replaceAll(
+          '\r\n',
+          '\n',
+        );
+        await testConfig.writeAsString(
+          config
+              .replaceFirst(
+                '''apiServer:
+  port: 0
+  publicHost: localhost
+  publicPort: 0
+  publicScheme: http''',
+                '''apiServer:
+  port: 0
+  publicHost: api.managed.host
+  publicPort: 443
+  publicScheme: https''',
+              )
+              .replaceFirst(
+                '''webServer:
+  port: 0
+  publicHost: localhost
+  publicPort: 0
+  publicScheme: http''',
+                '''webServer:
+  port: 0
+  publicHost: app.managed.host
+  publicPort: 80
+  publicScheme: http''',
+              ),
+        );
+
+        final startedPod = await _startPodAndCaptureWebPort(
+          project: project,
+          host: 'app.managed.host',
+        );
+        startProjectProcess = startedPod.process;
+
+        client = HttpClient()
+          ..connectionFactory = (uri, proxyHost, proxyPort) async {
+            return Socket.startConnect(
+              InternetAddress.loopbackIPv4,
+              startedPod.webPort,
+            );
+          };
+      });
+
+      tearDownAll(() async {
+        client?.close(force: true);
+        final process = startProjectProcess;
+        if (process != null) await stopProcess(process);
+      });
+
+      test(
+        'when requesting the root config asset, '
+        'then the dynamic app config overrides the injected asset',
+        () async {
+          final request = await client!.getUrl(
+            Uri.http(
+              'app.managed.host',
+              '/assets/assets/config.json',
+            ),
+          );
+          final response = await request.close();
+          final responseBody = await utf8.decoder.bind(response).join();
+          final appConfig = jsonDecode(responseBody) as Map<String, dynamic>;
+          final apiUrl = Uri.parse(appConfig['apiUrl'] as String);
+
+          expect(response.statusCode, HttpStatus.ok);
+          expect(apiUrl.scheme, 'https');
+          expect(apiUrl.host, 'api.managed.host');
+          expect(apiUrl.port, 443);
+          expect(responseBody, isNot(contains('invalid.url')));
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a project is created with fullstack template and webapp and website enabled, '
+    'and the pod is running, '
+    'and Flutter web app is not built',
+    () {
+      Process? startProjectProcess;
+      late int webPort;
 
       final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
@@ -591,22 +723,25 @@ void main() {
       );
 
       setUpAll(() async {
-        startProjectProcess = await startProcessAndWaitForKeywords(
-          'dart',
-          ['bin/main.dart', '--apply-migrations'],
-          workingDirectory: project.serverDir,
-          keywords: ['Webserver listening on'],
+        final startedPod = await _startPodAndCaptureWebPort(
+          project: project,
+          host: 'localhost',
         );
+        startProjectProcess = startedPod.process;
+        webPort = startedPod.webPort;
       });
 
-      tearDownAll(() {
-        startProjectProcess.kill();
+      tearDownAll(() async {
+        final process = startProjectProcess;
+        if (process != null) await stopProcess(process);
       });
 
       test(
         'when requesting the static website under / then it is is served',
         () async {
-          final response = await http.get(Uri.parse('http://localhost:8082'));
+          final response = await http.get(
+            Uri.parse('http://localhost:$webPort'),
+          );
           expect(response.statusCode, equals(200));
           expect(
             response.body,
@@ -621,7 +756,7 @@ void main() {
         'then the "Flutter web app not built" page is served',
         () async {
           final response = await http.get(
-            Uri.parse('http://localhost:8082/app'),
+            Uri.parse('http://localhost:$webPort/app'),
           );
           expect(response.statusCode, equals(200));
           expect(
@@ -638,52 +773,98 @@ void main() {
           );
         },
       );
+    },
+  );
 
-      group('Given the Flutter web app is built and the pod is restarted', () {
-        setUp(() async {
-          final flutterBuildProcess = await startServerpodCli(
-            ['run', 'flutter_build'],
-            rootPath: rootPath,
-            workingDirectory: project.serverDir,
-            environment: {
-              'SERVERPOD_HOME': rootPath,
-            },
-          );
-          expect(await flutterBuildProcess.exitCode, 0);
+  group(
+    'Given a project is created with fullstack template and webapp and website enabled, '
+    'and the Flutter web app is built, '
+    'and the pod is running',
+    () {
+      Process? startProjectProcess;
+      late int webPort;
 
-          startProjectProcess.kill();
-          startProjectProcess = await startProcessAndWaitForKeywords(
-            'dart',
-            ['bin/main.dart', '--apply-migrations'],
-            workingDirectory: project.serverDir,
-            keywords: ['Webserver listening on'],
-          );
-        });
+      final project = setUpPerformCreateInTempDir(
+        context: TemplateContext(
+          template: ServerpodTemplateType.fullstack,
+          webapp: true,
+          website: true,
+        ),
+      );
 
-        test(
-          'when requesting the Flutter web app under /app, '
-          'then the web app is served successfully',
-          () async {
-            final response = await http.get(
-              Uri.parse('http://localhost:8082/app'),
-            );
-            expect(response.statusCode, equals(200));
-            expect(
-              response.body,
-              isNot(contains('<title>Flutter web app not built</title>')),
-            );
-            expect(
-              response.body,
-              contains(
-                '<meta name="description" content="A new Flutter project.">',
-              ),
-            );
+      setUpAll(() async {
+        final flutterBuildProcess = await startServerpodCli(
+          ['run', 'flutter_build'],
+          rootPath: rootPath,
+          workingDirectory: project.serverDir,
+          environment: {
+            'SERVERPOD_HOME': rootPath,
           },
         );
+        expect(await flutterBuildProcess.exitCode, 0);
+
+        final startedPod = await _startPodAndCaptureWebPort(
+          project: project,
+          host: 'localhost',
+        );
+        startProjectProcess = startedPod.process;
+        webPort = startedPod.webPort;
       });
+
+      tearDownAll(() async {
+        final process = startProjectProcess;
+        if (process != null) await stopProcess(process);
+      });
+
+      test(
+        'when requesting the Flutter web app under /app, '
+        'then the web app is served successfully',
+        () async {
+          final response = await http.get(
+            Uri.parse('http://localhost:$webPort/app'),
+          );
+          expect(response.statusCode, equals(200));
+          expect(
+            response.body,
+            isNot(contains('<title>Flutter web app not built</title>')),
+          );
+          expect(
+            response.body,
+            contains(
+              '<meta name="description" content="A new Flutter project.">',
+            ),
+          );
+        },
+      );
     },
-    skip: Platform.isWindows
-        ? 'Windows does not support postgres in github actions'
-        : null,
   );
+}
+
+Future<({Process process, int webPort})> _startPodAndCaptureWebPort({
+  required TempProject project,
+  required String host,
+}) async {
+  final serverOutput = StringBuffer();
+  final webServerStartedPattern = RegExp(
+    'Webserver listening on http://${RegExp.escape(host)}:(\\d+)',
+  );
+  int? webPort;
+  final process = await startProcessAndWaitForKeywords(
+    'dart',
+    ['bin/main.dart', '--mode=test'],
+    workingDirectory: project.serverDir,
+    keywords: ['Webserver listening on'],
+    onOutput: (output) {
+      serverOutput.write(output);
+      final match = webServerStartedPattern.firstMatch(serverOutput.toString());
+      if (match != null) webPort = int.parse(match.group(1)!);
+    },
+  );
+  expect(
+    webPort,
+    isNotNull,
+    reason: 'Could not determine the web server port.',
+  );
+
+  return (process: process, webPort: webPort!);
 }

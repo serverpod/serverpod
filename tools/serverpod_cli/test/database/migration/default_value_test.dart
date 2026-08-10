@@ -466,4 +466,73 @@ void main() {
       );
     },
   );
+
+  group(
+    'Given a source and target definition where an existing int column is changed to a serial auto-increment column',
+    () {
+      var tableName = 'example_table';
+      var columnName = 'count';
+
+      ColumnDefinition countColumn({required bool serial}) => ColumnDefinition(
+        name: columnName,
+        columnType: ColumnType.bigint,
+        isNullable: !serial,
+        columnDefault: serial ? defaultIntSerial : null,
+        dartType: 'int?',
+      );
+
+      DatabaseDefinition definition({required bool serial}) =>
+          DatabaseDefinitionBuilder()
+              .withTable(
+                TableDefinitionBuilder()
+                    .withName(tableName)
+                    .withColumn(countColumn(serial: serial))
+                    .build(),
+              )
+              .build();
+
+      var migration = generateDatabaseMigration(
+        databaseSource: definition(serial: false),
+        databaseTarget: definition(serial: true),
+      );
+
+      test(
+        'then the column is dropped and recreated instead of altered in place.',
+        () {
+          var alterTable = migration.actions.first.alterTable!;
+          expect(alterTable.modifyColumns, isEmpty);
+          expect(alterTable.deleteColumns, contains(columnName));
+          expect(
+            alterTable.addColumns.map((c) => c.name),
+            contains(columnName),
+          );
+        },
+      );
+
+      test('then a destructive warning is generated.', () {
+        expect(
+          migration.warnings.map((w) => w.destructive),
+          contains(true),
+        );
+      });
+
+      test(
+        'then the generated SQL recreates the column using bigserial without '
+        'an explicit sequence.',
+        () {
+          var sql = migration.toPgSql(
+            databaseDefinition: definition(serial: true),
+            installedModules: [],
+            removedModules: [],
+          );
+          expect(
+            sql,
+            contains('ADD COLUMN "$columnName" bigserial NOT NULL'),
+          );
+          expect(sql, isNot(contains('CREATE SEQUENCE')));
+          expect(sql, isNot(contains('nextval')));
+        },
+      );
+    },
+  );
 }

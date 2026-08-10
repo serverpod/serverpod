@@ -28,11 +28,7 @@ void main() async {
         authenticationHandler: authenticationHandler,
       );
       await server.startWithDatabase();
-      client = Client(
-        server.apiUrl,
-        // ignore: deprecated_member_use
-        authenticationKeyManager: authKeyManager,
-      );
+      client = Client(server.apiUrl)..authKeyProvider = authKeyManager;
     });
 
     tearDown(() async {
@@ -119,11 +115,7 @@ void main() async {
         authenticationHandler: authenticationHandler,
       );
       await server.startWithDatabase();
-      client = Client(
-        server.apiUrl,
-        // ignore: deprecated_member_use
-        authenticationKeyManager: incorrectAuthKeyManager,
-      );
+      client = Client(server.apiUrl)..authKeyProvider = incorrectAuthKeyManager;
     });
 
     tearDown(() async {
@@ -167,11 +159,7 @@ void main() async {
         authenticationHandler: authenticationHandler,
       );
       await server.startWithDatabase();
-      client = Client(
-        server.apiUrl,
-        // ignore: deprecated_member_use
-        authenticationKeyManager: authKeyManager,
-      );
+      client = Client(server.apiUrl)..authKeyProvider = authKeyManager;
     });
 
     tearDown(() async {

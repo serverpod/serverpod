@@ -150,4 +150,87 @@ formatter:
       expect(formatter.pageWidth, 120);
     },
   );
+
+  test(
+    'Given a client package using Dart 3.12 whose generated protocol directory cannot be checked for existence, '
+    'when its generated-code formatters are resolved, '
+    'then they use the client package language version.',
+    () async {
+      final clientDirectory = Directory(
+        p.join(tempDirectory.path, 'example_client'),
+      );
+      final clientDartToolDirectory = Directory(
+        p.join(clientDirectory.path, '.dart_tool'),
+      );
+      await clientDartToolDirectory.create(recursive: true);
+      await File(
+        p.join(clientDartToolDirectory.path, 'package_config.json'),
+      ).writeAsString('''
+{
+  "configVersion": 2,
+  "packages": [
+    {
+      "name": "example_client",
+      "rootUri": "../",
+      "packageUri": "lib/",
+      "languageVersion": "3.12"
+    }
+  ]
+}
+''');
+      final libDirectory = Directory(p.join(clientDirectory.path, 'lib'));
+      await Directory(p.join(libDirectory.path, 'src')).create(recursive: true);
+
+      if (!await _makeUnsearchable(libDirectory)) {
+        markTestSkipped(
+          'Directory.exists() cannot be made to fail on this platform.',
+        );
+        return;
+      }
+      addTearDown(() => Process.run('chmod', ['755', libDirectory.path]));
+
+      final config = GeneratorConfigBuilder()
+          .withServerPackageDirectoryPathParts(p.split(serverDirectory.path))
+          .withRelativeDartClientPackagePathParts(['..', 'example_client'])
+          .build();
+
+      await GeneratedDartFormatters.resolve(config);
+
+      // The language version is only found if the walk up out of the
+      // unreadable output directory stops inside the client package.
+      final formatter = GeneratedDartFormatters.of(
+        p.joinAll([
+          ...config.generatedDartClientModelPathParts,
+          'protocol.dart',
+        ]),
+      );
+
+      expect(formatter.languageVersion, Version(3, 12, 0));
+    },
+  );
+}
+
+/// Makes [directory] unsearchable, so that `Directory.exists()` on the paths
+/// below it fails with a [PathAccessException] instead of returning `false`.
+///
+/// This is how Windows reports a directory that is pending deletion, which the
+/// generated output directory can be when one generation run follows another.
+/// Returns `false`, leaving [directory] untouched, where that cannot be
+/// arranged: on Windows, or when running as a user that bypasses permission
+/// checks.
+///
+/// It is the only reliable way to test the behavior, because a delete-pending
+/// directory is inherently a race condition and can't be reliably reproduced.
+Future<bool> _makeUnsearchable(Directory directory) async {
+  if (Platform.isWindows) return false;
+
+  await Process.run('chmod', ['000', directory.path]);
+  try {
+    await Directory(p.join(directory.path, 'probe')).exists();
+  } on PathAccessException {
+    return true;
+  }
+
+  await Process.run('chmod', ['755', directory.path]);
+  return false;
 }

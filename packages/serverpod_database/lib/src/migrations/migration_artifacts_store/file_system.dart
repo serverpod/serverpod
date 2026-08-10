@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../../../serverpod_database.dart';
@@ -36,13 +37,30 @@ class FileSystemMigrationArtifactStore
       return [];
     }
 
-    return await migrationsDirectory
-          .list()
-          .where((entity) => entity is Directory)
-          .cast<Directory>()
-          .map((directory) => path.basename(directory.path))
-          .toList()
-      ..sort();
+    var versions =
+        await migrationsDirectory
+              .list()
+              .where((entity) => entity is Directory)
+              .cast<Directory>()
+              .map((directory) => path.basename(directory.path))
+              .toList()
+          ..sort();
+
+    var removed = await deleteTrailingEmptyMigrationVersionDirectories(
+      versions,
+      migrationsBaseDirectory: migrationsDirectory,
+      logWarning: log.warning,
+    );
+
+    // Only an existing registry is refreshed, to drop the removed versions.
+    // Since writeVersionRegistry creates the file when missing, writing it
+    // unconditionally would turn listing the versions into generating a
+    // registry for projects that have none.
+    if (removed.isNotEmpty && await _registryFile.exists()) {
+      await writeVersionRegistry(versions);
+    }
+
+    return versions;
   }
 
   @override
@@ -178,14 +196,16 @@ class FileSystemMigrationArtifactStore
     );
   }
 
+  File get _registryFile => File(
+    path.join(
+      MigrationConstants.migrationsBaseDirectory(_projectDirectory).path,
+      'migration_registry.txt',
+    ),
+  );
+
   @override
   Future<void> writeVersionRegistry(List<String> versions) async {
-    var registryFile = File(
-      path.join(
-        MigrationConstants.migrationsBaseDirectory(_projectDirectory).path,
-        'migration_registry.txt',
-      ),
-    );
+    var registryFile = _registryFile;
 
     var contents = StringBuffer(_migrationRegistryHeader);
     for (var version in versions) {

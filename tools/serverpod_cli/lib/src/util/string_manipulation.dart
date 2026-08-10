@@ -1,4 +1,4 @@
-import 'package:super_string/super_string.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Splits a string on the separator token unless the token is inside
 /// brackets, angle brackets, ( ) and < >, square brackets, [ ], curly braces, { }, single quotes '', or double quotes "".

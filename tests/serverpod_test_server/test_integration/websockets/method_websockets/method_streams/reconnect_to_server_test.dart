@@ -17,11 +17,7 @@ void main() {
     server = IntegrationTestServer.create(apiPort: stableTestPort());
     await server.startWithDatabase();
 
-    client = c.Client(
-      server.apiUrl,
-      // ignore: deprecated_member_use
-      authenticationKeyManager: TestAuthKeyManager(),
-    );
+    client = c.Client(server.apiUrl)..authKeyProvider = TestAuthKeyManager();
   });
 
   tearDown(() async {

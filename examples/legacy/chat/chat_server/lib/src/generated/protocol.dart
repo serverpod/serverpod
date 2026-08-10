@@ -26,7 +26,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
 
   static final Protocol _instance = Protocol._().._registerHostProtocols();
 
-  static final List<_i2.TableDefinition> targetTableDefinitions = [
+  static List<_i2.TableDefinition> get targetTableDefinitions => [
     _i2.TableDefinition(
       name: 'channel',
       dartName: 'Channel',

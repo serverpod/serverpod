@@ -127,9 +127,12 @@ ORDER BY ordinal_position;
   }) async {
     var queryResult = await database.unsafeQuery(
       // We want to get the name (0), tablespace (1), isUnique (2), isPrimary (3),
-      // elements (4), isElementAColumn (5), predicate (6) and type of each index for this table.
-      // We also fetch reloptions (8) which contains the parameters for specialized indexes like pgvector's HNSW and IVFFLAT.
-      // For pgvector indexes, we extract the operator class names (9) which contain the distance metric information.
+      // nullsDistinct (4), elements (5), isElementAColumn (6), predicate (7)
+      // and type (8) of each index for this table.
+      // We also fetch reloptions (9) which contains the parameters for
+      // specialized indexes like pgvector's HNSW and IVFFLAT.
+      // For pgvector indexes, we extract the operator class names (10) which
+      // contain the distance metric information.
       //
       // Most information is stored in pg_index.
       //
@@ -162,7 +165,7 @@ ORDER BY ordinal_position;
       //
       // pg_get_expr gets us the expression for the predicate.
       '''
-SELECT i.relname, ts.spcname, indisunique, indisprimary,
+SELECT i.relname, ts.spcname, indisunique, indisprimary, NOT indnullsnotdistinct,
 ARRAY(
        SELECT pg_get_indexdef(indexrelid, k + 1, true)
        FROM generate_subscripts(indkey, 1) as k
@@ -186,8 +189,8 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
     );
 
     var indexes = queryResult.map((index) {
-      var indkeyNames = index[4];
-      var indkeyIsColumn = index[5];
+      var indkeyNames = index[5];
+      var indkeyIsColumn = index[6];
       if (indkeyNames is! List<String> || indkeyIsColumn is! List<bool>) {
         throw Exception('Failed to parse index definition.');
       }
@@ -197,13 +200,13 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
       VectorDistanceFunction? vectorDistanceFunction;
       ColumnType? vectorColumnType;
 
-      final indexType = index[7] as String;
+      final indexType = index[8] as String;
       final isGin = indexType == 'gin';
       final isPgVector = ['hnsw', 'ivfflat'].contains(indexType);
       if (isGin || isPgVector) {
         if (isPgVector) {
           // Parse index parameters from reloptions
-          var reloptions = index[8];
+          var reloptions = index[9];
           if (reloptions != null && reloptions is List<String>) {
             for (var option in reloptions) {
               var parts = option.split('=');
@@ -215,7 +218,7 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
         }
 
         // Extract data from operator class
-        var opclassNames = index[9];
+        var opclassNames = index[10];
         if (opclassNames is List<String> && opclassNames.isNotEmpty) {
           if (isGin) {
             // For gin, the first operator class contains the gin operator class name
@@ -253,13 +256,14 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
             definition: indkeyNames[i].removeSurroundingQuotes,
           ),
         ),
-        type: index[7],
+        type: index[8],
         isUnique: index[2],
+        nullsDistinct: index[4],
         isPrimary: index[3],
         // ISSUE(https://github.com/serverpod/serverpod/issues/716):
         // Maybe unquote in the future. Should be considered when Serverpod
         // introduces partial indexes.
-        predicate: index[6],
+        predicate: index[7],
         ginOperatorClass: ginOperatorClass,
         vectorDistanceFunction: vectorDistanceFunction,
         vectorColumnType: vectorColumnType,

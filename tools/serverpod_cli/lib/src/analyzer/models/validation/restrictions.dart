@@ -107,7 +107,7 @@ const _databaseModelReservedFieldNames = [
 
 /// We reserve 7 characters to enable deterministic generation of the following
 /// suffixes:
-/// - "_id_seq" suffix for the default value for serial fields stored in the
+/// - "_id_seq" suffix for the default value for serial id fields stored in the
 /// server generated table definition.
 /// - "_fk_{index}" suffix for foreign key constraints.
 const _reservedTableSuffixChars = 7;
@@ -955,6 +955,30 @@ class Restrictions {
         SourceSpanSeverityException(
           'The "unique" property cannot be used with vector indexes of '
           'type "${index.type}".',
+          span,
+        ),
+      ];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validateIndexNullsDistinctKey(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition) return [];
+
+    var index = definition.indexes.firstWhere(
+      (index) => index.name == parentNodeName,
+    );
+
+    if (!index.unique) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.nullsDistinct}" property can only be used with unique indexes.',
           span,
         ),
       ];

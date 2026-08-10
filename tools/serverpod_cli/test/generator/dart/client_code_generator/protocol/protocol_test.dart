@@ -77,6 +77,20 @@ void main() {
       );
 
       test(
+        'then target table definitions are generated as a static getter.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            matches(
+              RegExp(
+                r'static List<.*TableDefinition> get targetTableDefinitions =>',
+              ),
+            ),
+          );
+        },
+      );
+
+      test(
         'then the protocol.dart does not expose client migrations directly.',
         () {
           expect(

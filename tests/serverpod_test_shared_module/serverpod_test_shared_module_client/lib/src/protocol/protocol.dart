@@ -26,14 +26,14 @@ class Protocol extends _i1.DatabaseSerializationManager {
 
   static final Protocol _instance = Protocol._();
 
-  static final List<_i1.TableDefinition> targetTableDefinitions = [
+  final Set<_i3.SerializationManager> _hostProtocols = {};
+
+  static List<_i1.TableDefinition> get targetTableDefinitions => [
     ..._i2.Protocol() is _i1.DatabaseSerializationManager
         ? (_i2.Protocol() as _i1.DatabaseSerializationManager)
               .getTargetTableDefinitions()
         : [],
   ];
-
-  final Set<_i3.SerializationManager> _hostProtocols = {};
 
   void registerHostProtocol(
     String projectName,

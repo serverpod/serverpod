@@ -272,6 +272,11 @@ class ClassYamlDefinition {
                 valueRestriction: BooleanValueRestriction().validate,
               ),
               ValidateNode(
+                Keyword.nullsDistinct,
+                keyRestriction: restrictions.validateIndexNullsDistinctKey,
+                valueRestriction: BooleanValueRestriction().validate,
+              ),
+              ValidateNode(
                 Keyword.operatorClass,
                 keyRestriction: restrictions.validateIndexOperatorClassKey,
                 valueRestriction: EnumValueRestriction(

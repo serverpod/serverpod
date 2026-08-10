@@ -33,5 +33,6 @@ export 'src/migrations/migration_artifacts.dart';
 export 'src/migrations/migration_artifacts_store/file_system.dart';
 export 'src/migrations/migration_artifacts_store/runtime_list.dart';
 export 'src/migrations/migration_manager.dart';
+export 'src/migrations/trailing_empty_versions.dart';
 export 'src/query_parameters.dart';
 export 'src/util/database_util.dart';

@@ -9,12 +9,9 @@ Client _createServiceClient() {
   MigrationTestUtils.setModuleName('serverpod_test_sqlite');
   MigrationTestUtils.setDatabaseDialect(DatabaseDialect.sqlite);
 
-  return Client(
-    'http://localhost:8081/',
-    // ignore: deprecated_member_use
-    authenticationKeyManager: TestServiceKeyManager(
+  return Client('http://localhost:8081/')
+    ..authKeyProvider = TestServiceKeyManager(
       '0',
       'super_SECRET_password',
-    ),
-  );
+    );
 }

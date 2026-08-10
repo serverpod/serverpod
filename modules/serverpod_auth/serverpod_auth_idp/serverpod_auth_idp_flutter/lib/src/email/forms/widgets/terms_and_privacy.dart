@@ -35,6 +35,8 @@ class TermsAndPrivacyText extends StatelessWidget {
     final texts = context.emailSignInTexts;
     final onTermsAndConditionsPressed = this.onTermsAndConditionsPressed;
     final onPrivacyPolicyPressed = this.onPrivacyPolicyPressed;
+    final textStyle =
+        Theme.of(context).textTheme.bodySmall ?? const TextStyle(fontSize: 12);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -45,50 +47,41 @@ class TermsAndPrivacyText extends StatelessWidget {
           onChanged: onCheckboxChanged,
         ),
         Expanded(
-          child: Theme(
-            data: Theme.of(context).copyWith(
-              textTheme: Theme.of(context).textTheme.copyWith(
-                bodyMedium: const TextStyle(
-                  fontSize: 12,
+          child: DefaultTextStyle.merge(
+            style: textStyle,
+            child: Wrap(
+              alignment: WrapAlignment.start,
+              crossAxisAlignment: WrapCrossAlignment.end,
+              spacing: 2,
+              runSpacing: -6,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Text(texts.termsIntro),
                 ),
-              ),
-            ),
-            child: DefaultTextStyle(
-              style: const TextStyle(
-                fontSize: 12,
-              ),
-              child: Wrap(
-                alignment: WrapAlignment.start,
-                crossAxisAlignment: WrapCrossAlignment.end,
-                spacing: 2,
-                runSpacing: -6,
-                children: [
+                if (onTermsAndConditionsPressed != null)
+                  HyperlinkTextButton(
+                    onPressed: onTermsAndConditionsPressed,
+                    label: texts.termsAndConditions,
+                    fontSize: textStyle.fontSize,
+                  ),
+                if (onTermsAndConditionsPressed != null &&
+                    onPrivacyPolicyPressed != null)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 4),
-                    child: Text(texts.termsIntro),
+                    child: Text(texts.andText),
                   ),
-                  if (onTermsAndConditionsPressed != null)
-                    HyperlinkTextButton(
-                      onPressed: onTermsAndConditionsPressed,
-                      label: texts.termsAndConditions,
-                    ),
-                  if (onTermsAndConditionsPressed != null &&
-                      onPrivacyPolicyPressed != null)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 4),
-                      child: Text(texts.andText),
-                    ),
-                  if (onPrivacyPolicyPressed != null)
-                    HyperlinkTextButton(
-                      onPressed: onPrivacyPolicyPressed,
-                      label: texts.privacyPolicy,
-                    ),
-                  const Padding(
-                    padding: EdgeInsets.only(bottom: 4),
-                    child: Text("."),
+                if (onPrivacyPolicyPressed != null)
+                  HyperlinkTextButton(
+                    onPressed: onPrivacyPolicyPressed,
+                    label: texts.privacyPolicy,
+                    fontSize: textStyle.fontSize,
                   ),
-                ],
-              ),
+                const Padding(
+                  padding: EdgeInsets.only(bottom: 4),
+                  child: Text("."),
+                ),
+              ],
             ),
           ),
         ),

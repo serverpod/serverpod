@@ -14,6 +14,9 @@ fields:
   isUnique: bool
   ### Whether this index is the one for the primary key.
   isPrimary: bool
+  ### Whether null values should be considered distinct in this unique index.
+  ### If null, the database default behavior is used.
+  nullsDistinct: bool?
   ### The predicate of this partial index, if it is one.
   predicate: String?
   ### The GIN index operator class, if it is a GIN index.
