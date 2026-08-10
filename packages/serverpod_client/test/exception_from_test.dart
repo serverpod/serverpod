@@ -63,14 +63,14 @@ void main() {
         statusCode: 499,
       );
 
-      test('then a base ServerpodClientNetworkException is created', () {
-        expect(exception, isA<ServerpodClientNetworkException>());
+      test('then a base ServerpodClientHttpException is created', () {
+        expect(exception, isA<ServerpodClientHttpException>());
       });
 
       test('then the message is an unknown error', () {
         expect(
           exception,
-          isA<ServerpodClientNetworkException>().having(
+          isA<ServerpodClientHttpException>().having(
             (e) => e.message,
             'message',
             'Unknown error, data: malformed data',
