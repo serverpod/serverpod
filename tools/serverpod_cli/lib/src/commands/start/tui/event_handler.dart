@@ -10,6 +10,14 @@ import 'tab_model.dart';
 
 int _actionCounter = 0;
 
+/// IDs of [TrackedOperation]s currently open because of a `scope_start`
+/// server log event, as opposed to a CLI-driven action started by
+/// [runTrackedAction]. Tracked separately because [TrackedOperation] (from
+/// the external `serverpod_tui` package) carries no origin of its own, and
+/// [clearOrphanedServerScopes] must only finalize the former: CLI actions
+/// already self-complete through their own future.
+final Set<String> _serverScopeIds = {};
+
 /// Dispatches a structured server log event to the TUI state.
 void handleServerLogEvent(TuiAppStateHolder holder, Event event) {
   if (event.extensionKind != 'ext.serverpod.log') return;
@@ -40,9 +48,11 @@ void handleServerLogEvent(TuiAppStateHolder holder, Event event) {
         id: id,
         label: label,
       );
+      _serverScopeIds.add(id);
 
     case 'scope_end':
       final id = data['id'] as String? ?? '';
+      _serverScopeIds.remove(id);
       final op = state.activeOperations.remove(id);
       if (op != null) {
         op.stopwatch.stop();
@@ -58,6 +68,35 @@ void handleServerLogEvent(TuiAppStateHolder holder, Event event) {
         );
       }
   }
+  holder.markDirty();
+}
+
+/// Finalizes every operation still open from a `scope_start` server log
+/// event, e.g. a stream endpoint whose connection was still open.
+///
+/// A hard-killed pod (a hot restart) never emits the matching `scope_end`
+/// for scopes that were open at the time, so without this those entries
+/// would stay pinned in [TuiState.activeOperations] forever, growing the
+/// TUI's stream/operation counter on every restart. Call this once the new
+/// server process has taken over - at that point no in-flight scope from
+/// the old process can possibly still complete normally.
+void clearOrphanedServerScopes(TuiAppStateHolder holder) {
+  if (_serverScopeIds.isEmpty) return;
+
+  final state = holder.state;
+  for (final id in _serverScopeIds) {
+    final op = state.activeOperations.remove(id);
+    if (op == null) continue;
+    op.stopwatch.stop();
+    state.logHistory.add(
+      CompletedOperation(
+        label: op.label,
+        success: false,
+        duration: op.stopwatch.elapsed,
+      ),
+    );
+  }
+  _serverScopeIds.clear();
   holder.markDirty();
 }
 

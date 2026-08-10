@@ -317,6 +317,71 @@ void main() {
     });
   });
 
+  group('Given clearOrphanedServerScopes', () {
+    test('when a scope is still open then it is finalized as failed', () {
+      handleServerLogEvent(
+        holder,
+        _logEvent({
+          'type': 'scope_start',
+          'id': 'scope_stream',
+          'label': 'GET /api/stream',
+        }),
+      );
+
+      clearOrphanedServerScopes(holder);
+
+      expect(state.activeOperations, isEmpty);
+      expect(state.logHistory, hasLength(1));
+      final op = state.logHistory.first as CompletedOperation;
+      expect(op.label, 'GET /api/stream');
+      expect(op.success, isFalse);
+    });
+
+    test('when no scopes are open then it does nothing', () {
+      clearOrphanedServerScopes(holder);
+
+      expect(state.activeOperations, isEmpty);
+      expect(state.logHistory, isEmpty);
+    });
+
+    test('when a scope already completed then it is not finalized twice', () {
+      handleServerLogEvent(
+        holder,
+        _logEvent({
+          'type': 'scope_start',
+          'id': 'scope_done',
+          'label': 'GET /api/data',
+        }),
+      );
+      handleServerLogEvent(
+        holder,
+        _logEvent({
+          'type': 'scope_end',
+          'id': 'scope_done',
+          'success': true,
+        }),
+      );
+
+      clearOrphanedServerScopes(holder);
+
+      expect(state.logHistory, hasLength(1));
+    });
+
+    test('when a CLI action is in flight then it is left untouched', () {
+      state.serverReady = true;
+      final completer = Completer<void>();
+      runTrackedAction(holder, 'Restarting server', () => completer.future);
+
+      clearOrphanedServerScopes(holder);
+
+      expect(state.activeOperations, hasLength(1));
+      expect(state.activeOperations.values.first.label, 'Restarting server');
+      expect(state.actionBusy, isTrue);
+
+      completer.complete();
+    });
+  });
+
   group('Given a non-serverpod extension event', () {
     test('when dispatched then ignores it', () {
       final event = Event(

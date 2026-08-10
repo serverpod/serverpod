@@ -1369,6 +1369,9 @@ Future<void> _runTuiBackend({
         // so a degraded->running transition lights up the action buttons.
         holder.state.serverReady = true;
         holder.state.serverStartable = false;
+        // The previous process (if any) is gone, so none of its open scopes
+        // (e.g. a stream endpoint) can still emit their `scope_end`.
+        clearOrphanedServerScopes(holder);
         holder.markDirty();
         final vmService = server.vmService;
         if (vmService == null) return;
