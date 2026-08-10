@@ -1,4 +1,3 @@
-import 'package:serverpod_shared/log.dart' hide log;
 import 'package:serverpod_tui/serverpod_tui.dart';
 
 import '../../../util/serverpod_cli_logger.dart';
@@ -84,15 +83,4 @@ void _completeTrackedAction(
     );
   }
   holder.markDirty();
-}
-
-LogLevel parseLogLevel(String level) {
-  return switch (level) {
-    'debug' => LogLevel.debug,
-    'info' => LogLevel.info,
-    'warning' || 'warn' => LogLevel.warning,
-    'error' => LogLevel.error,
-    'fatal' => LogLevel.fatal,
-    _ => LogLevel.info,
-  };
 }
