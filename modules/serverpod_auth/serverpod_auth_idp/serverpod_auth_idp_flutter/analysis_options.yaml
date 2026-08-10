@@ -1,5 +1,9 @@
 include: package:serverpod_lints/public_flutter.yaml
 
+analyzer:
+  exclude:
+    - storybook/**
+
 linter:
   rules:
     prefer_const_constructors: true

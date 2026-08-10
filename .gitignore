@@ -27,7 +27,6 @@ doc/api/
 .fvm/
 build/
 ios/.generated/
-pubspec.lock
 .flutter-plugins
 .flutter-plugins-dependencies
 .dart_tool

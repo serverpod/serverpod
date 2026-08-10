@@ -78,7 +78,7 @@ extension GenerateCode on Library {
 ///
 /// `code_builder` emits enum constants without one, and the shape the
 /// formatter then produces depends on which `dart_style` version formats it.
-/// Serverpod supports Dart 3.10 and up, so the same generated file has to
+/// Serverpod supports Dart 3.11 and up, so the same generated file has to
 /// survive `dart format` from every SDK in that range — including the ones
 /// whose bundled `dart_style` predates the fix for
 /// https://github.com/dart-lang/dart_style/issues/1785.

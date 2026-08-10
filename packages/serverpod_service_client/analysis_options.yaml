@@ -5,5 +5,4 @@ linter:
     # Temporary disable the following so that each can be fixed one by one.
     directives_ordering: false
     prefer_final_locals: false
-    prefer_final_parameters: false
     sort_pub_dependencies: false

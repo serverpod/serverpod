@@ -40,7 +40,7 @@ jobs:
       - name: Bootstrap
         uses: ./.github/actions/retry
         with:
-          command: melos bootstrap
+          command: dart pub get
 
       - name: Generate completion specs
         run: util/generate_completion

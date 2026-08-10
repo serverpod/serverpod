@@ -9,7 +9,6 @@ linter:
     avoid_escaping_inner_quotes: false
     prefer_final_in_for_each: false
     prefer_final_locals: false
-    prefer_final_parameters: false
     sort_pub_dependencies: false
 
 formatter:
