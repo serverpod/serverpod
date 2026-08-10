@@ -65,6 +65,12 @@ dev_dependencies:
   melos: ^8.0.0
   sort_pubspec_dependencies: ^0.0.2
 
+dependency_overrides:
+  serverpod_auth_client:
+    path: modules/legacy/serverpod_auth/serverpod_auth_client
+  serverpod_auth_server:
+    path: modules/legacy/serverpod_auth/serverpod_auth_server
+
 melos:
   scripts:
     lint:
