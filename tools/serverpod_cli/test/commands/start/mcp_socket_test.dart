@@ -1,10 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dart_mcp/client.dart';
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/commands/start/log_history.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_socket.dart';
+import 'package:serverpod_cli/src/mcp/socket_directory.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
+import 'package:vm_service/vm_service.dart';
 
 void main() {
   group('Given an McpSocketServer', skip: !hasUnixSocketSupport(), () {
@@ -63,7 +67,12 @@ void main() {
       'when a client connects, '
       'then it can send and receive MCP messages',
       () async {
-        server.connect(onApplyMigration: () async {});
+        server.connect(
+          onApplyMigration: () async {},
+          getLogHistory: () => [],
+          getFlutterAppIds: () => [],
+          getFlutterLogHistory: (_) => [],
+        );
 
         final client = await Socket.connect(
           InternetAddress(server.socketPath, type: InternetAddressType.unix),
@@ -102,6 +111,111 @@ void main() {
       },
     );
   });
+
+  group(
+    'Given an McpSocketServer with retained session logs and no TUI,',
+    skip: !hasUnixSocketSupport(),
+    () {
+      late Directory tempServerDir;
+      late McpSocketServer server;
+      late ServerConnection connection;
+
+      setUp(() async {
+        // Short server-dir basename keeps the resulting socket path under
+        // macOS' ~104 char sun_path limit (the systemTemp prefix can eat ~50).
+        tempServerDir = await Directory.systemTemp.createTemp('mst');
+        server = McpSocketServer(serverDir: tempServerDir.path);
+        await server.start();
+
+        final history = StartLogHistory();
+        history.recordServerLogEvent(
+          Event(
+            kind: EventKind.kExtension,
+            timestamp: 0,
+            extensionKind: 'ext.serverpod.log',
+            extensionData: ExtensionData.parse({
+              'type': 'log',
+              'level': 'info',
+              'message': 'Server log retained without a TUI.',
+              'timestamp': '2026-08-10T12:00:00.000Z',
+            }),
+          ),
+        );
+        history.addFlutterLine(
+          'admin',
+          'Flutter log retained without a TUI.',
+        );
+        server.connect(
+          onApplyMigration: () async {},
+          getLogHistory: () => history.serverEntries.toList(),
+          getFlutterAppIds: () => ['admin'],
+          getFlutterLogHistory: (appId) =>
+              history.flutterLinesFor(appId).toList(),
+        );
+
+        final socket = await Socket.connect(
+          InternetAddress(server.socketPath, type: InternetAddressType.unix),
+          0,
+        );
+        final client = MCPClient(
+          Implementation(name: 'test-client', version: '0.1.0'),
+        );
+        connection = client.connectServer(socketChannel(socket));
+        await connection.initialize(
+          InitializeRequest(
+            protocolVersion: ProtocolVersion.latestSupported,
+            capabilities: ClientCapabilities(),
+            clientInfo: Implementation(
+              name: 'test-client',
+              version: '0.1.0',
+            ),
+          ),
+        );
+      });
+
+      tearDown(() async {
+        await connection.shutdown();
+        await server.close();
+        await _safeDelete(tempServerDir);
+      });
+
+      test(
+        'when tail_server_logs is called, '
+        'then it returns the retained server log.',
+        () async {
+          final result = await connection.callTool(
+            CallToolRequest(name: 'tail_server_logs'),
+          );
+
+          expect(result.isError, isNull);
+          final logs =
+              jsonDecode((result.content.single as TextContent).text)
+                  as List<dynamic>;
+          expect(logs, hasLength(1));
+          expect(
+            (logs.single as Map<String, dynamic>)['message'],
+            'Server log retained without a TUI.',
+          );
+        },
+      );
+
+      test(
+        'when tail_flutter_logs is called, '
+        'then it returns the retained Flutter log.',
+        () async {
+          final result = await connection.callTool(
+            CallToolRequest(name: 'tail_flutter_logs'),
+          );
+
+          expect(result.isError, isNull);
+          expect(
+            jsonDecode((result.content.single as TextContent).text),
+            ['Flutter log retained without a TUI.'],
+          );
+        },
+      );
+    },
+  );
 
   group(
     'Given a stale socket file left behind by a previous run',
