@@ -55,11 +55,7 @@ void main() {
     setUp(() {
       client = TestServerpodClient(
         host: Uri.parse('http://localhost:8080'),
-        requestDelegate: ServerpodClientRequestDelegateImpl(
-          connectionTimeout: const Duration(seconds: 20),
-          serializationManager: TestSerializationManager(),
-          httpClientOverride: _NonBrowserHttpClient(),
-        ),
+        httpClientOverride: _NonBrowserHttpClient(),
       );
     });
 

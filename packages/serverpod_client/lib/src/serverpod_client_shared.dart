@@ -3,7 +3,6 @@
 import 'dart:async';
 
 import 'package:http/http.dart' as http;
-import 'package:meta/meta.dart';
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:serverpod_client/src/client_method_stream_manager.dart';
 import 'package:serverpod_client/src/method_stream/method_stream_connection_details.dart';
@@ -231,7 +230,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
     this.onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
     http.Client? httpClientOverride,
-    @visibleForTesting ServerpodClientRequestDelegate? requestDelegate,
   }) : host = host.endsWith('/') ? host : '$host/',
        connectionTimeout = connectionTimeout ?? const Duration(seconds: 20),
        streamingConnectionTimeout =
@@ -240,14 +238,12 @@ abstract class ServerpodClientShared extends EndpointCaller {
       this.host.startsWith('http://') || this.host.startsWith('https://'),
       'host must include protocol, eg: https://example.com/',
     );
-    _requestDelegate =
-        requestDelegate ??
-        ServerpodClientRequestDelegateImpl(
-          connectionTimeout: this.connectionTimeout,
-          serializationManager: serializationManager,
-          securityContext: securityContext,
-          httpClientOverride: httpClientOverride,
-        );
+    _requestDelegate = ServerpodClientRequestDelegateImpl(
+      connectionTimeout: this.connectionTimeout,
+      serializationManager: serializationManager,
+      securityContext: securityContext,
+      httpClientOverride: httpClientOverride,
+    );
     disconnectStreamsOnLostInternetConnection ??= false;
     _disconnectMethodStreamsOnLostInternetConnection =
         disconnectStreamsOnLostInternetConnection;
