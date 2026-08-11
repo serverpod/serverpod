@@ -26,14 +26,11 @@ class JwtTokenManager implements TokenManager {
   JwtTokenManager({
     required final JwtConfig config,
     final AuthUsers authUsers = const AuthUsers(),
-    final Jwt? jwt,
   }) : _config = config,
-       jwt =
-           jwt ??
-           Jwt(
-             config: config,
-             authUsers: authUsers,
-           );
+       jwt = Jwt(
+         config: config,
+         authUsers: authUsers,
+       );
 
   @override
   Future<AuthSuccess> issueToken(
