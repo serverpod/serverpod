@@ -884,7 +884,7 @@ class Serverpod {
       if (!serversStarted) {
         throw ExitException(
           1,
-          'Failed to start the Serverpod servers, see logs for details.',
+          'Failed to start the Serverpod servers. Aborting.',
         );
       }
 
