@@ -346,6 +346,36 @@ void main() {
       });
     },
   );
+
+  group(
+    'Given a JwtAuthKeyProvider in cookie mode on a platform without '
+    'cross-tab locks',
+    () {
+      setUp(() {
+        provider = JwtAuthKeyProvider(
+          getAuthInfo: () async => storedAuthInfo,
+          onRefreshAuthInfo: (authSuccess) async {
+            storedAuthInfo = authSuccess;
+          },
+          refreshEndpoint: refreshEndpoint,
+          usesCookieAuth: () => true,
+        );
+        storedAuthInfo = jwtAuthSuccess;
+      });
+
+      test(
+        'when forcing a refresh then it throws a StateError before calling '
+        'the server.',
+        () async {
+          await expectLater(
+            provider.refreshAuthKey(force: true),
+            throwsA(isA<StateError>()),
+          );
+          expect(refreshEndpoint.callCount, 0);
+        },
+      );
+    },
+  );
 }
 
 class TestEndpointRefreshJwtToken extends EndpointJwtRefresh {

@@ -177,6 +177,30 @@ class EndpointAuthTest extends _i2.EndpointRef {
         'getMaxConcurrentJwtRefreshes',
         {},
       );
+
+  _i3.Future<int> getJwtRefreshCallCount() => caller.callServerEndpoint<int>(
+    'authTest',
+    'getJwtRefreshCallCount',
+    {},
+  );
+
+  /// Returns the auth-mode marker and whether an authorization header was
+  /// received, as seen by the server on this authenticated call.
+  _i3.Future<List<String?>> getReceivedAuthHeaders() =>
+      caller.callServerEndpoint<List<String?>>(
+        'authTest',
+        'getReceivedAuthHeaders',
+        {},
+      );
+
+  /// Like [getReceivedAuthHeaders], for an unauthenticated call.
+  _i3.Future<List<String?>> getReceivedAuthHeadersUnauthenticated() =>
+      caller.callServerEndpoint<List<String?>>(
+        'authTest',
+        'getReceivedAuthHeadersUnauthenticated',
+        {},
+        authenticated: false,
+      );
 }
 
 /// {@category Endpoint}

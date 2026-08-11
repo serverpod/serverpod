@@ -4,10 +4,12 @@ import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 class JwtRefreshEndpoint extends RefreshJwtTokensEndpoint {
   static int _activeRefreshes = 0;
   static int maxConcurrentRefreshes = 0;
+  static int refreshCallCount = 0;
 
   static void resetConcurrencyTracking() {
     _activeRefreshes = 0;
     maxConcurrentRefreshes = 0;
+    refreshCallCount = 0;
   }
 
   @unauthenticatedClientCall
@@ -16,6 +18,7 @@ class JwtRefreshEndpoint extends RefreshJwtTokensEndpoint {
     final Session session, {
     final String? refreshToken,
   }) async {
+    refreshCallCount++;
     _activeRefreshes++;
     if (_activeRefreshes > maxConcurrentRefreshes) {
       maxConcurrentRefreshes = _activeRefreshes;

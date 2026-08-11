@@ -129,6 +129,32 @@ class AuthTestEndpoint extends Endpoint {
   Future<int> getMaxConcurrentJwtRefreshes(final Session session) async {
     return JwtRefreshEndpoint.maxConcurrentRefreshes;
   }
+
+  Future<int> getJwtRefreshCallCount(final Session session) async {
+    return JwtRefreshEndpoint.refreshCallCount;
+  }
+
+  /// Returns the auth-mode marker and whether an authorization header was
+  /// received, as seen by the server on this authenticated call.
+  Future<List<String?>> getReceivedAuthHeaders(final Session session) async {
+    return _receivedAuthHeaders(session);
+  }
+
+  /// Like [getReceivedAuthHeaders], for an unauthenticated call.
+  @unauthenticatedClientCall
+  Future<List<String?>> getReceivedAuthHeadersUnauthenticated(
+    final Session session,
+  ) async {
+    return _receivedAuthHeaders(session);
+  }
+
+  static List<String?> _receivedAuthHeaders(final Session session) {
+    final headers = session.request?.headers;
+    return [
+      headers?[webAuthModeHeaderName]?.firstOrNull,
+      headers?['authorization'] == null ? null : 'present',
+    ];
+  }
 }
 
 class UnauthenticatedRequireLoginAuthTestEndpoint extends Endpoint {

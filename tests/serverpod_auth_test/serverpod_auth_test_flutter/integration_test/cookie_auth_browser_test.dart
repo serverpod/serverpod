@@ -165,6 +165,181 @@ void main() {
       expect(await firstClient.authTest.checkSession(userId), isTrue);
     },
   );
+
+  testWidgets(
+    'Given an SAS cookie session '
+    'when calling the server '
+    'then the wire carries the auth-mode marker and no header credentials.',
+    (_) async {
+      final client = _newClient(TestStorage());
+      addTearDown(client.close);
+
+      final userId = await client.authTest.createTestUser();
+      await client.auth.updateSignedInUser(
+        await client.authTest.createSasToken(userId),
+      );
+
+      expect(
+        await client.authTest.getReceivedAuthHeaders(),
+        ['cookie', null],
+      );
+      expect(
+        await client.authTest.getReceivedAuthHeadersUnauthenticated(),
+        ['cookie-transport', null],
+      );
+    },
+  );
+
+  testWidgets(
+    'Given a JWT cookie session '
+    'when calling the server '
+    'then the wire carries the auth-mode marker and the bearer access token.',
+    (_) async {
+      final client = _newClient(TestStorage());
+      addTearDown(client.close);
+
+      final userId = await client.authTest.createTestUser();
+      await client.auth.updateSignedInUser(
+        await client.authTest.createJwtToken(userId),
+      );
+
+      expect(
+        await client.authTest.getReceivedAuthHeaders(),
+        ['cookie', 'present'],
+      );
+    },
+  );
+
+  testWidgets(
+    'Given a cookie-auth client '
+    'when applying a JWT auth success that carries a body refresh token '
+    'then it is rejected with a StateError.',
+    (_) async {
+      final storage = TestStorage();
+      final client = _newClient(storage);
+      addTearDown(client.close);
+
+      await expectLater(
+        client.auth.updateSignedInUser(_leakedAuthSuccess(
+          authStrategy: AuthStrategy.jwt.name,
+          token: 'access-token',
+          refreshToken: 'leaked-refresh-token',
+        )),
+        throwsA(isA<StateError>()),
+      );
+      expect(await storage.get(), isNull);
+      expect(client.auth.authInfo, isNull);
+    },
+  );
+
+  testWidgets(
+    'Given a cookie-auth client '
+    'when applying a session auth success that carries a body token '
+    'then it is rejected with a StateError.',
+    (_) async {
+      final storage = TestStorage();
+      final client = _newClient(storage);
+      addTearDown(client.close);
+
+      await expectLater(
+        client.auth.updateSignedInUser(_leakedAuthSuccess(
+          authStrategy: AuthStrategy.session.name,
+          token: 'leaked-session-token',
+        )),
+        throwsA(isA<StateError>()),
+      );
+      expect(await storage.get(), isNull);
+      expect(client.auth.authInfo, isNull);
+    },
+  );
+
+  testWidgets(
+    'Given a JWT cookie session with an open method stream '
+    'when the access token is refreshed for the same user '
+    'then the stream stays open.',
+    (_) async {
+      final client = _newClient(TestStorage());
+      addTearDown(client.close);
+
+      final userId = await client.authTest.createTestUser();
+      await client.auth.updateSignedInUser(
+        await client.authTest.createJwtToken(userId),
+      );
+
+      final firstValue = Completer<String>();
+      final done = Completer<void>();
+      final subscription = client.authenticatedStreamingTest
+          .watchAuthenticatedUserId()
+          .listen(
+            (value) {
+              if (!firstValue.isCompleted) firstValue.complete(value);
+            },
+            onDone: done.complete,
+          );
+      expect(await firstValue.future, userId.toString());
+
+      expect(
+        await client.auth.refreshAuthKey(force: true),
+        RefreshAuthKeyResult.success,
+      );
+
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+      expect(done.isCompleted, isFalse);
+      await subscription.cancel();
+    },
+  );
+
+  testWidgets(
+    'Given a revoked JWT cookie session restored from shared storage '
+    'when refreshing repeatedly '
+    'then only the first refresh reaches the server.',
+    (_) async {
+      final firstStorage = TestStorage();
+      final firstClient = _newClient(firstStorage);
+      final secondStorage = TestStorage();
+      final secondClient = _newClient(secondStorage);
+      addTearDown(firstClient.close);
+      addTearDown(secondClient.close);
+
+      final userId = await firstClient.authTest.createTestUser();
+      await firstClient.auth.updateSignedInUser(
+        await firstClient.authTest.createJwtToken(userId),
+      );
+      await firstClient.authTest.deleteJwtRefreshTokens(userId);
+
+      // The persisted copy holds no access token, so a non-forced refresh
+      // must consult the (revoked) refresh cookie.
+      await secondStorage.set(await firstStorage.get());
+      await secondClient.auth.restore();
+      await firstClient.authTest.resetJwtRefreshConcurrency();
+
+      expect(
+        await secondClient.auth.refreshAuthKey(),
+        RefreshAuthKeyResult.failedUnauthorized,
+      );
+      expect(await firstClient.authTest.getJwtRefreshCallCount(), 1);
+
+      expect(
+        await secondClient.auth.refreshAuthKey(),
+        RefreshAuthKeyResult.failedUnauthorized,
+      );
+      expect(await firstClient.authTest.getJwtRefreshCallCount(), 1);
+    },
+  );
+}
+
+AuthSuccess _leakedAuthSuccess({
+  required String authStrategy,
+  required String token,
+  String? refreshToken,
+}) {
+  return AuthSuccess(
+    authUserId: UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+    authStrategy: authStrategy,
+    token: token,
+    refreshToken: refreshToken,
+    scopeNames: const {},
+  );
 }
 
 Client _newClient(TestStorage storage) {

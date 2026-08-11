@@ -345,6 +345,36 @@ class Endpoints extends _i1.EndpointDispatch {
               ) async => (endpoints['authTest'] as _i3.AuthTestEndpoint)
                   .getMaxConcurrentJwtRefreshes(session),
         ),
+        'getJwtRefreshCallCount': _i1.MethodConnector(
+          name: 'getJwtRefreshCallCount',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['authTest'] as _i3.AuthTestEndpoint)
+                  .getJwtRefreshCallCount(session),
+        ),
+        'getReceivedAuthHeaders': _i1.MethodConnector(
+          name: 'getReceivedAuthHeaders',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['authTest'] as _i3.AuthTestEndpoint)
+                  .getReceivedAuthHeaders(session),
+        ),
+        'getReceivedAuthHeadersUnauthenticated': _i1.MethodConnector(
+          name: 'getReceivedAuthHeadersUnauthenticated',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['authTest'] as _i3.AuthTestEndpoint)
+                  .getReceivedAuthHeadersUnauthenticated(session),
+        ),
         'checkSessionUnauthenticatedStream': _i1.MethodStreamConnector(
           name: 'checkSessionUnauthenticatedStream',
           params: {},
