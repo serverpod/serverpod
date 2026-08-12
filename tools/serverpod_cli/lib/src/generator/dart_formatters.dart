@@ -58,7 +58,7 @@ final class GeneratedDartFormatters {
     }
 
     if (warnings.isNotEmpty) {
-      log.debug(warnings.join('\n'));
+      log.warning(warnings.join('\n'));
     }
   }
 

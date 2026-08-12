@@ -14,7 +14,7 @@ import '../test_util/builders/generator_config_builder.dart';
 void main() {
   late Directory tempDirectory;
   late Directory serverDirectory;
-  late _DebugCapturingLogger logger;
+  late _WarningCapturingLogger logger;
 
   setUp(() async {
     tempDirectory = await Directory.systemTemp.createTemp(
@@ -26,7 +26,7 @@ void main() {
     );
     await serverDirectory.create(recursive: true);
 
-    logger = _DebugCapturingLogger();
+    logger = _WarningCapturingLogger();
     initializeLoggerWith(logger);
   });
 
@@ -188,7 +188,7 @@ formatter:
         reason: 'dart_style must not write to stderr itself.',
       );
       expect(
-        logger.debugMessages.single,
+        logger.warnings.single,
         contains('Warning: "trailing_commas" option'),
       );
     },
@@ -263,7 +263,7 @@ formatter:
       expect(formatter.pageWidth, 120);
       expect(formatter.trailingCommas, TrailingCommas.preserve);
       expect(
-        logger.debugMessages,
+        logger.warnings,
         isEmpty,
         reason: 'The include resolves, so dart_style reports no error.',
       );
@@ -355,12 +355,12 @@ Future<bool> _makeUnsearchable(Directory directory) async {
 }
 
 /// A logger that records the debug messages it is given and prints nothing.
-class _DebugCapturingLogger extends VoidLogger {
-  final List<String> debugMessages = [];
+class _WarningCapturingLogger extends VoidLogger {
+  final List<String> warnings = [];
 
   @override
-  void debug(String message, {bool newParagraph = false, LogType? type}) {
-    debugMessages.add(message);
+  void warning(String message, {bool newParagraph = false, LogType? type}) {
+    warnings.add(message);
   }
 }
 
