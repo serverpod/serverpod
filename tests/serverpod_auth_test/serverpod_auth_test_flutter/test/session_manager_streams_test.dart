@@ -12,8 +12,9 @@ void main() {
     'when the signed-in user changes '
     'then the stream stays open.',
     () async {
-      final client = Client('http://localhost:8080/')
-        ..authSessionManager = FlutterAuthSessionManager(storage: TestStorage());
+      final client = Client(
+        'http://localhost:8080/',
+      )..authSessionManager = FlutterAuthSessionManager(storage: TestStorage());
       addTearDown(client.close);
 
       final userA = await client.authTest.createTestUser();

@@ -317,5 +317,9 @@ _SetCookie _parseSetCookie(http.Response response) {
           ? segment.substring(segment.indexOf('=') + 1)
           : '',
   };
-  return _SetCookie(nameAndValue.first, nameAndValue.sublist(1).join('='), attributes);
+  return _SetCookie(
+    nameAndValue.first,
+    nameAndValue.sublist(1).join('='),
+    attributes,
+  );
 }

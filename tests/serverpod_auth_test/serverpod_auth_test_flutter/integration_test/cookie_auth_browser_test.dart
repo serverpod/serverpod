@@ -220,11 +220,13 @@ void main() {
       addTearDown(client.close);
 
       await expectLater(
-        client.auth.updateSignedInUser(_leakedAuthSuccess(
-          authStrategy: AuthStrategy.jwt.name,
-          token: 'access-token',
-          refreshToken: 'leaked-refresh-token',
-        )),
+        client.auth.updateSignedInUser(
+          _leakedAuthSuccess(
+            authStrategy: AuthStrategy.jwt.name,
+            token: 'access-token',
+            refreshToken: 'leaked-refresh-token',
+          ),
+        ),
         throwsA(isA<StateError>()),
       );
       expect(await storage.get(), isNull);
@@ -242,10 +244,12 @@ void main() {
       addTearDown(client.close);
 
       await expectLater(
-        client.auth.updateSignedInUser(_leakedAuthSuccess(
-          authStrategy: AuthStrategy.session.name,
-          token: 'leaked-session-token',
-        )),
+        client.auth.updateSignedInUser(
+          _leakedAuthSuccess(
+            authStrategy: AuthStrategy.session.name,
+            token: 'leaked-session-token',
+          ),
+        ),
         throwsA(isA<StateError>()),
       );
       expect(await storage.get(), isNull);
