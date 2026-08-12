@@ -5,6 +5,8 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/start/flutter_app_manager.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_log_event.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_process.dart'
+    show flutterDeviceWebServerWithBrowser;
 import 'package:serverpod_cli/src/commands/start/package_dependency_tracker.dart';
 import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:serverpod_shared/log.dart' show LogLevel;
@@ -54,12 +56,13 @@ class _AppSpec {
     this.id, {
     // `web-server` (no browser) so launches never spawn a real browser and
     // the VM-service connect waits without a timeout, as most manager tests
-    // expect. Pass a desktop device (e.g. `linux`) for non-web scenarios.
+    // expect. Pass a desktop device (e.g. `linux`) for non-web scenarios, or
+    // null to omit the `device` line from the app's pubspec entry.
     this.device = 'web-server',
   });
 
   final String id;
-  final String device;
+  final String? device;
 
   /// Directory (and package) name of the fabricated Flutter app.
   String get dirName => '${id.replaceAll('-', '_')}_flutter';
@@ -100,6 +103,7 @@ class _ManagerFixture {
     List<String> shimArgs = const [],
     bool fakeVmService = false,
     bool initialize = true,
+    Map<String, String> environment = const {},
     void Function(FlutterAppConfig app, String stage)? onProgress,
     void Function(FlutterAppConfig app, String? url)? onReady,
     void Function(FlutterAppConfig app)? onStop,
@@ -122,7 +126,9 @@ class _ManagerFixture {
     for (final spec in apps) {
       appEntries.writeln('    ${spec.id}:');
       appEntries.writeln('      path: ../${spec.dirName}');
-      appEntries.writeln('      device: ${spec.device}');
+      if (spec.device != null) {
+        appEntries.writeln('      device: ${spec.device}');
+      }
     }
     final serverPubspecFile = File(p.join(serverDir.path, 'pubspec.yaml'));
     serverPubspecFile.writeAsStringSync('''
@@ -142,6 +148,7 @@ $appEntries''');
     final manager = FlutterAppManager(
       projectName: 'project',
       launchFlutterApp: false,
+      environmentOverrideForTesting: environment,
       serverPubspecFile: serverPubspecFile,
       serverPackageDirectoryPathParts: p.split(serverDir.path),
       serverpodToolDir: p.join(serverDir.path, '.dart_tool', 'serverpod'),
@@ -200,6 +207,22 @@ dependencies:
     sdk: flutter
 ''');
     return dir;
+  }
+
+  /// The IDE device info file the VS Code extension would write.
+  File get ideDeviceInfoFile => File(
+    p.join(
+      serverDir.path,
+      '.dart_tool',
+      'serverpod',
+      FlutterAppManager.ideDeviceInfoFile,
+    ),
+  );
+
+  void writeIdeDeviceInfo(String content) {
+    ideDeviceInfoFile
+      ..createSync(recursive: true)
+      ..writeAsStringSync(content);
   }
 
   Future<void> dispose() async {
@@ -732,6 +755,270 @@ serverpod:
           expect(f.manager.dependencyTrackerFor('project'), isNotNull);
         },
       );
+    },
+  );
+
+  test(
+    'Given a FlutterAppManager with a single app configured without a device '
+    'and SERVERPOD_LAUNCHED_FROM_IDE environment variable is enabled, '
+    'and an IDE device info file, '
+    'when the app is launched, '
+    'then the IDE device info drives the spawn device',
+    () async {
+      final f = await _ManagerFixture.create(
+        apps: const [_AppSpec('project', device: null)],
+        shim: 'never_publishes_uri.dart',
+        environment: const {'SERVERPOD_LAUNCHED_FROM_IDE': 'true'},
+      );
+
+      addTearDown(() => f.dispose());
+
+      f.writeIdeDeviceInfo('{"deviceId": "linux"}');
+
+      expect(f.manager.ideDevice(), 'linux');
+
+      await f.manager.launch('project');
+      expect(f.manager.processFor('project')!.device, 'linux');
+    },
+  );
+
+  test(
+    'Given a FlutterAppManager with a single app configured with a device '
+    'and SERVERPOD_LAUNCHED_FROM_IDE environment variable is enabled, '
+    'and an IDE device info file, '
+    'when the app is launched, '
+    'then the configured device is used',
+    () async {
+      final f = await _ManagerFixture.create(
+        apps: const [_AppSpec('project', device: 'web-server')],
+        shim: 'never_publishes_uri.dart',
+        environment: const {'SERVERPOD_LAUNCHED_FROM_IDE': 'true'},
+      );
+
+      addTearDown(() => f.dispose());
+
+      f.writeIdeDeviceInfo('{"deviceId": "linux"}');
+
+      await f.manager.launch('project');
+      expect(f.manager.processFor('project')!.device, 'web-server');
+    },
+  );
+
+  test(
+    'Given a FlutterAppManager with a single app configured without a device '
+    'and SERVERPOD_LAUNCHED_FROM_IDE environment variable is enabled, '
+    'and an IDE device info file, '
+    'when a device is added to the pubspec while running, '
+    'then it takes over on the next launch',
+    () async {
+      final f = await _ManagerFixture.create(
+        apps: const [_AppSpec('project', device: null)],
+        shim: 'never_publishes_uri.dart',
+        environment: const {'SERVERPOD_LAUNCHED_FROM_IDE': 'true'},
+      );
+
+      addTearDown(() => f.dispose());
+
+      f.writeIdeDeviceInfo('{"deviceId": "linux"}');
+
+      await f.manager.launch('project');
+      expect(f.manager.processFor('project')!.device, 'linux');
+
+      f.serverPubspecFile.writeAsStringSync('''
+name: project_server
+serverpod:
+  flutter_apps:
+    project:
+      path: ../project_flutter
+      device: web-server
+''');
+      await f.manager.loadApps();
+      await f.manager.stop('project');
+      await f.manager.launch('project');
+
+      expect(f.manager.processFor('project')!.device, 'web-server');
+    },
+  );
+
+  test(
+    'Given a FlutterAppManager with multiple configured apps '
+    'and SERVERPOD_LAUNCHED_FROM_IDE environment variable is enabled, '
+    'and an IDE device info file, '
+    'when an app is launched, '
+    'then the IDE device info is ignored',
+    () async {
+      final f = await _ManagerFixture.create(
+        apps: const [
+          _AppSpec('web', device: null),
+          _AppSpec('admin', device: null),
+        ],
+        shim: 'never_publishes_uri.dart',
+        environment: const {'SERVERPOD_LAUNCHED_FROM_IDE': 'true'},
+      );
+
+      addTearDown(() => f.dispose());
+
+      f.writeIdeDeviceInfo('{"deviceId": "linux"}');
+
+      expect(f.manager.ideDevice(), isNull);
+
+      await f.manager.launch('web');
+      expect(
+        f.manager.processFor('web')!.device,
+        flutterDeviceWebServerWithBrowser,
+      );
+    },
+  );
+
+  test(
+    'Given a FlutterAppManager with a malformed IDE device info file, '
+    'and SERVERPOD_LAUNCHED_FROM_IDE environment variable is enabled, '
+    'when the IDE device is read, '
+    'then it returns null',
+    () async {
+      final f = await _ManagerFixture.create(
+        apps: const [_AppSpec('project', device: null)],
+        environment: const {'SERVERPOD_LAUNCHED_FROM_IDE': 'true'},
+      );
+
+      addTearDown(() => f.dispose());
+
+      f.writeIdeDeviceInfo('not json');
+
+      expect(f.manager.ideDevice(), isNull);
+    },
+  );
+
+  test(
+    'Given a FlutterAppManager with an IDE device info file, '
+    'and SERVERPOD_LAUNCHED_FROM_IDE environment variable is enabled, '
+    'when the manager is disposed, '
+    'then the IDE device info file is removed',
+    () async {
+      final f = await _ManagerFixture.create(
+        apps: const [_AppSpec('project', device: null)],
+        environment: const {'SERVERPOD_LAUNCHED_FROM_IDE': 'true'},
+      );
+
+      f.writeIdeDeviceInfo('{"deviceId": "linux"}');
+      final infoFile = File(
+        p.join(
+          f.serverDir.path,
+          '.dart_tool',
+          'serverpod',
+          FlutterAppManager.ideDeviceInfoFile,
+        ),
+      );
+      expect(infoFile.existsSync(), isTrue);
+
+      await f.manager.dispose();
+
+      expect(infoFile.existsSync(), isFalse);
+      expect(f.manager.ideDevice(), isNull);
+    },
+  );
+
+  test(
+    'Given a FlutterAppManager with an IDE device info file, '
+    'and SERVERPOD_LAUNCHED_FROM_IDE environment variable is disabled, '
+    'when an app is launched, '
+    'then the IDE device info is ignored and the file is left in place',
+    () async {
+      final f = await _ManagerFixture.create(
+        apps: const [_AppSpec('project', device: null)],
+        shim: 'never_publishes_uri.dart',
+        environment: const {'SERVERPOD_LAUNCHED_FROM_IDE': 'false'},
+      );
+
+      addTearDown(() => f.dispose());
+
+      f.writeIdeDeviceInfo('{"deviceId": "linux"}');
+
+      expect(f.manager.ideDevice(), isNull);
+
+      await f.manager.launch('project');
+      expect(
+        f.manager.processFor('project')!.device,
+        flutterDeviceWebServerWithBrowser,
+      );
+      expect(
+        f.ideDeviceInfoFile.existsSync(),
+        isTrue,
+        reason:
+            'a terminal run must not remove a file that may belong to a '
+            'pending IDE launch',
+      );
+    },
+  );
+
+  test(
+    'Given a FlutterAppManager with an IDE device info file, '
+    'and SERVERPOD_LAUNCHED_FROM_IDE environment variable is not set, '
+    'when an app is launched, '
+    'then the IDE device info is ignored and the file is left in place',
+    () async {
+      final f = await _ManagerFixture.create(
+        apps: const [_AppSpec('project', device: null)],
+        shim: 'never_publishes_uri.dart',
+        environment: const {},
+      );
+
+      addTearDown(() => f.dispose());
+
+      f.writeIdeDeviceInfo('{"deviceId": "linux"}');
+
+      expect(f.manager.ideDevice(), isNull);
+
+      await f.manager.launch('project');
+      expect(
+        f.manager.processFor('project')!.device,
+        flutterDeviceWebServerWithBrowser,
+      );
+      expect(
+        f.ideDeviceInfoFile.existsSync(),
+        isTrue,
+        reason:
+            'a terminal run must not remove a file that may belong to a '
+            'pending IDE launch',
+      );
+    },
+  );
+
+  test(
+    'Given a FlutterAppManager with an IDE device info file, '
+    'and SERVERPOD_LAUNCHED_FROM_IDE environment variable is disabled, '
+    'when the manager is disposed, '
+    'then the IDE device info file is left in place',
+    () async {
+      final f = await _ManagerFixture.create(
+        apps: const [_AppSpec('project', device: null)],
+        environment: const {'SERVERPOD_LAUNCHED_FROM_IDE': 'false'},
+      );
+
+      f.writeIdeDeviceInfo('{"deviceId": "linux"}');
+
+      await f.manager.dispose();
+
+      expect(f.ideDeviceInfoFile.existsSync(), isTrue);
+    },
+  );
+
+  test(
+    'Given a FlutterAppManager with an IDE device info file, '
+    'and SERVERPOD_LAUNCHED_FROM_IDE environment variable is not set, '
+    'when the manager is disposed, '
+    'then the IDE device info file is left in place',
+    () async {
+      final f = await _ManagerFixture.create(
+        apps: const [_AppSpec('project', device: null)],
+        environment: const {},
+      );
+
+      f.writeIdeDeviceInfo('{"deviceId": "linux"}');
+
+      await f.manager.dispose();
+
+      expect(f.ideDeviceInfoFile.existsSync(), isTrue);
     },
   );
 }

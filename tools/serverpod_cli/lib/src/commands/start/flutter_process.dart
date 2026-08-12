@@ -147,6 +147,9 @@ class FlutterProcess {
   /// True between [start] and [stop]/exit.
   bool get isRunning => _process != null;
 
+  /// Target device id this process was created for (`flutter run -d`).
+  String get device => _device;
+
   /// True once [connectToVmService] resolved the upstream VM service.
   bool get isVmServiceConnected => _vmService != null;
 

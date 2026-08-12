@@ -2,7 +2,7 @@
 # Mode: development
 
 name: serverpod_embedded_postgres
-version: 4.0.0-beta.1
+version: 4.0.0-beta.2
 description: Runs a real PostgreSQL server as a child process for Serverpod local development, without Docker or fixed port conflicts.
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
@@ -20,10 +20,10 @@ dependencies:
   path: ^1.8.3
   postgres: ^3.4.0
   pub_semver: ^2.1.4
-  serverpod_shared: 4.0.0-beta.1
+  serverpod_shared: 4.0.0-beta.2
 
 dev_dependencies:
-  serverpod_lints: 4.0.0-beta.1
+  serverpod_lints: 4.0.0-beta.2
   test: ^1.25.5
 
 dependency_overrides:

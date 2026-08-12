@@ -6,6 +6,7 @@ import 'package:serverpod_cli/src/create/create.dart';
 import 'package:serverpod_cli/src/create/template_context.dart';
 import 'package:test/test.dart';
 
+import '../../serverpod_test_server/lib/test_util/custom_matcher.dart';
 import 'util.dart';
 
 void main() {
@@ -53,6 +54,17 @@ void main() {
               expect(content, contains('postgres:'));
               expect(content, contains('postgres_test:'));
               expect(content, contains('volumes:'));
+            },
+          );
+
+          test(
+            'uses the official Serverpod PostgreSQL image.',
+            () async {
+              final content = await dockerComposeFile.readAsString();
+              expect(
+                content,
+                containsCount('image: ghcr.io/serverpod/postgres:16', 2),
+              );
             },
           );
         },
@@ -239,6 +251,17 @@ void main() {
               final content = await dockerComposeFile.readAsString();
               expect(content, contains('postgres_test:'));
               expect(content, contains('volumes:'));
+            },
+          );
+
+          test(
+            'uses the official Serverpod PostgreSQL image.',
+            () async {
+              final content = await dockerComposeFile.readAsString();
+              expect(
+                content,
+                containsCount('image: ghcr.io/serverpod/postgres:16', 1),
+              );
             },
           );
         },
