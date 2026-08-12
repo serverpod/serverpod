@@ -120,12 +120,17 @@ Future<DartFormatter> _formatterFor(
 ) async {
   final outputFile = File(p.join(directory, 'protocol.dart')).absolute;
 
-  // Package config discovery needs a path inside an existing directory. The
-  // generated output folder (e.g. lib/src/protocol) may not exist yet on the
-  // first run, so walk up to the nearest existing parent. In a real project
-  // that parent is always within the target package (e.g. lib/src or the
-  // package root); only test teardown races or a missing package can climb
-  // further, in which case language-version lookup falls back below.
+  // Package config discovery needs a path inside an existing directory: it
+  // starts at the file's own directory and does not walk up out of one that
+  // is missing. The generated output folder (e.g. lib/src/protocol) may not
+  // exist yet on the first run, so resolve against the nearest existing
+  // parent instead. Only missing directories are skipped, and those can hold
+  // neither a `.dart_tool/` nor an `analysis_options.yaml`, so this finds the
+  // same configuration the output directory itself would once it exists.
+  //
+  // In a real project that parent is always within the target package (e.g.
+  // lib/src or the package root); only test teardown races or a missing
+  // package can climb further, in which case language-version lookup falls back below.
   var languageVersionDirectory = outputFile.parent;
   while (!await _directoryExists(languageVersionDirectory)) {
     final parent = languageVersionDirectory.parent;
@@ -146,8 +151,8 @@ Future<DartFormatter> _formatterFor(
 
   return DartFormatter(
     languageVersion: languageVersion,
-    pageWidth: await configCache.findPageWidth(outputFile),
-    trailingCommas: await configCache.findTrailingCommas(outputFile),
+    pageWidth: await configCache.findPageWidth(languageVersionFile),
+    trailingCommas: await configCache.findTrailingCommas(languageVersionFile),
   );
 }
 

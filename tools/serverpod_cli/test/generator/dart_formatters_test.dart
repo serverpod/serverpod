@@ -195,6 +195,82 @@ formatter:
   );
 
   test(
+    'Given a target package whose analysis options include a package URI, '
+    'when its generated-code formatters are resolved before the output directory exists, '
+    'then they capture the target formatter settings and report no resolution error.',
+    () async {
+      // Stands in for `package:lints`, which the project templates include.
+      final lintsDirectory = Directory(
+        p.join(tempDirectory.path, 'example_lints', 'lib'),
+      );
+      await lintsDirectory.create(recursive: true);
+      await File(
+        p.join(lintsDirectory.path, 'recommended.yaml'),
+      ).writeAsString('''
+linter:
+  rules:
+    - camel_case_types
+''');
+
+      final dartToolDirectory = Directory(
+        p.join(serverDirectory.path, '.dart_tool'),
+      );
+      await dartToolDirectory.create(recursive: true);
+      await File(
+        p.join(dartToolDirectory.path, 'package_config.json'),
+      ).writeAsString('''
+{
+  "configVersion": 2,
+  "packages": [
+    {
+      "name": "example_server",
+      "rootUri": "../",
+      "packageUri": "lib/",
+      "languageVersion": "3.12"
+    },
+    {
+      "name": "example_lints",
+      "rootUri": "../../example_lints",
+      "packageUri": "lib/",
+      "languageVersion": "3.12"
+    }
+  ]
+}
+''');
+      await File(
+        p.join(serverDirectory.path, 'analysis_options.yaml'),
+      ).writeAsString('''
+include: package:example_lints/recommended.yaml
+
+formatter:
+  page_width: 120
+  trailing_commas: preserve
+''');
+
+      // The generated output directory is deliberately left uncreated: it does
+      // not exist until the first generation run writes to it, and resolving
+      // the include from a directory that does not exist fails.
+      final config = GeneratorConfigBuilder()
+          .withServerPackageDirectoryPathParts(p.split(serverDirectory.path))
+          .build();
+
+      await GeneratedDartFormatters.resolve(config);
+
+      final formatter = GeneratedDartFormatters.of(
+        p.joinAll(config.generatedServerProtocolFilePathParts),
+      );
+
+      expect(formatter.pageWidth, 120);
+      expect(formatter.trailingCommas, TrailingCommas.preserve);
+      expect(
+        logger.debugMessages,
+        isEmpty,
+        reason: 'The include resolves, so dart_style reports no error.',
+      );
+    },
+  );
+
+  test(
     'Given a client package using Dart 3.12 whose generated protocol directory cannot be checked for existence, '
     'when its generated-code formatters are resolved, '
     'then they use the client package language version.',
