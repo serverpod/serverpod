@@ -35,11 +35,16 @@ final class SocketBindFailure {
 /// - 10048: WSAEADDRINUSE on Windows
 const _addressInUseErrorCodes = {48, 98, 10048};
 
-/// Returns true when [error] indicates the bind address/port is already in use.
+/// Returns true when [error] indicates a port/address bind conflict.
+///
+/// Covers:
+/// - Classic EADDRINUSE / WSAEADDRINUSE (another process holds the port)
+/// - Dart's same-process rebind error when api/insights/web share a port in
+///   the same Serverpod process (`shared flag to bind()...`)
 ///
 /// Prefers stable [OSError.errorCode] values, with a message substring fallback
-/// for environments where the code is missing or the OS message is localized
-/// but still contains a recognizable English phrase.
+/// for environments where the code is missing, non-standard (-1), or the OS
+/// message is localized but still contains a recognizable English phrase.
 bool isAddressAlreadyInUse(Object error) {
   if (error is! SocketException) return false;
 
@@ -55,7 +60,10 @@ bool isAddressAlreadyInUse(Object error) {
   ].join(' ').toLowerCase();
 
   return message.contains('address already in use') ||
-      message.contains('already in use');
+      message.contains('already in use') ||
+      // Same process binding the same (address, port) twice (config overlap).
+      message.contains('shared flag to bind') ||
+      message.contains('binding multiple times on the same');
 }
 
 /// Builds a user-facing bind failure for [serverLabel] on [port].

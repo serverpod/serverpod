@@ -63,6 +63,23 @@ void main() {
     );
 
     test(
+      'when SocketException is Dart same-process rebind then it returns true',
+      () {
+        const error = SocketException(
+          'Failed to create server socket',
+          osError: OSError(
+            'The shared flag to bind() needs to be `true` if binding '
+            'multiple times on the same (address, port) combination.',
+            -1,
+          ),
+          port: 8080,
+        );
+
+        expect(isAddressAlreadyInUse(error), isTrue);
+      },
+    );
+
+    test(
       'when SocketException is permission denied then it returns false',
       () {
         const error = SocketException(
@@ -144,6 +161,35 @@ void main() {
         expect(failure.userMessage, contains('Insights server'));
         expect(failure.userMessage, contains('config/production.yaml'));
         expect(failure.userMessage, isNot(contains('development.yaml')));
+      },
+    );
+
+    test(
+      'when Dart reports a same-process rebind then message uses the '
+      'address-in-use UX path',
+      () {
+        const error = SocketException(
+          'Failed to create server socket',
+          osError: OSError(
+            'The shared flag to bind() needs to be `true` if binding '
+            'multiple times on the same (address, port) combination.',
+            -1,
+          ),
+          port: 8077,
+        );
+
+        final failure = describeSocketBindFailure(
+          error: error,
+          serverLabel: 'web server',
+          port: 8077,
+          runMode: 'production',
+        );
+
+        expect(failure.kind, SocketBindFailureKind.addressInUse);
+        expect(failure.omitStackTrace, isTrue);
+        expect(failure.userMessage, contains('web server'));
+        expect(failure.userMessage, contains('address already in use'));
+        expect(failure.userMessage, contains('config/production.yaml'));
       },
     );
 
