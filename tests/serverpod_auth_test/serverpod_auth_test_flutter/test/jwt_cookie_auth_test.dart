@@ -69,6 +69,25 @@ void main() {
     );
 
     test(
+      'when creating a JWT token with a malformed declared base path '
+      'then the refresh cookie path falls back to the configured path.',
+      () async {
+        final response = await _call(
+          'authTest',
+          'createJwtToken',
+          args: {'authUserId': userId},
+          headers: {
+            _authModeHeader: 'cookie-transport',
+            _basePathHeader: 'api',
+          },
+        );
+
+        expect(response.statusCode, 200);
+        expect(_parseSetCookie(response).attributes['path'], '/jwtRefresh');
+      },
+    );
+
+    test(
       'when creating a JWT token without the cookie marker '
       'then the tokens stay in the body and no cookie is set.',
       () async {
@@ -184,6 +203,27 @@ void main() {
         expect(cookie.name, _refreshCookieName);
         expect(cookie.value, isNot(refreshCookieValue));
         expect(cookie.attributes['path'], '/jwtRefresh');
+      },
+    );
+
+    test(
+      'when refreshing with duplicate refresh cookies '
+      'then the call fails.',
+      () async {
+        final response = await _call(
+          'jwtRefresh',
+          'refreshAccessToken',
+          args: {'refreshToken': null},
+          headers: {
+            _authModeHeader: 'cookie-transport',
+            'cookie':
+                '$_refreshCookieName=$refreshCookieValue; '
+                '$_refreshCookieName=stray-duplicate',
+          },
+        );
+
+        expect(response.statusCode, isNot(200));
+        expect(response.body, contains('RefreshTokenNotFoundException'));
       },
     );
 
