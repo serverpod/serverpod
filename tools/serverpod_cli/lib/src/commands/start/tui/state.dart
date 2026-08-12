@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/commands/start/log_history.dart';
 import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_tui/serverpod_tui.dart';
@@ -7,14 +8,21 @@ import 'tab_model.dart';
 /// Central state for the TUI, mutated by the backend and rendered by nocterm.
 class ServerWatchState extends TuiState {
   /// Creates [ServerWatchState].
-  ServerWatchState() : tabs = TabModel([TabArea(id: kMainArea, flex: 1)]) {
+  ServerWatchState()
+    : history = StartLogHistory(),
+      tabs = TabModel([TabArea(id: kMainArea, flex: 1)]) {
     tabs.addTab(ServerLogTab());
   }
+
+  /// The log buffers this state renders. The watch loop fills them and the MCP
+  /// log tools read them, so the TUI is one of several views on the same
+  /// history rather than its owner.
+  final StartLogHistory history;
 
   /// Log history entries: [LogEntry] (from serverpod_shared) or
   /// [CompletedOperation].
   @override
-  final logHistory = BoundedQueueList<Object>(maxLogEntries);
+  BoundedQueueList<Object> get logHistory => history.serverEntries;
 
   /// Raw stdout/stderr lines shown in the raw server logs overlay
   /// (toggled with the backtick or `.` shortcut).
@@ -23,7 +31,8 @@ class ServerWatchState extends TuiState {
 
   /// Currently active tracked operations (keyed by ID).
   @override
-  final Map<String, TrackedOperation> activeOperations = {};
+  Map<String, TrackedOperation> get activeOperations =>
+      history.activeOperations;
 
   /// Areas-based tab model for the multi-pane layout.
   final TabModel tabs;
@@ -133,9 +142,6 @@ class ServerWatchState extends TuiState {
   /// on demand via the backtick or `.` shortcut.
   bool showRawServerLogs = false;
 
-  /// Maximum number of log entries to keep.
-  static const maxLogEntries = 10000;
-
   /// Maximum number of raw lines to keep.
   static const maxRawLines = 10000;
 
@@ -172,6 +178,12 @@ class ServerWatchState extends TuiState {
     }
   }
 
+  /// Adds [entry] to the structured log of the Flutter app [appId], which is
+  /// dropped while that app has no open tab.
+  void addFlutterLogEntry(String appId, LogEntry entry) {
+    appLogTabFor(appId)?.logHistory.add(entry);
+  }
+
   /// Returns an existing [AppLogTab] for [appId] or creates and adds one.
   AppLogTab getOrCreateAppLogTab({
     required String appId,
@@ -181,7 +193,13 @@ class ServerWatchState extends TuiState {
     if (existing != null) return existing;
 
     createAppsTabAreaIfNeeded();
-    final tab = AppLogTab(appId: appId, label: label);
+    // Renders the session's line buffer, so a tab opened after the app started
+    // shows everything it has produced.
+    final tab = AppLogTab(
+      appId: appId,
+      label: label,
+      lines: history.flutterLinesFor(appId),
+    );
     tabs.addTab(tab);
     return tab;
   }
@@ -199,7 +217,8 @@ class ServerWatchState extends TuiState {
   /// In-progress [activeOperations] are kept so a running hot reload or
   /// migration still renders its pinned spinner after the buffers are cleared.
   void clearLogs() {
-    logHistory.clear();
+    // Also drops the lines of apps that have no open tab.
+    history.clear();
     rawLines.clear();
     _toggledStackTraces.clear();
     for (final tab in appsTabArea?.tabs ?? []) {

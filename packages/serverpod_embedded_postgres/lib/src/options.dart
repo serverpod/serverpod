@@ -8,7 +8,7 @@ import 'cluster/postgres_conf_builder.dart';
 import 'transport.dart';
 
 /// Default PostgreSQL major.minor version. Tracks Serverpod Cloud and the
-/// `pgvector/pgvector:pg16` image used by the project templates.
+/// `ghcr.io/serverpod/postgres:16` image used by the project templates.
 final Version defaultPostgresVersion = Version(16, 13, 0);
 
 /// Default username for the embedded cluster. Matches the existing

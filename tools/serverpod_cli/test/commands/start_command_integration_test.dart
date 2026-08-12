@@ -3,17 +3,22 @@
 @Timeout(Duration(minutes: 5))
 library;
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:cli_tools/cli_tools.dart';
+import 'package:dart_mcp/client.dart';
 import 'package:package_config/package_config.dart' as pc;
 import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start.dart';
+import 'package:serverpod_cli/src/mcp/socket_directory.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+import 'package:serverpod_shared/serverpod_shared.dart'
+    show hasUnixSocketSupport;
 import 'package:test/test.dart';
 
 final _testLogger = _TestLogger();
@@ -478,6 +483,99 @@ database:
       );
     },
   );
+
+  group(
+    'Given a running Serverpod project with a configured Flutter app started without a TUI,',
+    skip: !hasUnixSocketSupport(),
+    () {
+      late ServerConnection connection;
+
+      setUpAll(() async {
+        final projectRoot = await _createRunnableTestProject();
+        final serverDirectory = Directory(
+          p.join(projectRoot.path, 'test_server'),
+        );
+        final dillPath = await _compileStartCommandRunner();
+        final output = StringBuffer();
+        final process = await Process.start(
+          Platform.resolvedExecutable,
+          [
+            dillPath,
+            '--no-interactive',
+            'start',
+            '--directory',
+            serverDirectory.path,
+            '--no-tui',
+            '--no-watch',
+            '--no-flutter',
+            '--no-docker',
+          ],
+          workingDirectory: Directory.current.path,
+        );
+        process.stdout
+            .transform(utf8.decoder)
+            .listen(output.write, onError: output.write);
+        process.stderr
+            .transform(utf8.decoder)
+            .listen(output.write, onError: output.write);
+
+        addTearDown(() => _terminateStartProcessTree(process));
+
+        final socket = await _connectToStartedMcpSocket(
+          serverDirectory: serverDirectory,
+          process: process,
+          output: output,
+        );
+        final client = MCPClient(
+          Implementation(name: 'test-client', version: '0.1.0'),
+        );
+        connection = client.connectServer(socketChannel(socket));
+        await connection.initialize(
+          InitializeRequest(
+            protocolVersion: ProtocolVersion.latestSupported,
+            capabilities: ClientCapabilities(),
+            clientInfo: Implementation(
+              name: 'test-client',
+              version: '0.1.0',
+            ),
+          ),
+        );
+        addTearDown(connection.shutdown);
+      });
+
+      test(
+        'when tail_server_logs is called, '
+        'then the server history contains its log.',
+        () async {
+          final serverLogs = await _waitForServerLog(connection);
+
+          expect(serverLogs.isError, isNull);
+          expect(
+            jsonDecode((serverLogs.content.single as TextContent).text),
+            contains(
+              containsPair('message', 'Server log retained without a TUI.'),
+            ),
+          );
+        },
+      );
+
+      test(
+        'when tail_flutter_logs is called, '
+        'then the Flutter history is empty.',
+        () async {
+          final flutterLogs = await connection.callTool(
+            CallToolRequest(name: 'tail_flutter_logs'),
+          );
+
+          expect(flutterLogs.isError, isNull);
+          expect(
+            jsonDecode((flutterLogs.content.single as TextContent).text),
+            isEmpty,
+          );
+        },
+      );
+    },
+  );
 }
 
 Future<void> _runStart({
@@ -517,10 +615,15 @@ Future<void> _runStart({
   }
 }
 
-Future<Directory> _createTestProject(String databaseConfig) async {
-  final projectRoot = await Directory(
-    p.join(Directory.current.path, '.dart_tool'),
-  ).createTemp('start_command_test_');
+Future<Directory> _createTestProject(
+  String databaseConfig, {
+  bool useShortSystemTempPath = false,
+}) async {
+  final projectRoot = useShortSystemTempPath
+      ? await Directory.systemTemp.createTemp('smi')
+      : await Directory(
+          p.join(Directory.current.path, '.dart_tool'),
+        ).createTemp('start_command_test_');
   try {
     final serverDirectory = Directory(p.join(projectRoot.path, 'test_server'));
     final clientDirectory = Directory(p.join(projectRoot.path, 'test_client'));
@@ -616,11 +719,7 @@ fields:
       }),
     );
 
-    addTearDown(() async {
-      if (await projectRoot.exists()) {
-        await projectRoot.delete(recursive: true);
-      }
-    });
+    addTearDown(() => _deleteProjectRoot(projectRoot));
     return projectRoot;
   } catch (error, stackTrace) {
     try {
@@ -632,6 +731,101 @@ fields:
     }
     Error.throwWithStackTrace(error, stackTrace);
   }
+}
+
+Future<Directory> _createRunnableTestProject() async {
+  final projectRoot = await _createTestProject('''
+database:
+  filePath: db.sqlite
+''', useShortSystemTempPath: true);
+  final serverDirectory = Directory(p.join(projectRoot.path, 'test_server'));
+  await File(
+    p.join(serverDirectory.path, 'lib', 'src', 'models', 'invalid.spy.yaml'),
+  ).delete();
+  await Directory(p.join(serverDirectory.path, 'bin')).create();
+  await Directory(p.join(projectRoot.path, 'test_flutter')).create();
+  await File(p.join(serverDirectory.path, 'pubspec.yaml')).writeAsString('''
+name: test_server
+environment:
+  sdk: ^3.10.0
+dependencies:
+  serverpod: any
+serverpod:
+  flutter_apps:
+    admin:
+      path: ../test_flutter
+      auto_launch: false
+''');
+  await File(p.join(serverDirectory.path, 'bin', 'main.dart')).writeAsString('''
+import 'dart:async';
+import 'dart:developer' as developer;
+
+Future<void> main(List<String> arguments) async {
+  Timer.periodic(const Duration(milliseconds: 100), (_) {
+    developer.postEvent('ext.serverpod.log', {
+      'type': 'log',
+      'level': 'info',
+      'message': 'Server log retained without a TUI.',
+      'timestamp': DateTime.now().toIso8601String(),
+    });
+  });
+  await Completer<void>().future;
+}
+''');
+  return projectRoot;
+}
+
+Future<Socket> _connectToStartedMcpSocket({
+  required Directory serverDirectory,
+  required Process process,
+  required StringBuffer output,
+}) async {
+  int? processExitCode;
+  unawaited(process.exitCode.then((code) => processExitCode = code));
+  final socketPath = serverpodMcpSocketPath(serverDirectory.path);
+  final deadline = DateTime.now().add(const Duration(seconds: 60));
+  while (DateTime.now().isBefore(deadline)) {
+    if (processExitCode != null) {
+      throw StateError(
+        'serverpod start exited with $processExitCode before opening its MCP '
+        'socket.\n$output',
+      );
+    }
+    try {
+      return await Socket.connect(
+        InternetAddress(socketPath, type: InternetAddressType.unix),
+        0,
+      );
+    } on SocketException {
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+    }
+  }
+  throw TimeoutException(
+    'serverpod start did not open its MCP socket.\n$output',
+    const Duration(seconds: 60),
+  );
+}
+
+Future<CallToolResult> _waitForServerLog(ServerConnection connection) async {
+  final deadline = DateTime.now().add(const Duration(seconds: 10));
+  while (DateTime.now().isBefore(deadline)) {
+    final result = await connection.callTool(
+      CallToolRequest(name: 'tail_server_logs'),
+    );
+    final logs =
+        jsonDecode((result.content.single as TextContent).text) as List;
+    if (logs.any(
+      (log) =>
+          log is Map && log['message'] == 'Server log retained without a TUI.',
+    )) {
+      return result;
+    }
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+  }
+  throw TimeoutException(
+    'The server log was not retained.',
+    const Duration(seconds: 10),
+  );
 }
 
 /// Creates an empty `docker-compose.yaml`. Empty on purpose: even if a real
@@ -701,6 +895,47 @@ Future<({int exitCode, String output})> _runStartInSubprocess({
     exitCode: result.exitCode,
     output: '${result.stdout}\n${result.stderr}',
   );
+}
+
+/// Deletes a test project, retrying while Windows still reports the directory
+/// as in use.
+///
+/// Windows releases a terminated process's handles asynchronously, so a
+/// deletion right after the last process exits can still fail even though
+/// nothing holds the directory any more.
+Future<void> _deleteProjectRoot(Directory projectRoot) async {
+  final deadline = DateTime.now().add(const Duration(seconds: 10));
+  while (true) {
+    if (!await projectRoot.exists()) return;
+    try {
+      await projectRoot.delete(recursive: true);
+      return;
+    } on FileSystemException {
+      if (DateTime.now().isAfter(deadline)) rethrow;
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+    }
+  }
+}
+
+/// Shuts down a `serverpod start` [process] together with the pod it spawned.
+///
+/// On POSIX, SIGINT reaches the CLI's own shutdown path, which stops the pod
+/// for us. Windows has no such signal - `Process.kill` terminates the CLI
+/// outright, leaving the pod running with its working directory inside the
+/// test project, which then cannot be deleted (see the Job Object TODO in
+/// `ServerProcess.start`). `taskkill /T` takes down the whole tree instead.
+Future<void> _terminateStartProcessTree(Process process) async {
+  if (Platform.isWindows) {
+    await Process.run('taskkill', ['/T', '/F', '/PID', '${process.pid}']);
+  } else {
+    process.kill(ProcessSignal.sigint);
+  }
+  try {
+    await process.exitCode.timeout(const Duration(seconds: 10));
+  } on TimeoutException {
+    process.kill(ProcessSignal.sigkill);
+    await process.exitCode;
+  }
 }
 
 String _prependToPath(String directory) {
