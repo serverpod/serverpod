@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dart_style/dart_style.dart';
@@ -8,6 +9,7 @@ import 'package:dart_style/src/config_cache.dart';
 import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 /// Formatters for generated Dart, resolved from each output directory's
 /// `analysis_options.yaml`.
@@ -33,7 +35,34 @@ final class GeneratedDartFormatters {
   );
 
   /// Resolves the formatters needed by one generation run.
+  ///
+  /// `dart_style` reports problems with a target package's
+  /// `analysis_options.yaml` by writing to `stderr` itself, which corrupts the
+  /// TUI. Those writes are captured and re-emitted through the logger instead.
   static Future<void> resolve(GeneratorConfig config) async {
+    final formatterStderr = _BufferedStdout();
+
+    await IOOverrides.runZoned(
+      () => _resolve(config),
+      stderr: () => formatterStderr,
+      stdout: () => formatterStderr,
+    );
+
+    // Output directories in the same package share an `analysis_options.yaml`,
+    // so a problem with it is reported once per directory. Report each distinct
+    // line once, as a single warning, keeping multi-line messages intact.
+    final warnings = <String>{};
+    for (final line in const LineSplitter().convert(formatterStderr.text)) {
+      if (line.trim().isEmpty) continue;
+      warnings.add(line);
+    }
+
+    if (warnings.isNotEmpty) {
+      log.debug(warnings.join('\n'));
+    }
+  }
+
+  static Future<void> _resolve(GeneratorConfig config) async {
     final directories = _outputDirectories(config);
     final configCache = ConfigCache();
     final formatters = await Future.wait([
@@ -129,4 +158,76 @@ Future<bool> _directoryExists(Directory directory) async {
     // Windows can deny access while a directory is being deleted.
     return false;
   }
+}
+
+/// A [Stdout] that buffers everything written to it in memory.
+///
+/// Installed over `stderr` with [IOOverrides.runZoned] so that direct writes
+/// from within `dart_style` can be routed through the logger. The top-level
+/// `stderr` in `dart:io` resolves [IOOverrides.current] on every access, and
+/// the overrides are zone scoped, so the buffer stays in effect across the
+/// `await`s inside the library.
+class _BufferedStdout implements Stdout {
+  final StringBuffer _buffer = StringBuffer();
+
+  /// Everything written so far.
+  String get text => _buffer.toString();
+
+  @override
+  Encoding encoding = utf8;
+
+  @override
+  void write(Object? object) => _buffer.write(object);
+
+  @override
+  void writeln([Object? object = '']) => _buffer.writeln(object);
+
+  @override
+  void writeAll(Iterable<Object?> objects, [String separator = '']) =>
+      _buffer.writeAll(objects, separator);
+
+  @override
+  void writeCharCode(int charCode) => _buffer.writeCharCode(charCode);
+
+  @override
+  void add(List<int> data) => _buffer.write(encoding.decode(data));
+
+  @override
+  void addError(Object error, [StackTrace? stackTrace]) =>
+      _buffer.writeln(error);
+
+  @override
+  Future<void> addStream(Stream<List<int>> stream) => stream.forEach(add);
+
+  @override
+  Future<void> flush() async {}
+
+  @override
+  Future<void> close() async {}
+
+  @override
+  Future<void> get done => Future.value();
+
+  @override
+  IOSink get nonBlocking => this;
+
+  // Reported as a non-terminal so that anything checking before emitting ANSI
+  // escapes writes plain text the logger can render.
+  @override
+  bool get hasTerminal => false;
+
+  @override
+  bool get supportsAnsiEscapes => false;
+
+  @override
+  int get terminalColumns => 80;
+
+  @override
+  int get terminalLines => 24;
+
+  // Declaring `noSuchMethod` makes the compiler generate forwarders for any
+  // member a later SDK adds to `Stdout`, so this keeps compiling across SDK
+  // upgrades. Reaching one throws, as it would on any unimplemented member.
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }

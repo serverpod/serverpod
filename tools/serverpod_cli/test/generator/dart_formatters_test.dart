@@ -1,9 +1,12 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:cli_tools/cli_tools.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/generator/dart_formatters.dart';
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:test/test.dart';
 
 import '../test_util/builders/generator_config_builder.dart';
@@ -11,6 +14,7 @@ import '../test_util/builders/generator_config_builder.dart';
 void main() {
   late Directory tempDirectory;
   late Directory serverDirectory;
+  late _DebugCapturingLogger logger;
 
   setUp(() async {
     tempDirectory = await Directory.systemTemp.createTemp(
@@ -21,12 +25,17 @@ void main() {
       p.join(tempDirectory.path, 'example_server'),
     );
     await serverDirectory.create(recursive: true);
+
+    logger = _DebugCapturingLogger();
+    initializeLoggerWith(logger);
   });
 
   tearDown(() async {
     GeneratedDartFormatters.reset();
     await tempDirectory.delete(recursive: true);
   });
+
+  tearDownAll(closeLogger);
 
   test(
     'Given a target package using Dart 3.12, '
@@ -152,6 +161,40 @@ formatter:
   );
 
   test(
+    'Given a target package with an invalid trailing-comma analysis options setting, '
+    'when its generated-code formatters are resolved, '
+    'then the formatter warning is logged instead of written to stderr.',
+    () async {
+      await File(
+        p.join(serverDirectory.path, 'analysis_options.yaml'),
+      ).writeAsString('''
+formatter:
+  trailing_commas: not_a_valid_setting
+''');
+      final config = GeneratorConfigBuilder()
+          .withServerPackageDirectoryPathParts(p.split(serverDirectory.path))
+          .build();
+
+      // Stands in for the real stderr, which the TUI owns.
+      final outerStderr = _RecordingStdout();
+      await IOOverrides.runZoned(
+        () => GeneratedDartFormatters.resolve(config),
+        stderr: () => outerStderr,
+      );
+
+      expect(
+        outerStderr.text,
+        isEmpty,
+        reason: 'dart_style must not write to stderr itself.',
+      );
+      expect(
+        logger.debugMessages.single,
+        contains('Warning: "trailing_commas" option'),
+      );
+    },
+  );
+
+  test(
     'Given a client package using Dart 3.12 whose generated protocol directory cannot be checked for existence, '
     'when its generated-code formatters are resolved, '
     'then they use the client package language version.',
@@ -233,4 +276,64 @@ Future<bool> _makeUnsearchable(Directory directory) async {
 
   await Process.run('chmod', ['755', directory.path]);
   return false;
+}
+
+/// A logger that records the debug messages it is given and prints nothing.
+class _DebugCapturingLogger extends VoidLogger {
+  final List<String> debugMessages = [];
+
+  @override
+  void debug(String message, {bool newParagraph = false, LogType? type}) {
+    debugMessages.add(message);
+  }
+}
+
+/// A [Stdout] that records everything written to it in memory.
+class _RecordingStdout implements Stdout {
+  final StringBuffer _buffer = StringBuffer();
+
+  String get text => _buffer.toString();
+
+  @override
+  Encoding encoding = utf8;
+
+  @override
+  void write(Object? object) => _buffer.write(object);
+
+  @override
+  void writeln([Object? object = '']) => _buffer.writeln(object);
+
+  @override
+  void writeAll(Iterable<Object?> objects, [String separator = '']) =>
+      _buffer.writeAll(objects, separator);
+
+  @override
+  void writeCharCode(int charCode) => _buffer.writeCharCode(charCode);
+
+  @override
+  void add(List<int> data) => _buffer.write(encoding.decode(data));
+
+  @override
+  Future<void> addStream(Stream<List<int>> stream) => stream.forEach(add);
+
+  @override
+  Future<void> flush() async {}
+
+  @override
+  Future<void> close() async {}
+
+  @override
+  Future<void> get done => Future.value();
+
+  @override
+  IOSink get nonBlocking => this;
+
+  @override
+  bool get hasTerminal => false;
+
+  @override
+  bool get supportsAnsiEscapes => false;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
