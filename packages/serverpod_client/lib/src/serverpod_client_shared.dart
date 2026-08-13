@@ -471,12 +471,9 @@ abstract class EndpointRef {
 }
 
 /// Thrown if not able to get an endpoint on the client by type.
-sealed class ServerpodClientGetEndpointException implements Exception {
-  /// The error message to show to the user.
-  final String message;
-
+class ServerpodClientGetEndpointException extends ServerpodClientException {
   /// Creates an Endpoint Missing Exception.
-  const ServerpodClientGetEndpointException(this.message);
+  const ServerpodClientGetEndpointException(super.message);
 
   @override
   String toString() => message;
