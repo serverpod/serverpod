@@ -326,26 +326,12 @@ class PostgresDatabaseConnection
       selectedColumns.add(table.id);
     }
 
-    var selectedColumnNames = selectedColumns.map((e) => e.columnName);
-
-    var columnNames = selectedColumnNames
-        .map((columnName) => '"$columnName"')
-        .join(', ');
-
-    var values = _createQueryValueList(rows, selectedColumns);
-
-    var setColumns = selectedColumnNames
-        .map((columnName) => '"$columnName" = data."$columnName"')
-        .join(', ');
-
-    const tableAlias = 't';
-
-    var query =
-        'UPDATE "${table.tableName}" AS $tableAlias SET $setColumns FROM (VALUES $values) AS data($columnNames) WHERE data.id = $tableAlias.id';
-    if (!noReturn) {
-      var returning = buildReturningClause(table, tableAlias: tableAlias);
-      query += ' RETURNING $returning';
-    }
+    var query = UpdateQueryBuilder.forRows(
+      table: table,
+      dialect: DatabaseDialect.postgres,
+      rows: rows,
+      columns: selectedColumns,
+    ).withReturn(noReturn ? Returning.none : Returning.all).build();
 
     return (await _mappedResultsQuery(
           session,
@@ -392,17 +378,11 @@ class PostgresDatabaseConnection
       throw ArgumentError('columnValues cannot be empty');
     }
 
-    var setClause = columnValues
-        .map((cv) {
-          var value = poolManager.encoder.convert(cv.value);
-          return '"${cv.column.columnName}" = $value::${_convertToPostgresType(cv.column)}';
-        })
-        .join(', ');
-
-    var query =
-        'UPDATE "${table.tableName}" SET $setClause '
-        'WHERE "${table.id.columnName}" = ${poolManager.encoder.convert(id)} '
-        'RETURNING *';
+    var query = UpdateQueryBuilder.forColumnValues(
+      table: table,
+      dialect: DatabaseDialect.postgres,
+      columnValues: columnValues,
+    ).withId(id).build();
 
     var result = await _mappedResultsQuery(
       session,
@@ -439,14 +419,11 @@ class PostgresDatabaseConnection
       throw ArgumentError('columnValues cannot be empty');
     }
 
-    var setClause = columnValues
-        .map((cv) {
-          var value = poolManager.encoder.convert(cv.value);
-          return '"${cv.column.columnName}" = $value::${_convertToPostgresType(cv.column)}';
-        })
-        .join(', ');
-
-    String updateQuery;
+    var queryBuilder = UpdateQueryBuilder.forColumnValues(
+      table: table,
+      dialect: DatabaseDialect.postgres,
+      columnValues: columnValues,
+    ).withReturn(noReturn ? Returning.none : Returning.all);
 
     var requiresFilteredSubquery =
         limit != null ||
@@ -464,36 +441,12 @@ class PostgresDatabaseConnection
           .withOffset(offset)
           .build();
 
-      var idAlias = '${table.tableName}.${table.id.columnName}';
-
-      if (noReturn) {
-        // No rows are returned, so the wrapping SELECT and its ordering are
-        // unnecessary: run the UPDATE directly against the selected ids.
-        updateQuery =
-            'WITH rows_to_update AS ($subquery) '
-            'UPDATE "${table.tableName}" SET $setClause '
-            'WHERE "${table.id.columnName}" IN (SELECT "$idAlias" FROM rows_to_update)';
-      } else {
-        var orderByClause = switch (orders) {
-          != null when orders.isNotEmpty =>
-            ' ORDER BY '
-                '${orders.map((o) => o.toString().replaceAll('"${table.tableName}".', '')).join(', ')}',
-          _ => '',
-        };
-
-        updateQuery =
-            'WITH rows_to_update AS ($subquery), '
-            'updated AS ('
-            'UPDATE "${table.tableName}" SET $setClause '
-            'WHERE "${table.id.columnName}" IN (SELECT "$idAlias" FROM rows_to_update) '
-            'RETURNING *'
-            ') '
-            'SELECT * FROM updated$orderByClause';
-      }
+      queryBuilder.withFilteredSelection(subquery, orderBy: orders);
     } else {
-      updateQuery = 'UPDATE "${table.tableName}" SET $setClause WHERE $where';
-      if (!noReturn) updateQuery += ' RETURNING *';
+      queryBuilder.withWhere(where);
     }
+
+    var updateQuery = queryBuilder.build();
 
     var result = await _mappedResultsQuery(
       session,
@@ -1013,71 +966,6 @@ class PostgresDatabaseConnection
     }
     if (orderByList == null || orderByList.isEmpty) return null;
     return orderByList.asOrderBy();
-  }
-
-  String _createQueryValueList(
-    Iterable<TableRow> rows,
-    Iterable<Column> column,
-  ) {
-    return rows
-        .map((row) => row.toJsonForDatabase() as Map<String, dynamic>)
-        .map((row) {
-          var values = column
-              .map((column) {
-                var unformattedValue = row[column.columnName];
-
-                var formattedValue = poolManager.encoder.convert(
-                  unformattedValue,
-                );
-
-                return '$formattedValue::${_convertToPostgresType(column)}';
-              })
-              .join(', ');
-
-          return '($values)';
-        })
-        .join(', ');
-  }
-
-  String _convertToPostgresType(Column column) {
-    if (column is ColumnString) return 'text';
-    if (column is ColumnBool) return 'boolean';
-    if (column is ColumnInt) return 'bigint';
-    if (column is ColumnDouble) return 'double precision';
-    if (column is ColumnDateTime) return 'timestamp without time zone';
-    if (column is ColumnByteData) return 'bytea';
-    if (column is ColumnDuration) return 'bigint';
-    if (column is ColumnUuid) return 'uuid';
-    if (column is ColumnUri) return 'text';
-    if (column is ColumnBigInt) return 'text';
-    if (column is ColumnVector) return 'vector(${column.dimension})';
-    if (column is ColumnHalfVector) return 'halfvec(${column.dimension})';
-    if (column is ColumnSparseVector) return 'sparsevec(${column.dimension})';
-    if (column is ColumnBit) return 'bit(${column.dimension})';
-    if (column is ColumnGeographyPoint) {
-      return 'geography(Point,${Geography.defaultSrid})';
-    }
-    if (column is ColumnGeographyLineString) {
-      return 'geography(LineString,${Geography.defaultSrid})';
-    }
-    if (column is ColumnGeographyPolygon) {
-      return 'geography(Polygon,${Geography.defaultSrid})';
-    }
-    if (column is ColumnGeographyGeometryCollection) {
-      return 'geography(GeometryCollection,${Geography.defaultSrid})';
-    }
-    if (column is ColumnStructured) return 'jsonb';
-    if (column is ColumnSerializable) return 'json';
-    if (column is ColumnEnumExtended) {
-      switch (column.serialized) {
-        case EnumSerialization.byIndex:
-          return 'bigint';
-        case EnumSerialization.byName:
-          return 'text';
-      }
-    }
-
-    return 'json';
   }
 
   /// Merges the database result with the original non-persisted fields.
