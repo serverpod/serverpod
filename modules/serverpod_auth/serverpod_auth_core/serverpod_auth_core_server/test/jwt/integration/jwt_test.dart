@@ -655,6 +655,93 @@ void main() {
     );
   });
 
+  // `createTokens` refuses to issue a token pair to a blocked user, but that
+  // only guards the login path. A refresh token issued before the block is
+  // rotated through `rotateRefreshToken`, which never looks the `AuthUser` up,
+  // and `isExpired` measures from `lastUpdatedAt` - so each rotation pushes the
+  // expiry out again. Blocking therefore does not end an existing session: the
+  // user keeps full scoped access for as long as they refresh, by calling an
+  // endpoint that requires no authentication of its own.
+  withServerpod('Given a user that is blocked after having signed in,', (
+    final sessionBuilder,
+    final endpoints,
+  ) {
+    late Session session;
+    late UuidValue authUserId;
+    late String refreshToken;
+
+    setUp(() async {
+      session = sessionBuilder.build();
+
+      final authUser = await jwt.authUsers.create(session);
+      authUserId = authUser.id;
+
+      final authSuccess = await jwt.createTokens(
+        session,
+        authUserId: authUserId,
+        scopes: {},
+        method: 'test',
+      );
+      refreshToken = authSuccess.refreshToken!;
+
+      await jwt.authUsers.update(
+        session,
+        authUserId: authUserId,
+        blocked: true,
+      );
+    });
+
+    test(
+      'when refreshing the access token, '
+      'then an AuthUserBlockedException is thrown.',
+      () async {
+        await expectLater(
+          () => jwt.refreshAccessToken(session, refreshToken: refreshToken),
+          throwsA(isA<AuthUserBlockedException>()),
+        );
+      },
+    );
+
+    test(
+      'when rotating the refresh token through the admin API, '
+      'then an AuthUserBlockedException is thrown.',
+      () async {
+        await expectLater(
+          () => jwt.admin.rotateRefreshToken(
+            session,
+            refreshToken: refreshToken,
+          ),
+          throwsA(isA<AuthUserBlockedException>()),
+        );
+      },
+    );
+
+    test(
+      'when a rejected refresh is followed by lifting the block, '
+      'then the same refresh token is accepted again.',
+      () async {
+        await expectLater(
+          () => jwt.refreshAccessToken(session, refreshToken: refreshToken),
+          throwsA(isA<AuthUserBlockedException>()),
+          reason:
+              'Precondition: the refresh must be rejected here to show that '
+              'a later unblock allows rotation again.',
+        );
+
+        await jwt.authUsers.update(
+          session,
+          authUserId: authUserId,
+          blocked: false,
+        );
+
+        expect(
+          await jwt.refreshAccessToken(session, refreshToken: refreshToken),
+          isNotNull,
+        );
+      },
+    );
+  });
+
   withServerpod('Given a JwtConfig with extraClaimsProvider,', (
     final sessionBuilder,
     final endpoints,
