@@ -59,8 +59,8 @@ void main() {
     );
 
     test(
-      'when the stream subscription is cancelled before the session is '
-      'closed, then the message central retains no references to the session.',
+      'when the stream subscription is cancelled before the session is closed, '
+      'then the message central retains no references to the session.',
       () async {
         await subscription.cancel();
         await session.close();

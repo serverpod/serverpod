@@ -99,8 +99,8 @@ void main() {
         );
 
         test(
-          'then onAuthInfoChanged receives no update when refresh only resets '
-          'the cache and skips the network refresh.',
+          'then onAuthInfoChanged receives no update '
+          'when refresh only resets the cache and skips the network refresh.',
           () {
             expect(onAuthInfoChangedCalls, onAuthInfoCallsBeforeRefresh);
           },
@@ -179,8 +179,8 @@ void main() {
         );
 
         test(
-          'then onAuthInfoChanged is invoked once when the rotated token is '
-          'persisted after refresh.',
+          'then onAuthInfoChanged is invoked once '
+          'when the rotated token is persisted after refresh.',
           () {
             expect(onAuthInfoChangedCalls, onAuthInfoCallsBeforeRefresh + 1);
           },

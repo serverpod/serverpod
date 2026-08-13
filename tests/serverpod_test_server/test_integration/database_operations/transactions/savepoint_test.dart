@@ -52,8 +52,7 @@ void main() async {
   });
 
   test('Given a transaction with data inserted after savepoint '
-      'when adding new savepoint with data and rolling back to it after '
-      'rolling back to the first savepoint '
+      'when adding new savepoint with data and rolling back to it after rolling back to the first savepoint '
       'then no data is persisted in the database', () async {
     await session.db.transaction<void>(
       (transaction) async {

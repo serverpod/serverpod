@@ -39,8 +39,8 @@ void main() {
     });
 
     test(
-      'when converted to EWKT then it matches the custom SRID and LINESTRING '
-      'string.',
+      'when converted to EWKT '
+      'then it matches the custom SRID and LINESTRING string.',
       () {
         expect(
           lineString.toEwkt(),
