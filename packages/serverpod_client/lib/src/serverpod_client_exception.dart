@@ -10,7 +10,7 @@ class ServerpodClientException implements Exception {
 
   @override
   String toString() {
-    return ('ServerpodClientException: ${message.trim()}');
+    return '$runtimeType: ${message.trim()}';
   }
 }
 
@@ -36,7 +36,7 @@ class ServerpodClientHttpException extends ServerpodClientException {
 
   @override
   String toString() {
-    return ('ServerpodClientHttpException: ${message.trim()}, statusCode: $statusCode');
+    return '$runtimeType: ${message.trim()}, statusCode: $statusCode';
   }
 }
 
