@@ -6,9 +6,10 @@ import '../../../../test_util.dart';
 void main() {
   initTestClientSession();
 
-  group('Given models with one to many relation ', () {
+  group('Given models with one to many relation,', () {
     test(
-      'when counting models filtered on every many relation then result is as expected',
+      'when counting models filtered on every many relation, '
+      'then result is as expected',
       () async {
         var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
         var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));
@@ -30,7 +31,8 @@ void main() {
     );
 
     test(
-      'when counting models filtered on multiple every many relation then result is as expected.',
+      'when counting models filtered on multiple every many relation, '
+      'then result is as expected.',
       () async {
         var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
         var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));
@@ -54,9 +56,10 @@ void main() {
     );
   });
 
-  group('Given models with nested one to many relation', () {
+  group('Given models with nested one to many relation,', () {
     test(
-      'when counting models filtered on nested every many relation then result is as expected',
+      'when counting models filtered on nested every many relation, '
+      'then result is as expected',
       () async {
         var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
         var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));
@@ -87,7 +90,8 @@ void main() {
     );
 
     test(
-      'when counting models filtered on nested every many relation in combination with separate filter then result is as expected',
+      'when counting models filtered on nested every many relation in combination with separate filter, '
+      'then result is as expected',
       () async {
         var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
         var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));

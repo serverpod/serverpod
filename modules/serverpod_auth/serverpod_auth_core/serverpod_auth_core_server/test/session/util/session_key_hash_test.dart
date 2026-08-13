@@ -22,14 +22,14 @@ import 'package:test/test.dart';
 /// version byte, so sessions issued under the old, saltless scheme keep working
 /// and are re-hashed in place on next use rather than being invalidated.
 void main() {
-  group('Given a session key hash util', () {
-    final sessionKeyHash = ServerSideSessionKeyHash(
+  group('Given a session key hash util,', () {
+    late final sessionKeyHash = ServerSideSessionKeyHash(
       sessionKeyHashSaltLength: 16,
       sessionKeyHashPepper: 'test-pepper',
       fallbackSessionKeyHashPeppers: const [],
     );
 
-    final secret = Uint8List.fromList(List.generate(32, (final i) => i));
+    late final secret = Uint8List.fromList(List.generate(32, (final i) => i));
 
     test(
       'when the same secret is hashed twice, then the two hashes differ.',
@@ -113,18 +113,18 @@ void main() {
   group(
     'Given a session key hash stored under the pre-fix saltless scheme,',
     () {
-      final sessionKeyHash = ServerSideSessionKeyHash(
+      late final sessionKeyHash = ServerSideSessionKeyHash(
         sessionKeyHashSaltLength: 16,
         sessionKeyHashPepper: 'test-pepper',
         fallbackSessionKeyHashPeppers: const [],
       );
 
-      final secret = Uint8List.fromList(List.generate(32, (final i) => i));
+      late final secret = Uint8List.fromList(List.generate(32, (final i) => i));
 
       // Any stored salt: the pre-fix digest never mixed it in.
-      final salt = Uint8List.fromList(List.generate(16, (final i) => 255 - i));
+      late final salt = Uint8List.fromList(List.generate(16, (final i) => 255 - i));
 
-      final legacyHash = _legacySaltlessHash(secret, 'test-pepper');
+      late final legacyHash = _legacySaltlessHash(secret, 'test-pepper');
 
       test(
         'when it is validated with the right secret, '
@@ -227,14 +227,14 @@ void main() {
   group(
     'Given a stored hash of a length no scheme produces,',
     () {
-      final sessionKeyHash = ServerSideSessionKeyHash(
+      late final sessionKeyHash = ServerSideSessionKeyHash(
         sessionKeyHashSaltLength: 16,
         sessionKeyHashPepper: 'test-pepper',
         fallbackSessionKeyHashPeppers: const [],
       );
 
-      final secret = Uint8List.fromList(List.generate(32, (final i) => i));
-      final salt = Uint8List.fromList(List.generate(16, (final i) => 255 - i));
+      late final secret = Uint8List.fromList(List.generate(32, (final i) => i));
+      late final salt = Uint8List.fromList(List.generate(16, (final i) => 255 - i));
 
       // An empty hash reached `hash[0]` and threw a RangeError, turning a
       // corrupt row into a server error rather than a failed authentication.

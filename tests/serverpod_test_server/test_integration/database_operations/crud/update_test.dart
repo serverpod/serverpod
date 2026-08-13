@@ -13,8 +13,8 @@ void main() async {
   });
 
   test(
-    'Given an inserted entry '
-    'when batch updating with noReturn set to true '
+    'Given an inserted entry, '
+    'when batch updating with noReturn set to true, '
     'then an empty list is returned but the change is persisted.',
     () async {
       var inserted = (await UniqueData.db.insert(session, [
@@ -34,7 +34,9 @@ void main() async {
   );
 
   test(
-    'Given a list of entries when batch updating only a single column then no other data is updated.',
+    'Given a list of entries, '
+    'when batch updating only a single column, '
+    'then no other data is updated.',
     () async {
       var expectedFirstEmail = 'info@serverpod.dev';
       var expectedLastEmail = 'dev@serverpod.dev';
@@ -76,7 +78,8 @@ void main() async {
   );
 
   test(
-    'Given a list of entries to update where one does not have an id then an error is thrown.',
+    'Given a list of entries to update where one does not have an id, '
+    'then an error is thrown.',
     () async {
       var data = <UniqueData>[
         UniqueData(number: 1, email: 'info@serverpod.dev'),
@@ -101,7 +104,8 @@ void main() async {
   );
 
   test(
-    'Given a list of entries trying to update a column that does not exist then an error is thrown.',
+    'Given a list of entries trying to update a column that does not exist, '
+    'then an error is thrown.',
     () async {
       var data = <UniqueData>[
         UniqueData(number: 1, email: 'info@serverpod.dev'),
@@ -122,7 +126,8 @@ void main() async {
   );
 
   test(
-    'Given an model when batch updatingRow with a specific column only that column and no other data is updated.',
+    'Given an model, '
+    'when batch updatingRow with a specific column only that column and no other data is updated.',
     () async {
       var expectedEmail = 'info@serverpod.dev';
       var expectedNumber = 5;
@@ -151,7 +156,9 @@ void main() async {
   );
 
   test(
-    'Given an model without an id when batch updatingRow then an error is thrown.',
+    'Given an model without an id, '
+    'when batch updatingRow, '
+    'then an error is thrown.',
     () async {
       expect(
         UniqueData.db.updateRow(
@@ -165,7 +172,8 @@ void main() async {
   );
 
   test(
-    'Given an model trying to updateRow with a column that does not exist then an error is thrown.',
+    'Given an model trying to updateRow with a column that does not exist, '
+    'then an error is thrown.',
     () async {
       var inserted = await UniqueData.db.insertRow(
         session,
@@ -183,8 +191,8 @@ void main() async {
     },
   );
 
-  group('Given a typed entry in the database', () {
-    var data = Types(
+  group('Given a typed entry in the database,', () {
+    late var data = Types(
       anInt: 1,
       aBool: true,
       aDouble: 1.0,
@@ -236,7 +244,8 @@ void main() async {
     });
 
     test(
-      'when updating anInt to null then the database is updated with null value.',
+      'when updating anInt to null, '
+      'then the database is updated with null value.',
       () async {
         var value = Types(
           id: type.id,
@@ -250,7 +259,8 @@ void main() async {
     );
 
     test(
-      'when updating aBool to null then the database is updated with null value.',
+      'when updating aBool to null, '
+      'then the database is updated with null value.',
       () async {
         var value = Types(
           id: type.id,
@@ -264,7 +274,8 @@ void main() async {
     );
 
     test(
-      'when updating aDouble to null then the database is updated with null value.',
+      'when updating aDouble to null, '
+      'then the database is updated with null value.',
       () async {
         var value = Types(
           id: type.id,
@@ -278,7 +289,8 @@ void main() async {
     );
 
     test(
-      'when updating aString to null then the database is updated with null value.',
+      'when updating aString to null, '
+      'then the database is updated with null value.',
       () async {
         var value = Types(
           id: type.id,
@@ -292,7 +304,8 @@ void main() async {
     );
 
     test(
-      'when updating aDateTime to null then the database is updated with null value.',
+      'when updating aDateTime to null, '
+      'then the database is updated with null value.',
       () async {
         var value = Types(
           id: type.id,
@@ -306,7 +319,8 @@ void main() async {
     );
 
     test(
-      'when updating aByteData to null then the database is updated with null value.',
+      'when updating aByteData to null, '
+      'then the database is updated with null value.',
       () async {
         var value = Types(
           id: type.id,
@@ -320,7 +334,8 @@ void main() async {
     );
 
     test(
-      'when updating aDuration to null then the database is updated with null value.',
+      'when updating aDuration to null, '
+      'then the database is updated with null value.',
       () async {
         var value = Types(
           id: type.id,
@@ -334,7 +349,8 @@ void main() async {
     );
 
     test(
-      'when updating aUuid to null then the database is updated with null value.',
+      'when updating aUuid to null, '
+      'then the database is updated with null value.',
       () async {
         var value = Types(
           id: type.id,
@@ -348,7 +364,8 @@ void main() async {
     );
 
     test(
-      'when updating aUri to null then the database is updated with null value.',
+      'when updating aUri to null, '
+      'then the database is updated with null value.',
       () async {
         var value = Types(
           id: type.id,
@@ -362,7 +379,8 @@ void main() async {
     );
 
     test(
-      'when updating aBigInt to null then the database is updated with null value.',
+      'when updating aBigInt to null, '
+      'then the database is updated with null value.',
       () async {
         var value = Types(
           id: type.id,
@@ -376,7 +394,8 @@ void main() async {
     );
 
     test(
-      'when updating aVector to null then the database is updated with null value.',
+      'when updating aVector to null, '
+      'then the database is updated with null value.',
       () async {
         var value = Types(
           id: type.id,
@@ -390,7 +409,8 @@ void main() async {
     );
 
     test(
-      'when updating aHalfVector to null then the database is updated with null value.',
+      'when updating aHalfVector to null, '
+      'then the database is updated with null value.',
       () async {
         var value = Types(
           id: type.id,
@@ -404,7 +424,8 @@ void main() async {
     );
 
     test(
-      'when updating aSparseVector to null then the database is updated with null value.',
+      'when updating aSparseVector to null, '
+      'then the database is updated with null value.',
       () async {
         var value = Types(
           id: type.id,
@@ -418,7 +439,8 @@ void main() async {
     );
 
     test(
-      'when updating aBit to null then the database is updated with null value.',
+      'when updating aBit to null, '
+      'then the database is updated with null value.',
       () async {
         var value = Types(
           id: type.id,
@@ -432,7 +454,8 @@ void main() async {
     );
 
     test(
-      'when updating aGeographyPoint to null then the database is updated with null value.',
+      'when updating aGeographyPoint to null, '
+      'then the database is updated with null value.',
       () async {
         var value = Types(
           id: type.id,
@@ -446,7 +469,8 @@ void main() async {
     );
 
     test(
-      'when updating aGeographyLineString to null then the database is updated with null value.',
+      'when updating aGeographyLineString to null, '
+      'then the database is updated with null value.',
       () async {
         var value = Types(
           id: type.id,
@@ -460,7 +484,8 @@ void main() async {
     );
 
     test(
-      'when updating aGeographyPolygon to null then the database is updated with null value.',
+      'when updating aGeographyPolygon to null, '
+      'then the database is updated with null value.',
       () async {
         var value = Types(
           id: type.id,
@@ -474,7 +499,8 @@ void main() async {
     );
 
     test(
-      'when updating aGeographyGeometryCollection to null then the database is updated with null value.',
+      'when updating aGeographyGeometryCollection to null, '
+      'then the database is updated with null value.',
       () async {
         var value = Types(
           id: type.id,
@@ -488,7 +514,8 @@ void main() async {
     );
 
     test(
-      'when updating anEnum to null then the database is updated with null value.',
+      'when updating anEnum to null, '
+      'then the database is updated with null value.',
       () async {
         var value = Types(
           id: type.id,
@@ -502,7 +529,8 @@ void main() async {
     );
 
     test(
-      'when updating aStringifiedEnum to null then the database is updated with null value.',
+      'when updating aStringifiedEnum to null, '
+      'then the database is updated with null value.',
       () async {
         var value = Types(
           id: type.id,
@@ -516,7 +544,8 @@ void main() async {
     );
 
     test(
-      'when updating aList to null then the database is updated with null value.',
+      'when updating aList to null, '
+      'then the database is updated with null value.',
       () async {
         var value = Types(
           id: type.id,
@@ -530,7 +559,8 @@ void main() async {
     );
 
     test(
-      'when updating aMap to null then the database is updated with null value.',
+      'when updating aMap to null, '
+      'then the database is updated with null value.',
       () async {
         var value = Types(
           id: type.id,
@@ -544,7 +574,8 @@ void main() async {
     );
 
     test(
-      'when updating aSet to null then the database is updated with null value.',
+      'when updating aSet to null, '
+      'then the database is updated with null value.',
       () async {
         var value = Types(
           id: type.id,
@@ -558,7 +589,8 @@ void main() async {
     );
 
     test(
-      'when updating aRecord to null then the database is updated with null value.',
+      'when updating aRecord to null, '
+      'then the database is updated with null value.',
       () async {
         var value = Types(
           id: type.id,
@@ -572,8 +604,8 @@ void main() async {
     );
   });
 
-  group('Given a typed entry in the database', () {
-    var data = Types(
+  group('Given a typed entry in the database,', () {
+    late var data = Types(
       anInt: null,
       aBool: null,
       aDouble: null,
@@ -607,7 +639,7 @@ void main() async {
     });
 
     test(
-      'when updating anInt to 1 then the database is updated with value 1.',
+      'when updating anInt to 1, then the database is updated with value 1.',
       () async {
         var value = Types(
           id: type.id,
@@ -621,7 +653,8 @@ void main() async {
     );
 
     test(
-      'when updating aBool to true then the database is updated with value true.',
+      'when updating aBool to true, '
+      'then the database is updated with value true.',
       () async {
         var value = Types(
           id: type.id,
@@ -635,7 +668,8 @@ void main() async {
     );
 
     test(
-      'when updating aDouble to 1.0 then the database is updated with value 1.0.',
+      'when updating aDouble to 1.0, '
+      'then the database is updated with value 1.0.',
       () async {
         var value = Types(
           id: type.id,
@@ -649,7 +683,8 @@ void main() async {
     );
 
     test(
-      'when updating aString to "string" then the database is updated with value "string".',
+      'when updating aString to "string", '
+      'then the database is updated with value "string".',
       () async {
         var value = Types(
           id: type.id,
@@ -663,7 +698,8 @@ void main() async {
     );
 
     test(
-      'when updating aDateTime to a real value then the database is updated with the real value.',
+      'when updating aDateTime to a real value, '
+      'then the database is updated with the real value.',
       () async {
         var now = DateTime.now().toUtc();
         var value = Types(
@@ -678,7 +714,8 @@ void main() async {
     );
 
     test(
-      'when updating aByteData to a real value then the database is updated with the real value.',
+      'when updating aByteData to a real value, '
+      'then the database is updated with the real value.',
       () async {
         var byteData = ByteData.view(Uint8List(8).buffer);
         var value = Types(
@@ -701,7 +738,8 @@ void main() async {
     );
 
     test(
-      'when updating aDuration to a real value then the database is updated with the real value.',
+      'when updating aDuration to a real value, '
+      'then the database is updated with the real value.',
       () async {
         var duration = Duration(milliseconds: 1000);
         var value = Types(
@@ -716,7 +754,8 @@ void main() async {
     );
 
     test(
-      'when updating aUuid to a real value then the database is updated with the real value.',
+      'when updating aUuid to a real value, '
+      'then the database is updated with the real value.',
       () async {
         var uuidValue = UuidValue.fromString(Uuid().v4());
         var value = Types(
@@ -731,7 +770,8 @@ void main() async {
     );
 
     test(
-      'when updating aUri to a real value then the database is updated with the real value.',
+      'when updating aUri to a real value, '
+      'then the database is updated with the real value.',
       () async {
         var uri = Uri.parse('https://example.com');
         var value = Types(
@@ -746,7 +786,8 @@ void main() async {
     );
 
     test(
-      'when updating aBigInt to a real value then the database is updated with the real value.',
+      'when updating aBigInt to a real value, '
+      'then the database is updated with the real value.',
       () async {
         var bigInt = BigInt.from(987654321);
         var value = Types(
@@ -761,7 +802,8 @@ void main() async {
     );
 
     test(
-      'when updating aVector to a real value then the database is updated with the real value.',
+      'when updating aVector to a real value, '
+      'then the database is updated with the real value.',
       () async {
         var vector = Vector([4.0, 5.0, 6.0]);
         var value = Types(
@@ -776,7 +818,8 @@ void main() async {
     );
 
     test(
-      'when updating aHalfVector to a real value then the database is updated with the real value.',
+      'when updating aHalfVector to a real value, '
+      'then the database is updated with the real value.',
       () async {
         var halfVector = HalfVector([4.0, 5.0, 6.0]);
         var value = Types(
@@ -791,7 +834,8 @@ void main() async {
     );
 
     test(
-      'when updating aSparseVector to a real value then the database is updated with the real value.',
+      'when updating aSparseVector to a real value, '
+      'then the database is updated with the real value.',
       () async {
         var sparseVector = SparseVector([0.0, 4.0, 5.0]);
         var value = Types(
@@ -806,7 +850,8 @@ void main() async {
     );
 
     test(
-      'when updating aBit to a real value then the database is updated with the real value.',
+      'when updating aBit to a real value, '
+      'then the database is updated with the real value.',
       () async {
         var value = Types(
           id: type.id,
@@ -820,7 +865,8 @@ void main() async {
     );
 
     test(
-      'when updating anEnum to TestEnum.one then the database is updated with value TestEnum.one.',
+      'when updating anEnum to TestEnum.one, '
+      'then the database is updated with value TestEnum.one.',
       () async {
         var value = Types(
           id: type.id,
@@ -834,7 +880,8 @@ void main() async {
     );
 
     test(
-      'when updating aStringifiedEnum to TestEnumStringified.two then the database is updated with value TestEnumStringified.two.',
+      'when updating aStringifiedEnum to TestEnumStringified.two, '
+      'then the database is updated with value TestEnumStringified.two.',
       () async {
         var value = Types(
           id: type.id,
@@ -848,7 +895,8 @@ void main() async {
     );
 
     test(
-      'when updating aList to a real value then the database is updated with the real value.',
+      'when updating aList to a real value, '
+      'then the database is updated with the real value.',
       () async {
         var list = [4, 5, 6];
         var value = Types(
@@ -863,7 +911,8 @@ void main() async {
     );
 
     test(
-      'when updating aMap to a real value then the database is updated with the real value.',
+      'when updating aMap to a real value, '
+      'then the database is updated with the real value.',
       () async {
         var map = {3: 30, 4: 40};
         var value = Types(
@@ -878,7 +927,8 @@ void main() async {
     );
 
     test(
-      'when updating aSet to a real value then the database is updated with the real value.',
+      'when updating aSet to a real value, '
+      'then the database is updated with the real value.',
       () async {
         var set = {4, 5, 6};
         var value = Types(
@@ -893,7 +943,8 @@ void main() async {
     );
 
     test(
-      'when updating aRecord to a new value then the database is updated with the value.',
+      'when updating aRecord to a new value, '
+      'then the database is updated with the value.',
       () async {
         var value = Types(
           id: type.id,
@@ -910,8 +961,8 @@ void main() async {
     );
   });
 
-  group('Given a typed entry in the database', () {
-    var data = <Types>[
+  group('Given a typed entry in the database,', () {
+    late var data = <Types>[
       Types(
         anInt: 1,
         aBool: true,
@@ -948,7 +999,8 @@ void main() async {
     });
 
     test(
-      'when batch updating anInt to null then the database is updated with null value.',
+      'when batch updating anInt to null, '
+      'then the database is updated with null value.',
       () async {
         var toUpdate = <Types>[
           Types(
@@ -964,7 +1016,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aBool to null then the database is updated with null value.',
+      'when batch updating aBool to null, '
+      'then the database is updated with null value.',
       () async {
         var toUpdate = <Types>[
           Types(
@@ -980,7 +1033,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aDouble to null then the database is updated with null value.',
+      'when batch updating aDouble to null, '
+      'then the database is updated with null value.',
       () async {
         var toUpdate = <Types>[
           Types(
@@ -996,7 +1050,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aString to null then the database is updated with null value.',
+      'when batch updating aString to null, '
+      'then the database is updated with null value.',
       () async {
         var toUpdate = <Types>[
           Types(
@@ -1012,7 +1067,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aDateTime to null then the database is updated with null value.',
+      'when batch updating aDateTime to null, '
+      'then the database is updated with null value.',
       () async {
         var toUpdate = <Types>[
           Types(
@@ -1028,7 +1084,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aByteData to null then the database is updated with null value.',
+      'when batch updating aByteData to null, '
+      'then the database is updated with null value.',
       () async {
         var toUpdate = <Types>[
           Types(
@@ -1044,7 +1101,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aDuration to null then the database is updated with null value.',
+      'when batch updating aDuration to null, '
+      'then the database is updated with null value.',
       () async {
         var toUpdate = <Types>[
           Types(
@@ -1060,7 +1118,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aUuid to null then the database is updated with null value.',
+      'when batch updating aUuid to null, '
+      'then the database is updated with null value.',
       () async {
         var toUpdate = <Types>[
           Types(
@@ -1076,7 +1135,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aUri to null then the database is updated with null value.',
+      'when batch updating aUri to null, '
+      'then the database is updated with null value.',
       () async {
         var toUpdate = <Types>[
           Types(
@@ -1092,7 +1152,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aBigInt to null then the database is updated with null value.',
+      'when batch updating aBigInt to null, '
+      'then the database is updated with null value.',
       () async {
         var toUpdate = <Types>[
           Types(
@@ -1108,7 +1169,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aVector to null then the database is updated with null value.',
+      'when batch updating aVector to null, '
+      'then the database is updated with null value.',
       () async {
         var toUpdate = <Types>[
           Types(
@@ -1124,7 +1186,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aHalfVector to null then the database is updated with null value.',
+      'when batch updating aHalfVector to null, '
+      'then the database is updated with null value.',
       () async {
         var toUpdate = <Types>[
           Types(
@@ -1140,7 +1203,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aSparseVector to null then the database is updated with null value.',
+      'when batch updating aSparseVector to null, '
+      'then the database is updated with null value.',
       () async {
         var toUpdate = <Types>[
           Types(
@@ -1156,7 +1220,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aBit to null then the database is updated with null value.',
+      'when batch updating aBit to null, '
+      'then the database is updated with null value.',
       () async {
         var toUpdate = <Types>[
           Types(
@@ -1172,7 +1237,8 @@ void main() async {
     );
 
     test(
-      'when batch updating anEnum to null then the database is updated with null value.',
+      'when batch updating anEnum to null, '
+      'then the database is updated with null value.',
       () async {
         var toUpdate = <Types>[
           Types(
@@ -1188,7 +1254,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aStringifiedEnum to null then the database is updated with null value.',
+      'when batch updating aStringifiedEnum to null, '
+      'then the database is updated with null value.',
       () async {
         var toUpdate = <Types>[
           Types(
@@ -1204,7 +1271,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aList to null then the database is updated with null value.',
+      'when batch updating aList to null, '
+      'then the database is updated with null value.',
       () async {
         var toUpdate = <Types>[
           Types(
@@ -1220,7 +1288,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aMap to null then the database is updated with null value.',
+      'when batch updating aMap to null, '
+      'then the database is updated with null value.',
       () async {
         var toUpdate = <Types>[
           Types(
@@ -1236,7 +1305,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aSet to null then the database is updated with null value.',
+      'when batch updating aSet to null, '
+      'then the database is updated with null value.',
       () async {
         var toUpdate = <Types>[
           Types(
@@ -1252,7 +1322,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aRecord to null then the database is updated with null value.',
+      'when batch updating aRecord to null, '
+      'then the database is updated with null value.',
       () async {
         var toUpdate = <Types>[
           Types(
@@ -1268,8 +1339,8 @@ void main() async {
     );
   });
 
-  group('Given a typed entry in the database', () {
-    var data = <Types>[
+  group('Given a typed entry in the database,', () {
+    late var data = <Types>[
       Types(
         anInt: null,
         aBool: null,
@@ -1306,7 +1377,8 @@ void main() async {
     });
 
     test(
-      'when batch updating anInt to 1 then the database is updated with value 1.',
+      'when batch updating anInt to 1, '
+      'then the database is updated with value 1.',
       () async {
         var toUpdate = <Types>[
           Types(
@@ -1322,7 +1394,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aBool to true then the database is updated with value true.',
+      'when batch updating aBool to true, '
+      'then the database is updated with value true.',
       () async {
         var toUpdate = <Types>[
           Types(
@@ -1338,7 +1411,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aDouble to 1.0 then the database is updated with value 1.0.',
+      'when batch updating aDouble to 1.0, '
+      'then the database is updated with value 1.0.',
       () async {
         var toUpdate = <Types>[
           Types(
@@ -1354,7 +1428,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aString to "string" then the database is updated with value "string".',
+      'when batch updating aString to "string", '
+      'then the database is updated with value "string".',
       () async {
         var toUpdate = <Types>[
           Types(
@@ -1370,7 +1445,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aDateTime to a real value then the database is updated with the real value.',
+      'when batch updating aDateTime to a real value, '
+      'then the database is updated with the real value.',
       () async {
         var now = DateTime.now().toUtc();
         var toUpdate = <Types>[
@@ -1387,7 +1463,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aByteData to a real value then the database is updated with the real value.',
+      'when batch updating aByteData to a real value, '
+      'then the database is updated with the real value.',
       () async {
         var byteData = ByteData.view(Uint8List(8).buffer);
         var toUpdate = <Types>[
@@ -1412,7 +1489,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aDuration to a real value then the database is updated with the real value.',
+      'when batch updating aDuration to a real value, '
+      'then the database is updated with the real value.',
       () async {
         var duration = Duration(milliseconds: 1000);
         var toUpdate = <Types>[
@@ -1429,7 +1507,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aUuid to a real value then the database is updated with the real value.',
+      'when batch updating aUuid to a real value, '
+      'then the database is updated with the real value.',
       () async {
         var uuidValue = UuidValue.fromString(Uuid().v4());
         var toUpdate = <Types>[
@@ -1446,7 +1525,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aUri to a real value then the database is updated with the real value.',
+      'when batch updating aUri to a real value, '
+      'then the database is updated with the real value.',
       () async {
         var uri = Uri.parse('https://example.com');
         var toUpdate = <Types>[
@@ -1463,7 +1543,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aBigInt to a real value then the database is updated with the real value.',
+      'when batch updating aBigInt to a real value, '
+      'then the database is updated with the real value.',
       () async {
         var bigInt = BigInt.from(987654321);
         var toUpdate = <Types>[
@@ -1480,7 +1561,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aVector to a real value then the database is updated with the real value.',
+      'when batch updating aVector to a real value, '
+      'then the database is updated with the real value.',
       () async {
         var vector = Vector([4.0, 5.0, 6.0]);
         var toUpdate = <Types>[
@@ -1497,7 +1579,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aHalfVector to a real value then the database is updated with the real value.',
+      'when batch updating aHalfVector to a real value, '
+      'then the database is updated with the real value.',
       () async {
         var halfVector = HalfVector([4.0, 5.0, 6.0]);
         var toUpdate = <Types>[
@@ -1514,7 +1597,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aSparseVector to a real value then the database is updated with the real value.',
+      'when batch updating aSparseVector to a real value, '
+      'then the database is updated with the real value.',
       () async {
         var sparseVector = SparseVector([0.0, 4.0, 5.0]);
         var toUpdate = <Types>[
@@ -1531,7 +1615,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aBit to a real value then the database is updated with the real value.',
+      'when batch updating aBit to a real value, '
+      'then the database is updated with the real value.',
       () async {
         var bit = Bit([true, false, true]);
         var toUpdate = <Types>[
@@ -1548,7 +1633,8 @@ void main() async {
     );
 
     test(
-      'when batch updating anEnum to TestEnum.one then the database is updated with value TestEnum.one.',
+      'when batch updating anEnum to TestEnum.one, '
+      'then the database is updated with value TestEnum.one.',
       () async {
         var toUpdate = <Types>[
           Types(
@@ -1564,7 +1650,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aStringifiedEnum to TestEnumStringified.two then the database is updated with value TestEnumStringified.two.',
+      'when batch updating aStringifiedEnum to TestEnumStringified.two, '
+      'then the database is updated with value TestEnumStringified.two.',
       () async {
         var toUpdate = <Types>[
           Types(
@@ -1580,7 +1667,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aList to a real value then the database is updated with the real value.',
+      'when batch updating aList to a real value, '
+      'then the database is updated with the real value.',
       () async {
         var list = [4, 5, 6];
         var toUpdate = <Types>[
@@ -1597,7 +1685,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aMap to a real value then the database is updated with the real value.',
+      'when batch updating aMap to a real value, '
+      'then the database is updated with the real value.',
       () async {
         var map = {3: 30, 4: 40};
         var toUpdate = <Types>[
@@ -1614,7 +1703,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aSet to a real value then the database is updated with the real value.',
+      'when batch updating aSet to a real value, '
+      'then the database is updated with the real value.',
       () async {
         var set = {4, 5, 6};
         var toUpdate = <Types>[
@@ -1631,7 +1721,8 @@ void main() async {
     );
 
     test(
-      'when batch updating aRecord then the database is updated with the given value.',
+      'when batch updating aRecord, '
+      'then the database is updated with the given value.',
       () async {
         var toUpdate = <Types>[
           Types(
@@ -1652,7 +1743,8 @@ void main() async {
     );
 
     test(
-      'when listing id column in an update query of a row then update completes successfully.',
+      'when listing id column in an update query of a row, '
+      'then update completes successfully.',
       () async {
         expect(
           Types.db.updateRow(session, type, columns: (t) => [t.id]),
@@ -1662,7 +1754,7 @@ void main() async {
     );
   });
 
-  group('Given empty model in database', () {
+  group('Given empty model in database,', () {
     late EmptyModelWithTable model;
     setUp(() async {
       model = await EmptyModelWithTable.db.insertRow(
@@ -1678,7 +1770,7 @@ void main() async {
       );
     });
 
-    test('when model is updated then update completes', () async {
+    test('when model is updated, then update completes', () async {
       expect(
         EmptyModelWithTable.db.updateRow(session, model),
         completes,
@@ -1686,7 +1778,7 @@ void main() async {
     });
 
     test(
-      'when with columns from different model then error is thrown',
+      'when with columns from different model, then error is thrown',
       () async {
         var invalidColumns = [SimpleData.t.num, Types.t.anInt];
         expect(

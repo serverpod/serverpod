@@ -5,7 +5,7 @@ import 'package:serverpod_auth_core_server/src/common/utils/argon2_hash_util.dar
 import 'package:test/test.dart';
 
 void main() {
-  group('Given Argon2HashUtil instance', () {
+  group('Given Argon2HashUtil instance,', () {
     late Argon2HashUtil hashUtil;
     const testSaltLength = 16;
     const testPepper = 'test-pepper';
@@ -17,7 +17,7 @@ void main() {
       );
     });
 
-    group('when createHashFromString is called', () {
+    group('when createHashFromString is called,', () {
       test(
         'then generates hash with random salt when salt not provided.',
         () async {
@@ -114,7 +114,7 @@ void main() {
       });
     });
 
-    group('when createHashFromBytes is called', () {
+    group('when createHashFromBytes is called,', () {
       test(
         'then generates hash with random salt when salt not provided.',
         () async {
@@ -174,7 +174,7 @@ void main() {
       );
     });
 
-    group('when validateHashFromString is called', () {
+    group('when validateHashFromString is called,', () {
       test('then returns true with correct secret.', () async {
         const testSecret = 'test-secret-123';
 
@@ -256,7 +256,7 @@ void main() {
       });
     });
 
-    group('when validateHashFromBytes is called', () {
+    group('when validateHashFromBytes is called,', () {
       test('then returns true with correct secret.', () async {
         final testSecret = Uint8List.fromList(utf8.encode('test-secret-123'));
 
@@ -298,7 +298,7 @@ void main() {
       });
     });
 
-    group('when validating hash created with empty secret', () {
+    group('when validating hash created with empty secret,', () {
       test('then returns true with empty secret.', () async {
         final emptySecretHash = await hashUtil.createHashFromString(secret: '');
 
@@ -312,7 +312,7 @@ void main() {
     });
   });
 
-  group('Given Argon2HashUtil with fallback peppers', () {
+  group('Given Argon2HashUtil with fallback peppers,', () {
     const oldPepper = 'old-pepper-value';
     const newPepper = 'new-pepper-value';
     const testSecret = 'test-secret-123';
@@ -339,7 +339,7 @@ void main() {
     });
 
     test(
-      'when validateHashFromString is called with old hash then returns true.',
+      'when validateHashFromString is called with old hash, then returns true.',
       () async {
         final isValid = await newPepperHashUtilWithFallback
             .validateHashFromString(
@@ -352,7 +352,8 @@ void main() {
     );
 
     test(
-      'when validateHashFromString is called with incorrect secret then returns false.',
+      'when validateHashFromString is called with incorrect secret, '
+      'then returns false.',
       () async {
         const incorrectSecret = '$testSecret-incorrect';
 
@@ -367,7 +368,7 @@ void main() {
     );
 
     test(
-      'when createHashFromString is called then new hash uses primary pepper.',
+      'when createHashFromString is called, then new hash uses primary pepper.',
       () async {
         final newHash = await newPepperHashUtilWithFallback
             .createHashFromString(
@@ -403,7 +404,8 @@ void main() {
     );
 
     test(
-      'when multiple fallback peppers are provided then validates against any of them.',
+      'when multiple fallback peppers are provided, '
+      'then validates against any of them.',
       () async {
         const veryOldPepper = 'very-old-pepper-value';
 

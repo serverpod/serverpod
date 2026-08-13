@@ -19,9 +19,9 @@ void main() {
   ]).build();
   var manyRelation = ManyRelationBuilder(relationTable).build();
 
-  group('Given SelectQueryBuilder', () {
-    group('when ordering by list relation with a long field name', () {
-      var query = SelectQueryBuilder(
+  group('Given SelectQueryBuilder,', () {
+    group('when ordering by list relation with a long field name,', () {
+      late var query = SelectQueryBuilder(
         table: citizenTable,
       ).withOrderBy([manyRelation.count().asc()]).build();
       var expectedTruncatedName =

@@ -11,7 +11,8 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   test(
-    'Given a class is parsed from a yaml file, Then the type-class-name equals the class-name',
+    'Given a class is parsed from a yaml file, '
+    'Then the type-class-name equals the class-name',
     () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -36,7 +37,8 @@ void main() {
   );
 
   test(
-    'Given an enum is parsed from a yaml file, Then the type-class-name equals the class-name and the enum-definition is set',
+    'Given an enum is parsed from a yaml file, '
+    'Then the type-class-name equals the class-name and the enum-definition is set',
     () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -66,7 +68,8 @@ void main() {
   );
 
   test(
-    'Given an exception parsed from a yaml file, Then the type-class-name equals the class-name',
+    'Given an exception parsed from a yaml file, '
+    'Then the type-class-name equals the class-name',
     () {
       var modelSources = [
         ModelSourceBuilder().withYaml(

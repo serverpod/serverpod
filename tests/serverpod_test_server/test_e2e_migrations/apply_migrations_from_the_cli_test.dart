@@ -8,7 +8,7 @@ import 'package:serverpod_test_server/test_util/service_client.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a migration with multiple new protocol models with table', () {
+  group('Given a migration with multiple new protocol models with table,', () {
     final tables = [
       'migrated_table',
       'migrated_table_2',
@@ -62,7 +62,7 @@ void main() {
     });
 
     test(
-      'when applying migrations from the CLI '
+      'when applying migrations from the CLI, '
       'then database contains new tables.',
       () async {
         final result = await applyPendingMigrations(
@@ -85,7 +85,7 @@ void main() {
     );
   });
 
-  group('Given a schema drift on the live database', () {
+  group('Given a schema drift on the live database,', () {
     const tableName = 'simple_data';
     const renamedTableName = 'simple_data_cli_migration_backup';
 
@@ -104,7 +104,7 @@ void main() {
     });
 
     test(
-      'when applying migrations from the CLI '
+      'when applying migrations from the CLI, '
       'then the CLI completes without verifying integrity.',
       () async {
         final testWriter = TestLogWriter();
@@ -128,7 +128,7 @@ void main() {
     );
 
     test(
-      'when calling the applyMigrations endpoint with verify-only flags '
+      'when calling the applyMigrations endpoint with verify-only flags, '
       'then the result reports drift.',
       () async {
         final result = await serviceClient.insights.applyMigrations(

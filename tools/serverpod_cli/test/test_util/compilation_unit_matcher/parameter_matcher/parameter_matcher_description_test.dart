@@ -4,7 +4,9 @@ import '../../compilation_unit_matcher.dart';
 
 void main() {
   test(
-    'Given parameter matcher chained on constructor matcher when describing matcher then description is correct',
+    'Given parameter matcher chained on constructor matcher, '
+    'when describing matcher, '
+    'then description is correct',
     () {
       final matcher =
           containsClass('User').withUnnamedConstructor().withParameter('name')
@@ -22,7 +24,9 @@ void main() {
   );
 
   test(
-    'Given parameter matcher chained on method matcher when describing matcher then description is correct',
+    'Given parameter matcher chained on method matcher, '
+    'when describing matcher, '
+    'then description is correct',
     () {
       final matcher =
           containsClass('User').withMethod('method').withParameter('name')
@@ -40,7 +44,9 @@ void main() {
   );
 
   test(
-    'Given required parameter matcher when describing matcher then description is correct',
+    'Given required parameter matcher, '
+    'when describing matcher, '
+    'then description is correct',
     () {
       final matcher =
           containsClass(
@@ -58,7 +64,9 @@ void main() {
   );
 
   test(
-    'Given initializer parameter matcher when describing matcher then description is correct',
+    'Given initializer parameter matcher, '
+    'when describing matcher, '
+    'then description is correct',
     () {
       final matcher =
           containsClass('User')
@@ -76,7 +84,9 @@ void main() {
   );
 
   test(
-    'Given required initializer parameter when describing matcher then description is correct',
+    'Given required initializer parameter, '
+    'when describing matcher, '
+    'then description is correct',
     () {
       final matcher =
           containsClass(
@@ -98,7 +108,9 @@ void main() {
   );
 
   test(
-    'Given typed parameter matcher when describing matcher then description is correct',
+    'Given typed parameter matcher, '
+    'when describing matcher, '
+    'then description is correct',
     () {
       final matcher =
           containsClass(
@@ -116,7 +128,9 @@ void main() {
   );
 
   test(
-    'Given required typed parameter matcher when describing matcher then description is correct',
+    'Given required typed parameter matcher, '
+    'when describing matcher, '
+    'then description is correct',
     () {
       final matcher =
           containsClass('User').withUnnamedConstructor().withTypedParameter(

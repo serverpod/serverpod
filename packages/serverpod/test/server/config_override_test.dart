@@ -12,7 +12,7 @@ void main() {
     publicPort: 0,
   );
 
-  group('Given Serverpod initialized with a config override callback', () {
+  group('Given Serverpod initialized with a config override callback,', () {
     late Serverpod pod;
     const overriddenId = 'from-callback';
 
@@ -34,7 +34,7 @@ void main() {
     });
 
     test(
-      'when reading server id from the pod '
+      'when reading server id from the pod, '
       'then it matches the overridden value.',
       () {
         expect(pod.config.serverId, equals(overriddenId));
@@ -43,7 +43,7 @@ void main() {
     );
   });
 
-  group('Given Serverpod initialized without config override', () {
+  group('Given Serverpod initialized without config override,', () {
     late Serverpod pod;
     const originalId = 'unchanged';
 
@@ -65,7 +65,7 @@ void main() {
     });
 
     test(
-      'when reading server id from the pod '
+      'when reading server id from the pod, '
       'then it matches the original server id.',
       () {
         expect(pod.config.serverId, equals(originalId));

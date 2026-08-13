@@ -36,9 +36,10 @@ void main() {
   ]);
 
   group(
-    'Given an immutable class named $testClassName with one primitive var when generating code',
+    'Given an immutable class named $testClassName with one primitive var, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -159,9 +160,10 @@ void main() {
   );
 
   group(
-    'Given an immutable class named $testClassName with twenty primitive vars when generating code',
+    'Given an immutable class named $testClassName with twenty primitive vars, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -301,9 +303,9 @@ void main() {
   );
 
   group(
-    'Given an immutable shared class with a list field when generating code',
+    'Given an immutable shared class with a list field, when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -372,11 +374,12 @@ void main() {
   );
 
   group(
-    'Given an immutable class with an implicit foreign key field (scope none) when generating shared code',
+    'Given an immutable class with an implicit foreign key field (scope none), '
+    'when generating shared code,',
     () {
       var testClassName = 'MealToResource';
       var testClassFileName = 'meal_to_resource';
-      var expectedFilePath = path.joinAll([
+      late var expectedFilePath = path.joinAll([
         ...serverPathParts,
         'packages',
         'shared',
@@ -389,7 +392,7 @@ void main() {
       // Create a model with an implicit foreign key field that has scope: none
       // This simulates what happens when Serverpod generates a foreign key
       // for an implicit one-to-many relationship
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)

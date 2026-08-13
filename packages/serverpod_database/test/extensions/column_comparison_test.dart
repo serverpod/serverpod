@@ -6,9 +6,10 @@ import 'package:test/test.dart';
 void main() {
   ValueEncoder.set(const PostgresValueEncoder());
 
-  group('Given tables with different columns', () {
+  group('Given tables with different columns,', () {
     test(
-      'when a column is missing in the target table then mismatches include missing column',
+      'when a column is missing in the target table, '
+      'then mismatches include missing column',
       () {
         var tableA = TableDefinition(
           name: 'test_table',
@@ -61,7 +62,8 @@ void main() {
     );
 
     test(
-      'when columns have different types then mismatches include column type mismatch',
+      'when columns have different types, '
+      'then mismatches include column type mismatch',
       () {
         var tableA = TableDefinition(
           name: 'test_table',
@@ -107,7 +109,8 @@ void main() {
     );
 
     test(
-      'when columns have different nullability then mismatches include column nullability mismatch',
+      'when columns have different nullability, '
+      'then mismatches include column nullability mismatch',
       () {
         var tableA = TableDefinition(
           name: 'test_table',
@@ -153,7 +156,8 @@ void main() {
     );
 
     test(
-      'when columns have different default values then mismatches include default value mismatch',
+      'when columns have different default values, '
+      'then mismatches include default value mismatch',
       () {
         var tableA = TableDefinition(
           name: 'test_table',
@@ -202,7 +206,8 @@ void main() {
   });
 
   test(
-    'when vector columns have different dimension then mismatches include dimension mismatch.',
+    'when vector columns have different dimension, '
+    'then mismatches include dimension mismatch.',
     () {
       var tableA = TableDefinition(
         name: 'test_table',
@@ -250,7 +255,8 @@ void main() {
   );
 
   test(
-    'when half vector columns have different dimension then mismatches include dimension mismatch.',
+    'when half vector columns have different dimension, '
+    'then mismatches include dimension mismatch.',
     () {
       var tableA = TableDefinition(
         name: 'test_table',
@@ -298,7 +304,8 @@ void main() {
   );
 
   test(
-    'when sparse vector columns have different dimension then mismatches include dimension mismatch.',
+    'when sparse vector columns have different dimension, '
+    'then mismatches include dimension mismatch.',
     () {
       var tableA = TableDefinition(
         name: 'test_table',
@@ -346,7 +353,8 @@ void main() {
   );
 
   test(
-    'when bit vector columns have different dimension then mismatches include dimension mismatch.',
+    'when bit vector columns have different dimension, '
+    'then mismatches include dimension mismatch.',
     () {
       var tableA = TableDefinition(
         name: 'test_table',

@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 
 void main() {
-  group('WebWidget', () {
+  group('WebWidget,', () {
     test(
       'Given a template with variables, '
       'when render is called with onMissingVariable callback, '

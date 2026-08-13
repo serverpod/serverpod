@@ -9,7 +9,8 @@ import '../../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
   test(
-    'Given a class with a field with a database keyword, then a error is generated.',
+    'Given a class with a field with a database keyword, '
+    'then a error is generated.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(

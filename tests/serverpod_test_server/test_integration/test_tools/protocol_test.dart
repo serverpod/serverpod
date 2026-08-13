@@ -4,10 +4,10 @@ import 'serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given TestToolsEndpoint',
+    'Given TestToolsEndpoint,',
     (sessionBuilder, endpoints) {
       test(
-        'when calling method with positional arg then echoes the value',
+        'when calling method with positional arg, then echoes the value',
         () async {
           final result = await endpoints.methodSignaturePermutations
               .echoPositionalArg(sessionBuilder, 'PositionalArg');
@@ -16,7 +16,7 @@ void main() {
       );
 
       test(
-        'when calling method with named arg then echoes the value',
+        'when calling method with named arg, then echoes the value',
         () async {
           final result = await endpoints.methodSignaturePermutations
               .echoNamedArg(sessionBuilder, string: 'NamedArg');
@@ -25,7 +25,8 @@ void main() {
       );
 
       test(
-        'when calling method with a nullable named arg with value then echoes value',
+        'when calling method with a nullable named arg with value, '
+        'then echoes value',
         () async {
           final result = await endpoints.methodSignaturePermutations
               .echoNullableNamedArg(sessionBuilder, string: 'NamedArg');
@@ -34,7 +35,8 @@ void main() {
       );
 
       test(
-        'when calling method with a nullable named arg without passing value then echoes null',
+        'when calling method with a nullable named arg without passing value, '
+        'then echoes null',
         () async {
           final result = await endpoints.methodSignaturePermutations
               .echoNullableNamedArg(sessionBuilder);
@@ -43,7 +45,7 @@ void main() {
       );
 
       test(
-        'when calling method with optional arg then echoes the value',
+        'when calling method with optional arg, then echoes the value',
         () async {
           final result = await endpoints.methodSignaturePermutations
               .echoOptionalArg(sessionBuilder, 'OptionalArg');
@@ -52,7 +54,7 @@ void main() {
       );
 
       test(
-        'when calling method with optional arg without value then echoes null',
+        'when calling method with optional arg without value, then echoes null',
         () async {
           final result = await endpoints.methodSignaturePermutations
               .echoOptionalArg(sessionBuilder);
@@ -61,7 +63,7 @@ void main() {
       );
 
       test(
-        'when calling method with positional and named args then echoes args',
+        'when calling method with positional and named args, then echoes args',
         () async {
           final result = await endpoints.methodSignaturePermutations
               .echoPositionalAndNamedArgs(
@@ -75,7 +77,8 @@ void main() {
       );
 
       test(
-        'when calling method with positional and nullable named args with named arg then echoes args',
+        'when calling method with positional and nullable named args with named arg, '
+        'then echoes args',
         () async {
           final result = await endpoints.methodSignaturePermutations
               .echoPositionalAndNullableNamedArgs(
@@ -89,7 +92,8 @@ void main() {
       );
 
       test(
-        'when calling method with positional and named args without passing named arg then echoes null',
+        'when calling method with positional and named args without passing named arg, '
+        'then echoes null',
         () async {
           final result = await endpoints.methodSignaturePermutations
               .echoPositionalAndNullableNamedArgs(
@@ -102,7 +106,8 @@ void main() {
       );
 
       test(
-        'when calling method with positional and optional args then echoes both args',
+        'when calling method with positional and optional args, '
+        'then echoes both args',
         () async {
           final result = await endpoints.methodSignaturePermutations
               .echoPositionalAndOptionalArgs(
@@ -116,7 +121,8 @@ void main() {
       );
 
       test(
-        'when calling method with positional and optional args without passing value then echoes null',
+        'when calling method with positional and optional args without passing value, '
+        'then echoes null',
         () async {
           final result = await endpoints.methodSignaturePermutations
               .echoPositionalAndOptionalArgs(
@@ -129,7 +135,7 @@ void main() {
       );
 
       test(
-        'when calling method with named stream arg then echoes stream',
+        'when calling method with named stream arg, then echoes stream',
         () async {
           final result = await endpoints.methodSignaturePermutations
               .echoNamedArgStream(
@@ -143,7 +149,7 @@ void main() {
       );
 
       test(
-        'when calling method with named stream arg then echoes list future',
+        'when calling method with named stream arg, then echoes list future',
         () async {
           final result = await endpoints.methodSignaturePermutations
               .echoNamedArgStreamAsFuture(
@@ -156,7 +162,7 @@ void main() {
       );
 
       test(
-        'when calling method with positional stream arg then echoes stream',
+        'when calling method with positional stream arg, then echoes stream',
         () async {
           final result = await endpoints.methodSignaturePermutations
               .echoPositionalArgStream(
@@ -170,7 +176,7 @@ void main() {
       );
 
       test(
-        'when calling method with named stream arg then echoes list future',
+        'when calling method with named stream arg, then echoes list future',
         () async {
           final result = await endpoints.methodSignaturePermutations
               .echoPositionalArgStreamAsFuture(
@@ -183,7 +189,8 @@ void main() {
       );
 
       test(
-        'when calling method with empty Map<int, int> argument, then it returns the empty map.',
+        'when calling method with empty Map<int, int> argument, '
+        'then it returns the empty map.',
         () async {
           final result = await endpoints.mapParameters.returnIntIntMap(
             sessionBuilder,

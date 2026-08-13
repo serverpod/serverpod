@@ -23,19 +23,19 @@ void main() {
   );
   var tableName = 'example_table';
 
-  group('Given a class with table name when generating code', () {
-    var models = [
+  group('Given a class with table name, when generating code,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withTableName(tableName)
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
 
     test('then a class named ${testClassName}Include is generated.', () {
       expect(
@@ -61,9 +61,10 @@ void main() {
   });
 
   group(
-    'Given a class with table name and object relation field when generating code',
+    'Given a class with table name and object relation field, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -72,15 +73,15 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var compilationUnit = parseString(
+      late var compilationUnit = parseString(
         content: codeMap[expectedFilePath]!,
       ).unit;
-      var maybeClassNamedExampleInclude =
+      late var maybeClassNamedExampleInclude =
           CompilationUnitHelpers.tryFindClassDeclaration(
             compilationUnit,
             name: '${testClassName}Include',
@@ -172,7 +173,7 @@ void main() {
             : false,
       );
 
-      var includeListClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      late var includeListClass = CompilationUnitHelpers.tryFindClassDeclaration(
         compilationUnit,
         name: '${testClassName}IncludeList',
       );
@@ -268,9 +269,10 @@ void main() {
   );
 
   group(
-    'Given a class with table name and object relation field when generating code',
+    'Given a class with table name and object relation field, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -283,15 +285,15 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var compilationUnit = parseString(
+      late var compilationUnit = parseString(
         content: codeMap[expectedFilePath]!,
       ).unit;
-      var maybeClassNamedExampleInclude =
+      late var maybeClassNamedExampleInclude =
           CompilationUnitHelpers.tryFindClassDeclaration(
             compilationUnit,
             name: '${testClassName}Include',

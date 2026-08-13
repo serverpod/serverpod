@@ -5,9 +5,10 @@ import 'package:test/test.dart';
 void main() {
   ValueEncoder.set(const PostgresValueEncoder());
 
-  group('Given a comprehensive RuntimeParameters implementation', () {
+  group('Given a comprehensive RuntimeParameters implementation,', () {
     test(
-      'when build is called with all parameter types then correct SQL statements are returned.',
+      'when build is called with all parameter types, '
+      'then correct SQL statements are returned.',
       () {
         var options = _ComprehensiveRuntimeParameters(
           booleanTrue: true,
@@ -34,7 +35,8 @@ void main() {
     );
 
     test(
-      'when build is called with mixed null and non-null values then null values become TO DEFAULT.',
+      'when build is called with mixed null and non-null values, '
+      'then null values become TO DEFAULT.',
       () {
         var options = const _ComprehensiveRuntimeParameters(
           booleanTrue: true,
@@ -62,7 +64,8 @@ void main() {
     );
 
     test(
-      'when build is called with only null values then TO DEFAULT is used for all parameters.',
+      'when build is called with only null values, '
+      'then TO DEFAULT is used for all parameters.',
       () {
         var options = const _ComprehensiveRuntimeParameters();
 
@@ -82,7 +85,8 @@ void main() {
     );
 
     test(
-      'when build is called with isLocal true then LOCAL is included in all SQL statements.',
+      'when build is called with isLocal true, '
+      'then LOCAL is included in all SQL statements.',
       () {
         var options = _ComprehensiveRuntimeParameters(
           booleanTrue: true,
@@ -105,8 +109,8 @@ void main() {
       },
     );
 
-    group('with enum handling', () {
-      test('when IterativeScan.off is used then off is generated.', () {
+    group('with enum handling,', () {
+      test('when IterativeScan.off is used, then off is generated.', () {
         var options = const _ComprehensiveRuntimeParameters(
           enumValue: IterativeScan.off,
         );
@@ -117,7 +121,7 @@ void main() {
       });
 
       test(
-        'when IterativeScan.strict is used then strict_order is generated.',
+        'when IterativeScan.strict is used, then strict_order is generated.',
         () {
           var options = const _ComprehensiveRuntimeParameters(
             enumValue: IterativeScan.strict,
@@ -130,7 +134,7 @@ void main() {
       );
 
       test(
-        'when IterativeScan.relaxed is used then relaxed_order is generated.',
+        'when IterativeScan.relaxed is used, then relaxed_order is generated.',
         () {
           var options = const _ComprehensiveRuntimeParameters(
             enumValue: IterativeScan.relaxed,
@@ -143,8 +147,8 @@ void main() {
       );
     });
 
-    group('with boolean conversion', () {
-      test('when boolean is true then on is used in SQL.', () {
+    group('with boolean conversion,', () {
+      test('when boolean is true, then on is used in SQL.', () {
         var options = const _ComprehensiveRuntimeParameters(
           booleanTrue: true,
         );
@@ -154,7 +158,7 @@ void main() {
         expect(result, contains('SET test.boolean_true = on;'));
       });
 
-      test('when boolean is false then off is used in SQL.', () {
+      test('when boolean is false, then off is used in SQL.', () {
         var options = const _ComprehensiveRuntimeParameters(
           booleanFalse: false,
         );
@@ -165,9 +169,10 @@ void main() {
       });
     });
 
-    group('with nested RuntimeParameters', () {
+    group('with nested RuntimeParameters,', () {
       test(
-        'when nested RuntimeParameters is provided then nested build is called.',
+        'when nested RuntimeParameters is provided, '
+        'then nested build is called.',
         () {
           var options = _ComprehensiveRuntimeParameters(
             nestedParameters: _NestedRuntimeParameters(),
@@ -180,7 +185,8 @@ void main() {
       );
 
       test(
-        'when nested RuntimeParameters and isLocal true then nested receives isLocal.',
+        'when nested RuntimeParameters and isLocal true, '
+        'then nested receives isLocal.',
         () {
           var options = _ComprehensiveRuntimeParameters(
             nestedParameters: _NestedRuntimeParameters(),
@@ -197,9 +203,10 @@ void main() {
     });
   });
 
-  group('Given a HnswIndexQueryOptions', () {
+  group('Given a HnswIndexQueryOptions,', () {
     test(
-      'when build is called with all parameters then correct SQL statements are returned.',
+      'when build is called with all parameters, '
+      'then correct SQL statements are returned.',
       () {
         var options = const HnswIndexQueryOptions(
           efSearch: 100,
@@ -220,7 +227,7 @@ void main() {
       },
     );
 
-    test('when created with no parameters then default values are used.', () {
+    test('when created with no parameters, then default values are used.', () {
       var options = const HnswIndexQueryOptions();
 
       var result = options.build(isLocal: false);
@@ -235,7 +242,8 @@ void main() {
     });
 
     test(
-      'when build is called with isLocal true then LOCAL is included in SQL statements.',
+      'when build is called with isLocal true, '
+      'then LOCAL is included in SQL statements.',
       () {
         var options = const HnswIndexQueryOptions(
           efSearch: 100,
@@ -255,7 +263,8 @@ void main() {
     );
 
     test(
-      'when buildCheckValues is called then SELECT statement with all options is returned.',
+      'when buildCheckValues is called, '
+      'then SELECT statement with all options is returned.',
       () {
         var options = const HnswIndexQueryOptions();
 
@@ -272,9 +281,10 @@ void main() {
     );
   });
 
-  group('Given a IvfflatIndexQueryOptions', () {
+  group('Given a IvfflatIndexQueryOptions,', () {
     test(
-      'when build is called with all parameters then correct SQL statements are returned.',
+      'when build is called with all parameters, '
+      'then correct SQL statements are returned.',
       () {
         var options = const IvfflatIndexQueryOptions(
           probes: 5,
@@ -293,7 +303,7 @@ void main() {
       },
     );
 
-    test('when created with no parameters then default values are used.', () {
+    test('when created with no parameters, then default values are used.', () {
       var options = const IvfflatIndexQueryOptions();
 
       var result = options.build(isLocal: false);
@@ -307,7 +317,8 @@ void main() {
     });
 
     test(
-      'when build is called with isLocal true then LOCAL is included in SQL statements.',
+      'when build is called with isLocal true, '
+      'then LOCAL is included in SQL statements.',
       () {
         var options = const IvfflatIndexQueryOptions(
           probes: 3,
@@ -326,7 +337,8 @@ void main() {
     );
 
     test(
-      'when buildCheckValues is called then SELECT statement with all options is returned.',
+      'when buildCheckValues is called, '
+      'then SELECT statement with all options is returned.',
       () {
         var options = const IvfflatIndexQueryOptions();
 
@@ -341,8 +353,9 @@ void main() {
       },
     );
 
-    group('with constructor validation', () {
-      test('when iterative scan is strict then assertion error is thrown.', () {
+    group('with constructor validation,', () {
+      test('when iterative scan is strict, '
+           'then assertion error is thrown.', () {
         expect(
           () => IvfflatIndexQueryOptions(iterativeScan: IterativeScan.strict),
           throwsA(isA<AssertionError>()),
@@ -350,7 +363,7 @@ void main() {
       });
 
       test(
-        'when iterative scan is not strict then no assertion error is thrown.',
+        'when iterative scan is not strict, then no assertion error is thrown.',
         () {
           expect(
             () => const IvfflatIndexQueryOptions(
@@ -361,7 +374,8 @@ void main() {
         },
       );
 
-      test('when iterative scan is off then no assertion error is thrown.', () {
+      test('when iterative scan is off, '
+           'then no assertion error is thrown.', () {
         expect(
           () =>
               const IvfflatIndexQueryOptions(iterativeScan: IterativeScan.off),
@@ -371,9 +385,10 @@ void main() {
     });
   });
 
-  group('Given a VectorIndexQueryOptions', () {
+  group('Given a VectorIndexQueryOptions,', () {
     test(
-      'when build is called with all parameters then correct SQL statements are returned.',
+      'when build is called with all parameters, '
+      'then correct SQL statements are returned.',
       () {
         var options = const VectorIndexQueryOptions(
           enableIndexScan: true,
@@ -400,7 +415,7 @@ void main() {
       },
     );
 
-    test('when created with no parameters then default values are used.', () {
+    test('when created with no parameters, then default values are used.', () {
       var options = const VectorIndexQueryOptions();
 
       var result = options.build(isLocal: false);
@@ -418,7 +433,8 @@ void main() {
     });
 
     test(
-      'when build is called with isLocal true then LOCAL is included in SQL statements.',
+      'when build is called with isLocal true, '
+      'then LOCAL is included in SQL statements.',
       () {
         var options = const VectorIndexQueryOptions(
           enableIndexScan: true,
@@ -442,7 +458,8 @@ void main() {
     );
 
     test(
-      'when buildCheckValues is called then SELECT statement with all options is returned.',
+      'when buildCheckValues is called, '
+      'then SELECT statement with all options is returned.',
       () {
         var options = const VectorIndexQueryOptions();
 
@@ -462,9 +479,10 @@ void main() {
     );
   });
 
-  group('Given a SearchPathsConfig', () {
+  group('Given a SearchPathsConfig,', () {
     test(
-      'when build is called with search paths then correct SQL statement is returned.',
+      'when build is called with search paths, '
+      'then correct SQL statement is returned.',
       () {
         var options = SearchPathsConfig(
           searchPaths: ['public', 'custom_schema', 'another_schema'],
@@ -480,7 +498,7 @@ void main() {
     );
 
     test(
-      'when build is called with null search paths then TO DEFAULT is used.',
+      'when build is called with null search paths, then TO DEFAULT is used.',
       () {
         var options = const SearchPathsConfig(
           searchPaths: null,
@@ -496,7 +514,8 @@ void main() {
     );
 
     test(
-      'when build is called with isLocal true then LOCAL is included in SQL statement.',
+      'when build is called with isLocal true, '
+      'then LOCAL is included in SQL statement.',
       () {
         var options = SearchPathsConfig(
           searchPaths: ['public', 'custom_schema'],
@@ -512,7 +531,8 @@ void main() {
     );
 
     test(
-      'when build is called with isLocal true and null paths then LOCAL TO DEFAULT is used.',
+      'when build is called with isLocal true and null paths, '
+      'then LOCAL TO DEFAULT is used.',
       () {
         var options = const SearchPathsConfig(
           searchPaths: null,
@@ -528,7 +548,8 @@ void main() {
     );
 
     test(
-      'when buildCheckValues is called then SELECT statement with search_path option is returned.',
+      'when buildCheckValues is called, '
+      'then SELECT statement with search_path option is returned.',
       () {
         var options = SearchPathsConfig(
           searchPaths: ['public'],
@@ -543,9 +564,9 @@ void main() {
       },
     );
 
-    group('with constructor validation', () {
+    group('with constructor validation,', () {
       test(
-        'when search paths list is empty then assertion error is thrown.',
+        'when search paths list is empty, then assertion error is thrown.',
         () {
           expect(
             () => SearchPathsConfig(searchPaths: []),
@@ -555,7 +576,7 @@ void main() {
       );
 
       test(
-        'when search paths list is null then no assertion error is thrown.',
+        'when search paths list is null, then no assertion error is thrown.',
         () {
           expect(
             () => const SearchPathsConfig(searchPaths: null),
@@ -565,7 +586,8 @@ void main() {
       );
 
       test(
-        'when search paths list has valid entries then no assertion error is thrown.',
+        'when search paths list has valid entries, '
+        'then no assertion error is thrown.',
         () {
           expect(
             () => SearchPathsConfig(searchPaths: ['public', 'custom']),
@@ -576,9 +598,10 @@ void main() {
     });
   });
 
-  group('Given RuntimeParametersBuilder', () {
+  group('Given RuntimeParametersBuilder,', () {
     test(
-      'when using hnswIndexQuery then correct HnswIndexQueryOptions is created.',
+      'when using hnswIndexQuery, '
+      'then correct HnswIndexQueryOptions is created.',
       () {
         var builder = RuntimeParametersBuilder();
         var options = builder.hnswIndexQuery(
@@ -597,7 +620,8 @@ void main() {
     );
 
     test(
-      'when using ivfflatIndexQuery then correct IvfflatIndexQueryOptions is created.',
+      'when using ivfflatIndexQuery, '
+      'then correct IvfflatIndexQueryOptions is created.',
       () {
         var builder = RuntimeParametersBuilder();
         var options = builder.ivfflatIndexQuery(
@@ -614,7 +638,8 @@ void main() {
     );
 
     test(
-      'when using vectorIndexQuery then correct VectorIndexQueryOptions is created.',
+      'when using vectorIndexQuery, '
+      'then correct VectorIndexQueryOptions is created.',
       () {
         var builder = RuntimeParametersBuilder();
         var options = builder.vectorIndexQuery(
@@ -639,7 +664,7 @@ void main() {
     );
 
     test(
-      'when using hnswIndexQuery with no parameters then defaults are used.',
+      'when using hnswIndexQuery with no parameters, then defaults are used.',
       () {
         var builder = RuntimeParametersBuilder();
         var options = builder.hnswIndexQuery();
@@ -653,7 +678,8 @@ void main() {
     );
 
     test(
-      'when using ivfflatIndexQuery with no parameters then defaults are used.',
+      'when using ivfflatIndexQuery with no parameters, '
+      'then defaults are used.',
       () {
         var builder = RuntimeParametersBuilder();
         var options = builder.ivfflatIndexQuery();
@@ -666,7 +692,7 @@ void main() {
     );
 
     test(
-      'when using vectorIndexQuery with no parameters then defaults are used.',
+      'when using vectorIndexQuery with no parameters, then defaults are used.',
       () {
         var builder = RuntimeParametersBuilder();
         var options = builder.vectorIndexQuery();
@@ -683,7 +709,7 @@ void main() {
     );
 
     test(
-      'when using searchPaths then correct SearchPathsConfig is created.',
+      'when using searchPaths, then correct SearchPathsConfig is created.',
       () {
         var builder = RuntimeParametersBuilder();
         var options = builder.searchPaths(['public', 'custom_schema']);
@@ -694,7 +720,8 @@ void main() {
     );
 
     test(
-      'when using searchPaths with null then correct SearchPathsConfig is created.',
+      'when using searchPaths with null, '
+      'then correct SearchPathsConfig is created.',
       () {
         var builder = RuntimeParametersBuilder();
         var options = builder.searchPaths(null);
@@ -705,9 +732,9 @@ void main() {
     );
   });
 
-  group('Given a MapRuntimeParameters', () {
+  group('Given a MapRuntimeParameters,', () {
     test(
-      'when build is called with various types then correct SQL is returned.',
+      'when build is called with various types, then correct SQL is returned.',
       () {
         var params = MapRuntimeParameters({
           'custom.string': 'value',
@@ -729,7 +756,8 @@ void main() {
     );
 
     test(
-      'when build is called with nested RuntimeParameters then nested SQL is included.',
+      'when build is called with nested RuntimeParameters, '
+      'then nested SQL is included.',
       () {
         var params = MapRuntimeParameters({
           'outer.key': 'outer',
@@ -743,7 +771,7 @@ void main() {
       },
     );
 
-    test('when build is called with isLocal true then LOCAL is included.', () {
+    test('when build is called with isLocal true, then LOCAL is included.', () {
       var params = MapRuntimeParameters({'custom.key': 1});
 
       var result = params.build(isLocal: true);
@@ -751,7 +779,8 @@ void main() {
       expect(result, 'SET LOCAL custom.key = 1;');
     });
 
-    test('when buildCheckValues is called then SELECT statement is correct.', () {
+    test('when buildCheckValues is called, '
+         'then SELECT statement is correct.', () {
       var params = MapRuntimeParameters({
         'a': 1,
         'b': 'x',

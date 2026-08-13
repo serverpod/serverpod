@@ -14,10 +14,10 @@ const projectName = 'example_project';
 const generator = DartServerCodeGenerator();
 
 void main() {
-  group('Given a model that references a type from module:serverpod', () {
-    var config = GeneratorConfigBuilder().withName(projectName).build();
+  group('Given a model that references a type from module:serverpod,', () {
+    late var config = GeneratorConfigBuilder().withName(projectName).build();
 
-    var myModel = ModelClassDefinitionBuilder()
+    late var myModel = ModelClassDefinitionBuilder()
         .withClassName('MyModel')
         .withFileName('my_model')
         .withField(
@@ -36,7 +36,7 @@ void main() {
 
     var models = [myModel];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
@@ -48,8 +48,8 @@ void main() {
       '$fileName.dart',
     ]);
 
-    var myModelCode = codeMap[getExpectedFilePath('my_model')]!;
-    var compilationUnit = parseString(content: myModelCode).unit;
+    late var myModelCode = codeMap[getExpectedFilePath('my_model')]!;
+    late var compilationUnit = parseString(content: myModelCode).unit;
 
     test(
       'then the generated file does not have compilation errors',
@@ -72,17 +72,17 @@ void main() {
     );
   });
 
-  group('Given a model that references AuthUser from serverpod_auth_core', () {
-    var authCoreModule = ModuleConfigBuilder(
+  group('Given a model that references AuthUser from serverpod_auth_core,', () {
+    late var authCoreModule = ModuleConfigBuilder(
       'serverpod_auth_core',
       'serverpod_auth_core',
     ).build();
 
-    var config = GeneratorConfigBuilder().withName(projectName).withModules([
+    late var config = GeneratorConfigBuilder().withName(projectName).withModules([
       authCoreModule,
     ]).build();
 
-    var myDomainData = ModelClassDefinitionBuilder()
+    late var myDomainData = ModelClassDefinitionBuilder()
         .withClassName('MyDomainData')
         .withFileName('my_domain_data')
         .withField(
@@ -104,7 +104,7 @@ void main() {
 
     var models = [myDomainData];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
@@ -116,8 +116,8 @@ void main() {
       '$fileName.dart',
     ]);
 
-    var myDomainDataCode = codeMap[getExpectedFilePath('my_domain_data')]!;
-    var compilationUnit = parseString(content: myDomainDataCode).unit;
+    late var myDomainDataCode = codeMap[getExpectedFilePath('my_domain_data')]!;
+    late var compilationUnit = parseString(content: myDomainDataCode).unit;
 
     test(
       'then the generated file does not have compilation errors',

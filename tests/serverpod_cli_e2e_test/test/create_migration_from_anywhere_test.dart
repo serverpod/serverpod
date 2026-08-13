@@ -7,7 +7,7 @@ import 'package:uuid/uuid.dart';
 
 void main() async {
   group(
-    'Given a serverpod project with a root pubspec',
+    'Given a serverpod project with a root pubspec,',
     () {
       late String projectName;
 
@@ -35,7 +35,8 @@ environment:
       });
 
       test(
-        'when create-migration is called from project root then it should succeed.',
+        'when create-migration is called from project root, '
+        'then it should succeed.',
         () async {
           var result = await runServerpod(
             ['create-migration'],
@@ -65,7 +66,8 @@ environment:
       );
 
       test(
-        'when create-repair-migration is called from project root then it should not fail due to root pubspec.',
+        'when create-repair-migration is called from project root, '
+        'then it should not fail due to root pubspec.',
         () async {
           var result = await runServerpod(
             ['create-repair-migration'],
@@ -92,7 +94,7 @@ environment:
   );
 
   group(
-    'Given a serverpod project without a root pubspec',
+    'Given a serverpod project without a root pubspec,',
     () {
       late String projectName;
       late String clientDir;
@@ -113,7 +115,8 @@ environment:
       });
 
       test(
-        'when create-migration is called from client directory then it should succeed.',
+        'when create-migration is called from client directory, '
+        'then it should succeed.',
         () async {
           var result = await runServerpod(
             ['create-migration'],
@@ -137,7 +140,8 @@ environment:
       );
 
       test(
-        'when create-repair-migration is called from client directory then it should not fail due to package detection.',
+        'when create-repair-migration is called from client directory, '
+        'then it should not fail due to package detection.',
         () async {
           var result = await runServerpod(
             ['create-repair-migration'],

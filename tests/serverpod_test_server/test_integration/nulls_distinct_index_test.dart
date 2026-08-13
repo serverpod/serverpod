@@ -12,7 +12,7 @@ void main() {
     sessionBuilder,
     endpoints,
   ) {
-    var session = sessionBuilder.build();
+    late var session = sessionBuilder.build();
 
     test(
       'when rows with the same null-distinct values and a null are inserted, '
@@ -149,7 +149,7 @@ void main() {
     sessionBuilder,
     endpoints,
   ) {
-    var session = sessionBuilder.build();
+    late var session = sessionBuilder.build();
 
     test(
       'when the PostgreSQL schema is analyzed, '

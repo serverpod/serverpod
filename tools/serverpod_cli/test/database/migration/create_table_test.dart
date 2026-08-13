@@ -7,19 +7,19 @@ import '../../test_util/builders/database/database_definition_builder.dart';
 import '../../test_util/builders/database/table_definition_builder.dart';
 
 void main() {
-  group('Given an empty source but a target definition with a new table', () {
+  group('Given an empty source but a target definition with a new table,', () {
     var tableName = 'example_table';
 
-    var sourceDefinition = DatabaseDefinitionBuilder()
+    late var sourceDefinition = DatabaseDefinitionBuilder()
         .withDefaultModules()
         .build();
 
-    var targetDefinition = DatabaseDefinitionBuilder()
+    late var targetDefinition = DatabaseDefinitionBuilder()
         .withDefaultModules()
         .withTable(TableDefinitionBuilder().withName(tableName).build())
         .build();
 
-    var migration = generateDatabaseMigration(
+    late var migration = generateDatabaseMigration(
       databaseSource: sourceDefinition,
       databaseTarget: targetDefinition,
     );

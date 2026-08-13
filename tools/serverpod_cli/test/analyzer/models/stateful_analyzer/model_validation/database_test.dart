@@ -10,8 +10,8 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   test(
-    'Given a class with a table level database keyword '
-    'when validating '
+    'Given a class with a table level database keyword, '
+    'when validating, '
     'then no error is generated.',
     () {
       var models = [
@@ -37,8 +37,8 @@ void main() {
   );
 
   test(
-    'Given a class without a table and a database keyword '
-    'when validating '
+    'Given a class without a table and a database keyword, '
+    'when validating, '
     'then an error is generated.',
     () {
       var models = [

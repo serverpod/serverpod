@@ -15,7 +15,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "byNameEnumDefaultAndDefaultModel" field value should match the default value',
+      'when creating a record in the database with an unsafe query, '
+      'then the "byNameEnumDefaultAndDefaultModel" field value should match the default value',
       () async {
         await session.db.unsafeQuery(
           '''
@@ -32,7 +33,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "byNameEnumDefaultAndDefaultPersist" field value should match the defaultPersist value',
+      'when creating a record in the database with an unsafe query, '
+      'then the "byNameEnumDefaultAndDefaultPersist" field value should match the defaultPersist value',
       () async {
         await session.db.unsafeQuery(
           '''
@@ -49,7 +51,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "byNameEnumDefaultModelAndDefaultPersist" field value should match the defaultPersist value',
+      'when creating a record in the database with an unsafe query, '
+      'then the "byNameEnumDefaultModelAndDefaultPersist" field value should match the defaultPersist value',
       () async {
         await session.db.unsafeQuery(
           '''
@@ -66,7 +69,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with specific values, then the "byNameEnumDefaultAndDefaultModel" field value should match the provided value',
+      'when creating a record in the database with specific values, '
+      'then the "byNameEnumDefaultAndDefaultModel" field value should match the provided value',
       () async {
         var specificObject = EnumDefaultMix(
           byNameEnumDefaultAndDefaultModel: ByNameEnum.byName2,
@@ -83,7 +87,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with specific values, then the "byNameEnumDefaultAndDefaultPersist" field value should match the provided value',
+      'when creating a record in the database with specific values, '
+      'then the "byNameEnumDefaultAndDefaultPersist" field value should match the provided value',
       () async {
         var specificObject = EnumDefaultMix(
           byNameEnumDefaultAndDefaultPersist: ByNameEnum.byName1,
@@ -100,7 +105,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with specific values, then the "byNameEnumDefaultModelAndDefaultPersist" field value should match the provided value',
+      'when creating a record in the database with specific values, '
+      'then the "byNameEnumDefaultModelAndDefaultPersist" field value should match the provided value',
       () async {
         var specificObject = EnumDefaultMix(
           byNameEnumDefaultModelAndDefaultPersist: ByNameEnum.byName1,

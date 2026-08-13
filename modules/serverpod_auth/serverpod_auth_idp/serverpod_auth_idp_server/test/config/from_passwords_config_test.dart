@@ -21,7 +21,7 @@ void main() {
     publicPort: 0,
   );
 
-  group('Given missing IDP passwords', () {
+  group('Given missing IDP passwords,', () {
     setUpAll(() async {
       await d.dir('config', [
         d.file('passwords.yaml', 'test:\n  database: "test"'),
@@ -39,7 +39,8 @@ void main() {
     });
 
     test(
-      'when constructing EmailIdpConfigFromPasswords then throws PasswordNotFoundException.',
+      'when constructing EmailIdpConfigFromPasswords, '
+      'then throws PasswordNotFoundException.',
       () {
         expect(
           () => EmailIdpConfigFromPasswords(),
@@ -55,7 +56,8 @@ void main() {
     );
 
     test(
-      'when constructing GoogleIdpConfigFromPasswords then throws PasswordNotFoundException.',
+      'when constructing GoogleIdpConfigFromPasswords, '
+      'then throws PasswordNotFoundException.',
       () {
         expect(
           () => GoogleIdpConfigFromPasswords(),
@@ -71,7 +73,8 @@ void main() {
     );
 
     test(
-      'when constructing FacebookIdpConfigFromPasswords then throws PasswordNotFoundException.',
+      'when constructing FacebookIdpConfigFromPasswords, '
+      'then throws PasswordNotFoundException.',
       () {
         expect(
           () => FacebookIdpConfigFromPasswords(),
@@ -87,7 +90,8 @@ void main() {
     );
 
     test(
-      'when constructing GitHubIdpConfigFromPasswords then throws PasswordNotFoundException.',
+      'when constructing GitHubIdpConfigFromPasswords, '
+      'then throws PasswordNotFoundException.',
       () {
         expect(
           () => GitHubIdpConfigFromPasswords(),
@@ -103,7 +107,8 @@ void main() {
     );
 
     test(
-      'when constructing AppleIdpConfigFromPasswords then throws PasswordNotFoundException.',
+      'when constructing AppleIdpConfigFromPasswords, '
+      'then throws PasswordNotFoundException.',
       () {
         expect(
           () => AppleIdpConfigFromPasswords(),
@@ -119,7 +124,8 @@ void main() {
     );
 
     test(
-      'when constructing MicrosoftIdpConfigFromPasswords then throws PasswordNotFoundException.',
+      'when constructing MicrosoftIdpConfigFromPasswords, '
+      'then throws PasswordNotFoundException.',
       () {
         expect(
           () => MicrosoftIdpConfigFromPasswords(),
@@ -135,7 +141,8 @@ void main() {
     );
 
     test(
-      'when constructing PasskeyIdpConfigFromPasswords then throws PasswordNotFoundException.',
+      'when constructing PasskeyIdpConfigFromPasswords, '
+      'then throws PasswordNotFoundException.',
       () {
         expect(
           () => PasskeyIdpConfigFromPasswords(),
@@ -152,7 +159,7 @@ void main() {
   });
 
   group(
-    'Given emailSecretHashPepper password is present',
+    'Given emailSecretHashPepper password is present,',
 
     () {
       setUpAll(() async {
@@ -177,7 +184,7 @@ test:
       });
 
       test(
-        'when constructing EmailIdpConfigFromPasswords then succeeds.',
+        'when constructing EmailIdpConfigFromPasswords, then succeeds.',
         () {
           final config = EmailIdpConfigFromPasswords();
           expect(config, isA<EmailIdpConfig>());
@@ -187,7 +194,7 @@ test:
   );
 
   group(
-    'Given googleClientSecret password is present',
+    'Given googleClientSecret password is present,',
 
     () {
       setUpAll(() async {
@@ -212,7 +219,7 @@ test:
       });
 
       test(
-        'when constructing GoogleIdpConfigFromPasswords then succeeds.',
+        'when constructing GoogleIdpConfigFromPasswords, then succeeds.',
         () {
           final config = GoogleIdpConfigFromPasswords();
           expect(config, isA<GoogleIdpConfig>());
@@ -222,7 +229,7 @@ test:
   );
 
   group(
-    'Given Facebook passwords are present',
+    'Given Facebook passwords are present,',
 
     () {
       setUpAll(() async {
@@ -248,7 +255,7 @@ test:
       });
 
       test(
-        'when constructing FacebookIdpConfigFromPasswords then succeeds.',
+        'when constructing FacebookIdpConfigFromPasswords, then succeeds.',
         () {
           final config = FacebookIdpConfigFromPasswords();
           expect(config, isA<FacebookIdpConfig>());
@@ -258,7 +265,7 @@ test:
   );
 
   group(
-    'Given GitHub passwords are present',
+    'Given GitHub passwords are present,',
 
     () {
       setUpAll(() async {
@@ -284,7 +291,7 @@ test:
       });
 
       test(
-        'when constructing GitHubIdpConfigFromPasswords then succeeds.',
+        'when constructing GitHubIdpConfigFromPasswords, then succeeds.',
         () {
           final config = GitHubIdpConfigFromPasswords();
           expect(config, isA<GitHubIdpConfig>());
@@ -294,7 +301,7 @@ test:
   );
 
   group(
-    'Given all apple passwords are present',
+    'Given all apple passwords are present,',
 
     () {
       setUpAll(() async {
@@ -331,7 +338,7 @@ test:
       });
 
       test(
-        'when constructing AppleIdpConfigFromPasswords then succeeds.',
+        'when constructing AppleIdpConfigFromPasswords, then succeeds.',
         () {
           final config = AppleIdpConfigFromPasswords();
           expect(config, isA<AppleIdpConfig>());
@@ -346,7 +353,7 @@ test:
   );
 
   group(
-    'Given microsoftClientId and microsoftClientSecret passwords are present',
+    'Given microsoftClientId and microsoftClientSecret passwords are present,',
 
     () {
       setUpAll(() async {
@@ -372,7 +379,7 @@ test:
       });
 
       test(
-        'when constructing MicrosoftIdpConfigFromPasswords then succeeds.',
+        'when constructing MicrosoftIdpConfigFromPasswords, then succeeds.',
         () {
           final config = MicrosoftIdpConfigFromPasswords();
           expect(config, isA<MicrosoftIdpConfig>());
@@ -382,7 +389,7 @@ test:
   );
 
   group(
-    'Given passkeyHostname password is present',
+    'Given passkeyHostname password is present,',
 
     () {
       setUpAll(() async {
@@ -407,7 +414,7 @@ test:
       });
 
       test(
-        'when constructing PasskeyIdpConfigFromPasswords then succeeds.',
+        'when constructing PasskeyIdpConfigFromPasswords, then succeeds.',
         () {
           final config = PasskeyIdpConfigFromPasswords();
           expect(config, isA<PasskeyIdpConfig>());

@@ -4,7 +4,7 @@ import 'package:yaml/yaml.dart';
 
 void main() {
   test(
-    'Given no database section when inferring dialect then result is null.',
+    'Given no database section, when inferring dialect, then result is null.',
     () {
       expect(
         inferDatabaseDialectFromConfigMap({
@@ -21,7 +21,9 @@ void main() {
   );
 
   test(
-    'Given empty database section when inferring dialect then result is null.',
+    'Given empty database section, '
+    'when inferring dialect, '
+    'then result is null.',
     () {
       expect(
         inferDatabaseDialectFromConfigMap({'database': {}}),
@@ -31,7 +33,7 @@ void main() {
   );
 
   test(
-    'Given SQLite filePath when inferring dialect then result is sqlite.',
+    'Given SQLite filePath, when inferring dialect, then result is sqlite.',
     () {
       expect(
         inferDatabaseDialectFromConfigMap({
@@ -43,7 +45,9 @@ void main() {
   );
 
   test(
-    'Given PostgreSQL-shaped database when inferring dialect then result is postgres.',
+    'Given PostgreSQL-shaped database, '
+    'when inferring dialect, '
+    'then result is postgres.',
     () {
       expect(
         inferDatabaseDialectFromConfigMap({
@@ -60,7 +64,7 @@ void main() {
   );
 
   test(
-    'Given YAML from loadYaml when inferring dialect then result is sqlite.',
+    'Given YAML from loadYaml, when inferring dialect, then result is sqlite.',
     () {
       final doc = loadYaml('''
 database:
@@ -76,7 +80,9 @@ database:
   );
 
   test(
-    'Given invalid database section when inferring then an exception is thrown.',
+    'Given invalid database section, '
+    'when inferring, '
+    'then an exception is thrown.',
     () {
       expect(
         () => inferDatabaseDialectFromConfigMap({

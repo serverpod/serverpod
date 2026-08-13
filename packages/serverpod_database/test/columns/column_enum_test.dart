@@ -11,32 +11,34 @@ enum TestEnum {
 void main() {
   ValueEncoder.set(const PostgresValueEncoder());
 
-  group('Given a ColumnEnum serialized as index', () {
+  group('Given a ColumnEnum serialized as index,', () {
     var columnName = 'color';
-    var column = ColumnEnum<TestEnum>(
+    late var column = ColumnEnum<TestEnum>(
       columnName,
       Table<int?>(tableName: 'test'),
       EnumSerialization.byIndex,
     );
 
     test(
-      'when toString is called then column name withing double quotes is returned.',
+      'when toString is called, '
+      'then column name withing double quotes is returned.',
       () {
         expect(column.toString(), '"test"."$columnName"');
       },
     );
 
-    test('when columnName getter is called then column name is returned.', () {
+    test('when columnName getter is called, then column name is returned.', () {
       expect(column.columnName, columnName);
     });
 
-    test('when type is called then TestEnum is returned.', () {
+    test('when type is called, then TestEnum is returned.', () {
       expect(column.type, TestEnum);
     });
 
-    group('with _ColumnDefaultOperations mixin', () {
+    group('with _ColumnDefaultOperations mixin,', () {
       test(
-        'when equals compared to NULL value then output is IS NULL expression.',
+        'when equals compared to NULL value, '
+        'then output is IS NULL expression.',
         () {
           var comparisonExpression = column.equals(null);
 
@@ -45,7 +47,7 @@ void main() {
       );
 
       test(
-        'when equals compared to enum value then output is equals expression.',
+        'when equals compared to enum value, then output is equals expression.',
         () {
           var comparisonExpression = column.equals(TestEnum.blue);
 
@@ -54,7 +56,8 @@ void main() {
       );
 
       test(
-        'when NOT equals compared to NULL value then output is IS NOT NULL expression.',
+        'when NOT equals compared to NULL value, '
+        'then output is IS NOT NULL expression.',
         () {
           var comparisonExpression = column.notEquals(null);
 
@@ -63,7 +66,8 @@ void main() {
       );
 
       test(
-        'when NOT equals compared to enum value then output is NOT equals expression.',
+        'when NOT equals compared to enum value, '
+        'then output is NOT equals expression.',
         () {
           var comparisonExpression = column.notEquals(TestEnum.blue);
 
@@ -72,7 +76,8 @@ void main() {
       );
 
       test(
-        'when checking if expression is in value set then output is IN expression.',
+        'when checking if expression is in value set, '
+        'then output is IN expression.',
         () {
           var comparisonExpression = column.inSet(<TestEnum>{
             TestEnum.red,
@@ -85,7 +90,8 @@ void main() {
       );
 
       test(
-        'when checking if expression is in empty value set then output is FALSE expression.',
+        'when checking if expression is in empty value set, '
+        'then output is FALSE expression.',
         () {
           var comparisonExpression = column.inSet(<TestEnum>{});
 
@@ -94,7 +100,8 @@ void main() {
       );
 
       test(
-        'when checking if expression is NOT in value set then output is NOT IN expression.',
+        'when checking if expression is NOT in value set, '
+        'then output is NOT IN expression.',
         () {
           var comparisonExpression = column.notInSet(<TestEnum>{
             TestEnum.red,
@@ -110,7 +117,8 @@ void main() {
       );
 
       test(
-        'when checking if expression is NOT in empty value set then output is TRUE expression.',
+        'when checking if expression is NOT in empty value set, '
+        'then output is TRUE expression.',
         () {
           var comparisonExpression = column.notInSet(<TestEnum>{});
 
@@ -120,16 +128,16 @@ void main() {
     });
   });
 
-  group('Given a ColumnEnum serialized as name', () {
+  group('Given a ColumnEnum serialized as name,', () {
     var columnName = 'color';
-    var column = ColumnEnum<TestEnum>(
+    late var column = ColumnEnum<TestEnum>(
       columnName,
       Table<int?>(tableName: 'test'),
       EnumSerialization.byName,
     );
 
     test(
-      'when equals compared to NULL value then output is IS NULL expression.',
+      'when equals compared to NULL value, then output is IS NULL expression.',
       () {
         var comparisonExpression = column.equals(null);
 
@@ -138,7 +146,7 @@ void main() {
     );
 
     test(
-      'when equals compared to enum value then output is equals expression.',
+      'when equals compared to enum value, then output is equals expression.',
       () {
         var comparisonExpression = column.equals(TestEnum.blue);
 
@@ -147,7 +155,8 @@ void main() {
     );
 
     test(
-      'when NOT equals compared to NULL value then output is IS NOT NULL expression.',
+      'when NOT equals compared to NULL value, '
+      'then output is IS NOT NULL expression.',
       () {
         var comparisonExpression = column.notEquals(null);
 
@@ -156,7 +165,8 @@ void main() {
     );
 
     test(
-      'when NOT equals compared to enum value then output is NOT equals expression.',
+      'when NOT equals compared to enum value, '
+      'then output is NOT equals expression.',
       () {
         var comparisonExpression = column.notEquals(TestEnum.blue);
 
@@ -168,7 +178,8 @@ void main() {
     );
 
     test(
-      'when checking if expression is in value set then output is IN expression.',
+      'when checking if expression is in value set, '
+      'then output is IN expression.',
       () {
         var comparisonExpression = column.inSet(<TestEnum>{
           TestEnum.red,
@@ -184,7 +195,8 @@ void main() {
     );
 
     test(
-      'when checking if expression is NOT in value set then output is NOT IN expression.',
+      'when checking if expression is NOT in value set, '
+      'then output is NOT IN expression.',
       () {
         var comparisonExpression = column.notInSet(<TestEnum>{
           TestEnum.red,

@@ -10,7 +10,8 @@ import '../../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
   test(
-    'Given a class with a field with no persist set but has a table, then the generated model should be persisted.',
+    'Given a class with a field with no persist set but has a table, '
+    'then the generated model should be persisted.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -40,7 +41,7 @@ void main() {
   group(
     'Given a class with a field with persist set.',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withYaml(
           '''
             class: Example
@@ -50,14 +51,14 @@ void main() {
             ''',
         ).build(),
       ];
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
 
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       var definition = definitions.first as ClassDefinition;
 
@@ -71,7 +72,8 @@ void main() {
   );
 
   test(
-    'Given a class with a field with persist set to true, then the generated model should be persisted.',
+    'Given a class with a field with persist set to true, '
+    'then the generated model should be persisted.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -102,7 +104,8 @@ void main() {
   );
 
   test(
-    'Given a class with a field with persist set to false, then the generated model should not be persisted.',
+    'Given a class with a field with persist set to false, '
+    'then the generated model should not be persisted.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -133,9 +136,9 @@ void main() {
   );
 
   group(
-    'Given a class with a field with persist negated',
+    'Given a class with a field with persist negated,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -146,14 +149,14 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
 
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
       var definition = definitions.first as ClassDefinition;
 
       test('then no errors are collected.', () {
@@ -170,7 +173,8 @@ void main() {
   );
 
   test(
-    'Given a class with a field with persist negated and a relation defined, then collect an error that the keys are mutually exclusive.',
+    'Given a class with a field with persist negated and a relation defined, '
+    'then collect an error that the keys are mutually exclusive.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -202,7 +206,8 @@ void main() {
   );
 
   test(
-    'Given a class with a field with a persist key set to true, then collect an info that the keyword is unnecessary.',
+    'Given a class with a field with a persist key set to true, '
+    'then collect an info that the keyword is unnecessary.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -236,7 +241,8 @@ void main() {
   );
 
   test(
-    'Given a class with a field with a negated key and a value set, then collect an error that the negation operator cannot be used together with a value.',
+    'Given a class with a field with a negated key and a value set, '
+    'then collect an error that the negation operator cannot be used together with a value.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -265,7 +271,8 @@ void main() {
   );
 
   test(
-    'Given a class with a field with a nested negated key and a value set, then collect an error that the negation operator cannot be used together with a value.',
+    'Given a class with a field with a nested negated key and a value set, '
+    'then collect an error that the negation operator cannot be used together with a value.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -294,7 +301,8 @@ void main() {
   );
 
   test(
-    'Given a class with a field with the optional key set to an invalid value, then collect an error that value must be a boolean.',
+    'Given a class with a field with the optional key set to an invalid value, '
+    'then collect an error that value must be a boolean.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -323,7 +331,8 @@ void main() {
   );
 
   test(
-    'Given a class without a table but with a field with persist set, then collect an error that the field cannot be persisted without setting table.',
+    'Given a class without a table but with a field with persist set, '
+    'then collect an error that the field cannot be persisted without setting table.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -354,7 +363,8 @@ void main() {
   );
 
   test(
-    'Given a class with a field with the persist key set to a none boolean value, then collect a warning that the value must be a bool.',
+    'Given a class with a field with the persist key set to a none boolean value, '
+    'then collect a warning that the value must be a bool.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -383,7 +393,8 @@ void main() {
   );
 
   test(
-    'Given a class with a declared id field with the "persist" key set, then an error is collected.',
+    'Given a class with a declared id field with the "persist" key set, '
+    'then an error is collected.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(

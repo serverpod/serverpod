@@ -27,9 +27,10 @@ void main() {
   );
 
   group(
-    'Given a class named $testClassName with two primitive vars when generating code',
+    'Given a class named $testClassName with two primitive vars, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -38,17 +39,17 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var compilationUnit = parseString(
+      late var compilationUnit = parseString(
         content: codeMap[expectedFilePath]!,
       ).unit;
 
       group('then the $testClassName', () {
-        var baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        late var baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
           compilationUnit,
           name: testClassName,
         );
@@ -62,7 +63,7 @@ void main() {
         });
 
         group('has a copyWith method', () {
-          var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          late var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
             baseClass!,
             name: 'copyWith',
           );
@@ -96,7 +97,7 @@ void main() {
         }, skip: baseClass == null);
       });
 
-      var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      late var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
         compilationUnit,
         name: '_${testClassName}Impl',
       );
@@ -133,7 +134,7 @@ void main() {
         });
 
         group('has a copyWith method', () {
-          var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          late var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
             copyWithClass!,
             name: 'copyWith',
           );
@@ -184,9 +185,10 @@ void main() {
   );
 
   group(
-    'Given a class named $testClassName with a var with none scope when generating code',
+    'Given a class named $testClassName with a var with none scope, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -200,23 +202,23 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var compilationUnit = parseString(
+      late var compilationUnit = parseString(
         content: codeMap[expectedFilePath]!,
       ).unit;
 
       group('then the $testClassName', () {
-        var baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        late var baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
           compilationUnit,
           name: testClassName,
         );
 
         group('has a copyWith method', () {
-          var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          late var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
             baseClass!,
             name: 'copyWith',
           );
@@ -230,14 +232,14 @@ void main() {
         }, skip: baseClass == null);
       });
 
-      var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      late var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
         compilationUnit,
         name: '_${testClassName}Impl',
       );
 
       group('then the class named _${testClassName}Impl', () {
         group('has a copyWith method', () {
-          var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          late var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
             copyWithClass!,
             name: 'copyWith',
           );
@@ -263,9 +265,10 @@ void main() {
   );
 
   group(
-    'Given a class named $testClassName with a var with serverOnly scope when generating code',
+    'Given a class named $testClassName with a var with serverOnly scope, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -279,12 +282,12 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var compilationUnit = parseString(
+      late var compilationUnit = parseString(
         content: codeMap[expectedFilePath]!,
       ).unit;
 
@@ -300,13 +303,13 @@ void main() {
       });
 
       group('then the $testClassName', () {
-        var baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        late var baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
           compilationUnit,
           name: testClassName,
         );
 
         group('has a copyWith method', () {
-          var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          late var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
             baseClass!,
             name: 'copyWith',
           );
@@ -320,14 +323,14 @@ void main() {
         }, skip: baseClass == null);
       });
 
-      var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      late var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
         compilationUnit,
         name: '_${testClassName}Impl',
       );
 
       group('then the class named _${testClassName}Impl', () {
         group('has a copyWith method', () {
-          var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          late var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
             copyWithClass!,
             name: 'copyWith',
           );
@@ -352,8 +355,8 @@ void main() {
     },
   );
 
-  group('Given a class named $testClassName with a list of strings', () {
-    var models = [
+  group('Given a class named $testClassName with a list of strings,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -366,19 +369,19 @@ void main() {
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
 
-    var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
+    late var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: '_${testClassName}Impl',
     );
 
-    var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+    late var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
       copyWithClass!,
       name: 'copyWith',
     );
@@ -396,8 +399,8 @@ void main() {
     );
   });
 
-  group('Given a class named $testClassName with a map of strings', () {
-    var models = [
+  group('Given a class named $testClassName with a map of strings,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -412,19 +415,19 @@ void main() {
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
 
-    var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
+    late var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: '_${testClassName}Impl',
     );
 
-    var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+    late var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
       copyWithClass!,
       name: 'copyWith',
     );
@@ -442,8 +445,8 @@ void main() {
     );
   });
 
-  group('Given a class named $testClassName with a ByteData field', () {
-    var models = [
+  group('Given a class named $testClassName with a ByteData field,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -456,19 +459,19 @@ void main() {
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
 
-    var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
+    late var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: '_${testClassName}Impl',
     );
 
-    var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+    late var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
       copyWithClass!,
       name: 'copyWith',
     );
@@ -486,8 +489,8 @@ void main() {
     );
   });
 
-  group('Given a class named $testClassName with a nested object', () {
-    var models = [
+  group('Given a class named $testClassName with a nested object,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -500,19 +503,19 @@ void main() {
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
 
-    var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
+    late var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: '_${testClassName}Impl',
     );
 
-    var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+    late var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
       copyWithClass!,
       name: 'copyWith',
     );
@@ -531,9 +534,9 @@ void main() {
   });
 
   group(
-    'Given a class with only dynamic fields when generating code',
+    'Given a class with only dynamic fields, when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)

@@ -15,7 +15,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "defaultModel=\'This is a default model value\'" field value should match the default value',
+      'when creating a record in the database, '
+      'then the "defaultModel=\'This is a default model value\'" field value should match the default value',
       () async {
         var object = StringDefaultModel();
         var databaseObject = await StringDefaultModel.db.insertRow(
@@ -30,7 +31,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the nullable "defaultModel=\'This is a default model null value\'" field value should match the default value',
+      'when creating a record in the database, '
+      'then the nullable "defaultModel=\'This is a default model null value\'" field value should match the default value',
       () async {
         var object = StringDefaultModel();
         var databaseObject = await StringDefaultModel.db.insertRow(
@@ -45,7 +47,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "stringDefaultModel" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "stringDefaultModel" field value should match the provided value',
       () async {
         var specificObject = StringDefaultModel(
           stringDefaultModel: 'A specific model value',
@@ -62,7 +65,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "stringDefaultModelNull" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "stringDefaultModelNull" field value should match the provided value',
       () async {
         var specificObject = StringDefaultModel(
           stringDefaultModelNull: 'A specific model null value',

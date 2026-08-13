@@ -15,7 +15,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "defaultModel=10" field value should be 10',
+      'when creating a record in the database, '
+      'then the "defaultModel=10" field value should be 10',
       () async {
         var object = IntDefaultModel();
         var databaseObject = await IntDefaultModel.db.insertRow(
@@ -27,7 +28,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the nullable "defaultModel=20" field value should be 20',
+      'when creating a record in the database, '
+      'then the nullable "defaultModel=20" field value should be 20',
       () async {
         var object = IntDefaultModel();
         var databaseObject = await IntDefaultModel.db.insertRow(
@@ -39,7 +41,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "intDefaultModel" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "intDefaultModel" field value should match the provided value',
       () async {
         var specificObject = IntDefaultModel(
           intDefaultModel: 30,
@@ -53,7 +56,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "intDefaultModelNull" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "intDefaultModelNull" field value should match the provided value',
       () async {
         var specificObject = IntDefaultModel(
           intDefaultModelNull: 40,

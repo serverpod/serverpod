@@ -28,7 +28,8 @@ void main() {
   );
 
   group(
-    'Given protocol definition with an abstract future call when generating server files',
+    'Given protocol definition with an abstract future call, '
+    'when generating server files,',
     () {
       late Map<String, String> codeMap;
       late String? endpointsFile;
@@ -96,7 +97,8 @@ void main() {
   );
 
   group(
-    'Given protocol definition with both concrete and abstract future call when generating server files',
+    'Given protocol definition with both concrete and abstract future call, '
+    'when generating server files,',
     () {
       late Map<String, String> codeMap;
       late String? endpointsFile;

@@ -7,7 +7,7 @@ import '../../test_utils/email_idp_test_fixture.dart';
 
 void main() {
   withServerpod(
-    'Given auth user',
+    'Given auth user,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -27,7 +27,7 @@ void main() {
         await fixture.tearDown(session);
       });
 
-      group('when create email authentication is called with password', () {
+      group('when create email authentication is called with password,', () {
         late Future<UuidValue> createEmailAuthenticationFuture;
         setUp(() async {
           createEmailAuthenticationFuture = session.db.transaction(
@@ -66,7 +66,8 @@ void main() {
       });
 
       test(
-        'when create email authentication is called with null password then user cannot authenticate with empty password',
+        'when create email authentication is called with null password, '
+        'then user cannot authenticate with empty password',
         () async {
           await session.db.transaction(
             (final transaction) =>
@@ -96,7 +97,8 @@ void main() {
       );
 
       test(
-        'when create email authentication is called with empty password then user can authenticate with empty password',
+        'when create email authentication is called with empty password, '
+        'then user can authenticate with empty password',
         () async {
           await session.db.transaction(
             (final transaction) =>

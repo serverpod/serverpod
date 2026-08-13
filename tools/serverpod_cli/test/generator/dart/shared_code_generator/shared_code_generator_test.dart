@@ -43,9 +43,9 @@ void main() {
   ]);
 
   group(
-    'Given a single shared model when generating the shared package code',
+    'Given a single shared model, when generating the shared package code,',
     () {
-      var sharedModel = ModelClassDefinitionBuilder()
+      late var sharedModel = ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withSimpleField('name', 'String')
@@ -77,16 +77,16 @@ void main() {
   );
 
   group(
-    'Given a single server model',
+    'Given a single server model,',
     () {
-      var serverModel = ModelClassDefinitionBuilder()
+      late var serverModel = ModelClassDefinitionBuilder()
           .withClassName('ServerExample')
           .withFileName('server_example')
           .withSimpleField('id', 'int')
           .build();
 
       test(
-        ' when generating the shared package code then the result is empty.',
+        ' when generating the shared package code, then the result is empty.',
         () {
           var codeMap = generator.generateSerializableModelsCode(
             models: [serverModel],
@@ -97,7 +97,7 @@ void main() {
       );
 
       test(
-        'when generating the protocol code then the result is empty.',
+        'when generating the protocol code, then the result is empty.',
         () {
           var codeMap = generator.generateProtocolCode(
             protocolDefinition: ProtocolDefinition(
@@ -114,16 +114,16 @@ void main() {
   );
 
   group(
-    'Given a single shared model when generating the protocol code',
+    'Given a single shared model, when generating the protocol code,',
     () {
-      var sharedModel = ModelClassDefinitionBuilder()
+      late var sharedModel = ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withSimpleField('name', 'String')
           .withSharedPackageName(sharedPackageName)
           .build();
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [],
         models: [sharedModel],
         futureCalls: [],

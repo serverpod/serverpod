@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 void main() async {
   var session = await IntegrationTestServer().session();
 
-  group('Given models with one to many relation ', () {
+  group('Given models with one to many relation,', () {
     tearDown(() async {
       await Order.db.deleteWhere(session, where: (_) => db.Constant.bool(true));
       await Customer.db.deleteWhere(
@@ -16,7 +16,8 @@ void main() async {
     });
 
     test(
-      'when counting models filtered on many relation count then result is as expected.',
+      'when counting models filtered on many relation count, '
+      'then result is as expected.',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Alex'),
@@ -47,7 +48,8 @@ void main() async {
     );
 
     test(
-      'when counting models filtered on filtered many relation count then result is as expected',
+      'when counting models filtered on filtered many relation count, '
+      'then result is as expected',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Alex'),
@@ -78,7 +80,8 @@ void main() async {
     );
 
     test(
-      'when counting models filtered on multiple many relation count then result is as expected.',
+      'when counting models filtered on multiple many relation count, '
+      'then result is as expected.',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Alex'),
@@ -109,7 +112,7 @@ void main() async {
     );
   });
 
-  group('Given models with nested one to many relation', () {
+  group('Given models with nested one to many relation,', () {
     tearDown(() async {
       await Comment.db.deleteWhere(
         session,
@@ -123,7 +126,8 @@ void main() async {
     });
 
     test(
-      'when counting models filtered on nested many relation count then result is as expected',
+      'when counting models filtered on nested many relation count, '
+      'then result is as expected',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Alex'),
@@ -172,7 +176,8 @@ void main() async {
     );
 
     test(
-      'when counting models filtered on filtered nested many relation count then result is as expected',
+      'when counting models filtered on filtered nested many relation count, '
+      'then result is as expected',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Alex'),

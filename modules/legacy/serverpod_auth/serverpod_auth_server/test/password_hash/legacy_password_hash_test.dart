@@ -3,8 +3,8 @@ import 'package:serverpod_auth_server/src/business/password_hash.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given password', () {
-    test('when generating hash then hash matches regression value', () async {
+  group('Given password,', () {
+    test('when generating hash, then hash matches regression value', () async {
       // This regression hash value was derived from the old serverpod hash
       // generation algorithm.
       var expectedHash =
@@ -19,7 +19,8 @@ void main() {
     });
 
     test(
-      'when validating with correct password then validator returns PasswordValidationSuccess',
+      'when validating with correct password, '
+      'then validator returns PasswordValidationSuccess',
       () async {
         var salt = 'serverpod password salt';
         var password = 'hunter2';
@@ -37,7 +38,8 @@ void main() {
     );
 
     test(
-      'when validating with incorrect password then validator returns PasswordValidationFailed',
+      'when validating with incorrect password, '
+      'then validator returns PasswordValidationFailed',
       () async {
         var salt = 'serverpod password salt';
 
@@ -54,7 +56,8 @@ void main() {
     );
 
     test(
-      'when validating with different salts then validator returns PasswordValidationFailed',
+      'when validating with different salts, '
+      'then validator returns PasswordValidationFailed',
       () async {
         var password = 'hunter2';
 
@@ -71,9 +74,10 @@ void main() {
     );
   });
 
-  group('Given password and extra salt email', () {
+  group('Given password and extra salt email,', () {
     test(
-      'when generating hash with email provided then result matches regression value',
+      'when generating hash with email provided, '
+      'then result matches regression value',
       () async {
         // This regression hash value was derived from the old serverpod hash
         // generation algorithm.
@@ -91,9 +95,9 @@ void main() {
     );
   });
 
-  group('Given password hash', () {
+  group('Given password hash,', () {
     test(
-      'when checking if hash should be updated then no update is needed.',
+      'when checking if hash should be updated, then no update is needed.',
       () async {
         var salt = 'saltySalt';
         var passwordHash = PasswordHash(
@@ -109,7 +113,7 @@ void main() {
     );
 
     test(
-      'when checking if hash is legacy hash then method returns true.',
+      'when checking if hash is legacy hash, then method returns true.',
       () async {
         var salt = 'saltySalt';
         var passwordHash = PasswordHash(
@@ -125,7 +129,8 @@ void main() {
     );
 
     test(
-      'when matching with correct password then it returns PasswordValidationSuccess',
+      'when matching with correct password, '
+      'then it returns PasswordValidationSuccess',
       () async {
         var salt = 'serverpod password salt';
         var password = 'hunter2';
@@ -149,7 +154,8 @@ void main() {
     );
 
     test(
-      'when matching with incorrect password then it returns PasswordValidationFailed',
+      'when matching with incorrect password, '
+      'then it returns PasswordValidationFailed',
       () async {
         var salt = 'serverpod password salt';
         var email = 'test@serverpod.dev';
@@ -172,7 +178,8 @@ void main() {
     );
 
     test(
-      'when matching with incorrect salt then it returns PasswordValidationFailed',
+      'when matching with incorrect salt, '
+      'then it returns PasswordValidationFailed',
       () async {
         var password = 'hunter2';
         var email = 'test@serverpod.dev';
@@ -195,7 +202,8 @@ void main() {
     );
 
     test(
-      'when matching with incorrect email then it returns PasswordValidationFailed',
+      'when matching with incorrect email, '
+      'then it returns PasswordValidationFailed',
       () async {
         var salt = 'serverpod password salt';
         var password = 'hunter2';

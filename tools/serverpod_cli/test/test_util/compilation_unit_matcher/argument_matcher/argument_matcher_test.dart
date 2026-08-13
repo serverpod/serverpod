@@ -4,7 +4,7 @@ import '../../compilation_unit_matcher.dart';
 
 void main() {
   group(
-    'Given compilation unit with class with super initializer without arguments',
+    'Given compilation unit with class with super initializer without arguments,',
     () {
       late final compilationUnit = parseCode(
         '''
@@ -15,7 +15,8 @@ void main() {
       );
 
       test(
-        'when negate matching class, constructor, super initializer and non-existent argument then test passes',
+        'when negate matching class, constructor, super initializer and non-existent argument, '
+        'then test passes',
         () {
           expect(
             compilationUnit,
@@ -32,7 +33,7 @@ void main() {
   );
 
   group(
-    'Given compilation unit with class with super initializer with positional argument',
+    'Given compilation unit with class with super initializer with positional argument,',
     () {
       late final compilationUnit = parseCode(
         '''
@@ -43,7 +44,8 @@ void main() {
       );
 
       test(
-        'when matching class, constructor, super initializer and argument then test passes',
+        'when matching class, constructor, super initializer and argument, '
+        'then test passes',
         () {
           expect(
             compilationUnit,
@@ -56,7 +58,8 @@ void main() {
       );
 
       test(
-        'when matching class, constructor, super initializer and positional argument then test passes',
+        'when matching class, constructor, super initializer and positional argument, '
+        'then test passes',
         () {
           expect(
             compilationUnit,
@@ -69,7 +72,8 @@ void main() {
       );
 
       test(
-        'when negate matching class, constructor, super initializer and named argument then test passes',
+        'when negate matching class, constructor, super initializer and named argument, '
+        'then test passes',
         () {
           expect(
             compilationUnit,
@@ -86,7 +90,7 @@ void main() {
   );
 
   group(
-    'Given compilation unit with class with super initializer with argument for named parameter',
+    'Given compilation unit with class with super initializer with argument for named parameter,',
     () {
       late final compilationUnit = parseCode(
         '''
@@ -97,7 +101,8 @@ void main() {
       );
 
       test(
-        'when matching class, constructor, super initializer and argument then test passes',
+        'when matching class, constructor, super initializer and argument, '
+        'then test passes',
         () {
           expect(
             compilationUnit,
@@ -110,7 +115,8 @@ void main() {
       );
 
       test(
-        'when matching class, constructor, super initializer and named argument then test passes',
+        'when matching class, constructor, super initializer and named argument, '
+        'then test passes',
         () {
           expect(
             compilationUnit,
@@ -123,7 +129,8 @@ void main() {
       );
 
       test(
-        'when negate matching class, constructor, super initializer and named argument with incorrect parameter name then test passes',
+        'when negate matching class, constructor, super initializer and named argument with incorrect parameter name, '
+        'then test passes',
         () {
           expect(
             compilationUnit,
@@ -138,7 +145,8 @@ void main() {
       );
 
       test(
-        'when negate matching class, constructor, super initializer and positional argument then test passes',
+        'when negate matching class, constructor, super initializer and positional argument, '
+        'then test passes',
         () {
           expect(
             compilationUnit,
@@ -155,7 +163,7 @@ void main() {
   );
 
   group(
-    'Given compilation unit with class with super initializer with same argument for multiple positional parameters',
+    'Given compilation unit with class with super initializer with same argument for multiple positional parameters,',
     () {
       late final compilationUnit = parseCode(
         '''
@@ -166,7 +174,8 @@ void main() {
       );
 
       test(
-        'when matching class, constructor, super initializer and argument then test passes',
+        'when matching class, constructor, super initializer and argument, '
+        'then test passes',
         () {
           expect(
             compilationUnit,
@@ -179,7 +188,8 @@ void main() {
       );
 
       test(
-        'when matching class, constructor, super initializer and positional argument then test passes',
+        'when matching class, constructor, super initializer and positional argument, '
+        'then test passes',
         () {
           expect(
             compilationUnit,
@@ -192,7 +202,8 @@ void main() {
       );
 
       test(
-        'when negate matching class, constructor, super initializer and named argument then test passes',
+        'when negate matching class, constructor, super initializer and named argument, '
+        'then test passes',
         () {
           expect(
             compilationUnit,
@@ -209,7 +220,7 @@ void main() {
   );
 
   group(
-    'Given compilation unit with class with super initializer with literal argument',
+    'Given compilation unit with class with super initializer with literal argument,',
     () {
       late final compilationUnit = parseCode(
         '''
@@ -220,7 +231,8 @@ void main() {
       );
 
       test(
-        'when matching class, constructor, super initializer and argument then test passes',
+        'when matching class, constructor, super initializer and argument, '
+        'then test passes',
         () {
           expect(
             compilationUnit,
@@ -235,7 +247,7 @@ void main() {
   );
 
   group(
-    'Given compilation unit with class with super initializer with identifier argument',
+    'Given compilation unit with class with super initializer with identifier argument,',
     () {
       late final compilationUnit = parseCode(
         '''
@@ -245,7 +257,8 @@ void main() {
     ''',
       );
       test(
-        'when matching class, constructor, super initializer and argument then test passes',
+        'when matching class, constructor, super initializer and argument, '
+        'then test passes',
         () {
           expect(
             compilationUnit,
@@ -259,7 +272,7 @@ void main() {
     },
   );
 
-  group('Given compilation unit with class with field initializer with argument', () {
+  group('Given compilation unit with class with field initializer with argument,', () {
     late final compilationUnit = parseCode(
       '''
       class User {
@@ -270,7 +283,8 @@ void main() {
     );
 
     test(
-      'when matching class, constructor, field initializer and argument then test passes',
+      'when matching class, constructor, field initializer and argument, '
+      'then test passes',
       () {
         expect(
           compilationUnit,
@@ -283,7 +297,8 @@ void main() {
     );
 
     test(
-      'when matching class, constructor, field initializer and positional argument then test passes',
+      'when matching class, constructor, field initializer and positional argument, '
+      'then test passes',
       () {
         expect(
           compilationUnit,
@@ -296,7 +311,8 @@ void main() {
     );
 
     test(
-      'when negate matching class, constructor, field initializer and named argument then test passes',
+      'when negate matching class, constructor, field initializer and named argument, '
+      'then test passes',
       () {
         expect(
           compilationUnit,
@@ -311,7 +327,8 @@ void main() {
     );
 
     test(
-      'when negate matching class, constructor, field initializer and invalid argument then test passes',
+      'when negate matching class, constructor, field initializer and invalid argument, '
+      'then test passes',
       () {
         expect(
           compilationUnit,

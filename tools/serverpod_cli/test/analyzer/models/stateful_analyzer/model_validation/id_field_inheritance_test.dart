@@ -10,10 +10,10 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   group(
-    'Given a parent table class and a child non-table class that extends it '
-    'when analyzing',
+    'Given a parent table class and a child non-table class that extends it, '
+    'when analyzing,',
     () {
-      var modelSources = [
+      late var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
           class: ParentClass
@@ -32,7 +32,7 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late var models = StatefulAnalyzer(
         config,
         modelSources,
@@ -58,10 +58,10 @@ void main() {
   );
 
   group(
-    'Given a parent non-table class with id field defined and a child table class that extends it '
-    'when analyzing',
+    'Given a parent non-table class with id field defined and a child table class that extends it, '
+    'when analyzing,',
     () {
-      var modelSources = [
+      late var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
           class: ParentClass
@@ -81,7 +81,7 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late var models = StatefulAnalyzer(
         config,
         modelSources,
@@ -116,10 +116,10 @@ void main() {
   );
 
   group(
-    'Given a parent non-table class with id field of type nullable UuidValue using defaultPersist keyword and a child table class that extends it '
-    'when analyzing',
+    'Given a parent non-table class with id field of type nullable UuidValue using defaultPersist keyword and a child table class that extends it, '
+    'when analyzing,',
     () {
-      var modelSources = [
+      late var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
           class: ParentClass
@@ -139,7 +139,7 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late var models = StatefulAnalyzer(
         config,
         modelSources,
@@ -169,10 +169,10 @@ void main() {
   );
 
   group(
-    'Given a parent non-table class with id field of type non-nullable UuidValue using defaultModel keyword and a child table class that extends it '
-    'when analyzing',
+    'Given a parent non-table class with id field of type non-nullable UuidValue using defaultModel keyword and a child table class that extends it, '
+    'when analyzing,',
     () {
-      var modelSources = [
+      late var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
           class: ParentClass
@@ -192,7 +192,7 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late var models = StatefulAnalyzer(
         config,
         modelSources,
@@ -222,10 +222,10 @@ void main() {
   );
 
   group(
-    'Given a parent non-table class with id field of type non-nullable UuidValue using default keyword and a child table class that extends it '
-    'when analyzing',
+    'Given a parent non-table class with id field of type non-nullable UuidValue using default keyword and a child table class that extends it, '
+    'when analyzing,',
     () {
-      var modelSources = [
+      late var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
           class: ParentClass
@@ -245,7 +245,7 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late var models = StatefulAnalyzer(
         config,
         modelSources,
@@ -270,9 +270,9 @@ void main() {
     },
   );
 
-  group('Given a grandparent non-table class with id defined and a grandchild table class that extends its parent '
-      'when analyzing', () {
-    var modelSources = [
+  group('Given a grandparent non-table class with id defined and a grandchild table class that extends its parent, '
+        'when analyzing,', () {
+    late var modelSources = [
       ModelSourceBuilder().withYaml(
         '''
           class: GrandparentClass
@@ -300,7 +300,7 @@ void main() {
       ).build(),
     ];
 
-    var collector = CodeGenerationCollector();
+    late var collector = CodeGenerationCollector();
     late var models = StatefulAnalyzer(
       config,
       modelSources,
@@ -335,10 +335,10 @@ void main() {
   });
 
   group(
-    'Given a parent non-table server only class with id field defined and a child server only table class that extends it '
-    'when analyzing',
+    'Given a parent non-table server only class with id field defined and a child server only table class that extends it, '
+    'when analyzing,',
     () {
-      var modelSources = [
+      late var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
           class: ParentClass
@@ -360,7 +360,7 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
 
       setUpAll(() {
         StatefulAnalyzer(
@@ -377,10 +377,10 @@ void main() {
   );
 
   group(
-    'Given a parent non-table class with id field of one type and a child table class that extends it defining a different id type '
-    'when analyzing',
+    'Given a parent non-table class with id field of one type and a child table class that extends it defining a different id type, '
+    'when analyzing,',
     () {
-      var modelSources = [
+      late var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
           class: ParentClass
@@ -401,7 +401,7 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
 
       setUpAll(() {
         StatefulAnalyzer(
@@ -421,9 +421,9 @@ void main() {
     },
   );
 
-  group('Given a parent non-table class with a declared id field using a constant default value and a child table class that extends it '
-      'when analyzing', () {
-    var modelSources = [
+  group('Given a parent non-table class with a declared id field using a constant default value and a child table class that extends it, '
+        'when analyzing,', () {
+    late var modelSources = [
       ModelSourceBuilder().withYaml(
         '''
           class: ParentClass
@@ -443,7 +443,7 @@ void main() {
       ).build(),
     ];
 
-    var collector = CodeGenerationCollector();
+    late var collector = CodeGenerationCollector();
 
     setUpAll(() {
       StatefulAnalyzer(
@@ -468,9 +468,9 @@ void main() {
     );
   });
 
-  group('Given a parent non-table class with id field of type UuidValue and no default value and a child table class that extends it '
-      'when analyzing', () {
-    var modelSources = [
+  group('Given a parent non-table class with id field of type UuidValue and no default value and a child table class that extends it, '
+        'when analyzing,', () {
+    late var modelSources = [
       ModelSourceBuilder().withYaml(
         '''
           class: ParentClass
@@ -489,7 +489,7 @@ void main() {
           ''',
       ).build(),
     ];
-    var collector = CodeGenerationCollector();
+    late var collector = CodeGenerationCollector();
 
     setUpAll(() {
       StatefulAnalyzer(
@@ -511,10 +511,10 @@ void main() {
   });
 
   group(
-    'Given a parent non-table class with id field of unsupported type and a child table class that extends it '
-    'when analyzing',
+    'Given a parent non-table class with id field of unsupported type and a child table class that extends it, '
+    'when analyzing,',
     () {
-      var modelSources = [
+      late var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
           class: ParentClass
@@ -534,7 +534,7 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
 
       setUpAll(() {
         StatefulAnalyzer(
@@ -557,10 +557,10 @@ void main() {
   );
 
   group(
-    'Given a parent non-table class with a declared id field with the "scope" key set and a child table class that extends it '
-    'when analyzing',
+    'Given a parent non-table class with a declared id field with the "scope" key set and a child table class that extends it, '
+    'when analyzing,',
     () {
-      var modelSources = [
+      late var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
           class: ParentClass
@@ -580,7 +580,7 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
 
       setUpAll(() {
         StatefulAnalyzer(

@@ -13,15 +13,15 @@ final config = GeneratorConfigBuilder().withName(projectName).build();
 const generator = DartServerCodeGenerator();
 
 void main() {
-  group('Given a single class when generating the code', () {
-    var models = [
+  group('Given a single class, when generating the code,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
@@ -35,15 +35,15 @@ void main() {
     });
   });
 
-  group('Given a single enum when generating the code', () {
-    var models = [
+  group('Given a single enum, when generating the code,', () {
+    late var models = [
       EnumDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
@@ -57,8 +57,8 @@ void main() {
     });
   });
 
-  group('Given multiple classes when generating the code', () {
-    var models = [
+  group('Given multiple classes, when generating the code,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
@@ -77,7 +77,7 @@ void main() {
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
@@ -110,7 +110,9 @@ void main() {
   });
 
   test(
-    'Given a server-side only class when generating the code then the server-side file is created',
+    'Given a server-side only class, '
+    'when generating the code, '
+    'then the server-side file is created',
     () {
       var models = [
         ModelClassDefinitionBuilder()
@@ -134,7 +136,9 @@ void main() {
   );
 
   test(
-    'Given a server-side only enum when generating the code then the server-side file is created',
+    'Given a server-side only enum, '
+    'when generating the code, '
+    'then the server-side file is created',
     () {
       var models = [
         EnumDefinitionBuilder()
@@ -158,9 +162,10 @@ void main() {
   );
 
   group(
-    'Given relativeServerTestToolsPathParts is set and database enabled when generating protocol code',
+    'Given relativeServerTestToolsPathParts is set and database enabled, '
+    'when generating protocol code,',
     () {
-      var configWithTestToolsPath = GeneratorConfigBuilder()
+      late var configWithTestToolsPath = GeneratorConfigBuilder()
           .withName(projectName)
           .withEnabledFeatures(
             [
@@ -175,7 +180,7 @@ void main() {
           )
           .build();
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: const ProtocolDefinition(
           endpoints: [],
           models: [],
@@ -202,9 +207,10 @@ void main() {
   );
 
   group(
-    'Given relativeServerTestToolsPathParts is not set and database enabled when generating protocol code',
+    'Given relativeServerTestToolsPathParts is not set and database enabled, '
+    'when generating protocol code,',
     () {
-      var configWithTestToolsPath = GeneratorConfigBuilder()
+      late var configWithTestToolsPath = GeneratorConfigBuilder()
           .withName(projectName)
           .withEnabledFeatures(
             [
@@ -214,7 +220,7 @@ void main() {
           .withRelativeServerTestToolsPathParts(null)
           .build();
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: const ProtocolDefinition(
           endpoints: [],
           models: [],
@@ -240,16 +246,17 @@ void main() {
   );
 
   group(
-    'Given relativeServerTestToolsPathParts is not set and database is disabled when generating protocol code',
+    'Given relativeServerTestToolsPathParts is not set and database is disabled, '
+    'when generating protocol code,',
     () {
-      var configWithTestToolsPath = GeneratorConfigBuilder()
+      late var configWithTestToolsPath = GeneratorConfigBuilder()
           .withName(projectName)
           // Disable database feature
           .withEnabledFeatures([])
           .withRelativeServerTestToolsPathParts(null)
           .build();
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: const ProtocolDefinition(
           endpoints: [],
           models: [],

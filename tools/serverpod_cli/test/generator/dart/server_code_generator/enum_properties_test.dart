@@ -14,9 +14,9 @@ void main() {
   var expectedFileName = path.join('lib', 'src', 'generated', 'example.dart');
 
   group(
-    'Given an enhanced enum with custom properties when generating code',
+    'Given an enhanced enum with custom properties, when generating code,',
     () {
-      var models = [
+      late var models = [
         EnumDefinitionBuilder()
             .withClassName('HttpStatus')
             .withFileName('example')
@@ -45,7 +45,7 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
@@ -80,8 +80,8 @@ void main() {
     },
   );
 
-  group('Given a simple enum without properties when generating code', () {
-    var models = [
+  group('Given a simple enum without properties, when generating code,', () {
+    late var models = [
       EnumDefinitionBuilder()
           .withClassName('SimpleEnum')
           .withFileName('example')
@@ -92,7 +92,7 @@ void main() {
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );

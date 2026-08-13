@@ -2,7 +2,7 @@ import 'package:serverpod_cloud_storage_s3_compat/src/config/custom_endpoint_con
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a CustomEndpointConfig with HTTP base URI', () {
+  group('Given a CustomEndpointConfig with HTTP base URI,', () {
     late CustomEndpointConfig config;
 
     setUp(() {
@@ -13,7 +13,7 @@ void main() {
     });
 
     test(
-      'when building bucket URI '
+      'when building bucket URI, '
       'then it appends bucket to the base path',
       () {
         final uri = config.buildBucketUri('my-bucket', 'us-east-1');
@@ -26,7 +26,7 @@ void main() {
     );
 
     test(
-      'when building bucket URI with different regions '
+      'when building bucket URI with different regions, '
       'then it ignores the region parameter',
       () {
         final uri1 = config.buildBucketUri('my-bucket', 'us-east-1');
@@ -37,7 +37,7 @@ void main() {
     );
 
     test(
-      'when building public URI '
+      'when building public URI, '
       'then it builds path-style URL with bucket and file path',
       () {
         final uri = config.buildPublicUri(
@@ -54,7 +54,7 @@ void main() {
     );
 
     test(
-      'when getting service name '
+      'when getting service name, '
       'then it returns the configured name',
       () {
         expect(config.serviceName, 'LocalStack');
@@ -62,7 +62,7 @@ void main() {
     );
 
     test(
-      'when building public URI with override host '
+      'when building public URI with override host, '
       'then the override host takes precedence',
       () {
         final overrideHost = Uri.https('cdn.example.com', '/assets');
@@ -81,7 +81,7 @@ void main() {
     );
   });
 
-  group('Given a CustomEndpointConfig with HTTPS base URI and path prefix', () {
+  group('Given a CustomEndpointConfig with HTTPS base URI and path prefix,', () {
     late CustomEndpointConfig config;
 
     setUp(() {
@@ -92,7 +92,7 @@ void main() {
     });
 
     test(
-      'when building bucket URI '
+      'when building bucket URI, '
       'then it correctly joins the base path with bucket',
       () {
         final uri = config.buildBucketUri('my-bucket', 'us-east-1');
@@ -103,7 +103,7 @@ void main() {
     );
 
     test(
-      'when building public URI '
+      'when building public URI, '
       'then it correctly joins all path components',
       () {
         final uri = config.buildPublicUri('my-bucket', 'us-east-1', 'file.txt');
@@ -114,8 +114,8 @@ void main() {
   });
 
   test(
-    'Given a CustomEndpointConfig with default service name '
-    'when getting service name '
+    'Given a CustomEndpointConfig with default service name, '
+    'when getting service name, '
     'then it returns the default',
     () {
       final config = CustomEndpointConfig(

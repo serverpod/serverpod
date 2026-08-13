@@ -56,7 +56,7 @@ void main() {
     await holder.dispose();
   });
 
-  group('Given a running TUI start app with onQuit callback wired', () {
+  group('Given a running TUI start app with onQuit callback wired,', () {
     late int quitCalls;
 
     setUp(() {
@@ -65,7 +65,8 @@ void main() {
     });
 
     test(
-      'when Ctrl-C is pressed twice without a selection then onQuit is invoked',
+      'when Ctrl-C is pressed twice without a selection, '
+      'then onQuit is invoked',
       () async {
         await _sendCtrlC(tester);
         await _sendCtrlC(tester);
@@ -75,7 +76,7 @@ void main() {
     );
   });
 
-  group('Given a structured log tab with a stack-traced error entry', () {
+  group('Given a structured log tab with a stack-traced error entry,', () {
     setUp(() {
       state.logHistory.add(
         LogEntry(
@@ -89,7 +90,7 @@ void main() {
       );
     });
 
-    test('when e is pressed then stack traces expand and collapse', () async {
+    test('when e is pressed, then stack traces expand and collapse', () async {
       expect(state.expandStackTraces, isFalse);
 
       await _sendKey(tester, LogicalKey.keyE);
@@ -99,7 +100,7 @@ void main() {
       expect(state.expandStackTraces, isFalse);
     });
 
-    test('when backtick is pressed then the raw server logs open', () async {
+    test('when backtick is pressed, then the raw server logs open', () async {
       expect(state.showRawServerLogs, isFalse);
 
       await _sendKey(tester, LogicalKey.backquote);
@@ -109,7 +110,7 @@ void main() {
       expect(state.showRawServerLogs, isFalse);
     });
 
-    test('when S is pressed then the raw server logs open', () async {
+    test('when S is pressed, then the raw server logs open', () async {
       expect(state.showRawServerLogs, isFalse);
 
       await _sendKey(tester, LogicalKey.keyS);
@@ -188,25 +189,25 @@ void main() {
     );
   });
 
-  group('Given the raw server logs overlay is open', () {
+  group('Given the raw server logs overlay is open,', () {
     setUp(() {
       state.showRawServerLogs = true;
     });
 
-    test('when Esc is pressed then it closes', () async {
+    test('when Esc is pressed, then it closes', () async {
       await _sendKey(tester, LogicalKey.escape);
 
       expect(state.showRawServerLogs, isFalse);
     });
 
-    test('when S is pressed then it closes', () async {
+    test('when S is pressed, then it closes', () async {
       await _sendKey(tester, LogicalKey.keyS);
 
       expect(state.showRawServerLogs, isFalse);
     });
   });
 
-  group('Given a running TUI start app with a Flutter app running', () {
+  group('Given a running TUI start app with a Flutter app running,', () {
     late int restartCalls;
 
     setUp(() {
@@ -225,7 +226,7 @@ void main() {
     });
 
     test(
-      'when Ctrl+R is pressed then the panel is opened',
+      'when Ctrl+R is pressed, then the panel is opened',
       () async {
         expect(state.showLaunchPanel, isFalse);
         await _sendCtrlR(tester);
@@ -234,7 +235,7 @@ void main() {
     );
 
     test(
-      'when Ctrl+R is pressed then it does not fall through to hot reload',
+      'when Ctrl+R is pressed, then it does not fall through to hot reload',
       () async {
         var reloadCalls = 0;
         holder.onHotReload = () => reloadCalls++;
@@ -248,7 +249,7 @@ void main() {
     );
   });
 
-  group('Given a running TUI start app with no Flutter package', () {
+  group('Given a running TUI start app with no Flutter package,', () {
     late int restartCalls;
 
     setUp(() {
@@ -258,7 +259,7 @@ void main() {
     });
 
     test(
-      'when Ctrl+R is pressed then the panel is not opened',
+      'when Ctrl+R is pressed, then the panel is not opened',
       () async {
         expect(state.showLaunchPanel, isFalse);
         await _sendCtrlR(tester);
@@ -267,7 +268,7 @@ void main() {
     );
   });
 
-  group('Given a ready TUI start app in watch mode', () {
+  group('Given a ready TUI start app in watch mode,', () {
     late int reloadCalls;
     late int restartCalls;
 
@@ -286,7 +287,7 @@ void main() {
     });
 
     test(
-      'when R is pressed then hot restart is invoked instead of hot reload',
+      'when R is pressed, then hot restart is invoked instead of hot reload',
       () async {
         await _sendKey(tester, LogicalKey.keyR);
 
@@ -295,7 +296,7 @@ void main() {
       },
     );
 
-    test('when Shift+R is pressed then hot restart is invoked', () async {
+    test('when Shift+R is pressed, then hot restart is invoked', () async {
       await _sendShiftR(tester);
 
       expect(restartCalls, 1);
@@ -303,7 +304,7 @@ void main() {
     });
   });
 
-  group('Given a ready TUI start app without watch mode', () {
+  group('Given a ready TUI start app without watch mode,', () {
     late int reloadCalls;
     late int restartCalls;
 
@@ -321,7 +322,7 @@ void main() {
     });
 
     test(
-      'when R is pressed then hot reload is invoked instead of hot restart',
+      'when R is pressed, then hot reload is invoked instead of hot restart',
       () async {
         await _sendKey(tester, LogicalKey.keyR);
 
@@ -330,7 +331,7 @@ void main() {
       },
     );
 
-    test('when Shift+R is pressed then hot restart is invoked', () async {
+    test('when Shift+R is pressed, then hot restart is invoked', () async {
       await _sendShiftR(tester);
 
       expect(restartCalls, 1);
@@ -338,13 +339,14 @@ void main() {
     });
   });
 
-  group('Given a running TUI start app with the help overlay open', () {
+  group('Given a running TUI start app with the help overlay open,', () {
     setUp(() {
       state.showHelp = true;
     });
 
     test(
-      'when Ctrl-C is pressed then it bubbles past the help-mode key absorber and exit is armed',
+      'when Ctrl-C is pressed, '
+      'then it bubbles past the help-mode key absorber and exit is armed',
       () async {
         await _sendCtrlC(tester);
 
@@ -353,7 +355,7 @@ void main() {
     );
   });
 
-  group('Given a running TUI start app with multiple launchable apps', () {
+  group('Given a running TUI start app with multiple launchable apps,', () {
     setUp(() {
       state.canLaunchApps = true;
       state.launchableApps = [
@@ -374,7 +376,7 @@ void main() {
     });
 
     test(
-      'when Ctrl+R is pressed then the launch panel opens',
+      'when Ctrl+R is pressed, then the launch panel opens',
       () async {
         await _sendCtrlR(tester);
 
@@ -383,7 +385,7 @@ void main() {
     );
 
     test(
-      'when Ctrl+R is pressed twice then the launch panel closes',
+      'when Ctrl+R is pressed twice, then the launch panel closes',
       () async {
         await _sendCtrlR(tester);
         await _sendCtrlR(tester);
@@ -393,7 +395,7 @@ void main() {
     );
 
     test(
-      'when Esc is pressed with the panel open then it closes',
+      'when Esc is pressed with the panel open, then it closes',
       () async {
         state.showLaunchPanel = true;
         await _sendKey(tester, LogicalKey.escape);
@@ -403,7 +405,7 @@ void main() {
     );
 
     test(
-      'when no app tab is open then the panel cursor starts at the first app',
+      'when no app tab is open, then the panel cursor starts at the first app',
       () async {
         state.launchPanelIndex = 1;
 
@@ -415,7 +417,7 @@ void main() {
     );
 
     test(
-      'when an app tab is active then the panel cursor starts on it',
+      'when an app tab is active, then the panel cursor starts on it',
       () async {
         // Open the second app's tab and make it the active one.
         final customer = state.getOrCreateAppLogTab(
@@ -433,7 +435,7 @@ void main() {
     );
 
     test(
-      'when arrow keys are pressed then the cursor moves and wraps',
+      'when arrow keys are pressed, then the cursor moves and wraps',
       () async {
         state.showLaunchPanel = true;
         state.launchPanelIndex = 0;
@@ -450,7 +452,7 @@ void main() {
     );
 
     test(
-      'when Enter is pressed,'
+      'when Enter is pressed, '
       'then the focused app is launched and the panel stays open',
       () async {
         var launchIndex = -1;
@@ -466,7 +468,7 @@ void main() {
     );
   });
 
-  group('Given a tab with a running Flutter app', () {
+  group('Given a tab with a running Flutter app,', () {
     setUp(() {
       state.canLaunchApps = true;
       state.launchableApps = const [
@@ -482,7 +484,7 @@ void main() {
       state.tabs.focusTab(tab);
     });
 
-    test('when x is pressed then the app is stopped', () async {
+    test('when x is pressed, then the app is stopped', () async {
       var stopIndex = -1;
       holder.onStopApp = (index) => stopIndex = index;
 
@@ -492,7 +494,7 @@ void main() {
     });
   });
 
-  group('Given a tab with a stopped Flutter app', () {
+  group('Given a tab with a stopped Flutter app,', () {
     late AppLogTab tab;
 
     setUp(() {
@@ -511,16 +513,16 @@ void main() {
       state.tabs.focusTab(tab);
     });
 
-    test('when x is pressed then the tab is closed', () async {
+    test('when x is pressed, then the tab is closed', () async {
       await _sendKey(tester, LogicalKey.keyX);
 
       expect(state.tabs.allTabs, isNot(contains(tab)));
     });
   });
 
-  group('Given a tab with no Flutter app', () {
+  group('Given a tab with no Flutter app,', () {
     // The server log tab is focused by default, so no app tab is active.
-    test('when x is pressed then no app is stopped', () async {
+    test('when x is pressed, then no app is stopped', () async {
       var stopCalls = 0;
       holder.onStopApp = (_) => stopCalls++;
 
@@ -530,12 +532,12 @@ void main() {
     });
   });
 
-  group('Given a ready TUI start app', () {
+  group('Given a ready TUI start app,', () {
     setUp(() {
       state.serverReady = true;
     });
 
-    test('when P is pressed then a repair migration is invoked', () async {
+    test('when P is pressed, then a repair migration is invoked', () async {
       var repairCalls = 0;
       var forced = true;
       holder.onCreateRepairMigration = ({bool force = false}) {
@@ -549,7 +551,7 @@ void main() {
       expect(forced, isFalse);
     });
 
-    test('when A is pressed then apply migration is invoked', () async {
+    test('when A is pressed, then apply migration is invoked', () async {
       var applyCalls = 0;
       holder.onApplyMigration = () => applyCalls++;
 
@@ -559,7 +561,7 @@ void main() {
     });
   });
 
-  group('Given a running TUI start app with exactly one launchable app', () {
+  group('Given a running TUI start app with exactly one launchable app,', () {
     late int restartCalls;
 
     setUp(() {
@@ -577,7 +579,7 @@ void main() {
     });
 
     test(
-      'when Ctrl+R is pressed then the launch panel opens',
+      'when Ctrl+R is pressed, then the launch panel opens',
       () async {
         await _sendCtrlR(tester);
         expect(state.showLaunchPanel, isTrue);
@@ -586,7 +588,7 @@ void main() {
     );
   });
 
-  group('Given a wide TUI with multiple app tabs open', () {
+  group('Given a wide TUI with multiple app tabs open,', () {
     late AppLogTab admin;
     late AppLogTab portal;
 
@@ -609,7 +611,8 @@ void main() {
     });
 
     test(
-      'when Tab is pressed from the server tab then the first app tab is focused',
+      'when Tab is pressed from the server tab, '
+      'then the first app tab is focused',
       () async {
         state.tabs.focusedAreaIndex = 0;
 
@@ -620,7 +623,7 @@ void main() {
     );
 
     test(
-      'when Tab is pressed from an app tab then the next app tab is focused',
+      'when Tab is pressed from an app tab, then the next app tab is focused',
       () async {
         state.tabs.focusTab(admin);
 
@@ -631,7 +634,7 @@ void main() {
     );
 
     test(
-      'when digit 1 is pressed then the server tab is focused',
+      'when digit 1 is pressed, then the server tab is focused',
       () async {
         state.tabs.focusTab(portal);
 
@@ -642,7 +645,7 @@ void main() {
     );
 
     test(
-      'when digit 3 is pressed then the second app tab is focused',
+      'when digit 3 is pressed, then the second app tab is focused',
       () async {
         state.tabs.focusTab(admin);
 
@@ -678,7 +681,7 @@ void main() {
     );
   });
 
-  group('Given a narrow TUI with multiple tabs open', () {
+  group('Given a narrow TUI with multiple tabs open,', () {
     late AppLogTab admin;
 
     setUp(() async {
@@ -698,7 +701,8 @@ void main() {
     });
 
     test(
-      'when Tab is pressed from the server tab then the first app tab is focused',
+      'when Tab is pressed from the server tab, '
+      'then the first app tab is focused',
       () async {
         state.tabs.focusTab(state.serverLogTab);
 

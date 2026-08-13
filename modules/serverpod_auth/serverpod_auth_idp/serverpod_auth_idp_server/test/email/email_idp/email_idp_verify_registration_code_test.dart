@@ -10,7 +10,7 @@ import '../test_utils/email_idp_test_fixture.dart';
 
 void main() {
   withServerpod(
-    'Given account request exists',
+    'Given account request exists,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -48,7 +48,7 @@ void main() {
       });
 
       group(
-        'when verifyRegistrationCode is called with generated verification code',
+        'when verifyRegistrationCode is called with generated verification code,',
         () {
           late Future<String> registrationToken;
 
@@ -68,7 +68,8 @@ void main() {
       );
 
       test(
-        'when verifyRegistrationCode is called with invalid verification code then it throws EmailAccountRequestException with reason "invalid"',
+        'when verifyRegistrationCode is called with invalid verification code, '
+        'then it throws EmailAccountRequestException with reason "invalid"',
         () async {
           final result = fixture.emailIdp.verifyRegistrationCode(
             session,
@@ -90,7 +91,7 @@ void main() {
       );
 
       group(
-        'when verifyRegistrationCode is called multiple times in quick succession',
+        'when verifyRegistrationCode is called multiple times in quick succession,',
         () {
           late Future<List<String>> attempts;
           const numberOfAttempts = registrationVerificationCodeAllowedAttempts;
@@ -153,7 +154,8 @@ void main() {
       );
 
       test(
-        'when verifyRegistrationCode is called with valid credentials after expiration then it throws EmailAccountRequestException with reason "expired"',
+        'when verifyRegistrationCode is called with valid credentials after expiration, '
+        'then it throws EmailAccountRequestException with reason "expired"',
         () async {
           await withClock(
             Clock.fixed(
@@ -184,7 +186,8 @@ void main() {
       );
 
       test(
-        'when verifyRegistrationCode is called with invalid credentials after expiration then it throws EmailAccountRequestException with reason "invalid" to not leak that the request exists',
+        'when verifyRegistrationCode is called with invalid credentials after expiration, '
+        'then it throws EmailAccountRequestException with reason "invalid" to not leak that the request exists',
         () async {
           await withClock(
             Clock.fixed(
@@ -217,7 +220,7 @@ void main() {
   );
 
   withServerpod(
-    'Given account request that has been verified',
+    'Given account request that has been verified,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -258,7 +261,8 @@ void main() {
       });
 
       test(
-        'when verifyRegistrationCode is called again with valid verification code then it throws EmailAccountRequestException with reason "invalid"',
+        'when verifyRegistrationCode is called again with valid verification code, '
+        'then it throws EmailAccountRequestException with reason "invalid"',
         () async {
           final result = fixture.emailIdp.verifyRegistrationCode(
             session,
@@ -280,7 +284,8 @@ void main() {
       );
 
       test(
-        'when verifyRegistrationCode is called with expired request that has been verified then it throws EmailAccountRequestException with reason "invalid" to not leak that the request exists',
+        'when verifyRegistrationCode is called with expired request that has been verified, '
+        'then it throws EmailAccountRequestException with reason "invalid" to not leak that the request exists',
         () async {
           await withClock(
             Clock.fixed(
@@ -313,7 +318,7 @@ void main() {
   );
 
   withServerpod(
-    'Given account request that has been validated with invalid credentials and config allows multiple attempts',
+    'Given account request that has been validated with invalid credentials and config allows multiple attempts,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -355,7 +360,8 @@ void main() {
       });
 
       test(
-        'when verifyRegistrationCode is called with valid verification code then it succeeds and returns registration token',
+        'when verifyRegistrationCode is called with valid verification code, '
+        'then it succeeds and returns registration token',
         () async {
           final result = await fixture.emailIdp.verifyRegistrationCode(
             session,
@@ -370,7 +376,7 @@ void main() {
   );
 
   withServerpod(
-    'Given account request was validated with expired credentials',
+    'Given account request was validated with expired credentials,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -423,7 +429,8 @@ void main() {
       });
 
       test(
-        'when verifyRegistrationCode is called with valid credentials then it throws EmailAccountRequestException with reason "invalid"',
+        'when verifyRegistrationCode is called with valid credentials, '
+        'then it throws EmailAccountRequestException with reason "invalid"',
         () async {
           final result = fixture.emailIdp.verifyRegistrationCode(
             session,
@@ -447,7 +454,7 @@ void main() {
   );
 
   withServerpod(
-    'Given account request that has failed verification matching the rate limit',
+    'Given account request that has failed verification matching the rate limit,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -490,7 +497,8 @@ void main() {
       });
 
       test(
-        'when verifyRegistrationCode is called with valid credentials then it throws EmailAccountRequestException with reason "tooManyAttempts"',
+        'when verifyRegistrationCode is called with valid credentials, '
+        'then it throws EmailAccountRequestException with reason "tooManyAttempts"',
         () async {
           final result = fixture.emailIdp.verifyRegistrationCode(
             session,
@@ -514,7 +522,7 @@ void main() {
   );
 
   withServerpod(
-    'Given existing account request that has failed to verify past the maximum number of allowed verification attempts',
+    'Given existing account request that has failed to verify past the maximum number of allowed verification attempts,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -567,7 +575,8 @@ void main() {
       });
 
       test(
-        'when verifyRegistrationCode is called with valid verification code then throws EmailAccountRequestException with reason "tooManyAttempts"',
+        'when verifyRegistrationCode is called with valid verification code, '
+        'then throws EmailAccountRequestException with reason "tooManyAttempts"',
         () async {
           final result = fixture.emailIdp.verifyRegistrationCode(
             session,
@@ -591,7 +600,7 @@ void main() {
   );
 
   withServerpod(
-    'Given account request that has been completed',
+    'Given account request that has been completed,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -638,7 +647,8 @@ void main() {
       });
 
       test(
-        'when verifyRegistrationCode is called with valid verification code then it throws EmailAccountRequestException with reason "invalid"',
+        'when verifyRegistrationCode is called with valid verification code, '
+        'then it throws EmailAccountRequestException with reason "invalid"',
         () async {
           final result = fixture.emailIdp.verifyRegistrationCode(
             session,
@@ -662,7 +672,7 @@ void main() {
   );
 
   withServerpod(
-    'Given no account request created',
+    'Given no account request created,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -684,7 +694,8 @@ void main() {
       });
 
       test(
-        'when verifyRegistrationCode is called then it throws EmailAccountRequestException with reason "invalid"',
+        'when verifyRegistrationCode is called, '
+        'then it throws EmailAccountRequestException with reason "invalid"',
         () async {
           final result = fixture.emailIdp.verifyRegistrationCode(
             session,
@@ -706,7 +717,8 @@ void main() {
       );
 
       test(
-        'when verifyRegistrationCode is called past the allowed attempts then it throws EmailAccountRequestException with reason "tooManyAttempts"',
+        'when verifyRegistrationCode is called past the allowed attempts, '
+        'then it throws EmailAccountRequestException with reason "tooManyAttempts"',
         () async {
           final accountRequestId = const Uuid().v4obj();
           // Make attempts up to the limit

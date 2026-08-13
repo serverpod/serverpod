@@ -16,9 +16,9 @@ void main() {
   ]).build();
   var manyRelation = ManyRelationBuilder(relationTable).build();
 
-  group('Given SelectQueryBuilder', () {
-    group('when filtering on filtered every many relation', () {
-      var query = SelectQueryBuilder(
+  group('Given SelectQueryBuilder,', () {
+    group('when filtering on filtered every many relation,', () {
+      late var query = SelectQueryBuilder(
         table: citizenTable,
       ).withWhere(manyRelation.every((t) => t.id.equals(1))).build();
       test('then a sub query is created for the filter.', () {
@@ -39,8 +39,8 @@ void main() {
       });
     });
 
-    group('when filtering on advanced filtered every many relation', () {
-      var query = SelectQueryBuilder(table: citizenTable)
+    group('when filtering on advanced filtered every many relation,', () {
+      late var query = SelectQueryBuilder(table: citizenTable)
           .withWhere(manyRelation.every((t) => t.id.equals(1) | t.id.equals(2)))
           .build();
       test('then a sub query is created for the filter.', () {
@@ -61,11 +61,11 @@ void main() {
       });
     });
 
-    group('when filtering on multiple every many relation', () {
-      var where =
+    group('when filtering on multiple every many relation,', () {
+      late var where =
           manyRelation.every((t) => t.id.equals(1)) |
           manyRelation.every((t) => t.id.equals(2));
-      var query = SelectQueryBuilder(
+      late var query = SelectQueryBuilder(
         table: citizenTable,
       ).withWhere(where).build();
 
@@ -110,9 +110,9 @@ void main() {
     });
   });
 
-  group('Given DeleteQueryBuilder', () {
-    group('when filtering on filtered every many relation', () {
-      var query = DeleteQueryBuilder(
+  group('Given DeleteQueryBuilder,', () {
+    group('when filtering on filtered every many relation,', () {
+      late var query = DeleteQueryBuilder(
         table: citizenTable,
       ).withWhere(manyRelation.every((t) => t.id.equals(1))).build();
       test('then a sub query is created for the filter.', () {
@@ -133,8 +133,8 @@ void main() {
       });
     });
 
-    group('when filtering on advanced filtered every many relation', () {
-      var query = DeleteQueryBuilder(table: citizenTable)
+    group('when filtering on advanced filtered every many relation,', () {
+      late var query = DeleteQueryBuilder(table: citizenTable)
           .withWhere(manyRelation.every((t) => t.id.equals(1) | t.id.equals(2)))
           .build();
       test('then a sub query is created for the filter.', () {
@@ -155,11 +155,11 @@ void main() {
       });
     });
 
-    group('when filtering on multiple every many relation', () {
-      var where =
+    group('when filtering on multiple every many relation,', () {
+      late var where =
           manyRelation.every((t) => t.id.equals(1)) |
           manyRelation.every((t) => t.id.equals(2));
-      var query = DeleteQueryBuilder(
+      late var query = DeleteQueryBuilder(
         table: citizenTable,
       ).withWhere(where).build();
 

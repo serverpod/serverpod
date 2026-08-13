@@ -15,7 +15,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "defaultPersist=true" field should be true',
+      'when creating a record in the database, '
+      'then the "defaultPersist=true" field should be true',
       () async {
         var object = BoolDefaultPersist();
         var databaseObject = await BoolDefaultPersist.db.insertRow(
@@ -27,7 +28,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "defaultPersist=false" field should be false',
+      'when creating a record in the database, '
+      'then the "defaultPersist=false" field should be false',
       () async {
         var object = BoolDefaultPersist();
         var databaseObject = await BoolDefaultPersist.db.insertRow(
@@ -39,7 +41,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "defaultPersist=true" field should be true',
+      'when creating a record in the database with an unsafe query, '
+      'then the "defaultPersist=true" field should be true',
       () async {
         await session.db.unsafeQuery(
           '''
@@ -53,7 +56,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "defaultPersist=false" field should be false',
+      'when creating a record in the database with an unsafe query, '
+      'then the "defaultPersist=false" field should be false',
       () async {
         await session.db.unsafeQuery(
           '''
@@ -67,7 +71,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "boolDefaultPersistTrue" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "boolDefaultPersistTrue" field value should match the provided value',
       () async {
         var specificObject = BoolDefaultPersist(
           boolDefaultPersistTrue: false,
@@ -81,7 +86,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "boolDefaultPersistFalse" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "boolDefaultPersistFalse" field value should match the provided value',
       () async {
         var specificObject = BoolDefaultPersist(
           boolDefaultPersistFalse: true,

@@ -6,7 +6,9 @@ import 'package:test/test.dart';
 
 void main() {
   test(
-    'Given a class with only nullable fields without any of them defined when calling toJsonForProtocol then an empty map is returned.',
+    'Given a class with only nullable fields without any of them defined, '
+    'when calling toJsonForProtocol, '
+    'then an empty map is returned.',
     () {
       var types = Types();
 
@@ -17,7 +19,9 @@ void main() {
   );
 
   test(
-    'Given a class with only nullable fields with an int defined when calling toJsonForProtocol then the key and value is set.',
+    'Given a class with only nullable fields with an int defined, '
+    'when calling toJsonForProtocol, '
+    'then the key and value is set.',
     () {
       var types = Types(anInt: 1);
 
@@ -28,7 +32,9 @@ void main() {
   );
 
   test(
-    'Given a class with only nullable fields with a double defined when calling toJsonForProtocol then the key and value is set.',
+    'Given a class with only nullable fields with a double defined, '
+    'when calling toJsonForProtocol, '
+    'then the key and value is set.',
     () {
       var types = Types(aDouble: 1.0);
 
@@ -42,7 +48,9 @@ void main() {
   );
 
   test(
-    'Given a class with only nullable fields with a bool defined when calling toJsonForProtocol then the key and value is set.',
+    'Given a class with only nullable fields with a bool defined, '
+    'when calling toJsonForProtocol, '
+    'then the key and value is set.',
     () {
       var types = Types(aBool: true);
 
@@ -53,7 +61,9 @@ void main() {
   );
 
   test(
-    'Given a class with only nullable fields with a String defined when calling toJsonForProtocol then the key and value is set.',
+    'Given a class with only nullable fields with a String defined, '
+    'when calling toJsonForProtocol, '
+    'then the key and value is set.',
     () {
       var types = Types(aString: 'Hello world!');
 
@@ -67,7 +77,9 @@ void main() {
   );
 
   test(
-    'Given a class with only nullable fields with an enum serialized by index defined when calling toJsonForProtocol then the key and value is set.',
+    'Given a class with only nullable fields with an enum serialized by index defined, '
+    'when calling toJsonForProtocol, '
+    'then the key and value is set.',
     () {
       var types = Types(anEnum: TestEnum.one);
 
@@ -78,7 +90,9 @@ void main() {
   );
 
   test(
-    'Given a class with only nullable fields with an enum serialized by name defined when calling toJsonForProtocol then the key and value is set.',
+    'Given a class with only nullable fields with an enum serialized by name defined, '
+    'when calling toJsonForProtocol, '
+    'then the key and value is set.',
     () {
       var types = Types(aStringifiedEnum: TestEnumStringified.one);
 
@@ -92,7 +106,9 @@ void main() {
   );
 
   test(
-    'Given a class with only nullable fields with a Uuid defined when calling toJsonForProtocol then the key and value is set.',
+    'Given a class with only nullable fields with a Uuid defined, '
+    'when calling toJsonForProtocol, '
+    'then the key and value is set.',
     () {
       // ignore: deprecated_member_use
       var types = Types(aUuid: UuidValue.nil);
@@ -107,7 +123,9 @@ void main() {
   );
 
   test(
-    'Given a class with only nullable fields with a Uri defined when calling toJsonForProtocol then the key and value is set.',
+    'Given a class with only nullable fields with a Uri defined, '
+    'when calling toJsonForProtocol, '
+    'then the key and value is set.',
     () {
       var uri = Uri.parse('https://serverpod.dev');
       var types = Types(aUri: uri);
@@ -122,7 +140,9 @@ void main() {
   );
 
   test(
-    'Given a class with only nullable fields with a BigInt defined when calling toJsonForProtocol then the key and value is set.',
+    'Given a class with only nullable fields with a BigInt defined, '
+    'when calling toJsonForProtocol, '
+    'then the key and value is set.',
     () {
       var types = Types(aBigInt: BigInt.one);
 
@@ -136,7 +156,9 @@ void main() {
   );
 
   test(
-    'Given a class with only nullable fields with a Duration defined when calling toJsonForProtocol then the key and value is set.',
+    'Given a class with only nullable fields with a Duration defined, '
+    'when calling toJsonForProtocol, '
+    'then the key and value is set.',
     () {
       var types = Types(aDuration: Duration(seconds: 1));
 
@@ -150,7 +172,9 @@ void main() {
   );
 
   test(
-    'Given a class with only nullable fields with a DateTime defined when calling toJsonForProtocol then the key and value is set.',
+    'Given a class with only nullable fields with a DateTime defined, '
+    'when calling toJsonForProtocol, '
+    'then the key and value is set.',
     () {
       var types = Types(aDateTime: DateTime.parse('2024-01-01T00:00:00.000Z'));
 
@@ -164,7 +188,9 @@ void main() {
   );
 
   test(
-    'Given a class with only nullable fields with a ByteData defined when calling toJsonForProtocol then the key and value is set.',
+    'Given a class with only nullable fields with a ByteData defined, '
+    'when calling toJsonForProtocol, '
+    'then the key and value is set.',
     () {
       var intList = Uint8List(8);
       for (var i = 0; i < intList.length; i++) {
@@ -183,7 +209,8 @@ void main() {
   );
 
   test(
-    'Given a class with a relation to an object when calling toJsonForProtocol the entire nested structure is converted.',
+    'Given a class with a relation to an object, '
+    'when calling toJsonForProtocol the entire nested structure is converted.',
     () {
       var next = Post(content: 'next');
       var post = Post(content: 'post', next: next);
@@ -199,7 +226,8 @@ void main() {
   );
 
   test(
-    'Given a class with a nested object when calling toJsonForProtocol the entire nested structure is converted.',
+    'Given a class with a nested object, '
+    'when calling toJsonForProtocol the entire nested structure is converted.',
     () {
       var simpleData = SimpleData(num: 123);
       var object = SimpleDataObject(object: simpleData);
@@ -216,7 +244,8 @@ void main() {
   ///----
 
   test(
-    'Given a class with a List with a nested object when calling toJsonForProtocol the entire nested structure is converted.',
+    'Given a class with a List with a nested object, '
+    'when calling toJsonForProtocol the entire nested structure is converted.',
     () {
       var type = Types(anInt: 123);
       var object = TypesList(anObject: [type]);
@@ -233,7 +262,8 @@ void main() {
   );
 
   test(
-    'Given a class with a List with a nested DateTime when calling toJsonForProtocol the entire nested structure is converted.',
+    'Given a class with a List with a nested DateTime, '
+    'when calling toJsonForProtocol the entire nested structure is converted.',
     () {
       var object = TypesList(
         aDateTime: [DateTime.parse('2024-01-01T00:00:00.000Z')],
@@ -249,7 +279,8 @@ void main() {
   );
 
   test(
-    'Given a class with a List with a nested ByteData when calling toJsonForProtocol the entire nested structure is converted.',
+    'Given a class with a List with a nested ByteData, '
+    'when calling toJsonForProtocol the entire nested structure is converted.',
     () {
       var intList = Uint8List(8);
       for (var i = 0; i < intList.length; i++) {
@@ -270,7 +301,8 @@ void main() {
   );
 
   test(
-    'Given a class with a List with a nested Duration when calling toJsonForProtocol the entire nested structure is converted.',
+    'Given a class with a List with a nested Duration, '
+    'when calling toJsonForProtocol the entire nested structure is converted.',
     () {
       var object = TypesList(
         aDuration: [Duration(seconds: 1)],
@@ -286,7 +318,8 @@ void main() {
   );
 
   test(
-    'Given a class with a List with a nested Uuid when calling toJsonForProtocol the entire nested structure is converted.',
+    'Given a class with a List with a nested Uuid, '
+    'when calling toJsonForProtocol the entire nested structure is converted.',
     () {
       var object = TypesList(
         // ignore: deprecated_member_use
@@ -303,7 +336,8 @@ void main() {
   );
 
   test(
-    'Given a class with a List with a nested Uri when calling toJsonForProtocol the entire nested structure is converted.',
+    'Given a class with a List with a nested Uri, '
+    'when calling toJsonForProtocol the entire nested structure is converted.',
     () {
       var object = TypesList(
         aUri: [Uri.parse('https://serverpod.dev')],
@@ -319,7 +353,8 @@ void main() {
   );
 
   test(
-    'Given a class with a List with a nested BigInt when calling toJsonForProtocol the entire nested structure is converted.',
+    'Given a class with a List with a nested BigInt, '
+    'when calling toJsonForProtocol the entire nested structure is converted.',
     () {
       var object = TypesList(
         aBigInt: [BigInt.one],
@@ -335,7 +370,8 @@ void main() {
   );
 
   test(
-    'Given a class with a List with a nested enum serialized by index when calling toJsonForProtocol the entire nested structure is converted.',
+    'Given a class with a List with a nested enum serialized by index, '
+    'when calling toJsonForProtocol the entire nested structure is converted.',
     () {
       var object = TypesList(
         anEnum: [TestEnum.one],
@@ -351,7 +387,8 @@ void main() {
   );
 
   test(
-    'Given a class with a List with a nested enum serialized by name when calling toJsonForProtocol the entire nested structure is converted.',
+    'Given a class with a List with a nested enum serialized by name, '
+    'when calling toJsonForProtocol the entire nested structure is converted.',
     () {
       var object = TypesList(
         aStringifiedEnum: [TestEnumStringified.one],
@@ -367,7 +404,8 @@ void main() {
   );
 
   test(
-    'Given a class with a List with a nested Map serialized by name when calling toJsonForProtocol the entire nested structure is converted.',
+    'Given a class with a List with a nested Map serialized by name, '
+    'when calling toJsonForProtocol the entire nested structure is converted.',
     () {
       var type = Types(anInt: 123);
       var object = TypesList(
@@ -390,7 +428,8 @@ void main() {
   );
 
   test(
-    'Given a class with a List with a nested List serialized by name when calling toJsonForProtocol the entire nested structure is converted.',
+    'Given a class with a List with a nested List serialized by name, '
+    'when calling toJsonForProtocol the entire nested structure is converted.',
     () {
       var type = Types(anInt: 123);
       var object = TypesList(
@@ -412,9 +451,10 @@ void main() {
     },
   );
 
-  group('Set', () {
+  group('Set,', () {
     test(
-      'Given a class with a Set with a nested object when calling toJsonForProtocol the entire nested structure is converted.',
+      'Given a class with a Set with a nested object, '
+      'when calling toJsonForProtocol the entire nested structure is converted.',
       () {
         var type = Types(anInt: 123);
         var object = TypesSet(anObject: {type});
@@ -431,7 +471,8 @@ void main() {
     );
 
     test(
-      'Given a class with a Set with a nested DateTime when calling toJsonForProtocol the entire nested structure is converted.',
+      'Given a class with a Set with a nested DateTime, '
+      'when calling toJsonForProtocol the entire nested structure is converted.',
       () {
         var object = TypesSet(
           aDateTime: {DateTime.parse('2024-01-01T00:00:00.000Z')},
@@ -447,7 +488,8 @@ void main() {
     );
 
     test(
-      'Given a class with a Set with a nested ByteData when calling toJsonForProtocol the entire nested structure is converted.',
+      'Given a class with a Set with a nested ByteData, '
+      'when calling toJsonForProtocol the entire nested structure is converted.',
       () {
         var intList = Uint8List(8);
         for (var i = 0; i < intList.length; i++) {
@@ -468,7 +510,8 @@ void main() {
     );
 
     test(
-      'Given a class with a Set with a nested Duration when calling toJsonForProtocol the entire nested structure is converted.',
+      'Given a class with a Set with a nested Duration, '
+      'when calling toJsonForProtocol the entire nested structure is converted.',
       () {
         var object = TypesSet(
           aDuration: {Duration(seconds: 1)},
@@ -484,7 +527,8 @@ void main() {
     );
 
     test(
-      'Given a class with a Set with a nested Uuid when calling toJsonForProtocol the entire nested structure is converted.',
+      'Given a class with a Set with a nested Uuid, '
+      'when calling toJsonForProtocol the entire nested structure is converted.',
       () {
         var object = TypesSet(
           // ignore: deprecated_member_use
@@ -501,7 +545,8 @@ void main() {
     );
 
     test(
-      'Given a class with a Set with a nested BigInt when calling toJsonForProtocol the entire nested structure is converted.',
+      'Given a class with a Set with a nested BigInt, '
+      'when calling toJsonForProtocol the entire nested structure is converted.',
       () {
         var object = TypesSet(
           aBigInt: {BigInt.one},
@@ -517,7 +562,8 @@ void main() {
     );
 
     test(
-      'Given a class with a Set with a nested enum serialized by index when calling toJsonForProtocol the entire nested structure is converted.',
+      'Given a class with a Set with a nested enum serialized by index, '
+      'when calling toJsonForProtocol the entire nested structure is converted.',
       () {
         var object = TypesSet(
           anEnum: {TestEnum.one},
@@ -533,7 +579,8 @@ void main() {
     );
 
     test(
-      'Given a class with a Set with a nested enum serialized by name when calling toJsonForProtocol the entire nested structure is converted.',
+      'Given a class with a Set with a nested enum serialized by name, '
+      'when calling toJsonForProtocol the entire nested structure is converted.',
       () {
         var object = TypesSet(
           aStringifiedEnum: {TestEnumStringified.one},
@@ -549,7 +596,8 @@ void main() {
     );
 
     test(
-      'Given a class with a Set with a nested Map serialized by name when calling toJsonForProtocol the entire nested structure is converted.',
+      'Given a class with a Set with a nested Map serialized by name, '
+      'when calling toJsonForProtocol the entire nested structure is converted.',
       () {
         var type = Types(anInt: 123);
         var object = TypesSet(
@@ -572,7 +620,8 @@ void main() {
     );
 
     test(
-      'Given a class with a Set with a nested List serialized by name when calling toJsonForProtocol the entire nested structure is converted.',
+      'Given a class with a Set with a nested List serialized by name, '
+      'when calling toJsonForProtocol the entire nested structure is converted.',
       () {
         var type = Types(anInt: 123);
         var object = TypesSet(
@@ -595,9 +644,10 @@ void main() {
     );
   });
 
-  group('Map value -', () {
+  group('Map value -,', () {
     test(
-      'Given a class with a Map with a nested object when calling toJsonForProtocol the entire nested structure is converted.',
+      'Given a class with a Map with a nested object, '
+      'when calling toJsonForProtocol the entire nested structure is converted.',
       () {
         var type = Types(anInt: 123);
         var object = TypesMap(anObjectValue: {'key': type});
@@ -614,7 +664,8 @@ void main() {
     );
 
     test(
-      'Given a class with a Map with a nested DateTime when calling toJsonForProtocol the entire nested structure is converted.',
+      'Given a class with a Map with a nested DateTime, '
+      'when calling toJsonForProtocol the entire nested structure is converted.',
       () {
         var object = TypesMap(
           aDateTimeValue: {'key': DateTime.parse('2024-01-01T00:00:00.000Z')},
@@ -630,7 +681,8 @@ void main() {
     );
 
     test(
-      'Given a class with a Map with a nested ByteData when calling toJsonForProtocol the entire nested structure is converted.',
+      'Given a class with a Map with a nested ByteData, '
+      'when calling toJsonForProtocol the entire nested structure is converted.',
       () {
         var intList = Uint8List(8);
         for (var i = 0; i < intList.length; i++) {
@@ -651,7 +703,8 @@ void main() {
     );
 
     test(
-      'Given a class with a Map with a nested Duration when calling toJsonForProtocol the entire nested structure is converted.',
+      'Given a class with a Map with a nested Duration, '
+      'when calling toJsonForProtocol the entire nested structure is converted.',
       () {
         var object = TypesMap(
           aDurationValue: {'key': Duration(seconds: 1)},
@@ -667,7 +720,8 @@ void main() {
     );
 
     test(
-      'Given a class with a Map with a nested Uuid when calling toJsonForProtocol the entire nested structure is converted.',
+      'Given a class with a Map with a nested Uuid, '
+      'when calling toJsonForProtocol the entire nested structure is converted.',
       () {
         var object = TypesMap(
           // ignore: deprecated_member_use
@@ -684,7 +738,8 @@ void main() {
     );
 
     test(
-      'Given a class with a Map with a nested Uri when calling toJsonForProtocol the entire nested structure is converted.',
+      'Given a class with a Map with a nested Uri, '
+      'when calling toJsonForProtocol the entire nested structure is converted.',
       () {
         var object = TypesMap(
           aUriValue: {'key': Uri.parse('https://serverpod.dev')},
@@ -700,7 +755,8 @@ void main() {
     );
 
     test(
-      'Given a class with a Map with a nested BigInt when calling toJsonForProtocol the entire nested structure is converted.',
+      'Given a class with a Map with a nested BigInt, '
+      'when calling toJsonForProtocol the entire nested structure is converted.',
       () {
         var object = TypesMap(
           aBigIntValue: {'key': BigInt.one},
@@ -716,7 +772,8 @@ void main() {
     );
 
     test(
-      'Given a class with a Map with a nested enum serialized by index when calling toJsonForProtocol the entire nested structure is converted.',
+      'Given a class with a Map with a nested enum serialized by index, '
+      'when calling toJsonForProtocol the entire nested structure is converted.',
       () {
         var object = TypesMap(
           anEnumValue: {'key': TestEnum.one},
@@ -732,7 +789,8 @@ void main() {
     );
 
     test(
-      'Given a class with a Map with a nested enum serialized by name when calling toJsonForProtocol the entire nested structure is converted.',
+      'Given a class with a Map with a nested enum serialized by name, '
+      'when calling toJsonForProtocol the entire nested structure is converted.',
       () {
         var object = TypesMap(
           aStringifiedEnumValue: {'key': TestEnumStringified.one},
@@ -748,7 +806,8 @@ void main() {
     );
 
     test(
-      'Given a class with a Map with a nested Map serialized by name when calling toJsonForProtocol the entire nested structure is converted.',
+      'Given a class with a Map with a nested Map serialized by name, '
+      'when calling toJsonForProtocol the entire nested structure is converted.',
       () {
         var type = Types(anInt: 1);
         var object = TypesMap(
@@ -771,7 +830,8 @@ void main() {
     );
 
     test(
-      'Given a class with a Map with a nested List serialized by name when calling toJsonForProtocol the entire nested structure is converted.',
+      'Given a class with a Map with a nested List serialized by name, '
+      'when calling toJsonForProtocol the entire nested structure is converted.',
       () {
         var type = Types(anInt: 1);
         var object = TypesMap(
@@ -794,9 +854,10 @@ void main() {
     );
   });
 
-  group('Map key -', () {
+  group('Map key -,', () {
     test(
-      'Given a class with a Map with a nested object when calling toJsonForProtocol the entire nested structure is converted.',
+      'Given a class with a Map with a nested object, '
+      'when calling toJsonForProtocol the entire nested structure is converted.',
       () {
         var type = Types(anInt: 123);
         var object = TypesMap(anObjectKey: {type: 'value'});
@@ -816,7 +877,8 @@ void main() {
     );
 
     test(
-      'Given a class with a Map with a nested DateTime when calling toJsonForProtocol the entire nested structure is converted.',
+      'Given a class with a Map with a nested DateTime, '
+      'when calling toJsonForProtocol the entire nested structure is converted.',
       () {
         var object = TypesMap(
           aDateTimeKey: {DateTime.parse('2024-01-01T00:00:00.000Z'): 'value'},
@@ -834,7 +896,8 @@ void main() {
     );
 
     test(
-      'Given a class with a Map with a nested ByteData when calling toJsonForProtocol the entire nested structure is converted.',
+      'Given a class with a Map with a nested ByteData, '
+      'when calling toJsonForProtocol the entire nested structure is converted.',
       () {
         var intList = Uint8List(8);
         for (var i = 0; i < intList.length; i++) {
@@ -857,7 +920,8 @@ void main() {
     );
 
     test(
-      'Given a class with a Map with a nested Duration when calling toJsonForProtocol the entire nested structure is converted.',
+      'Given a class with a Map with a nested Duration, '
+      'when calling toJsonForProtocol the entire nested structure is converted.',
       () {
         var object = TypesMap(
           aDurationKey: {Duration(seconds: 1): 'value'},
@@ -875,7 +939,8 @@ void main() {
     );
 
     test(
-      'Given a class with a Map with a nested Uuid when calling toJsonForProtocol the entire nested structure is converted.',
+      'Given a class with a Map with a nested Uuid, '
+      'when calling toJsonForProtocol the entire nested structure is converted.',
       () {
         var object = TypesMap(
           // ignore: deprecated_member_use
@@ -894,7 +959,8 @@ void main() {
     );
 
     test(
-      'Given a class with a Map with a nested Uri when calling toJsonForProtocol the entire nested structure is converted.',
+      'Given a class with a Map with a nested Uri, '
+      'when calling toJsonForProtocol the entire nested structure is converted.',
       () {
         var object = TypesMap(
           aUriKey: {Uri.parse('https://serverpod.dev'): 'value'},
@@ -912,7 +978,8 @@ void main() {
     );
 
     test(
-      'Given a class with a Map with a nested BigInt when calling toJsonForProtocol the entire nested structure is converted.',
+      'Given a class with a Map with a nested BigInt, '
+      'when calling toJsonForProtocol the entire nested structure is converted.',
       () {
         var object = TypesMap(
           aBigIntKey: {BigInt.one: 'value'},
@@ -930,7 +997,8 @@ void main() {
     );
 
     test(
-      'Given a class with a Map with a nested enum serialized by index when calling toJsonForProtocol the entire nested structure is converted.',
+      'Given a class with a Map with a nested enum serialized by index, '
+      'when calling toJsonForProtocol the entire nested structure is converted.',
       () {
         var object = TypesMap(
           anEnumKey: {TestEnum.one: 'value'},
@@ -948,7 +1016,8 @@ void main() {
     );
 
     test(
-      'Given a class with a Map with a nested enum serialized by name when calling toJsonForProtocol the entire nested structure is converted.',
+      'Given a class with a Map with a nested enum serialized by name, '
+      'when calling toJsonForProtocol the entire nested structure is converted.',
       () {
         var object = TypesMap(
           aStringifiedEnumKey: {TestEnumStringified.one: 'value'},
@@ -966,7 +1035,8 @@ void main() {
     );
 
     test(
-      'Given a class with a Map with a nested Map serialized by name when calling toJsonForProtocol the entire nested structure is converted.',
+      'Given a class with a Map with a nested Map serialized by name, '
+      'when calling toJsonForProtocol the entire nested structure is converted.',
       () {
         var type = Types(anInt: 1);
         var object = TypesMap(
@@ -995,7 +1065,8 @@ void main() {
     );
 
     test(
-      'Given a class with a Map with a nested List serialized by name when calling toJsonForProtocol the entire nested structure is converted.',
+      'Given a class with a Map with a nested List serialized by name, '
+      'when calling toJsonForProtocol the entire nested structure is converted.',
       () {
         var type = Types(anInt: 1);
         var object = TypesMap(
@@ -1021,7 +1092,7 @@ void main() {
     );
   });
 
-  group("Given an object with server only field, ", () {
+  group("Given an object with server only field,", () {
     test('then the serialized json should not contain server-only field.', () {
       var object = ScopeServerOnlyField(
         serverOnlyScope: Types(anInt: 2),
@@ -1055,9 +1126,9 @@ void main() {
     );
   });
 
-  test('Given an object from a server only class with changed id type '
-      'when calling toJsonForProtocol '
-      'then the serialized json should be an empty map.', () {
+  test('Given an object from a server only class with changed id type, '
+       'when calling toJsonForProtocol, '
+       'then the serialized json should be an empty map.', () {
     var object = ServerOnlyChangedIdFieldClass(
       id: Uuid().v4obj(),
     );
@@ -1068,8 +1139,8 @@ void main() {
   });
 
   test(
-    'Given an object from a server only class that inherits from a non server only class '
-    'when calling toJsonForProtocol '
+    'Given an object from a server only class that inherits from a non server only class, '
+    'when calling toJsonForProtocol, '
     'then the serialized json should be an empty map.',
     () {
       var object = ServerOnlyChildClass(

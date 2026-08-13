@@ -20,23 +20,23 @@ const holeRing = [
 ];
 
 void main() {
-  group('Given a GeographyPolygon created with an exterior ring', () {
+  group('Given a GeographyPolygon created with an exterior ring,', () {
     const polygon = GeographyPolygon(exteriorRing: squareRing);
 
-    test('when getting the exterior ring then it matches the input.', () {
+    test('when getting the exterior ring, then it matches the input.', () {
       expect(polygon.exteriorRing, squareRing);
     });
 
-    test('when getting the holes then they are empty.', () {
+    test('when getting the holes, then they are empty.', () {
       expect(polygon.holes, isEmpty);
     });
 
-    test('when getting the SRID then it defaults to 4326.', () {
+    test('when getting the SRID, then it defaults to 4326.', () {
       expect(polygon.srid, Geography.defaultSrid);
     });
 
     test(
-      'when converted to EWKT then it matches the SRID and POLYGON string.',
+      'when converted to EWKT, then it matches the SRID and POLYGON string.',
       () {
         expect(
           polygon.toEwkt(),
@@ -45,24 +45,25 @@ void main() {
       },
     );
 
-    test('when converted to a string then it matches the EWKT.', () {
+    test('when converted to a string, then it matches the EWKT.', () {
       expect(polygon.toString(), polygon.toEwkt());
     });
   });
 
-  group('Given a GeographyPolygon created with a hole', () {
+  group('Given a GeographyPolygon created with a hole,', () {
     const polygon = GeographyPolygon(
       exteriorRing: squareRing,
       holes: [holeRing],
     );
 
-    test('when getting the holes then the interior ring is stored.', () {
+    test('when getting the holes, then the interior ring is stored.', () {
       expect(polygon.holes.length, 1);
       expect(polygon.holes[0], holeRing);
     });
 
     test(
-      'when converted to EWKT then it contains the exterior and interior rings.',
+      'when converted to EWKT, '
+      'then it contains the exterior and interior rings.',
       () {
         expect(
           polygon.toEwkt(),
@@ -75,14 +76,14 @@ void main() {
     );
   });
 
-  group('Given a GeographyPolygon created with a custom SRID', () {
+  group('Given a GeographyPolygon created with a custom SRID,', () {
     const polygon = GeographyPolygon(exteriorRing: squareRing, srid: 3857);
 
-    test('when getting the SRID then it matches the custom value.', () {
+    test('when getting the SRID, then it matches the custom value.', () {
       expect(polygon.srid, 3857);
     });
 
-    test('when converted to EWKT then it starts with the custom SRID.', () {
+    test('when converted to EWKT, then it starts with the custom SRID.', () {
       expect(
         polygon.toEwkt(),
         'SRID=3857;POLYGON((0.0 0.0, 1.0 0.0, 1.0 1.0, 0.0 1.0, 0.0 0.0))',
@@ -90,22 +91,22 @@ void main() {
     });
   });
 
-  group('Given two GeographyPolygons with the same rings and SRID', () {
+  group('Given two GeographyPolygons with the same rings and SRID,', () {
     const a = GeographyPolygon(exteriorRing: squareRing);
     const b = GeographyPolygon(exteriorRing: squareRing);
 
-    test('when compared then they are equal.', () {
+    test('when compared, then they are equal.', () {
       expect(a, equals(b));
     });
 
-    test('when getting their hashCodes then they match.', () {
+    test('when getting their hashCodes, then they match.', () {
       expect(a.hashCode, b.hashCode);
     });
   });
 
-  group('Given two GeographyPolygons that differ', () {
+  group('Given two GeographyPolygons that differ,', () {
     test(
-      'when one has a hole and the other does not then they are not equal.',
+      'when one has a hole and the other does not, then they are not equal.',
       () {
         const a = GeographyPolygon(exteriorRing: squareRing);
         const b = GeographyPolygon(exteriorRing: squareRing, holes: [holeRing]);
@@ -113,7 +114,7 @@ void main() {
       },
     );
 
-    test('when the SRID differs then they are not equal.', () {
+    test('when the SRID differs, then they are not equal.', () {
       const a = GeographyPolygon(exteriorRing: squareRing, srid: 4326);
       const b = GeographyPolygon(exteriorRing: squareRing, srid: 3857);
       expect(a, isNot(equals(b)));

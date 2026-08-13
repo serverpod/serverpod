@@ -30,10 +30,10 @@ void main() {
   });
 
   withServerpod(
-    'Given an unauthenticated session',
+    'Given an unauthenticated session,',
     (final sessionBuilder, final endpoints) {
       test(
-        'when calling hasAccount then it returns false',
+        'when calling hasAccount, then it returns false',
         () async {
           final result = await endpoints.gitHubAccount.hasAccount(
             sessionBuilder,
@@ -44,7 +44,7 @@ void main() {
     },
   );
 
-  withServerpod('Given an authenticated session but no GitHub account', (
+  withServerpod('Given an authenticated session but no GitHub account,', (
     final sessionBuilder,
     final endpoints,
   ) {
@@ -60,7 +60,7 @@ void main() {
     });
 
     test(
-      'when calling hasAccount then it returns false',
+      'when calling hasAccount, then it returns false',
       () async {
         final result = await endpoints.gitHubAccount.hasAccount(session);
         expect(result, isFalse);
@@ -68,7 +68,7 @@ void main() {
     );
   });
 
-  withServerpod('Given an authenticated session with a GitHub account', (
+  withServerpod('Given an authenticated session with a GitHub account,', (
     final sessionBuilder,
     final endpoints,
   ) {
@@ -95,7 +95,7 @@ void main() {
     });
 
     test(
-      'when calling hasAccount then it returns true',
+      'when calling hasAccount, then it returns true',
       () async {
         final result = await endpoints.gitHubAccount.hasAccount(session);
         expect(result, isTrue);

@@ -48,7 +48,8 @@ void main() {
       });
 
       test(
-        'when calling `FacebookIdpAdmin.findUserByFacebookUserId` with existing userIdentifier, then the auth user ID is returned.',
+        'when calling `FacebookIdpAdmin.findUserByFacebookUserId` with existing userIdentifier, '
+        'then the auth user ID is returned.',
         () async {
           final foundUserId = await FacebookIdpAdmin.findUserByFacebookUserId(
             session,
@@ -60,7 +61,8 @@ void main() {
       );
 
       test(
-        'when calling `FacebookIdpAdmin.findUserByFacebookUserId` with non-existing userIdentifier, then null is returned.',
+        'when calling `FacebookIdpAdmin.findUserByFacebookUserId` with non-existing userIdentifier, '
+        'then null is returned.',
         () async {
           final foundUserId = await FacebookIdpAdmin.findUserByFacebookUserId(
             session,
@@ -92,7 +94,8 @@ void main() {
       });
 
       test(
-        'when calling `linkFacebookAuthentication`, then a Facebook account is created.',
+        'when calling `linkFacebookAuthentication`, '
+        'then a Facebook account is created.',
         () async {
           final facebookAccount = await admin.linkFacebookAuthentication(
             session,

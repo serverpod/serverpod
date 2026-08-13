@@ -2,8 +2,9 @@ import 'package:serverpod_embedded_postgres/src/supervisor/log_buffer.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a LogBuffer', () {
-    test('when fewer than capacity lines are added then all are retained.', () {
+  group('Given a LogBuffer,', () {
+    test('when fewer than capacity lines are added, '
+         'then all are retained.', () {
       var buf = LogBuffer(capacity: 5);
 
       buf.add('a');
@@ -14,7 +15,7 @@ void main() {
     });
 
     test(
-      'when more than capacity lines are added '
+      'when more than capacity lines are added, '
       'then the oldest are evicted in FIFO order.',
       () {
         var buf = LogBuffer(capacity: 3);

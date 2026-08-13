@@ -8,11 +8,11 @@ import 'package:web_socket/web_socket.dart';
 import '../websocket_extensions.dart';
 
 void main() {
-  group('Given multiple method stream connections when one returns', () {
+  group('Given multiple method stream connections, when one returns,', () {
     var endpoint = 'methodStreaming';
     var keepAliveMethod = 'intEchoStream';
     var closeMethod = 'intStreamFromValue';
-    var keepAliveConnectionId = const Uuid().v4obj();
+    late var keepAliveConnectionId = const Uuid().v4obj();
 
     late Serverpod server;
     late WebSocket webSocket;
@@ -20,7 +20,7 @@ void main() {
     late Completer<CloseMethodStreamCommand> closeMethodStreamCommand;
     late Completer<void> webSocketCompleter;
     late Completer<void> keepAliveMessageReceived;
-    TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
+    late TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
 
     late bool testInProgress;
 
@@ -127,12 +127,14 @@ void main() {
   });
 
   group(
-    'Given multiple method stream connections when one throws then webSocket connection is not closed.',
+    'Given multiple method stream connections, '
+    'when one throws, '
+    'then webSocket connection is not closed.',
     () {
       var endpoint = 'methodStreaming';
       var keepAliveMethod = 'intEchoStream';
       var throwMethod = 'outStreamThrowsException';
-      var keepAliveConnectionId = const Uuid().v4obj();
+      late var keepAliveConnectionId = const Uuid().v4obj();
 
       late Serverpod server;
       late WebSocket webSocket;
@@ -140,7 +142,7 @@ void main() {
       late Completer<CloseMethodStreamCommand> closeMethodStreamCommand;
       late Completer<void> webSocketCompleter;
       late Completer<void> keepAliveMessageReceived;
-      TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
+      late TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
 
       late bool testInProgress;
 
@@ -248,12 +250,14 @@ void main() {
   );
 
   group(
-    'Given multiple method stream connections when one throws serializable exception then webSocket connection is not closed.',
+    'Given multiple method stream connections, '
+    'when one throws serializable exception, '
+    'then webSocket connection is not closed.',
     () {
       var endpoint = 'methodStreaming';
       var keepAliveMethod = 'intEchoStream';
       var throwMethod = 'outStreamThrowsSerializableException';
-      var keepAliveConnectionId = const Uuid().v4obj();
+      late var keepAliveConnectionId = const Uuid().v4obj();
 
       late Serverpod server;
       late WebSocket webSocket;
@@ -261,7 +265,7 @@ void main() {
       late Completer<CloseMethodStreamCommand> closeMethodStreamCommand;
       late Completer<void> webSocketCompleter;
       late Completer<void> keepAliveMessageReceived;
-      TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
+      late TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
 
       late bool testInProgress;
 

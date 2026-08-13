@@ -9,7 +9,7 @@ import 'package:uuid/uuid.dart';
 
 void main() async {
   group(
-    'Given a serverpod project with an initial migration',
+    'Given a serverpod project with an initial migration,',
     () {
       late String projectName;
       late String serverDir;
@@ -35,7 +35,7 @@ void main() async {
       });
 
       test(
-        'when create-migration is called with no changes then exit code is 0.',
+        'when create-migration is called with no changes, then exit code is 0.',
         () async {
           var result = await runServerpod(
             ['create-migration'],
@@ -58,7 +58,8 @@ void main() async {
       );
 
       test(
-        'when create-migration is called with --empty then an empty migration is created.',
+        'when create-migration is called with --empty, '
+        'then an empty migration is created.',
         () async {
           var migrationsDirectory = Directory(
             path.join(serverDir, 'migrations'),
@@ -89,7 +90,7 @@ void main() async {
   );
 
   group(
-    'Given a serverpod project with a migration that has warnings',
+    'Given a serverpod project with a migration that has warnings,',
     () {
       late String projectName;
       late String serverDir;
@@ -146,7 +147,7 @@ fields:
       });
 
       test(
-        'when create-migration is called without --force then exit code is 1.',
+        'when create-migration is called without --force, then exit code is 1.',
         () async {
           var result = await runServerpod(
             ['create-migration'],
@@ -169,7 +170,7 @@ fields:
       );
 
       test(
-        'when create-migration is called with --force then exit code is 0.',
+        'when create-migration is called with --force, then exit code is 0.',
         () async {
           var result = await runServerpod(
             ['create-migration', '--force'],

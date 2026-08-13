@@ -11,7 +11,7 @@ Future<void> _sendKeyAndPump(NoctermTester tester, LogicalKey key) async {
 }
 
 void main() {
-  group('Given the create TUI with server template', () {
+  group('Given the create TUI with server template,', () {
     late NoctermTester tester;
     late CreateConfigState state;
     late CreateAppStateHolder holder;

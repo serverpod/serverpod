@@ -15,7 +15,7 @@ const generator = DartServerCodeGenerator();
 
 void main() {
   group(
-    'Given an exception class with fields when generating code',
+    'Given an exception class with fields, when generating code,',
     () {
       ClassDeclaration? baseClass;
       MethodDeclaration? toStringMethod;
@@ -88,7 +88,7 @@ void main() {
   );
 
   group(
-    'Given an exception class without fields when generating code',
+    'Given an exception class without fields, when generating code,',
     () {
       ClassDeclaration? baseClass;
       MethodDeclaration? toStringMethod;
@@ -148,7 +148,7 @@ void main() {
   );
 
   group(
-    'Given an exception class with nullable fields when generating code',
+    'Given an exception class with nullable fields, when generating code,',
     () {
       ClassDeclaration? baseClass;
       MethodDeclaration? toStringMethod;

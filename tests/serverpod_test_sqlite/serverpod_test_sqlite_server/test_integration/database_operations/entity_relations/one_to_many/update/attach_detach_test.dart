@@ -18,7 +18,9 @@ void main() async {
   });
 
   test(
-    'Given an implicit list relation of a city and person when attaching the person to the city then the city list contains the person',
+    'Given an implicit list relation of a city and person, '
+    'when attaching the person to the city, '
+    'then the city list contains the person',
     () async {
       var city = await City.db.insertRow(session, City(name: 'Stockholm'));
 
@@ -48,7 +50,9 @@ void main() async {
   );
 
   test(
-    'Given an implicit list relation of a city and two persons when attaching the persons to the city then both persons are in the city list',
+    'Given an implicit list relation of a city and two persons, '
+    'when attaching the persons to the city, '
+    'then both persons are in the city list',
     () async {
       var city = await City.db.insertRow(
         session,
@@ -90,7 +94,9 @@ void main() async {
   );
 
   test(
-    'Given an implicit list relation of a city with two persons when detaching one of the persons from the city then it is no longer contained in the city citizens list.',
+    'Given an implicit list relation of a city with two persons, '
+    'when detaching one of the persons from the city, '
+    'then it is no longer contained in the city citizens list.',
     () async {
       var city = await City.db.insertRow(
         session,
@@ -129,7 +135,9 @@ void main() async {
   );
 
   test(
-    'Given an implicit list relation of a city with two persons when detaching both of the persons from the city then they are no longer contained in the city citizens list.',
+    'Given an implicit list relation of a city with two persons, '
+    'when detaching both of the persons from the city, '
+    'then they are no longer contained in the city citizens list.',
     () async {
       var city = await City.db.insertRow(
         session,
@@ -173,7 +181,9 @@ void main() async {
   );
 
   test(
-    'Given an explicit list relation of an organization and person when attaching the person to the organization then the people list contains the person',
+    'Given an explicit list relation of an organization and person, '
+    'when attaching the person to the organization, '
+    'then the people list contains the person',
     () async {
       var org = await Organization.db.insertRow(
         session,
@@ -205,7 +215,9 @@ void main() async {
   );
 
   test(
-    'Given an explicit list relation of an organization and two persons when attaching the persons to the organization then both persons are in the people list',
+    'Given an explicit list relation of an organization and two persons, '
+    'when attaching the persons to the organization, '
+    'then both persons are in the people list',
     () async {
       var org = await Organization.db.insertRow(
         session,
@@ -249,7 +261,9 @@ void main() async {
   );
 
   test(
-    'Given an explicit list relation of a organization with two persons when detaching one of the persons from the organization then it is no longer contained in the people list.',
+    'Given an explicit list relation of a organization with two persons, '
+    'when detaching one of the persons from the organization, '
+    'then it is no longer contained in the people list.',
     () async {
       var org = await Organization.db.insertRow(
         session,
@@ -290,7 +304,9 @@ void main() async {
   );
 
   test(
-    'Given an explicit list relation of a organization with two persons when detaching both of the persons from the organization then they are no longer contained in the people list.',
+    'Given an explicit list relation of a organization with two persons, '
+    'when detaching both of the persons from the organization, '
+    'then they are no longer contained in the people list.',
     () async {
       var org = await Organization.db.insertRow(
         session,
@@ -340,7 +356,9 @@ void main() async {
   );
 
   test(
-    'Given using `attachRow` and `detachRow` inside a transaction when attaching two persons and detaching one then the city list contains the remaining person',
+    'Given using `attachRow` and `detachRow` inside a transaction, '
+    'when attaching two persons and detaching one, '
+    'then the city list contains the remaining person',
     () async {
       var city = await City.db.insertRow(session, City(name: 'Stockholm'));
       var person1 = await Person.db.insertRow(session, Person(name: 'Person1'));
@@ -391,7 +409,9 @@ void main() async {
   );
 
   test(
-    'Given using `attach` and `detach` inside a transaction when attaching two persons and detaching one then the city list contains the remaining person',
+    'Given using `attach` and `detach` inside a transaction, '
+    'when attaching two persons and detaching one, '
+    'then the city list contains the remaining person',
     () async {
       var city = await City.db.insertRow(session, City(name: 'Stockholm'));
       var person1 = await Person.db.insertRow(session, Person(name: 'Person1'));

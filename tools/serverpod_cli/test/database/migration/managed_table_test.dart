@@ -8,7 +8,9 @@ import '../../test_util/builders/database/table_definition_builder.dart';
 
 void main() {
   test(
-    'Given two database definitions with one unchanged table and one unmanaged table in the target definition when generating the migration then no actions are added.',
+    'Given two database definitions with one unchanged table and one unmanaged table in the target definition, '
+    'when generating the migration, '
+    'then no actions are added.',
     () {
       var unchangedTable = TableDefinitionBuilder().build();
 
@@ -38,7 +40,9 @@ void main() {
   );
 
   test(
-    'Given two database definitions with one unchanged table and one unmanaged table in the source definition when generating the migration then no actions are added.',
+    'Given two database definitions with one unchanged table and one unmanaged table in the source definition, '
+    'when generating the migration, '
+    'then no actions are added.',
     () {
       var unchangedTable = TableDefinitionBuilder().build();
 
@@ -68,7 +72,8 @@ void main() {
   );
 
   test(
-    'Given a table that is managed by serverpod that changes to opt out of serverpod management then the database migration has no additional actions.',
+    'Given a table that is managed by serverpod that changes to opt out of serverpod management, '
+    'then the database migration has no additional actions.',
     () {
       var tableName = 'example_table';
 
@@ -102,7 +107,8 @@ void main() {
   );
 
   test(
-    'Given a table that is managed by serverpod that changes to opt out of serverpod management but also modifies the table in a backwards compatible way then the database migration has no additional actions.',
+    'Given a table that is managed by serverpod that changes to opt out of serverpod management but also modifies the table in a backwards compatible way, '
+    'then the database migration has no additional actions.',
     () {
       var tableName = 'example_table';
 
@@ -142,7 +148,8 @@ void main() {
   );
 
   test(
-    'Given a table that is managed by serverpod that changes to opt out of serverpod management but also modifies the table in a destructive way then the database migration has no additional actions.',
+    'Given a table that is managed by serverpod that changes to opt out of serverpod management but also modifies the table in a destructive way, '
+    'then the database migration has no additional actions.',
     () {
       var tableName = 'example_table';
 
@@ -182,11 +189,11 @@ void main() {
   );
 
   group(
-    'Given a table that is not managed by serverpod that changes to be managed',
+    'Given a table that is not managed by serverpod that changes to be managed,',
     () {
       var tableName = 'example_table';
 
-      var sourceDefinition = DatabaseDefinitionBuilder()
+      late var sourceDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -196,7 +203,7 @@ void main() {
           )
           .build();
 
-      var targetDefinition = DatabaseDefinitionBuilder()
+      late var targetDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -206,7 +213,7 @@ void main() {
           )
           .build();
 
-      var migration = generateDatabaseMigration(
+      late var migration = generateDatabaseMigration(
         databaseSource: sourceDefinition,
         databaseTarget: targetDefinition,
       );

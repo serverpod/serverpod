@@ -8,10 +8,11 @@ import 'package:test_descriptor/test_descriptor.dart' as d;
 import 'package:uuid/uuid.dart';
 
 void main() async {
-  group('Given a serverpod project when generate is called from anywhere', () {
-    var projectName =
+  group('Given a serverpod project, '
+        'when generate is called from anywhere,', () {
+    late var projectName =
         'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
-    var serverDir = path.join(projectName, '${projectName}_server');
+    late var serverDir = path.join(projectName, '${projectName}_server');
 
     setUp(() async {
       var result = await runServerpod(

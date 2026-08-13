@@ -5,9 +5,9 @@ import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('Given a client '
-      'when calling an endpoint multiple times in quick succession '
-      'then all streams complete successfully', () async {
+  test('Given a client, '
+       'when calling an endpoint multiple times in quick succession, '
+       'then all streams complete successfully', () async {
     var client = Client(serverUrl);
     var numMessages = 1000;
     List<Future> streamCompleteFutures = [];
@@ -21,9 +21,9 @@ void main() {
     ].wait;
   });
 
-  test('Given multiple method streaming connections to the same endpoint '
-      'when streams are listened, paused and resumed '
-      'then all streams complete successfully', () async {
+  test('Given multiple method streaming connections to the same endpoint, '
+       'when streams are listened, paused and resumed, '
+       'then all streams complete successfully', () async {
     var client = Client(serverUrl);
     var numMessages = 1000;
     List<Future> streamCompleteFutures = [];

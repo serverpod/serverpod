@@ -3,8 +3,8 @@ import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given client with onSucceededCall callback', () {
-    group('when successfully calling endpoint', () {
+  group('Given client with onSucceededCall callback,', () {
+    group('when successfully calling endpoint,', () {
       var succeededContexts = <MethodCallContext>[];
       setUpAll(() async {
         var client = Client(
@@ -46,7 +46,7 @@ void main() {
       });
     });
 
-    test('when endpoint call fails then callback is not called.', () async {
+    test('when endpoint call fails, then callback is not called.', () async {
       var succeededContexts = <MethodCallContext>[];
       var client = Client(
         serverUrl,
@@ -67,8 +67,8 @@ void main() {
     });
   });
 
-  group('Given client with onFailedCall callback', () {
-    group('when endpoint call fails ', () {
+  group('Given client with onFailedCall callback,', () {
+    group('when endpoint call fails,', () {
       var failedContexts = <MethodCallContext>[];
       setUpAll(() async {
         var client = Client(
@@ -118,7 +118,7 @@ void main() {
     });
 
     test(
-      'when successfully calling endpoint then callback is not called.',
+      'when successfully calling endpoint, then callback is not called.',
       () async {
         var failedContexts = <MethodCallContext>[];
         var client = Client(

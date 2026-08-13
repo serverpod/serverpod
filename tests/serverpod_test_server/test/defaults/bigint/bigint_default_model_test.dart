@@ -3,10 +3,11 @@ import 'package:test/test.dart';
 
 void main() async {
   group(
-    "Given a class with 'defaultModel' BigInt fields",
+    "Given a class with 'defaultModel' BigInt fields,",
     () {
       test(
-        'when an object of the class is created, then the "defaultModel" BigInt field with a string should match the default',
+        'when an object of the class is created, '
+        'then the "defaultModel" BigInt field with a string should match the default',
         () {
           var object = BigIntDefaultModel();
           expect(
@@ -17,7 +18,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created, then the nullable "defaultModel" BigInt field with a string should match the default',
+        'when an object of the class is created, '
+        'then the nullable "defaultModel" BigInt field with a string should match the default',
         () {
           var object = BigIntDefaultModel();
           expect(
@@ -28,7 +30,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a specific value for "bigIntDefaultModelStr", then the field value should match the provided value',
+        'when an object of the class is created with a specific value for "bigIntDefaultModelStr", '
+        'then the field value should match the provided value',
         () {
           var bigInt = BigInt.one;
           var object = BigIntDefaultModel(
@@ -42,7 +45,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a specific value for "bigIntDefaultModelStrNull", then the field value should match the provided value',
+        'when an object of the class is created with a specific value for "bigIntDefaultModelStrNull", '
+        'then the field value should match the provided value',
         () {
           var bigInt = BigInt.one;
           var object = BigIntDefaultModel(

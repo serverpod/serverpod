@@ -10,7 +10,7 @@ import '../websocket_extensions.dart';
 
 void main() {
   group(
-    'Given a method stream connection to an endpoint that returns true if input stream has serializable exception error',
+    'Given a method stream connection to an endpoint that returns true if input stream has serializable exception error,',
     () {
       var endpoint = 'methodStreaming';
       var method = 'didInputStreamHaveSerializableExceptionError';
@@ -31,13 +31,13 @@ void main() {
         await webSocket.tryClose();
       });
 
-      group('when serializable exception is passed to stream', () {
+      group('when serializable exception is passed to stream,', () {
         late Completer<bool> endpointResponse;
         late Completer<CloseMethodStreamCommand> closeMethodStreamCommand;
-        TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
+        late TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
 
         var inputParameter = 'stream';
-        var connectionId = const Uuid().v4obj();
+        late var connectionId = const Uuid().v4obj();
 
         setUp(() async {
           endpointResponse = Completer<bool>();

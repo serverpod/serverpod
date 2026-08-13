@@ -7,9 +7,10 @@ import 'package:test/test.dart';
 void main() {
   var client = Client(serverUrl);
 
-  group('Given the "Type" database-roundtrip/echo endpoint', () {
+  group('Given the "Type" database-roundtrip/echo endpoint,', () {
     test(
-      'When sending a new to be stored, then the count of stored objects is increased by one',
+      'When sending a new to be stored, '
+      'then the count of stored objects is increased by one',
       () async {
         var types = Types();
 
@@ -26,7 +27,8 @@ void main() {
     );
 
     test(
-      'When sending an object with a `bool` field, then it\'s written to the database and can be read later',
+      'When sending an object with a `bool` field, '
+      'then it\'s written to the database and can be read later',
       () async {
         var types = Types(
           aBool: true,
@@ -44,7 +46,8 @@ void main() {
     );
 
     test(
-      'When sending an object with a `ByteData` field, then it\'s written to the database and can be read later',
+      'When sending an object with a `ByteData` field, '
+      'then it\'s written to the database and can be read later',
       () async {
         var types = Types(
           aByteData: ByteData.view(Uint8List.fromList([1, 2, 3]).buffer),
@@ -62,7 +65,8 @@ void main() {
     );
 
     test(
-      'When sending an object with a `double` field, then it\'s written to the database and can be read later',
+      'When sending an object with a `double` field, '
+      'then it\'s written to the database and can be read later',
       () async {
         var types = Types(
           aDouble: 1.5,
@@ -80,7 +84,8 @@ void main() {
     );
 
     test(
-      'When sending an object with a `int` field, then it\'s written to the database and can be read later',
+      'When sending an object with a `int` field, '
+      'then it\'s written to the database and can be read later',
       () async {
         var types = Types(
           anInt: 42,
@@ -98,7 +103,8 @@ void main() {
     );
 
     test(
-      'When sending an object with a `DateTime` field, then it\'s written to the database and can be read later',
+      'When sending an object with a `DateTime` field, '
+      'then it\'s written to the database and can be read later',
       () async {
         var dateTime = DateTime.utc(1976, 9, 10, 2, 10);
 
@@ -118,7 +124,8 @@ void main() {
     );
 
     test(
-      'When sending an object with a `Duration` field, then it\'s written to the database and can be read later',
+      'When sending an object with a `Duration` field, '
+      'then it\'s written to the database and can be read later',
       () async {
         var duration = const Duration(seconds: 1);
 
@@ -137,7 +144,8 @@ void main() {
     );
 
     test(
-      'When sending an object with a `String` field, then it\'s written to the database and can be read later',
+      'When sending an object with a `String` field, '
+      'then it\'s written to the database and can be read later',
       () async {
         var types = Types(
           aString: 'Foo',
@@ -155,7 +163,8 @@ void main() {
     );
 
     test(
-      'When sending an object with a `UUID` field, then it\'s written to the database and can be read later',
+      'When sending an object with a `UUID` field, '
+      'then it\'s written to the database and can be read later',
       () async {
         var uuid = UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11');
 
@@ -175,7 +184,8 @@ void main() {
     );
 
     test(
-      'When sending an object with a `BigInt` field, then it\'s written to the database and can be read later',
+      'When sending an object with a `BigInt` field, '
+      'then it\'s written to the database and can be read later',
       () async {
         var bigInt = BigInt.parse('18446744073709551615999');
 
@@ -195,7 +205,8 @@ void main() {
     );
 
     test(
-      'When sending an object with a `Set<int>` field, then it\'s written to the database and can be read later',
+      'When sending an object with a `Set<int>` field, '
+      'then it\'s written to the database and can be read later',
       () async {
         const set = {1, 2, 3};
         var types = Types(aSet: set);
@@ -212,7 +223,8 @@ void main() {
     );
 
     test(
-      'When sending an object with a `Uri` field, then it\'s written to the database and can be read later',
+      'When sending an object with a `Uri` field, '
+      'then it\'s written to the database and can be read later',
       () async {
         var uri = Uri.parse('https://serverpod.dev');
 
@@ -232,7 +244,8 @@ void main() {
     );
 
     test(
-      'When sending an object with a `Record` field, then it\'s written to the database and can be read later',
+      'When sending an object with a `Record` field, '
+      'then it\'s written to the database and can be read later',
       () async {
         var record = ('test', optionalUri: Uri.parse('https://serverpod.dev'));
 
@@ -252,7 +265,8 @@ void main() {
     );
 
     test(
-      'When writing an object with fields set to `null` (by default), then an object with `null` fields is returned',
+      'When writing an object with fields set to `null` (by default), '
+      'then an object with `null` fields is returned',
       () async {
         var types = Types();
 
@@ -276,7 +290,8 @@ void main() {
     );
 
     test(
-      'When writing an object with an empty non-String-keyed map, then the empty map field is returned',
+      'When writing an object with an empty non-String-keyed map, '
+      'then the empty map field is returned',
       () async {
         var types = Types(
           aMap: {},

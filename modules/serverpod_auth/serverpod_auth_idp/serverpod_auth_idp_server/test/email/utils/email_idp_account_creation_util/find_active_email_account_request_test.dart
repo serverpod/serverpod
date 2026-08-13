@@ -8,7 +8,7 @@ import '../../test_utils/email_idp_test_fixture.dart';
 
 void main() {
   withServerpod(
-    'Given pending account request within verification code lifetime',
+    'Given pending account request within verification code lifetime,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -35,7 +35,8 @@ void main() {
       });
 
       test(
-        'when find active email account request is called then it returns the account request',
+        'when find active email account request is called, '
+        'then it returns the account request',
         () async {
           final request = await session.db.transaction(
             (final transaction) =>
@@ -55,7 +56,7 @@ void main() {
   );
 
   withServerpod(
-    'Given expired account request',
+    'Given expired account request,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -97,7 +98,8 @@ void main() {
       });
 
       test(
-        'when find active email account request is called then it returns null',
+        'when find active email account request is called, '
+        'then it returns null',
         () async {
           final request = await session.db.transaction(
             (final transaction) =>
@@ -115,12 +117,12 @@ void main() {
   );
 
   withServerpod(
-    'Given no account request',
+    'Given no account request,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
-      final accountRequestId = const Uuid().v4obj();
+      late final accountRequestId = const Uuid().v4obj();
 
       setUp(() async {
         session = sessionBuilder.build();
@@ -132,7 +134,8 @@ void main() {
       });
 
       test(
-        'when find active email account request is called then it returns null',
+        'when find active email account request is called, '
+        'then it returns null',
         () async {
           final request = await session.db.transaction(
             (final transaction) =>

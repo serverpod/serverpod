@@ -6,9 +6,9 @@ import 'package:test/test.dart';
 void main() {
   ValueEncoder.set(const PostgresValueEncoder());
 
-  group('Given models with deep nested relations', () {
-    group('when building expression with deep nested relations', () {
-      Expression expression =
+  group('Given models with deep nested relations,', () {
+    group('when building expression with deep nested relations,', () {
+      late Expression expression =
           Citizen.t.oldCompany.town.mayor.name.equals('Alex') &
           Citizen.t.company.name.equals('Serverpod');
 
@@ -38,7 +38,7 @@ void main() {
       });
     });
 
-    group('when accessing nested relations fields', () {
+    group('when accessing nested relations fields,', () {
       var nestedRelationAccess = Citizen.t.oldCompany.town.mayor.name;
 
       test('then query prefix is built based on relations.', () {

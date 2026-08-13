@@ -26,15 +26,15 @@ final config = GeneratorConfigBuilder()
 
 void main() {
   group(
-    'Given a shared parent and a shared child that extends the parent '
-    'when generating the shared package code',
+    'Given a shared parent and a shared child that extends the parent, '
+    'when generating the shared package code,',
     () {
       const parentClassName = 'SharedParent';
       const parentClassFileName = 'shared_parent';
       const childClassName = 'SharedChild';
       const childClassFileName = 'shared_child';
 
-      var childExpectedFilePath = path.joinAll([
+      late var childExpectedFilePath = path.joinAll([
         ...serverPathParts,
         'packages',
         'shared',
@@ -101,15 +101,15 @@ void main() {
   );
 
   group(
-    'Given a shared parent and a project child that extends the parent '
-    'when generating the server package code',
+    'Given a shared parent and a project child that extends the parent, '
+    'when generating the server package code,',
     () {
       const parentClassName = 'SharedParent';
       const parentClassFileName = 'shared_parent';
       const childClassName = 'ProjectChild';
       const childClassFileName = 'project_child';
 
-      var childExpectedFilePath = path.joinAll([
+      late var childExpectedFilePath = path.joinAll([
         ...serverPathParts,
         'lib',
         'src',
@@ -173,8 +173,8 @@ void main() {
   );
 
   group(
-    'Given a shared parent and a project child that extends the parent '
-    'when generating the client package code',
+    'Given a shared parent and a project child that extends the parent, '
+    'when generating the client package code,',
     () {
       const parentClassName = 'SharedParent';
       const parentClassFileName = 'shared_parent';
@@ -241,7 +241,7 @@ void main() {
   );
 
   group(
-    'Given a project model with a field that references a shared model',
+    'Given a project model with a field that references a shared model,',
     () {
       const sharedModelClassName = 'SharedModel';
       const sharedModelFileName = 'shared_model';
@@ -281,7 +281,7 @@ void main() {
             .build();
       });
 
-      group('when generating the client package code', () {
+      group('when generating the client package code,', () {
         setUpAll(() {
           codeMap = const DartClientCodeGenerator()
               .generateSerializableModelsCode(
@@ -352,7 +352,7 @@ void main() {
   );
 
   group(
-    'Given a project model with a field that references an enum in a shared package',
+    'Given a project model with a field that references an enum in a shared package,',
     () {
       const sharedEnumClassName = 'SharedEnum';
       const sharedEnumFileName = 'shared_enum';
@@ -395,7 +395,7 @@ void main() {
             .build();
       });
 
-      group('when generating the client package code', () {
+      group('when generating the client package code,', () {
         setUpAll(() {
           codeMap = const DartClientCodeGenerator()
               .generateSerializableModelsCode(

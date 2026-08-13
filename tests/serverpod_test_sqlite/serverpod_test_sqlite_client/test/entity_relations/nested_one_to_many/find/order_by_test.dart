@@ -7,9 +7,10 @@ import '../../../test_util.dart';
 void main() {
   initTestClientSession();
 
-  group('Given models with one to many relation nested in a one to one relation', () {
+  group('Given models with one to many relation nested in a one to one relation,', () {
     test(
-      'when fetching models ordered by count of nested many relation then result is as expected.',
+      'when fetching models ordered by count of nested many relation, '
+      'then result is as expected.',
       () async {
         var players = await Player.db.insert(session, [
           Player(name: 'Alex'),
@@ -55,7 +56,8 @@ void main() {
     );
 
     test(
-      'when fetching models ordered by count of filtered nested many relation then result is as expected.',
+      'when fetching models ordered by count of filtered nested many relation, '
+      'then result is as expected.',
       () async {
         var players = await Player.db.insert(session, [
           Player(name: 'Alex'),

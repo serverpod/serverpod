@@ -9,7 +9,7 @@ import '../../websocket_extensions.dart';
 
 void main() {
   group(
-    'Given a method stream connection to an endpoint that echoes a dynamic input stream',
+    'Given a method stream connection to an endpoint that echoes a dynamic input stream,',
     () {
       var endpoint = 'methodStreaming';
       var method = 'dynamicEchoStream';
@@ -30,14 +30,14 @@ void main() {
         await webSocket.tryClose();
       });
 
-      group('when a stream of values are passed in', () {
+      group('when a stream of values are passed in,', () {
         late Completer<CloseMethodStreamCommand> closeMethodStreamCommand;
-        TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
+        late TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
         var inputValues = [1, 'hello'];
         late List<dynamic> endpointResponses;
 
         var inputParameter = 'stream';
-        var connectionId = const Uuid().v4obj();
+        late var connectionId = const Uuid().v4obj();
 
         setUp(() async {
           endpointResponses = [];

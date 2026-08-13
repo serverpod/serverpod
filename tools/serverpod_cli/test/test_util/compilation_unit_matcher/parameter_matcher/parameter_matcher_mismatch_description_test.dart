@@ -3,9 +3,9 @@ import 'package:test/test.dart';
 import '../../compilation_unit_matcher.dart';
 
 void main() {
-  group('Given compilation unit with class and constructor', () {
+  group('Given compilation unit with class and constructor,', () {
     group(
-      'Given compilation unit with class and constructor with "this" initializer parameter',
+      'Given compilation unit with class and constructor with "this" initializer parameter,',
       () {
         late final compilationUnit = parseCode(
           '''
@@ -16,7 +16,8 @@ void main() {
         );
 
         test(
-          'when matching with non-existent parameter then mismatch description is correct',
+          'when matching with non-existent parameter, '
+          'then mismatch description is correct',
           () {
             final matcher =
                 containsClass(
@@ -36,7 +37,8 @@ void main() {
         );
 
         test(
-          'when matching matching class and constructor with "super" initializer parameter then mismatch description is correct',
+          'when matching matching class and constructor with "super" initializer parameter, '
+          'then mismatch description is correct',
           () {
             final matcher =
                 containsClass('User')
@@ -58,7 +60,7 @@ void main() {
     );
 
     group(
-      'Given compilation unit with class and constructor with "super" initializer parameter',
+      'Given compilation unit with class and constructor with "super" initializer parameter,',
       () {
         late final compilationUnit = parseCode(
           '''
@@ -69,7 +71,8 @@ void main() {
         );
 
         test(
-          'when matching class and constructor with "this" initializer parameter then mismatch description is correct',
+          'when matching class and constructor with "this" initializer parameter, '
+          'then mismatch description is correct',
           () {
             final matcher =
                 containsClass('User')
@@ -91,7 +94,7 @@ void main() {
     );
 
     group(
-      'Given compilation unit with class and constructor with typed parameter',
+      'Given compilation unit with class and constructor with typed parameter,',
       () {
         late final compilationUnit = parseCode(
           '''
@@ -102,7 +105,8 @@ void main() {
         );
 
         test(
-          'when matching with incorrect parameter type then mismatch description is correct',
+          'when matching with incorrect parameter type, '
+          'then mismatch description is correct',
           () {
             final matcher =
                 containsClass(
@@ -122,7 +126,7 @@ void main() {
     );
 
     group(
-      'Given compilation unit with class and constructor with required parameter initialized with "this"',
+      'Given compilation unit with class and constructor with required parameter initialized with "this",',
       () {
         late final compilationUnit = parseCode(
           '''
@@ -133,7 +137,8 @@ void main() {
         );
 
         test(
-          'when matching class and constructor with required parameter then test passes',
+          'when matching class and constructor with required parameter, '
+          'then test passes',
           () {
             expect(
               compilationUnit,
@@ -146,7 +151,8 @@ void main() {
         );
 
         test(
-          'when matching with optional parameter then mismatch description is correct',
+          'when matching with optional parameter, '
+          'then mismatch description is correct',
           () {
             final matcher =
                 containsClass('User').withUnnamedConstructor().withParameter(
@@ -165,7 +171,8 @@ void main() {
         );
 
         test(
-          'when matching with optional "super" initializer parameter then mismatch description is correct',
+          'when matching with optional "super" initializer parameter, '
+          'then mismatch description is correct',
           () {
             final matcher =
                 containsClass(

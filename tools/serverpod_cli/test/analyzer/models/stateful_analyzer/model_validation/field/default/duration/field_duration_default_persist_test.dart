@@ -11,10 +11,11 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   group(
-    'Given a class with fields with a "defaultPersist" keyword for Duration type',
+    'Given a class with fields with a "defaultPersist" keyword for Duration type,',
     () {
       test(
-        'when the field is of type Duration and the defaultPersist is set to "1d 2h 10min 30s 100ms", then the field should have a "default persist" value',
+        'when the field is of type Duration and the defaultPersist is set to "1d 2h 10min 30s 100ms", '
+        'then the field should have a "default persist" value',
         () {
           var models = [
             ModelSourceBuilder().withYaml(
@@ -45,7 +46,8 @@ void main() {
       );
 
       test(
-        'when the field is of type Duration and the defaultPersist is empty, then an error is generated',
+        'when the field is of type Duration and the defaultPersist is empty, '
+        'then an error is generated',
         () {
           var models = [
             ModelSourceBuilder().withYaml(
@@ -77,7 +79,8 @@ void main() {
       );
 
       test(
-        'when the field is of type Duration with an invalid defaultPersist value "INVALID_DURATION", then an error is generated',
+        'when the field is of type Duration with an invalid defaultPersist value "INVALID_DURATION", '
+        'then an error is generated',
         () {
           var models = [
             ModelSourceBuilder().withYaml(
@@ -109,7 +112,8 @@ void main() {
       );
 
       test(
-        'when the field is of type Duration with an invalid defaultPersist value containing an incorrect format, then an error is generated',
+        'when the field is of type Duration with an invalid defaultPersist value containing an incorrect format, '
+        'then an error is generated',
         () {
           var models = [
             ModelSourceBuilder().withYaml(
@@ -141,7 +145,8 @@ void main() {
       );
 
       test(
-        'when the field is of type Duration non-nullable type, then an error is generated',
+        'when the field is of type Duration non-nullable type, '
+        'then an error is generated',
         () {
           var models = [
             ModelSourceBuilder().withYaml(

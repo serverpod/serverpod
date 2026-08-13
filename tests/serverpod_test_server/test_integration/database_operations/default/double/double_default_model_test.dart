@@ -15,7 +15,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "defaultModel=10.5" field value should be 10.5',
+      'when creating a record in the database, '
+      'then the "defaultModel=10.5" field value should be 10.5',
       () async {
         var object = DoubleDefaultModel();
         var databaseObject = await DoubleDefaultModel.db.insertRow(
@@ -27,7 +28,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the nullable "defaultModel=20.5" field value should be 20.5',
+      'when creating a record in the database, '
+      'then the nullable "defaultModel=20.5" field value should be 20.5',
       () async {
         var object = DoubleDefaultModel();
         var databaseObject = await DoubleDefaultModel.db.insertRow(
@@ -39,7 +41,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "doubleDefaultModel" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "doubleDefaultModel" field value should match the provided value',
       () async {
         var specificObject = DoubleDefaultModel(
           doubleDefaultModel: 30.5,
@@ -53,7 +56,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "doubleDefaultModelNull" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "doubleDefaultModelNull" field value should match the provided value',
       () async {
         var specificObject = DoubleDefaultModel(
           doubleDefaultModelNull: 40.5,

@@ -29,9 +29,10 @@ void main() {
     ];
   });
 
-  group('Given a class with fields with a "defaultModel" keyword', () {
+  group('Given a class with fields with a "defaultModel" keyword,', () {
     test(
-      'when the field is of enum type and the defaultModel is set to "byName1", then the field should have a "default model" value',
+      'when the field is of enum type and the defaultModel is set to "byName1", '
+      'then the field should have a "default model" value',
       () {
         var localModels = List<ModelSource>.from(models);
         localModels.add(
@@ -60,7 +61,8 @@ void main() {
     );
 
     test(
-      'when the field is of enum type and the defaultModel is set to "byName2", then the field should have a "default model" value',
+      'when the field is of enum type and the defaultModel is set to "byName2", '
+      'then the field should have a "default model" value',
       () {
         var localModels = List<ModelSource>.from(models);
         localModels.add(
@@ -89,7 +91,8 @@ void main() {
     );
 
     test(
-      'when the field is of enum type and the defaultModel is empty, then an error is generated',
+      'when the field is of enum type and the defaultModel is empty, '
+      'then an error is generated',
       () {
         var localModels = List<ModelSource>.from(models);
         localModels.add(
@@ -121,7 +124,8 @@ void main() {
     );
 
     test(
-      'when the field is of enum type with an invalid defaultModel value "INVALID", then an error is generated',
+      'when the field is of enum type with an invalid defaultModel value "INVALID", '
+      'then an error is generated',
       () {
         var localModels = List<ModelSource>.from(models);
         localModels.add(
@@ -153,7 +157,8 @@ void main() {
     );
 
     test(
-      'when the field is of enum type with an invalid defaultModel value, then an error is generated',
+      'when the field is of enum type with an invalid defaultModel value, '
+      'then an error is generated',
       () {
         var localModels = List<ModelSource>.from(models);
         localModels.add(

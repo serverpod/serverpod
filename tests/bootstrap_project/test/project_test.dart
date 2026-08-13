@@ -26,7 +26,7 @@ void main() async {
     } catch (e) {}
   });
 
-  group('Given a clean state', () {
+  group('Given a clean state,', () {
     final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
     late Process createProcess;
@@ -36,7 +36,8 @@ void main() async {
     });
 
     test(
-      'when creating a new project then the project is created successfully and can be booted',
+      'when creating a new project, '
+      'then the project is created successfully and can be booted',
       () async {
         createProcess = await startServerpodCli(
           [
@@ -72,7 +73,7 @@ void main() async {
     );
   });
 
-  group('Given a clean state', () {
+  group('Given a clean state,', () {
     final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
     late Process createProcess;
@@ -84,7 +85,8 @@ void main() async {
     });
 
     test(
-      'when creating a new project then the project can be booted without applying migrations',
+      'when creating a new project, '
+      'then the project can be booted without applying migrations',
       () async {
         createProcess = await startServerpodCli(
           [
@@ -137,13 +139,13 @@ void main() async {
     );
   });
 
-  group('Given a clean state', () {
+  group('Given a clean state,', () {
     var (:projectName, commandRoot: _) = createRandomProjectName(tempPath);
     final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
       projectName,
     );
 
-    group('when creating a new project', () {
+    group('when creating a new project,', () {
       setUpAll(() async {
         var process = await startServerpodCli(
           [
@@ -175,7 +177,7 @@ void main() async {
         expect(exitCode, 0, reason: 'Linting errors in new project.');
       });
 
-      group('then the server project', () {
+      group('then the server project,', () {
         test('folder is created', () {
           expect(
             Directory(path.join(tempPath, serverDir)).existsSync(),
@@ -690,7 +692,7 @@ void main() async {
         });
       });
 
-      group('then the workspace', () {
+      group('then the workspace,', () {
         test('has a root pubspec.yaml file', () {
           expect(
             File(path.join(tempPath, projectName, 'pubspec.yaml')).existsSync(),
@@ -981,7 +983,7 @@ void main() async {
     });
   });
 
-  group('Given a clean state', () {
+  group('Given a clean state,', () {
     final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
     final (:serverDir, flutterDir: _, :clientDir) = createProjectFolderPaths(
       projectName,
@@ -994,7 +996,8 @@ void main() async {
     });
 
     test(
-      'when removing generated files from a new project and running generate then the files are recreated successfully',
+      'when removing generated files from a new project and running generate, '
+      'then the files are recreated successfully',
       () async {
         createProcess = await startServerpodCli(
           [
@@ -1109,7 +1112,7 @@ void main() async {
     );
   });
 
-  group('Given a created project', () {
+  group('Given a created project,', () {
     late String projectName;
     late String commandRoot;
 
@@ -1138,7 +1141,8 @@ void main() async {
     });
 
     test(
-      'when building the server Dockerfile then the image is built successfully',
+      'when building the server Dockerfile, '
+      'then the image is built successfully',
       () async {
         // Temporarily remove parameters from server.dart that have not been
         // published yet, because the Dockerfile won't have access to the local
@@ -1197,7 +1201,7 @@ void main() async {
     );
 
     test(
-      'when running tests then example unit and integration tests passes',
+      'when running tests, then example unit and integration tests passes',
       () async {
         var testProcess = await startProcess(
           'dart',
@@ -1214,7 +1218,7 @@ void main() async {
     );
 
     test(
-      'when starting the server against its docker compose stack '
+      'when starting the server against its docker compose stack, '
       'then migrations apply and the server boots',
       () async {
         final configFile = File(
@@ -1267,7 +1271,7 @@ void main() async {
   });
 
   group(
-    'Given a created project and a running pod',
+    'Given a created project and a running pod,',
     () {
       final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
@@ -1325,7 +1329,7 @@ void main() async {
         },
       );
 
-      group('Given the Flutter web app is built and the pod is restarted', () {
+      group('Given the Flutter web app is built and the pod is restarted,', () {
         setUp(() async {
           final flutterBuildProcess = await startServerpodCli(
             ['run', 'flutter_build'],

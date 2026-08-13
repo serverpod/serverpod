@@ -19,7 +19,7 @@ void main() {
     'protocol.dart',
   );
   group(
-    'Given classes with a circular relation when generating protocol files',
+    'Given classes with a circular relation, when generating protocol files,',
     () {
       /**
      * Citizen -> Company -> Town -> Citizen
@@ -27,7 +27,7 @@ void main() {
       var citizen = 'citizen';
       var company = 'company';
       var town = 'town';
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(citizen.sentenceCase)
             .withFileName(citizen)
@@ -51,13 +51,13 @@ void main() {
             .build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [],
         models: models,
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );

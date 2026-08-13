@@ -29,11 +29,11 @@ void main() async {
   });
 
   group(
-    'Given a transaction that does not match required database transaction',
+    'Given a transaction that does not match required database transaction,',
     () {
-      var invalidTransactionType = MockTransaction();
+      late var invalidTransactionType = MockTransaction();
 
-      test('when calling `find` then an error is thrown', () async {
+      test('when calling `find`, then an error is thrown', () async {
         expect(
           session.db.transaction<void>((transaction) async {
             await UniqueData.db.find(
@@ -45,7 +45,7 @@ void main() async {
         );
       });
 
-      test('when calling `findFirstRow` then an error is thrown', () async {
+      test('when calling `findFirstRow`, then an error is thrown', () async {
         expect(
           session.db.transaction<void>((transaction) async {
             await UniqueData.db.findFirstRow(
@@ -57,7 +57,7 @@ void main() async {
         );
       });
 
-      test('when calling `findById` then an error is thrown', () async {
+      test('when calling `findById`, then an error is thrown', () async {
         expect(
           session.db.transaction<void>((transaction) async {
             await UniqueData.db.findById(
@@ -72,9 +72,9 @@ void main() async {
     },
   );
 
-  group('Given finding an object inside a transaction that is committed', () {
+  group('Given finding an object inside a transaction that is committed,', () {
     test(
-      'when calling `find` with transaction then does find the object',
+      'when calling `find` with transaction, then does find the object',
       () async {
         await session.db.transaction((transaction) async {
           await UniqueData.db.insertRow(
@@ -96,7 +96,7 @@ void main() async {
     );
 
     test(
-      'when calling `find` without transaction then does not find the object',
+      'when calling `find` without transaction, then does not find the object',
       () async {
         await session.db.transaction((transaction) async {
           await UniqueData.db.insertRow(
@@ -115,7 +115,7 @@ void main() async {
     );
 
     test(
-      'when calling `findFirstRow` with transaction then does find the object',
+      'when calling `findFirstRow` with transaction, then does find the object',
       () async {
         await session.db.transaction((transaction) async {
           await UniqueData.db.insertRow(
@@ -137,7 +137,8 @@ void main() async {
     );
 
     test(
-      'when calling `findFirstRow` without transaction then does not find the object',
+      'when calling `findFirstRow` without transaction, '
+      'then does not find the object',
       () async {
         await session.db.transaction((transaction) async {
           await UniqueData.db.insertRow(
@@ -156,7 +157,7 @@ void main() async {
     );
 
     test(
-      'when calling `findById` with transaction then does find the object',
+      'when calling `findById` with transaction, then does find the object',
       () async {
         await session.db.transaction((transaction) async {
           var insertedData = await UniqueData.db.insertRow(
@@ -179,7 +180,7 @@ void main() async {
     );
 
     test(
-      'when calling `find` without transaction then does not find the object',
+      'when calling `find` without transaction, then does not find the object',
       () async {
         await session.db.transaction((transaction) async {
           var insertedData = await UniqueData.db.insertRow(
@@ -199,9 +200,9 @@ void main() async {
     );
   });
 
-  test('Given list relation '
-      'when creating all objects inside a transaction '
-      'then includeList should include the related objects', () async {
+  test('Given list relation, '
+       'when creating all objects inside a transaction, '
+       'then includeList should include the related objects', () async {
     await session.db.transaction((transaction) async {
       var serverpod = await Organization.db.insertRow(
         session,
@@ -240,7 +241,7 @@ void main() async {
     });
   });
 
-  group('Given deeply nested list relation ', () {
+  group('Given deeply nested list relation,', () {
     tearDown(() async {
       await Person.db.deleteWhere(session, where: (_) => Constant.bool(true));
       await Organization.db.deleteWhere(
@@ -250,8 +251,8 @@ void main() async {
       await City.db.deleteWhere(session, where: (_) => Constant.bool(true));
     });
 
-    test('when creating all objects inside a transaction '
-        'then includeList should include the nested related objects', () async {
+    test('when creating all objects inside a transaction, '
+         'then includeList should include the nested related objects', () async {
       await session.db.transaction((transaction) async {
         var stockholm = await City.db.insertRow(
           session,

@@ -8,13 +8,13 @@ import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a server with an authenticationHandler', () {
+  group('Given a server with an authenticationHandler,', () {
     late Serverpod server;
     const validTestToken = 'valid-test-token';
     const invalidTestToken = 'invalid-test-token';
     const testUserId = 'test-user-123';
     const testAuthId = 'auth-id-456';
-    final testScopes = {Scope('test'), Scope('admin')};
+    late final testScopes = {Scope('test'), Scope('admin')};
 
     setUpAll(() async {
       server = IntegrationTestServer.create(
@@ -40,7 +40,7 @@ void main() {
     });
 
     group(
-      'when calling standard endpoint methods with an authenticated client and a valid token',
+      'when calling standard endpoint methods with an authenticated client and a valid token,',
       () {
         late Client client;
 
@@ -87,7 +87,7 @@ void main() {
     );
 
     group(
-      'when calling standard endpoint methods with an authenticated client and an invalid token',
+      'when calling standard endpoint methods with an authenticated client and an invalid token,',
       () {
         late Client client;
 
@@ -128,7 +128,7 @@ void main() {
     );
 
     group(
-      'when calling streaming endpoint methods with an authenticated client and a valid token',
+      'when calling streaming endpoint methods with an authenticated client and a valid token,',
       () {
         late Client client;
 
@@ -166,7 +166,7 @@ void main() {
     );
 
     group(
-      'when calling streaming endpoint methods with an authenticated client and an invalid token',
+      'when calling streaming endpoint methods with an authenticated client and an invalid token,',
       () {
         late Client client;
 
@@ -197,7 +197,7 @@ void main() {
       },
     );
 
-    group('when accessing web route with a valid Authorization header', () {
+    group('when accessing web route with a valid Authorization header,', () {
       late http.Response response;
       late Map<String, dynamic> body;
 
@@ -223,7 +223,7 @@ void main() {
       });
     });
 
-    group('when accessing web route with an invalid Authorization header', () {
+    group('when accessing web route with an invalid Authorization header,', () {
       late http.Response response;
       late Map<String, dynamic> body;
 
@@ -250,7 +250,7 @@ void main() {
     });
   });
 
-  group('Given a server without an authenticationHandler', () {
+  group('Given a server without an authenticationHandler,', () {
     late Serverpod server;
 
     setUpAll(() async {
@@ -270,7 +270,7 @@ void main() {
     });
 
     group(
-      'when calling standard endpoint methods with an unauthenticated client',
+      'when calling standard endpoint methods with an unauthenticated client,',
       () {
         late Client client;
 
@@ -299,7 +299,7 @@ void main() {
     );
 
     group(
-      'when calling streaming endpoint methods with an unauthenticated client',
+      'when calling streaming endpoint methods with an unauthenticated client,',
       () {
         late Client client;
 
@@ -329,7 +329,7 @@ void main() {
     );
 
     test(
-      'when accessing web route then session.authenticated is null',
+      'when accessing web route, then session.authenticated is null',
       () async {
         final response = await http.get(
           Uri.parse('${server.webUrl}session-test'),

@@ -37,8 +37,8 @@ void main() {
     '$testClassFileName.dart',
   ]);
 
-  group('Given an empty class named $testClassName when generating code', () {
-    var models = [
+  group('Given an empty class named $testClassName, when generating code,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -140,12 +140,12 @@ void main() {
     });
   });
 
-  group('Given a class with documentation when generating code', () {
+  group('Given a class with documentation, when generating code,', () {
     var documentation = [
       '// This is an example documentation',
       '// This is another example',
     ];
-    var models = [
+    late var models = [
       ModelClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withSharedPackageName(sharedPackageName)
@@ -165,9 +165,9 @@ void main() {
     });
   });
 
-  group('Given a class with table name when generating code', () {
+  group('Given a class with table name, when generating code,', () {
     var tableName = 'example_table';
-    var models = [
+    late var models = [
       ModelClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withTableName(tableName)
@@ -241,7 +241,7 @@ void main() {
       });
 
       group('has a constructor', () {
-        var constructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
+        late var constructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
           maybeClassNamedExample!,
           name: '_',
         );
@@ -352,8 +352,8 @@ void main() {
     });
   });
 
-  group('Given a class with a none nullable field when generating code', () {
-    var models = [
+  group('Given a class with a none nullable field, when generating code,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -407,8 +407,8 @@ void main() {
     );
   });
 
-  group('Given a class with a nullable field when generating code', () {
-    var models = [
+  group('Given a class with a nullable field, when generating code,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -463,9 +463,10 @@ void main() {
   });
 
   group(
-    'Given a class with a non persistent field with scope all when generating code',
+    'Given a class with a non persistent field with scope all, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withFileName(testClassFileName)
             .withField(
@@ -488,7 +489,7 @@ void main() {
       late var compilationUnit = parseString(
         content: codeMap[expectedFileName]!,
       ).unit;
-      var maybeClassNamedExample =
+      late var maybeClassNamedExample =
           CompilationUnitHelpers.tryFindClassDeclaration(
             compilationUnit,
             name: testClassName,
@@ -511,9 +512,10 @@ void main() {
   );
 
   group(
-    'Given a class with a non persistent field with scope server only when generating code',
+    'Given a class with a non persistent field with scope server only, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withFileName(testClassFileName)
             .withField(
@@ -536,7 +538,7 @@ void main() {
       late var compilationUnit = parseString(
         content: codeMap[expectedFileName]!,
       ).unit;
-      var maybeClassNamedExample =
+      late var maybeClassNamedExample =
           CompilationUnitHelpers.tryFindClassDeclaration(
             compilationUnit,
             name: testClassName,
@@ -559,9 +561,10 @@ void main() {
   );
 
   group(
-    'Given a class with a non persistent field with scope none when generating code',
+    'Given a class with a non persistent field with scope none, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withFileName(testClassFileName)
             .withField(
@@ -584,7 +587,7 @@ void main() {
       late var compilationUnit = parseString(
         content: codeMap[expectedFileName]!,
       ).unit;
-      var maybeClassNamedExample =
+      late var maybeClassNamedExample =
           CompilationUnitHelpers.tryFindClassDeclaration(
             compilationUnit,
             name: testClassName,
@@ -606,8 +609,8 @@ void main() {
     },
   );
 
-  group('Given exception class when generating code', () {
-    var models = [
+  group('Given exception class, when generating code,', () {
+    late var models = [
       ExceptionClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)

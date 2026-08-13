@@ -10,9 +10,10 @@ import '../../../../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
-  group('Given a class with fields with a "defaultPersist" keyword', () {
+  group('Given a class with fields with a "defaultPersist" keyword,', () {
     test(
-      'when the field is of type int and the defaultPersist is set to "10", then the field should have a "default persist" value',
+      'when the field is of type int and the defaultPersist is set to "10", '
+      'then the field should have a "default persist" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -40,7 +41,8 @@ void main() {
     );
 
     test(
-      'when the field is of type int and the defaultPersist is set to "20", then the field should have a "default persist" value',
+      'when the field is of type int and the defaultPersist is set to "20", '
+      'then the field should have a "default persist" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -101,7 +103,8 @@ void main() {
     );
 
     test(
-      'when the field is of type int and the defaultPersist is empty, then an error is generated',
+      'when the field is of type int and the defaultPersist is empty, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -132,7 +135,8 @@ void main() {
     );
 
     test(
-      'when the field is of type int with an invalid default value "TEN", then an error is generated',
+      'when the field is of type int with an invalid default value "TEN", '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -163,7 +167,8 @@ void main() {
     );
 
     test(
-      'when the field is of type int with an invalid default value containing decimals, then an error is generated',
+      'when the field is of type int with an invalid default value containing decimals, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -194,7 +199,8 @@ void main() {
     );
 
     test(
-      'when the field is of type int with an invalid defaultPersist value, then an error is generated',
+      'when the field is of type int with an invalid defaultPersist value, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -225,7 +231,8 @@ void main() {
     );
 
     test(
-      'when the field is of type int non-nullable type, then an error is generated',
+      'when the field is of type int non-nullable type, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -287,9 +294,10 @@ void main() {
     );
   });
 
-  group('Given a class with a declared id field with a "defaultPersist" keyword', () {
+  group('Given a class with a declared id field with a "defaultPersist" keyword,', () {
     test(
-      'when the field is of type int and the default is set to "serial", then the field should have a "default persist" value and not have a "default model" value',
+      'when the field is of type int and the default is set to "serial", '
+      'then the field should have a "default persist" value and not have a "default model" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -318,7 +326,8 @@ void main() {
     );
 
     test(
-      'when the field is of type int and the defaultPersist is empty, then an error is generated',
+      'when the field is of type int and the defaultPersist is empty, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -350,7 +359,8 @@ void main() {
     );
 
     test(
-      'when the field is of type int and the defaultPersist is set to a constant value, then an error is generated',
+      'when the field is of type int and the defaultPersist is set to a constant value, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -382,7 +392,8 @@ void main() {
     );
 
     test(
-      'when the field is of type int and the defaultPersist is set to an invalid value, then an error is generated',
+      'when the field is of type int and the defaultPersist is set to an invalid value, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -414,7 +425,8 @@ void main() {
     );
 
     test(
-      'when the field is of type int non-nullable type, then an error is generated',
+      'when the field is of type int non-nullable type, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(

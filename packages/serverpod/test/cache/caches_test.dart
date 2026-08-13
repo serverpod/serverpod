@@ -24,7 +24,7 @@ void main() {
 
   group(
     'Given a Caches collection with Redis configured, '
-    'when global cache is accessed, ',
+    'when global cache is accessed,',
     () {
       late Caches caches;
 
@@ -52,7 +52,7 @@ void main() {
 
   group(
     'Given a Caches collection without Redis, '
-    'when global cache is accessed, ',
+    'when global cache is accessed,',
     () {
       late Caches caches;
 
@@ -97,7 +97,7 @@ void main() {
 
   group(
     'Given a Caches collection without Redis with entries in local and global, '
-    'when clear is called, ',
+    'when clear is called,',
     () {
       late Caches caches;
 

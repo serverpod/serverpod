@@ -2,7 +2,7 @@ import 'package:serverpod/src/redis/controller.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a Redis controller that is not reachable on localhost', () {
+  group('Given a Redis controller that is not reachable on localhost,', () {
     late RedisController controller;
 
     setUp(() {
@@ -66,7 +66,7 @@ void main() {
   });
 
   group(
-    'Given a Redis controller that is not reachable on localhost and connectTimeout is short',
+    'Given a Redis controller that is not reachable on localhost and connectTimeout is short,',
     () {
       late RedisController controller;
 

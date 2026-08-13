@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 import '../../compilation_unit_matcher.dart';
 
 void main() {
-  group('Given compilation unit with class with no methods', () {
+  group('Given compilation unit with class with no methods,', () {
     late final compilationUnit = parseCode(
       '''
       class User {}
@@ -11,7 +11,8 @@ void main() {
     );
 
     test(
-      'when negate matching with non-existent method of the class then test passes',
+      'when negate matching with non-existent method of the class, '
+      'then test passes',
       () {
         expect(
           compilationUnit,
@@ -21,7 +22,7 @@ void main() {
     );
   });
 
-  group('Given compilation unit with class with void method', () {
+  group('Given compilation unit with class with void method,', () {
     late final compilationUnit = parseCode(
       '''
       class User {
@@ -30,21 +31,21 @@ void main() {
     ''',
     );
 
-    test('when matching class and method then test passes', () {
+    test('when matching class and method, then test passes', () {
       expect(
         compilationUnit,
         containsClass('User').withMethod('methodName'),
       );
     });
 
-    test('when matching class and void return method then test passes', () {
+    test('when matching class and void return method, then test passes', () {
       expect(
         compilationUnit,
         containsClass('User').withMethod('methodName', returnType: 'void'),
       );
     });
 
-    test('when matching class and non-override method then test passes', () {
+    test('when matching class and non-override method, then test passes', () {
       expect(
         compilationUnit,
         containsClass('User').withMethod('methodName', isOverride: false),
@@ -52,7 +53,8 @@ void main() {
     });
 
     test(
-      'when negate matching with non-existent class and method then test passes',
+      'when negate matching with non-existent class and method, '
+      'then test passes',
       () {
         expect(
           compilationUnit,
@@ -61,7 +63,8 @@ void main() {
       },
     );
 
-    test('when negate matching class and override method then test passes', () {
+    test('when negate matching class and override method, '
+         'then test passes', () {
       expect(
         compilationUnit,
         isNot(containsClass('User').withMethod('methodName', isOverride: true)),
@@ -69,7 +72,7 @@ void main() {
     });
 
     test(
-      'when negate matching class and non-existent method then test passes',
+      'when negate matching class and non-existent method, then test passes',
       () {
         expect(
           compilationUnit,
@@ -79,7 +82,7 @@ void main() {
     );
 
     test(
-      'when negate matching class and String return method then test passes',
+      'when negate matching class and String return method, then test passes',
       () {
         expect(
           compilationUnit,
@@ -93,7 +96,7 @@ void main() {
     );
   });
 
-  group('Given compilation unit with class with override method', () {
+  group('Given compilation unit with class with override method,', () {
     late final compilationUnit = parseCode(
       '''
       class User {
@@ -103,14 +106,14 @@ void main() {
     ''',
     );
 
-    test('when matching class and method then test passes', () {
+    test('when matching class and method, then test passes', () {
       expect(
         compilationUnit,
         containsClass('User').withMethod('methodName'),
       );
     });
 
-    test('when matching class and override method then test passes', () {
+    test('when matching class and override method, then test passes', () {
       expect(
         compilationUnit,
         containsClass('User').withMethod('methodName', isOverride: true),
@@ -118,7 +121,7 @@ void main() {
     });
 
     test(
-      'when negate matching class and non-override method then test passes',
+      'when negate matching class and non-override method, then test passes',
       () {
         expect(
           compilationUnit,

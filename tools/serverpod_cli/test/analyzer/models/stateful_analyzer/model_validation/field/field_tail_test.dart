@@ -11,7 +11,7 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   group('Given a class with tail fields,', () {
-    var models = [
+    late var models = [
       ModelSourceBuilder().withYaml(
         '''
           class: Example
@@ -22,8 +22,8 @@ void main() {
           ''',
       ).build(),
     ];
-    var collector = CodeGenerationCollector();
-    var definitions = StatefulAnalyzer(
+    late var collector = CodeGenerationCollector();
+    late var definitions = StatefulAnalyzer(
       config,
       models,
       onErrorsCollector(collector),
@@ -63,7 +63,7 @@ void main() {
   group(
     'Given a class with tail fields declared between non-tail fields,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -75,8 +75,8 @@ void main() {
           ''',
         ).build(),
       ];
-      var collector = CodeGenerationCollector();
-      var definitions = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var definitions = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
@@ -102,7 +102,7 @@ void main() {
   );
 
   group('Given a class with tail on the id field,', () {
-    var models = [
+    late var models = [
       ModelSourceBuilder().withYaml(
         '''
           class: Example
@@ -113,7 +113,7 @@ void main() {
           ''',
       ).build(),
     ];
-    var collector = CodeGenerationCollector();
+    late var collector = CodeGenerationCollector();
 
     StatefulAnalyzer(
       config,

@@ -24,7 +24,9 @@ class TestServerpodClient extends ServerpodClientShared {
 
 void main() {
   test(
-    'Given a ServerpodClient when connectionTimeout is provided in constructor then it is set correctly.',
+    'Given a ServerpodClient, '
+    'when connectionTimeout is provided in constructor, '
+    'then it is set correctly.',
     () {
       final client = TestServerpodClient(
         host: Uri.parse('http://localhost:8080'),
@@ -36,7 +38,9 @@ void main() {
   );
 
   test(
-    'Given a ServerpodClient when connectionTimeout is not provided then it defaults to 20 seconds.',
+    'Given a ServerpodClient, '
+    'when connectionTimeout is not provided, '
+    'then it defaults to 20 seconds.',
     () {
       final client = TestServerpodClient(
         host: Uri.parse('http://localhost:8080'),

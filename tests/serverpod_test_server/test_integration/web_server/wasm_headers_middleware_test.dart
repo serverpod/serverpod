@@ -16,7 +16,7 @@ void main() {
     client.close();
   });
 
-  group('Given wasmHeadersMiddleware', () {
+  group('Given wasmHeadersMiddleware,', () {
     late Serverpod pod;
 
     setUp(() async {
@@ -32,7 +32,7 @@ void main() {
       await pod.shutdown(exitProcess: false);
     });
 
-    test('when Response is returned then WASM headers are added', () async {
+    test('when Response is returned, then WASM headers are added', () async {
       final response = await client.get(
         Uri.parse('${pod.webUrl}test/route'),
       );
@@ -43,7 +43,8 @@ void main() {
     });
 
     test(
-      'when Response has existing headers then WASM headers are added preserving existing',
+      'when Response has existing headers, '
+      'then WASM headers are added preserving existing',
       () async {
         final response = await client.get(
           Uri.parse('${pod.webUrl}test/route'),
@@ -59,7 +60,7 @@ void main() {
     );
   });
 
-  group('Given wasmHeadersMiddleware applied to multiple routes', () {
+  group('Given wasmHeadersMiddleware applied to multiple routes,', () {
     late Serverpod pod;
 
     setUp(() async {
@@ -76,7 +77,7 @@ void main() {
       await pod.shutdown(exitProcess: false);
     });
 
-    test('when applied to route then all responses get headers', () async {
+    test('when applied to route, then all responses get headers', () async {
       final response1 = await client.get(
         Uri.parse('${pod.webUrl}route1'),
       );

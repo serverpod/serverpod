@@ -41,7 +41,8 @@ void main() {
     });
 
     test(
-      'when attempting to run `importLegacyPasswordIfNeeded` for a non-existent account, then it completes without error.',
+      'when attempting to run `importLegacyPasswordIfNeeded` for a non-existent account, '
+      'then it completes without error.',
       () async {
         await expectLater(
           AuthBackwardsCompatibility.importLegacyPasswordIfNeeded(

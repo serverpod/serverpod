@@ -9,9 +9,9 @@ import 'serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given calling endpoint returning Future',
+    'Given calling endpoint returning Future,',
     (sessionBuilder, endpoints) {
-      group('when using the same session between two calls', () {
+      group('when using the same session between two calls,', () {
         late UuidValue sessionId1;
         late UuidValue sessionId2;
 
@@ -30,7 +30,7 @@ void main() {
       });
 
       test(
-        "when method is returning the session's `endpoint` and `method` properties then the correct name and method is returned",
+        "when method is returning the session's `endpoint` and `method` properties, then the correct name and method is returned",
         () async {
           var [endpoint, method] = await endpoints.testTools
               .returnsSessionEndpointAndMethod(sessionBuilder);
@@ -40,7 +40,8 @@ void main() {
       );
 
       test(
-        'when method logs to session then the log can be observed persistently',
+        'when method logs to session, '
+        'then the log can be observed persistently',
         () async {
           final querySession = sessionBuilder.build();
           await LoggingUtil.clearAllLogs(querySession);
@@ -63,7 +64,7 @@ void main() {
         },
       );
 
-      group('when method throws an exception', () {
+      group('when method throws an exception,', () {
         late Future future;
 
         setUp(() async {
@@ -97,9 +98,9 @@ void main() {
   );
 
   withServerpod(
-    'Given calling endpoint returning Stream',
+    'Given calling endpoint returning Stream,',
     (sessionBuilder, endpoints) {
-      group('when using the same session between two calls', () {
+      group('when using the same session between two calls,', () {
         late Stream<UuidValue> sessionId1Stream;
         late Stream<UuidValue> sessionId2Stream;
 
@@ -118,7 +119,7 @@ void main() {
       });
 
       test(
-        "when method is returning the session's `endpoint` and `method` properties then the correct name and method is returned",
+        "when method is returning the session's `endpoint` and `method` properties, then the correct name and method is returned",
         () async {
           var [endpoint, method] = await endpoints.testTools
               .returnsSessionEndpointAndMethodFromStream(sessionBuilder)
@@ -130,7 +131,7 @@ void main() {
         },
       );
 
-      group('when method throws an exception', () {
+      group('when method throws an exception,', () {
         late Stream stream;
 
         setUp(() async {

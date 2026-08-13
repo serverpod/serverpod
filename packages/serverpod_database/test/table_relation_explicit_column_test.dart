@@ -6,23 +6,23 @@ import 'package:test/test.dart';
 void main() {
   ValueEncoder.set(const PostgresValueEncoder());
 
-  group('Given table relation with explicit column name', () {
-    var table = Table<int?>(tableName: 'company');
-    var foreignTable = Table<int?>(tableName: 'citizen');
-    var lastJoiningColumn = ColumnInt('ceo_id', table, fieldName: 'ceoId');
-    var lastJoiningForeignColumn = ColumnInt(
+  group('Given table relation with explicit column name,', () {
+    late var table = Table<int?>(tableName: 'company');
+    late var foreignTable = Table<int?>(tableName: 'citizen');
+    late var lastJoiningColumn = ColumnInt('ceo_id', table, fieldName: 'ceoId');
+    late var lastJoiningForeignColumn = ColumnInt(
       'citizen_id',
       foreignTable,
       fieldName: 'citizenId',
     );
-    var tableRelationEntries = [
+    late var tableRelationEntries = [
       TableRelationEntry(
         relationAlias: 'ceo',
         field: lastJoiningColumn,
         foreignField: lastJoiningForeignColumn,
       ),
     ];
-    TableRelation tableRelation = TableRelation(tableRelationEntries);
+    late TableRelation tableRelation = TableRelation(tableRelationEntries);
 
     test('then field name is built correctly.', () {
       expect(

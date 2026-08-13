@@ -4,7 +4,7 @@ import '../../compilation_unit_matcher.dart';
 
 void main() {
   group(
-    'Given compilation unit with class with super initializer without arguments',
+    'Given compilation unit with class with super initializer without arguments,',
     () {
       late final compilationUnit = parseCode(
         '''
@@ -15,7 +15,8 @@ void main() {
       );
 
       test(
-        'when matching class, constructor, super initializer and non-existent argument then mismatch description is correct',
+        'when matching class, constructor, super initializer and non-existent argument, '
+        'then mismatch description is correct',
         () {
           var matcher =
               containsClass('User')
@@ -38,7 +39,7 @@ void main() {
   );
 
   group(
-    'Given compilation unit with class with super initializer with positional argument',
+    'Given compilation unit with class with super initializer with positional argument,',
     () {
       late final compilationUnit = parseCode(
         '''
@@ -49,7 +50,8 @@ void main() {
       );
 
       test(
-        'when matching class, constructor, super initializer and non-existent argument then mismatch description is correct',
+        'when matching class, constructor, super initializer and non-existent argument, '
+        'then mismatch description is correct',
         () {
           var matcher =
               containsClass('User')
@@ -70,7 +72,8 @@ void main() {
       );
 
       test(
-        'when matching class, constructor, super initializer and named argument then mismatch description is correct',
+        'when matching class, constructor, super initializer and named argument, '
+        'then mismatch description is correct',
         () {
           var matcher =
               containsClass('User')
@@ -93,7 +96,7 @@ void main() {
   );
 
   group(
-    'Given compilation unit with class with super initializer with argument for named parameter',
+    'Given compilation unit with class with super initializer with argument for named parameter,',
     () {
       late final compilationUnit = parseCode(
         '''
@@ -104,7 +107,8 @@ void main() {
       );
 
       test(
-        'when matching class, constructor, super initializer and non-existent argument then mismatch description is correct',
+        'when matching class, constructor, super initializer and non-existent argument, '
+        'then mismatch description is correct',
         () {
           var matcher =
               containsClass('User')
@@ -125,7 +129,8 @@ void main() {
       );
 
       test(
-        'when matching class, constructor, super initializer and incorrect named argument then mismatch description is correct',
+        'when matching class, constructor, super initializer and incorrect named argument, '
+        'then mismatch description is correct',
         () {
           var matcher =
               containsClass('User')
@@ -146,7 +151,8 @@ void main() {
       );
 
       test(
-        'when matching class, constructor, super initializer and positional argument then mismatch description is correct',
+        'when matching class, constructor, super initializer and positional argument, '
+        'then mismatch description is correct',
         () {
           var matcher =
               containsClass('User')

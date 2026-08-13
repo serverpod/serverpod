@@ -9,8 +9,8 @@ import '../../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
-  group('Given a class with a one to many relation', () {
-    var models = [
+  group('Given a class with a one to many relation,', () {
+    late var models = [
       ModelSourceBuilder().withFileName('cat').withYaml(
         '''
         class: Cat
@@ -22,14 +22,14 @@ void main() {
       ).build(),
     ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
+    late var collector = CodeGenerationCollector();
+    late StatefulAnalyzer analyzer = StatefulAnalyzer(
       config,
       models,
       onErrorsCollector(collector),
     );
-    var definitions = analyzer.validateAll();
-    var classDefinition = definitions.whereType<ClassDefinition>().firstWhere(
+    late var definitions = analyzer.validateAll();
+    late var classDefinition = definitions.whereType<ClassDefinition>().firstWhere(
       (d) => d.className == 'Cat',
     );
 
@@ -47,7 +47,7 @@ void main() {
       );
     }, skip: errors.isNotEmpty);
 
-    var relation = classDefinition.findField('kittens')?.relation;
+    late var relation = classDefinition.findField('kittens')?.relation;
     test(
       'then the reference field is set on the list relation.',
       () {
@@ -93,7 +93,8 @@ void main() {
   });
 
   test(
-    'Given a list relation with an invalid type then the only error reported is that the type is invalid.',
+    'Given a list relation with an invalid type, '
+    'then the only error reported is that the type is invalid.',
     () {
       var models = [
         ModelSourceBuilder().withFileName('example').withYaml(

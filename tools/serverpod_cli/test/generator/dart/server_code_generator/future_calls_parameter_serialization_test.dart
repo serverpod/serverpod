@@ -33,7 +33,8 @@ void main() {
   );
 
   group(
-    'Given future call serializable model and protocol definition with future calls when generating code',
+    'Given future call serializable model and protocol definition with future calls, '
+    'when generating code,',
     () {
       var futureCallName = 'example';
 

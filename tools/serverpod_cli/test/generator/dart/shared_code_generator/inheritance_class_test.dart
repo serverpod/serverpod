@@ -45,9 +45,10 @@ void main() {
   ]);
 
   group(
-    'Given a child-class named $childClassName with one primitive var extending a parent-class named $parentClassName with one primitive var when generating code',
+    'Given a child-class named $childClassName with one primitive var extending a parent-class named $parentClassName with one primitive var, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(parentClassName)
             .withFileName(parentClassFileName)
@@ -271,9 +272,10 @@ void main() {
   );
 
   group(
-    'Given a child-class named $childClassName with one primitive var and a var with default value extending a parent-class named $parentClassName with one primitive var and a var with default value when generating code',
+    'Given a child-class named $childClassName with one primitive var and a var with default value extending a parent-class named $parentClassName with one primitive var and a var with default value, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(parentClassName)
             .withFileName(parentClassFileName)

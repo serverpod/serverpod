@@ -7,7 +7,7 @@ void main() {
   initTestClientSession();
 
   group(
-    'Given an entity with an implicit one-to-many relation',
+    'Given an entity with an implicit one-to-many relation,',
     () {
       setUp(() async {
         var book = await Book.db.insertRow(
@@ -24,7 +24,8 @@ void main() {
       });
 
       test(
-        'when fetching "many" side, then implicit fields are included in toJson',
+        'when fetching "many" side, '
+        'then implicit fields are included in toJson',
         () async {
           var chapter = await Chapter.db.findFirstRow(session);
 
@@ -34,7 +35,8 @@ void main() {
       );
 
       test(
-        'when copying many side entity, then implicit fields are included in toJson',
+        'when copying many side entity, '
+        'then implicit fields are included in toJson',
         () async {
           var chapter = await Chapter.db.findFirstRow(session);
 
@@ -48,7 +50,7 @@ void main() {
       );
 
       test(
-        'when updating field on "many" side then relation is still preserved',
+        'when updating field on "many" side, then relation is still preserved',
         () async {
           var chapter = await Chapter.db.findFirstRow(session);
 
@@ -69,7 +71,8 @@ void main() {
       );
 
       test(
-        'when creating a object to update entity with implicit relation, then relation is preserved',
+        'when creating a object to update entity with implicit relation, '
+        'then relation is preserved',
         () async {
           var storedChapter = await Chapter.db.findFirstRow(session);
           expect(storedChapter, isNotNull);

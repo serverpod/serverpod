@@ -5,9 +5,10 @@ import 'package:test/test.dart';
 void main() {
   var client = Client(serverUrl);
 
-  group('Given the database-roundtrip/echo server', () {
+  group('Given the database-roundtrip/echo server,', () {
     test(
-      'When an object with field scopes is stored in the database, then the `api` value will not be persisted and be unavailable on a later read',
+      'When an object with field scopes is stored in the database, '
+      'then the `api` value will not be persisted and be unavailable on a later read',
       () async {
         var object = ObjectFieldScopes(
           normal: 'test normal',

@@ -9,7 +9,8 @@ import '../../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
   test(
-    'Given a class with an index with a unique key that is not a bool, then collect an error that the unique key has to be defined as a bool.',
+    'Given a class with an index with a unique key that is not a bool, '
+    'then collect an error that the unique key has to be defined as a bool.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -46,7 +47,8 @@ void main() {
   );
 
   test(
-    'Given a class with an index with an undefined unique key, then return a definition where unique is set to false.',
+    'Given a class with an index with an undefined unique key, '
+    'then return a definition where unique is set to false.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -77,7 +79,8 @@ void main() {
   );
 
   test(
-    'Given a class with an index with a unique key set to false, then return a definition where unique is set to false.',
+    'Given a class with an index with a unique key set to false, '
+    'then return a definition where unique is set to false.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -109,7 +112,8 @@ void main() {
   );
 
   test(
-    'Given a class with an index with a unique key set to true, then return a definition where unique is set to true.',
+    'Given a class with an index with a unique key set to true, '
+    'then return a definition where unique is set to true.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -141,7 +145,8 @@ void main() {
   );
 
   test(
-    'Given a class with a vector index of type HNSW with unique set to true, then collect an error that unique property cannot be used with vector indexes.',
+    'Given a class with a vector index of type HNSW with unique set to true, '
+    'then collect an error that unique property cannot be used with vector indexes.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -182,7 +187,8 @@ void main() {
   );
 
   test(
-    'Given a class with a vector index of type IVFFlat with unique set to true, then collect an error that unique property cannot be used with vector indexes.',
+    'Given a class with a vector index of type IVFFlat with unique set to true, '
+    'then collect an error that unique property cannot be used with vector indexes.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(

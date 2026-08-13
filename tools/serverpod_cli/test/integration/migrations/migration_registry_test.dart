@@ -13,14 +13,15 @@ void main() {
   );
 
   group(
-    'Given a migration folder with multiple migrations',
+    'Given a migration folder with multiple migrations,',
     () {
-      var projectDirectory = Directory(
+      late var projectDirectory = Directory(
         path.join(testAssetsPath, 'multiple_migrations'),
       );
 
       test(
-        'when loading migration registry then migrations are listed in alphabetical sorting order',
+        'when loading migration registry, '
+        'then migrations are listed in alphabetical sorting order',
         () async {
           var artifactStore = FileSystemMigrationArtifactStore(
             projectDirectory: projectDirectory,

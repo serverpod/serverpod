@@ -15,7 +15,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "defaultPersist=\'This is a default persist value\'" field should match the default value',
+      'when creating a record in the database, '
+      'then the "defaultPersist=\'This is a default persist value\'" field should match the default value',
       () async {
         var object = StringDefaultPersist();
         var databaseObject = await StringDefaultPersist.db.insertRow(
@@ -30,7 +31,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "defaultPersist=\'This is a default persist value\'" field should match the default value',
+      'when creating a record in the database with an unsafe query, '
+      'then the "defaultPersist=\'This is a default persist value\'" field should match the default value',
       () async {
         await session.db.unsafeQuery(
           '''
@@ -49,7 +51,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "stringDefaultPersist" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "stringDefaultPersist" field value should match the provided value',
       () async {
         var specificObject = StringDefaultPersist(
           stringDefaultPersist: 'A specific persist value',
@@ -68,7 +71,8 @@ void main() async {
     // Additional tests for new fields
 
     test(
-      'when creating a record in the database, then the "stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote" field should match the default value',
+      'when creating a record in the database, '
+      'then the "stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote" field should match the default value',
       () async {
         var object = StringDefaultPersist();
         var databaseObject = await StringDefaultPersist.db.insertRow(
@@ -84,7 +88,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote" field should match the default value',
+      'when creating a record in the database with an unsafe query, '
+      'then the "stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote" field should match the default value',
       () async {
         await session.db.unsafeQuery(
           '''
@@ -104,7 +109,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote" field value should match the provided value',
       () async {
         var specificObject = StringDefaultPersist(
           stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote:
@@ -123,7 +129,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote" field should match the default value',
+      'when creating a record in the database, '
+      'then the "stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote" field should match the default value',
       () async {
         var object = StringDefaultPersist();
         var databaseObject = await StringDefaultPersist.db.insertRow(
@@ -139,7 +146,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote" field should match the default value',
+      'when creating a record in the database with an unsafe query, '
+      'then the "stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote" field should match the default value',
       () async {
         await session.db.unsafeQuery(
           '''
@@ -159,7 +167,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote" field value should match the provided value',
       () async {
         var specificObject = StringDefaultPersist(
           stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote:
@@ -178,7 +187,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote" field should match the default value',
+      'when creating a record in the database, '
+      'then the "stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote" field should match the default value',
       () async {
         var object = StringDefaultPersist();
         var databaseObject = await StringDefaultPersist.db.insertRow(
@@ -194,7 +204,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote" field should match the default value',
+      'when creating a record in the database with an unsafe query, '
+      'then the "stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote" field should match the default value',
       () async {
         await session.db.unsafeQuery(
           '''
@@ -219,7 +230,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote" field value should match the provided value',
       () async {
         var specificObject = StringDefaultPersist(
           stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote:
@@ -238,7 +250,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote" field should match the default value',
+      'when creating a record in the database, '
+      'then the "stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote" field should match the default value',
       () async {
         var object = StringDefaultPersist();
         var databaseObject = await StringDefaultPersist.db.insertRow(
@@ -254,7 +267,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote" field should match the default value',
+      'when creating a record in the database with an unsafe query, '
+      'then the "stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote" field should match the default value',
       () async {
         await session.db.unsafeQuery(
           '''
@@ -274,7 +288,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote" field value should match the provided value',
       () async {
         var specificObject = StringDefaultPersist(
           stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote:
@@ -293,7 +308,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "stringDefaultPersistSingleQuoteWithOneDoubleQuote" field should match the default value',
+      'when creating a record in the database, '
+      'then the "stringDefaultPersistSingleQuoteWithOneDoubleQuote" field should match the default value',
       () async {
         var object = StringDefaultPersist();
         var databaseObject = await StringDefaultPersist.db.insertRow(
@@ -308,7 +324,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "stringDefaultPersistSingleQuoteWithOneDoubleQuote" field should match the default value',
+      'when creating a record in the database with an unsafe query, '
+      'then the "stringDefaultPersistSingleQuoteWithOneDoubleQuote" field should match the default value',
       () async {
         await session.db.unsafeQuery(
           '''
@@ -327,7 +344,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "stringDefaultPersistSingleQuoteWithOneDoubleQuote" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "stringDefaultPersistSingleQuoteWithOneDoubleQuote" field value should match the provided value',
       () async {
         var specificObject = StringDefaultPersist(
           stringDefaultPersistSingleQuoteWithOneDoubleQuote:
@@ -346,7 +364,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "stringDefaultPersistSingleQuoteWithTwoDoubleQuote" field should match the default value',
+      'when creating a record in the database, '
+      'then the "stringDefaultPersistSingleQuoteWithTwoDoubleQuote" field should match the default value',
       () async {
         var object = StringDefaultPersist();
         var databaseObject = await StringDefaultPersist.db.insertRow(
@@ -361,7 +380,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "stringDefaultPersistSingleQuoteWithTwoDoubleQuote" field should match the default value',
+      'when creating a record in the database with an unsafe query, '
+      'then the "stringDefaultPersistSingleQuoteWithTwoDoubleQuote" field should match the default value',
       () async {
         await session.db.unsafeQuery(
           '''
@@ -380,7 +400,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "stringDefaultPersistSingleQuoteWithTwoDoubleQuote" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "stringDefaultPersistSingleQuoteWithTwoDoubleQuote" field value should match the provided value',
       () async {
         var specificObject = StringDefaultPersist(
           stringDefaultPersistSingleQuoteWithTwoDoubleQuote:
@@ -399,7 +420,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "stringDefaultPersistDoubleQuoteWithOneSingleQuote" field should match the default value',
+      'when creating a record in the database, '
+      'then the "stringDefaultPersistDoubleQuoteWithOneSingleQuote" field should match the default value',
       () async {
         var object = StringDefaultPersist();
         var databaseObject = await StringDefaultPersist.db.insertRow(
@@ -414,7 +436,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "stringDefaultPersistDoubleQuoteWithOneSingleQuote" field should match the default value',
+      'when creating a record in the database with an unsafe query, '
+      'then the "stringDefaultPersistDoubleQuoteWithOneSingleQuote" field should match the default value',
       () async {
         await session.db.unsafeQuery(
           '''
@@ -433,7 +456,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "stringDefaultPersistDoubleQuoteWithOneSingleQuote" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "stringDefaultPersistDoubleQuoteWithOneSingleQuote" field value should match the provided value',
       () async {
         var specificObject = StringDefaultPersist(
           stringDefaultPersistDoubleQuoteWithOneSingleQuote:
@@ -452,7 +476,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "stringDefaultPersistDoubleQuoteWithTwoSingleQuote" field should match the default value',
+      'when creating a record in the database, '
+      'then the "stringDefaultPersistDoubleQuoteWithTwoSingleQuote" field should match the default value',
       () async {
         var object = StringDefaultPersist();
         var databaseObject = await StringDefaultPersist.db.insertRow(
@@ -467,7 +492,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "stringDefaultPersistDoubleQuoteWithTwoSingleQuote" field should match the default value',
+      'when creating a record in the database with an unsafe query, '
+      'then the "stringDefaultPersistDoubleQuoteWithTwoSingleQuote" field should match the default value',
       () async {
         await session.db.unsafeQuery(
           '''
@@ -486,7 +512,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "stringDefaultPersistDoubleQuoteWithTwoSingleQuote" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "stringDefaultPersistDoubleQuoteWithTwoSingleQuote" field value should match the provided value',
       () async {
         var specificObject = StringDefaultPersist(
           stringDefaultPersistDoubleQuoteWithTwoSingleQuote:

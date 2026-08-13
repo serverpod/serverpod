@@ -33,7 +33,8 @@ void main() {
   ]);
 
   group(
-    'Given a hierarchy with a sealed parent, a normal child and a normal grandchild when generating protocol files',
+    'Given a hierarchy with a sealed parent, a normal child and a normal grandchild, '
+    'when generating protocol files,',
     () {
       var parentClassName = 'Example';
       var parentClassFileName = 'example';
@@ -44,7 +45,7 @@ void main() {
       var grandchildClassName = 'GrandChildExample';
       var grandchildClassFileName = 'grand_child_example';
 
-      var parent = ModelClassDefinitionBuilder()
+      late var parent = ModelClassDefinitionBuilder()
           .withClassName(parentClassName)
           .withFileName(parentClassFileName)
           .withSimpleField('name', 'String')
@@ -52,7 +53,7 @@ void main() {
           .withSharedPackageName(sharedPackageName)
           .build();
 
-      var child = ModelClassDefinitionBuilder()
+      late var child = ModelClassDefinitionBuilder()
           .withClassName(childClassName)
           .withFileName(childClassFileName)
           .withSimpleField('age', 'int', nullable: true)
@@ -60,7 +61,7 @@ void main() {
           .withSharedPackageName(sharedPackageName)
           .build();
 
-      var grandChild = ModelClassDefinitionBuilder()
+      late var grandChild = ModelClassDefinitionBuilder()
           .withClassName(grandchildClassName)
           .withFileName(grandchildClassFileName)
           .withSimpleField('height', 'int', nullable: true)
@@ -77,7 +78,7 @@ void main() {
         grandChild,
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [],
         models: models,
         futureCalls: [],

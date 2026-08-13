@@ -5,9 +5,11 @@ import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 
 void main() {
-  group('TemplateWidget', () {
+  group('TemplateWidget,', () {
     test(
-      'Given a template with placeholders when values parameter is passed to constructor then template renders with those values.',
+      'Given a template with placeholders, '
+      'when values parameter is passed to constructor, '
+      'then template renders with those values.',
       () async {
         await d.file('template_with_values.html', '''
 <h1>Hello {{name}}</h1><p>{{message}}</p>''').create();
@@ -27,7 +29,9 @@ void main() {
     );
 
     test(
-      'Given a template with placeholders when partial values are passed then template renders with provided values.',
+      'Given a template with placeholders, '
+      'when partial values are passed, '
+      'then template renders with provided values.',
       () async {
         await d.file('template_partial_values.html', '''
 <h1>Hello {{name}}</h1>''').create();
@@ -47,7 +51,9 @@ void main() {
     );
 
     test(
-      'Given a template with placeholders when values are modified after construction then template renders with updated values.',
+      'Given a template with placeholders, '
+      'when values are modified after construction, '
+      'then template renders with updated values.',
       () async {
         await d.file('template_modified_values.html', '''
 <h1>Hello {{name}}</h1><p>{{message}}</p>''').create();
@@ -69,7 +75,9 @@ void main() {
     );
 
     test(
-      'Given a template without placeholders when values parameter is passed then template still renders correctly.',
+      'Given a template without placeholders, '
+      'when values parameter is passed, '
+      'then template still renders correctly.',
       () async {
         await d.file('static_content.html', '<p>Static content</p>').create();
 
@@ -85,7 +93,9 @@ void main() {
     );
 
     test(
-      'Given a template without placeholders when no values parameter is passed then template renders correctly.',
+      'Given a template without placeholders, '
+      'when no values parameter is passed, '
+      'then template renders correctly.',
       () async {
         await d.file('static_no_values.html', '<p>Static content</p>').create();
 
@@ -98,7 +108,9 @@ void main() {
     );
 
     test(
-      'Given missing template when TemplateWidget is created with values then StateError is thrown.',
+      'Given missing template, '
+      'when TemplateWidget is created with values, '
+      'then StateError is thrown.',
       () async {
         expect(
           () => TemplateWidget(

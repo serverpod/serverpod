@@ -17,7 +17,7 @@ void main() {
     publicPort: 0,
   );
 
-  group('Given a running web server with a user-registered route', () {
+  group('Given a running web server with a user-registered route,', () {
     late int port;
     late http.Client httpClient;
 
@@ -48,7 +48,7 @@ void main() {
 
     for (final probe in const ['livez', 'readyz', 'startupz']) {
       test(
-        'when calling GET /$probe '
+        'when calling GET /$probe, '
         'then response status code is 200',
         () async {
           final response = await httpClient.get(
@@ -60,7 +60,7 @@ void main() {
       );
 
       test(
-        'when calling GET /$probe with no authentication '
+        'when calling GET /$probe with no authentication, '
         'then response has no body',
         () async {
           final response = await httpClient.get(
@@ -72,7 +72,7 @@ void main() {
       );
 
       test(
-        'when calling GET /$probe with valid authentication '
+        'when calling GET /$probe with valid authentication, '
         'then response is JSON with status pass',
         () async {
           final response = await httpClient.get(
@@ -88,7 +88,7 @@ void main() {
     }
   });
 
-  group('Given a web server with a failing readiness indicator', () {
+  group('Given a web server with a failing readiness indicator,', () {
     late int port;
     late http.Client httpClient;
 
@@ -120,7 +120,7 @@ void main() {
     });
 
     test(
-      'when calling GET /readyz '
+      'when calling GET /readyz, '
       'then response status code is 503 and reaches the client unmodified',
       () async {
         final response = await httpClient.get(
@@ -135,7 +135,7 @@ void main() {
     );
   });
 
-  group('Given a fallback route is configured on the web server', () {
+  group('Given a fallback route is configured on the web server,', () {
     late int port;
     late http.Client httpClient;
 
@@ -158,7 +158,7 @@ void main() {
     });
 
     test(
-      'when calling GET /livez '
+      'when calling GET /livez, '
       'then the probe handler responds, not the fallback',
       () async {
         final response = await httpClient.get(
@@ -171,7 +171,7 @@ void main() {
     );
 
     test(
-      'when calling an unrelated path '
+      'when calling an unrelated path, '
       'then the fallback route still handles it',
       () async {
         final response = await httpClient.get(

@@ -7,7 +7,7 @@ import 'fakes/fakes.dart';
 
 void main() {
   withServerpod(
-    'Given AuthServices is being configured',
+    'Given AuthServices is being configured,',
     (final sessionBuilder, final endpoints) {
       late List<IdentityProviderBuilder<IdentityProvider>>
       identityProviderBuilders;
@@ -26,7 +26,7 @@ void main() {
         ];
       });
 
-      group('when AuthServices.set is called with valid parameters', () {
+      group('when AuthServices.set is called with valid parameters,', () {
         late AuthServices authServices;
 
         setUp(() {
@@ -46,7 +46,7 @@ void main() {
         });
       });
 
-      group('when AuthServices.set is called multiple times', () {
+      group('when AuthServices.set is called multiple times,', () {
         late AuthServices firstAuthServices;
         late AuthServices secondAuthServices;
 
@@ -81,7 +81,7 @@ void main() {
   );
 
   withServerpod(
-    'Given an AuthServices with identity providers',
+    'Given an AuthServices with identity providers,',
     (final sessionBuilder, final endpoints) {
       late FakeTokenManagerBuilder fakeTokenManagerBuilder;
       late List<IdentityProviderBuilder<IdentityProvider>>
@@ -112,7 +112,7 @@ void main() {
         );
       });
 
-      group('when provider is constructed during initialization', () {
+      group('when provider is constructed during initialization,', () {
         test('then constructed provider should have correct token issuer', () {
           final provider =
               AuthServices.getIdentityProvider<FakeIdentityProvider>();
@@ -127,7 +127,7 @@ void main() {
         });
       });
 
-      group('when retrieving provider by type', () {
+      group('when retrieving provider by type,', () {
         test(
           'then getProvider should return correct provider instance for registered types',
           () {
@@ -156,7 +156,8 @@ void main() {
       });
 
       test(
-        'when accessing a registered provider then the provider should be accessible',
+        'when accessing a registered provider, '
+        'then the provider should be accessible',
         () {
           final provider =
               AuthServices.getIdentityProvider<FakeIdentityProvider>();
@@ -165,7 +166,7 @@ void main() {
       );
 
       test(
-        'when accessing an unregistered provider then a StateError is thrown',
+        'when accessing an unregistered provider, then a StateError is thrown',
         () {
           expect(
             () => AuthServices.getIdentityProvider<UnregisteredIdp>(),
@@ -177,7 +178,7 @@ void main() {
   );
 
   withServerpod(
-    'Given an AuthServices with multiple identity providers',
+    'Given an AuthServices with multiple identity providers,',
     (final sessionBuilder, final endpoints) {
       late FakeTokenManagerBuilder fakeTokenManagerBuilder;
       late FakeTokenStorage fakeTokenStorage;
@@ -198,7 +199,7 @@ void main() {
       });
 
       test(
-        'when accessing providers'
+        'when accessing providers, '
         'then each provider should be accessible independently',
         () {
           final fakeProvider =
@@ -288,7 +289,7 @@ void main() {
   );
 
   withServerpod(
-    'Given an AuthServices with authentication handler',
+    'Given an AuthServices with authentication handler,',
     (final sessionBuilder, final endpoints) {
       late FakeTokenManagerBuilder fakeTokenManagerBuilder;
       late List<IdentityProviderBuilder<IdentityProvider>>
@@ -323,7 +324,7 @@ void main() {
         authUserId = (await authServices.authUsers.create(session)).id;
       });
 
-      group('when validating a valid token with single scope', () {
+      group('when validating a valid token with single scope,', () {
         late AuthenticationInfo? result;
         late String validToken;
 
@@ -358,7 +359,7 @@ void main() {
         });
       });
 
-      group('when validating a token with multiple scopes', () {
+      group('when validating a token with multiple scopes,', () {
         late String validToken;
 
         setUp(() async {
@@ -389,7 +390,7 @@ void main() {
         });
       });
 
-      group('when validating invalid tokens', () {
+      group('when validating invalid tokens,', () {
         test('then null should be returned for invalid token', () async {
           final result = await authServices.authenticationHandler(
             session,

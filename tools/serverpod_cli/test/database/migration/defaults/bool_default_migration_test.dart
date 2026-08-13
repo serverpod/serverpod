@@ -7,9 +7,10 @@ import '../../../test_util/builders/database/database_definition_builder.dart';
 import '../../../test_util/builders/database/table_definition_builder.dart';
 
 void main() {
-  group('Given a database table definition with a boolean column', () {
+  group('Given a database table definition with a boolean column,', () {
     test(
-      'when generating SQL with a specific boolean default value (TRUE), then the table should have the correct default value.',
+      'when generating SQL with a specific boolean default value (TRUE), '
+      'then the table should have the correct default value.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -38,7 +39,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with a specific boolean default value (FALSE), then the table should have the correct default value.',
+      'when generating SQL with a specific boolean default value (FALSE), '
+      'then the table should have the correct default value.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -67,7 +69,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with no columnDefault, then the table should not have a default value for the boolean field.',
+      'when generating SQL with no columnDefault, '
+      'then the table should not have a default value for the boolean field.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -99,7 +102,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with nullable boolean field and columnDefault (TRUE), then the table should be nullable with the correct default value.',
+      'when generating SQL with nullable boolean field and columnDefault (TRUE), '
+      'then the table should be nullable with the correct default value.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -129,7 +133,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with nullable boolean field and columnDefault (FALSE), then the table should be nullable with the correct default value.',
+      'when generating SQL with nullable boolean field and columnDefault (FALSE), '
+      'then the table should be nullable with the correct default value.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -159,7 +164,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with nullable boolean field and no columnDefault, then the table should be nullable with no default value.',
+      'when generating SQL with nullable boolean field and no columnDefault, '
+      'then the table should be nullable with no default value.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -192,7 +198,7 @@ void main() {
     );
   });
 
-  group('Given a SQLite database table definition with a boolean column ', () {
+  group('Given a SQLite database table definition with a boolean column,', () {
     test(
       'when generating SQL with boolean default TRUE, then INTEGER uses 1.',
       () {
@@ -258,7 +264,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with no columnDefault, then the boolean column has no DEFAULT.',
+      'when generating SQL with no columnDefault, '
+      'then the boolean column has no DEFAULT.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withDefaultModules()
@@ -288,7 +295,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with nullable boolean and default TRUE, then the column is nullable with 1.',
+      'when generating SQL with nullable boolean and default TRUE, '
+      'then the column is nullable with 1.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withDefaultModules()
@@ -321,7 +329,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with nullable boolean and default FALSE, then the column is nullable with 0.',
+      'when generating SQL with nullable boolean and default FALSE, '
+      'then the column is nullable with 0.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withDefaultModules()
@@ -354,7 +363,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with nullable boolean and no columnDefault, then the column has no DEFAULT.',
+      'when generating SQL with nullable boolean and no columnDefault, '
+      'then the column has no DEFAULT.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withDefaultModules()

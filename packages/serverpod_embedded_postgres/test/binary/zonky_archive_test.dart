@@ -18,9 +18,10 @@ void main() {
     if (tmp.existsSync()) tmp.deleteSync(recursive: true);
   });
 
-  group('Given a JAR shape that violates "exactly one .txz at root"', () {
+  group('Given a JAR shape that violates "exactly one .txz at root",', () {
     test(
-      'when there is no .txz at the JAR root then BinaryFetchException is thrown.',
+      'when there is no .txz at the JAR root, '
+      'then BinaryFetchException is thrown.',
       () {
         var jar = _buildJar([
           ('postgres-x.txz.bak', _trivialTxz()), // wrong extension
@@ -34,7 +35,7 @@ void main() {
     );
 
     test(
-      'when two .txz files exist at the JAR root '
+      'when two .txz files exist at the JAR root, '
       'then BinaryFetchException is thrown.',
       () {
         var jar = _buildJar([
@@ -50,7 +51,7 @@ void main() {
     );
 
     test(
-      'when a .txz exists only inside a subdir '
+      'when a .txz exists only inside a subdir, '
       'then BinaryFetchException is thrown (root-level matches required).',
       () {
         var jar = _buildJar([
@@ -65,14 +66,14 @@ void main() {
     );
   });
 
-  group('Given a tarball with content', () {
+  group('Given a tarball with content,', () {
     // We don't re-test TarDecoder/OutputFileStream's "regular files come out
     // intact" path - that's package:archive's responsibility. The tests below
     // pin the workarounds we explicitly added on top: the deferred-symlink
     // pass and exec-bit restoration. The spike proved both were necessary.
 
     test(
-      'when extracting a symlink entry '
+      'when extracting a symlink entry, '
       'then a real symlink is created (NOT a 0-byte regular file).',
       () {
         var tar = _buildTar([
@@ -99,7 +100,7 @@ void main() {
     );
 
     test(
-      'when a file entry has mode 0o755 '
+      'when a file entry has mode 0o755, '
       'then the extracted file is executable on POSIX.',
       () {
         var tar = _buildTar([
@@ -126,7 +127,7 @@ void main() {
     );
 
     test(
-      'when a file entry name contains ../ that escapes the destination '
+      'when a file entry name contains ../ that escapes the destination, '
       'then BinaryFetchException is thrown (tar-slip).',
       () {
         var tar = _buildTar([
@@ -146,7 +147,7 @@ void main() {
     );
 
     test(
-      'when a file entry name is an absolute path '
+      'when a file entry name is an absolute path, '
       'then BinaryFetchException is thrown.',
       () {
         // POSIX absolute - on Windows package:path treats /etc/... as
@@ -163,7 +164,7 @@ void main() {
     );
 
     test(
-      'when a symlink target resolves outside the destination '
+      'when a symlink target resolves outside the destination, '
       'then BinaryFetchException is thrown (symlink-traversal).',
       () {
         var tar = _buildTar([
@@ -188,7 +189,7 @@ void main() {
     );
 
     test(
-      'when a symlink target is an absolute path '
+      'when a symlink target is an absolute path, '
       'then BinaryFetchException is thrown.',
       () {
         var tar = _buildTar([
@@ -203,7 +204,7 @@ void main() {
       onPlatform: const {'windows': Skip('Windows symlink perms')},
     );
 
-    test('when extracting then onProgress is called and ends at 1.0.', () {
+    test('when extracting, then onProgress is called and ends at 1.0.', () {
       var tar = _buildTar([
         for (var i = 0; i < 50; i++)
           _TarEntry.file('f$i', Uint8List.fromList([i])),

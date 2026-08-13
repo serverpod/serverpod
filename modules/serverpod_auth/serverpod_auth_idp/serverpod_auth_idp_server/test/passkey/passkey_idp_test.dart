@@ -33,7 +33,7 @@ void main() {
       late AuthUserModel user;
       late Session session;
 
-      final challengeId = const Uuid().v4obj();
+      late final challengeId = const Uuid().v4obj();
 
       setUp(() async {
         user = await authUsers.create(sessionBuilder.build());
@@ -77,7 +77,8 @@ void main() {
       );
 
       test(
-        'when calling `PasskeyAccounts.registerPasskey` after challenge expired, then a `PasskeyChallengeExpiredException` is thrown.',
+        'when calling `PasskeyAccounts.registerPasskey` after challenge expired, '
+        'then a `PasskeyChallengeExpiredException` is thrown.',
         () async {
           await expectLater(
             withClock(
@@ -113,7 +114,7 @@ void main() {
       late AuthUserModel user;
       late Session session;
 
-      final loginChallengeId = const Uuid().v4obj();
+      late final loginChallengeId = const Uuid().v4obj();
 
       setUp(() async {
         session = sessionBuilder.build();
@@ -176,7 +177,8 @@ void main() {
       );
 
       test(
-        'when calling `PasskeyAccounts.login` with an invalid challenge ID, then a `PasskeyChallengeNotFoundException` is thrown.',
+        'when calling `PasskeyAccounts.login` with an invalid challenge ID, '
+        'then a `PasskeyChallengeNotFoundException` is thrown.',
         () async {
           await expectLater(
             () => passKeyIdp.login(
@@ -195,7 +197,8 @@ void main() {
       );
 
       test(
-        'when calling `PasskeyAccounts.login` with an invalid key ID, then a `PasskeyPublicKeyNotFoundException` is thrown.',
+        'when calling `PasskeyAccounts.login` with an invalid key ID, '
+        'then a `PasskeyPublicKeyNotFoundException` is thrown.',
         () async {
           await expectLater(
             () => passKeyIdp.login(
@@ -214,7 +217,8 @@ void main() {
       );
 
       test(
-        'when calling `PasskeyAccounts.login` with an invalid authenticator data, then an exception is thrown.',
+        'when calling `PasskeyAccounts.login` with an invalid authenticator data, '
+        'then an exception is thrown.',
         () async {
           final brokenAuthenticatorData = _loginAuthenticatorData.clone();
           brokenAuthenticatorData.asUint8List[10] = 0; // breaks the rpID hash
@@ -242,7 +246,8 @@ void main() {
       );
 
       test(
-        'when calling `PasskeyAccounts.login` with an invalid client data JSON, then an exception is thrown.',
+        'when calling `PasskeyAccounts.login` with an invalid client data JSON, '
+        'then an exception is thrown.',
         () async {
           final brokenClientDataJsonMap =
               jsonDecode(utf8.decode(_loginClientDataJSON.asUint8List)) as Map;
@@ -274,7 +279,8 @@ void main() {
       );
 
       test(
-        'when calling `PasskeyAccounts.login` with an invalid signature, then an exception is thrown.',
+        'when calling `PasskeyAccounts.login` with an invalid signature, '
+        'then an exception is thrown.',
         () async {
           final brokenSignature = _signature.clone();
           brokenSignature.asUint8List[10] = 0;

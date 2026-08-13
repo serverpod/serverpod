@@ -15,7 +15,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "defaultPersist=byName1" field should be byName1',
+      'when creating a record in the database, '
+      'then the "defaultPersist=byName1" field should be byName1',
       () async {
         var object = EnumDefaultPersist();
         var databaseObject = await EnumDefaultPersist.db.insertRow(
@@ -30,7 +31,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "defaultPersist=byName1" field should be byName1',
+      'when creating a record in the database with an unsafe query, '
+      'then the "defaultPersist=byName1" field should be byName1',
       () async {
         await session.db.unsafeQuery(
           '''
@@ -47,7 +49,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "defaultPersist=byIndex1" field should be byIndex1',
+      'when creating a record in the database, '
+      'then the "defaultPersist=byIndex1" field should be byIndex1',
       () async {
         var object = EnumDefaultPersist();
         var databaseObject = await EnumDefaultPersist.db.insertRow(
@@ -62,7 +65,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "defaultPersist=byIndex1" field should be byIndex1',
+      'when creating a record in the database with an unsafe query, '
+      'then the "defaultPersist=byIndex1" field should be byIndex1',
       () async {
         await session.db.unsafeQuery(
           '''
@@ -79,7 +83,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "byNameEnumDefaultPersist" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "byNameEnumDefaultPersist" field value should match the provided value',
       () async {
         var specificObject = EnumDefaultPersist(
           byNameEnumDefaultPersist: ByNameEnum.byName2,
@@ -96,7 +101,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "byIndexEnumDefaultPersist" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "byIndexEnumDefaultPersist" field value should match the provided value',
       () async {
         var specificObject = EnumDefaultPersist(
           byIndexEnumDefaultPersist: ByIndexEnum.byIndex2,

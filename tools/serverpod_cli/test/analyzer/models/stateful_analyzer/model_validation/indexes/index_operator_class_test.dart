@@ -10,7 +10,8 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   test(
-    'Given a class with a gin index with valid operator class, then return a definition where operatorClass is correctly set.',
+    'Given a class with a gin index with valid operator class, '
+    'then return a definition where operatorClass is correctly set.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -51,7 +52,8 @@ void main() {
   );
 
   test(
-    'Given a class with a gin index without operator class, then return a definition where operatorClass defaults to jsonbOps.',
+    'Given a class with a gin index without operator class, '
+    'then return a definition where operatorClass defaults to jsonbOps.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -91,7 +93,8 @@ void main() {
   );
 
   test(
-    'Given a class with a gin index with invalid operator class value, then collect an error about invalid operator class value.',
+    'Given a class with a gin index with invalid operator class value, '
+    'then collect an error about invalid operator class value.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -132,7 +135,8 @@ void main() {
   );
 
   test(
-    'Given a class with a gin index with a non-string operator class, then collect an error about the invalid value.',
+    'Given a class with a gin index with a non-string operator class, '
+    'then collect an error about the invalid value.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -171,7 +175,8 @@ void main() {
   );
 
   test(
-    'Given a class with a non-gin index with operator class, then collect an error about the operator class not being supported.',
+    'Given a class with a non-gin index with operator class, '
+    'then collect an error about the operator class not being supported.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(

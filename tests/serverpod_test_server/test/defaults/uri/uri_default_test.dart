@@ -3,10 +3,11 @@ import 'package:test/test.dart';
 
 void main() async {
   group(
-    "Given a class with 'default' Uri fields",
+    "Given a class with 'default' Uri fields,",
     () {
       test(
-        'when an object of the class is created, then the "uriDefault" field should match the default value',
+        'when an object of the class is created, '
+        'then the "uriDefault" field should match the default value',
         () {
           var object = UriDefault();
           var expectedUri = Uri.parse('https://serverpod.dev/default');
@@ -15,7 +16,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created, then the "uriDefaultNull" field should match the default value',
+        'when an object of the class is created, '
+        'then the "uriDefaultNull" field should match the default value',
         () {
           var object = UriDefault();
           var expectedUri = Uri.parse('https://serverpod.dev/default');
@@ -24,7 +26,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a specific value for "uriDefault", then the field value should match the provided value',
+        'when an object of the class is created with a specific value for "uriDefault", '
+        'then the field value should match the provided value',
         () {
           var uri = Uri.parse('https://serverpod.dev/default');
           var object = UriDefault(uriDefault: uri);
@@ -33,7 +36,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a specific value for "uriDefaultNull", then the field value should match the provided value',
+        'when an object of the class is created with a specific value for "uriDefaultNull", '
+        'then the field value should match the provided value',
         () {
           var uri = Uri.parse('https://serverpod.dev/default');
           var object = UriDefault(uriDefaultNull: uri);

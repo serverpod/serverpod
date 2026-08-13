@@ -5,7 +5,7 @@ import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a QuickstartCommand', () {
+  group('Given a QuickstartCommand,', () {
     late QuickstartCommand command;
 
     setUp(() {
@@ -23,14 +23,14 @@ void main() {
       },
     );
 
-    test('when parsing configuration then default template is fullstack', () {
+    test('when parsing configuration, then default template is fullstack', () {
       final argResults = command.argParser.parse(['myproject']);
       final config = command.resolveConfiguration(argResults);
 
       expect(config.value(QuickstartOption.template).name, equals('fullstack'));
     });
 
-    test('when parsing configuration then default force is false', () {
+    test('when parsing configuration, then default force is false', () {
       final argResults = command.argParser.parse(['myproject']);
       final config = command.resolveConfiguration(argResults);
 
@@ -159,7 +159,7 @@ void main() {
     );
 
     test(
-      'when running with restricted name and without force,'
+      'when running with restricted name and without force, '
       'then an ExitException is thrown',
       () async {
         final runner = ServerpodCommandRunner(

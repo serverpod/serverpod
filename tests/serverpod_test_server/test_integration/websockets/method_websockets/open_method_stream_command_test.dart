@@ -6,7 +6,7 @@ import 'package:web_socket/web_socket.dart';
 import '../websocket_extensions.dart';
 
 void main() {
-  group('Given method websocket connection', () {
+  group('Given method websocket connection,', () {
     late Serverpod server;
     late WebSocket webSocket;
 
@@ -24,7 +24,8 @@ void main() {
     });
 
     test(
-      'when a open method stream command with an invalid endpoint is sent then OpenMethodStreamResponse type "endpointNotFound" is received.',
+      'when a open method stream command with an invalid endpoint is sent, '
+      'then OpenMethodStreamResponse type "endpointNotFound" is received.',
       () async {
         webSocket.sendText(
           OpenMethodStreamCommand.buildMessage(
@@ -54,7 +55,8 @@ void main() {
     );
 
     test(
-      'when a open method stream command with an invalid endpoint method is sent then OpenMethodStreamResponse type "endpointNotFound" is received.',
+      'when a open method stream command with an invalid endpoint method is sent, '
+      'then OpenMethodStreamResponse type "endpointNotFound" is received.',
       () async {
         webSocket.sendText(
           OpenMethodStreamCommand.buildMessage(
@@ -84,7 +86,8 @@ void main() {
     );
 
     test(
-      'when a open method stream command is sent to a method call endpoint then OpenMethodStreamResponse type "endpointNotFound" is received.',
+      'when a open method stream command is sent to a method call endpoint, '
+      'then OpenMethodStreamResponse type "endpointNotFound" is received.',
       () async {
         webSocket.sendText(
           OpenMethodStreamCommand.buildMessage(
@@ -114,7 +117,8 @@ void main() {
     );
 
     test(
-      'when a valid open method stream command is sent then OpenMethodStreamResponse type "success" is received.',
+      'when a valid open method stream command is sent, '
+      'then OpenMethodStreamResponse type "success" is received.',
       () async {
         webSocket.sendText(
           OpenMethodStreamCommand.buildMessage(
@@ -144,7 +148,8 @@ void main() {
     );
 
     test(
-      'when a open method stream command is sent without required argument then OpenMethodStreamResponse type "invalidArguments" is received.',
+      'when a open method stream command is sent without required argument, '
+      'then OpenMethodStreamResponse type "invalidArguments" is received.',
       () async {
         webSocket.sendText(
           OpenMethodStreamCommand.buildMessage(
@@ -174,7 +179,8 @@ void main() {
     );
 
     test(
-      'when an open method stream command is sent without required input stream then OpenMethodStreamResponse type "invalidArguments" is received.',
+      'when an open method stream command is sent without required input stream, '
+      'then OpenMethodStreamResponse type "invalidArguments" is received.',
       () async {
         webSocket.sendText(
           OpenMethodStreamCommand.buildMessage(
@@ -204,7 +210,8 @@ void main() {
     );
 
     test(
-      'when a open method stream command is sent with required argument then OpenMethodStreamResponse type "success" is received.',
+      'when a open method stream command is sent with required argument, '
+      'then OpenMethodStreamResponse type "success" is received.',
       () async {
         webSocket.sendText(
           OpenMethodStreamCommand.buildMessage(
@@ -234,7 +241,8 @@ void main() {
     );
 
     test(
-      'when a open method stream command is sent to a method with a streaming argument then OpenMethodStreamResponse type "success" is received.',
+      'when a open method stream command is sent to a method with a streaming argument, '
+      'then OpenMethodStreamResponse type "success" is received.',
       () async {
         webSocket.sendText(
           OpenMethodStreamCommand.buildMessage(
@@ -269,7 +277,8 @@ void main() {
     );
 
     test(
-      'when a open method stream command is sent to an authenticated endpoint without an authentication token then OpenMethodStreamResponse type "authenticationFailed" is received.',
+      'when a open method stream command is sent to an authenticated endpoint without an authentication token, '
+      'then OpenMethodStreamResponse type "authenticationFailed" is received.',
       () async {
         webSocket.sendText(
           OpenMethodStreamCommand.buildMessage(
@@ -300,7 +309,8 @@ void main() {
     );
 
     test(
-      'when a open method stream command is sent to an authenticated endpoint with an invalid authentication token then OpenMethodStreamResponse type "authenticationFailed" is received.',
+      'when a open method stream command is sent to an authenticated endpoint with an invalid authentication token, '
+      'then OpenMethodStreamResponse type "authenticationFailed" is received.',
       () async {
         webSocket.sendText(
           OpenMethodStreamCommand.buildMessage(
@@ -331,7 +341,7 @@ void main() {
     );
 
     group(
-      'when an authenticated open method stream command is sent to an authenticated endpoint with insufficient scopes',
+      'when an authenticated open method stream command is sent to an authenticated endpoint with insufficient scopes,',
       () {
         late String token;
         setUp(() async {
@@ -382,7 +392,7 @@ void main() {
     );
 
     group(
-      'when an authenticated open method stream command with sufficient privilege is sent to an authenticated endpoint',
+      'when an authenticated open method stream command with sufficient privilege is sent to an authenticated endpoint,',
       () {
         late String token;
         setUp(() async {

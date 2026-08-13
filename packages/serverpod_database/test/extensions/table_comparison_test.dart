@@ -7,7 +7,7 @@ void main() {
   ValueEncoder.set(const PostgresValueEncoder());
 
   test(
-    'Given identical tables when compared then mismatches list is empty',
+    'Given identical tables, when compared, then mismatches list is empty',
     () {
       var tableA = TableDefinition(
         name: 'test_table',
@@ -37,9 +37,10 @@ void main() {
     },
   );
 
-  group('Table general property comparisons', () {
+  group('Table general property comparisons,', () {
     test(
-      'when tables have different names then mismatches include table name mismatch',
+      'when tables have different names, '
+      'then mismatches include table name mismatch',
       () {
         var tableA = TableDefinition(
           name: 'test_table_a',
@@ -73,7 +74,8 @@ void main() {
     );
 
     test(
-      'when tables have different tablespaces then mismatches include tablespace mismatch',
+      'when tables have different tablespaces, '
+      'then mismatches include tablespace mismatch',
       () {
         var tableA = TableDefinition(
           name: 'test_table',
@@ -123,7 +125,8 @@ void main() {
     );
 
     test(
-      'when tables have different managed property then mismatches include managed property mismatch',
+      'when tables have different managed property, '
+      'then mismatches include managed property mismatch',
       () {
         var tableA = TableDefinition(
           name: 'test_table',
@@ -171,7 +174,8 @@ void main() {
     );
 
     test(
-      'when tables have same names but different casing then mismatches include table name mismatch',
+      'when tables have same names but different casing, '
+      'then mismatches include table name mismatch',
       () {
         var tableA = TableDefinition(
           name: 'Test_Table',
@@ -205,7 +209,8 @@ void main() {
     );
 
     test(
-      'when tables have one null tablespace and one with a value then mismatches include tablespace mismatch',
+      'when tables have one null tablespace and one with a value, '
+      'then mismatches include tablespace mismatch',
       () {
         var tableA = TableDefinition(
           name: 'test_table',

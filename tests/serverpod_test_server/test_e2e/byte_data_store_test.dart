@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 void main() {
   var client = Client(serverUrl);
 
-  group('Given the database-roundtrip/echo server', () {
+  group('Given the database-roundtrip/echo server,', () {
     test(
       'When the byte data store is tested on the server, it succeeds',
       () async {

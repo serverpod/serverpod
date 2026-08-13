@@ -7,7 +7,7 @@ import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a VmServiceProxy in front of a fake DDS', () {
+  group('Given a VmServiceProxy in front of a fake DDS,', () {
     late _FakeUpstream upstream;
     late VmServiceProxy proxy;
 
@@ -186,8 +186,7 @@ void main() {
 
     test(
       'when retarget is called with a new upstream, '
-      'then the published URI is stable and new connections hit the '
-      'new upstream',
+      'then the published URI is stable and new connections hit the new upstream',
       () async {
         final upstream2 = await _FakeUpstream.start();
         addTearDown(upstream2.close);
@@ -236,7 +235,7 @@ void main() {
     );
   });
 
-  group('Given a VmServiceProxy bound with no upstream', () {
+  group('Given a VmServiceProxy bound with no upstream,', () {
     late VmServiceProxy proxy;
 
     setUp(() async {
@@ -252,9 +251,8 @@ void main() {
     });
 
     test(
-      'when a client connects '
-      'then the WS upgrade succeeds and the socket stays open '
-      'until an upstream is set',
+      'when a client connects, '
+      'then the WS upgrade succeeds and the socket stays open until an upstream is set',
       () async {
         final client = await _connectClient(proxy);
         addTearDown(client.close);
@@ -264,7 +262,7 @@ void main() {
     );
 
     test(
-      'when an upstream is set after a client is already waiting '
+      'when an upstream is set after a client is already waiting, '
       'then a round-trip flows through the just-paired upstream',
       () async {
         final upstream = await _FakeUpstream.start();
@@ -298,7 +296,7 @@ void main() {
     );
 
     test(
-      'when a client sends a request while still waiting '
+      'when a client sends a request while still waiting, '
       'then the request reaches the upstream once one is set',
       () async {
         final upstream = await _FakeUpstream.start();
@@ -345,9 +343,8 @@ void main() {
     );
 
     test(
-      'when a client waits past the timeout with no upstream ever set '
-      'then the WS is closed cleanly so the IDE attach surfaces an error '
-      'instead of hanging forever',
+      'when a client waits past the timeout with no upstream ever set, '
+      'then the WS is closed cleanly so the IDE attach surfaces an error instead of hanging forever',
       () async {
         final client = await _connectClient(proxy);
         final closed = Completer<void>();
@@ -359,7 +356,7 @@ void main() {
     );
 
     test(
-      'when setUpstream(null) is called while pairs are active '
+      'when setUpstream(null) is called while pairs are active, '
       'then existing client sockets are closed and new connections wait',
       () async {
         final upstream = await _FakeUpstream.start();
@@ -388,11 +385,10 @@ void main() {
     );
   });
 
-  group('Given a VmServiceProxy with onWaitingClientArrived', () {
+  group('Given a VmServiceProxy with onWaitingClientArrived,', () {
     test(
-      'when the first client connects with no upstream '
-      'then the callback fires exactly once '
-      'and again only after the waiting queue drains and refills',
+      'when the first client connects with no upstream, '
+      'then the callback fires exactly once and again only after the waiting queue drains and refills',
       () async {
         var fired = 0;
         final proxy = VmServiceProxy(

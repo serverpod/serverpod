@@ -6,37 +6,39 @@ import 'package:test/test.dart';
 void main() {
   ValueEncoder.set(const PostgresValueEncoder());
 
-  group('Given a ColumnSparseVector', () {
+  group('Given a ColumnSparseVector,', () {
     var columnName = 'sparse_data';
     var dimension = 8;
-    var column = ColumnSparseVector(
+    late var column = ColumnSparseVector(
       columnName,
       Table<int?>(tableName: 'test'),
       dimension: dimension,
     );
 
     test(
-      'when toString is called then column name within double quotes is returned.',
+      'when toString is called, '
+      'then column name within double quotes is returned.',
       () {
         expect(column.toString(), '"test"."$columnName"');
       },
     );
 
-    test('when columnName getter is called then column name is returned.', () {
+    test('when columnName getter is called, then column name is returned.', () {
       expect(column.columnName, columnName);
     });
 
-    test('when type is called then SparseVector is returned.', () {
+    test('when type is called, then SparseVector is returned.', () {
       expect(column.type, SparseVector);
     });
 
-    test('when dimension is accessed then correct dimension is returned.', () {
+    test('when dimension is accessed, then correct dimension is returned.', () {
       expect(column.dimension, dimension);
     });
 
-    group('with _ColumnDefaultOperations mixin', () {
+    group('with _ColumnDefaultOperations mixin,', () {
       test(
-        'when equals compared to SparseVector value then output is equals expression.',
+        'when equals compared to SparseVector value, '
+        'then output is equals expression.',
         () {
           var testVector = SparseVector.fromMap({1: 1.0, 2: 3.0}, dimension);
           var comparisonExpression = column.equals(testVector);
@@ -49,7 +51,8 @@ void main() {
       );
 
       test(
-        'when NOT equals compared to SparseVector value then output is NOT equals expression.',
+        'when NOT equals compared to SparseVector value, '
+        'then output is NOT equals expression.',
         () {
           var testVector = SparseVector.fromMap({1: 1.0, 2: 3.0}, dimension);
           var comparisonExpression = column.notEquals(testVector);
@@ -62,7 +65,8 @@ void main() {
       );
 
       test(
-        'when checking if expression is in value set then output is IN expression.',
+        'when checking if expression is in value set, '
+        'then output is IN expression.',
         () {
           var comparisonExpression = column.inSet(<SparseVector>{
             SparseVector.fromMap({1: 1.0, 2: 3.0}, dimension),
@@ -78,7 +82,8 @@ void main() {
       );
 
       test(
-        'when checking if expression is in empty value set then output is FALSE expression.',
+        'when checking if expression is in empty value set, '
+        'then output is FALSE expression.',
         () {
           var comparisonExpression = column.inSet(<SparseVector>{});
 
@@ -87,7 +92,8 @@ void main() {
       );
 
       test(
-        'when checking if expression is NOT in value set then output is NOT IN expression.',
+        'when checking if expression is NOT in value set, '
+        'then output is NOT IN expression.',
         () {
           var comparisonExpression = column.notInSet(<SparseVector>{
             SparseVector.fromMap({1: 1.0, 2: 3.0}, dimension),
@@ -103,7 +109,8 @@ void main() {
       );
 
       test(
-        'when checking if expression is NOT in empty value set then output is TRUE expression.',
+        'when checking if expression is NOT in empty value set, '
+        'then output is TRUE expression.',
         () {
           var comparisonExpression = column.notInSet(<SparseVector>{});
 
@@ -112,9 +119,10 @@ void main() {
       );
     });
 
-    group('with _VectorColumnDefaultOperations mixin', () {
+    group('with _VectorColumnDefaultOperations mixin,', () {
       test(
-        'when distanceL2 is called then output is correct operator expression.',
+        'when distanceL2 is called, '
+        'then output is correct operator expression.',
         () {
           var testVector = SparseVector.fromMap({1: 1.0, 2: 3.0}, dimension);
           var comparisonExpression = column.distanceL2(testVector);
@@ -127,7 +135,8 @@ void main() {
       );
 
       test(
-        'when distanceInnerProduct is called then output is correct operator expression.',
+        'when distanceInnerProduct is called, '
+        'then output is correct operator expression.',
         () {
           var testVector = SparseVector.fromMap({1: 1.0, 2: 3.0}, dimension);
           var comparisonExpression = column.distanceInnerProduct(testVector);
@@ -140,7 +149,8 @@ void main() {
       );
 
       test(
-        'when distanceCosine is called then output is correct operator expression.',
+        'when distanceCosine is called, '
+        'then output is correct operator expression.',
         () {
           var testVector = SparseVector.fromMap({1: 1.0, 2: 3.0}, dimension);
           var comparisonExpression = column.distanceCosine(testVector);
@@ -153,7 +163,8 @@ void main() {
       );
 
       test(
-        'when distanceL1 is called then output is correct operator expression.',
+        'when distanceL1 is called, '
+        'then output is correct operator expression.',
         () {
           var testVector = SparseVector.fromMap({1: 1.0, 2: 3.0}, dimension);
           var comparisonExpression = column.distanceL1(testVector);
@@ -166,7 +177,8 @@ void main() {
       );
 
       test(
-        'when comparing a distance to a value then output is correct comparison expression.',
+        'when comparing a distance to a value, '
+        'then output is correct comparison expression.',
         () {
           var testVector = SparseVector.fromMap({1: 1.0, 2: 3.0}, dimension);
           var comparisonExpression = column.distanceL2(testVector) < 0.5;

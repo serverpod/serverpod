@@ -22,7 +22,7 @@ void main() async {
   var session = await IntegrationTestServer().session();
 
   group(
-    'Given two relations to the same table with long relation field names',
+    'Given two relations to the same table with long relation field names,',
     () {
       late int childId;
 
@@ -56,7 +56,8 @@ void main() async {
       });
 
       test(
-        'when fetching the root including both relations then each relation keeps its own column values.',
+        'when fetching the root including both relations, '
+        'then each relation keeps its own column values.',
         () async {
           try {
             var root = await BleedRoot.db.findFirstRow(

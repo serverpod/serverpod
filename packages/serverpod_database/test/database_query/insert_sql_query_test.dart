@@ -111,9 +111,10 @@ class UserClass implements TableRow<int?>, ProtocolSerialization {
 void main() {
   ValueEncoder.set(const PostgresValueEncoder());
 
-  group('Given model with a couple of columns', () {
+  group('Given model with a couple of columns,', () {
     test(
-      'when building insert query with a row then output is a valid SQL query that lists the columns.',
+      'when building insert query with a row, '
+      'then output is a valid SQL query that lists the columns.',
       () {
         var query = InsertQueryBuilder(
           table: PersonTable(),
@@ -128,7 +129,8 @@ void main() {
     );
 
     test(
-      'when instantiating insert query with empty list of rows then argument error is thrown.',
+      'when instantiating insert query with empty list of rows, '
+      'then argument error is thrown.',
       () {
         expect(
           () => InsertQueryBuilder(
@@ -141,7 +143,8 @@ void main() {
     );
 
     test(
-      'when building upsert query with a row without id and single unique column then output is valid SQL with ON CONFLICT DO UPDATE.',
+      'when building upsert query with a row without id and single unique column, '
+      'then output is valid SQL with ON CONFLICT DO UPDATE.',
       () {
         var table = PersonTable();
         var query = InsertQueryBuilder(
@@ -160,7 +163,8 @@ void main() {
     );
 
     test(
-      'when building upsert query with a row with id and single unique column then id is included in INSERT but excluded from DO UPDATE SET.',
+      'when building upsert query with a row with id and single unique column, '
+      'then id is included in INSERT but excluded from DO UPDATE SET.',
       () {
         var table = PersonTable();
         var query = InsertQueryBuilder(
@@ -179,7 +183,8 @@ void main() {
     );
 
     test(
-      'when building upsert query with multiple unique columns then ON CONFLICT lists all unique columns.',
+      'when building upsert query with multiple unique columns, '
+      'then ON CONFLICT lists all unique columns.',
       () {
         var table = PersonTable();
         var query = InsertQueryBuilder(
@@ -198,7 +203,8 @@ void main() {
     );
 
     test(
-      'when building upsert query with updateWhere then WHERE appears after SET clause and RETURNING is present.',
+      'when building upsert query with updateWhere, '
+      'then WHERE appears after SET clause and RETURNING is present.',
       () {
         var table = PersonTable();
         var query = InsertQueryBuilder(
@@ -217,7 +223,8 @@ void main() {
     );
 
     test(
-      'when building upsert query with both updateColumns and updateWhere then both are applied.',
+      'when building upsert query with both updateColumns and updateWhere, '
+      'then both are applied.',
       () {
         var table = PersonTable();
         var query = InsertQueryBuilder(
@@ -237,7 +244,8 @@ void main() {
     );
 
     test(
-      'when updateWhere is provided without conflictColumns then ArgumentError is thrown.',
+      'when updateWhere is provided without conflictColumns, '
+      'then ArgumentError is thrown.',
       () {
         var table = PersonTable();
         expect(
@@ -252,7 +260,8 @@ void main() {
     );
 
     test(
-      'when updateColumns is provided without conflictColumns then ArgumentError is thrown.',
+      'when updateColumns is provided without conflictColumns, '
+      'then ArgumentError is thrown.',
       () {
         var table = PersonTable();
         expect(
@@ -267,7 +276,8 @@ void main() {
     );
 
     test(
-      'when building upsert query with multiple rows without id then output includes all rows in VALUES.',
+      'when building upsert query with multiple rows without id, '
+      'then output includes all rows in VALUES.',
       () {
         var table = PersonTable();
         var query = InsertQueryBuilder(
@@ -289,7 +299,8 @@ void main() {
     );
 
     test(
-      'when building upsert query with mixed id rows then WITH/UNION ALL query is generated.',
+      'when building upsert query with mixed id rows, '
+      'then WITH/UNION ALL query is generated.',
       () {
         var table = PersonTable();
         var query = InsertQueryBuilder(
@@ -317,7 +328,8 @@ SELECT * FROM insertWithIdNotNull
     );
 
     test(
-      'when building upsert query with explicit updateColumns then SET clause only includes those columns.',
+      'when building upsert query with explicit updateColumns, '
+      'then SET clause only includes those columns.',
       () {
         var table = PersonTable();
         var query = InsertQueryBuilder(
@@ -336,7 +348,8 @@ SELECT * FROM insertWithIdNotNull
       },
     );
     test(
-      'when instantiating upsert query with empty list of rows then argument error is thrown.',
+      'when instantiating upsert query with empty list of rows, '
+      'then argument error is thrown.',
       () {
         var table = PersonTable();
         expect(
@@ -351,7 +364,8 @@ SELECT * FROM insertWithIdNotNull
     );
 
     test(
-      'when instantiating upsert query with empty conflictColumns then argument error is thrown.',
+      'when instantiating upsert query with empty conflictColumns, '
+      'then argument error is thrown.',
       () {
         var table = PersonTable();
         expect(
@@ -366,7 +380,8 @@ SELECT * FROM insertWithIdNotNull
     );
 
     test(
-      'when instantiating upsert query with id as conflict column then query is built successfully.',
+      'when instantiating upsert query with id as conflict column, '
+      'then query is built successfully.',
       () {
         var table = PersonTable();
         var query = InsertQueryBuilder(
@@ -385,7 +400,8 @@ SELECT * FROM insertWithIdNotNull
     );
 
     test(
-      'when instantiating upsert query with column not in table then argument error is thrown.',
+      'when instantiating upsert query with column not in table, '
+      'then argument error is thrown.',
       () {
         var personTable = PersonTable();
         var userTable = UserTable();
@@ -401,7 +417,8 @@ SELECT * FROM insertWithIdNotNull
     );
 
     test(
-      'when instantiating upsert query with empty updateColumns then argument error is thrown.',
+      'when instantiating upsert query with empty updateColumns, '
+      'then argument error is thrown.',
       () {
         var table = PersonTable();
         expect(
@@ -417,7 +434,8 @@ SELECT * FROM insertWithIdNotNull
     );
 
     test(
-      'when instantiating upsert query with id in updateColumns then argument error is thrown.',
+      'when instantiating upsert query with id in updateColumns, '
+      'then argument error is thrown.',
       () {
         var table = PersonTable();
         expect(
@@ -433,7 +451,8 @@ SELECT * FROM insertWithIdNotNull
     );
 
     test(
-      'when instantiating upsert query with updateColumns containing column not in table then argument error is thrown.',
+      'when instantiating upsert query with updateColumns containing column not in table, '
+      'then argument error is thrown.',
       () {
         var personTable = PersonTable();
         var userTable = UserTable();
@@ -450,7 +469,8 @@ SELECT * FROM insertWithIdNotNull
     );
 
     test(
-      'when instantiating upsert query with updateColumns overlapping conflictColumns then argument error is thrown.',
+      'when instantiating upsert query with updateColumns overlapping conflictColumns, '
+      'then argument error is thrown.',
       () {
         var table = PersonTable();
         expect(
@@ -467,7 +487,9 @@ SELECT * FROM insertWithIdNotNull
   });
 
   group(
-    'Given model with only id column when building insert query then default values are used in the query.',
+    'Given model with only id column, '
+    'when building insert query, '
+    'then default values are used in the query.',
     () {
       test(
         'when building insert query with a row then output is a valid SQL query that lists the columns.',
@@ -483,9 +505,10 @@ SELECT * FROM insertWithIdNotNull
     },
   );
 
-  group('Given model with an explicit column field name', () {
+  group('Given model with an explicit column field name,', () {
     test(
-      'when building insert query then output is a valid SQL query with column names.',
+      'when building insert query, '
+      'then output is a valid SQL query with column names.',
       () {
         var query = InsertQueryBuilder(
           table: UserTable(),
@@ -501,7 +524,8 @@ SELECT * FROM insertWithIdNotNull
     );
 
     test(
-      'when building upsert query then output uses column names and field name returning clause.',
+      'when building upsert query, '
+      'then output uses column names and field name returning clause.',
       () {
         var table = UserTable();
         var query = InsertQueryBuilder(
@@ -521,7 +545,9 @@ SELECT * FROM insertWithIdNotNull
   });
 
   test(
-    'Given model with multiple columns and id column having value when building insert query then its id is used in the query.',
+    'Given model with multiple columns and id column having value, '
+    'when building insert query, '
+    'then its id is used in the query.',
     () {
       var query = InsertQueryBuilder(
         table: PersonTable(),
@@ -536,7 +562,9 @@ SELECT * FROM insertWithIdNotNull
   );
 
   test(
-    'Given model with only id column and id column having value when building insert query then its id is used in the query.',
+    'Given model with only id column and id column having value, '
+    'when building insert query, '
+    'then its id is used in the query.',
     () {
       var query = InsertQueryBuilder(
         table: Table<int?>(tableName: 'only_id'),
@@ -548,7 +576,9 @@ SELECT * FROM insertWithIdNotNull
   );
 
   test(
-    'Given models a list of models with and without id column having value when building insert query then two separate insert queries are generated.',
+    'Given models a list of models with and without id column having value, '
+    'when building insert query, '
+    'then two separate insert queries are generated.',
     () {
       var query = InsertQueryBuilder(
         table: PersonTable(),
@@ -573,7 +603,7 @@ SELECT * FROM insertWithIdNotNull
     },
   );
 
-  group('Given ignoreConflicts is true and a row without id', () {
+  group('Given ignoreConflicts is true and a row without id,', () {
     late String query;
 
     setUp(() {
@@ -585,7 +615,7 @@ SELECT * FROM insertWithIdNotNull
     });
 
     test(
-      'when building insert query then ON CONFLICT DO NOTHING is appended.',
+      'when building insert query, then ON CONFLICT DO NOTHING is appended.',
       () {
         expect(
           query,
@@ -595,7 +625,7 @@ SELECT * FROM insertWithIdNotNull
     );
   });
 
-  group('Given ignoreConflicts is true and a row with id', () {
+  group('Given ignoreConflicts is true and a row with id,', () {
     late String query;
 
     setUp(() {
@@ -607,7 +637,7 @@ SELECT * FROM insertWithIdNotNull
     });
 
     test(
-      'when building insert query then ON CONFLICT DO NOTHING is appended.',
+      'when building insert query, then ON CONFLICT DO NOTHING is appended.',
       () {
         expect(
           query,
@@ -617,7 +647,7 @@ SELECT * FROM insertWithIdNotNull
     );
   });
 
-  group('Given ignoreConflicts is true and only id column', () {
+  group('Given ignoreConflicts is true and only id column,', () {
     late String query;
 
     setUp(() {
@@ -629,7 +659,8 @@ SELECT * FROM insertWithIdNotNull
     });
 
     test(
-      'when building insert query then ON CONFLICT DO NOTHING is appended to DEFAULT VALUES query.',
+      'when building insert query, '
+      'then ON CONFLICT DO NOTHING is appended to DEFAULT VALUES query.',
       () {
         expect(
           query,
@@ -639,7 +670,7 @@ SELECT * FROM insertWithIdNotNull
     );
   });
 
-  group('Given ignoreConflicts is true and mixed id rows', () {
+  group('Given ignoreConflicts is true and mixed id rows,', () {
     late String query;
 
     setUp(() {
@@ -654,7 +685,8 @@ SELECT * FROM insertWithIdNotNull
     });
 
     test(
-      'when building insert query then both sub-queries include ON CONFLICT DO NOTHING.',
+      'when building insert query, '
+      'then both sub-queries include ON CONFLICT DO NOTHING.',
       () {
         expect(
           query,
@@ -672,7 +704,7 @@ SELECT * FROM insertWithIdNotNull
     );
   });
 
-  group('Given ignoreConflicts is false (default)', () {
+  group('Given ignoreConflicts is false (default),', () {
     late String query;
 
     setUp(() {
@@ -684,7 +716,7 @@ SELECT * FROM insertWithIdNotNull
     });
 
     test(
-      'when building insert query then ON CONFLICT DO NOTHING is not present.',
+      'when building insert query, then ON CONFLICT DO NOTHING is not present.',
       () {
         expect(
           query,
@@ -694,9 +726,9 @@ SELECT * FROM insertWithIdNotNull
     );
   });
 
-  group('Given noReturn is true', () {
+  group('Given noReturn is true,', () {
     test(
-      'when building insert query then the RETURNING clause is omitted.',
+      'when building insert query, then the RETURNING clause is omitted.',
       () {
         var query = InsertQueryBuilder(
           table: PersonTable(),
@@ -712,7 +744,8 @@ SELECT * FROM insertWithIdNotNull
     );
 
     test(
-      'when building insert query with default values then the RETURNING clause is omitted.',
+      'when building insert query with default values, '
+      'then the RETURNING clause is omitted.',
       () {
         var query = InsertQueryBuilder(
           table: Table<int?>(tableName: 'only_id'),
@@ -725,7 +758,7 @@ SELECT * FROM insertWithIdNotNull
     );
 
     test(
-      'when building upsert query then the RETURNING clause is omitted.',
+      'when building upsert query, then the RETURNING clause is omitted.',
       () {
         var table = PersonTable();
         var query = InsertQueryBuilder(
@@ -744,7 +777,7 @@ SELECT * FROM insertWithIdNotNull
     );
 
     test(
-      'when building insert query with mixed id rows '
+      'when building insert query with mixed id rows, '
       'then the id-null insert runs as a data-modifying CTE without RETURNING or a wrapping SELECT.',
       () {
         var query = InsertQueryBuilder(

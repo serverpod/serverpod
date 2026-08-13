@@ -8,9 +8,9 @@ import 'package:test/test.dart';
 /// `linux-amd64`/`darwin-arm64v8` names after the artifact naming moved to
 /// the Serverpod `<os>-<arch>` scheme).
 void main() {
-  group('Given the user-facing documentation and prefetch CLI help, ', () {
+  group('Given the user-facing documentation and prefetch CLI help,', () {
     const documentedFiles = ['README.md', 'PLATFORMS.md', 'bin/prefetch.dart'];
-    final targetPattern = RegExp(
+    late final targetPattern = RegExp(
       r'\b(?:linux|macos|windows|darwin)-(?:x64|arm64|amd64|arm64v8|x86_64)\b',
     );
     late Map<String, String> documentedContents;

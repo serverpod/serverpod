@@ -3,9 +3,9 @@ import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
 void main() async {
-  group('Given IvfflatIndexQueryOptions runtime parameters', () {
+  group('Given IvfflatIndexQueryOptions runtime parameters,', () {
     test(
-      'when setting parameters globally then options are applied globally.',
+      'when setting parameters globally, then options are applied globally.',
       () async {
         var session = await IntegrationTestServer(
           runtimeParametersBuilder: (params) => [
@@ -29,7 +29,8 @@ void main() async {
     );
 
     test(
-      'when setting parameters in transaction then they do not affect global settings.',
+      'when setting parameters in transaction, '
+      'then they do not affect global settings.',
       () async {
         var checkQuery = IvfflatIndexQueryOptions().buildCheckValues();
 

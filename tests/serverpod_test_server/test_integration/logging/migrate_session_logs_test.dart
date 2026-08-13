@@ -9,7 +9,7 @@ import '../test_tools/serverpod_test_tools.dart';
 const serverId = 'migrate_tests';
 
 void main() {
-  withServerpod('Given session log entries with only authenticatedUserId set', (
+  withServerpod('Given session log entries with only authenticatedUserId set,', (
     sessionBuilder,
     _,
   ) {
@@ -36,7 +36,7 @@ void main() {
         entries,
       );
     });
-    group('when migrating user id field ', () {
+    group('when migrating user id field,', () {
       late int migratedCount;
       setUp(() async {
         migratedCount = await SessionLogUtils.migrateSessionLogUserIds(
@@ -78,7 +78,8 @@ void main() {
     });
 
     test(
-      'when migrated in a transaction that is rolled back then no entries are migrated',
+      'when migrated in a transaction that is rolled back, '
+      'then no entries are migrated',
       () async {
         await session.db.transaction((transaction) async {
           var savepoint = await transaction.createSavepoint();
@@ -105,7 +106,7 @@ void main() {
   });
 
   withServerpod(
-    'Given session log entries with both userId and authenticatedUserId',
+    'Given session log entries with both userId and authenticatedUserId,',
     (sessionBuilder, _) {
       late Session session;
       late SessionLogEntry entry;
@@ -125,7 +126,8 @@ void main() {
       });
 
       test(
-        'when migrating user id field then entry with non-null user id is not migrated',
+        'when migrating user id field, '
+        'then entry with non-null user id is not migrated',
         () async {
           await SessionLogUtils.migrateSessionLogUserIds(session: session);
           var actualEntry = await SessionLogEntry.db.findById(
@@ -139,7 +141,7 @@ void main() {
     },
   );
 
-  withServerpod('Given more entries than maxMigratedEntries', (
+  withServerpod('Given more entries than maxMigratedEntries,', (
     sessionBuilder,
     _,
   ) {
@@ -162,7 +164,8 @@ void main() {
     });
 
     test(
-      'when migrating user id then only maxMigratedEntries number of entries are migrated',
+      'when migrating user id, '
+      'then only maxMigratedEntries number of entries are migrated',
       () async {
         final migrated = await SessionLogUtils.migrateSessionLogUserIds(
           session: session,
@@ -179,7 +182,7 @@ void main() {
     );
   });
 
-  withServerpod('Given more entries than batchSize', (sessionBuilder, _) {
+  withServerpod('Given more entries than batchSize,', (sessionBuilder, _) {
     late Session session;
     const batchSize = 3;
     late List<SessionLogEntry> entries;
@@ -199,7 +202,7 @@ void main() {
       await SessionLogEntry.db.insert(session, entries);
     });
 
-    test('when migrating user id then all entries are migrated', () async {
+    test('when migrating user id, then all entries are migrated', () async {
       final migrated = await SessionLogUtils.migrateSessionLogUserIds(
         session: session,
         batchSize: batchSize,

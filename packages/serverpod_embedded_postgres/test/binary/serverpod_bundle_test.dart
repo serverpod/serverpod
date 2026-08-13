@@ -31,7 +31,7 @@ void main() {
   );
 
   group(
-    'Given a PostgreSQL 16.13.0 revision 1 bundle for macOS Arm64, ',
+    'Given a PostgreSQL 16.13.0 revision 1 bundle for macOS Arm64,',
     () {
       late ServerpodBundleArtifact artifact;
 
@@ -97,7 +97,7 @@ void main() {
     },
   );
 
-  group('Given two bundle revisions of the same PostgreSQL version, ', () {
+  group('Given two bundle revisions of the same PostgreSQL version,', () {
     late ServerpodBundleArtifact r1;
     late ServerpodBundleArtifact r2;
 
@@ -140,7 +140,7 @@ void main() {
   });
 
   group(
-    'Given an empty Linux x64 installation directory and its expected bundle artifact, ',
+    'Given an empty Linux x64 installation directory and its expected bundle artifact,',
     () {
       late Directory installDir;
       late ServerpodBundleArtifact artifact;

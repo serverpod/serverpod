@@ -115,7 +115,7 @@ void main() {
     });
   });
 
-  group('Given signed in user without "admin" scope', () {
+  group('Given signed in user without "admin" scope,', () {
     setUp(() async {
       var response = await client.authentication.authenticate(
         'test@foo.bar',
@@ -141,7 +141,8 @@ void main() {
       );
     });
     test(
-      'when accessing endpoint that requires "admin" scope then 403 is returned.',
+      'when accessing endpoint that requires "admin" scope, '
+      'then 403 is returned.',
       () async {
         expectLater(
           client.adminScopeRequired.testMethod(),
@@ -157,7 +158,7 @@ void main() {
     );
   });
 
-  group('Given signed in user with "admin" scope', () {
+  group('Given signed in user with "admin" scope,', () {
     setUp(() async {
       var response = await client.authentication.authenticate(
         'test@foo.bar',
@@ -184,7 +185,8 @@ void main() {
       );
     });
     test(
-      'when accessing endpoint that requires "admin" scope then request is successful.',
+      'when accessing endpoint that requires "admin" scope, '
+      'then request is successful.',
       () async {
         var result = await client.adminScopeRequired.testMethod();
         expect(result, equals(true));
@@ -192,7 +194,7 @@ void main() {
     );
   });
 
-  group('Given signed in user that wants to alter its user info', () {
+  group('Given signed in user that wants to alter its user info,', () {
     setUp(() async {
       var response = await client.authentication.authenticate(
         'test@foo.bar',
@@ -218,7 +220,7 @@ void main() {
       );
     });
 
-    test('when changing its user name then user name is updated.', () async {
+    test('when changing its user name, then user name is updated.', () async {
       final currentUserInfo = await client.modules.auth.status.getUserInfo();
       expect(
         currentUserInfo,
@@ -251,7 +253,7 @@ void main() {
       );
     });
 
-    test('when changing its full name  then full name is updated.', () async {
+    test('when changing its full name,  then full name is updated.', () async {
       final currentUserInfo = await client.modules.auth.status.getUserInfo();
       expect(
         currentUserInfo,

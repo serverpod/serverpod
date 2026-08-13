@@ -6,9 +6,10 @@ import 'package:serverpod_embedded_postgres/src/binary/maven_url.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given platformSuffixForAbi', () {
+  group('Given platformSuffixForAbi,', () {
     test(
-      'when called with each supported ABI then the matching Zonky suffix is returned.',
+      'when called with each supported ABI, '
+      'then the matching Zonky suffix is returned.',
       () {
         expect(platformSuffixForAbi(Abi.linuxX64), 'linux-amd64');
         expect(platformSuffixForAbi(Abi.linuxArm64), 'linux-arm64v8');
@@ -19,7 +20,7 @@ void main() {
     );
 
     test(
-      'when called with an ABI Zonky does not publish '
+      'when called with an ABI Zonky does not publish, '
       'then UnsupportedPlatformException is thrown.',
       () {
         expect(
@@ -34,7 +35,7 @@ void main() {
     );
   });
 
-  group('Given a ZonkyArtifact', () {
+  group('Given a ZonkyArtifact,', () {
     test(
       'when constructed for darwin-amd64 16.13.0 '
       "then BOM, artifact ID, and JAR filename match Zonky's actual layout.",
@@ -53,7 +54,7 @@ void main() {
       },
     );
 
-    test('when computing jarUrl then it points at Maven Central.', () {
+    test('when computing jarUrl, then it points at Maven Central.', () {
       var a = ZonkyArtifact(
         version: Version(16, 13, 0),
         platform: 'darwin-amd64',
@@ -67,7 +68,7 @@ void main() {
       );
     });
 
-    test('when computing sha256Url then it appends ".sha256" to jarUrl.', () {
+    test('when computing sha256Url, then it appends ".sha256" to jarUrl.', () {
       var a = ZonkyArtifact(
         version: Version(16, 13, 0),
         platform: 'linux-arm64v8',
@@ -78,7 +79,7 @@ void main() {
     });
 
     test(
-      'when comparing two artifacts with the same version and platform '
+      'when comparing two artifacts with the same version and platform, '
       'then they are equal.',
       () {
         var a = ZonkyArtifact(
@@ -96,7 +97,7 @@ void main() {
     );
 
     test(
-      'when constructed via forCurrentPlatform '
+      'when constructed via forCurrentPlatform, '
       'then platform matches the host ABI.',
       () {
         var a = ZonkyArtifact.forCurrentPlatform(version: Version(16, 13, 0));

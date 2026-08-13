@@ -13,7 +13,9 @@ void main() {
 
   tearDown(() async => await client.emailAuthTestMethods.tearDown());
   test(
-    'Given no user exists when creating user then user is created and can be authenticated',
+    'Given no user exists, '
+    'when creating user, '
+    'then user is created and can be authenticated',
     () async {
       var createAccountRequest = await client.modules.auth.email
           .createAccountRequest(
@@ -58,7 +60,7 @@ void main() {
     },
   );
 
-  group('Given existing user', () {
+  group('Given existing user,', () {
     setUp(
       () async {
         var createUserRequest = await client.emailAuthTestMethods.createUser(
@@ -77,7 +79,8 @@ void main() {
     );
 
     test(
-      'when changing password using password reset then user can authenticate using new password',
+      'when changing password using password reset, '
+      'then user can authenticate using new password',
       () async {
         var initiatePasswordResetResponse = await client.modules.auth.email
             .initiatePasswordReset(email);
@@ -119,7 +122,7 @@ void main() {
     );
 
     test(
-      'when authenticating with wrong password then authentication fails',
+      'when authenticating with wrong password, then authentication fails',
       () async {
         var wrongPassword = '$password-wrong';
         var authResponse = await client.modules.auth.email.authenticate(
@@ -136,7 +139,7 @@ void main() {
     );
   });
 
-  group('Given existing and authenticated user', () {
+  group('Given existing and authenticated user,', () {
     setUp(
       () async {
         var createUserRequest = await client.emailAuthTestMethods.createUser(
@@ -166,7 +169,7 @@ void main() {
     tearDown(() async => await authKeyProvider.remove());
 
     test(
-      'when changing password then user can authenticate with new password',
+      'when changing password, then user can authenticate with new password',
       () async {
         var newPassword = '$password-with-addition';
         var changePasswordResponse = await client.modules.auth.email

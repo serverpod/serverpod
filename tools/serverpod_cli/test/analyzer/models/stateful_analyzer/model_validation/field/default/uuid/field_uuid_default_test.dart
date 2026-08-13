@@ -10,9 +10,10 @@ import '../../../../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
-  group('Given a class with fields with a "default" keyword', () {
+  group('Given a class with fields with a "default" keyword,', () {
     test(
-      'when the field is of type UUID and the default is set to "random", then the field\'s default model and persist values are "random".',
+      'when the field is of type UUID and the default is set to "random", '
+      'then the field\'s default model and persist values are "random".',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -41,7 +42,8 @@ void main() {
     );
 
     test(
-      'when the field is of type UUID and the default is set to "random_v7", then the field\'s default model and persist values are "random_v7".',
+      'when the field is of type UUID and the default is set to "random_v7", '
+      'then the field\'s default model and persist values are "random_v7".',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -70,7 +72,8 @@ void main() {
     );
 
     test(
-      'when the field is of type UUID and the default is set to a valid UUID string with single quotes, then the field\'s default model and persist values are the provided UUID string.',
+      'when the field is of type UUID and the default is set to a valid UUID string with single quotes, '
+      'then the field\'s default model and persist values are the provided UUID string.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -106,7 +109,8 @@ void main() {
     );
 
     test(
-      'when the field is of type UUID and the default is set to a valid UUID string with double quotes, then the field\'s default model and persist values are the provided UUID string, converted to single quotes.',
+      'when the field is of type UUID and the default is set to a valid UUID string with double quotes, '
+      'then the field\'s default model and persist values are the provided UUID string, converted to single quotes.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -142,7 +146,8 @@ void main() {
     );
 
     test(
-      'when the field is of type UUID and the default is empty, then an error is generated.',
+      'when the field is of type UUID and the default is empty, '
+      'then an error is generated.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -173,7 +178,8 @@ void main() {
     );
 
     test(
-      'when the field is of type UUID with an invalid default value, then an error is generated.',
+      'when the field is of type UUID with an invalid default value, '
+      'then an error is generated.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -204,7 +210,8 @@ void main() {
     );
 
     test(
-      'when the field is of type UUID with a malformed UUID in single quotes, then an error is generated.',
+      'when the field is of type UUID with a malformed UUID in single quotes, '
+      'then an error is generated.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -235,7 +242,8 @@ void main() {
     );
 
     test(
-      'when the field is of type UUID with a malformed UUID in double quotes, then an error is generated.',
+      'when the field is of type UUID with a malformed UUID in double quotes, '
+      'then an error is generated.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -267,7 +275,8 @@ void main() {
   });
 
   test(
-    'Given a class with a declared id field of type UUID with a "default" keyword, then an error is collected.',
+    'Given a class with a declared id field of type UUID with a "default" keyword, '
+    'then an error is collected.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(

@@ -22,9 +22,9 @@ void main() {
 
   group(
     'Given a TemplateContext with redis disabled and no database option enabled, '
-    'when performCreate is called with the context and a fullstack template type',
+    'when performCreate is called with the context and a fullstack template type,',
     () {
-      final project = setUpPerformCreateInTempDir(
+      late final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.fullstack,
           postgres: false,
@@ -87,9 +87,9 @@ void main() {
 
   group(
     'Given a TemplateContext with redis disabled and no database option enabled, '
-    'when performCreate is called with the context and a module template type',
+    'when performCreate is called with the context and a module template type,',
     () {
-      final project = setUpPerformCreateInTempDir(
+      late final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.module,
           postgres: false,

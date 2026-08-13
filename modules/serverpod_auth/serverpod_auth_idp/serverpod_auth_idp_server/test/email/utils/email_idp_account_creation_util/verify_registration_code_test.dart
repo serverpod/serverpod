@@ -10,7 +10,7 @@ import '../../test_utils/email_idp_test_fixture.dart';
 
 void main() {
   withServerpod(
-    'Given pending account request exists',
+    'Given pending account request exists,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -48,7 +48,7 @@ void main() {
       });
 
       group(
-        'when verify registration code is called with valid verification code',
+        'when verify registration code is called with valid verification code,',
         () {
           late Future<String> verifyAccountRequestFuture;
           setUp(() async {
@@ -91,7 +91,8 @@ void main() {
       );
 
       test(
-        'when verify registration code is called with invalid verification code then it throws invalid verification code exception',
+        'when verify registration code is called with invalid verification code, '
+        'then it throws invalid verification code exception',
         () async {
           final result = session.db.transaction(
             (final transaction) =>
@@ -111,7 +112,8 @@ void main() {
       );
 
       test(
-        'when verify registration code is called with valid code after expiration then it throws verification expired exception',
+        'when verify registration code is called with valid code after expiration, '
+        'then it throws verification expired exception',
         () async {
           const registrationVerificationCodeLifetime = Duration(hours: 1);
 
@@ -142,7 +144,7 @@ void main() {
       );
 
       group(
-        'when verify registration code is called multiple times in quick succession',
+        'when verify registration code is called multiple times in quick succession,',
         () {
           late Future<List<String>> attempts;
           const numberOfAttempts = registrationVerificationCodeAllowedAttempts;
@@ -209,7 +211,7 @@ void main() {
   );
 
   withServerpod(
-    'Given account request that has been verified already',
+    'Given account request that has been verified already,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -254,7 +256,8 @@ void main() {
       });
 
       test(
-        'when verify registration code is called with valid verification code then throws verification code already used exception',
+        'when verify registration code is called with valid verification code, '
+        'then throws verification code already used exception',
         () async {
           final result = session.db.transaction(
             (final transaction) =>
@@ -278,7 +281,7 @@ void main() {
   );
 
   withServerpod(
-    'Given account request that has been completed',
+    'Given account request that has been completed,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -334,7 +337,8 @@ void main() {
       });
 
       test(
-        'when verify registration code is called with valid verification code then it throws request not found exception',
+        'when verify registration code is called with valid verification code, '
+        'then it throws request not found exception',
         () async {
           final result = session.db.transaction(
             (final transaction) =>
@@ -356,7 +360,7 @@ void main() {
   );
 
   withServerpod(
-    'Given account request that has failed verification and config allows multiple attempts',
+    'Given account request that has failed verification and config allows multiple attempts,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -406,7 +410,8 @@ void main() {
       });
 
       test(
-        'when verify registration code is called with valid verification code then it succeeds and returns verification token',
+        'when verify registration code is called with valid verification code, '
+        'then it succeeds and returns verification token',
         () async {
           final request = session.db.transaction(
             (final transaction) =>
@@ -425,7 +430,7 @@ void main() {
   );
 
   withServerpod(
-    'Given account request that has failed verification matching the allowed attempts',
+    'Given account request that has failed verification matching the allowed attempts,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -475,7 +480,8 @@ void main() {
       });
 
       test(
-        'when verify registration code is called with invalid verification code then it throws too many attempts exception',
+        'when verify registration code is called with invalid verification code, '
+        'then it throws too many attempts exception',
         () async {
           final result = session.db.transaction(
             (final transaction) =>
@@ -499,7 +505,7 @@ void main() {
   );
 
   withServerpod(
-    'Given account request that has failed verification past the maximum number of allowed attempts',
+    'Given account request that has failed verification past the maximum number of allowed attempts,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -564,7 +570,8 @@ void main() {
       });
 
       test(
-        'when verify registration code is called with valid verification code then it throws too many attempts exception',
+        'when verify registration code is called with valid verification code, '
+        'then it throws too many attempts exception',
         () async {
           final result = session.db.transaction(
             (final transaction) =>
@@ -588,7 +595,7 @@ void main() {
   );
 
   withServerpod(
-    'Given account request was verified with expired credentials',
+    'Given account request was verified with expired credentials,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -648,7 +655,8 @@ void main() {
       });
 
       test(
-        'when verify registration code is called with valid verification code then it throws request not found exception',
+        'when verify registration code is called with valid verification code, '
+        'then it throws request not found exception',
         () async {
           final result = session.db.transaction(
             (final transaction) =>

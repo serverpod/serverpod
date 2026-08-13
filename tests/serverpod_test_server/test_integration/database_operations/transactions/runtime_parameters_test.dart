@@ -5,9 +5,9 @@ import 'package:test/test.dart';
 void main() async {
   var session = await IntegrationTestServer().session();
 
-  test('Given a transaction with HnswIndexQueryOptions parameters '
-      'when setting parameters using transaction.setRuntimeParameters '
-      'then options are applied locally to the transaction', () async {
+  test('Given a transaction with HnswIndexQueryOptions parameters, '
+       'when setting parameters using transaction.setRuntimeParameters, '
+       'then options are applied locally to the transaction', () async {
     await session.db.transaction((transaction) async {
       await transaction.setRuntimeParameters(
         (params) => [
@@ -35,9 +35,9 @@ void main() async {
     });
   });
 
-  test('Given a transaction with IvfflatIndexQueryOptions parameters '
-      'when setting parameters using transaction.setRuntimeParameters '
-      'then options are applied locally to the transaction', () async {
+  test('Given a transaction with IvfflatIndexQueryOptions parameters, '
+       'when setting parameters using transaction.setRuntimeParameters, '
+       'then options are applied locally to the transaction', () async {
     await session.db.transaction((transaction) async {
       await transaction.setRuntimeParameters(
         (params) => [
@@ -63,9 +63,9 @@ void main() async {
     });
   });
 
-  test('Given a transaction with VectorIndexQueryOptions parameters '
-      'when setting parameters using transaction.setRuntimeParameters '
-      'then options are applied locally to the transaction', () async {
+  test('Given a transaction with VectorIndexQueryOptions parameters, '
+       'when setting parameters using transaction.setRuntimeParameters, '
+       'then options are applied locally to the transaction', () async {
     await session.db.transaction((transaction) async {
       await transaction.setRuntimeParameters(
         (params) => [
@@ -99,9 +99,9 @@ void main() async {
     });
   });
 
-  test('Given a transaction with mixed runtime parameters '
-      'when setting multiple different parameter types using transaction.setRuntimeParameters '
-      'then all options are applied locally to the transaction', () async {
+  test('Given a transaction with mixed runtime parameters, '
+       'when setting multiple different parameter types using transaction.setRuntimeParameters, '
+       'then all options are applied locally to the transaction', () async {
     await session.db.transaction((transaction) async {
       await transaction.setRuntimeParameters(
         (params) => [
@@ -165,9 +165,9 @@ void main() async {
     });
   });
 
-  test('Given a transaction with runtime parameters containing null values '
-      'when setting parameters using transaction.setRuntimeParameters '
-      'then only non-null values are applied to the transaction', () async {
+  test('Given a transaction with runtime parameters containing null values, '
+       'when setting parameters using transaction.setRuntimeParameters, '
+       'then only non-null values are applied to the transaction', () async {
     await session.db.transaction((transaction) async {
       // pgvector registers its hnsw.* GUCs only once its library is loaded into
       // the backend, which happens lazily on the first vector operation. Force
@@ -207,8 +207,8 @@ void main() async {
   });
 
   test(
-    'Given a transaction with custom runtime parameters supplied to the Serverpod instance '
-    'when setting parameters using transaction.setRuntimeParameters '
+    'Given a transaction with custom runtime parameters supplied to the Serverpod instance, '
+    'when setting parameters using transaction.setRuntimeParameters, '
     'then parameters set to null are cleared',
     () async {
       var customSession = await IntegrationTestServer(

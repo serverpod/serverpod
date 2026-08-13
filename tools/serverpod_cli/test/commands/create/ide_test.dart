@@ -5,10 +5,10 @@ import 'package:serverpod_cli/src/create/ide.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given the Antigravity IDE', () {
+  group('Given the Antigravity IDE,', () {
     const ide = TemplateIde.antigravity;
 
-    group('when reading its file layout', () {
+    group('when reading its file layout,', () {
       test('then the MCP config lives in the .agents plugin folder', () {
         expect(
           ide.filePath,
@@ -33,8 +33,8 @@ void main() {
       });
     });
 
-    group('when rendering its config', () {
-      final config = ide.effectiveConfig(serverDirRelative: 'my_app_server');
+    group('when rendering its config,', () {
+      late final config = ide.effectiveConfig(serverDirRelative: 'my_app_server');
 
       test('then the server dir is embedded in the serverpod entry', () {
         expect(config, contains('"--server-dir", "my_app_server"'));
@@ -47,7 +47,7 @@ void main() {
     });
 
     test(
-      'when rendering a companion file that uses slots '
+      'when rendering a companion file that uses slots, '
       'then the server dir slot and replacements are applied',
       () {
         final rendered = ide.render(
@@ -60,9 +60,9 @@ void main() {
     );
   });
 
-  group('Given the VS Code IDE', () {
+  group('Given the VS Code IDE,', () {
     test(
-      'when rendering its config '
+      'when rendering its config, '
       'then the mcpServers key is replaced with servers',
       () {
         final config = TemplateIde.vscode.effectiveConfig(
@@ -75,9 +75,9 @@ void main() {
     );
   });
 
-  group('Given every IDE', () {
+  group('Given every IDE,', () {
     test(
-      'when rendering all of its files '
+      'when rendering all of its files, '
       'then no unrendered server dir slot remains',
       () {
         for (final ide in TemplateIde.values) {

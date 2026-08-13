@@ -15,9 +15,9 @@ void main() {
     return file;
   }
 
-  test('Given a missing server pubspec.yaml '
-      'when calling GeneratorConfig.load '
-      'then a ServerpodProjectNotFoundException is thrown', () async {
+  test('Given a missing server pubspec.yaml, '
+       'when calling GeneratorConfig.load, '
+       'then a ServerpodProjectNotFoundException is thrown', () async {
     await expectLater(
       GeneratorConfig.load(
         serverRootDir: (await getServerPubspecFile()).parent.path,
@@ -34,9 +34,9 @@ void main() {
     );
   });
 
-  test('Given an invalid server pubspec.yaml '
-      'when calling GeneratorConfig.load '
-      'then a ServerpodProjectNotFoundException is thrown', () async {
+  test('Given an invalid server pubspec.yaml, '
+       'when calling GeneratorConfig.load, '
+       'then a ServerpodProjectNotFoundException is thrown', () async {
     var serverPubspecFile = await getServerPubspecFile();
     await serverPubspecFile.writeAsString('invalid yaml');
     // TODO: https://github.com/serverpod/serverpod/issues/3298
@@ -57,9 +57,9 @@ void main() {
     );
   });
 
-  test('Given a valid server pubspec.yaml but a missing client pubspec.yaml '
-      'when calling GeneratorConfig.load '
-      'then a ServerpodProjectNotFoundException is thrown', () async {
+  test('Given a valid server pubspec.yaml but a missing client pubspec.yaml, '
+       'when calling GeneratorConfig.load, '
+       'then a ServerpodProjectNotFoundException is thrown', () async {
     // TODO: https://github.com/serverpod/serverpod/issues/3298
     // should this even be an error?
     var serverPubspecFile = await getServerPubspecFile();

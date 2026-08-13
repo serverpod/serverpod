@@ -5,15 +5,16 @@ import 'package:test/test.dart';
 void main() {
   ValueEncoder.set(const PostgresValueEncoder());
 
-  group('Given a Constant expression', () {
-    test('when null static is retrieved then output is NULL.', () {
+  group('Given a Constant expression,', () {
+    test('when null static is retrieved, then output is NULL.', () {
       var expression = Constant.nullValue;
 
       expect(expression.toString(), 'NULL');
     });
 
     test(
-      'when bool constructor is used value then output is uppercase bool value.',
+      'when bool constructor is used value, '
+      'then output is uppercase bool value.',
       () {
         var expression = Constant.bool(true);
 
@@ -22,7 +23,7 @@ void main() {
     );
 
     test(
-      'when initialized with String value then output is escaped string.',
+      'when initialized with String value, then output is escaped string.',
       () {
         var expression = Constant.string('test');
 

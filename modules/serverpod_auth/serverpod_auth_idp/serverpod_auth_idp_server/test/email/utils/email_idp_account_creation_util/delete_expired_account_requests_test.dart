@@ -8,7 +8,7 @@ import '../../test_utils/email_idp_test_fixture.dart';
 
 void main() {
   withServerpod(
-    'Given account request within verification code lifetime',
+    'Given account request within verification code lifetime,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -42,7 +42,8 @@ void main() {
       });
 
       test(
-        'when deleting expired account requests then request can still be verified',
+        'when deleting expired account requests, '
+        'then request can still be verified',
         () async {
           await session.db.transaction(
             (final transaction) =>
@@ -69,7 +70,7 @@ void main() {
   );
 
   withServerpod(
-    'Given expired account request',
+    'Given expired account request,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -118,7 +119,8 @@ void main() {
       // attempting to verify an expired request within the valid timeframe
       // of that request.
       test(
-        'when deleting expired account requests then attempting to verify expired request within requests timeframe throws request not found exception',
+        'when deleting expired account requests, '
+        'then attempting to verify expired request within requests timeframe throws request not found exception',
         () async {
           await session.db.transaction(
             (final transaction) =>

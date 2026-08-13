@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 
 void main() {
   group(
-    'Given existing protocol model with json column and a target definition that changes it to jsonb',
+    'Given existing protocol model with json column and a target definition that changes it to jsonb,',
     () {
       var tag = 'json-to-jsonb';
       var initialStateProtocols = {
@@ -90,7 +90,7 @@ void main() {
   );
 
   group(
-    'Given existing protocol model with jsonb column and a target definition that changes it to json',
+    'Given existing protocol model with jsonb column and a target definition that changes it to json,',
     () {
       var tag = 'jsonb-to-json';
       var initialStateProtocols = {

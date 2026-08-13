@@ -24,11 +24,13 @@ production:
 
 void main() {
   group(
-    'Given default password config when loading Map in runMode development then',
+    'Given default password config, '
+    'when loading Map in runMode development, '
+    'then',
     () {
       const runMode = 'development';
 
-      var passwords = PasswordManager(
+      late var passwords = PasswordManager(
         runMode: runMode,
       ).loadPasswordsFromMap(loadYaml(_defaultPasswordConfig));
 
@@ -47,11 +49,13 @@ void main() {
   );
 
   group(
-    'Given default password config when loading Map in runMode production then',
+    'Given default password config, '
+    'when loading Map in runMode production, '
+    'then',
     () {
       const runMode = 'production';
 
-      var passwords = PasswordManager(
+      late var passwords = PasswordManager(
         runMode: runMode,
       ).loadPasswordsFromMap(loadYaml(_defaultPasswordConfig));
 
@@ -70,11 +74,11 @@ void main() {
   );
 
   group(
-    'Given an empty config when loading Map in runMode development then',
+    'Given an empty config, when loading Map in runMode development, then',
     () {
       const runMode = 'development';
 
-      var passwords = PasswordManager(
+      late var passwords = PasswordManager(
         runMode: runMode,
       ).loadPasswordsFromMap({});
 
@@ -92,8 +96,8 @@ void main() {
     },
   );
 
-  group('Given a runMode that does not exist in the config file', () {
-    var passwords = PasswordManager(
+  group('Given a runMode that does not exist in the config file,', () {
+    late var passwords = PasswordManager(
       runMode: 'unknown_run_mode',
     ).loadPasswordsFromMap(loadYaml(_defaultPasswordConfig));
     test('then the shared password is set.', () {
@@ -126,8 +130,8 @@ development:
     );
   });
 
-  group('Given an empty config file with all env passwords defined', () {
-    var passwords = PasswordManager(runMode: 'development')
+  group('Given an empty config file with all env passwords defined,', () {
+    late var passwords = PasswordManager(runMode: 'development')
         .loadPasswordsFromMap(
           {},
           environment: {
@@ -154,12 +158,12 @@ development:
     });
   });
 
-  group('Given a config map and set environment variables', () {
-    var databasePassword = const Uuid().v4();
-    var serviceSecret = const Uuid().v4();
-    var redisPassword = const Uuid().v4();
+  group('Given a config map and set environment variables,', () {
+    late var databasePassword = const Uuid().v4();
+    late var serviceSecret = const Uuid().v4();
+    late var redisPassword = const Uuid().v4();
 
-    var passwords = PasswordManager(runMode: 'development')
+    late var passwords = PasswordManager(runMode: 'development')
         .loadPasswordsFromMap(
           loadYaml(_defaultPasswordConfig),
           environment: {
@@ -187,9 +191,11 @@ development:
   });
 
   group(
-    'Given a reserved env variable when merging custom passwords then an ArgumentError is thrown for env',
+    'Given a reserved env variable, '
+    'when merging custom passwords, '
+    'then an ArgumentError is thrown for env',
     () {
-      var passwordManager = PasswordManager(runMode: 'development');
+      late var passwordManager = PasswordManager(runMode: 'development');
 
       test('SERVERPOD_DATABASE_PASSWORD', () {
         expect(
@@ -224,9 +230,11 @@ development:
   );
 
   group(
-    'Given a reserved alias when merging custom passwords then an ArgumentError is thrown for ',
+    'Given a reserved alias, '
+    'when merging custom passwords, '
+    'then an ArgumentError is thrown for',
     () {
-      var passwordManager = PasswordManager(runMode: 'development');
+      late var passwordManager = PasswordManager(runMode: 'development');
 
       test('database', () {
         expect(
@@ -261,7 +269,8 @@ development:
   );
 
   test(
-    'Given a custom password config and an environment variable then the env is loaded as the alias.',
+    'Given a custom password config and an environment variable, '
+    'then the env is loaded as the alias.',
     () {
       var passwordManager = PasswordManager(runMode: 'development');
 
@@ -278,7 +287,9 @@ development:
   );
 
   test(
-    'Given a custom password config and an existing password but no environment variable when merging the custom password then the existing password is loaded.',
+    'Given a custom password config and an existing password but no environment variable, '
+    'when merging the custom password, '
+    'then the existing password is loaded.',
     () {
       var passwordManager = PasswordManager(runMode: 'development');
 
@@ -295,7 +306,9 @@ development:
   );
 
   test(
-    'Given a custom password config and an existing password and an environment variable when merging the custom password then the env is loaded and override the existing password.',
+    'Given a custom password config and an existing password and an environment variable, '
+    'when merging the custom password, '
+    'then the env is loaded and override the existing password.',
     () {
       var passwordManager = PasswordManager(runMode: 'development');
 
@@ -314,7 +327,9 @@ development:
   );
 
   test(
-    'Given a custom password config and an existing password and an environment variable when merging the custom password then the existing passwords are kept unmodified.',
+    'Given a custom password config and an existing password and an environment variable, '
+    'when merging the custom password, '
+    'then the existing passwords are kept unmodified.',
     () {
       var passwordManager = PasswordManager(runMode: 'development');
 
@@ -333,7 +348,9 @@ development:
   );
 
   test(
-    'Given user-defined environment passwords when loading passwords then custom passwords are included',
+    'Given user-defined environment passwords, '
+    'when loading passwords, '
+    'then custom passwords are included',
     () {
       final passwords = PasswordManager(runMode: 'development')
           .loadPasswordsFromMap(
@@ -350,7 +367,9 @@ development:
   );
 
   test(
-    'Given user-defined environment passwords when loading passwords then non-password environment variables are ignored',
+    'Given user-defined environment passwords, '
+    'when loading passwords, '
+    'then non-password environment variables are ignored',
     () {
       final passwords = PasswordManager(runMode: 'development')
           .loadPasswordsFromMap(
@@ -367,7 +386,9 @@ development:
   );
 
   test(
-    'Given user-defined environment passwords when loading passwords then custom passwords override config passwords',
+    'Given user-defined environment passwords, '
+    'when loading passwords, '
+    'then custom passwords override config passwords',
     () {
       final passwords = PasswordManager(runMode: 'development')
           .loadPasswordsFromMap(
@@ -385,7 +406,9 @@ development:
   );
 
   test(
-    'Given user-defined environment passwords when loading passwords then custom passwords are merged with standard passwords',
+    'Given user-defined environment passwords, '
+    'when loading passwords, '
+    'then custom passwords are merged with standard passwords',
     () {
       final passwords = PasswordManager(runMode: 'development')
           .loadPasswordsFromMap(
@@ -402,7 +425,9 @@ development:
   );
 
   test(
-    'Given user-defined environment passwords when loading passwords then custom SERVERPOD_PASSWORD_ prefixed variables override built-in passwords',
+    'Given user-defined environment passwords, '
+    'when loading passwords, '
+    'then custom SERVERPOD_PASSWORD_ prefixed variables override built-in passwords',
     () {
       final passwords = PasswordManager(runMode: 'development')
           .loadPasswordsFromMap(
@@ -418,7 +443,9 @@ development:
   );
 
   test(
-    'Given user-defined environment passwords when loading passwords then environment variables with empty suffix are ignored',
+    'Given user-defined environment passwords, '
+    'when loading passwords, '
+    'then environment variables with empty suffix are ignored',
     () {
       final passwords = PasswordManager(runMode: 'development')
           .loadPasswordsFromMap(
@@ -435,7 +462,9 @@ development:
   );
 
   test(
-    'Given user-defined environment passwords when loading passwords then environment variables with only prefix are ignored',
+    'Given user-defined environment passwords, '
+    'when loading passwords, '
+    'then environment variables with only prefix are ignored',
     () {
       final passwords = PasswordManager(runMode: 'development')
           .loadPasswordsFromMap(

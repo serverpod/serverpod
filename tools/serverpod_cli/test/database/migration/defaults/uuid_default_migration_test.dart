@@ -7,9 +7,10 @@ import '../../../test_util/builders/database/database_definition_builder.dart';
 import '../../../test_util/builders/database/table_definition_builder.dart';
 
 void main() {
-  group('Given a database table definition with a UUID column', () {
+  group('Given a database table definition with a UUID column,', () {
     test(
-      'when generating SQL with a specific UUID default value, then the table should have the correct default value.',
+      'when generating SQL with a specific UUID default value, '
+      'then the table should have the correct default value.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -40,7 +41,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with no columnDefault, then the table should not have a default value for the UUID field.',
+      'when generating SQL with no columnDefault, '
+      'then the table should not have a default value for the UUID field.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -72,7 +74,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with columnDefault set to "$defaultUuidValueRandom", then the table should have gen_random_uuid() as the default value.',
+      'when generating SQL with columnDefault set to "$defaultUuidValueRandom", '
+      'then the table should have gen_random_uuid() as the default value.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -101,7 +104,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with columnDefault set to "$defaultUuidValueRandomV7", then the table should have gen_random_uuid_v7() as the default value.',
+      'when generating SQL with columnDefault set to "$defaultUuidValueRandomV7", '
+      'then the table should have gen_random_uuid_v7() as the default value.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -130,7 +134,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with nullable UUID field and columnDefault, then the table should be nullable with the correct default value.',
+      'when generating SQL with nullable UUID field and columnDefault, '
+      'then the table should be nullable with the correct default value.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -162,7 +167,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with nullable UUID field and no columnDefault, then the table should be nullable with no default value.',
+      'when generating SQL with nullable UUID field and no columnDefault, '
+      'then the table should be nullable with no default value.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withTable(

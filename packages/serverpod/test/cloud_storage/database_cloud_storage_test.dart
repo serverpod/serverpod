@@ -60,9 +60,9 @@ void main() {
     session = _FakeSession();
   });
 
-  group('Given a DatabaseCloudStorage with storeFileWithOptions', () {
+  group('Given a DatabaseCloudStorage with storeFileWithOptions,', () {
     test(
-      'when preventOverwrite is false '
+      'when preventOverwrite is false, '
       'then the file is stored',
       () async {
         final data = ByteData.view(
@@ -85,7 +85,7 @@ void main() {
     );
 
     test(
-      'when preventOverwrite is true and file does not exist '
+      'when preventOverwrite is true and file does not exist, '
       'then the file is stored',
       () async {
         final data = ByteData.view(
@@ -108,7 +108,7 @@ void main() {
     );
 
     test(
-      'when preventOverwrite is true and file already exists '
+      'when preventOverwrite is true and file already exists, '
       'then it throws CloudStorageException',
       () async {
         final data = ByteData.view(
@@ -145,10 +145,10 @@ void main() {
   });
 
   group(
-    'Given a DatabaseCloudStorage with createDirectFileUploadDescriptionWithOptions',
+    'Given a DatabaseCloudStorage with createDirectFileUploadDescriptionWithOptions,',
     () {
       test(
-        'when contentLength is within maxFileSize '
+        'when contentLength is within maxFileSize, '
         'then it returns a description',
         () async {
           final description = await storage
@@ -164,7 +164,7 @@ void main() {
       );
 
       test(
-        'when contentLength exceeds maxFileSize '
+        'when contentLength exceeds maxFileSize, '
         'then it throws CloudStorageException',
         () {
           expect(
@@ -186,7 +186,7 @@ void main() {
       );
 
       test(
-        'when contentLength equals maxFileSize '
+        'when contentLength equals maxFileSize, '
         'then it returns a description',
         () async {
           final description = await storage
@@ -202,7 +202,7 @@ void main() {
       );
 
       test(
-        'when contentLength is null '
+        'when contentLength is null, '
         'then it returns a description',
         () async {
           final description = await storage

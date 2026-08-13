@@ -43,7 +43,7 @@ class _BasicTokenAuthProvider implements ClientAuthKeyProvider {
 
 void main() {
   group(
-    'Given a server with default configuration (validateHeaders enabled)',
+    'Given a server with default configuration (validateHeaders enabled),',
     () {
       late Serverpod server;
 
@@ -77,7 +77,7 @@ void main() {
         },
       );
 
-      group('when calling endpoint with Bearer-wrapped token', () {
+      group('when calling endpoint with Bearer-wrapped token,', () {
         late Client client;
 
         setUp(() {
@@ -98,7 +98,7 @@ void main() {
         );
       });
 
-      group('when calling endpoint with unwrapped token', () {
+      group('when calling endpoint with unwrapped token,', () {
         late Client client;
 
         setUp(() {
@@ -121,7 +121,7 @@ void main() {
         );
       });
 
-      group('when calling streaming endpoint with unwrapped token', () {
+      group('when calling streaming endpoint with unwrapped token,', () {
         late Client client;
 
         setUp(() {
@@ -144,7 +144,7 @@ void main() {
         );
       });
 
-      group('when accessing web route with unwrapped token', () {
+      group('when accessing web route with unwrapped token,', () {
         test(
           'then request should fail with 400',
           () async {
@@ -162,7 +162,7 @@ void main() {
     },
   );
 
-  group('Given a server with validateHeaders explicitly disabled', () {
+  group('Given a server with validateHeaders explicitly disabled,', () {
     late Serverpod server;
 
     setUpAll(() async {
@@ -203,7 +203,7 @@ void main() {
       await server.shutdown(exitProcess: false);
     });
 
-    group('when calling endpoint with unwrapped token', () {
+    group('when calling endpoint with unwrapped token,', () {
       late Client client;
 
       setUp(() {
@@ -224,7 +224,7 @@ void main() {
       );
     });
 
-    group('when calling streaming endpoint with unwrapped token', () {
+    group('when calling streaming endpoint with unwrapped token,', () {
       late Client client;
 
       setUp(() {
@@ -248,7 +248,7 @@ void main() {
       );
     });
 
-    group('when calling endpoint with Bearer-wrapped token', () {
+    group('when calling endpoint with Bearer-wrapped token,', () {
       late Client client;
 
       setUp(() {
@@ -269,7 +269,7 @@ void main() {
       );
     });
 
-    group('when calling endpoint with Basic-wrapped token', () {
+    group('when calling endpoint with Basic-wrapped token,', () {
       late Client client;
 
       setUp(() {
@@ -290,7 +290,7 @@ void main() {
       );
     });
 
-    group('when accessing web route with unwrapped token', () {
+    group('when accessing web route with unwrapped token,', () {
       test(
         'then session should be authenticated',
         () async {
@@ -309,7 +309,7 @@ void main() {
       );
     });
 
-    group('when accessing web route with Bearer-wrapped token', () {
+    group('when accessing web route with Bearer-wrapped token,', () {
       test(
         'then session should be authenticated',
         () async {

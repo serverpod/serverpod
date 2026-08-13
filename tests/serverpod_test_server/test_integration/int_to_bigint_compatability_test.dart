@@ -7,8 +7,8 @@ void main() async {
   // compatible with each other in the database.
   var session = await IntegrationTestServer().session();
 
-  group('Given table that uses an int column and has a row entry', () {
-    var tableName = UuidV4().generate().toString();
+  group('Given table that uses an int column and has a row entry,', () {
+    late var tableName = UuidV4().generate().toString();
     var initialValue = 1;
 
     setUp(() async {

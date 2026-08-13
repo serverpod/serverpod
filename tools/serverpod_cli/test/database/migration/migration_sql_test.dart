@@ -9,7 +9,9 @@ import '../../test_util/builders/database/table_definition_builder.dart';
 
 void main() {
   test(
-    'Given database table definition when generating sql then table id column uses bigserial type.',
+    'Given database table definition, '
+    'when generating sql, '
+    'then table id column uses bigserial type.',
     () {
       var databaseDefinition = DatabaseDefinitionBuilder()
           .withTable(
@@ -32,7 +34,9 @@ void main() {
     ),
   ]) {
     test(
-      'Given database table definition when generating sql with id set to ${idType.aliases.first} then table id column contains $definitionContains.',
+      'Given database table definition, '
+      'when generating sql with id set to ${idType.aliases.first}, '
+      'then table id column contains $definitionContains.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -51,7 +55,7 @@ void main() {
   }
 
   test(
-    'Given SQLite database table definition '
+    'Given SQLite database table definition, '
     'when generating SQL for SQLite, '
     'then table id column uses INTEGER PRIMARY KEY.',
     () {
@@ -157,7 +161,7 @@ void main() {
     ),
   ]) {
     test(
-      'Given SQLite database table definition '
+      'Given SQLite database table definition, '
       'when generating SQL for SQLite with id set to ${idType.aliases.first}, '
       'then the table id column contains expected fragment.',
       () {

@@ -3,10 +3,11 @@ import 'package:test/test.dart';
 
 void main() async {
   group(
-    "Given a class with 'defaultModel' fields",
+    "Given a class with 'defaultModel' fields,",
     () {
       test(
-        'when an object of the class is created, then the "stringDefaultModel" field should match the default value',
+        'when an object of the class is created, '
+        'then the "stringDefaultModel" field should match the default value',
         () {
           var object = StringDefaultModel();
           expect(
@@ -17,7 +18,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created, then the "stringDefaultModelNull" field should match the default value',
+        'when an object of the class is created, '
+        'then the "stringDefaultModelNull" field should match the default value',
         () {
           var object = StringDefaultModel();
           expect(
@@ -28,7 +30,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a specific value for "stringDefaultModel", then the field value should match the provided value',
+        'when an object of the class is created with a specific value for "stringDefaultModel", '
+        'then the field value should match the provided value',
         () {
           var object = StringDefaultModel(
             stringDefaultModel: 'A specific value',
@@ -41,7 +44,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a specific value for "stringDefaultModelNull", then the field value should match the provided value',
+        'when an object of the class is created with a specific value for "stringDefaultModelNull", '
+        'then the field value should match the provided value',
         () {
           var object = StringDefaultModel(
             stringDefaultModelNull: 'Another specific value',

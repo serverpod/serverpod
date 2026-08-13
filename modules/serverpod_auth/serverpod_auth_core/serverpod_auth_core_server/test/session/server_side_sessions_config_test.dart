@@ -2,9 +2,10 @@ import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given ServerSideSessionsConfig validation', () {
+  group('Given ServerSideSessionsConfig validation,', () {
     test(
-      'when creating config with valid session key hash pepper then config is created successfully.',
+      'when creating config with valid session key hash pepper, '
+      'then config is created successfully.',
       () {
         expect(
           () => ServerSideSessionsConfig(
@@ -16,7 +17,8 @@ void main() {
     );
 
     test(
-      'when creating config with empty session key hash pepper then an error is thrown.',
+      'when creating config with empty session key hash pepper, '
+      'then an error is thrown.',
       () {
         expect(
           () => ServerSideSessionsConfig(
@@ -28,7 +30,8 @@ void main() {
     );
 
     test(
-      'when creating config with session key hash pepper less than 10 characters then an error is thrown.',
+      'when creating config with session key hash pepper less than 10 characters, '
+      'then an error is thrown.',
       () {
         expect(
           () => ServerSideSessionsConfig(
@@ -40,7 +43,8 @@ void main() {
     );
 
     test(
-      'when creating config with valid default session lifetime then config is created successfully.',
+      'when creating config with valid default session lifetime, '
+      'then config is created successfully.',
       () {
         expect(
           () => ServerSideSessionsConfig(
@@ -53,7 +57,8 @@ void main() {
     );
 
     test(
-      'when creating config with negative default session lifetime then an error is thrown.',
+      'when creating config with negative default session lifetime, '
+      'then an error is thrown.',
       () {
         expect(
           () => ServerSideSessionsConfig(
@@ -66,7 +71,8 @@ void main() {
     );
 
     test(
-      'when creating config with valid default session inactivity timeout then config is created successfully.',
+      'when creating config with valid default session inactivity timeout, '
+      'then config is created successfully.',
       () {
         expect(
           () => ServerSideSessionsConfig(
@@ -79,7 +85,8 @@ void main() {
     );
 
     test(
-      'when creating config with negative default session inactivity timeout then an error is thrown.',
+      'when creating config with negative default session inactivity timeout, '
+      'then an error is thrown.',
       () {
         expect(
           () => ServerSideSessionsConfig(
@@ -92,7 +99,8 @@ void main() {
     );
 
     test(
-      'when creating config with all optional parameters null then config is created successfully.',
+      'when creating config with all optional parameters null, '
+      'then config is created successfully.',
       () {
         expect(
           () => ServerSideSessionsConfig(
@@ -106,7 +114,8 @@ void main() {
     );
 
     test(
-      'when creating config with valid fallback peppers then config is created successfully.',
+      'when creating config with valid fallback peppers, '
+      'then config is created successfully.',
       () {
         expect(
           () => ServerSideSessionsConfig(
@@ -119,7 +128,8 @@ void main() {
     );
 
     test(
-      'when creating config with empty fallback peppers list then config is created successfully.',
+      'when creating config with empty fallback peppers list, '
+      'then config is created successfully.',
       () {
         expect(
           () => ServerSideSessionsConfig(
@@ -132,7 +142,8 @@ void main() {
     );
 
     test(
-      'when creating config with invalid fallback pepper then an error is thrown.',
+      'when creating config with invalid fallback pepper, '
+      'then an error is thrown.',
       () {
         expect(
           () => ServerSideSessionsConfig(
@@ -145,7 +156,8 @@ void main() {
     );
 
     test(
-      'when creating config with empty fallback pepper then an error is thrown.',
+      'when creating config with empty fallback pepper, '
+      'then an error is thrown.',
       () {
         expect(
           () => ServerSideSessionsConfig(

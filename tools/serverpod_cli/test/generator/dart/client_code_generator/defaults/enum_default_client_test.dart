@@ -26,7 +26,8 @@ void main() {
       .build();
 
   group(
-    'Given a class named EnumDefault with enum fields having defaultModelValue when generating code',
+    'Given a class named EnumDefault with enum fields having defaultModelValue, '
+    'when generating code,',
     () {
       ClassDeclaration? baseClass;
       ConstructorDeclaration? privateConstructor;
@@ -130,7 +131,8 @@ void main() {
   );
 
   group(
-    'Given a class named EnumDefaultPersist with enum fields having defaultPersistValue when generating code',
+    'Given a class named EnumDefaultPersist with enum fields having defaultPersistValue, '
+    'when generating code,',
     () {
       ClassDeclaration? baseClass;
       ConstructorDeclaration? privateConstructor;

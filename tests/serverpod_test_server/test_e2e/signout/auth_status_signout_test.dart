@@ -4,7 +4,7 @@ import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given two authenticated clients', () {
+  group('Given two authenticated clients,', () {
     late Client primaryClient;
     late Client secondaryClient;
 
@@ -32,7 +32,7 @@ void main() {
       secondaryClient.close();
     });
 
-    group('when calling signOutCurrentDevice with first client', () {
+    group('when calling signOutCurrentDevice with first client,', () {
       setUp(() async {
         await primaryClient.modules.auth.status.signOutDevice();
       });
@@ -56,7 +56,7 @@ void main() {
       });
     });
 
-    group('when calling signOutAllDevices with first client', () {
+    group('when calling signOutAllDevices with first client,', () {
       setUp(() async {
         await primaryClient.modules.auth.status.signOutAllDevices();
       });

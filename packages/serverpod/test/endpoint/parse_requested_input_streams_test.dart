@@ -3,7 +3,9 @@ import 'package:test/test.dart';
 
 void main() {
   test(
-    'Given no parameter descriptions when empty parameter list is provided then empty list is returned.',
+    'Given no parameter descriptions, '
+    'when empty parameter list is provided, '
+    'then empty list is returned.',
     () {
       expect(
         EndpointDispatch.parseRequestedInputStreams(
@@ -15,16 +17,17 @@ void main() {
     },
   );
 
-  group('Given single non nullable parameter description', () {
+  group('Given single non nullable parameter description,', () {
     var streamParameterName = 'stream1';
-    var streamParameterDescription = {
+    late var streamParameterDescription = {
       streamParameterName: StreamParameterDescription<int>(
         name: streamParameterName,
         nullable: false,
       ),
     };
     test(
-      'when valid stream name is provided then stream description is returned.',
+      'when valid stream name is provided, '
+      'then stream description is returned.',
       () {
         var result = EndpointDispatch.parseRequestedInputStreams(
           descriptions: streamParameterDescription,
@@ -37,7 +40,8 @@ void main() {
     );
 
     test(
-      'when invalid stream name is provided then exception is thrown informing that required stream parameter is missing.',
+      'when invalid stream name is provided, '
+      'then exception is thrown informing that required stream parameter is missing.',
       () {
         expect(
           () => EndpointDispatch.parseRequestedInputStreams(
@@ -56,7 +60,8 @@ void main() {
     );
 
     test(
-      'when additional stream name is provided then only existing stream parameter description is returned.',
+      'when additional stream name is provided, '
+      'then only existing stream parameter description is returned.',
       () {
         expect(
           EndpointDispatch.parseRequestedInputStreams(
@@ -71,16 +76,17 @@ void main() {
       },
     );
   });
-  group('Given single nullable parameter description', () {
+  group('Given single nullable parameter description,', () {
     var nullableStreamParameterName = 'stream1';
-    var streamParameterDescription = {
+    late var streamParameterDescription = {
       nullableStreamParameterName: StreamParameterDescription<int>(
         name: nullableStreamParameterName,
         nullable: true,
       ),
     };
     test(
-      'when valid stream name is provided then stream description is returned.',
+      'when valid stream name is provided, '
+      'then stream description is returned.',
       () {
         var result = EndpointDispatch.parseRequestedInputStreams(
           descriptions: streamParameterDescription,
@@ -93,7 +99,7 @@ void main() {
       },
     );
 
-    test('when no stream name is provided then empty list returned.', () {
+    test('when no stream name is provided, then empty list returned.', () {
       expect(
         EndpointDispatch.parseRequestedInputStreams(
           descriptions: streamParameterDescription,
@@ -104,7 +110,8 @@ void main() {
     });
 
     test(
-      'when additional stream name is provided then only existing stream parameter description is returned.',
+      'when additional stream name is provided, '
+      'then only existing stream parameter description is returned.',
       () {
         expect(
           EndpointDispatch.parseRequestedInputStreams(
@@ -119,10 +126,10 @@ void main() {
       },
     );
   });
-  group('Given multiple non nullable parameter descriptions', () {
+  group('Given multiple non nullable parameter descriptions,', () {
     var streamParameterName1 = 'stream1';
     var streamParameterName2 = 'stream2';
-    var streamParameterDescription = {
+    late var streamParameterDescription = {
       streamParameterName1: StreamParameterDescription<int>(
         name: streamParameterName1,
         nullable: false,
@@ -133,7 +140,8 @@ void main() {
       ),
     };
     test(
-      'when valid stream names are provided then stream descriptions are returned.',
+      'when valid stream names are provided, '
+      'then stream descriptions are returned.',
       () {
         var result = EndpointDispatch.parseRequestedInputStreams(
           descriptions: streamParameterDescription,
@@ -151,7 +159,8 @@ void main() {
     );
 
     test(
-      'when only one stream name is provided then exception is thrown informing that required stream parameter is missing.',
+      'when only one stream name is provided, '
+      'then exception is thrown informing that required stream parameter is missing.',
       () {
         expect(
           () => EndpointDispatch.parseRequestedInputStreams(

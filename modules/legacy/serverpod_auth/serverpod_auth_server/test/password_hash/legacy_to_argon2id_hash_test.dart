@@ -6,7 +6,9 @@ import 'package:test/test.dart';
 
 void main() {
   test(
-    'Given a hash from the legacy hash used as password for argon2id hash when generating hash using same salt and base password then same hash is produced',
+    'Given a hash from the legacy hash used as password for argon2id hash, '
+    'when generating hash using same salt and base password, '
+    'then same hash is produced',
     () async {
       var password = 'hunter2';
       var legacySalt = 'legacySalt';
@@ -31,8 +33,8 @@ void main() {
     },
   );
 
-  group('Given legacyHash, legacy salt and fixed salt', () {
-    group('when generating password hash', () {
+  group('Given legacyHash, legacy salt and fixed salt,', () {
+    group('when generating password hash,', () {
       test('then hash has 4 sections split by \$.', () async {
         var passwordHash = await PasswordHash.migratedLegacyToArgon2idHash(
           'legacyHash',
@@ -83,7 +85,7 @@ void main() {
       });
     });
 
-    group('when generating password hash with and without pepper', () {
+    group('when generating password hash with and without pepper,', () {
       var password = 'hunter2';
       var legacySalt = 'legacySalt';
       var salt = 'saltySalt';
@@ -119,8 +121,8 @@ void main() {
     });
   });
 
-  group('Given password', () {
-    group('when generating password hash multiple times', () {
+  group('Given password,', () {
+    group('when generating password hash multiple times,', () {
       var password = 'hunter2';
       var legacySalt = 'legacySalt';
       late String firstPasswordHash;
@@ -150,9 +152,9 @@ void main() {
     });
   });
 
-  group('Given password hash', () {
+  group('Given password hash,', () {
     test(
-      'when checking if hash should be updated then no update is needed.',
+      'when checking if hash should be updated, then no update is needed.',
       () async {
         var salt = 'saltySalt';
         var passwordHash = PasswordHash(
@@ -168,7 +170,7 @@ void main() {
     );
 
     test(
-      'when checking if hash is legacy hash then method returns false.',
+      'when checking if hash is legacy hash, then method returns false.',
       () async {
         var salt = 'saltySalt';
         var passwordHash = PasswordHash(
@@ -183,7 +185,8 @@ void main() {
       },
     );
     test(
-      'when validating with correct password then validator returns PasswordValidationSuccess',
+      'when validating with correct password, '
+      'then validator returns PasswordValidationSuccess',
       () async {
         var salt = 'saltySalt';
         var legacySalt = 'legacySalt';
@@ -206,7 +209,8 @@ void main() {
     );
 
     test(
-      'when validating with correct password but different legacy salt then validator returns PasswordValidationFailed',
+      'when validating with correct password but different legacy salt, '
+      'then validator returns PasswordValidationFailed',
       () async {
         var password = 'hunter2';
         var legacySalt = 'legacySalt';
@@ -228,7 +232,8 @@ void main() {
     );
 
     test(
-      'when validating with incorrect password then validator returns PasswordValidationFailed',
+      'when validating with incorrect password, '
+      'then validator returns PasswordValidationFailed',
       () async {
         var salt = 'saltySalt';
         var legacySalt = 'legacySalt';
@@ -250,7 +255,8 @@ void main() {
     );
 
     test(
-      'when validating with modified salt then validator returns PasswordValidationFailed',
+      'when validating with modified salt, '
+      'then validator returns PasswordValidationFailed',
       () async {
         var password = 'hunter2';
         var legacySalt = 'legacySalt';
@@ -279,7 +285,8 @@ void main() {
     );
 
     test(
-      'when validating with valid pepper then validator returns PasswordValidationSuccess.',
+      'when validating with valid pepper, '
+      'then validator returns PasswordValidationSuccess.',
       () async {
         var password = 'hunter2';
         var legacySalt = 'legacySalt';
@@ -305,7 +312,8 @@ void main() {
     );
 
     test(
-      'when validating with invalid pepper then validator returns PasswordValidationFailed.',
+      'when validating with invalid pepper, '
+      'then validator returns PasswordValidationFailed.',
       () async {
         var password = 'hunter2';
         var legacySalt = 'legacySalt';
@@ -330,7 +338,8 @@ void main() {
     );
 
     test(
-      'when validating with missing pepper then validator returns PasswordValidationFailed.',
+      'when validating with missing pepper, '
+      'then validator returns PasswordValidationFailed.',
       () async {
         var password = 'hunter2';
         var legacySalt = 'legacySalt';
@@ -354,7 +363,8 @@ void main() {
     );
 
     test(
-      'when validating with added pepper then validator returns PasswordValidationFailed.',
+      'when validating with added pepper, '
+      'then validator returns PasswordValidationFailed.',
       () async {
         var password = 'hunter2';
         var legacySalt = 'legacySalt';
@@ -378,9 +388,10 @@ void main() {
     );
   });
 
-  group('Given salt that contains \$', () {
+  group('Given salt that contains \$,', () {
     test(
-      'when generating password hash then hash still only has 4 parts split by \$.',
+      'when generating password hash, '
+      'then hash still only has 4 parts split by \$.',
       () async {
         var legacySalt = 'legacySalt';
         var salt = 'salty\$salt';

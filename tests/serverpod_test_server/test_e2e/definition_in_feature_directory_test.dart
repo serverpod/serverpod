@@ -8,9 +8,9 @@ void main() {
   var client = Client(serverUrl)..authKeyProvider = TestAuthKeyManager();
 
   group(
-    'Given an endpoint that is defined outside of the endpoint directory',
+    'Given an endpoint that is defined outside of the endpoint directory,',
     () {
-      test('when calling the endpoint then call is successful', () async {
+      test('when calling the endpoint, then call is successful', () async {
         var response = client.myFeature.myFeatureMethod();
         await expectLater(response, completion('Hello, world!'));
       });
@@ -18,9 +18,9 @@ void main() {
   );
 
   group(
-    'Given a module endpoint that is defined outside of the endpoint directory',
+    'Given a module endpoint that is defined outside of the endpoint directory,',
     () {
-      test('when calling the endpoint then call is successful', () async {
+      test('when calling the endpoint, then call is successful', () async {
         var response = client.modules.module.myModuleFeature.myFeatureMethod();
         await expectLater(response, completion('Hello, world!'));
       });
@@ -28,9 +28,9 @@ void main() {
   );
 
   group(
-    'Given an endpoint that returns a model defined outside of the models directory',
+    'Given an endpoint that returns a model defined outside of the models directory,',
     () {
-      test('when calling the endpoint then call is successful', () async {
+      test('when calling the endpoint, then call is successful', () async {
         var response = client.myFeature.myFeatureModel();
         await expectLater(
           response,
@@ -43,9 +43,9 @@ void main() {
   );
 
   group(
-    'Given a module endpoint that returns a model defined outside of the models directory',
+    'Given a module endpoint that returns a model defined outside of the models directory,',
     () {
-      test('when calling the endpoint then call is successful', () async {
+      test('when calling the endpoint, then call is successful', () async {
         var response = client.modules.module.myModuleFeature.myFeatureModel();
         await expectLater(
           response,

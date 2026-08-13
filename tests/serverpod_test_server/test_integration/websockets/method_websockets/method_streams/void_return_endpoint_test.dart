@@ -9,7 +9,7 @@ import '../../websocket_extensions.dart';
 
 void main() {
   group(
-    'Given a method stream connection to an endpoint that returns void after parameter stream is closed',
+    'Given a method stream connection to an endpoint that returns void after parameter stream is closed,',
     () {
       var endpoint = 'methodStreaming';
       var method = 'voidReturnAfterStream';
@@ -30,13 +30,13 @@ void main() {
         await webSocket.tryClose();
       });
 
-      group('when parameter stream is closed', () {
+      group('when parameter stream is closed,', () {
         late Completer<void> endpointResponse;
         late Completer<CloseMethodStreamCommand> closeMethodStreamCommand;
-        TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
+        late TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
 
         var inputParameter = 'stream';
-        var connectionId = const Uuid().v4obj();
+        late var connectionId = const Uuid().v4obj();
 
         setUp(() async {
           endpointResponse = Completer<MethodStreamMessage>();

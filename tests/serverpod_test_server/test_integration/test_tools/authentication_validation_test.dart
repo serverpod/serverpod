@@ -7,10 +7,11 @@ import 'serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given AuthenticatedTestToolsEndpoint',
+    'Given AuthenticatedTestToolsEndpoint,',
     (sessionBuilder, endpoints) {
       test(
-        'when not authenticated and calling returnsString then throws ServerpodUnauthenticatedException',
+        'when not authenticated and calling returnsString, '
+        'then throws ServerpodUnauthenticatedException',
         () async {
           sessionBuilder = sessionBuilder.copyWith(
             authentication: AuthenticationOverride.unauthenticated(),
@@ -28,7 +29,8 @@ void main() {
       );
 
       test(
-        'when not having sufficient access scopes and calling returnsString then throws ServerpodInsufficientAccessException',
+        'when not having sufficient access scopes and calling returnsString, '
+        'then throws ServerpodInsufficientAccessException',
         () async {
           sessionBuilder = sessionBuilder.copyWith(
             authentication: AuthenticationOverride.authenticationInfo(
@@ -49,7 +51,7 @@ void main() {
       );
 
       test(
-        'when authorized and calling returnsString then echoes string',
+        'when authorized and calling returnsString, then echoes string',
         () async {
           sessionBuilder = sessionBuilder.copyWith(
             authentication: AuthenticationOverride.authenticationInfo(
@@ -67,7 +69,8 @@ void main() {
       );
 
       test(
-        'when not authenticated and calling returnsStream then throws ServerpodUnauthenticatedException',
+        'when not authenticated and calling returnsStream, '
+        'then throws ServerpodUnauthenticatedException',
         () async {
           sessionBuilder = sessionBuilder.copyWith(
             authentication: AuthenticationOverride.unauthenticated(),
@@ -84,7 +87,8 @@ void main() {
       );
 
       test(
-        'when not having sufficient access scopes and calling returnsStream then throws ServerpodInsufficientAccessException',
+        'when not having sufficient access scopes and calling returnsStream, '
+        'then throws ServerpodInsufficientAccessException',
         () async {
           sessionBuilder = sessionBuilder.copyWith(
             authentication: AuthenticationOverride.authenticationInfo(
@@ -104,7 +108,7 @@ void main() {
       );
 
       test(
-        'when authorized and calling returnsStream then returns a stream',
+        'when authorized and calling returnsStream, then returns a stream',
         () async {
           sessionBuilder = sessionBuilder.copyWith(
             authentication: AuthenticationOverride.authenticationInfo(
@@ -126,7 +130,7 @@ void main() {
         late StreamController<int> inStream;
 
         var authenticatedUserId = '1';
-        var authenticatedSessionBuilder = sessionBuilder.copyWith(
+        late var authenticatedSessionBuilder = sessionBuilder.copyWith(
           authentication: AuthenticationOverride.authenticationInfo(
             authenticatedUserId,
             {Scope('user')},
@@ -169,7 +173,8 @@ void main() {
         });
 
         test(
-          'and the authenticated user is revoked then stream is closed with ConnectionClosedException.',
+          'and the authenticated user is revoked, '
+          'then stream is closed with ConnectionClosedException.',
           () async {
             await expectLater(
               session.messages.authenticationRevoked(
@@ -192,7 +197,8 @@ void main() {
         );
 
         test(
-          'and the required scope for an endpoint is revoked then stream is closed with ConnectionClosedException.',
+          'and the required scope for an endpoint is revoked, '
+          'then stream is closed with ConnectionClosedException.',
           () async {
             await expectLater(
               session.messages.authenticationRevoked(
@@ -224,7 +230,7 @@ void main() {
         late StreamController<int> inStream2;
 
         var authenticatedUserId = '1';
-        var authenticatedSessionBuilder = sessionBuilder.copyWith(
+        late var authenticatedSessionBuilder = sessionBuilder.copyWith(
           authentication: AuthenticationOverride.authenticationInfo(
             authenticatedUserId,
             {Scope('user')},
@@ -300,7 +306,8 @@ void main() {
         });
 
         test(
-          'and the authenticated user is revoked then streams are closed with ConnectionClosedException.',
+          'and the authenticated user is revoked, '
+          'then streams are closed with ConnectionClosedException.',
           () async {
             await expectLater(
               session.messages.authenticationRevoked(
@@ -327,7 +334,8 @@ void main() {
         );
 
         test(
-          'and the required scope for an endpoint is revoked then streams are closed with ConnectionClosedException.',
+          'and the required scope for an endpoint is revoked, '
+          'then streams are closed with ConnectionClosedException.',
           () async {
             await expectLater(
               session.messages.authenticationRevoked(

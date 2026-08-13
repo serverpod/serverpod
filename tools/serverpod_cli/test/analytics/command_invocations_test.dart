@@ -29,7 +29,7 @@ class _SilentAnalytics extends Analytics {
 }
 
 void main() {
-  group('Given every registered Serverpod command, ', () {
+  group('Given every registered Serverpod command,', () {
     late Iterable<String> commandNames;
 
     setUp(() {

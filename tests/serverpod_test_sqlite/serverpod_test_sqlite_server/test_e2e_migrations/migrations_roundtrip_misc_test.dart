@@ -4,7 +4,7 @@ import 'package:serverpod_test_sqlite_server/test_util/service_client.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given invalid protocol file', () {
+  group('Given invalid protocol file,', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
         serviceClient: serviceClient,
@@ -12,7 +12,8 @@ void main() {
     });
 
     test(
-      'when creating migration then create migration exits with error and migration is not created.',
+      'when creating migration, '
+      'then create migration exits with error and migration is not created.',
       () async {
         var tag = 'invalid-protocol';
         var targetStateProtocols = {
@@ -39,7 +40,7 @@ void main() {
     );
   });
 
-  group('Given a new table that should not be managed by Serverpod', () {
+  group('Given a new table that should not be managed by Serverpod,', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
         serviceClient: serviceClient,
@@ -47,7 +48,8 @@ void main() {
     });
 
     test(
-      'when creating migration then create migration exits successfully and migration is not created.',
+      'when creating migration, '
+      'then create migration exits successfully and migration is not created.',
       () async {
         var tag = 'managed-false';
         var targetStateProtocols = {
@@ -80,7 +82,8 @@ void main() {
 
   /// Issue: https://github.com/serverpod/serverpod/issues/3503
   group(
-    'Given an existing table when a new table is added that is lexically sorted after the existing table and the existing table references the new table',
+    'Given an existing table, '
+    'when a new table is added that is lexically sorted after the existing table and the existing table references the new table,',
     () {
       var oldTable = 'a_old_table';
       var newTable = 'z_new_table';
@@ -94,7 +97,8 @@ void main() {
       });
 
       test(
-        'when creating and applying migrations then both tables and the relation exist in the database.',
+        'when creating and applying migrations, '
+        'then both tables and the relation exist in the database.',
         () async {
           var initialTag = 'create-old-table';
           // a Prefix ensure that it is lexically sorted before the new table
@@ -175,7 +179,7 @@ void main() {
   );
 
   group(
-    'Given existing protocol model with camelCase column migrated to snake_case with column override',
+    'Given existing protocol model with camelCase column migrated to snake_case with column override,',
     () {
       tearDown(() async {
         await MigrationTestUtils.migrationTestCleanup(
@@ -185,7 +189,8 @@ void main() {
       });
 
       test(
-        'when creating and applying migration then database contains new column name.',
+        'when creating and applying migration, '
+        'then database contains new column name.',
         () async {
           var tag = 'rename-column-with-override';
           var table = 'migrated_table';

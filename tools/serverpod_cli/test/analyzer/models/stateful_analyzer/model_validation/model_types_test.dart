@@ -37,7 +37,8 @@ void main() {
   });
 
   test(
-    'Given a PascalCASEString class name with several uppercase letters, then no errors are collected.',
+    'Given a PascalCASEString class name with several uppercase letters, '
+    'then no errors are collected.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -65,7 +66,8 @@ void main() {
   );
 
   test(
-    'Given a PascalCASEString class name with several uppercase letters, then an exception with that name is generated.',
+    'Given a PascalCASEString class name with several uppercase letters, '
+    'then an exception with that name is generated.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -85,7 +87,8 @@ void main() {
   );
 
   test(
-    'Given a camelCase class name, then give an error indicating that PascalCase is required.',
+    'Given a camelCase class name, '
+    'then give an error indicating that PascalCase is required.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -119,7 +122,8 @@ void main() {
   );
 
   test(
-    'Given a snake_case exception name, then give an error indicating that PascalCase is required.',
+    'Given a snake_case exception name, '
+    'then give an error indicating that PascalCase is required.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -153,7 +157,8 @@ void main() {
   );
 
   test(
-    'Given an enum name with a leading number, then give an error indicating that PascalCase is required.',
+    'Given an enum name with a leading number, '
+    'then give an error indicating that PascalCase is required.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -188,7 +193,8 @@ void main() {
   );
 
   test(
-    'Given a class name with reserved value List, then give an error that the class name is reserved.',
+    'Given a class name with reserved value List, '
+    'then give an error that the class name is reserved.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -222,7 +228,8 @@ void main() {
   );
 
   test(
-    'Given a class name with reserved value Map, then give an error that the class name is reserved.',
+    'Given a class name with reserved value Map, '
+    'then give an error that the class name is reserved.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -256,7 +263,8 @@ void main() {
   );
 
   test(
-    'Given a class name with reserved value String, then give an error that the class name is reserved.',
+    'Given a class name with reserved value String, '
+    'then give an error that the class name is reserved.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -290,7 +298,8 @@ void main() {
   );
 
   test(
-    'Given a class name with reserved value DateTime, then give an error that the class name is reserved.',
+    'Given a class name with reserved value DateTime, '
+    'then give an error that the class name is reserved.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -324,7 +333,8 @@ void main() {
   );
 
   test(
-    'Given a class name with reserved value Endpoints, then give an error that the class name is reserved.',
+    'Given a class name with reserved value Endpoints, '
+    'then give an error that the class name is reserved.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -358,7 +368,8 @@ void main() {
   );
 
   test(
-    'Given a class name with reserved value DateTime, then give an error that the class name is reserved.',
+    'Given a class name with reserved value DateTime, '
+    'then give an error that the class name is reserved.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -392,7 +403,8 @@ void main() {
   );
 
   test(
-    'Given a class name with reserved value Protocol, then give an error that the class name is reserved.',
+    'Given a class name with reserved value Protocol, '
+    'then give an error that the class name is reserved.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -426,7 +438,8 @@ void main() {
   );
 
   test(
-    'Given a class name with reserved value Client, then give an error that the class name is reserved.',
+    'Given a class name with reserved value Client, '
+    'then give an error that the class name is reserved.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -459,7 +472,7 @@ void main() {
     },
   );
 
-  group('Given a model without any defined model type', () {
+  group('Given a model without any defined model type,', () {
     test(
       'Then return a human readable error message informing the user that the model type is missing.',
       () {
@@ -496,7 +509,7 @@ void main() {
   });
 
   group('Given a model with class and exception type defined.', () {
-    var models = [
+    late var models = [
       ModelSourceBuilder().withYaml(
         '''
 class: Example
@@ -506,7 +519,7 @@ fields:
 ''',
       ).build(),
     ];
-    var collector = CodeGenerationCollector();
+    late var collector = CodeGenerationCollector();
 
     test('Then return a human readable error message when analyzing.', () {
       StatefulAnalyzer(
@@ -551,8 +564,8 @@ fields:
     });
   });
 
-  group('Given a model with exception and enum type defined', () {
-    var models = [
+  group('Given a model with exception and enum type defined,', () {
+    late var models = [
       ModelSourceBuilder().withYaml(
         '''
         exception: ExampleException
@@ -562,7 +575,7 @@ fields:
         ''',
       ).build(),
     ];
-    var collector = CodeGenerationCollector();
+    late var collector = CodeGenerationCollector();
 
     test('then return a human readable error message when analyzing.', () {
       StatefulAnalyzer(
@@ -586,7 +599,7 @@ fields:
   });
 
   group('Given a model with three different types defined.', () {
-    var models = [
+    late var models = [
       ModelSourceBuilder().withYaml(
         '''
 class: Example
@@ -597,7 +610,7 @@ fields:
 ''',
       ).build(),
     ];
-    var collector = CodeGenerationCollector();
+    late var collector = CodeGenerationCollector();
 
     test('then return a human readable error message when analyzing.', () {
       StatefulAnalyzer(

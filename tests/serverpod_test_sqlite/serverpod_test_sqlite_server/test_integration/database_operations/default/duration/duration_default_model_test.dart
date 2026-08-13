@@ -15,7 +15,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "defaultModel=1d 2h 10min 30s 100ms" field value should be the expected duration',
+      'when creating a record in the database, '
+      'then the "defaultModel=1d 2h 10min 30s 100ms" field value should be the expected duration',
       () async {
         var object = DurationDefaultModel();
         var databaseObject = await DurationDefaultModel.db.insertRow(
@@ -38,7 +39,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the nullable "defaultModel=2d 1h 20min 40s 100ms" field value should be the expected duration',
+      'when creating a record in the database, '
+      'then the nullable "defaultModel=2d 1h 20min 40s 100ms" field value should be the expected duration',
       () async {
         var object = DurationDefaultModel();
         var databaseObject = await DurationDefaultModel.db.insertRow(
@@ -61,7 +63,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "durationDefaultModel" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "durationDefaultModel" field value should match the provided value',
       () async {
         var specificDuration = Duration(
           days: 3,
@@ -85,7 +88,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "durationDefaultModelNull" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "durationDefaultModelNull" field value should match the provided value',
       () async {
         var specificDuration = Duration(
           days: 3,

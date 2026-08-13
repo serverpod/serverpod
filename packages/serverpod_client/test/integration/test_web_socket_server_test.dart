@@ -12,7 +12,7 @@ import 'websocket_extensions.dart';
 import '../test_utils/test_web_socket_server.dart';
 
 void main() async {
-  group('Given echo websocket test server', () {
+  group('Given echo websocket test server,', () {
     Completer<Uri> callbackUrlFuture;
     late Uri webSocketHost;
     late Future<void> Function() closeServer;
@@ -43,7 +43,7 @@ void main() async {
 
     tearDown(() => closeServer());
 
-    test('when sending a message then expect same response', () async {
+    test('when sending a message, then expect same response', () async {
       var webSocket = await WebSocket.connect(webSocketHost);
       var message = 'Hello';
       webSocket.sendText(message);
@@ -52,7 +52,7 @@ void main() async {
     });
   });
 
-  group('Given sequence websocket test server with a single response', () {
+  group('Given sequence websocket test server with a single response,', () {
     Completer<Uri> callbackUrlFuture;
     late Uri webSocketHost;
     late Future<void> Function() closeServer;
@@ -79,7 +79,7 @@ void main() async {
     tearDown(() => closeServer());
 
     test(
-      'when sending single message then configured response is returned.',
+      'when sending single message, then configured response is returned.',
       () async {
         var webSocket = await WebSocket.connect(webSocketHost);
         webSocket.sendText('Hello');
@@ -89,7 +89,7 @@ void main() async {
     );
 
     test(
-      'when sending multiple messages then a single response is returned.',
+      'when sending multiple messages, then a single response is returned.',
       () async {
         var webSocket = await WebSocket.connect(webSocketHost);
 

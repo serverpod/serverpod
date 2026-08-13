@@ -9,7 +9,7 @@ import 'package:test/test.dart';
 void main() {
   group(
     'Given a CreateConfigState with server and app template type, '
-    'when converting to template context',
+    'when converting to template context,',
     () {
       late CreateConfigState state;
 
@@ -86,7 +86,7 @@ void main() {
       );
 
       test(
-        'when database is selected (default),'
+        'when database is selected (default), '
         'then postgres is enabled in TemplateContext',
         () {
           final context = state.toTemplateContext();
@@ -95,7 +95,7 @@ void main() {
       );
 
       test(
-        'when database is selected,'
+        'when database is selected, '
         'then postgres is disabled in TemplateContext',
         () {
           // Deselect to disable
@@ -110,7 +110,7 @@ void main() {
       );
 
       test(
-        'when redis is not selected (default),'
+        'when redis is not selected (default), '
         'then redis is disabled in TemplateContext',
         () {
           // By default redis is not selected
@@ -120,7 +120,7 @@ void main() {
       );
 
       test(
-        'when redis is selected,'
+        'when redis is selected, '
         'then redis is enabled in TemplateContext',
         () {
           state.form.updateSelectedOption(
@@ -134,7 +134,7 @@ void main() {
       );
 
       group(
-        'when WebServerConfigOption is set to app only (default)',
+        'when WebServerConfigOption is set to app only (default),',
         () {
           late TemplateContext context;
           setUp(() {
@@ -156,7 +156,7 @@ void main() {
       );
 
       test(
-        'when WebServerConfigOption is set to app and website,'
+        'when WebServerConfigOption is set to app and website, '
         'then webapp, website and webserver are all enabled',
         () {
           state.form.updateSelectedOption(
@@ -171,7 +171,7 @@ void main() {
       );
 
       test(
-        'when WebServerConfigOption is set to none,'
+        'when WebServerConfigOption is set to none, '
         'then webapp, website and webserver are all disabled',
         () {
           state.form.updateSelectedOption(
@@ -186,7 +186,7 @@ void main() {
       );
 
       test(
-        'when auth is disabled then TemplateContext reflects disabled',
+        'when auth is disabled, then TemplateContext reflects disabled',
         () {
           state.form.updateSelectedOption(
             ServerpodCreateConfig.auth,
@@ -199,7 +199,7 @@ void main() {
       );
 
       test(
-        'when ides are selected then TemplateContext contains ides',
+        'when ides are selected, then TemplateContext contains ides',
         () {
           state.form.updateSelectedOption(
             ServerpodCreateConfig.ide,
@@ -222,7 +222,7 @@ void main() {
 
   group(
     'Given a CreateConfigState exposing only the ide config with default values for the other configs, '
-    'when converting to template context',
+    'when converting to template context,',
     () {
       late CreateConfigState state;
 
@@ -260,7 +260,7 @@ void main() {
 
   group(
     'Given a CreateConfigState exposing only the ide config with an ide selected, '
-    'when converting to template context',
+    'when converting to template context,',
     () {
       late CreateConfigState state;
 
@@ -286,9 +286,8 @@ void main() {
   );
 
   group(
-    'Given a CreateConfigState with all configs '
-    'and default values for the constrainable configs, '
-    'when a config is hidden by an unsatisfied requirement',
+    'Given a CreateConfigState with all configs and default values for the constrainable configs, '
+    'when a config is hidden by an unsatisfied requirement,',
     () {
       late CreateConfigState state;
 
@@ -323,7 +322,7 @@ void main() {
   );
 
   group(
-    'Given a CreateConfigState that requires an ide selection',
+    'Given a CreateConfigState that requires an ide selection,',
     () {
       late CreateConfigState state;
 
@@ -336,14 +335,14 @@ void main() {
       });
 
       test(
-        'when no ide is selected then the project can not be created',
+        'when no ide is selected, then the project can not be created',
         () {
           expect(state.canCreate, isFalse);
         },
       );
 
       test(
-        'when an ide is selected then the project can be created',
+        'when an ide is selected, then the project can be created',
         () {
           state.form.updateSelectedOption(
             ServerpodCreateConfig.ide,
@@ -355,7 +354,7 @@ void main() {
       );
 
       test(
-        'when the only selected ide is deselected '
+        'when the only selected ide is deselected, '
         'then the project can not be created',
         () {
           state.form.updateSelectedOption(
@@ -374,7 +373,7 @@ void main() {
   );
 
   group(
-    'Given a CreateConfigState that does not require an ide selection',
+    'Given a CreateConfigState that does not require an ide selection,',
     () {
       late CreateConfigState state;
 
@@ -383,7 +382,7 @@ void main() {
       });
 
       test(
-        'when no ide is selected then the project can be created',
+        'when no ide is selected, then the project can be created',
         () {
           expect(state.canCreate, isTrue);
         },
@@ -392,7 +391,7 @@ void main() {
   );
 
   group(
-    'Given a CreateConfigState with all configs except ServerpodCreateConfig.template',
+    'Given a CreateConfigState with all configs except ServerpodCreateConfig.template,',
     () {
       late CreateConfigState state;
 

@@ -15,7 +15,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "default=true" field value should be true',
+      'when creating a record in the database, '
+      'then the "default=true" field value should be true',
       () async {
         var object = BoolDefault();
         var databaseObject = await BoolDefault.db.insertRow(
@@ -30,7 +31,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "default=false" field value should be false',
+      'when creating a record in the database, '
+      'then the "default=false" field value should be false',
       () async {
         var object = BoolDefault();
         var databaseObject = await BoolDefault.db.insertRow(
@@ -45,7 +47,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the nullable "default=false" field value should be false',
+      'when creating a record in the database, '
+      'then the nullable "default=false" field value should be false',
       () async {
         var object = BoolDefault();
         var databaseObject = await BoolDefault.db.insertRow(
@@ -60,7 +63,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "boolDefaultTrue" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "boolDefaultTrue" field value should match the provided value',
       () async {
         var specificObject = BoolDefault(
           boolDefaultTrue: false,
@@ -77,7 +81,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "boolDefaultFalse" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "boolDefaultFalse" field value should match the provided value',
       () async {
         var specificObject = BoolDefault(
           boolDefaultFalse: true,
@@ -94,7 +99,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "boolDefaultNullFalse" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "boolDefaultNullFalse" field value should match the provided value',
       () async {
         var specificObject = BoolDefault(
           boolDefaultNullFalse: true,

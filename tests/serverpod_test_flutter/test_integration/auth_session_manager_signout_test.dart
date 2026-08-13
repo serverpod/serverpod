@@ -20,7 +20,7 @@ class MockStorage implements Storage {
 void main() {
   const serverUrl = 'http://serverpod_test_server:8080/';
 
-  group('Given two authenticated clients with SessionManagers', () {
+  group('Given two authenticated clients with SessionManagers,', () {
     late Client primaryClient;
     late Client secondaryClient;
     late SessionManager primarySessionManager;
@@ -80,7 +80,7 @@ void main() {
       secondaryClient.close();
     });
 
-    group('when calling signOutDevice on the first SessionManager', () {
+    group('when calling signOutDevice on the first SessionManager,', () {
       setUp(() async {
         bool result = await primarySessionManager.signOutDevice();
         assert(
@@ -113,7 +113,7 @@ void main() {
       );
     });
 
-    group('when calling signOutAllDevices on the first SessionManager', () {
+    group('when calling signOutAllDevices on the first SessionManager,', () {
       setUp(() async {
         bool result = await primarySessionManager.signOutAllDevices();
         assert(

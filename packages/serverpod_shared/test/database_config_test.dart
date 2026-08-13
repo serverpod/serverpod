@@ -11,7 +11,9 @@ void main() {
   var passwords = {'serviceSecret': 'longpasswordthatisrequired'};
 
   test(
-    'Given a Serverpod config with api server configuration when loading from Map then database configuration is null.',
+    'Given a Serverpod config with api server configuration, '
+    'when loading from Map, '
+    'then database configuration is null.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -37,7 +39,9 @@ apiServer:
   );
 
   test(
-    'Given a Serverpod config with database configuration without password when loading from Map then exception is thrown.',
+    'Given a Serverpod config with database configuration without password, '
+    'when loading from Map, '
+    'then exception is thrown.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -77,7 +81,9 @@ database:
   );
 
   test(
-    'Given a Serverpod config with database configuration missing required field when loading from Map then exception is thrown.',
+    'Given a Serverpod config with database configuration missing required field, '
+    'when loading from Map, '
+    'then exception is thrown.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -112,7 +118,9 @@ database:
   );
 
   test(
-    'Given a Serverpod config with database configuration when loading from Map then database configuration is set.',
+    'Given a Serverpod config with database configuration, '
+    'when loading from Map, '
+    'then database configuration is set.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -147,7 +155,9 @@ database:
   );
 
   test(
-    'Given a Serverpod config with only the api server configuration but the environment variables containing the config for the database when loading from Map then the database config is created.',
+    'Given a Serverpod config with only the api server configuration but the environment variables containing the config for the database, '
+    'when loading from Map, '
+    'then the database config is created.',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -178,7 +188,9 @@ database:
   );
 
   test(
-    'Given a Serverpod config map with half the values and the environment variables the other half for the database when loading from Map then configuration then the database config is created',
+    'Given a Serverpod config map with half the values and the environment variables the other half for the database, '
+    'when loading from Map, '
+    'then configuration then the database config is created',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -210,7 +222,9 @@ database:
   );
 
   test(
-    'Given a Serverpod config map with all the values and the environment variables for the database when loading from Map then the config is overridden by the environment variables.',
+    'Given a Serverpod config map with all the values and the environment variables for the database, '
+    'when loading from Map, '
+    'then the config is overridden by the environment variables.',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -246,7 +260,8 @@ database:
   );
 
   test(
-    'Given a Serverpod config with only the api server configuration but the environment variables containing the optional database variable require ssl then the database config takes the value from the env.',
+    'Given a Serverpod config with only the api server configuration but the environment variables containing the optional database variable require ssl, '
+    'then the database config takes the value from the env.',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -274,7 +289,8 @@ database:
   );
 
   test(
-    'Given a Serverpod config with only the api server configuration but the environment variables containing the optional database variable isUnixSocket then the database config takes the value from the env.',
+    'Given a Serverpod config with only the api server configuration but the environment variables containing the optional database variable isUnixSocket, '
+    'then the database config takes the value from the env.',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -302,7 +318,8 @@ database:
   );
 
   test(
-    'Given a Serverpod config with only the api server configuration but the environment variables containing the optional database variable searchPaths then the database config takes the value from the env.',
+    'Given a Serverpod config with only the api server configuration but the environment variables containing the optional database variable searchPaths, '
+    'then the database config takes the value from the env.',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -331,7 +348,9 @@ database:
   );
 
   test(
-    'Given a Serverpod config with database configuration including searchPaths when loading from Map then the database config is set correctly.',
+    'Given a Serverpod config with database configuration including searchPaths, '
+    'when loading from Map, '
+    'then the database config is set correctly.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -359,7 +378,9 @@ database:
   );
 
   test(
-    'Given a Serverpod config with both config file and environment variables for searchPaths when loading from Map then the environment variable overrides the config file.',
+    'Given a Serverpod config with both config file and environment variables for searchPaths, '
+    'when loading from Map, '
+    'then the environment variable overrides the config file.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -390,7 +411,9 @@ database:
   );
 
   test(
-    'Given a Serverpod config with a list of searchPaths when loading from Map then all search paths are parsed.',
+    'Given a Serverpod config with a list of searchPaths, '
+    'when loading from Map, '
+    'then all search paths are parsed.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -425,7 +448,9 @@ database:
   );
 
   test(
-    'Given a SERVERPOD_DATABASE_SEARCH_PATHS with a list of searchPaths when loading from Map then all search paths are parsed.',
+    'Given a SERVERPOD_DATABASE_SEARCH_PATHS with a list of searchPaths, '
+    'when loading from Map, '
+    'then all search paths are parsed.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -463,7 +488,9 @@ database:
   );
 
   test(
-    'Given a Serverpod config with database configuration when loading from Map then maxConnectionCount uses default value.',
+    'Given a Serverpod config with database configuration, '
+    'when loading from Map, '
+    'then maxConnectionCount uses default value.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -493,7 +520,9 @@ database:
   );
 
   test(
-    'Given a Serverpod config with database configuration including maxConnectionCount when loading from Map then maxConnectionCount is set correctly.',
+    'Given a Serverpod config with database configuration including maxConnectionCount, '
+    'when loading from Map, '
+    'then maxConnectionCount is set correctly.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -521,7 +550,8 @@ database:
   );
 
   test(
-    'Given a Serverpod config with only the api server configuration but the environment variables containing the optional database variable maxConnectionCount then the database config takes the value from the env.',
+    'Given a Serverpod config with only the api server configuration but the environment variables containing the optional database variable maxConnectionCount, '
+    'then the database config takes the value from the env.',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -549,7 +579,9 @@ database:
   );
 
   test(
-    'Given a Serverpod config with both config file and environment variables for maxConnectionCount when loading from Map then the environment variable overrides the config file.',
+    'Given a Serverpod config with both config file and environment variables for maxConnectionCount, '
+    'when loading from Map, '
+    'then the environment variable overrides the config file.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -580,7 +612,9 @@ database:
   );
 
   test(
-    'Given a Serverpod config with database configuration including negative maxConnectionCount when loading from Map then maxConnectionCount is set to null.',
+    'Given a Serverpod config with database configuration including negative maxConnectionCount, '
+    'when loading from Map, '
+    'then maxConnectionCount is set to null.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -608,7 +642,9 @@ database:
   );
 
   test(
-    'Given a Serverpod config with database configuration including zero maxConnectionCount when loading from Map then maxConnectionCount is set to null.',
+    'Given a Serverpod config with database configuration including zero maxConnectionCount, '
+    'when loading from Map, '
+    'then maxConnectionCount is set to null.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -636,7 +672,8 @@ database:
   );
 
   test(
-    'Given a DatabaseConfig created with null maxConnectionCount then maxConnectionCount is null.',
+    'Given a DatabaseConfig created with null maxConnectionCount, '
+    'then maxConnectionCount is null.',
     () {
       var config = DatabaseConfig(
         host: 'localhost',
@@ -652,7 +689,9 @@ database:
   );
 
   test(
-    'Given a Serverpod config with database dialect postgres when loading from Map then PostgresDatabaseConfig is set.',
+    'Given a Serverpod config with database dialect postgres, '
+    'when loading from Map, '
+    'then PostgresDatabaseConfig is set.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -681,7 +720,8 @@ database:
   );
 
   group(
-    'Given a Serverpod config with database dialect sqlite and filePath when loading from Map',
+    'Given a Serverpod config with database dialect sqlite and filePath, '
+    'when loading from Map,',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -722,7 +762,9 @@ database:
   );
 
   test(
-    'Given a Serverpod config with database dialect sqlite and filePath including maxConnectionCount when loading from Map then SqliteDatabaseConfig maxConnectionCount is set correctly.',
+    'Given a Serverpod config with database dialect sqlite and filePath including maxConnectionCount, '
+    'when loading from Map, '
+    'then SqliteDatabaseConfig maxConnectionCount is set correctly.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -750,7 +792,9 @@ database:
   );
 
   test(
-    'Given a Serverpod config with database dialect sqlite and filePath including zero maxConnectionCount when loading from Map then SqliteDatabaseConfig maxConnectionCount is null.',
+    'Given a Serverpod config with database dialect sqlite and filePath including zero maxConnectionCount, '
+    'when loading from Map, '
+    'then SqliteDatabaseConfig maxConnectionCount is null.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -778,7 +822,9 @@ database:
   );
 
   test(
-    'Given a Serverpod config with database dialect sqlite and filePath including negative maxConnectionCount when loading from Map then SqliteDatabaseConfig maxConnectionCount is null.',
+    'Given a Serverpod config with database dialect sqlite and filePath including negative maxConnectionCount, '
+    'when loading from Map, '
+    'then SqliteDatabaseConfig maxConnectionCount is null.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -806,7 +852,9 @@ database:
   );
 
   test(
-    'Given a Serverpod config with database dialect sqlite but missing filePath when loading from Map then ArgumentError is thrown.',
+    'Given a Serverpod config with database dialect sqlite but missing filePath, '
+    'when loading from Map, '
+    'then ArgumentError is thrown.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -837,7 +885,9 @@ database:
   );
 
   test(
-    'Given a Serverpod config with database dialect sqlite but empty filePath when loading from Map then ArgumentError is thrown.',
+    'Given a Serverpod config with database dialect sqlite but empty filePath, '
+    'when loading from Map, '
+    'then ArgumentError is thrown.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -869,7 +919,9 @@ database:
   );
 
   test(
-    'Given a Serverpod config with database filePath but no dialect when loading from Map then SqliteDatabaseConfig is used via fallback.',
+    'Given a Serverpod config with database filePath but no dialect, '
+    'when loading from Map, '
+    'then SqliteDatabaseConfig is used via fallback.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -895,7 +947,8 @@ database:
   );
 
   test(
-    'Given a SqliteDatabaseConfig created directly then filePath and dialect are correct.',
+    'Given a SqliteDatabaseConfig created directly, '
+    'then filePath and dialect are correct.',
     () {
       var config = SqliteDatabaseConfig(filePath: '/path/to/db.sqlite');
 
@@ -1001,7 +1054,8 @@ database:
   );
 
   test(
-    'Given a SqliteDatabaseConfig with custom maxConnectionCount then value is set.',
+    'Given a SqliteDatabaseConfig with custom maxConnectionCount, '
+    'then value is set.',
     () {
       var config = SqliteDatabaseConfig(
         filePath: '/db.sqlite',
@@ -1013,7 +1067,9 @@ database:
   );
 
   test(
-    'Given a SqliteDatabaseConfig when calling toString then output contains filePath and dialect.',
+    'Given a SqliteDatabaseConfig, '
+    'when calling toString, '
+    'then output contains filePath and dialect.',
     () {
       var config = SqliteDatabaseConfig(filePath: '/tmp/db.sqlite');
       var str = config.toString();
@@ -1030,7 +1086,9 @@ database dialect: sqlite
   );
 
   test(
-    'Given a database config with both Postgres and SQLite options when loading from Map then Postgres is used by default.',
+    'Given a database config with both Postgres and SQLite options, '
+    'when loading from Map, '
+    'then Postgres is used by default.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -1058,7 +1116,9 @@ database:
   );
 
   test(
-    'Given a Serverpod config with database dialect invalid when loading from Map then ArgumentError is thrown.',
+    'Given a Serverpod config with database dialect invalid, '
+    'when loading from Map, '
+    'then ArgumentError is thrown.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -1088,8 +1148,8 @@ database:
     },
   );
 
-  group('Given a Postgres database config', () {
-    test('when dataPath is omitted then it is null.', () {
+  group('Given a Postgres database config,', () {
+    test('when dataPath is omitted, then it is null.', () {
       var serverpodConfig = '''
 apiServer:
   port: 8080
@@ -1115,7 +1175,7 @@ database:
       expect((db as PostgresDatabaseConfig).dataPath, isNull);
     });
 
-    test('when dataPath is set then it is normalized on the config.', () {
+    test('when dataPath is set, then it is normalized on the config.', () {
       var serverpodConfig = '''
 apiServer:
   port: 8080
@@ -1142,7 +1202,7 @@ database:
     });
 
     test(
-      'when SERVERPOD_DATABASE_DATA_PATH is set then it overrides the file.',
+      'when SERVERPOD_DATABASE_DATA_PATH is set, then it overrides the file.',
       () {
         var serverpodConfig = '''
 apiServer:
@@ -1171,7 +1231,7 @@ database:
       },
     );
 
-    test('when dataPath is only whitespace then it is treated as absent.', () {
+    test('when dataPath is only whitespace, then it is treated as absent.', () {
       var serverpodConfig = '''
 apiServer:
   port: 8080
@@ -1197,7 +1257,7 @@ database:
       expect(db.dataPath, isNull);
     });
 
-    test('when dataPath is non-string then ArgumentError is thrown.', () {
+    test('when dataPath is non-string, then ArgumentError is thrown.', () {
       var serverpodConfig = '''
 apiServer:
   port: 8080
@@ -1224,7 +1284,8 @@ database:
     });
 
     test(
-      'when dataPath is present then toString includes the database data path line.',
+      'when dataPath is present, '
+      'then toString includes the database data path line.',
       () {
         var serverpodConfig = '''
 apiServer:
@@ -1252,9 +1313,9 @@ database:
     );
   });
 
-  test('Given a SQLite database config '
-      'when converting to string '
-      'then toString does not mention postgres data path.', () {
+  test('Given a SQLite database config, '
+       'when converting to string, '
+       'then toString does not mention postgres data path.', () {
     var serverpodConfig = '''
 apiServer:
   port: 8080

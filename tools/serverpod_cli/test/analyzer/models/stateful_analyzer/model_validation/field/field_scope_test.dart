@@ -11,7 +11,8 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   test(
-    'Given a class with a field with no scope set, then the generated model has the all scope.',
+    'Given a class with a field with no scope set, '
+    'then the generated model has the all scope.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -38,7 +39,8 @@ void main() {
   );
 
   test(
-    'Given server only class with a field with no scope set, then the generated model has the server only scope.',
+    'Given server only class with a field with no scope set, '
+    'then the generated model has the server only scope.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -68,9 +70,9 @@ void main() {
   );
 
   group(
-    'Given a class with a field with the scope set',
+    'Given a class with a field with the scope set,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -121,7 +123,8 @@ void main() {
   );
 
   test(
-    'Given a class with a field with the scope set to null, then collect an error informing the user about the correct types.',
+    'Given a class with a field with the scope set to null, '
+    'then collect an error informing the user about the correct types.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -155,7 +158,8 @@ void main() {
   );
 
   test(
-    'Given a class with a field with the scope set to an invalid value, then collect an error informing the user about the correct types.',
+    'Given a class with a field with the scope set to an invalid value, '
+    'then collect an error informing the user about the correct types.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -189,7 +193,8 @@ void main() {
   );
 
   test(
-    'Given a class with a none nullable field with the scope serverOnly then an error is collected notifying that only nullable fields are allowed.',
+    'Given a class with a none nullable field with the scope serverOnly, '
+    'then an error is collected notifying that only nullable fields are allowed.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -221,9 +226,9 @@ void main() {
   );
 
   group(
-    'Given a server only class with a none nullable field with the scope serverOnly',
+    'Given a server only class with a none nullable field with the scope serverOnly,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -282,7 +287,8 @@ void main() {
   );
 
   test(
-    'Given a class with a none nullable field with the scope none then an error is collected notifying that only nullable fields are allowed.',
+    'Given a class with a none nullable field with the scope none, '
+    'then an error is collected notifying that only nullable fields are allowed.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -314,7 +320,8 @@ void main() {
   );
 
   test(
-    'Given a server only class with a none nullable field with the scope none then an error is collected notifying that only nullable fields are allowed.',
+    'Given a server only class with a none nullable field with the scope none, '
+    'then an error is collected notifying that only nullable fields are allowed.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -347,7 +354,8 @@ void main() {
   );
 
   test(
-    'Given a server only class with a nullable field with the scope none then field has scope none.',
+    'Given a server only class with a nullable field with the scope none, '
+    'then field has scope none.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -378,8 +386,8 @@ void main() {
     },
   );
 
-  group('Given class with server only property and field with scope all', () {
-    var models = [
+  group('Given class with server only property and field with scope all,', () {
+    late var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -413,8 +421,8 @@ void main() {
     });
   });
 
-  group('Given server only class referenced from all scoped class', () {
-    var models = [
+  group('Given server only class referenced from all scoped class,', () {
+    late var models = [
       ModelSourceBuilder().withFileName('server_only_class').withYaml(
         '''
         class: ServerOnlyClass
@@ -459,7 +467,8 @@ void main() {
   });
 
   test(
-    'Given server only class referenced from server only scoped class then field is defined.',
+    'Given server only class referenced from server only scoped class, '
+    'then field is defined.',
     () {
       var models = [
         ModelSourceBuilder().withFileName('server_only_class').withYaml(
@@ -495,8 +504,8 @@ void main() {
     },
   );
 
-  group('Given server only class referenced from all scoped field', () {
-    var models = [
+  group('Given server only class referenced from all scoped field,', () {
+    late var models = [
       ModelSourceBuilder().withFileName('server_only_class').withYaml(
         '''
         class: ServerOnlyClass
@@ -540,8 +549,8 @@ void main() {
     );
   });
 
-  group('Given server only class referenced from Map in an all scoped field', () {
-    var models = [
+  group('Given server only class referenced from Map in an all scoped field,', () {
+    late var models = [
       ModelSourceBuilder().withFileName('server_only_class').withYaml(
         '''
         class: ServerOnlyClass
@@ -586,7 +595,8 @@ void main() {
   });
 
   test(
-    'Given server only class referenced from server only scoped field then field is defined.',
+    'Given server only class referenced from server only scoped field, '
+    'then field is defined.',
     () {
       var models = [
         ModelSourceBuilder().withFileName('server_only_class').withYaml(
@@ -622,7 +632,8 @@ void main() {
   );
 
   test(
-    'Given server only class referenced from none scoped field then field is defined.',
+    'Given server only class referenced from none scoped field, '
+    'then field is defined.',
     () {
       var models = [
         ModelSourceBuilder().withFileName('server_only_class').withYaml(
@@ -658,7 +669,8 @@ void main() {
   );
 
   test(
-    'Given a class with a declared id field with the "scope" key set, then an error is collected.',
+    'Given a class with a declared id field with the "scope" key set, '
+    'then an error is collected.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -686,9 +698,9 @@ void main() {
   );
 
   group(
-    'Given a serverOnly table class with a declared id field and no scope set',
+    'Given a serverOnly table class with a declared id field and no scope set,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example

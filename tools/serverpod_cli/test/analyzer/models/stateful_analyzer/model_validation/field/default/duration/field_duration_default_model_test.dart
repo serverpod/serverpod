@@ -10,9 +10,10 @@ import '../../../../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
-  group('Given a class with fields with a "defaultModel" keyword for Duration type', () {
+  group('Given a class with fields with a "defaultModel" keyword for Duration type,', () {
     test(
-      'when the field is of type Duration and the defaultModel is set to "1d 2h 10min 30s 100ms", then the field should have a "default model" value',
+      'when the field is of type Duration and the defaultModel is set to "1d 2h 10min 30s 100ms", '
+      'then the field should have a "default model" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -43,7 +44,8 @@ void main() {
     );
 
     test(
-      'when the field is of type Duration and the defaultModel is empty, then an error is generated',
+      'when the field is of type Duration and the defaultModel is empty, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -74,7 +76,8 @@ void main() {
     );
 
     test(
-      'when the field is of type Duration with an invalid defaultModel value "INVALID_DURATION", then an error is generated',
+      'when the field is of type Duration with an invalid defaultModel value "INVALID_DURATION", '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -105,7 +108,8 @@ void main() {
     );
 
     test(
-      'when the field is of type Duration with an invalid defaultModel value containing an incorrect format, then an error is generated',
+      'when the field is of type Duration with an invalid defaultModel value containing an incorrect format, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(

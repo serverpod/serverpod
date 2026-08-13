@@ -61,7 +61,8 @@ void main() {
       });
 
       test(
-        'when running `importLegacyPasswordIfNeeded` with the correct password, then it completes without error.',
+        'when running `importLegacyPasswordIfNeeded` with the correct password, '
+        'then it completes without error.',
         () async {
           await expectLater(
             AuthBackwardsCompatibility.importLegacyPasswordIfNeeded(
@@ -75,7 +76,8 @@ void main() {
       );
 
       test(
-        'when running `importLegacyPasswordIfNeeded` with an incorrect password, then it completes without error.',
+        'when running `importLegacyPasswordIfNeeded` with an incorrect password, '
+        'then it completes without error.',
         () async {
           await expectLater(
             AuthBackwardsCompatibility.importLegacyPasswordIfNeeded(
@@ -121,7 +123,8 @@ void main() {
       });
 
       test(
-        'when running `importLegacyPasswordIfNeeded` again with the correct password, then it completes without error.',
+        'when running `importLegacyPasswordIfNeeded` again with the correct password, '
+        'then it completes without error.',
         () async {
           await expectLater(
             AuthBackwardsCompatibility.importLegacyPasswordIfNeeded(
@@ -135,7 +138,8 @@ void main() {
       );
 
       test(
-        'when running `importLegacyPasswordIfNeeded` again with an incorrect password, then it completes without error.',
+        'when running `importLegacyPasswordIfNeeded` again with an incorrect password, '
+        'then it completes without error.',
         () async {
           await expectLater(
             AuthBackwardsCompatibility.importLegacyPasswordIfNeeded(
@@ -174,7 +178,8 @@ void main() {
       });
 
       test(
-        'when running `migrateUsers`, then it forwards the error and does not create an `AuthUser`.',
+        'when running `migrateUsers`, '
+        'then it forwards the error and does not create an `AuthUser`.',
         () async {
           await expectLater(
             AuthMigrations.migrateUsers(
@@ -248,7 +253,8 @@ void main() {
       });
 
       test(
-        'when the migration is done, then no session has been created in the legacy system.',
+        'when the migration is done, '
+        'then no session has been created in the legacy system.',
         () async {
           expect(await legacy_auth.AuthKey.db.find(session), isEmpty);
         },
@@ -264,7 +270,8 @@ void main() {
       );
 
       test(
-        'when checking the migrated users table, then an entry has been written for it.',
+        'when checking the migrated users table, '
+        'then an entry has been written for it.',
         () async {
           final migratedUser = (await MigratedUser.db.find(session)).single;
 
@@ -274,7 +281,8 @@ void main() {
       );
 
       test(
-        'when attempting to authenticate against the new system with the credentials, then that succeeds.',
+        'when attempting to authenticate against the new system with the credentials, '
+        'then that succeeds.',
         () async {
           expect(
             await newEmailIdp.utils.authentication.authenticate(
@@ -338,7 +346,8 @@ void main() {
       });
 
       test(
-        'when reading the profile, then it throws because none has been created.',
+        'when reading the profile, '
+        'then it throws because none has been created.',
         () async {
           const userProfiles = new_auth_core.UserProfiles();
           await expectLater(
@@ -397,7 +406,8 @@ void main() {
       });
 
       test(
-        'when the migration is done, then no session has been created in the legacy system.',
+        'when the migration is done, '
+        'then no session has been created in the legacy system.',
         () async {
           expect(await legacy_auth.AuthKey.db.find(session), isEmpty);
         },
@@ -413,7 +423,8 @@ void main() {
       );
 
       test(
-        'when checking the migrated users table, then an entry has been written for it.',
+        'when checking the migrated users table, '
+        'then an entry has been written for it.',
         () async {
           final migratedUser = (await MigratedUser.db.find(session)).single;
 
@@ -423,7 +434,8 @@ void main() {
       );
 
       test(
-        'when attempting to run `importLegacyPasswordIfNeeded` for that account, then it completes without error.',
+        'when attempting to run `importLegacyPasswordIfNeeded` for that account, '
+        'then it completes without error.',
         () async {
           await expectLater(
             AuthBackwardsCompatibility.importLegacyPasswordIfNeeded(
@@ -437,7 +449,8 @@ void main() {
       );
 
       test(
-        'when running `importLegacyPasswordIfNeeded` with the correct password, then no session is created in the legacy system.',
+        'when running `importLegacyPasswordIfNeeded` with the correct password, '
+        'then no session is created in the legacy system.',
         () async {
           await AuthBackwardsCompatibility.importLegacyPasswordIfNeeded(
             session,
@@ -450,7 +463,8 @@ void main() {
       );
 
       test(
-        'when running `importLegacyPasswordIfNeeded` with the correct password, then this password can be used for the login.',
+        'when running `importLegacyPasswordIfNeeded` with the correct password, '
+        'then this password can be used for the login.',
         () async {
           await AuthBackwardsCompatibility.importLegacyPasswordIfNeeded(
             session,
@@ -471,7 +485,8 @@ void main() {
       );
 
       test(
-        'when running `importLegacyPasswordIfNeeded` with a wrong password, then this password can not be used for the login.',
+        'when running `importLegacyPasswordIfNeeded` with a wrong password, '
+        'then this password can not be used for the login.',
         () async {
           const wrongPassword = 'asdf456789!';
 
@@ -498,7 +513,8 @@ void main() {
       );
 
       test(
-        'when attempting to authenticate against the new system with the credentials, then that fails (because the password has not been set).',
+        'when attempting to authenticate against the new system with the credentials, '
+        'then that fails (because the password has not been set).',
         () async {
           await expectLater(
             () => newEmailIdp.utils.authentication.authenticate(

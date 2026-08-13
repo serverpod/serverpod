@@ -18,19 +18,19 @@ void main() {
     '$testClassFileName.dart',
   );
 
-  group('Given class with documentation when generating code', () {
+  group('Given class with documentation, when generating code,', () {
     var documentation = [
       '// This is an example documentation',
       '// This is another example',
     ];
-    var models = [
+    late var models = [
       ModelClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withDocumentation(documentation)
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );

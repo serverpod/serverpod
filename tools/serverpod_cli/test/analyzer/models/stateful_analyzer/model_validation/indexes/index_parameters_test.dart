@@ -10,7 +10,8 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   test(
-    'Given a class with an index with undefined parameters, then return a definition where parameters is set to null.',
+    'Given a class with an index with undefined parameters, '
+    'then return a definition where parameters is set to null.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -40,7 +41,8 @@ void main() {
     },
   );
   test(
-    'Given a class with an index with empty parameters, then return a definition where parameters is set to null.',
+    'Given a class with an index with empty parameters, '
+    'then return a definition where parameters is set to null.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -72,7 +74,8 @@ void main() {
   );
 
   test(
-    'Given a class with an index with invalid parameters (not a map), then collect an error that the parameters must be a map.',
+    'Given a class with an index with invalid parameters (not a map), '
+    'then collect an error that the parameters must be a map.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -109,7 +112,8 @@ void main() {
   );
 
   test(
-    'Given a class with a non-vector field and parameters, then collect an error that parameters can only be used with vector indexes.',
+    'Given a class with a non-vector field and parameters, '
+    'then collect an error that parameters can only be used with vector indexes.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -151,7 +155,8 @@ void main() {
   );
 
   test(
-    'Given a class with a vector field and hnsw index with valid parameters, then return a definition where parameters are correctly set.',
+    'Given a class with a vector field and hnsw index with valid parameters, '
+    'then return a definition where parameters are correctly set.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -195,7 +200,8 @@ void main() {
   );
 
   test(
-    'Given a class with a vector field and hnsw index with invalid parameter name, then collect an error about unknown parameters.',
+    'Given a class with a vector field and hnsw index with invalid parameter name, '
+    'then collect an error about unknown parameters.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -238,7 +244,8 @@ void main() {
   );
 
   test(
-    'Given a class with a vector field and ivfflat index with valid parameters, then no errors should be collected.',
+    'Given a class with a vector field and ivfflat index with valid parameters, '
+    'then no errors should be collected.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -280,7 +287,8 @@ void main() {
   );
 
   test(
-    'Given a class with a vector field and ivfflat index with invalid parameter name, then collect an error about unknown parameters.',
+    'Given a class with a vector field and ivfflat index with invalid parameter name, '
+    'then collect an error about unknown parameters.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -323,7 +331,8 @@ void main() {
   );
 
   test(
-    'Given a class with a vector field and hnsw index with incorrect parameter type, then collect an error about parameter type.',
+    'Given a class with a vector field and hnsw index with incorrect parameter type, '
+    'then collect an error about parameter type.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -370,7 +379,8 @@ void main() {
   );
 
   test(
-    'Given a vector field with HNSW index where ef_construction < 2*m, then collect an error about the constraint.',
+    'Given a vector field with HNSW index where ef_construction < 2*m, '
+    'then collect an error about the constraint.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -414,7 +424,8 @@ void main() {
   );
 
   test(
-    'Given a vector field with HNSW index where ef_construction = 2*m, then no errors should be collected',
+    'Given a vector field with HNSW index where ef_construction = 2*m, '
+    'then no errors should be collected',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -451,7 +462,8 @@ void main() {
   );
 
   test(
-    'Given a vector field with HNSW index where ef_construction > 2*m, then no errors should be collected',
+    'Given a vector field with HNSW index where ef_construction > 2*m, '
+    'then no errors should be collected',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -488,7 +500,8 @@ void main() {
   );
 
   test(
-    'Given a vector field with HNSW index with only m parameter where default ef_construction < 2*m, then collect an error with suggestion',
+    'Given a vector field with HNSW index with only m parameter where default ef_construction < 2*m, '
+    'then collect an error with suggestion',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -531,7 +544,8 @@ void main() {
   );
 
   test(
-    'Given a vector field with HNSW index with only ef_construction parameter where ef_construction < 2*default m, then collect an error with suggestion',
+    'Given a vector field with HNSW index with only ef_construction parameter where ef_construction < 2*default m, '
+    'then collect an error with suggestion',
     () {
       var models = [
         ModelSourceBuilder().withYaml(

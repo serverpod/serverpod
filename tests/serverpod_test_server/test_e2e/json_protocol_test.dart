@@ -6,7 +6,7 @@ import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
 
 void main() {
-  group("Given a Serverpod server when fetching an object, ", () {
+  group("Given a Serverpod server, when fetching an object,", () {
     late http.Response response;
 
     setUpAll(() async {
@@ -30,7 +30,7 @@ void main() {
   });
 
   group(
-    "Given a Serverpod server when fetching an object with server only field, ",
+    "Given a Serverpod server, when fetching an object with server only field,",
     () {
       late http.Response response;
 
@@ -55,7 +55,7 @@ void main() {
   );
 
   group(
-    "Given a Serverpod server when fetching an custom class object with server only field, ",
+    "Given a Serverpod server, when fetching an custom class object with server only field,",
     () {
       late http.Response response;
 
@@ -74,7 +74,7 @@ void main() {
   );
 
   group(
-    "Given a Serverpod server when fetching an custom class object that extends another custom class object and inherits a server only field",
+    "Given a Serverpod server, when fetching an custom class object that extends another custom class object and inherits a server only field,",
     () {
       late http.Response response;
 
@@ -93,7 +93,7 @@ void main() {
   );
 
   group(
-    "Given a Serverpod server when calling an endpoint which throws a normal exception, ",
+    "Given a Serverpod server, when calling an endpoint which throws a normal exception,",
     () {
       late http.Response response;
 
@@ -112,7 +112,7 @@ void main() {
   );
 
   group(
-    "Given a Serverpod server when calling an endpoint which throws a exception with data, ",
+    "Given a Serverpod server, when calling an endpoint which throws a exception with data,",
     () {
       late http.Response response;
 

@@ -26,9 +26,9 @@ void main() {
 
   group(
     'Given a class with a client database table and explicit nullable list relation field, '
-    'when generating code',
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -43,16 +43,16 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var compilationUnit = parseString(
+      late var compilationUnit = parseString(
         content: codeMap[expectedFilePath]!,
       ).unit;
 
-      var repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      late var repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
         compilationUnit,
         name: '${testClassName}Repository',
       );
@@ -123,9 +123,9 @@ void main() {
 
   group(
     'Given a class with a client database table and explicit non-nullable list relation field, '
-    'when generating code',
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -140,16 +140,16 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var compilationUnit = parseString(
+      late var compilationUnit = parseString(
         content: codeMap[expectedFilePath]!,
       ).unit;
 
-      var repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      late var repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
         compilationUnit,
         name: '${testClassName}Repository',
       );

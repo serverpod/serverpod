@@ -10,7 +10,7 @@ void main() {
   var invalidAuthKeyId = -1;
 
   withServerpod(
-    'Given a user signed in to multiple devices',
+    'Given a user signed in to multiple devices,',
     (sessionBuilder, endpoints) {
       late Session session;
 
@@ -37,7 +37,7 @@ void main() {
       });
 
       test(
-        'when signing out then user is signed out of all devices',
+        'when signing out, then user is signed out of all devices',
         () async {
           await UserAuthentication.signOutUser(session, userId: userId1);
 
@@ -50,7 +50,7 @@ void main() {
       );
 
       test(
-        'when revoking auth key then only the revoked auth key is deleted',
+        'when revoking auth key, then only the revoked auth key is deleted',
         () async {
           var authKeys = await AuthKey.db.find(
             session,
@@ -72,7 +72,7 @@ void main() {
       );
 
       test(
-        'when signing out with invalid userId then no keys are deleted',
+        'when signing out with invalid userId, then no keys are deleted',
         () async {
           await UserAuthentication.signOutUser(session, userId: invalidUserId);
 
@@ -85,7 +85,7 @@ void main() {
       );
 
       test(
-        'when revoking with invalid authKeyId then no keys are deleted',
+        'when revoking with invalid authKeyId, then no keys are deleted',
         () async {
           await UserAuthentication.revokeAuthKey(
             session,
@@ -103,7 +103,7 @@ void main() {
   );
 
   withServerpod(
-    'Given two users signed in to multiple devices',
+    'Given two users signed in to multiple devices,',
     (sessionBuilder, endpoints) {
       late Session session;
 
@@ -137,7 +137,8 @@ void main() {
       });
 
       test(
-        'when signing out user1 then user1 is signed out but user2 remains signed in',
+        'when signing out user1, '
+        'then user1 is signed out but user2 remains signed in',
         () async {
           await UserAuthentication.signOutUser(session, userId: userId1);
 
@@ -155,7 +156,8 @@ void main() {
       );
 
       test(
-        'when revoking auth key for user1 then user1 loses one authentication key but user2 remains unaffected',
+        'when revoking auth key for user1, '
+        'then user1 loses one authentication key but user2 remains unaffected',
         () async {
           var authKeysUser1 = await AuthKey.db.find(
             session,

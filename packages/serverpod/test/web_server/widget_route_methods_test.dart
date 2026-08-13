@@ -34,7 +34,7 @@ class NotFoundRoute extends WidgetRoute {
 }
 
 void main() {
-  group('Given a widget route that accepts GET and POST methods', () {
+  group('Given a widget route that accepts GET and POST methods,', () {
     late Serverpod pod;
     late int port;
 
@@ -71,7 +71,7 @@ void main() {
     });
 
     test(
-      'when GET request is made then route responds successfully.',
+      'when GET request is made, then route responds successfully.',
       () async {
         var response = await http.get(
           Uri.parse('http://localhost:$port/test-route'),
@@ -83,7 +83,7 @@ void main() {
     );
 
     test(
-      'when POST request is made then route responds successfully.',
+      'when POST request is made, then route responds successfully.',
       () async {
         var response = await http.post(
           Uri.parse('http://localhost:$port/test-route'),

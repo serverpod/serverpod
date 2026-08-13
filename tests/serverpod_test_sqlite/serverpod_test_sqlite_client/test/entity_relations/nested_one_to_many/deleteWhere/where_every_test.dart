@@ -7,10 +7,11 @@ void main() {
   initTestClientSession();
 
   group(
-    'Given models with one to many relation nested in a one to one relation',
+    'Given models with one to many relation nested in a one to one relation,',
     () {
       test(
-        'when deleting models filtered on filtered every of nested many relation then result is as expected.',
+        'when deleting models filtered on filtered every of nested many relation, '
+        'then result is as expected.',
         () async {
           var players = await Player.db.insert(session, [
             Player(name: 'Alex'),

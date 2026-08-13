@@ -14,7 +14,7 @@ const _protocolBackupMarker = 'UNIQUE_PROTOCOL_BACKUP_MARKER';
 
 void main() {
   group(
-    'Given an existing protocol.dart when model-only generation runs',
+    'Given an existing protocol.dart, when model-only generation runs,',
     () {
       late Directory projectDir;
       late GeneratorConfig config;

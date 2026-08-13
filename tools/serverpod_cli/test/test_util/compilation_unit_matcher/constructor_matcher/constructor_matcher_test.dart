@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 import '../../compilation_unit_matcher.dart';
 
 void main() {
-  group('Given compilation unit with class', () {
+  group('Given compilation unit with class,', () {
     late final compilationUnit = parseCode(
       '''
       class User {}
@@ -11,7 +11,7 @@ void main() {
     );
 
     test(
-      'when negate matching class and unnamed constructor then test passes',
+      'when negate matching class and unnamed constructor, then test passes',
       () {
         expect(
           compilationUnit,
@@ -21,7 +21,7 @@ void main() {
     );
 
     test(
-      'when negate matching class and named constructor then test passes',
+      'when negate matching class and named constructor, then test passes',
       () {
         expect(
           compilationUnit,
@@ -31,7 +31,7 @@ void main() {
     );
   });
 
-  group('Given compilation unit with class and unnamed constructor', () {
+  group('Given compilation unit with class and unnamed constructor,', () {
     late final compilationUnit = parseCode(
       '''
       class User {
@@ -40,7 +40,7 @@ void main() {
     ''',
     );
 
-    test('when matching class and unnamed constructor then test passes', () {
+    test('when matching class and unnamed constructor, then test passes', () {
       expect(
         compilationUnit,
         containsClass('User').withUnnamedConstructor(),
@@ -48,7 +48,8 @@ void main() {
     });
 
     test(
-      'when matching class and unnamed non-factory constructor then test passes',
+      'when matching class and unnamed non-factory constructor, '
+      'then test passes',
       () {
         expect(
           compilationUnit,
@@ -58,7 +59,8 @@ void main() {
     );
 
     test(
-      'when negate matching with non-existent class and constructor then test passes',
+      'when negate matching with non-existent class and constructor, '
+      'then test passes',
       () {
         expect(
           compilationUnit,
@@ -68,7 +70,7 @@ void main() {
     );
 
     test(
-      'when negate matching class and named constructor then test passes',
+      'when negate matching class and named constructor, then test passes',
       () {
         expect(
           compilationUnit,
@@ -78,7 +80,8 @@ void main() {
     );
 
     test(
-      'when negate matching class and unnamed factory constructor then test passes',
+      'when negate matching class and unnamed factory constructor, '
+      'then test passes',
       () {
         expect(
           compilationUnit,
@@ -88,7 +91,7 @@ void main() {
     );
   });
 
-  group('Given compilation unit with class and private named constructor', () {
+  group('Given compilation unit with class and private named constructor,', () {
     late final compilationUnit = parseCode(
       '''
       class User {
@@ -98,7 +101,7 @@ void main() {
     );
 
     test(
-      'when matching class and private named constructor then test passes',
+      'when matching class and private named constructor, then test passes',
       () {
         expect(
           compilationUnit,
@@ -108,7 +111,7 @@ void main() {
     );
 
     test(
-      'when negate matching class and unnamed constructor then test passes',
+      'when negate matching class and unnamed constructor, then test passes',
       () {
         expect(
           compilationUnit,
@@ -118,7 +121,7 @@ void main() {
     );
   });
 
-  group('Given compilation unit with class and unnamed factory constructor', () {
+  group('Given compilation unit with class and unnamed factory constructor,', () {
     late final compilationUnit = parseCode(
       '''
       class User {
@@ -128,7 +131,7 @@ void main() {
     );
 
     test(
-      'when matching class and unnamed factory constructor then test passes',
+      'when matching class and unnamed factory constructor, then test passes',
       () {
         expect(
           compilationUnit,
@@ -138,7 +141,8 @@ void main() {
     );
 
     test(
-      'when negate matching class and unnamed non-factory constructor then test passes',
+      'when negate matching class and unnamed non-factory constructor, '
+      'then test passes',
       () {
         expect(
           compilationUnit,
@@ -148,7 +152,8 @@ void main() {
     );
 
     test(
-      'when negate matching class and named factory constructor then test passes',
+      'when negate matching class and named factory constructor, '
+      'then test passes',
       () {
         expect(
           compilationUnit,
@@ -160,7 +165,7 @@ void main() {
     );
   });
 
-  group('Given compilation unit with class and named factory constructor', () {
+  group('Given compilation unit with class and named factory constructor,', () {
     late final compilationUnit = parseCode(
       '''
       class User {
@@ -169,7 +174,7 @@ void main() {
     ''',
     );
 
-    test('when matching class and named constructor then test passes', () {
+    test('when matching class and named constructor, then test passes', () {
       expect(
         compilationUnit,
         containsClass('User').withNamedConstructor(
@@ -179,7 +184,7 @@ void main() {
     });
 
     test(
-      'when matching class and named factory constructor then test passes',
+      'when matching class and named factory constructor, then test passes',
       () {
         expect(
           compilationUnit,
@@ -192,7 +197,8 @@ void main() {
     );
 
     test(
-      'when negate matching class and unnamed factory constructor then test passes',
+      'when negate matching class and unnamed factory constructor, '
+      'then test passes',
       () {
         expect(
           compilationUnit,
@@ -206,7 +212,8 @@ void main() {
     );
 
     test(
-      'when negate matching class and named non-factory constructor then test passes',
+      'when negate matching class and named non-factory constructor, '
+      'then test passes',
       () {
         expect(
           compilationUnit,

@@ -8,7 +8,7 @@ void main() {
     rollbackDatabase: RollbackDatabase.disabled,
     'Given a database already at the latest migration version',
     (sessionBuilder, _) async {
-      final endpoint = InsightsEndpoint();
+      late final endpoint = InsightsEndpoint();
 
       test(
         'when applyMigrations is called requesting regular migrations, '

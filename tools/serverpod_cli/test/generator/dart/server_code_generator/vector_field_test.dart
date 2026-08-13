@@ -22,8 +22,8 @@ void main() {
   );
   var tableName = 'example_with_vector_table';
 
-  group('Given a class with a vector field when generating code', () {
-    var models = [
+  group('Given a class with a vector field, when generating code,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -84,8 +84,8 @@ void main() {
     });
   });
 
-  group('Given a class with a half vector field when generating code', () {
-    var models = [
+  group('Given a class with a half vector field, when generating code,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -151,8 +151,8 @@ void main() {
     });
   });
 
-  group('Given a class with a sparse vector field when generating code', () {
-    var models = [
+  group('Given a class with a sparse vector field, when generating code,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -218,8 +218,8 @@ void main() {
     });
   });
 
-  group('Given a class with a bit vector field when generating code', () {
-    var models = [
+  group('Given a class with a bit vector field, when generating code,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)

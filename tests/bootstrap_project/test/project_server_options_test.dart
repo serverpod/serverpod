@@ -36,7 +36,7 @@ void main() async {
       });
 
       group(
-        'when creating a new server project with database enabled',
+        'when creating a new server project with database enabled,',
         () {
           late ({String projectName, String commandRoot}) project;
 
@@ -65,7 +65,7 @@ void main() async {
       );
 
       group(
-        'when creating a new server project with database disabled',
+        'when creating a new server project with database disabled,',
         () {
           late ({String projectName, String commandRoot}) project;
 
@@ -94,7 +94,7 @@ void main() async {
       );
 
       group(
-        'when creating a new server project with database disabled and authentication enabled',
+        'when creating a new server project with database disabled and authentication enabled,',
         () {
           late ({String projectName, String commandRoot}) project;
           late ProcessResult createResult;
@@ -146,7 +146,7 @@ void main() async {
       );
 
       group(
-        'when creating a new server project with Redis enabled',
+        'when creating a new server project with Redis enabled,',
         () {
           late ({String projectName, String commandRoot}) project;
 
@@ -175,7 +175,7 @@ void main() async {
       );
 
       group(
-        'when creating a new server project with Redis disabled',
+        'when creating a new server project with Redis disabled,',
         () {
           late ({String projectName, String commandRoot}) project;
 
@@ -204,7 +204,7 @@ void main() async {
       );
 
       group(
-        'when creating a new server project with database and auth enabled',
+        'when creating a new server project with database and auth enabled,',
         () {
           late ({String projectName, String commandRoot}) project;
 
@@ -229,7 +229,7 @@ void main() async {
       );
 
       group(
-        'when creating a new server project with auth disabled',
+        'when creating a new server project with auth disabled,',
         () {
           late ({String projectName, String commandRoot}) project;
 
@@ -254,7 +254,7 @@ void main() async {
       );
 
       group(
-        'when creating a new server project with website enabled',
+        'when creating a new server project with website enabled,',
         () {
           late ({String projectName, String commandRoot}) project;
 
@@ -283,7 +283,7 @@ void main() async {
       );
 
       group(
-        'when creating a new server project with website disabled',
+        'when creating a new server project with website disabled,',
         () {
           late ({String projectName, String commandRoot}) project;
 
@@ -312,7 +312,7 @@ void main() async {
       );
 
       group(
-        'when creating a new server project with webapp enabled',
+        'when creating a new server project with webapp enabled,',
         () {
           late ({String projectName, String commandRoot}) project;
 
@@ -341,7 +341,7 @@ void main() async {
       );
 
       group(
-        'when creating a new server project with webapp disabled',
+        'when creating a new server project with webapp disabled,',
         () {
           late ({String projectName, String commandRoot}) project;
 
@@ -370,7 +370,7 @@ void main() async {
       );
 
       group(
-        'when creating a new server project without specifying IDEs',
+        'when creating a new server project without specifying IDEs,',
         () {
           late ({String projectName, String commandRoot}) project;
           late String projectRoot;

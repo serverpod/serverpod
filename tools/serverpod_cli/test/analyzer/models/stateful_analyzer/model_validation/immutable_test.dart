@@ -11,7 +11,8 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   test(
-    'Given a class defined to immutable, then the immutable property is set to true.',
+    'Given a class defined to immutable, '
+    'then the immutable property is set to true.',
     () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -37,7 +38,8 @@ void main() {
   );
 
   test(
-    'Given a class explicitly setting immutable to false, then the immutable property is set to false.',
+    'Given a class explicitly setting immutable to false, '
+    'then the immutable property is set to false.',
     () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -63,7 +65,8 @@ void main() {
   );
 
   test(
-    'Given a class without the immutable property, then the default "false" value is used.',
+    'Given a class without the immutable property, '
+    'then the default "false" value is used.',
     () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -87,9 +90,9 @@ void main() {
     },
   );
 
-  group('Given an immutable class with non-constant default values', () {
+  group('Given an immutable class with non-constant default values,', () {
     test(
-      'when a DateTime field has default=now then an error is generated.',
+      'when a DateTime field has default=now, then an error is generated.',
       () {
         var modelSources = [
           ModelSourceBuilder().withYaml(
@@ -124,7 +127,7 @@ void main() {
     );
 
     test(
-      'when a UuidValue field has default=random then an error is generated.',
+      'when a UuidValue field has default=random, then an error is generated.',
       () {
         var modelSources = [
           ModelSourceBuilder().withYaml(
@@ -159,7 +162,8 @@ void main() {
     );
 
     test(
-      'when a UuidValue field has default=random_v7 then an error is generated.',
+      'when a UuidValue field has default=random_v7, '
+      'then an error is generated.',
       () {
         var modelSources = [
           ModelSourceBuilder().withYaml(
@@ -194,7 +198,7 @@ void main() {
     );
 
     test(
-      'when a DateTime field has defaultModel=now then an error is generated.',
+      'when a DateTime field has defaultModel=now, then an error is generated.',
       () {
         var modelSources = [
           ModelSourceBuilder().withYaml(
@@ -231,7 +235,7 @@ void main() {
     );
 
     test(
-      'when the id field has defaultModel=random then an error is generated.',
+      'when the id field has defaultModel=random, then an error is generated.',
       () {
         var modelSources = [
           ModelSourceBuilder().withYaml(
@@ -268,7 +272,8 @@ void main() {
     );
 
     test(
-      'when the id field has defaultModel=random_v7 then an error is generated.',
+      'when the id field has defaultModel=random_v7, '
+      'then an error is generated.',
       () {
         var modelSources = [
           ModelSourceBuilder().withYaml(
@@ -305,7 +310,8 @@ void main() {
     );
 
     test(
-      'when a DateTime field has a constant default value then no error is generated.',
+      'when a DateTime field has a constant default value, '
+      'then no error is generated.',
       () {
         var modelSources = [
           ModelSourceBuilder().withYaml(
@@ -331,7 +337,8 @@ void main() {
     );
 
     test(
-      'when an int field has a constant default value then no error is generated.',
+      'when an int field has a constant default value, '
+      'then no error is generated.',
       () {
         var modelSources = [
           ModelSourceBuilder().withYaml(
@@ -357,7 +364,8 @@ void main() {
     );
 
     test(
-      'when a UuidValue field has a constant default value then no error is generated.',
+      'when a UuidValue field has a constant default value, '
+      'then no error is generated.',
       () {
         var modelSources = [
           ModelSourceBuilder().withYaml(
@@ -383,9 +391,10 @@ void main() {
     );
   });
 
-  group('Given an immutable class with extends and non-constant default', () {
+  group('Given an immutable class with extends and non-constant default,', () {
     test(
-      'when a child immutable class has a field with default=now then an error is generated.',
+      'when a child immutable class has a field with default=now, '
+      'then an error is generated.',
       () {
         var modelSources = [
           ModelSourceBuilder().withYaml(
@@ -429,7 +438,8 @@ void main() {
     );
 
     test(
-      'when a child class extending an immutable parent has default=now then an error is generated.',
+      'when a child class extending an immutable parent has default=now, '
+      'then an error is generated.',
       () {
         var modelSources = [
           ModelSourceBuilder().withYaml(
@@ -472,7 +482,8 @@ void main() {
     );
 
     test(
-      'when the base immutable class has a field with default=now then an error is generated.',
+      'when the base immutable class has a field with default=now, '
+      'then an error is generated.',
       () {
         var modelSources = [
           ModelSourceBuilder().withYaml(
@@ -507,9 +518,9 @@ void main() {
     );
   });
 
-  group('Given a non-immutable class with non-constant default values', () {
+  group('Given a non-immutable class with non-constant default values,', () {
     test(
-      'when a DateTime field has default=now then no error is generated.',
+      'when a DateTime field has default=now, then no error is generated.',
       () {
         var modelSources = [
           ModelSourceBuilder().withYaml(
@@ -535,7 +546,7 @@ void main() {
     );
 
     test(
-      'when a UuidValue field has default=random then no error is generated.',
+      'when a UuidValue field has default=random, then no error is generated.',
       () {
         var modelSources = [
           ModelSourceBuilder().withYaml(
@@ -562,10 +573,11 @@ void main() {
   });
 
   group(
-    'Given an immutable class with table and non-constant default for defaultPersist',
+    'Given an immutable class with table and non-constant default for defaultPersist,',
     () {
       test(
-        'when a DateTime field has defaultPersist=now then no error is generated.',
+        'when a DateTime field has defaultPersist=now, '
+        'then no error is generated.',
         () {
           var modelSources = [
             ModelSourceBuilder().withYaml(
@@ -592,7 +604,8 @@ void main() {
       );
 
       test(
-        'when a UuidValue field has defaultPersist=random then no error is generated.',
+        'when a UuidValue field has defaultPersist=random, '
+        'then no error is generated.',
         () {
           var modelSources = [
             ModelSourceBuilder().withYaml(

@@ -3,10 +3,11 @@ import 'package:test/test.dart';
 
 void main() async {
   group(
-    "Given a class with 'default' fields",
+    "Given a class with 'default' fields,",
     () {
       test(
-        'when an object of the class is created, then the "intDefault" field should match the default value',
+        'when an object of the class is created, '
+        'then the "intDefault" field should match the default value',
         () {
           var object = IntDefault();
           expect(object.intDefault, equals(10));
@@ -14,7 +15,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created, then the "intDefaultNull" field should match the default value',
+        'when an object of the class is created, '
+        'then the "intDefaultNull" field should match the default value',
         () {
           var object = IntDefault();
           expect(object.intDefaultNull, equals(20));
@@ -22,7 +24,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a specific value for "intDefault", then the field value should match the provided value',
+        'when an object of the class is created with a specific value for "intDefault", '
+        'then the field value should match the provided value',
         () {
           var object = IntDefault(intDefault: 15);
           expect(object.intDefault, equals(15));
@@ -30,7 +33,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a specific value for "intDefaultNull", then the field value should match the provided value',
+        'when an object of the class is created with a specific value for "intDefaultNull", '
+        'then the field value should match the provided value',
         () {
           var object = IntDefault(intDefaultNull: 25);
           expect(object.intDefaultNull, equals(25));

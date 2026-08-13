@@ -27,9 +27,10 @@ void main() {
   // Field name is 61 characters long causing field alias to be over 63 characters
   // which is the maximum length for identifiers in Postgres.
   var table = TableWithMaxFieldName('table');
-  group('Given SelectQueryBuilder', () {
+  group('Given SelectQueryBuilder,', () {
     test(
-      'when selecting from table with long field name then field alias is truncated',
+      'when selecting from table with long field name, '
+      'then field alias is truncated',
       () {
         var query = SelectQueryBuilder(table: table).build();
         expect(

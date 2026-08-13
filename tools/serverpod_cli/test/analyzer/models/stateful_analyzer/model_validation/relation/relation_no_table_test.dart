@@ -9,10 +9,11 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   group(
-    'Given a class without a table definition when defining a relation',
+    'Given a class without a table definition, when defining a relation',
     () {
       test(
-        'Given a class with an object relation but no table definition when analyzing model then an error is collected that the table property must be defined.',
+        'Given a class with an object relation but no table definition when analyzing model, '
+        'then an error is collected that the table property must be defined.',
         () {
           var models = [
             ModelSourceBuilder().withYaml(
@@ -54,7 +55,8 @@ void main() {
       );
 
       test(
-        'Given a class with a named object relation but no table definition when analyzing model then an error is collected that the table property must be defined.',
+        'Given a class with a named object relation but no table definition when analyzing model, '
+        'then an error is collected that the table property must be defined.',
         () {
           var models = [
             ModelSourceBuilder().withYaml(
@@ -97,7 +99,8 @@ void main() {
       );
 
       test(
-        'Given a class with a manual field relation but no table definition when analyzing model then an error is collected that the table property must be defined.',
+        'Given a class with a manual field relation but no table definition when analyzing model, '
+        'then an error is collected that the table property must be defined.',
         () {
           var models = [
             ModelSourceBuilder().withYaml(
@@ -140,7 +143,8 @@ void main() {
       );
 
       test(
-        'Given a class with a list relation but no table definition when analyzing model then an error is collected that the table property must be defined.',
+        'Given a class with a list relation but no table definition when analyzing model, '
+        'then an error is collected that the table property must be defined.',
         () {
           var models = [
             ModelSourceBuilder().withYaml(
@@ -182,7 +186,8 @@ void main() {
       );
 
       test(
-        'Given a class with an id field but no table definition when setting a relation then an error is collected about missing table property.',
+        'Given a class with an id field but no table definition when setting a relation, '
+        'then an error is collected about missing table property.',
         () {
           var models = [
             ModelSourceBuilder().withYaml(

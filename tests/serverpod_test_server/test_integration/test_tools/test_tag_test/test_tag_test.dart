@@ -6,9 +6,9 @@ import 'package:test/test.dart';
 enum TestTag { include, exclude }
 
 void main() async {
-  test('Given custom tag '
-      'when including test tag '
-      'then test is run', () async {
+  test('Given custom tag, '
+       'when including test tag, '
+       'then test is run', () async {
     final result = await runTest(
       TestTag.include,
       'customTag',
@@ -19,9 +19,9 @@ void main() async {
     expect(result.stdout, contains('dummy test passes'));
   });
 
-  test('Given custom tag '
-      'when excluding test tag '
-      'then test is not run', () async {
+  test('Given custom tag, '
+       'when excluding test tag, '
+       'then test is not run', () async {
     final result = await runTest(
       TestTag.exclude,
       'customTag',
@@ -37,9 +37,9 @@ void main() async {
     );
   });
 
-  test('Given default tag '
-      'when including test tag '
-      'then test is run', () async {
+  test('Given default tag, '
+       'when including test tag, '
+       'then test is run', () async {
     final result = await runTest(
       TestTag.include,
       'integration',
@@ -50,9 +50,9 @@ void main() async {
     expect(result.stdout, contains('dummy test passes'));
   });
 
-  test('Given default tag '
-      'when excluding test tag '
-      'then test is not run', () async {
+  test('Given default tag, '
+       'when excluding test tag, '
+       'then test is not run', () async {
     final result = await runTest(
       TestTag.exclude,
       'integration',

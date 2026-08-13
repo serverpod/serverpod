@@ -29,9 +29,10 @@ void main() {
     ];
   });
 
-  group('Given a class with fields with a "default" enum keyword', () {
+  group('Given a class with fields with a "default" enum keyword,', () {
     test(
-      'when the field is of enum type and the default is set to "byName1", then the field should have a "default model" and "default persist" value',
+      'when the field is of enum type and the default is set to "byName1", '
+      'then the field should have a "default model" and "default persist" value',
       () {
         var localModels = List<ModelSource>.from(models);
         localModels.add(
@@ -61,7 +62,8 @@ void main() {
     );
 
     test(
-      'when the field is of nullable enum type and the default is set to "byName2", then the field should have a "default model" and "default persist" value',
+      'when the field is of nullable enum type and the default is set to "byName2", '
+      'then the field should have a "default model" and "default persist" value',
       () {
         var localModels = List<ModelSource>.from(models);
         localModels.add(
@@ -91,7 +93,8 @@ void main() {
     );
 
     test(
-      'when the field is of enum type and the default is empty, then an error is generated',
+      'when the field is of enum type and the default is empty, '
+      'then an error is generated',
       () {
         var localModels = List<ModelSource>.from(models);
         localModels.add(
@@ -123,7 +126,8 @@ void main() {
     );
 
     test(
-      'when the field is of nullable enum type with an invalid default value "INVALID", then an error is generated',
+      'when the field is of nullable enum type with an invalid default value "INVALID", '
+      'then an error is generated',
       () {
         var localModels = List<ModelSource>.from(models);
         localModels.add(
@@ -155,7 +159,8 @@ void main() {
     );
 
     test(
-      'when the field is of enum type with an invalid default value, then an error is generated',
+      'when the field is of enum type with an invalid default value, '
+      'then an error is generated',
       () {
         var localModels = List<ModelSource>.from(models);
         localModels.add(

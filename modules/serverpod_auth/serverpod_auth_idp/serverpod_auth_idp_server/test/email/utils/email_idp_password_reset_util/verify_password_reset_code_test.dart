@@ -13,7 +13,7 @@ import '../../test_utils/email_idp_test_fixture.dart';
 /// logged outside of the passed in transaction.
 void main() {
   withServerpod(
-    'Given password reset request exists',
+    'Given password reset request exists,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -60,7 +60,7 @@ void main() {
       });
 
       group(
-        'when verify password reset code is called with generated verification code',
+        'when verify password reset code is called with generated verification code,',
         () {
           late Future<String> verifyPasswordResetCodeResult;
 
@@ -87,7 +87,8 @@ void main() {
       );
 
       test(
-        'when called with invalid verification code then throws invalid verification code exception',
+        'when called with invalid verification code, '
+        'then throws invalid verification code exception',
         () async {
           final result = session.db.transaction(
             (final transaction) =>
@@ -107,7 +108,8 @@ void main() {
       );
 
       test(
-        'when verify password reset code is called with valid credentials after expiration then throws request expired exception',
+        'when verify password reset code is called with valid credentials after expiration, '
+        'then throws request expired exception',
         () async {
           await withClock(
             Clock.fixed(
@@ -137,7 +139,8 @@ void main() {
       );
 
       test(
-        'when verify password reset code is called with invalid credentials after expiration then throws invalid verification code exception',
+        'when verify password reset code is called with invalid credentials after expiration, '
+        'then throws invalid verification code exception',
         () async {
           await withClock(
             Clock.fixed(
@@ -169,7 +172,7 @@ void main() {
       );
 
       group(
-        'when verifyPasswordResetCode is called multiple times in quick succession',
+        'when verifyPasswordResetCode is called multiple times in quick succession,',
         () {
           late Future<List<String>> attempts;
           const numberOfAttempts = 3;
@@ -236,7 +239,7 @@ void main() {
   );
 
   withServerpod(
-    'Given password reset request that has been verified',
+    'Given password reset request that has been verified,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -298,7 +301,8 @@ void main() {
       });
 
       test(
-        'when verify password reset code is called again with valid verification code then it throws verification code already used exception',
+        'when verify password reset code is called again with valid verification code, '
+        'then it throws verification code already used exception',
         () async {
           final result = session.db.transaction(
             (final transaction) =>
@@ -320,7 +324,8 @@ void main() {
       );
 
       test(
-        'when verify password reset code is called with expired request that has been verified then it throws verification code already used exception',
+        'when verify password reset code is called with expired request that has been verified, '
+        'then it throws verification code already used exception',
         () async {
           await withClock(
             Clock.fixed(
@@ -352,7 +357,8 @@ void main() {
       );
 
       group(
-        'when exceeding the allowed number of attempts then it throws too many attempts exception',
+        'when exceeding the allowed number of attempts, '
+        'then it throws too many attempts exception,',
         () {
           late Future<String> verifyPasswordResetCodeFuture;
 
@@ -422,7 +428,7 @@ void main() {
   );
 
   withServerpod(
-    'Given password reset request that has been validated with invalid credentials and config allows multiple attempts',
+    'Given password reset request that has been validated with invalid credentials and config allows multiple attempts,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -483,7 +489,8 @@ void main() {
       });
 
       test(
-        'when verify password reset code is called with valid verification code then it succeeds and returns complete password reset token',
+        'when verify password reset code is called with valid verification code, '
+        'then it succeeds and returns complete password reset token',
         () async {
           final result = await session.db.transaction(
             (final transaction) =>
@@ -502,7 +509,7 @@ void main() {
   );
 
   withServerpod(
-    'Given password reset request was validated with expired credentials',
+    'Given password reset request was validated with expired credentials,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -574,7 +581,8 @@ void main() {
       });
 
       test(
-        'when verify password reset code is called with valid credentials then it throws request not found exception',
+        'when verify password reset code is called with valid credentials, '
+        'then it throws request not found exception',
         () async {
           final result = session.db.transaction(
             (final transaction) =>
@@ -596,7 +604,7 @@ void main() {
   );
 
   withServerpod(
-    'Given password reset request that has failed verification matching the rate limit',
+    'Given password reset request that has failed verification matching the rate limit,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -658,7 +666,8 @@ void main() {
       });
 
       test(
-        'when verify password reset code is called with valid credentials then it throws too many attempts exception',
+        'when verify password reset code is called with valid credentials, '
+        'then it throws too many attempts exception',
         () async {
           final result = session.db.transaction(
             (final transaction) =>
@@ -682,7 +691,7 @@ void main() {
   );
 
   withServerpod(
-    'Given existing password reset that has failed to verify past the maximum number of allowed verification attempts',
+    'Given existing password reset that has failed to verify past the maximum number of allowed verification attempts,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -758,7 +767,8 @@ void main() {
       });
 
       test(
-        'when verify password reset code is called with valid verification code then too many attempts exception is thrown',
+        'when verify password reset code is called with valid verification code, '
+        'then too many attempts exception is thrown',
         () async {
           final result = session.db.transaction(
             (final transaction) =>
@@ -780,7 +790,8 @@ void main() {
       );
 
       test(
-        'when complete password reset is called then it throws request not found exception',
+        'when complete password reset is called, '
+        'then it throws request not found exception',
         () async {
           // This test depends in implementation details but ensures we remove the
           // request and behave as expected when attempting to complete a removed
@@ -811,7 +822,7 @@ void main() {
   );
 
   withServerpod(
-    'Given no password reset request exists',
+    'Given no password reset request exists,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -857,7 +868,8 @@ void main() {
       });
 
       test(
-        'when verify password reset code is called and it exceeds the maximum number of allowed verification attempts then it throws too many attempts exception',
+        'when verify password reset code is called and it exceeds the maximum number of allowed verification attempts, '
+        'then it throws too many attempts exception',
         () async {
           final result = session.db.transaction(
             (final transaction) =>

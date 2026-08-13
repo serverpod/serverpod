@@ -3,7 +3,9 @@ import 'package:test/test.dart';
 
 void main() {
   test(
-    'Given an identifier that is shorter than max length when truncating then the identifier is returned.',
+    'Given an identifier that is shorter than max length, '
+    'when truncating, '
+    'then the identifier is returned.',
     () {
       var identifier = '123456789';
 
@@ -14,7 +16,9 @@ void main() {
   );
 
   test(
-    'Given an identifier that is longer than max length when truncating then identifier is truncated and hashed.',
+    'Given an identifier that is longer than max length, '
+    'when truncating, '
+    'then identifier is truncated and hashed.',
     () {
       var identifier = '123456789';
 
@@ -25,7 +29,9 @@ void main() {
   );
 
   test(
-    'Given a hash length longer than max length when truncating then an argument error is thrown.',
+    'Given a hash length longer than max length, '
+    'when truncating, '
+    'then an argument error is thrown.',
     () {
       var identifier = '123456789';
       var maxLength = 8;
@@ -39,7 +45,9 @@ void main() {
   );
 
   test(
-    'Given a hash length equal to max length when truncating then full string is replaced with hash',
+    'Given a hash length equal to max length, '
+    'when truncating, '
+    'then full string is replaced with hash',
     () {
       var identifier = '0123456789';
       var maxLength = 8;
@@ -56,7 +64,9 @@ void main() {
   );
 
   test(
-    'Given a hash length longer than generated hash when truncating then silently use actual generated hash length.',
+    'Given a hash length longer than generated hash, '
+    'when truncating, '
+    'then silently use actual generated hash length.',
     () {
       var identifier =
           '0123456789012345678901234567890123456789012345678901234567890123456789';

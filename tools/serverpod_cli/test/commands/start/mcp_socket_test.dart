@@ -11,7 +11,7 @@ import 'package:test/test.dart';
 import 'package:vm_service/vm_service.dart';
 
 void main() {
-  group('Given an McpSocketServer', skip: !hasUnixSocketSupport(), () {
+  group('Given an McpSocketServer,', skip: !hasUnixSocketSupport(), () {
     late Directory tempServerDir;
     late McpSocketServer server;
 
@@ -218,7 +218,7 @@ void main() {
   );
 
   group(
-    'Given a stale socket file left behind by a previous run',
+    'Given a stale socket file left behind by a previous run,',
     skip: !hasUnixSocketSupport(),
     () {
       test(
@@ -250,7 +250,7 @@ void main() {
   );
 
   group(
-    'Given Windows with Dart < 3.11',
+    'Given Windows with Dart < 3.11,',
     skip: hasUnixSocketSupport(),
     () {
       test(

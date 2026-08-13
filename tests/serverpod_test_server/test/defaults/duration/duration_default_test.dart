@@ -3,10 +3,11 @@ import 'package:test/test.dart';
 
 void main() async {
   group(
-    "Given a class with 'default' Duration fields",
+    "Given a class with 'default' Duration fields,",
     () {
       test(
-        'when an object of the class is created, then the "durationDefault" field should match the default value',
+        'when an object of the class is created, '
+        'then the "durationDefault" field should match the default value',
         () {
           var object = DurationDefault();
           var expectedDuration = Duration(
@@ -21,7 +22,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created, then the "durationDefaultNull" field should match the default value',
+        'when an object of the class is created, '
+        'then the "durationDefaultNull" field should match the default value',
         () {
           var object = DurationDefault();
           var expectedDuration = Duration(
@@ -36,7 +38,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a specific value for "durationDefault", then the field value should match the provided value',
+        'when an object of the class is created with a specific value for "durationDefault", '
+        'then the field value should match the provided value',
         () {
           var duration = Duration(
             days: 3,
@@ -51,7 +54,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a specific value for "durationDefaultNull", then the field value should match the provided value',
+        'when an object of the class is created with a specific value for "durationDefaultNull", '
+        'then the field value should match the provided value',
         () {
           var duration = Duration(
             days: 3,

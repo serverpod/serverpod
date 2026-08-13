@@ -10,7 +10,8 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   test(
-    'Given an enum without a values property, then collect an error that the values property is required.',
+    'Given an enum without a values property, '
+    'then collect an error that the values property is required.',
     () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -39,7 +40,8 @@ void main() {
   );
 
   test(
-    'Given an enum with an empty values property, then collect an error that values must be defined.',
+    'Given an enum with an empty values property, '
+    'then collect an error that values must be defined.',
     () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -72,7 +74,8 @@ void main() {
   );
 
   test(
-    'Given an enum with the values property defined as a map, then collect an error that values must be a list.',
+    'Given an enum with the values property defined as a map, '
+    'then collect an error that values must be a list.',
     () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -107,7 +110,8 @@ void main() {
   );
 
   test(
-    'Given an enum with the values with none string values, then collect an error that values must be a list of strings.',
+    'Given an enum with the values with none string values, '
+    'then collect an error that values must be a list of strings.',
     () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -142,7 +146,8 @@ void main() {
   );
 
   test(
-    'Given an enum with an empty enum string structure, then collect that values must be strings',
+    'Given an enum with an empty enum string structure, '
+    'then collect that values must be strings',
     () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -176,7 +181,8 @@ void main() {
   );
 
   test(
-    'Given an enum with an dash in the enum string structure, then collect an error that the string must follow the required syntax.',
+    'Given an enum with an dash in the enum string structure, '
+    'then collect an error that the string must follow the required syntax.',
     () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -207,7 +213,8 @@ void main() {
   );
 
   test(
-    'Given an enum with a dot in enum string structure, then collect an error that the string must follow the required syntax.',
+    'Given an enum with a dot in enum string structure, '
+    'then collect an error that the string must follow the required syntax.',
     () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -238,7 +245,8 @@ void main() {
   );
 
   test(
-    'Given an enum starting with numbers in the enum string structure, then collect an error that the string must follow the required syntax.',
+    'Given an enum starting with numbers in the enum string structure, '
+    'then collect an error that the string must follow the required syntax.',
     () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -269,7 +277,8 @@ void main() {
   );
 
   test(
-    'Given an enum with two duplicated entries, then collect an error that the enum values must be unique.',
+    'Given an enum with two duplicated entries, '
+    'then collect an error that the enum values must be unique.',
     () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -357,7 +366,8 @@ void main() {
   });
 
   test(
-    'Given a value with numbers at the end of the value then no errors are generated.',
+    'Given a value with numbers at the end of the value, '
+    'then no errors are generated.',
     () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -384,7 +394,8 @@ void main() {
     },
   );
 
-  test('Given a value with snake_case value then no errors are generated.', () {
+  test('Given a value with snake_case value, '
+       'then no errors are generated.', () {
     var modelSources = [
       ModelSourceBuilder().withYaml(
         '''
@@ -409,7 +420,8 @@ void main() {
     );
   });
 
-  test('Given a value with PascalCase value then no errors are generated.', () {
+  test('Given a value with PascalCase value, '
+       'then no errors are generated.', () {
     var modelSources = [
       ModelSourceBuilder().withYaml(
         '''
@@ -435,7 +447,7 @@ void main() {
   });
 
   test(
-    'Given a value starting with an _ value then no errors are generated.',
+    'Given a value starting with an _ value, then no errors are generated.',
     () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -462,7 +474,7 @@ void main() {
     },
   );
 
-  test('Given a value with UPPERCASE value then no errors are generated.', () {
+  test('Given a value with UPPERCASE value, then no errors are generated.', () {
     var modelSources = [
       ModelSourceBuilder().withYaml('''
 enum: ExampleEnum
@@ -486,7 +498,8 @@ values:
   });
 
   test(
-    'Given a valid enum with two values, then the enum definition should contain two values.',
+    'Given a valid enum with two values, '
+    'then the enum definition should contain two values.',
     () {
       var modelSources = [
         ModelSourceBuilder().withYaml(

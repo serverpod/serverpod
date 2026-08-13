@@ -95,11 +95,11 @@ Future<void> waitForGeneratedOutput(
 }
 
 void main() async {
-  group('Given a server project', () {
+  group('Given a server project,', () {
     late String sandboxDir;
-    var projectName =
+    late var projectName =
         'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
-    var serverDir = path.join(projectName, '${projectName}_server');
+    late var serverDir = path.join(projectName, '${projectName}_server');
 
     Process? serverProcess;
     KeywordSearchInStream? streamSearch;
@@ -131,7 +131,7 @@ void main() async {
       streamSearch = null;
     });
 
-    group("when running 'serverpod start --watch'", () {
+    group("when running 'serverpod start --watch',", () {
       setUp(() async {
         (serverProcess, streamSearch) = await startServerpodWithStreamSearch(
           ['start', '--watch'],
@@ -188,7 +188,8 @@ class TestEndpoint extends Endpoint {
       );
 
       test(
-        'when a model file is added, modified, and deleted then server is reloaded each time.',
+        'when a model file is added, modified, and deleted, '
+        'then server is reloaded each time.',
         () async {
           await waitForServerRunning(streamSearch!);
 
@@ -292,7 +293,7 @@ fields:
     });
 
     group(
-      "when running 'serverpod start --no-watch'",
+      "when running 'serverpod start --no-watch',",
       () {
         setUp(() async {
           (serverProcess, streamSearch) = await startServerpodWithStreamSearch(
@@ -319,7 +320,7 @@ fields:
       retry: 3,
     );
 
-    group("when running 'serverpod start'", () {
+    group("when running 'serverpod start',", () {
       setUp(() async {
         (serverProcess, streamSearch) = await startServerpodWithStreamSearch(
           ['start'],
@@ -357,7 +358,7 @@ fields:
     });
   });
 
-  group('Given a project with a configured Flutter app', () {
+  group('Given a project with a configured Flutter app,', () {
     const projectName = 'vscode_test_app';
     late String sandboxDir;
     late String serverDir;
@@ -367,7 +368,7 @@ fields:
     Process? serverProcess;
     StreamSubscription<String>? stdoutSubscription;
     StreamSubscription<String>? stderrSubscription;
-    final processOutput = StringBuffer();
+    late final processOutput = StringBuffer();
 
     setUpAll(() async {
       sandboxDir = d.sandbox;

@@ -9,7 +9,7 @@ import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given Redis is enabled and reachable, ', () {
+  group('Given Redis is enabled and reachable,', () {
     late Session session;
     late Serverpod server;
     setUp(() async {
@@ -29,7 +29,9 @@ void main() {
     });
 
     test(
-      'and a non valid message type when broadcasting revoked authentication event then exception is thrown',
+      'and a non valid message type, '
+      'when broadcasting revoked authentication event, '
+      'then exception is thrown',
       () {
         expect(
           () => session.messages.authenticationRevoked('1', EmptyModel()),
@@ -39,7 +41,9 @@ void main() {
     );
 
     test(
-      'and a valid message type when broadcasting revoked authentication event then event is broadcasted',
+      'and a valid message type, '
+      'when broadcasting revoked authentication event, '
+      'then event is broadcasted',
       () async {
         var eventCompleter = Completer<RevokedAuthenticationUser>();
         session.messages
@@ -87,7 +91,9 @@ void main() {
     });
 
     test(
-      'and a valid message type when broadcasting revoked authentication event then event is broadcasted',
+      'and a valid message type, '
+      'when broadcasting revoked authentication event, '
+      'then event is broadcasted',
       () async {
         var eventCompleter = Completer<RevokedAuthenticationUser>();
         session.messages

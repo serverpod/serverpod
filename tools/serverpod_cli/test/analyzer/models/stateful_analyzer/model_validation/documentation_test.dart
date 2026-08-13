@@ -9,7 +9,8 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   test(
-    'Given a class with a class documentation comment then an model with the class documentation set is generated.',
+    'Given a class with a class documentation comment, '
+    'then an model with the class documentation set is generated.',
     () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -31,7 +32,8 @@ void main() {
   );
 
   test(
-    'Given a class with a multiline class documentation comment then an model with the class documentation set is generated.',
+    'Given a class with a multiline class documentation comment, '
+    'then an model with the class documentation set is generated.',
     () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -57,7 +59,8 @@ void main() {
   );
 
   test(
-    'Given a class with a normal class comment, then the model that is generated has no documentation set.',
+    'Given a class with a normal class comment, '
+    'then the model that is generated has no documentation set.',
     () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -79,7 +82,8 @@ void main() {
   );
 
   test(
-    'Given a class with a field documentation comment then the model that is generated has the documentation set for that specific field.',
+    'Given a class with a field documentation comment, '
+    'then the model that is generated has the documentation set for that specific field.',
     () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -104,7 +108,8 @@ void main() {
   );
 
   test(
-    'Given a class with a multiline field documentation comment then the model that is generated has the documentation set for that specific field.',
+    'Given a class with a multiline field documentation comment, '
+    'then the model that is generated has the documentation set for that specific field.',
     () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -130,7 +135,8 @@ void main() {
   );
 
   test(
-    'Given a class with multiple fields but only one has a documentation comment then the model that is generated has the documentation set for that specific field.',
+    'Given a class with multiple fields but only one has a documentation comment, '
+    'then the model that is generated has the documentation set for that specific field.',
     () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -158,7 +164,8 @@ void main() {
   );
 
   test(
-    'Given a class with a field with a normal comment, then the model that is generated has no documentation set.',
+    'Given a class with a field with a normal comment, '
+    'then the model that is generated has no documentation set.',
     () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -180,7 +187,8 @@ void main() {
   );
 
   test(
-    'Given an enum with a multiline class documentation comment then an model with the class documentation set is generated.',
+    'Given an enum with a multiline class documentation comment, '
+    'then an model with the class documentation set is generated.',
     () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -206,7 +214,8 @@ void main() {
   );
 
   test(
-    'Given an enum with a multiline value documentation comment then the model that is generated has the documentation set for that specific field.',
+    'Given an enum with a multiline value documentation comment, '
+    'then the model that is generated has the documentation set for that specific field.',
     () {
       var modelSources = [
         ModelSourceBuilder().withYaml(

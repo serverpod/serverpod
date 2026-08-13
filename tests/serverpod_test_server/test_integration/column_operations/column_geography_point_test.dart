@@ -38,8 +38,8 @@ void main() async {
   setUpAll(() async => await _createTestDatabase(session));
   tearDownAll(() async => await _deleteAll(session));
 
-  group('Given geography point column in database', () {
-    test('when fetching all then all rows are returned.', () async {
+  group('Given geography point column in database,', () {
+    test('when fetching all, then all rows are returned.', () async {
       var result = await Types.db.find(
         session,
         where: (_) => Constant.bool(true),
@@ -49,7 +49,8 @@ void main() async {
     });
 
     test(
-      'when filtering with intersects then points inside the polygon are returned.',
+      'when filtering with intersects, '
+      'then points inside the polygon are returned.',
       () async {
         var result = await Types.db.find(
           session,
@@ -65,7 +66,8 @@ void main() async {
     );
 
     test(
-      'when filtering with distanceWithin then points within the distance are returned.',
+      'when filtering with distanceWithin, '
+      'then points within the distance are returned.',
       () async {
         // London–Paris ~344 km; Tokyo is ~9700 km from Paris.
         var result = await Types.db.find(
@@ -82,7 +84,7 @@ void main() async {
     );
 
     test(
-      'when ordering by distance then closest rows are returned first.',
+      'when ordering by distance, then closest rows are returned first.',
       () async {
         // Distance from Berlin: Paris ~878 km, London ~931 km, Tokyo ~8900 km.
         var result = await Types.db.find(
@@ -98,7 +100,8 @@ void main() async {
     );
 
     test(
-      'when filtering with within then points inside the polygon are returned.',
+      'when filtering with within, '
+      'then points inside the polygon are returned.',
       () async {
         var result = await Types.db.find(
           session,

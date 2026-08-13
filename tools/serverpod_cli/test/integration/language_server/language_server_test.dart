@@ -27,7 +27,7 @@ void main() {
   });
 
   group('Given an initialized language server for a project without model '
-      'files', () {
+        'files,', () {
     late LanguageServerTestSession session;
     late String modelsDir;
 
@@ -53,7 +53,7 @@ void main() {
     });
 
     test(
-      'when an invalid model file is created on disk without being opened '
+      'when an invalid model file is created on disk without being opened, '
       'then diagnostics are published for it.',
       () async {
         var newPath = p.join(modelsDir, 'example.spy.yaml');
@@ -71,7 +71,7 @@ void main() {
     );
 
     test(
-      'when a valid model file is created on disk without being opened '
+      'when a valid model file is created on disk without being opened, '
       'then empty diagnostics are published for it.',
       () async {
         var newPath = p.join(modelsDir, 'example.spy.yaml');
@@ -88,7 +88,7 @@ void main() {
 
   group(
     'Given an initialized language server for a project with an invalid model '
-    'file in a models subdirectory',
+    'file in a models subdirectory,',
     () {
       late LanguageServerTestSession session;
       late String modelsDir;
@@ -129,7 +129,7 @@ void main() {
       });
 
       test(
-        'when the model file is deleted on disk '
+        'when the model file is deleted on disk, '
         'then empty diagnostics are published for its URI.',
         () async {
           File(modelPath).deleteSync();
@@ -145,7 +145,7 @@ void main() {
       );
 
       test(
-        'when the model file is renamed on disk '
+        'when the model file is renamed on disk, '
         'then diagnostics move from the old to the new URI.',
         () async {
           var newPath = p.join(subDir, 'renamed.spy.yaml');
@@ -171,8 +171,7 @@ void main() {
       );
 
       test(
-        'when the model directory is renamed on disk and only directory-level '
-        'events are delivered '
+        'when the model directory is renamed on disk and only directory-level events are delivered, '
         'then diagnostics move to the new URIs.',
         () async {
           var newSubDir = p.join(modelsDir, 'renamed_subdir');
@@ -201,7 +200,7 @@ void main() {
 
   group(
     'Given an initialized language server with an open document for an '
-    'invalid model file',
+    'invalid model file,',
     () {
       late LanguageServerTestSession session;
       late String modelPath;
@@ -241,7 +240,7 @@ void main() {
       });
 
       test(
-        'when a watched change event arrives for the open document '
+        'when a watched change event arrives for the open document, '
         'then the editor buffer content stays authoritative.',
         () async {
           File(modelPath).writeAsStringSync(_validModelYaml);
@@ -261,9 +260,8 @@ void main() {
       );
 
       test(
-        'when the model file is deleted on disk and the document is then '
-        'closed '
-        'then empty diagnostics are published for its URI.',
+        'when the model file is deleted on disk and the document is, '
+        'then closed then empty diagnostics are published for its URI.',
         () async {
           File(modelPath).deleteSync();
 

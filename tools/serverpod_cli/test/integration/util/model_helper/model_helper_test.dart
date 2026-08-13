@@ -9,7 +9,7 @@ import '../../../test_util/builders/generator_config_builder.dart';
 
 void main() {
   group('Test path extraction - extractPathFromConfig.', () {
-    var serverRootDir = Directory(
+    late var serverRootDir = Directory(
       join(
         'test',
         'integration',
@@ -22,7 +22,8 @@ void main() {
     );
 
     test(
-      'Given a model path directly inside the protocol folder, then the parts list is empty.',
+      'Given a model path directly inside the protocol folder, '
+      'then the parts list is empty.',
       () {
         var modelFile = File(
           join(
@@ -54,7 +55,8 @@ void main() {
     );
 
     test(
-      'Given a model with a nested path inside the protocol folder, then the parts list contains the nested path.',
+      'Given a model with a nested path inside the protocol folder, '
+      'then the parts list contains the nested path.',
       () {
         var modelFile = File(
           join(
@@ -88,7 +90,8 @@ void main() {
     );
 
     test(
-      'Given a model with a nested path inside the model folder, then the parts list contains the nested path.',
+      'Given a model with a nested path inside the model folder, '
+      'then the parts list contains the nested path.',
       () {
         var modelFile = File(
           join(
@@ -122,7 +125,8 @@ void main() {
     );
 
     test(
-      'Given a model with a path outside of the lib folder, then parts list contains all the path parts',
+      'Given a model with a path outside of the lib folder, '
+      'then parts list contains all the path parts',
       () {
         var filePathParts = [
           'test',
@@ -150,7 +154,7 @@ void main() {
   });
 
   group('Test yaml model loader.', () {
-    var serverRootDir = Directory(
+    late var serverRootDir = Directory(
       join(
         'test',
         'integration',
@@ -162,13 +166,14 @@ void main() {
       ),
     );
 
-    var config = GeneratorConfigBuilder()
+    late var config = GeneratorConfigBuilder()
         .withServerPackageDirectoryPathParts(split(serverRootDir.path))
         .withModules([])
         .build();
 
     test(
-      'Given a serverpod project with model files then the converted model path has the file uri set.',
+      'Given a serverpod project with model files, '
+      'then the converted model path has the file uri set.',
       () async {
         var models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
 
@@ -191,7 +196,8 @@ void main() {
     );
 
     test(
-      'Given a serverpod project with model files then the converted model path has the subDirPathParts set to empty arrays.',
+      'Given a serverpod project with model files, '
+      'then the converted model path has the subDirPathParts set to empty arrays.',
       () async {
         var models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
 
@@ -204,7 +210,8 @@ void main() {
     );
 
     test(
-      'Given a serverpod project with model files in a nested folder then the converted model path has the subDirPathParts set to the nested folder inside the models directory.',
+      'Given a serverpod project with model files in a nested folder, '
+      'then the converted model path has the subDirPathParts set to the nested folder inside the models directory.',
       () async {
         var serverRootDir = Directory(
           join(
@@ -232,7 +239,8 @@ void main() {
     );
 
     test(
-      'Given a serverpod project with model files, then the converted model yaml string has been set.',
+      'Given a serverpod project with model files, '
+      'then the converted model yaml string has been set.',
       () async {
         var models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
 
@@ -252,7 +260,8 @@ fields:
   });
 
   test(
-    'Given a serverpod project without a protocol or model folder then the converted model path list is empty.',
+    'Given a serverpod project without a protocol or model folder, '
+    'then the converted model path list is empty.',
     () async {
       var serverRootDir = Directory(
         join(
@@ -280,7 +289,8 @@ fields:
   );
 
   test(
-    'Given a serverpod project without a protocol or model folder then the converted model path list is empty.',
+    'Given a serverpod project without a protocol or model folder, '
+    'then the converted model path list is empty.',
     () async {
       var serverRootDir = Directory(
         join(
@@ -313,7 +323,7 @@ fields:
   );
 
   group('Test createModelSourceForPath.', () {
-    var serverRootDir = Directory(
+    late var serverRootDir = Directory(
       join(
         'test',
         'integration',
@@ -326,7 +336,8 @@ fields:
     );
 
     test(
-      'Given a path under the server lib directory, then createModelSourceForPath returns a server model source with default module alias and isSharedModel false.',
+      'Given a path under the server lib directory, '
+      'then createModelSourceForPath returns a server model source with default module alias and isSharedModel false.',
       () {
         var path = join(
           serverRootDir.path,
@@ -360,7 +371,7 @@ fields:
     );
 
     group(
-      'Given a path under a shared package lib directory',
+      'Given a path under a shared package lib directory,',
       () {
         late Directory testDirectory;
         late Directory testProject;
@@ -432,7 +443,7 @@ fields:
     );
 
     group(
-      'Given a path in a nested directory under a shared package lib',
+      'Given a path in a nested directory under a shared package lib,',
       () {
         late Directory testDirectory;
         late Directory testProject;
@@ -506,7 +517,7 @@ fields:
   });
 
   group(
-    'Given a serverpod project with server and shared package model files',
+    'Given a serverpod project with server and shared package model files,',
     () {
       late Directory testDirectory;
       late Directory testProject;

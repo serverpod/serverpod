@@ -17,7 +17,7 @@ class InMemoryClientAuthSuccessStorage implements ClientAuthSuccessStorage {
 }
 
 void main() {
-  group('Given a platform-agnostic ClientAuthSessionManager', () {
+  group('Given a platform-agnostic ClientAuthSessionManager,', () {
     late ClientAuthSessionManager sessionManager;
     late InMemoryClientAuthSuccessStorage storage;
 
@@ -28,13 +28,13 @@ void main() {
       );
     });
 
-    test('when created then it has no authenticated user.', () {
+    test('when created, then it has no authenticated user.', () {
       expect(sessionManager.isAuthenticated, isFalse);
       expect(sessionManager.authInfo, isNull);
     });
 
     test(
-      'when storage has auth data then restore updates the auth info.',
+      'when storage has auth data, then restore updates the auth info.',
       () async {
         final authSuccess = AuthSuccess(
           authUserId: UuidValue.fromString(
@@ -58,7 +58,8 @@ void main() {
     );
 
     test(
-      'when updateSignedInUser is called then storage and auth info are updated.',
+      'when updateSignedInUser is called, '
+      'then storage and auth info are updated.',
       () async {
         final authSuccess = AuthSuccess(
           authUserId: UuidValue.fromString(
@@ -90,14 +91,14 @@ void main() {
     );
 
     test(
-      'when auth info is null then isAuthenticated returns false.',
+      'when auth info is null, then isAuthenticated returns false.',
       () {
         expect(sessionManager.isAuthenticated, isFalse);
       },
     );
 
     test(
-      'when auth info is set then isAuthenticated returns true.',
+      'when auth info is set, then isAuthenticated returns true.',
       () async {
         final authSuccess = AuthSuccess(
           authUserId: UuidValue.fromString(
@@ -115,7 +116,7 @@ void main() {
     );
   });
 
-  group('Given a CachedClientAuthSuccessStorage', () {
+  group('Given a CachedClientAuthSuccessStorage,', () {
     late CachedClientAuthSuccessStorage cachedStorage;
     late InMemoryClientAuthSuccessStorage delegateStorage;
 
@@ -124,7 +125,7 @@ void main() {
       cachedStorage = CachedClientAuthSuccessStorage(delegate: delegateStorage);
     });
 
-    test('when calling get multiple times then data is cached.', () async {
+    test('when calling get multiple times, then data is cached.', () async {
       final authSuccess = AuthSuccess(
         authUserId: UuidValue.fromString(
           'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44',
@@ -146,7 +147,7 @@ void main() {
     });
 
     test(
-      'when clearCache is called then next get retrieves from delegate.',
+      'when clearCache is called, then next get retrieves from delegate.',
       () async {
         final authSuccess = AuthSuccess(
           authUserId: UuidValue.fromString(
@@ -190,9 +191,9 @@ void main() {
     );
   });
 
-  group('Given a KeyValueClientAuthSuccessStorage', () {
+  group('Given a KeyValueClientAuthSuccessStorage,', () {
     test(
-      'when storing and retrieving AuthSuccess then data is preserved.',
+      'when storing and retrieving AuthSuccess, then data is preserved.',
       () async {
         final storage = KeyValueClientAuthSuccessStorage(
           keyValueStorage: _InMemoryKeyValueStorage(),
@@ -219,7 +220,7 @@ void main() {
       },
     );
 
-    test('when setting null then stored data is null.', () async {
+    test('when setting null, then stored data is null.', () async {
       final storage = KeyValueClientAuthSuccessStorage(
         keyValueStorage: _InMemoryKeyValueStorage(),
       );

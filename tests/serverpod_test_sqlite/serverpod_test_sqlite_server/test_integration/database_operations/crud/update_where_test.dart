@@ -8,9 +8,9 @@ import '../../test_tools/serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given database entries with basic matching criteria',
+    'Given database entries with basic matching criteria,',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late var session = sessionBuilder.build();
 
       setUp(() async {
         await Types.db.insert(
@@ -24,7 +24,7 @@ void main() {
         );
       });
 
-      group('when updating where with no columns specified', () {
+      group('when updating where with no columns specified,', () {
         test('then ArgumentError is thrown', () {
           expect(
             () => Types.db.updateWhere(
@@ -48,7 +48,7 @@ void main() {
       });
 
       group(
-        'when updating where number equals specific value for a single column',
+        'when updating where number equals specific value for a single column,',
         () {
           const updatedNumber = 42;
           late List<Types> updated;
@@ -88,7 +88,7 @@ void main() {
       );
 
       group(
-        'when updating where number matches complex criteria for a single column',
+        'when updating where number matches complex criteria for a single column,',
         () {
           const updatedComplexNumber = 200;
           late List<Types> updated;
@@ -130,7 +130,7 @@ void main() {
         },
       );
 
-      group('when updating where criteria matches for multiple columns', () {
+      group('when updating where criteria matches for multiple columns,', () {
         const updatedInt = 42;
         const updatedString = 'updated';
         late List<Types> updated;
@@ -184,9 +184,9 @@ void main() {
   );
 
   withServerpod(
-    'Given database entries for transaction testing',
+    'Given database entries for transaction testing,',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late var session = sessionBuilder.build();
 
       setUp(() async {
         await Types.db.insert(
@@ -199,7 +199,7 @@ void main() {
         );
       });
 
-      group('when updating within an aborted transaction', () {
+      group('when updating within an aborted transaction,', () {
         const transactionUpdatedInt = 999;
 
         setUp(() async {
@@ -236,9 +236,9 @@ void main() {
   );
 
   withServerpod(
-    'Given no matching database entries',
+    'Given no matching database entries,',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late var session = sessionBuilder.build();
 
       setUp(() async {
         await Types.db.insert(
@@ -250,7 +250,7 @@ void main() {
       });
 
       test(
-        'when updating where no rows match then empty list is returned',
+        'when updating where no rows match, then empty list is returned',
         () async {
           var updated = await Types.db.updateWhere(
             session,
@@ -265,9 +265,9 @@ void main() {
   );
 
   withServerpod(
-    'Given database entries with null values',
+    'Given database entries with null values,',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late var session = sessionBuilder.build();
 
       setUp(() async {
         await Types.db.insertRow(
@@ -282,7 +282,7 @@ void main() {
         );
       });
 
-      group('when updating where column to non-null value', () {
+      group('when updating where column to non-null value,', () {
         const updatedIntFromNull = 99;
         const updatedStringFromNull = 'was_null';
         late List<Types> updated;
@@ -318,9 +318,9 @@ void main() {
   );
 
   withServerpod(
-    'Given database entries with non-null values',
+    'Given database entries with non-null values,',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late var session = sessionBuilder.build();
 
       const originalInt = 1;
       const originalString = 'value';
@@ -340,7 +340,7 @@ void main() {
         );
       });
 
-      group('when updating non-null values to null values', () {
+      group('when updating non-null values to null values,', () {
         late List<Types> updated;
 
         setUp(() async {
@@ -386,9 +386,9 @@ void main() {
   );
 
   withServerpod(
-    'Given database entries for pagination operations',
+    'Given database entries for pagination operations,',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late var session = sessionBuilder.build();
 
       const matchingInt = 100;
 
@@ -435,7 +435,7 @@ void main() {
         );
       });
 
-      group('when updating with limit', () {
+      group('when updating with limit,', () {
         const limitedUpdateString = 'limited_update';
         const limit = 3;
         late List<Types> updated;
@@ -483,7 +483,7 @@ void main() {
         });
       });
 
-      group('when updating in descending order', () {
+      group('when updating in descending order,', () {
         late List<Types> updated;
 
         setUp(() async {
@@ -503,7 +503,7 @@ void main() {
         });
       });
 
-      group('when updating with offset', () {
+      group('when updating with offset,', () {
         late List<Types> updated;
 
         setUp(() async {
@@ -550,7 +550,7 @@ void main() {
         });
       });
 
-      group('when updating with limit and offset', () {
+      group('when updating with limit and offset,', () {
         late List<Types> updated;
 
         setUp(() async {
@@ -573,9 +573,9 @@ void main() {
   );
 
   withServerpod(
-    'Given database entries with all supported data types',
+    'Given database entries with all supported data types,',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late var session = sessionBuilder.build();
 
       setUp(() async {
         await Types.db.insert(
@@ -636,7 +636,7 @@ void main() {
         );
       });
 
-      group('when updating all supported data types', () {
+      group('when updating all supported data types,', () {
         late List<Types> updated;
 
         setUp(() async {
@@ -767,7 +767,7 @@ void main() {
   withServerpod(
     'Given an inserted entry,',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late var session = sessionBuilder.build();
 
       setUp(() async {
         await UniqueData.db.insert(session, [
@@ -783,7 +783,7 @@ void main() {
       });
 
       test(
-        'when updating rows matching a where expression with noReturn set to true '
+        'when updating rows matching a where expression with noReturn set to true, '
         'then an empty list is returned but the matching rows are updated.',
         () async {
           var result = await UniqueData.db.updateWhere(

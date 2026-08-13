@@ -7,7 +7,7 @@ import '../../test_utils/email_idp_test_fixture.dart';
 
 void main() {
   withServerpod(
-    'Given pending account request',
+    'Given pending account request,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -40,7 +40,8 @@ void main() {
       });
 
       test(
-        'when delete email account request by id is called then attempting to verify registration code throws request not found exception',
+        'when delete email account request by id is called, '
+        'then attempting to verify registration code throws request not found exception',
         () async {
           await session.db.transaction(
             (final transaction) =>
@@ -71,7 +72,7 @@ void main() {
   );
 
   withServerpod(
-    'Given account requests exist for multiple users',
+    'Given account requests exist for multiple users,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -115,7 +116,8 @@ void main() {
       });
 
       test(
-        'when delete email account request by id is called for one user then other user can still verify its registration code',
+        'when delete email account request by id is called for one user, '
+        'then other user can still verify its registration code',
         () async {
           await session.db.transaction(
             (final transaction) =>

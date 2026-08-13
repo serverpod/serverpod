@@ -24,10 +24,10 @@ void main() {
   });
 
   group(
-    'Given a future call that extends another future call when analyzed',
+    'Given a future call that extends another future call, when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -90,10 +90,11 @@ class SubclassFutureCall extends BaseFutureCall {
   );
 
   group(
-    'Given a future call that extends another future call and overrides a method when analyzed',
+    'Given a future call that extends another future call and overrides a method, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -147,11 +148,11 @@ class SubclassFutureCall extends BaseFutureCall {
   );
 
   group(
-    'Given abstract > concrete > abstract subclass > concrete subclass'
-    'future calls hierarchy when analyzed',
+    'Given abstract > concrete > abstract subclass > concrete subclass future calls hierarchy, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 

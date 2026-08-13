@@ -25,10 +25,11 @@ void main() {
   });
 
   group(
-    'Given an endpoint class annotated with @unauthenticatedClientCall when analyzed',
+    'Given an endpoint class annotated with @unauthenticatedClientCall, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -73,10 +74,11 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint method annotated with @unauthenticatedClientCall when analyzed',
+    'Given an endpoint method annotated with @unauthenticatedClientCall, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -142,10 +144,11 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint class annotated with @unauthenticatedClientCall and overriding requireLogin when analyzed',
+    'Given an endpoint class annotated with @unauthenticatedClientCall and overriding requireLogin, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -198,10 +201,11 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint class overriding requireLogin with a method annotated with @unauthenticatedClientCall when analyzed',
+    'Given an endpoint class overriding requireLogin with a method annotated with @unauthenticatedClientCall, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 

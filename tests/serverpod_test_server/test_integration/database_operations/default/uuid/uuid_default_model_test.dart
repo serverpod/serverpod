@@ -15,7 +15,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "defaultModel=random" UUID field should not be null and should generate a valid UUID',
+      'when creating a record in the database, '
+      'then the "defaultModel=random" UUID field should not be null and should generate a valid UUID',
       () async {
         var object = UuidDefaultModel();
         var databaseObject = await UuidDefaultModel.db.insertRow(
@@ -33,7 +34,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "defaultModel=random_v7" UUID field should not be null and should generate a valid UUID',
+      'when creating a record in the database, '
+      'then the "defaultModel=random_v7" UUID field should not be null and should generate a valid UUID',
       () async {
         var object = UuidDefaultModel();
         var databaseObject = await UuidDefaultModel.db.insertRow(
@@ -51,7 +53,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "defaultModel" UUID field with a string should match the default',
+      'when creating a record in the database, '
+      'then the "defaultModel" UUID field with a string should match the default',
       () async {
         var object = UuidDefaultModel();
         var databaseObject = await UuidDefaultModel.db.insertRow(
@@ -66,7 +69,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the nullable "defaultModel" UUID field with a string should match the default',
+      'when creating a record in the database, '
+      'then the nullable "defaultModel" UUID field with a string should match the default',
       () async {
         var object = UuidDefaultModel();
         var databaseObject = await UuidDefaultModel.db.insertRow(
@@ -81,7 +85,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "uuidDefaultModelRandom" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "uuidDefaultModelRandom" field value should match the provided value',
       () async {
         var uuid = UuidValue.fromString('3f2504e0-4f89-11d3-9a0c-0305e82c3301');
         var specificObject = UuidDefaultModel(
@@ -99,7 +104,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "uuidDefaultModelRandomV7" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "uuidDefaultModelRandomV7" field value should match the provided value',
       () async {
         var uuid = UuidValue.fromString('3f2504e0-4f89-11d3-9a0c-0305e82c3301');
         var specificObject = UuidDefaultModel(
@@ -117,7 +123,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "uuidDefaultModelStr" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "uuidDefaultModelStr" field value should match the provided value',
       () async {
         var uuid = UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000');
         var specificObject = UuidDefaultModel(
@@ -135,7 +142,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "uuidDefaultModelStrNull" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "uuidDefaultModelStrNull" field value should match the provided value',
       () async {
         var uuid = UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000');
         var specificObject = UuidDefaultModel(

@@ -6,9 +6,10 @@ import '../../../../test_util.dart';
 void main() {
   initTestClientSession();
 
-  group('Given models with one to many relation ', () {
+  group('Given models with one to many relation,', () {
     test(
-      'when counting models filtered on any many relation then result is as expected.',
+      'when counting models filtered on any many relation, '
+      'then result is as expected.',
       () async {
         var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
         await Cat.db.insertRow(session, Cat(name: 'Smulan'));
@@ -29,7 +30,8 @@ void main() {
     );
 
     test(
-      'when counting models filtered on filtered any many relation then result is as expected',
+      'when counting models filtered on filtered any many relation, '
+      'then result is as expected',
       () async {
         var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
         var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));
@@ -51,7 +53,8 @@ void main() {
     );
 
     test(
-      'when counting models filtered on multiple any many relation then result is as expected.',
+      'when counting models filtered on multiple any many relation, '
+      'then result is as expected.',
       () async {
         var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
         var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));
@@ -75,9 +78,10 @@ void main() {
     );
   });
 
-  group('Given models with nested one to many relation', () {
+  group('Given models with nested one to many relation,', () {
     test(
-      'when counting models filtered on nested any many relation then result is as expected',
+      'when counting models filtered on nested any many relation, '
+      'then result is as expected',
       () async {
         var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
         var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));
@@ -105,7 +109,8 @@ void main() {
     );
 
     test(
-      'when counting models filtered on filtered nested any many relation then result is as expected',
+      'when counting models filtered on filtered nested any many relation, '
+      'then result is as expected',
       () async {
         var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
         var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));

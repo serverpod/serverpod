@@ -2,7 +2,7 @@ import 'package:serverpod_auth_idp_server/providers/firebase.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given account details with an unverified email', () {
+  group('Given account details with an unverified email,', () {
     late FirebaseAccountDetails accountDetails;
 
     setUp(() {
@@ -17,7 +17,7 @@ void main() {
     });
 
     test(
-      'when applying the default validation then the details are accepted',
+      'when applying the default validation, then the details are accepted',
       () {
         expect(
           () => FirebaseIdpConfig.validateFirebaseAccountDetails(
@@ -29,7 +29,7 @@ void main() {
     );
 
     test(
-      'when applying the requireVerifiedEmail validation '
+      'when applying the requireVerifiedEmail validation, '
       'then it throws a FirebaseEmailNotVerifiedException',
       () {
         expect(
@@ -41,7 +41,7 @@ void main() {
   });
 
   group(
-    'Given account details with an email whose verification status is unknown',
+    'Given account details with an email whose verification status is unknown,',
     () {
       late FirebaseAccountDetails accountDetails;
 
@@ -57,7 +57,7 @@ void main() {
       });
 
       test(
-        'when applying the default validation then the details are accepted',
+        'when applying the default validation, then the details are accepted',
         () {
           expect(
             () => FirebaseIdpConfig.validateFirebaseAccountDetails(
@@ -69,7 +69,7 @@ void main() {
       );
 
       test(
-        'when applying the requireVerifiedEmail validation '
+        'when applying the requireVerifiedEmail validation, '
         'then it throws a FirebaseEmailNotVerifiedException',
         () {
           expect(
@@ -81,7 +81,7 @@ void main() {
     },
   );
 
-  group('Given account details with a verified email', () {
+  group('Given account details with a verified email,', () {
     late FirebaseAccountDetails accountDetails;
 
     setUp(() {
@@ -96,7 +96,7 @@ void main() {
     });
 
     test(
-      'when applying the default validation then the details are accepted',
+      'when applying the default validation, then the details are accepted',
       () {
         expect(
           () => FirebaseIdpConfig.validateFirebaseAccountDetails(
@@ -108,7 +108,7 @@ void main() {
     );
 
     test(
-      'when applying the requireVerifiedEmail validation '
+      'when applying the requireVerifiedEmail validation, '
       'then the details are accepted',
       () {
         expect(
@@ -119,7 +119,7 @@ void main() {
     );
   });
 
-  group('Given account details without an email', () {
+  group('Given account details without an email,', () {
     late FirebaseAccountDetails accountDetails;
 
     setUp(() {
@@ -134,7 +134,7 @@ void main() {
     });
 
     test(
-      'when applying the default validation then the details are accepted',
+      'when applying the default validation, then the details are accepted',
       () {
         expect(
           () => FirebaseIdpConfig.validateFirebaseAccountDetails(
@@ -146,7 +146,7 @@ void main() {
     );
 
     test(
-      'when applying the requireVerifiedEmail validation '
+      'when applying the requireVerifiedEmail validation, '
       'then the details are accepted',
       () {
         expect(

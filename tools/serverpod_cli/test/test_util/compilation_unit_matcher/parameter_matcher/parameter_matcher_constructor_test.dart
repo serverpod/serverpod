@@ -4,7 +4,7 @@ import '../../compilation_unit_matcher.dart';
 
 void main() {
   group(
-    'Given compilation unit with class and constructor with no parameters',
+    'Given compilation unit with class and constructor with no parameters,',
     () {
       late final compilationUnit = parseCode(
         '''
@@ -15,7 +15,8 @@ void main() {
       );
 
       test(
-        'when negate matching with non-existent constructor parameter then test passes',
+        'when negate matching with non-existent constructor parameter, '
+        'then test passes',
         () {
           expect(
             compilationUnit,
@@ -30,7 +31,7 @@ void main() {
     },
   );
 
-  group('Given compilation unit with class and constructor with parameter', () {
+  group('Given compilation unit with class and constructor with parameter,', () {
     late final compilationUnit = parseCode(
       '''
       class User {
@@ -40,7 +41,7 @@ void main() {
     );
 
     test(
-      'when matching class and constructor with parameter then test passes',
+      'when matching class and constructor with parameter, then test passes',
       () {
         expect(
           compilationUnit,
@@ -50,7 +51,8 @@ void main() {
     );
 
     test(
-      'when negate matching class constructor with invalid "extra properties" and parameter then test passes',
+      'when negate matching class constructor with invalid "extra properties" and parameter, '
+      'then test passes',
       () {
         expect(
           compilationUnit,
@@ -64,7 +66,8 @@ void main() {
     );
 
     test(
-      'when negate matching non existing class with parameter then test passes',
+      'when negate matching non existing class with parameter, '
+      'then test passes',
       () {
         expect(
           compilationUnit,
@@ -79,7 +82,7 @@ void main() {
   });
 
   group(
-    'Given compilation unit with class and constructor with "this" initializer parameter',
+    'Given compilation unit with class and constructor with "this" initializer parameter,',
     () {
       late final compilationUnit = parseCode(
         '''
@@ -90,7 +93,8 @@ void main() {
       );
 
       test(
-        'when matching class and constructor with "this" initializer parameter then test passes',
+        'when matching class and constructor with "this" initializer parameter, '
+        'then test passes',
         () {
           expect(
             compilationUnit,
@@ -102,7 +106,8 @@ void main() {
       );
 
       test(
-        'when negate matching class and constructor with "super" initializer parameter then test passes',
+        'when negate matching class and constructor with "super" initializer parameter, '
+        'then test passes',
         () {
           expect(
             compilationUnit,
@@ -118,7 +123,7 @@ void main() {
   );
 
   group(
-    'Given compilation unit with class and constructor with "super" initializer parameter',
+    'Given compilation unit with class and constructor with "super" initializer parameter,',
     () {
       late final compilationUnit = parseCode(
         '''
@@ -129,7 +134,8 @@ void main() {
       );
 
       test(
-        'when matching class and constructor with "super" initializer parameter then test passes',
+        'when matching class and constructor with "super" initializer parameter, '
+        'then test passes',
         () {
           expect(
             compilationUnit,
@@ -141,7 +147,8 @@ void main() {
       );
 
       test(
-        'when negate matching class and constructor with "this" initializer parameter then test passes',
+        'when negate matching class and constructor with "this" initializer parameter, '
+        'then test passes',
         () {
           expect(
             compilationUnit,
@@ -157,7 +164,7 @@ void main() {
   );
 
   group(
-    'Given compilation unit with class and constructor with typed parameter',
+    'Given compilation unit with class and constructor with typed parameter,',
     () {
       late final compilationUnit = parseCode(
         '''
@@ -168,7 +175,8 @@ void main() {
       );
 
       test(
-        'when matching class and constructor with typed parameter then test passes',
+        'when matching class and constructor with typed parameter, '
+        'then test passes',
         () {
           expect(
             compilationUnit,
@@ -180,7 +188,8 @@ void main() {
       );
 
       test(
-        'when negate matching class and constructor with incorrect type then test passes',
+        'when negate matching class and constructor with incorrect type, '
+        'then test passes',
         () {
           expect(
             compilationUnit,
@@ -196,7 +205,7 @@ void main() {
   );
 
   group(
-    'Given compilation unit with class and constructor with required parameter initialized with "this"',
+    'Given compilation unit with class and constructor with required parameter initialized with "this",',
     () {
       late final compilationUnit = parseCode(
         '''
@@ -207,7 +216,8 @@ void main() {
       );
 
       test(
-        'when matching class and constructor with required parameter then test passes',
+        'when matching class and constructor with required parameter, '
+        'then test passes',
         () {
           expect(
             compilationUnit,
@@ -219,7 +229,8 @@ void main() {
       );
 
       test(
-        'when negate matching class and constructor with optional parameter then test passes',
+        'when negate matching class and constructor with optional parameter, '
+        'then test passes',
         () {
           expect(
             compilationUnit,
@@ -234,7 +245,8 @@ void main() {
       );
 
       test(
-        'when matching with required "this" initializer parameter then test passes',
+        'when matching with required "this" initializer parameter, '
+        'then test passes',
         () {
           expect(
             compilationUnit,
@@ -250,7 +262,8 @@ void main() {
       );
 
       test(
-        'when negate matching with optional "this" initializer parameter then test passes',
+        'when negate matching with optional "this" initializer parameter, '
+        'then test passes',
         () {
           expect(
             compilationUnit,
@@ -267,7 +280,7 @@ void main() {
         },
       );
 
-      test('when negate matching with typed parameter then test passes', () {
+      test('when negate matching with typed parameter, then test passes', () {
         expect(
           compilationUnit,
           isNot(
@@ -281,7 +294,7 @@ void main() {
   );
 
   group(
-    'Given compilation unit with class and constructor with required typed parameter',
+    'Given compilation unit with class and constructor with required typed parameter,',
     () {
       late final compilationUnit = parseCode(
         '''
@@ -292,7 +305,8 @@ void main() {
       );
 
       test(
-        'when matching class and constructor with required parameter then test passes',
+        'when matching class and constructor with required parameter, '
+        'then test passes',
         () {
           expect(
             compilationUnit,
@@ -304,7 +318,8 @@ void main() {
       );
 
       test(
-        'when negate matching class and constructor with optional parameter then test passes',
+        'when negate matching class and constructor with optional parameter, '
+        'then test passes',
         () {
           expect(
             compilationUnit,
@@ -319,7 +334,8 @@ void main() {
       );
 
       test(
-        'when matching with required matching typed parameter then test passes',
+        'when matching with required matching typed parameter, '
+        'then test passes',
         () {
           expect(
             compilationUnit,
@@ -333,7 +349,8 @@ void main() {
       );
 
       test(
-        'when negate matching with optional matching typed initializer parameter then test passes',
+        'when negate matching with optional matching typed initializer parameter, '
+        'then test passes',
         () {
           expect(
             compilationUnit,
@@ -349,7 +366,8 @@ void main() {
       );
 
       test(
-        'when negate matching with required "this" initializer parameter then test passes',
+        'when negate matching with required "this" initializer parameter, '
+        'then test passes',
         () {
           expect(
             compilationUnit,

@@ -11,10 +11,10 @@ void main() {
   MigrationTestUtils.setModuleName('serverpod_test_nonvector');
 
   withServerpod(
-    'Given a database without pgvector extension',
+    'Given a database without pgvector extension,',
     runMode: 'production',
     (sessionBuilder, endpoints) {
-      group('when applying a migration with no vector columns', () {
+      group('when applying a migration with no vector columns,', () {
         tearDown(() async {
           await MigrationTestUtils.migrationTestCleanup(
             resetSql: 'DROP TABLE IF EXISTS integrity_test_table;',
@@ -74,7 +74,7 @@ fields:
         });
       });
 
-      group('when applying a migration with a vector column', () {
+      group('when applying a migration with a vector column,', () {
         tearDown(() async {
           await MigrationTestUtils.migrationTestCleanup(
             resetSql: 'DROP TABLE IF EXISTS vector_test_table;',

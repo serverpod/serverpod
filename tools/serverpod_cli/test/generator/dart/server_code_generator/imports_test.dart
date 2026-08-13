@@ -30,9 +30,10 @@ void main() {
       ]);
 
   group(
-    'Given a hierarchy with a sealed parent that has a model and a normal child, when generating code',
+    'Given a hierarchy with a sealed parent that has a model and a normal child, '
+    'when generating code,',
     () {
-      var parent = ModelClassDefinitionBuilder()
+      late var parent = ModelClassDefinitionBuilder()
           .withSubDirParts(['subdir'])
           .withClassName('Example')
           .withFileName('example')
@@ -50,7 +51,7 @@ void main() {
           .withIsSealed(true)
           .build();
 
-      var child = ModelClassDefinitionBuilder()
+      late var child = ModelClassDefinitionBuilder()
           .withSubDirParts(['subdir'])
           .withClassName('ExampleChild')
           .withFileName('example_child')
@@ -58,7 +59,7 @@ void main() {
           .withExtendsClass(parent)
           .build();
 
-      var user = ModelClassDefinitionBuilder()
+      late var user = ModelClassDefinitionBuilder()
           .withSubDirParts(['subdir'])
           .withClassName('User')
           .withFileName('user')
@@ -73,12 +74,12 @@ void main() {
         user,
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var parentCompilationUnit = parseString(
+      late var parentCompilationUnit = parseString(
         content:
             codeMap[getExpectedFilePath(
               parent.fileName,
@@ -101,9 +102,10 @@ void main() {
   );
 
   group(
-    'Given an endpoint that has a UuidValue parameter imported from Serverpod when generating endpoints',
+    'Given an endpoint that has a UuidValue parameter imported from Serverpod, '
+    'when generating endpoints,',
     () {
-      var endpoint = EndpointDefinitionBuilder()
+      late var endpoint = EndpointDefinitionBuilder()
           .withClassName('ExampleEndpoint')
           .withName('example')
           .withMethods([
@@ -121,7 +123,7 @@ void main() {
           ])
           .build();
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [endpoint],
         models: [],
         futureCalls: [],
@@ -163,9 +165,10 @@ void main() {
   );
 
   group(
-    'Given an endpoint that has a UuidValue parameter imported from package:uuid/uuid.dart when generating endpoints',
+    'Given an endpoint that has a UuidValue parameter imported from package:uuid/uuid.dart, '
+    'when generating endpoints,',
     () {
-      var endpoint = EndpointDefinitionBuilder()
+      late var endpoint = EndpointDefinitionBuilder()
           .withClassName('ExampleEndpoint')
           .withName('example')
           .withMethods([
@@ -183,7 +186,7 @@ void main() {
           ])
           .build();
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [endpoint],
         models: [],
         futureCalls: [],
@@ -225,9 +228,10 @@ void main() {
   );
 
   group(
-    'Given an endpoint that has a UuidValue parameter imported from package:uuid/uuid_value.dart when generating endpoints',
+    'Given an endpoint that has a UuidValue parameter imported from package:uuid/uuid_value.dart, '
+    'when generating endpoints,',
     () {
-      var endpoint = EndpointDefinitionBuilder()
+      late var endpoint = EndpointDefinitionBuilder()
           .withClassName('ExampleEndpoint')
           .withName('example')
           .withMethods([
@@ -245,7 +249,7 @@ void main() {
           ])
           .build();
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [endpoint],
         models: [],
         futureCalls: [],
@@ -287,9 +291,10 @@ void main() {
   );
 
   group(
-    'Given an endpoint that has a UuidValue parameter imported from unkown source when generating endpoints',
+    'Given an endpoint that has a UuidValue parameter imported from unkown source, '
+    'when generating endpoints,',
     () {
-      var endpoint = EndpointDefinitionBuilder()
+      late var endpoint = EndpointDefinitionBuilder()
           .withClassName('ExampleEndpoint')
           .withName('example')
           .withMethods([
@@ -307,7 +312,7 @@ void main() {
           ])
           .build();
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [endpoint],
         models: [],
         futureCalls: [],

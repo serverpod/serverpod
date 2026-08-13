@@ -18,7 +18,7 @@ Matcher isASpanWith(
 
 void main() {
   group('Given a pubspec.yaml', () {
-    group('with explicit serverpod package version', () {
+    group('with explicit serverpod package version,', () {
       late final explicitVersion = PubspecPlus.parse('''
 name: x
 dependencies:
@@ -26,8 +26,8 @@ dependencies:
   serverpod_client: 1.1.0
 ''');
 
-      test('when calling validateServerpodPackagesVersion with same version '
-          'then no warnings are returned', () {
+      test('when calling validateServerpodPackagesVersion with same version, '
+           'then no warnings are returned', () {
         var packageWarnings = validateServerpodPackagesVersion(
           Version(1, 1, 0),
           explicitVersion,
@@ -37,7 +37,7 @@ dependencies:
       });
 
       group(
-        'when calling validateServerpodPackagesVersion with older version',
+        'when calling validateServerpodPackagesVersion with older version,',
         () {
           late final packageWarnings = validateServerpodPackagesVersion(
             Version(1, 0, 0),
@@ -73,7 +73,7 @@ dependencies:
       );
 
       group(
-        'when calling validateServerpodPackagesVersion with newer version',
+        'when calling validateServerpodPackagesVersion with newer version,',
         () {
           late final packageWarnings = validateServerpodPackagesVersion(
             Version(1, 2, 0),
@@ -109,7 +109,7 @@ dependencies:
       );
     });
 
-    group('with approximate serverpod package version', () {
+    group('with approximate serverpod package version,', () {
       late final approximateVersion = PubspecPlus.parse('''
 name: x
 dependencies:
@@ -118,7 +118,7 @@ dependencies:
 ''');
 
       group(
-        'when calling validateServerpodPackagesVersion matching version',
+        'when calling validateServerpodPackagesVersion matching version,',
         () {
           late final cliVersion = Version(1, 1, 0);
           late final packageWarnings = validateServerpodPackagesVersion(
@@ -157,7 +157,7 @@ dependencies:
       );
 
       group(
-        'when calling validateServerpodPackagesVersion with older version',
+        'when calling validateServerpodPackagesVersion with older version,',
         () {
           late final cliVersion = Version(1, 0, 0);
           late final packageWarnings = validateServerpodPackagesVersion(
@@ -206,10 +206,10 @@ dependencies:
       );
 
       group(
-        'when calling validateServerpodPackagesVersion with newer version',
+        'when calling validateServerpodPackagesVersion with newer version,',
         () {
-          var cliVersion = Version(1, 2, 0);
-          var packageWarnings = validateServerpodPackagesVersion(
+          late var cliVersion = Version(1, 2, 0);
+          late var packageWarnings = validateServerpodPackagesVersion(
             cliVersion,
             approximateVersion,
           );

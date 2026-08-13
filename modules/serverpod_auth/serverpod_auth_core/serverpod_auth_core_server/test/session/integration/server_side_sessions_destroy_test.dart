@@ -39,7 +39,8 @@ void main() {
       });
 
       test(
-        'when calling `destroySession` with a valid `serverSideSessionId`, then it returns true.',
+        'when calling `destroySession` with a valid `serverSideSessionId`, '
+        'then it returns true.',
         () async {
           final deleted = await serverSideSessions.revokeSession(
             session,
@@ -54,7 +55,8 @@ void main() {
       );
 
       test(
-        'when calling `destroySession` with an invalid `serverSideSessionId`, then it returns false.',
+        'when calling `destroySession` with an invalid `serverSideSessionId`, '
+        'then it returns false.',
         () async {
           final deleted = await serverSideSessions.revokeSession(
             session,
@@ -66,7 +68,8 @@ void main() {
       );
 
       test(
-        'when calling `destroyAllSessions`, then it returns the list of deleted session IDs.',
+        'when calling `destroyAllSessions`, '
+        'then it returns the list of deleted session IDs.',
         () async {
           final newAuthSuccesses = await List.generate(
             3,
@@ -131,7 +134,8 @@ void main() {
       );
 
       test(
-        'when destroying all auth sessions for a user, then a message for it is broadcast.',
+        'when destroying all auth sessions for a user, '
+        'then a message for it is broadcast.',
         () async {
           final channelName =
               MessageCentralServerpodChannels.revokedAuthentication(
@@ -197,7 +201,8 @@ void main() {
       });
 
       test(
-        'when calling `authenticationHandler` with the destroyed session key, then it returns `null`.',
+        'when calling `authenticationHandler` with the destroyed session key, '
+        'then it returns `null`.',
         () async {
           final authInfo = await serverSideSessions.authenticationHandler(
             session,
@@ -212,7 +217,8 @@ void main() {
       );
 
       test(
-        'when calling `authenticationHandler` with the retained session key, then it returns the auth info.',
+        'when calling `authenticationHandler` with the retained session key, '
+        'then it returns the auth info.',
         () async {
           final authInfo = await serverSideSessions.authenticationHandler(
             session,
@@ -261,7 +267,8 @@ void main() {
       });
 
       test(
-        'when calling the `authenticationHandler` with the first session key, then it returns `null`.',
+        'when calling the `authenticationHandler` with the first session key, '
+        'then it returns `null`.',
         () async {
           final authInfo = await serverSideSessions.authenticationHandler(
             session,
@@ -276,7 +283,8 @@ void main() {
       );
 
       test(
-        'when calling the `authenticationHandler` with the  second session key, then it returns `null`.',
+        'when calling the `authenticationHandler` with the  second session key, '
+        'then it returns `null`.',
         () async {
           final authInfo = await serverSideSessions.authenticationHandler(
             session,

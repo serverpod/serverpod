@@ -23,9 +23,9 @@ void main() {
     testProjectDirectory.deleteSync(recursive: true);
   });
 
-  group('Given abstract future call class when analyzed', () {
-    var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
+  group('Given abstract future call class, when analyzed,', () {
+    late var collector = CodeGenerationCollector();
+    late var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
 
@@ -66,10 +66,11 @@ abstract class ExampleFutureCall extends FutureCall {
   });
 
   group(
-    'Given a concrete future call that extends an abstract base future call when analyzed',
+    'Given a concrete future call that extends an abstract base future call, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -136,10 +137,11 @@ class ConcreteFutureCall extends BaseFutureCall {
   );
 
   group(
-    'Given a concrete future call that extends an abstract base future call and overrides a method when analyzed',
+    'Given a concrete future call that extends an abstract base future call and overrides a method, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 

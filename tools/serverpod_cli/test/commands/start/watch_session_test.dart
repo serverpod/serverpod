@@ -404,7 +404,7 @@ void main() {
     session = buildSession(compiler: compiler, initialServer: server);
   });
 
-  group('Given static-only file changes and VM service connected', () {
+  group('Given static-only file changes and VM service connected,', () {
     test(
       'when static files change, '
       'then it notifies static change without compiling',
@@ -423,7 +423,7 @@ void main() {
     );
   });
 
-  group('Given static-only file changes and VM service not connected', () {
+  group('Given static-only file changes and VM service not connected,', () {
     setUp(() {
       server.isVmServiceConnected = false;
     });
@@ -446,7 +446,7 @@ void main() {
     );
   });
 
-  group('Given dart file changes that compile successfully', () {
+  group('Given dart file changes that compile successfully,', () {
     test(
       'when file change is handled, '
       'then it runs codegen, does incremental compile, and hot reload',
@@ -489,7 +489,7 @@ void main() {
     );
   });
 
-  group('Given dart file changes where codegen fails', () {
+  group('Given dart file changes where codegen fails,', () {
     setUp(() {
       generateSuccess = false;
     });
@@ -513,7 +513,7 @@ void main() {
     );
   });
 
-  group('Given dart file changes where compilation fails', () {
+  group('Given dart file changes where compilation fails,', () {
     setUp(() {
       compiler.nextIncrementalResult = _failResult();
     });
@@ -534,7 +534,7 @@ void main() {
     );
   });
 
-  group('Given dart file changes where hot reload fails', () {
+  group('Given dart file changes where hot reload fails,', () {
     setUp(() {
       server.reloadSuccess = false;
     });
@@ -562,7 +562,7 @@ void main() {
     );
   });
 
-  group('Given multiple dart file changes', () {
+  group('Given multiple dart file changes,', () {
     test(
       'when codegen succeeds and compilation succeeds, '
       'then it passes all paths to codegen and compiles incrementally',
@@ -585,7 +585,7 @@ void main() {
     );
   });
 
-  group('Given model file changes that produce generated files', () {
+  group('Given model file changes that produce generated files,', () {
     late FileChangeEvent event;
 
     setUp(() {
@@ -614,7 +614,7 @@ void main() {
     );
   });
 
-  group('Given model file changes where codegen fails', () {
+  group('Given model file changes where codegen fails,', () {
     setUp(() {
       generateSuccess = false;
     });
@@ -639,7 +639,7 @@ void main() {
     );
   });
 
-  group('Given only generated dart files change in the watcher', () {
+  group('Given only generated dart files change in the watcher,', () {
     late FileChangeEvent event;
 
     setUp(() {
@@ -664,7 +664,7 @@ void main() {
     );
   });
 
-  group('Given model and source dart files change with generated output', () {
+  group('Given model and source dart files change with generated output,', () {
     late FileChangeEvent event;
 
     setUp(() {
@@ -693,7 +693,7 @@ void main() {
     );
   });
 
-  group('Given package_config.json changed', () {
+  group('Given package_config.json changed,', () {
     test(
       'when dart files also changed, '
       'then it recompiles incrementally and invalidates the package config',
@@ -768,7 +768,7 @@ void main() {
     );
   });
 
-  group('Given a native-assets builder', () {
+  group('Given a native-assets builder,', () {
     late _FakeNativeAssetsApplier builder;
     late WatchSession nativeSession;
 
@@ -837,7 +837,7 @@ void main() {
     );
   });
 
-  group('Given a server dependency tracker', () {
+  group('Given a server dependency tracker,', () {
     late _FakeServerDependencyTracker tracker;
     late WatchSession gatedSession;
 
@@ -883,8 +883,7 @@ void main() {
     );
 
     test(
-      'when package_config changed without a closure change but dart files '
-      'also changed, '
+      'when package_config changed without a closure change but dart files also changed, '
       'then it recompiles the dart files without invalidating the package config',
       () async {
         tracker.next = PackageDependencyChange.none;
@@ -904,8 +903,7 @@ void main() {
     );
 
     test(
-      'when a package_config compile fails and the next event has no closure '
-      'change, '
+      'when a package_config compile fails and the next event has no closure change, '
       'then the pending invalidation still rides along',
       () async {
         // First cycle: a real closure change whose compile fails and rolls back.
@@ -942,15 +940,14 @@ void main() {
     );
   });
 
-  group('Given hot reload fails', () {
+  group('Given hot reload fails,', () {
     setUp(() {
       server.reloadSuccess = false;
     });
 
     test(
       'when a dart file changes, '
-      'then it does a full compile, stops the old server, '
-      'and creates a new server via factory',
+      'then it does a full compile, stops the old server, and creates a new server via factory',
       () async {
         final event = FileChangeEvent(
           dartFiles: {'/lib/a.dart'},
@@ -1029,7 +1026,7 @@ void main() {
     );
   });
 
-  group('Given VM service is not connected', () {
+  group('Given VM service is not connected,', () {
     setUp(() {
       server.isVmServiceConnected = false;
     });
@@ -1061,7 +1058,7 @@ void main() {
     );
   });
 
-  group('Given the server exits unexpectedly', () {
+  group('Given the server exits unexpectedly,', () {
     test(
       'when the server crashes, '
       'then done completes with the exit code',
@@ -1100,7 +1097,7 @@ void main() {
     );
   });
 
-  group('Given applyMigration is called after dispose', () {
+  group('Given applyMigration is called after dispose,', () {
     test(
       'when applyMigration is called, '
       'then it throws a StateError with disposed message',
@@ -1121,7 +1118,7 @@ void main() {
     );
   });
 
-  group('Given applyMigration is called with an in-place action', () {
+  group('Given applyMigration is called with an in-place action,', () {
     late void Function() migrationRunner;
     late int actionCalls;
     late Completer<void>? gate;
@@ -1236,7 +1233,7 @@ void main() {
   });
 
   group(
-    'Given a watch session with a compiler with no errors,'
+    'Given a watch session with a compiler with no errors, '
     'when force restart is called,',
     () {
       setUp(() async {
@@ -1262,8 +1259,8 @@ void main() {
   );
 
   test(
-    'Given a watch session with a compiler that fails,'
-    'when force restart is called,'
+    'Given a watch session with a compiler that fails, '
+    'when force restart is called, '
     'then it does not stop the server or spawn a new one.',
     () async {
       compiler.nextCompileResult = _failResult();
@@ -1276,7 +1273,7 @@ void main() {
   );
 
   test(
-    'Given a watch session that is disposed,'
+    'Given a watch session that is disposed, '
     'when force restart is called, '
     'then it throws a StateError.',
     () async {
@@ -2237,7 +2234,7 @@ serverpod:
     },
   );
 
-  group('Given dispose is called', () {
+  group('Given dispose is called,', () {
     test(
       'when disposing, '
       'then it stops the server and disposes the compiler',
@@ -2264,7 +2261,7 @@ serverpod:
   });
 
   group(
-    'Given a watch session where no dart change is protocol-relevant',
+    'Given a watch session where no dart change is protocol-relevant,',
     () {
       late _FakeCompiler classifierCompiler;
       late _FakeServer classifierServer;
@@ -2334,7 +2331,7 @@ serverpod:
   );
 
   group(
-    'Given a watch session where every dart change is protocol-relevant',
+    'Given a watch session where every dart change is protocol-relevant,',
     () {
       late _FakeCompiler classifierCompiler;
       late _FakeServer classifierServer;
@@ -2364,8 +2361,7 @@ serverpod:
 
       test(
         'when a dart file changes, '
-        'then code generation runs and the changed file is included in '
-        'the regenerated paths',
+        'then code generation runs and the changed file is included in the regenerated paths',
         () async {
           final event = FileChangeEvent(
             dartFiles: {'/lib/endpoints/user.dart'},
@@ -2384,7 +2380,7 @@ serverpod:
     },
   );
 
-  group('Given defaultProtocolChangeClassifier', () {
+  group('Given defaultProtocolChangeClassifier,', () {
     test(
       'when the file does not exist, '
       'then it returns true (conservative default for deletes)',
@@ -2473,7 +2469,7 @@ class Counter {
     );
   });
 
-  group('Given a watch session with no compiler', () {
+  group('Given a watch session with no compiler,', () {
     late _FakeServer noCompilerServer;
     late _FakeServer noCompilerFactoryServer;
     late List<String> noCompilerFactoryCalls;
@@ -2616,7 +2612,7 @@ class Counter {
     );
   });
 
-  group('Given a watch session with no compiler and no factory', () {
+  group('Given a watch session with no compiler and no factory,', () {
     late _FakeServer noFactoryServer;
     late WatchSession noFactorySession;
 
@@ -2653,7 +2649,7 @@ class Counter {
     );
   });
 
-  group('Given a degraded session that booted with no server', () {
+  group('Given a degraded session that booted with no server,', () {
     late int fullGenerateCalls;
     late bool fullGenerateSuccess;
     late WatchSession degradedSession;
@@ -2799,7 +2795,7 @@ class Counter {
     );
   });
 
-  group('Given a degraded session with no compiler', () {
+  group('Given a degraded session with no compiler,', () {
     late int fullGenerateCalls;
     late WatchSession degradedNoCompilerSession;
 
@@ -2832,7 +2828,7 @@ class Counter {
     );
   });
 
-  group('Given a running session', () {
+  group('Given a running session,', () {
     test(
       'when retryStart is called, '
       'then it is a no-op (recovery only applies while degraded)',

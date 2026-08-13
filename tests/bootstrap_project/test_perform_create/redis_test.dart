@@ -22,9 +22,9 @@ void main() {
 
   group(
     'Given a TemplateContext with redis enabled, '
-    'when performCreate is called with the context and a fullstack template type',
+    'when performCreate is called with the context and a fullstack template type,',
     () {
-      final project = setUpPerformCreateInTempDir(
+      late final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.fullstack,
           redis: true,
@@ -86,9 +86,9 @@ void main() {
 
   group(
     'Given a TemplateContext with redis disabled, '
-    'when performCreate is called with the context and a fullstack template type',
+    'when performCreate is called with the context and a fullstack template type,',
     () {
-      final project = setUpPerformCreateInTempDir(
+      late final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.fullstack,
           redis: false,
@@ -110,9 +110,9 @@ void main() {
 
   group(
     'Given a TemplateContext with redis enabled, '
-    'when performCreate is called with the context and a module template type',
+    'when performCreate is called with the context and a module template type,',
     () {
-      final project = setUpPerformCreateInTempDir(
+      late final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.module,
           redis: true,
@@ -167,9 +167,9 @@ void main() {
 
   group(
     'Given a TemplateContext with redis disabled, '
-    'when performCreate is called with the context and a module template type',
+    'when performCreate is called with the context and a module template type,',
     () {
-      final project = setUpPerformCreateInTempDir(
+      late final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.module,
           redis: false,

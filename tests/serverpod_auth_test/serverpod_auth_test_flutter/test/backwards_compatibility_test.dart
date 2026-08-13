@@ -7,7 +7,9 @@ import 'utils/test_storage.dart';
 
 void main() {
   test(
-    'Given a legacy user, when importing the user, then their legacy password can be migrated later on and used for the login.',
+    'Given a legacy user, '
+    'when importing the user, '
+    'then their legacy password can be migrated later on and used for the login.',
     () async {
       final client = Client(
         'http://localhost:8080/',

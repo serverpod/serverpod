@@ -5,28 +5,30 @@ import 'package:test/test.dart';
 void main() {
   ValueEncoder.set(const PostgresValueEncoder());
 
-  group('Given a ColumnUri', () {
+  group('Given a ColumnUri,', () {
     var columnName = 'uri';
-    var column = ColumnUri(columnName, Table<int?>(tableName: 'test'));
+    late var column = ColumnUri(columnName, Table<int?>(tableName: 'test'));
 
     test(
-      'when toString is called then column name withing double quotes is returned.',
+      'when toString is called, '
+      'then column name withing double quotes is returned.',
       () {
         expect(column.toString(), '"test"."$columnName"');
       },
     );
 
-    test('when columnName getter is called then column name is returned.', () {
+    test('when columnName getter is called, then column name is returned.', () {
       expect(column.columnName, columnName);
     });
 
-    test('when type is called then Uri is returned.', () {
+    test('when type is called, then Uri is returned.', () {
       expect(column.type, Uri);
     });
 
-    group('with _ColumnDefaultOperations mixin', () {
+    group('with _ColumnDefaultOperations mixin,', () {
       test(
-        'when equals compared to NULL value then output is IS NULL expression.',
+        'when equals compared to NULL value, '
+        'then output is IS NULL expression.',
         () {
           var comparisonExpression = column.equals(null);
 
@@ -34,7 +36,8 @@ void main() {
         },
       );
 
-      test('when equals compared to uri then output is equals expression.', () {
+      test('when equals compared to uri, '
+           'then output is equals expression.', () {
         var comparisonExpression = column.equals(
           Uri.parse('https://serverpod.dev/'),
         );
@@ -46,7 +49,8 @@ void main() {
       });
 
       test(
-        'when NOT equals compared to NULL value then output is IS NOT NULL expression.',
+        'when NOT equals compared to NULL value, '
+        'then output is IS NOT NULL expression.',
         () {
           var comparisonExpression = column.notEquals(null);
 
@@ -55,7 +59,8 @@ void main() {
       );
 
       test(
-        'when NOT equals compared to uri then output is NOT equals expression.',
+        'when NOT equals compared to uri, '
+        'then output is NOT equals expression.',
         () {
           var comparisonExpression = column.notEquals(
             Uri.parse('https://serverpod.dev/'),
@@ -69,7 +74,8 @@ void main() {
       );
 
       test(
-        'when checking if expression is in value set then output is IN expression.',
+        'when checking if expression is in value set, '
+        'then output is IN expression.',
         () {
           var comparisonExpression = column.inSet(<Uri>{
             Uri.parse('https://serverpod.dev/'),
@@ -84,7 +90,8 @@ void main() {
       );
 
       test(
-        'when checking if expression is in empty value set then output is FALSE expression.',
+        'when checking if expression is in empty value set, '
+        'then output is FALSE expression.',
         () {
           var comparisonExpression = column.inSet(<Uri>{});
 
@@ -93,7 +100,8 @@ void main() {
       );
 
       test(
-        'when checking if expression is NOT in value set then output is NOT IN expression.',
+        'when checking if expression is NOT in value set, '
+        'then output is NOT IN expression.',
         () {
           var comparisonExpression = column.notInSet(<Uri>{
             Uri.parse('https://serverpod.dev/'),
@@ -108,7 +116,8 @@ void main() {
       );
 
       test(
-        'when checking if expression is NOT in empty value set then output is TRUE expression.',
+        'when checking if expression is NOT in empty value set, '
+        'then output is TRUE expression.',
         () {
           var comparisonExpression = column.notInSet(<Uri>{});
 

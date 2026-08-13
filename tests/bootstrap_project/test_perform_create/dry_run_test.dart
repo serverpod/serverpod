@@ -8,7 +8,7 @@ import 'package:uuid/uuid.dart';
 
 void main() {
   group(
-    'Given a clean state',
+    'Given a clean state,',
     () {
       late Directory workingDir;
 
@@ -25,7 +25,7 @@ void main() {
       });
 
       group(
-        'when calling performCreate with a valid name and dryRun set to true',
+        'when calling performCreate with a valid name and dryRun set to true,',
         () {
           CreateResult? result;
           final projectName = 'test';
@@ -55,7 +55,7 @@ void main() {
       );
 
       group(
-        'when calling performCreate with invalid name and dryRun set to true',
+        'when calling performCreate with invalid name and dryRun set to true,',
         () {
           CreateResult? result;
 
@@ -77,10 +77,10 @@ void main() {
       );
 
       group(
-        'when calling performCreate with an existing project name and dryRun set to true',
+        'when calling performCreate with an existing project name and dryRun set to true,',
         () {
           CreateResult? result;
-          final projectName =
+          late final projectName =
               'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
 
           setUp(() async {

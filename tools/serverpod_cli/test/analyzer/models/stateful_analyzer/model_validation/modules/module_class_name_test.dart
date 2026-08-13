@@ -9,7 +9,8 @@ void main() {
   var config = GeneratorConfigBuilder().withAuthModule().build();
 
   test(
-    'Given a module class with the same name as a user defined class then there is no name conflict reported.',
+    'Given a module class with the same name as a user defined class, '
+    'then there is no name conflict reported.',
     () {
       var models = [
         ModelSourceBuilder()

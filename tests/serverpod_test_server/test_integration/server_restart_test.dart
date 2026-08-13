@@ -17,7 +17,9 @@ void main() {
   });
 
   test(
-    'Given a running Serverpod server when it is shutdown and restarted then it can be successfully started again.',
+    'Given a running Serverpod server, '
+    'when it is shutdown and restarted, '
+    'then it can be successfully started again.',
     () async {
       await serverpod.startWithDatabase();
 
@@ -28,7 +30,9 @@ void main() {
   );
 
   test(
-    'Given a running Serverpod server when it is shutdown and started then database request can be made.',
+    'Given a running Serverpod server, '
+    'when it is shutdown and started, '
+    'then database request can be made.',
     () async {
       await serverpod.startWithDatabase();
 
@@ -42,7 +46,9 @@ void main() {
   );
 
   test(
-    'Given a running Serverpod server when it is shutdown and started then no error is written to stderr.',
+    'Given a running Serverpod server, '
+    'when it is shutdown and started, '
+    'then no error is written to stderr.',
     () async {
       var record = MockStdout();
       await IOOverrides.runZoned(() async {

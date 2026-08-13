@@ -114,7 +114,8 @@ void main() {
     );
 
     test(
-      'when listing sessions for the user with its method, then it is returned.',
+      'when listing sessions for the user with its method, '
+      'then it is returned.',
       () async {
         final sessions = await serverSideSessions.listSessions(
           session,
@@ -134,7 +135,8 @@ void main() {
     );
 
     test(
-      'when listing sessions for the user with another method, then nothing is returned.',
+      'when listing sessions for the user with another method, '
+      'then nothing is returned.',
       () async {
         final sessions = await serverSideSessions.listSessions(
           session,
@@ -148,7 +150,7 @@ void main() {
   });
 
   withServerpod(
-    'Given sessions with different expiration states',
+    'Given sessions with different expiration states,',
     (
       final sessionBuilder,
       final endpoints,
@@ -218,7 +220,8 @@ void main() {
       });
 
       test(
-        'when listing all sessions without filter then all sessions are returned.',
+        'when listing all sessions without filter, '
+        'then all sessions are returned.',
         () async {
           final sessions = await serverSideSessions.listSessions(session);
 
@@ -227,7 +230,8 @@ void main() {
       );
 
       test(
-        'when listing only non-expired sessions then only active session is returned.',
+        'when listing only non-expired sessions, '
+        'then only active session is returned.',
         () async {
           final sessions = await serverSideSessions.listSessions(
             session,
@@ -240,7 +244,8 @@ void main() {
       );
 
       test(
-        'when listing only expired sessions then both expired sessions are returned.',
+        'when listing only expired sessions, '
+        'then both expired sessions are returned.',
         () async {
           final sessions = await serverSideSessions.listSessions(
             session,
@@ -256,7 +261,8 @@ void main() {
       );
 
       test(
-        'when filtering by user and expired status then correct sessions are returned.',
+        'when filtering by user and expired status, '
+        'then correct sessions are returned.',
         () async {
           final sessions = await serverSideSessions.listSessions(
             session,
@@ -270,7 +276,8 @@ void main() {
       );
 
       test(
-        'when filtering by method and expired status then correct session is returned.',
+        'when filtering by method and expired status, '
+        'then correct session is returned.',
         () async {
           final sessions = await serverSideSessions.listSessions(
             session,
@@ -284,7 +291,8 @@ void main() {
       );
 
       test(
-        'when filtering non-expired by method that is expired then no sessions are returned.',
+        'when filtering non-expired by method that is expired, '
+        'then no sessions are returned.',
         () async {
           final sessions = await serverSideSessions.listSessions(
             session,
@@ -299,7 +307,7 @@ void main() {
   );
 
   withServerpod(
-    'Given multiple sessions',
+    'Given multiple sessions,',
     (
       final sessionBuilder,
       final endpoints,
@@ -328,7 +336,7 @@ void main() {
       });
 
       test(
-        'when listing sessions without limit then all sessions are returned.',
+        'when listing sessions without limit, then all sessions are returned.',
         () async {
           final sessions = await serverSideSessions.listSessions(session);
 
@@ -337,7 +345,8 @@ void main() {
       );
 
       test(
-        'when listing sessions with limit then only limited number of sessions are returned.',
+        'when listing sessions with limit, '
+        'then only limited number of sessions are returned.',
         () async {
           final sessions = await serverSideSessions.listSessions(
             session,
@@ -349,7 +358,7 @@ void main() {
       );
 
       test(
-        'when listing sessions with limit then results are ordered by ID.',
+        'when listing sessions with limit, then results are ordered by ID.',
         () async {
           final sessions = await serverSideSessions.listSessions(
             session,
@@ -368,7 +377,8 @@ void main() {
       );
 
       test(
-        'when listing sessions with limit and user filter then correct sessions are returned.',
+        'when listing sessions with limit and user filter, '
+        'then correct sessions are returned.',
         () async {
           final sessions = await serverSideSessions.listSessions(
             session,

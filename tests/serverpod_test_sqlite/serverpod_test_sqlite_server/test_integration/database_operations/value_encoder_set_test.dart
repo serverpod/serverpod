@@ -4,9 +4,9 @@ import 'package:serverpod/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('Given no database is created '
-      'when ValueEncoder instance is accessed '
-      'then throws StateError', () {
+  test('Given no database is created, '
+       'when ValueEncoder instance is accessed, '
+       'then throws StateError', () {
     expect(
       () => ValueEncoder.instance,
       throwsA(
@@ -19,7 +19,7 @@ void main() {
     );
   });
 
-  group('Given a Serverpod instance with no database configured', () {
+  group('Given a Serverpod instance with no database configured,', () {
     late final pod = Serverpod(
       [],
       Protocol(),
@@ -42,8 +42,8 @@ void main() {
       await pod.shutdown(exitProcess: false);
     });
 
-    test('when ValueEncoder instance is accessed '
-        'then throws StateError', () {
+    test('when ValueEncoder instance is accessed, '
+         'then throws StateError', () {
       expect(
         () => ValueEncoder.instance,
         throwsA(
@@ -57,7 +57,7 @@ void main() {
     });
   });
 
-  group('Given a Serverpod instance with a database configured', () {
+  group('Given a Serverpod instance with a database configured,', () {
     late final pod = Serverpod(
       [],
       Protocol(),
@@ -87,8 +87,8 @@ void main() {
       await pod.shutdown(exitProcess: false);
     });
 
-    test('when ValueEncoder instance is accessed '
-        'then returns the SqliteValueEncoder instance', () {
+    test('when ValueEncoder instance is accessed, '
+         'then returns the SqliteValueEncoder instance', () {
       expect(ValueEncoder.instance, isA<SqliteValueEncoder>());
     });
   });

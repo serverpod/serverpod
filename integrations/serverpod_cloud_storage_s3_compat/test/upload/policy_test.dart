@@ -4,7 +4,7 @@ import 'package:serverpod_cloud_storage_s3_compat/src/upload/policy.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a public Policy created with fromS3PresignedPost', () {
+  group('Given a public Policy created with fromS3PresignedPost,', () {
     late Policy policy;
 
     setUp(() {
@@ -20,7 +20,7 @@ void main() {
     });
 
     test(
-      'when accessing bucket property '
+      'when accessing bucket property, '
       'then it has the correct bucket',
       () {
         expect(policy.bucket, 'my-bucket');
@@ -28,7 +28,7 @@ void main() {
     );
 
     test(
-      'when accessing key property '
+      'when accessing key property, '
       'then it has the correct key',
       () {
         expect(policy.key, 'uploads/test-file.txt');
@@ -36,7 +36,7 @@ void main() {
     );
 
     test(
-      'when accessing region property '
+      'when accessing region property, '
       'then it has the correct region',
       () {
         expect(policy.region, 'us-east-1');
@@ -44,7 +44,7 @@ void main() {
     );
 
     test(
-      'when accessing maxFileSize property '
+      'when accessing maxFileSize property, '
       'then it has the correct max file size',
       () {
         expect(policy.maxFileSize, 10 * 1024 * 1024);
@@ -52,7 +52,7 @@ void main() {
     );
 
     test(
-      'when accessing public property '
+      'when accessing public property, '
       'then it has public set to true',
       () {
         expect(policy.public, true);
@@ -60,7 +60,7 @@ void main() {
     );
 
     test(
-      'when accessing credential property '
+      'when accessing credential property, '
       'then it contains the access key',
       () {
         expect(policy.credential, startsWith('AKIAIOSFODNN7EXAMPLE/'));
@@ -68,7 +68,7 @@ void main() {
     );
 
     test(
-      'when accessing credential property '
+      'when accessing credential property, '
       'then it contains the region',
       () {
         expect(policy.credential, contains('us-east-1'));
@@ -76,7 +76,7 @@ void main() {
     );
 
     test(
-      'when accessing datetime property '
+      'when accessing datetime property, '
       'then it is in AWS format',
       () {
         // AWS datetime format: YYYYMMDDTHHMMSSZ
@@ -85,7 +85,7 @@ void main() {
     );
   });
 
-  group('Given a non-public Policy created with fromS3PresignedPost', () {
+  group('Given a non-public Policy created with fromS3PresignedPost,', () {
     late Policy policy;
 
     setUp(() {
@@ -101,7 +101,7 @@ void main() {
     });
 
     test(
-      'when encoding it '
+      'when encoding it, '
       'then it returns a valid base64 string',
       () {
         final encoded = policy.encode();
@@ -111,7 +111,7 @@ void main() {
     );
 
     test(
-      'when encoding and decoding it '
+      'when encoding and decoding it, '
       'then it contains the bucket',
       () {
         final encoded = policy.encode();
@@ -122,7 +122,7 @@ void main() {
     );
 
     test(
-      'when encoding and decoding it '
+      'when encoding and decoding it, '
       'then it contains private ACL',
       () {
         final encoded = policy.encode();
@@ -133,7 +133,7 @@ void main() {
     );
   });
 
-  group('Given a public Policy created with fromS3PresignedPost', () {
+  group('Given a public Policy created with fromS3PresignedPost,', () {
     late Policy policy;
 
     setUp(() {
@@ -148,7 +148,7 @@ void main() {
     });
 
     test(
-      'when converting to string '
+      'when converting to string, '
       'then it contains public-read ACL',
       () {
         expect(policy.toString(), contains('"acl": "public-read"'));
@@ -156,7 +156,7 @@ void main() {
     );
 
     test(
-      'when converting to string '
+      'when converting to string, '
       'then it contains the expiration',
       () {
         expect(policy.toString(), contains('"expiration":'));
@@ -164,7 +164,7 @@ void main() {
     );
 
     test(
-      'when converting to string '
+      'when converting to string, '
       'then it contains content-length-range condition',
       () {
         expect(
@@ -175,7 +175,7 @@ void main() {
     );
 
     test(
-      'when converting to string '
+      'when converting to string, '
       'then it contains the key starts-with condition',
       () {
         expect(
@@ -187,8 +187,8 @@ void main() {
   });
 
   test(
-    'Given a Policy created with eu-west-1 region '
-    'when accessing region property '
+    'Given a Policy created with eu-west-1 region, '
+    'when accessing region property, '
     'then it is correctly set',
     () {
       final policy = Policy.fromS3PresignedPost(
@@ -206,8 +206,8 @@ void main() {
   );
 
   test(
-    'Given a Policy created with default constructor '
-    'when accessing region property '
+    'Given a Policy created with default constructor, '
+    'when accessing region property, '
     'then the default region is us-east-1',
     () {
       final policy = Policy(

@@ -8,12 +8,12 @@ import '../../test_util/builders/database/table_definition_builder.dart';
 
 void main() {
   group(
-    'Given a source and target definition with a table and adding a default value',
+    'Given a source and target definition with a table and adding a default value,',
     () {
       var tableName = 'example_table';
       var columnName = 'example_column';
 
-      var sourceDefinition = DatabaseDefinitionBuilder()
+      late var sourceDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -30,7 +30,7 @@ void main() {
           )
           .build();
 
-      var targetDefinition = DatabaseDefinitionBuilder()
+      late var targetDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -48,7 +48,7 @@ void main() {
           )
           .build();
 
-      var migration = generateDatabaseMigration(
+      late var migration = generateDatabaseMigration(
         databaseSource: sourceDefinition,
         databaseTarget: targetDefinition,
       );
@@ -76,12 +76,12 @@ void main() {
   );
 
   group(
-    'Given a source and target definition with a table and dropping a default value',
+    'Given a source and target definition with a table and dropping a default value,',
     () {
       var tableName = 'example_table';
       var columnName = 'example_column';
 
-      var sourceDefinition = DatabaseDefinitionBuilder()
+      late var sourceDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -99,7 +99,7 @@ void main() {
           )
           .build();
 
-      var targetDefinition = DatabaseDefinitionBuilder()
+      late var targetDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -116,7 +116,7 @@ void main() {
           )
           .build();
 
-      var migration = generateDatabaseMigration(
+      late var migration = generateDatabaseMigration(
         databaseSource: sourceDefinition,
         databaseTarget: targetDefinition,
       );
@@ -141,12 +141,12 @@ void main() {
   );
 
   group(
-    'Given a source and target definition with a table and changing a default value',
+    'Given a source and target definition with a table and changing a default value,',
     () {
       var tableName = 'example_table';
       var columnName = 'example_column';
 
-      var sourceDefinition = DatabaseDefinitionBuilder()
+      late var sourceDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -164,7 +164,7 @@ void main() {
           )
           .build();
 
-      var targetDefinition = DatabaseDefinitionBuilder()
+      late var targetDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -182,7 +182,7 @@ void main() {
           )
           .build();
 
-      var migration = generateDatabaseMigration(
+      late var migration = generateDatabaseMigration(
         databaseSource: sourceDefinition,
         databaseTarget: targetDefinition,
       );
@@ -210,12 +210,12 @@ void main() {
   );
 
   group(
-    'Given a source and target definition with a table and the same default value',
+    'Given a source and target definition with a table and the same default value,',
     () {
       var tableName = 'example_table';
       var columnName = 'example_column';
 
-      var sourceDefinition = DatabaseDefinitionBuilder()
+      late var sourceDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -233,7 +233,7 @@ void main() {
           )
           .build();
 
-      var targetDefinition = DatabaseDefinitionBuilder()
+      late var targetDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -251,7 +251,7 @@ void main() {
           )
           .build();
 
-      var migration = generateDatabaseMigration(
+      late var migration = generateDatabaseMigration(
         databaseSource: sourceDefinition,
         databaseTarget: targetDefinition,
       );
@@ -263,11 +263,11 @@ void main() {
   );
 
   group(
-    'Given a source and target definition with a table changing the id field on the model to not-nullable',
+    'Given a source and target definition with a table changing the id field on the model to not-nullable,',
     () {
       var tableName = 'example_table';
 
-      var sourceDefinition = DatabaseDefinitionBuilder()
+      late var sourceDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -277,7 +277,7 @@ void main() {
           )
           .build();
 
-      var targetDefinition = DatabaseDefinitionBuilder()
+      late var targetDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -287,7 +287,7 @@ void main() {
           )
           .build();
 
-      var migration = generateDatabaseMigration(
+      late var migration = generateDatabaseMigration(
         databaseSource: sourceDefinition,
         databaseTarget: targetDefinition,
       );
@@ -299,11 +299,11 @@ void main() {
   );
 
   group(
-    'Given a source and target definition with a table changing the id field on the model to nullable',
+    'Given a source and target definition with a table changing the id field on the model to nullable,',
     () {
       var tableName = 'example_table';
 
-      var sourceDefinition = DatabaseDefinitionBuilder()
+      late var sourceDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -313,7 +313,7 @@ void main() {
           )
           .build();
 
-      var targetDefinition = DatabaseDefinitionBuilder()
+      late var targetDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -323,7 +323,7 @@ void main() {
           )
           .build();
 
-      var migration = generateDatabaseMigration(
+      late var migration = generateDatabaseMigration(
         databaseSource: sourceDefinition,
         databaseTarget: targetDefinition,
       );
@@ -335,11 +335,11 @@ void main() {
   );
 
   group(
-    'Given a source and target definition with a table changing the id field from int to UUIDv4',
+    'Given a source and target definition with a table changing the id field from int to UUIDv4,',
     () {
       var tableName = 'example_table';
 
-      var sourceDefinition = DatabaseDefinitionBuilder()
+      late var sourceDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -349,7 +349,7 @@ void main() {
           )
           .build();
 
-      var targetDefinition = DatabaseDefinitionBuilder()
+      late var targetDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -359,7 +359,7 @@ void main() {
           )
           .build();
 
-      var migration = generateDatabaseMigration(
+      late var migration = generateDatabaseMigration(
         databaseSource: sourceDefinition,
         databaseTarget: targetDefinition,
       );
@@ -420,11 +420,11 @@ void main() {
   );
 
   group(
-    'Given a source and target definition with a table changing the id field from UUIDv4 to UUIDv7',
+    'Given a source and target definition with a table changing the id field from UUIDv4 to UUIDv7,',
     () {
       var tableName = 'example_table';
 
-      var sourceDefinition = DatabaseDefinitionBuilder()
+      late var sourceDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -434,7 +434,7 @@ void main() {
           )
           .build();
 
-      var targetDefinition = DatabaseDefinitionBuilder()
+      late var targetDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -444,7 +444,7 @@ void main() {
           )
           .build();
 
-      var migration = generateDatabaseMigration(
+      late var migration = generateDatabaseMigration(
         databaseSource: sourceDefinition,
         databaseTarget: targetDefinition,
       );
@@ -468,7 +468,7 @@ void main() {
   );
 
   group(
-    'Given a source and target definition where an existing int column is changed to a serial auto-increment column',
+    'Given a source and target definition where an existing int column is changed to a serial auto-increment column,',
     () {
       var tableName = 'example_table';
       var columnName = 'count';
@@ -491,7 +491,7 @@ void main() {
               )
               .build();
 
-      var migration = generateDatabaseMigration(
+      late var migration = generateDatabaseMigration(
         databaseSource: definition(serial: false),
         databaseTarget: definition(serial: true),
       );

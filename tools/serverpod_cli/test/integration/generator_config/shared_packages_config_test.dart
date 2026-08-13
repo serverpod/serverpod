@@ -13,7 +13,7 @@ void main() {
   });
 
   group(
-    'Given a generator.yaml without shared_packages',
+    'Given a generator.yaml without shared_packages,',
     () {
       setUpAll(() async {
         var projectDir = _createProject(
@@ -25,7 +25,8 @@ type: server
       });
 
       test(
-        'when loading GeneratorConfig then sharedModelsSourcePathsParts is empty.',
+        'when loading GeneratorConfig, '
+        'then sharedModelsSourcePathsParts is empty.',
         () async {
           var config = await GeneratorConfig.load(
             serverRootDir: path.join(d.sandbox, _serverRootDir),
@@ -39,7 +40,7 @@ type: server
   );
 
   group(
-    'Given a generator.yaml with shared_packages as an empty list',
+    'Given a generator.yaml with shared_packages as an empty list,',
     () {
       setUpAll(() async {
         var projectDir = _createProject(
@@ -52,7 +53,8 @@ shared_packages: []
       });
 
       test(
-        'when loading GeneratorConfig then sharedModelsSourcePathsParts is empty.',
+        'when loading GeneratorConfig, '
+        'then sharedModelsSourcePathsParts is empty.',
         () async {
           var config = await GeneratorConfig.load(
             serverRootDir: path.join(d.sandbox, _serverRootDir),
@@ -66,7 +68,7 @@ shared_packages: []
   );
 
   group(
-    'Given a generator.yaml with shared_packages pointing to a valid package',
+    'Given a generator.yaml with shared_packages pointing to a valid package,',
     () {
       setUpAll(() async {
         var projectDir = _createProject(
@@ -81,7 +83,8 @@ shared_packages:
       });
 
       test(
-        'when loading GeneratorConfig then sharedModelsSourcePathsParts contains the package.',
+        'when loading GeneratorConfig, '
+        'then sharedModelsSourcePathsParts contains the package.',
         () async {
           var config = await GeneratorConfig.load(
             serverRootDir: path.join(d.sandbox, _serverRootDir),
@@ -100,7 +103,7 @@ shared_packages:
   );
 
   group(
-    'Given a generator.yaml with shared_packages that is not a list',
+    'Given a generator.yaml with shared_packages that is not a list,',
     () {
       setUpAll(() async {
         var projectDir = _createProject(
@@ -113,7 +116,8 @@ shared_packages: not_a_list
       });
 
       test(
-        'when loading GeneratorConfig then SourceSpanFormatException is thrown.',
+        'when loading GeneratorConfig, '
+        'then SourceSpanFormatException is thrown.',
         () async {
           await expectLater(
             GeneratorConfig.load(
@@ -134,7 +138,7 @@ shared_packages: not_a_list
   );
 
   group(
-    'Given a generator.yaml with shared_packages containing a non-string path',
+    'Given a generator.yaml with shared_packages containing a non-string path,',
     () {
       setUpAll(() async {
         var projectDir = _createProject(
@@ -148,7 +152,8 @@ shared_packages:
       });
 
       test(
-        'when loading GeneratorConfig then SourceSpanFormatException is thrown.',
+        'when loading GeneratorConfig, '
+        'then SourceSpanFormatException is thrown.',
         () async {
           await expectLater(
             GeneratorConfig.load(
@@ -170,7 +175,7 @@ shared_packages:
   );
 
   group(
-    'Given a generator.yaml with an absolute shared_packages path',
+    'Given a generator.yaml with an absolute shared_packages path,',
     () {
       setUpAll(() async {
         var projectDir = _createProject(
@@ -184,7 +189,8 @@ shared_packages:
       });
 
       test(
-        'when loading GeneratorConfig then SourceSpanFormatException is thrown.',
+        'when loading GeneratorConfig, '
+        'then SourceSpanFormatException is thrown.',
         () async {
           await expectLater(
             GeneratorConfig.load(
@@ -206,7 +212,7 @@ shared_packages:
   );
 
   group(
-    'Given a generator.yaml with shared_packages path pointing to a missing directory',
+    'Given a generator.yaml with shared_packages path pointing to a missing directory,',
     () {
       setUpAll(() async {
         var projectDir = _createProject(
@@ -221,7 +227,8 @@ shared_packages:
       });
 
       test(
-        'when loading GeneratorConfig then ServerpodProjectNotFoundException is thrown.',
+        'when loading GeneratorConfig, '
+        'then ServerpodProjectNotFoundException is thrown.',
         () async {
           await expectLater(
             GeneratorConfig.load(

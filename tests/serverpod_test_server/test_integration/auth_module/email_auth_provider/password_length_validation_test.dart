@@ -30,8 +30,8 @@ void main() async {
     );
   });
 
-  withServerpod('Given an existing user ', (sessionBuilder, _) {
-    final session = sessionBuilder.build();
+  withServerpod('Given an existing user,', (sessionBuilder, _) {
+    late final session = sessionBuilder.build();
 
     const userName = 'user-change';
     const email = 'user.change@serverpod.dev';
@@ -43,7 +43,8 @@ void main() async {
     });
 
     test(
-      'when changing to a password that is in range within required password length then password change is accepted',
+      'when changing to a password that is in range within required password length, '
+      'then password change is accepted',
       () async {
         final user = await Users.findUserByEmail(session, email);
         expect(user, isNotNull, reason: 'User should exist');
@@ -60,7 +61,8 @@ void main() async {
     );
 
     test(
-      'when changing to a password that is shorter than minimum required password length then password change is rejected',
+      'when changing to a password that is shorter than minimum required password length, '
+      'then password change is rejected',
       () async {
         final user = await Users.findUserByEmail(session, email);
         expect(user, isNotNull, reason: 'User should exist');
@@ -77,7 +79,8 @@ void main() async {
     );
 
     test(
-      'when changing to a password that is above max required password length then password change is rejected',
+      'when changing to a password that is above max required password length, '
+      'then password change is rejected',
       () async {
         final user = await Users.findUserByEmail(session, email);
         expect(user, isNotNull, reason: 'User should exist');
@@ -94,7 +97,8 @@ void main() async {
     );
 
     test(
-      'when resetting a password that is in range within required password length then password change is accepted',
+      'when resetting a password that is in range within required password length, '
+      'then password change is accepted',
       () async {
         // Initiate a fresh reset to get a valid code
         final initiated = await Emails.initiatePasswordReset(session, email);
@@ -117,7 +121,8 @@ void main() async {
     );
 
     test(
-      'when resetting a password that is shorter than minimum required password length then password change is rejected',
+      'when resetting a password that is shorter than minimum required password length, '
+      'then password change is rejected',
       () async {
         final initiated = await Emails.initiatePasswordReset(session, email);
         expect(initiated, isTrue, reason: 'Password reset should be initiated');
@@ -139,7 +144,8 @@ void main() async {
     );
 
     test(
-      'when resetting a password that is longer than max required password length then password change is rejected',
+      'when resetting a password that is longer than max required password length, '
+      'then password change is rejected',
       () async {
         final initiated = await Emails.initiatePasswordReset(session, email);
         expect(initiated, isTrue, reason: 'Password reset should be initiated');
@@ -161,13 +167,14 @@ void main() async {
     );
   });
 
-  withServerpod('Given create account request ', (sessionBuilder, _) async {
-    var session = sessionBuilder.build();
+  withServerpod('Given create account request,', (sessionBuilder, _) async {
+    late var session = sessionBuilder.build();
     var userName = 'test';
     var email = 'test@serverpod.dev';
 
     test(
-      'when creating an account with a password that is in range within required password length then password change is accepted',
+      'when creating an account with a password that is in range within required password length, '
+      'then password change is accepted',
       () async {
         final response = await Emails.createAccountRequest(
           session,
@@ -192,7 +199,8 @@ void main() async {
     );
 
     test(
-      'when creating an account with a password that is shorter than minimum required password length then password change is rejected',
+      'when creating an account with a password that is shorter than minimum required password length, '
+      'then password change is rejected',
       () async {
         final response = await Emails.createAccountRequest(
           session,
@@ -206,7 +214,8 @@ void main() async {
     );
 
     test(
-      'when creating an account with a password that is longer than max required password length then password change is rejected',
+      'when creating an account with a password that is longer than max required password length, '
+      'then password change is rejected',
       () async {
         final response = await Emails.createAccountRequest(
           session,

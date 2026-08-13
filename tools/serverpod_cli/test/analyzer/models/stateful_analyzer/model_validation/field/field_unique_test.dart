@@ -10,8 +10,8 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   test(
-    'Given a class with a field marked as unique '
-    'when parsed '
+    'Given a class with a field marked as unique, '
+    'when parsed, '
     'then an index is auto-generated.',
     () {
       var models = [
@@ -50,8 +50,8 @@ void main() {
   );
 
   test(
-    'Given a class with a field marked as unique=true '
-    'when parsed '
+    'Given a class with a field marked as unique=true, '
+    'when parsed, '
     'then an index is auto-generated.',
     () {
       var models = [
@@ -91,8 +91,8 @@ void main() {
   );
 
   test(
-    'Given a class with a field marked as unique=false '
-    'when parsed '
+    'Given a class with a field marked as unique=false, '
+    'when parsed, '
     'then no index is auto-generated.',
     () {
       var models = [
@@ -128,8 +128,8 @@ void main() {
   );
 
   test(
-    'Given a class with multiple fields marked as unique '
-    'when parsed '
+    'Given a class with multiple fields marked as unique, '
+    'when parsed, '
     'then multiple indexes are auto-generated.',
     () {
       var models = [
@@ -177,8 +177,8 @@ void main() {
   );
 
   test(
-    'Given a class with both unique field and manual indexes '
-    'when parsed '
+    'Given a class with both unique field and manual indexes, '
+    'when parsed, '
     'then both are included.',
     () {
       var models = [
@@ -228,8 +228,8 @@ void main() {
   );
 
   test(
-    'Given a class with a field with column override marked as unique '
-    'when parsed '
+    'Given a class with a field with column override marked as unique, '
+    'when parsed, '
     'then index uses column name.',
     () {
       var models = [
@@ -266,8 +266,8 @@ void main() {
   );
 
   test(
-    'Given a class without a table when a field is marked as unique '
-    'when parsed '
+    'Given a class without a table, '
+    'when a field is marked as unique when parsed, '
     'then no index is auto-generated.',
     () {
       var models = [
@@ -300,8 +300,8 @@ void main() {
   );
 
   test(
-    'Given a manual index with the same name as an auto-generated unique index '
-    'when parsed '
+    'Given a manual index with the same name as an auto-generated unique index, '
+    'when parsed, '
     'then collect an error.',
     () {
       var models = [

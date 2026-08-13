@@ -5,12 +5,12 @@ import 'serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given withServerpod without runtimeParametersBuilder',
+    'Given withServerpod without runtimeParametersBuilder,',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late var session = sessionBuilder.build();
 
-      test('when querying runtime parameters globally '
-          'then no database parameters are set.', () async {
+      test('when querying runtime parameters globally, '
+           'then no database parameters are set.', () async {
         // Forces the pgvector extension to load. After the extension is loaded,
         // parameters default will return a value instead of null. Without this
         // query, the order of the tests can cause a null value to be returned.
@@ -46,8 +46,8 @@ void main() {
   );
 
   withServerpod(
-    'Given withServerpod with runtime parameters set globally '
-    'when querying runtime parameters globally',
+    'Given withServerpod with runtime parameters set globally, '
+    'when querying runtime parameters globally,',
     runtimeParametersBuilder: (params) => [
       params.hnswIndexQuery(
         efSearch: 50,
@@ -71,7 +71,7 @@ void main() {
       ),
     ],
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late var session = sessionBuilder.build();
 
       Future<void> validateParameters() async {
         var hnswCheckQuery = HnswIndexQueryOptions().buildCheckValues();
@@ -112,8 +112,8 @@ void main() {
   );
 
   withServerpod(
-    'Given withServerpod with runtime parameters set globally '
-    'when setting local parameters in transaction',
+    'Given withServerpod with runtime parameters set globally, '
+    'when setting local parameters in transaction,',
     runtimeParametersBuilder: (params) => [
       params.hnswIndexQuery(
         efSearch: 50,
@@ -123,7 +123,7 @@ void main() {
       ),
     ],
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late var session = sessionBuilder.build();
 
       test('then local parameters override global ones temporarily.', () async {
         await session.db.ensureVectorLoaded();

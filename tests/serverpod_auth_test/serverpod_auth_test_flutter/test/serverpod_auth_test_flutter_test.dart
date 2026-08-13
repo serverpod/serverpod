@@ -6,7 +6,9 @@ import 'utils/test_storage.dart';
 
 void main() {
   test(
-    'Given a session, when setting it on the `SessionManager`, then the server recognizes the user correctly.',
+    'Given a session, '
+    'when setting it on the `SessionManager`, '
+    'then the server recognizes the user correctly.',
     () async {
       final client = Client(
         'http://localhost:8080/',

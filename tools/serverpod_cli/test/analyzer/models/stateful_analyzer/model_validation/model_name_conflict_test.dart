@@ -11,9 +11,8 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   group('Given an enum with the same name defined in', () {
-    test('a module and then the project (order matters) '
-        'when the project enum is referenced '
-        'then the type is resolved to the project enum', () {
+    test('a module and, '
+         'then the project (order matters) when the project enum is referenced then the type is resolved to the project enum', () {
       var commonEnumName = 'CommonEnum';
       var firstModuleAlias = 'module1';
       var modelSources = [
@@ -71,9 +70,9 @@ void main() {
       );
     });
 
-    test('different modules (order matters)'
-        'when the second module enum is referenced '
-        'then the type is resolved to the second module enum', () {
+    test('different modules (order matters), '
+         'when the second module enum is referenced, '
+         'then the type is resolved to the second module enum', () {
       var commonEnumName = 'CommonEnum';
       var firstModuleAlias = 'module1';
       var secondModuleAlias = 'module2';
@@ -131,9 +130,8 @@ void main() {
   });
 
   group('Given a class with the same name defined in', () {
-    test('a module and then the project (order matters) '
-        'when the project class is referenced in a relation '
-        'then the relation is resolved to the project class', () {
+    test('a module and, '
+         'then the project (order matters) when the project class is referenced in a relation then the relation is resolved to the project class', () {
       var commonClassName = 'CommonClass';
       var firstModuleAlias = 'module1';
       var modelSources = [
@@ -186,9 +184,9 @@ void main() {
       expect(fieldType.parentTable, 'common_class_$defaultModuleAlias');
     });
 
-    test('different modules (order matters)'
-        'when the second module class is referenced in a relation '
-        'then the relation is resolved to the second module class', () {
+    test('different modules (order matters), '
+         'when the second module class is referenced in a relation, '
+         'then the relation is resolved to the second module class', () {
       var commonClassName = 'CommonClass';
       var firstModuleAlias = 'module1';
       var secondModuleAlias = 'module2';

@@ -4,7 +4,7 @@ import 'package:serverpod_test_sqlite_server/test_util/service_client.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given new protocol model with table', () {
+  group('Given new protocol model with table,', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -13,7 +13,7 @@ void main() {
     });
 
     test(
-      'when creating and applying migration then database contains new table.',
+      'when creating and applying migration, then database contains new table.',
       () async {
         var tableName = 'migrated_table';
         var tag = 'add-table';
@@ -58,7 +58,7 @@ void main() {
     );
   });
 
-  group('Given multiple new protocol models with table', () {
+  group('Given multiple new protocol models with table,', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
         resetSql:
@@ -70,7 +70,8 @@ void main() {
     });
 
     test(
-      'when creating and applying migration then database contains new tables.',
+      'when creating and applying migration, '
+      'then database contains new tables.',
       () async {
         var tag = 'add-multiple-tables';
         var tables = [
@@ -133,7 +134,7 @@ void main() {
     );
   });
 
-  group('Given protocol model with table that is removed', () {
+  group('Given protocol model with table that is removed,', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -141,7 +142,7 @@ void main() {
       );
     });
 
-    test('when creating migration then creating migration fails.', () async {
+    test('when creating migration, then creating migration fails.', () async {
       var tag = 'drop-table';
       var initialStateProtocols = {
         'migrated_table': '''
@@ -171,7 +172,7 @@ void main() {
     });
   });
 
-  group('Given protocol model with table that is removed', () {
+  group('Given protocol model with table that is removed,', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -180,7 +181,8 @@ void main() {
     });
 
     test(
-      'when creating migration using --force and applying it then table is removed from database.',
+      'when creating migration using --force and applying it, '
+      'then table is removed from database.',
       () async {
         var tag = 'drop-table';
         var table = 'migrated_table';

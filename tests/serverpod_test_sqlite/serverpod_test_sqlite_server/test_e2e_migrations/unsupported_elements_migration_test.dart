@@ -29,7 +29,7 @@ indexes:
 
   group(
     'Given a new model with an unsupported index type for the SQLite dialect, '
-    'when creating a migration, ',
+    'when creating a migration,',
     () {
       late int exitCode;
       late String stdout;

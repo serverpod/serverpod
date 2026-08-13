@@ -12,7 +12,7 @@ void main() {
     publicPort: 0,
   );
 
-  group('Given Serverpod initialized with custom --server-id', () {
+  group('Given Serverpod initialized with custom --server-id,', () {
     late Serverpod pod;
     const customServerId = 'my-pod-42';
 
@@ -33,7 +33,7 @@ void main() {
     });
 
     test(
-      'when accessing all `serverId` properties '
+      'when accessing all `serverId` properties, '
       'then they all return the custom server id.',
       () {
         expect(pod.serverId, equals(customServerId));
@@ -43,7 +43,7 @@ void main() {
     );
   });
 
-  group('Given Serverpod initialized without --server-id', () {
+  group('Given Serverpod initialized without --server-id,', () {
     late Serverpod pod;
 
     setUp(() {
@@ -63,7 +63,7 @@ void main() {
     });
 
     test(
-      'when accessing all `serverId` properties '
+      'when accessing all `serverId` properties, '
       'then they all return "default".',
       () {
         expect(pod.config.serverId, equals('default'));

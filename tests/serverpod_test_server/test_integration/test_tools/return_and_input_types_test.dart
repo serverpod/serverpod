@@ -6,9 +6,9 @@ import 'serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given TestToolsEndpoint',
+    'Given TestToolsEndpoint,',
     (sessionBuilder, endpoints) {
-      test('when calling returnsString then echoes string', () async {
+      test('when calling returnsString, then echoes string', () async {
         final result = await endpoints.testTools.returnsString(
           sessionBuilder,
           "Hello",
@@ -16,7 +16,7 @@ void main() {
         expect(result, 'Hello');
       });
 
-      test('when calling returnsStream then returns a stream', () async {
+      test('when calling returnsStream, then returns a stream', () async {
         final result = await endpoints.testTools
             .returnsStream(sessionBuilder, 3)
             .toList();
@@ -24,7 +24,8 @@ void main() {
       });
 
       test(
-        'when calling returnsListFromInputStream then returns a list of the input stream',
+        'when calling returnsListFromInputStream, '
+        'then returns a list of the input stream',
         () async {
           final stream = Stream<int>.fromIterable([1, 2, 3, 4, 5]);
           final result = await endpoints.testTools.returnsListFromInputStream(
@@ -36,7 +37,8 @@ void main() {
       );
 
       test(
-        'when calling returnsSimpleDataListFromInputStream then returns a list of the input stream',
+        'when calling returnsSimpleDataListFromInputStream, '
+        'then returns a list of the input stream',
         () async {
           final stream = Stream<SimpleData>.fromIterable([
             SimpleData(num: 1),
@@ -50,7 +52,8 @@ void main() {
       );
 
       test(
-        'when calling returnsStreamFromInputStream then echoes the input stream back',
+        'when calling returnsStreamFromInputStream, '
+        'then echoes the input stream back',
         () async {
           final stream = Stream<int>.fromIterable([1, 2, 3, 4, 5]);
           final result = endpoints.testTools.returnsStreamFromInputStream(
@@ -62,7 +65,8 @@ void main() {
       );
 
       test(
-        'when calling returnsSimpleDataStreamFromInputStream then echoes the input stream back',
+        'when calling returnsSimpleDataStreamFromInputStream, '
+        'then echoes the input stream back',
         () async {
           final stream = Stream<SimpleData>.fromIterable([
             SimpleData(num: 1),
@@ -78,7 +82,8 @@ void main() {
       );
 
       test(
-        'when calling postNumberToSharedStream and listenForNumbersOnSharedStream with different sessions then number should be echoed',
+        'when calling postNumberToSharedStream and listenForNumbersOnSharedStream with different sessions, '
+        'then number should be echoed',
         () async {
           var userSession1 = sessionBuilder.copyWith(
             authentication: AuthenticationOverride.authenticationInfo(
@@ -106,7 +111,8 @@ void main() {
       );
 
       test(
-        'when calling postNumberToSharedStreamAndReturnStream without listening to the return stream then number should still be posted',
+        'when calling postNumberToSharedStreamAndReturnStream without listening to the return stream, '
+        'then number should still be posted',
         () async {
           var stream = endpoints.testTools.listenForNumbersOnSharedStream(
             sessionBuilder,
@@ -121,7 +127,8 @@ void main() {
         },
       );
 
-      test('when calling echoSimpleData then should echo the object', () async {
+      test('when calling echoSimpleData, '
+           'then should echo the object', () async {
         final data = SimpleData(num: 1);
         var result = await endpoints.testTools.echoSimpleData(
           sessionBuilder,
@@ -131,7 +138,7 @@ void main() {
       });
 
       test(
-        'when calling echoSimpleDatas then should echo the object',
+        'when calling echoSimpleDatas, then should echo the object',
         () async {
           final data1 = SimpleData(num: 1);
           final data2 = SimpleData(num: 2);
@@ -145,7 +152,7 @@ void main() {
       );
 
       test(
-        'when calling echoTypes then should return the `Types` model',
+        'when calling echoTypes, then should return the `Types` model',
         () async {
           final types = Types(
             aRecord: ('hello', optionalUri: Uri.parse('world://')),
@@ -163,7 +170,7 @@ void main() {
       );
 
       test(
-        'when calling echoTypesList then should return the `Types` models',
+        'when calling echoTypesList, then should return the `Types` models',
         () async {
           final typesList = [
             Types(aRecord: ('hello', optionalUri: null)),
@@ -181,7 +188,7 @@ void main() {
       );
 
       test(
-        'when calling echoModuleDatatype then should return the model',
+        'when calling echoModuleDatatype, then should return the model',
         () async {
           final model = ModuleDatatype(
             model: ModuleClass(name: 'hello', data: 1, record: (true,)),
@@ -213,7 +220,7 @@ void main() {
       );
 
       test(
-        'when calling streamModuleDatatype then should return the models',
+        'when calling streamModuleDatatype, then should return the models',
         () async {
           final initial = ModuleDatatype(
             model: ModuleClass(name: 'hello', data: 1, record: (true,)),
@@ -281,7 +288,7 @@ void main() {
       );
 
       test(
-        'when calling echoModuleClass then should return the model',
+        'when calling echoModuleClass, then should return the model',
         () async {
           final model = ModuleClass(name: 'hello', data: 1, record: (true,));
 
@@ -297,7 +304,7 @@ void main() {
       );
 
       test(
-        'when calling streamModuleClass then should return the models',
+        'when calling streamModuleClass, then should return the models',
         () async {
           final initial = ModuleClass(name: 'hello', data: 1, record: (true,));
           final streamed = [
@@ -328,7 +335,7 @@ void main() {
         },
       );
 
-      test('when calling echoRecord then should return the record', () async {
+      test('when calling echoRecord, then should return the record', () async {
         final record = ('hello', (2, true));
         var result = await endpoints.testTools.echoRecord(
           sessionBuilder,
@@ -337,7 +344,8 @@ void main() {
         expect(result, record);
       });
 
-      test('when calling echoRecords then should return the records', () async {
+      test('when calling echoRecords, '
+           'then should return the records', () async {
         final records = [
           ('hello', (2, true)),
           ('world', (4, false)),
@@ -351,7 +359,8 @@ void main() {
       });
 
       test(
-        'when calling returnRecordWithSerializableObject then should return the record with serialized object',
+        'when calling returnRecordWithSerializableObject, '
+        'then should return the record with serialized object',
         () async {
           final data = SimpleData(num: 42);
           var result = await endpoints.testTools
@@ -367,7 +376,7 @@ void main() {
       );
 
       test(
-        'when calling recordEchoStream then should return the records',
+        'when calling recordEchoStream, then should return the records',
         () async {
           final records =
               <
@@ -464,7 +473,7 @@ void main() {
       );
 
       test(
-        'when calling listOfRecordEchoStream then should return the records',
+        'when calling listOfRecordEchoStream, then should return the records',
         () async {
           final lists = <List<(String, int)>>[
             [
@@ -495,7 +504,7 @@ void main() {
       );
 
       test(
-        'when calling nullableRecordEchoStream then should return the records',
+        'when calling nullableRecordEchoStream, then should return the records',
         () async {
           final records =
               <
@@ -525,7 +534,8 @@ void main() {
       );
 
       test(
-        'when calling nullableListOfRecordEchoStream then should return the records',
+        'when calling nullableListOfRecordEchoStream, '
+        'then should return the records',
         () async {
           final lists = <List<(String, int)>?>[
             [
@@ -559,7 +569,8 @@ void main() {
       );
 
       test(
-        'when calling modelWithRecordsEchoStream then should return the models',
+        'when calling modelWithRecordsEchoStream, '
+        'then should return the models',
         () async {
           final lists = <TypesRecord?>[
             TypesRecord(anInt: (1,)),
@@ -599,10 +610,11 @@ void main() {
   );
 
   withServerpod(
-    'Given RecordParametersEndpoint',
+    'Given RecordParametersEndpoint,',
     (sessionBuilder, endpoints) {
       test(
-        'when calling returnRecordOfNamedIntAndObject then should return the named record with deserialized object',
+        'when calling returnRecordOfNamedIntAndObject, '
+        'then should return the named record with deserialized object',
         () async {
           final data = SimpleData(num: 42);
           var result = await endpoints.recordParameters
@@ -617,7 +629,8 @@ void main() {
       );
 
       test(
-        'when calling returnNullableRecordOfNamedIntAndObject with a non-null record then should return the named record with deserialized object',
+        'when calling returnNullableRecordOfNamedIntAndObject with a non-null record, '
+        'then should return the named record with deserialized object',
         () async {
           final data = SimpleData(num: 7);
           var result = await endpoints.recordParameters

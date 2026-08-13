@@ -9,15 +9,15 @@ final config = GeneratorConfigBuilder().withName(projectName).build();
 const generator = DartTemporaryProtocolGenerator();
 
 void main() {
-  group('Given a single class when generating the code', () {
-    var models = [
+  group('Given a single class, when generating the code,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
@@ -31,8 +31,8 @@ void main() {
     });
   });
 
-  group('Given a multiple classes when generating the code', () {
-    var models = [
+  group('Given a multiple classes, when generating the code,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
@@ -43,7 +43,7 @@ void main() {
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
@@ -66,7 +66,9 @@ void main() {
   });
 
   test(
-    'Given a server-side only class when generating the code then the protocol exports the class',
+    'Given a server-side only class, '
+    'when generating the code, '
+    'then the protocol exports the class',
     () {
       var models = [
         ModelClassDefinitionBuilder()

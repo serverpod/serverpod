@@ -34,7 +34,7 @@ void main() {
       );
 
       group(
-        'when round-tripping the JSON-converted data through jsonEncode and jsonDecode, ',
+        'when round-tripping the JSON-converted data through jsonEncode and jsonDecode,',
         () {
           late Map<String, dynamic> jsonDecoded;
 
@@ -101,7 +101,7 @@ void main() {
   );
 
   group(
-    'Given a dynamic field containing nested maps with dynamic keys, ',
+    'Given a dynamic field containing nested maps with dynamic keys,',
     () {
       final value = [
         {'a': 1, 2: 'two'},

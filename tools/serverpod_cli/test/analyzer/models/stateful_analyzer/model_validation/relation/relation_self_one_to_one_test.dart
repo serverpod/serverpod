@@ -10,9 +10,9 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   group(
-    'Given a class with a named object self relation on both sides with a field references where the side without the foreign key is declared first',
+    'Given a class with a named object self relation on both sides with a field references where the side without the foreign key is declared first,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withFileName('post').withYaml(
           '''
         class: Post
@@ -30,13 +30,13 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       var errors = collector.errors;
 
@@ -47,7 +47,7 @@ void main() {
       var postDefinition = definitions.firstOrNull as ClassDefinition?;
 
       group('then the successor field relation', () {
-        var field = postDefinition?.findField('next');
+        late var field = postDefinition?.findField('next');
         var relation = field?.relation;
 
         test('name is null.', () {
@@ -85,7 +85,7 @@ void main() {
       }, skip: errors.isNotEmpty);
 
       group('then the predecessor field relation', () {
-        var field = postDefinition?.findField('previous');
+        late var field = postDefinition?.findField('previous');
         var relation = field?.relation;
 
         test('name is defined', () {
@@ -127,7 +127,7 @@ void main() {
       }, skip: errors.isNotEmpty);
 
       group('then the successorId field relation', () {
-        var field = postDefinition?.findField('nextId');
+        late var field = postDefinition?.findField('nextId');
         var relation = field?.relation;
 
         test('name is defined', () {
@@ -158,9 +158,9 @@ void main() {
   );
 
   group(
-    'Given a class with a named object self relation on both sides with a field references where the side without the foreign key is declared last',
+    'Given a class with a named object self relation on both sides with a field references where the side without the foreign key is declared last,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withFileName('user').withYaml(
           '''
         class: User
@@ -178,13 +178,13 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       var errors = collector.errors;
 
@@ -195,7 +195,7 @@ void main() {
       var userDefinition = definitions.firstOrNull as ClassDefinition?;
 
       group('then the successor field relation', () {
-        var field = userDefinition?.findField('successor');
+        late var field = userDefinition?.findField('successor');
         var relation = field?.relation;
 
         test('name is null', () {
@@ -233,7 +233,7 @@ void main() {
       }, skip: errors.isNotEmpty);
 
       group('then the predecessor field relation', () {
-        var field = userDefinition?.findField('predecessor');
+        late var field = userDefinition?.findField('predecessor');
         var relation = field?.relation;
 
         test('name is defined', () {
@@ -271,7 +271,7 @@ void main() {
       }, skip: errors.isNotEmpty);
 
       group('then the successorId field relation', () {
-        var field = userDefinition?.findField('successorId');
+        late var field = userDefinition?.findField('successorId');
         var relation = field?.relation;
 
         test('name is defined', () {
@@ -302,9 +302,9 @@ void main() {
   );
 
   group(
-    'Given a class with a named object self relation on both sides with a field references where the side without the foreign key is declared last',
+    'Given a class with a named object self relation on both sides with a field references where the side without the foreign key is declared last,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withFileName('user').withYaml(
           '''
         class: User
@@ -317,13 +317,13 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       var userDefinition = definitions.first as ClassDefinition;
 
@@ -334,7 +334,7 @@ void main() {
       });
 
       group('then the parent field relation', () {
-        var field = userDefinition.findField('parent');
+        late var field = userDefinition.findField('parent');
         var relation = field?.relation;
 
         test('name is null', () {
@@ -372,7 +372,7 @@ void main() {
       });
 
       group('then the predecessor field relation', () {
-        var field = userDefinition.findField('children');
+        late var field = userDefinition.findField('children');
         var relation = field?.relation;
 
         test('name is defined', () {
@@ -398,7 +398,7 @@ void main() {
       });
 
       group('then the successorId field relation', () {
-        var field = userDefinition.findField('parentId');
+        late var field = userDefinition.findField('parentId');
         var relation = field?.relation;
 
         test('name is defined', () {

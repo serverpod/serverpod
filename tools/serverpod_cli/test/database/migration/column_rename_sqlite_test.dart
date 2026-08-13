@@ -8,13 +8,13 @@ import '../../test_util/builders/database/database_definition_builder.dart';
 import '../../test_util/builders/database/table_definition_builder.dart';
 
 void main() {
-  group('Given a table migration with a column rename', () {
+  group('Given a table migration with a column rename,', () {
     const tableName = 'example_table';
     const oldColumnName = 'old_name';
     const newColumnName = 'new_name';
     const modelFieldName = 'myField';
 
-    var sourceDefinition = DatabaseDefinitionBuilder()
+    late var sourceDefinition = DatabaseDefinitionBuilder()
         .withDefaultModules()
         .withTable(
           TableDefinitionBuilder()
@@ -30,7 +30,7 @@ void main() {
         )
         .build();
 
-    var targetDefinition = DatabaseDefinitionBuilder()
+    late var targetDefinition = DatabaseDefinitionBuilder()
         .withDefaultModules()
         .withTable(
           TableDefinitionBuilder()
@@ -46,19 +46,20 @@ void main() {
         )
         .build();
 
-    var migration = generateDatabaseMigration(
+    late var migration = generateDatabaseMigration(
       databaseSource: sourceDefinition,
       databaseTarget: targetDefinition,
     );
 
-    var sqlite = migration.toSqliteSql(
+    late var sqlite = migration.toSqliteSql(
       databaseDefinition: targetDefinition,
       installedModules: targetDefinition.installedModules,
       removedModules: [],
     );
 
     test(
-      'when generating SQLite then ALTER TABLE RENAME COLUMN statement is generated.',
+      'when generating SQLite, '
+      'then ALTER TABLE RENAME COLUMN statement is generated.',
       () {
         expect(
           sqlite,
@@ -70,7 +71,7 @@ void main() {
     );
 
     test(
-      'when generating SQLite then DROP COLUMN statement is not generated.',
+      'when generating SQLite, then DROP COLUMN statement is not generated.',
       () {
         expect(
           sqlite,
@@ -80,7 +81,7 @@ void main() {
     );
 
     test(
-      'when generating SQLite then ADD COLUMN statement is not generated.',
+      'when generating SQLite, then ADD COLUMN statement is not generated.',
       () {
         expect(
           sqlite,
@@ -90,7 +91,7 @@ void main() {
     );
   });
 
-  group('Given a table migration with multiple column renames', () {
+  group('Given a table migration with multiple column renames,', () {
     const tableName = 'example_table';
     const oldName1 = 'old_name_1';
     const newName1 = 'new_name_1';
@@ -99,7 +100,7 @@ void main() {
     const modelField1 = 'fieldOne';
     const modelField2 = 'fieldTwo';
 
-    var sourceDefinition = DatabaseDefinitionBuilder()
+    late var sourceDefinition = DatabaseDefinitionBuilder()
         .withDefaultModules()
         .withTable(
           TableDefinitionBuilder()
@@ -122,7 +123,7 @@ void main() {
         )
         .build();
 
-    var targetDefinition = DatabaseDefinitionBuilder()
+    late var targetDefinition = DatabaseDefinitionBuilder()
         .withDefaultModules()
         .withTable(
           TableDefinitionBuilder()
@@ -145,19 +146,20 @@ void main() {
         )
         .build();
 
-    var migration = generateDatabaseMigration(
+    late var migration = generateDatabaseMigration(
       databaseSource: sourceDefinition,
       databaseTarget: targetDefinition,
     );
 
-    var sqlite = migration.toSqliteSql(
+    late var sqlite = migration.toSqliteSql(
       databaseDefinition: targetDefinition,
       installedModules: targetDefinition.installedModules,
       removedModules: [],
     );
 
     test(
-      'when generating SQLite then both RENAME COLUMN statements are generated.',
+      'when generating SQLite, '
+      'then both RENAME COLUMN statements are generated.',
       () {
         expect(
           sqlite,
@@ -175,14 +177,14 @@ void main() {
     );
   });
 
-  group('Given a table migration with rename and add operations', () {
+  group('Given a table migration with rename and add operations,', () {
     const tableName = 'example_table';
     const renamedOldName = 'old_name';
     const renamedNewName = 'new_name';
     const addedColumnName = 'added_column';
     const renamedModelField = 'renamedField';
 
-    var sourceDefinition = DatabaseDefinitionBuilder()
+    late var sourceDefinition = DatabaseDefinitionBuilder()
         .withDefaultModules()
         .withTable(
           TableDefinitionBuilder()
@@ -198,7 +200,7 @@ void main() {
         )
         .build();
 
-    var targetDefinition = DatabaseDefinitionBuilder()
+    late var targetDefinition = DatabaseDefinitionBuilder()
         .withDefaultModules()
         .withTable(
           TableDefinitionBuilder()
@@ -222,18 +224,18 @@ void main() {
         )
         .build();
 
-    var migration = generateDatabaseMigration(
+    late var migration = generateDatabaseMigration(
       databaseSource: sourceDefinition,
       databaseTarget: targetDefinition,
     );
 
-    var sqlite = migration.toSqliteSql(
+    late var sqlite = migration.toSqliteSql(
       databaseDefinition: targetDefinition,
       installedModules: targetDefinition.installedModules,
       removedModules: [],
     );
 
-    test('when generating SQLite then rename appears before add.', () {
+    test('when generating SQLite, then rename appears before add.', () {
       var renameIndex = sqlite.indexOf('RENAME COLUMN');
       var addIndex = sqlite.indexOf('ADD COLUMN');
       expect(renameIndex, isNot(-1));
@@ -242,13 +244,13 @@ void main() {
     });
   });
 
-  group('Given a table migration with renamed column and nullability change', () {
+  group('Given a table migration with renamed column and nullability change,', () {
     const tableName = 'example_table';
     const oldColumnName = 'old_name';
     const newColumnName = 'new_name';
     const modelFieldName = 'nullableField';
 
-    var sourceDefinition = DatabaseDefinitionBuilder()
+    late var sourceDefinition = DatabaseDefinitionBuilder()
         .withDefaultModules()
         .withTable(
           TableDefinitionBuilder()
@@ -265,7 +267,7 @@ void main() {
         )
         .build();
 
-    var targetDefinition = DatabaseDefinitionBuilder()
+    late var targetDefinition = DatabaseDefinitionBuilder()
         .withDefaultModules()
         .withTable(
           TableDefinitionBuilder()
@@ -282,19 +284,19 @@ void main() {
         )
         .build();
 
-    var migration = generateDatabaseMigration(
+    late var migration = generateDatabaseMigration(
       databaseSource: sourceDefinition,
       databaseTarget: targetDefinition,
     );
 
-    var sqlite = migration.toSqliteSql(
+    late var sqlite = migration.toSqliteSql(
       databaseDefinition: targetDefinition,
       installedModules: targetDefinition.installedModules,
       removedModules: [],
     );
 
     test(
-      'when generating SQLite '
+      'when generating SQLite, '
       'then table rebuild copies data using the old physical column name in SELECT.',
       () {
         expect(sqlite, contains('CREATE TABLE "new_$tableName"'));
@@ -309,7 +311,7 @@ void main() {
     );
 
     test(
-      'when generating SQLite then inline RENAME COLUMN is not used.',
+      'when generating SQLite, then inline RENAME COLUMN is not used.',
       () {
         expect(
           sqlite,

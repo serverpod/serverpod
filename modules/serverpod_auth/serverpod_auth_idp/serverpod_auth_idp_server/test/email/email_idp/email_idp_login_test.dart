@@ -8,7 +8,7 @@ import '../test_utils/email_idp_test_fixture.dart';
 
 void main() {
   withServerpod(
-    'Given an existing email account with scopes',
+    'Given an existing email account with scopes,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -41,7 +41,8 @@ void main() {
       });
 
       test(
-        'when login is called with correct credentials then it returns auth session token',
+        'when login is called with correct credentials, '
+        'then it returns auth session token',
         () async {
           final result = fixture.emailIdp.login(
             session,
@@ -54,7 +55,8 @@ void main() {
       );
 
       test(
-        'when login is called with invalid credentials then it throws EmailAccountLoginException with invalidCredentials',
+        'when login is called with invalid credentials, '
+        'then it throws EmailAccountLoginException with invalidCredentials',
         () async {
           final result = fixture.emailIdp.login(
             session,
@@ -76,7 +78,8 @@ void main() {
       );
 
       test(
-        'when login is called, then the returned AuthSuccess contains the users scopes',
+        'when login is called, '
+        'then the returned AuthSuccess contains the users scopes',
         () async {
           final result = await fixture.emailIdp.login(
             session,
@@ -93,7 +96,7 @@ void main() {
   );
 
   withServerpod(
-    'Given blocked auth user with email account',
+    'Given blocked auth user with email account,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -125,7 +128,8 @@ void main() {
       });
 
       test(
-        'when login is called with correct credentials then it throws AuthUserBlockedException',
+        'when login is called with correct credentials, '
+        'then it throws AuthUserBlockedException',
         () async {
           final result = fixture.emailIdp.login(
             session,
@@ -143,7 +147,7 @@ void main() {
   );
 
   withServerpod(
-    'Given email account with invalid logins matching rate limit',
+    'Given email account with invalid logins matching rate limit,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -191,7 +195,8 @@ void main() {
       });
 
       test(
-        'when login is called with valid credentials then it throws EmailAccountLoginException with reason "tooManyAttempts"',
+        'when login is called with valid credentials, '
+        'then it throws EmailAccountLoginException with reason "tooManyAttempts"',
         () async {
           final result = fixture.emailIdp.login(
             session,
@@ -213,7 +218,8 @@ void main() {
       );
 
       test(
-        'when login is called with invalid credentials then it throws EmailAccountLoginException with reason "tooManyAttempts"',
+        'when login is called with invalid credentials, '
+        'then it throws EmailAccountLoginException with reason "tooManyAttempts"',
         () async {
           final result = fixture.emailIdp.login(
             session,
@@ -237,7 +243,7 @@ void main() {
   );
 
   withServerpod(
-    'Given no email account',
+    'Given no email account,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -253,7 +259,8 @@ void main() {
       });
 
       test(
-        'when login is called then it throws EmailAccountLoginException with invalidCredentials',
+        'when login is called, '
+        'then it throws EmailAccountLoginException with invalidCredentials',
         () async {
           final result = fixture.emailIdp.login(
             session,
@@ -277,7 +284,7 @@ void main() {
   );
 
   withServerpod(
-    'Given maximum allowed invalid login attempts for non-existent email account',
+    'Given maximum allowed invalid login attempts for non-existent email account,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -314,7 +321,8 @@ void main() {
       });
 
       test(
-        'when login is called then it throws EmailAccountLoginException with reason "tooManyAttempts"',
+        'when login is called, '
+        'then it throws EmailAccountLoginException with reason "tooManyAttempts"',
         () async {
           final result = fixture.emailIdp.login(
             session,

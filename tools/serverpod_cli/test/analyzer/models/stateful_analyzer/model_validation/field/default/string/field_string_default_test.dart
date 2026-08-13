@@ -10,9 +10,10 @@ import '../../../../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
-  group('Given a class with fields with a "default" keyword', () {
+  group('Given a class with fields with a "default" keyword,', () {
     test(
-      'when the field is of type String and the default is set to "This is a default value", then the field should have a "default model" and "default persist" value',
+      'when the field is of type String and the default is set to "This is a default value", '
+      'then the field should have a "default model" and "default persist" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -47,7 +48,8 @@ void main() {
     );
 
     test(
-      'when the field is of type String and the default is set to "This is a default null value", then the field should have a "default model" and "default persist" value',
+      'when the field is of type String and the default is set to "This is a default null value", '
+      'then the field should have a "default model" and "default persist" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -83,7 +85,8 @@ void main() {
     );
 
     test(
-      'when the field is of type String and the default is set to \'This \\\'is\\\' a default value\', then the field should have a "default model" and "default persist" value',
+      'when the field is of type String and the default is set to \'This \\\'is\\\' a default value\', '
+      'then the field should have a "default model" and "default persist" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -118,7 +121,8 @@ void main() {
     );
 
     test(
-      'when the field is of type String and the default is set to "This \\"is\\" a default value", then the field should have a "default model" and "default persist" value',
+      'when the field is of type String and the default is set to "This \\"is\\" a default value", '
+      'then the field should have a "default model" and "default persist" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -153,7 +157,8 @@ void main() {
     );
 
     test(
-      'when the field is of type String and the default is set to "This, is a default value", then the field should have a "default model" and "default persist" value',
+      'when the field is of type String and the default is set to "This, is a default value", '
+      'then the field should have a "default model" and "default persist" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -188,7 +193,8 @@ void main() {
     );
 
     test(
-      'when the field is of type String and the default is set to "This \\"is\\", a default value", then the field should have a "default model" and "default persist" value',
+      'when the field is of type String and the default is set to "This \\"is\\", a default value", '
+      'then the field should have a "default model" and "default persist" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -223,7 +229,8 @@ void main() {
     );
 
     test(
-      'when the field is of type String and the default is set to "This \'is\' a default value", then the field should have a "default model" and "default persist" value',
+      'when the field is of type String and the default is set to "This \'is\' a default value", '
+      'then the field should have a "default model" and "default persist" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -258,7 +265,8 @@ void main() {
     );
 
     test(
-      'when the field is of type String and the default is set to \'This "is" a default value\', then the field should have a "default model" and "default persist" value',
+      'when the field is of type String and the default is set to \'This "is" a default value\', '
+      'then the field should have a "default model" and "default persist" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -293,7 +301,8 @@ void main() {
     );
 
     test(
-      'when the field is of type String and the default is empty, then an error is generated',
+      'when the field is of type String and the default is empty, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -324,7 +333,8 @@ void main() {
     );
 
     test(
-      'when the field is of type String with an invalid default value, then an error is generated',
+      'when the field is of type String with an invalid default value, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -355,7 +365,8 @@ void main() {
     );
 
     test(
-      'when the field is of type String with an invalid default value, then an error is generated',
+      'when the field is of type String with an invalid default value, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -386,7 +397,8 @@ void main() {
     );
 
     test(
-      'when the field is of type String with an invalid default value containing unescaped single quotes, then an error is generated',
+      'when the field is of type String with an invalid default value containing unescaped single quotes, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -417,7 +429,8 @@ void main() {
     );
 
     test(
-      'when the field is of type String with an invalid default value containing unescaped double quotes, then an error is generated',
+      'when the field is of type String with an invalid default value containing unescaped double quotes, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(

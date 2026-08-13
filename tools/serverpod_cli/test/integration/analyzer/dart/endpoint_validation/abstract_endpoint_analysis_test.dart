@@ -20,9 +20,9 @@ void main() {
     testProjectDirectory.deleteSync(recursive: true);
   });
 
-  group('Given abstract endpoint class when analyzed', () {
-    var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
+  group('Given abstract endpoint class, when analyzed,', () {
+    late var collector = CodeGenerationCollector();
+    late var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
 
@@ -58,10 +58,11 @@ abstract class ExampleEndpoint extends Endpoint {
   });
 
   group(
-    'Given a concrete endpoint that extends an abstract base endpoint when analyzed',
+    'Given a concrete endpoint that extends an abstract base endpoint, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -130,10 +131,11 @@ class ConcreteEndpoint extends BaseEndpoint {
   );
 
   group(
-    'Given a concrete endpoint that extends an abstract base endpoint and overrides a method when analyzed',
+    'Given a concrete endpoint that extends an abstract base endpoint and overrides a method, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -190,10 +192,11 @@ class ConcreteEndpoint extends BaseEndpoint {
   );
 
   group(
-    'Given a concrete endpoint that extends an abstract endpoint annotated with @doNotGenerate when analyzed',
+    'Given a concrete endpoint that extends an abstract endpoint annotated with @doNotGenerate, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -254,10 +257,11 @@ class ConcreteEndpoint extends BaseEndpoint {
   );
 
   group(
-    'Given a concrete endpoint that extends an abstract endpoint annotated as @doNotGenerate that also extends another abstract endpoint when analyzed',
+    'Given a concrete endpoint that extends an abstract endpoint annotated as @doNotGenerate that also extends another abstract endpoint, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 

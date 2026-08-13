@@ -10,10 +10,10 @@ import '../../test_util/builders/serializable_entity_field_definition_builder.da
 void main() {
   group(
     'Given a persisted model field whose database column names matches its Dart field names, '
-    'when creating a database definition, ',
+    'when creating a database definition,',
     () {
       const tableName = 'example';
-      var model = ModelClassDefinitionBuilder()
+      late var model = ModelClassDefinitionBuilder()
           .withTableName(tableName)
           .withField(
             FieldDefinitionBuilder()
@@ -56,13 +56,13 @@ void main() {
 
   group(
     'Given a persisted model field with an explicit database column name override, '
-    'when creating a database definition, ',
+    'when creating a database definition,',
     () {
       const dartFieldName = 'userName';
       const dbColumnName = 'user_name';
       const tableName = 'example';
 
-      var model = ModelClassDefinitionBuilder()
+      late var model = ModelClassDefinitionBuilder()
           .withTableName(tableName)
           .withField(
             FieldDefinitionBuilder()
@@ -94,19 +94,19 @@ void main() {
 
   group(
     'Given a foreign key field with an explicit database column name override, '
-    'when creating a database definition, ',
+    'when creating a database definition,',
     () {
       const parentTable = 'example_parent';
       const childTable = 'example_child';
       const dartFieldName = 'parentId';
       const dbColumnName = 'parent_id';
 
-      var relation = ForeignRelationDefinitionBuilder()
+      late var relation = ForeignRelationDefinitionBuilder()
           .withParentTable(parentTable)
           .withReferenceFieldName('id')
           .build();
 
-      var childModel = ModelClassDefinitionBuilder()
+      late var childModel = ModelClassDefinitionBuilder()
           .withTableName(childTable)
           .withField(
             FieldDefinitionBuilder()

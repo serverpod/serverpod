@@ -20,7 +20,9 @@ void main() {
   group('Given a custom class', () {
     group('that does not implement ProtocolSerialization', () {
       test(
-        'with the "serverSideValue" field set when the method is called then the server returns the "serverSideValue"',
+        'with the "serverSideValue" field set, '
+        'when the method is called, '
+        'then the server returns the "serverSideValue"',
         () async {
           final customClass = CustomClassWithoutProtocolSerialization(
             serverSideValue: 'serverSideValue',
@@ -37,7 +39,9 @@ void main() {
       );
 
       test(
-        'with the "value" field set when the method is called then the server returns the "value"',
+        'with the "value" field set, '
+        'when the method is called, '
+        'then the server returns the "value"',
         () async {
           final customClass = CustomClassWithoutProtocolSerialization(
             value: 'value',
@@ -56,7 +60,9 @@ void main() {
 
     group('that implements ProtocolSerialization', () {
       test(
-        'with the "serverSideValue" field set when the method is called then the server does not return the "serverSideValue"',
+        'with the "serverSideValue" field set, '
+        'when the method is called, '
+        'then the server does not return the "serverSideValue"',
         () async {
           final customClass = CustomClassWithProtocolSerialization(
             serverSideValue: 'serverSideValue',
@@ -74,7 +80,9 @@ void main() {
       );
 
       test(
-        'with the "value" field set when the method is called then the server returns the "value"',
+        'with the "value" field set, '
+        'when the method is called, '
+        'then the server returns the "value"',
         () async {
           final customClass = CustomClassWithProtocolSerialization(
             value: 'value',
@@ -95,7 +103,9 @@ void main() {
       'that does not implement ProtocolSerialization but has the "toJsonForProtocol" method',
       () {
         test(
-          'with the "serverSideValue" field set when the method is called then the server returns the "serverSideValue"',
+          'with the "serverSideValue" field set, '
+          'when the method is called, '
+          'then the server returns the "serverSideValue"',
           () async {
             final customClass = CustomClassWithProtocolSerializationMethod(
               serverSideValue: 'serverSideValue',
@@ -112,7 +122,9 @@ void main() {
         );
 
         test(
-          'with the "value" field set when the method is called then the server returns the "value"',
+          'with the "value" field set, '
+          'when the method is called, '
+          'then the server returns the "value"',
           () async {
             final customClass = CustomClassWithProtocolSerializationMethod(
               value: 'value',

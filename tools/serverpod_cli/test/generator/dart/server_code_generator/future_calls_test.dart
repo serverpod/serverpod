@@ -30,7 +30,8 @@ void main() {
   );
 
   group(
-    'Given protocol definition without future calls when generating server files',
+    'Given protocol definition without future calls, '
+    'when generating server files,',
     () {
       late Map<String, String> codeMap;
       late String? endpointsFile;
@@ -86,7 +87,8 @@ void main() {
   );
 
   group(
-    'Given protocol definition with a future call when generating server files',
+    'Given protocol definition with a future call, '
+    'when generating server files,',
     () {
       var futureCallName = 'testing';
       late Map<String, String> codeMap;
@@ -170,7 +172,7 @@ void main() {
       });
 
       group(
-        'then future calls file',
+        'then future calls file,',
         () {
           test('has future calls map defined.', () {
             expect(
@@ -330,7 +332,8 @@ void main() {
   );
 
   group(
-    'Given protocol definition with multiple future calls when generating server files',
+    'Given protocol definition with multiple future calls, '
+    'when generating server files,',
     () {
       var firstFutureCallName = 'testing1';
       var secondFutureCallName = 'testing2';

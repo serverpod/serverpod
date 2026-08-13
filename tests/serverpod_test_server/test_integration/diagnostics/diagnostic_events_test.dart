@@ -24,8 +24,8 @@ void main() {
   const timeout = Duration(seconds: 3);
 
   group('Given a serverpod server with a diagnostic event handler, '
-      'when starting serverpod with its web server port already in use', () {
-    var exceptionHandler = TestExceptionHandler();
+        'when starting serverpod with its web server port already in use,', () {
+    late var exceptionHandler = TestExceptionHandler();
     late Serverpod pod;
     late DiagnosticEventRecord<ExceptionEvent> record;
 
@@ -117,10 +117,10 @@ void main() {
   });
 
   group(
-    'Given a serverpod server with future calls and a diagnostic event handler',
+    'Given a serverpod server with future calls and a diagnostic event handler,',
     () {
       late Client client;
-      var exceptionHandler = TestExceptionHandler();
+      late var exceptionHandler = TestExceptionHandler();
       late Serverpod pod;
 
       setUp(() async {
@@ -140,7 +140,7 @@ void main() {
       });
 
       test(
-        'when a client calls an endpoint method that schedules a future call that throws '
+        'when a client calls an endpoint method that schedules a future call that throws, '
         'then the diagnostic event handler gets called',
         () async {
           await client.testFutureCalls.makeFutureCallThatThrows(
@@ -158,9 +158,9 @@ void main() {
     },
   );
 
-  group('Given a serverpod server with a diagnostic event handler', () {
+  group('Given a serverpod server with a diagnostic event handler,', () {
     late Client client;
-    var exceptionHandler = TestExceptionHandler();
+    late var exceptionHandler = TestExceptionHandler();
     late Serverpod pod;
 
     setUp(() async {
@@ -179,8 +179,8 @@ void main() {
       exceptionHandler.eventsStreamController.close();
     });
 
-    test('when a client calls an endpoint method that throws an exception '
-        'then the diagnostic event handler gets called', () async {
+    test('when a client calls an endpoint method that throws an exception, '
+         'then the diagnostic event handler gets called', () async {
       final result = client.exceptionTest.throwNormalException();
       await expectLater(result, throwsA(isA<Exception>()));
 
@@ -208,8 +208,8 @@ void main() {
       );
     });
 
-    test('when a client calls streaming method outStreamThrowsException '
-        'then the diagnostic event handler gets called', () async {
+    test('when a client calls streaming method outStreamThrowsException, '
+         'then the diagnostic event handler gets called', () async {
       final stream = client.methodStreaming.outStreamThrowsException();
       await expectLater(stream, emitsError(isA<ConnectionClosedException>()));
 
@@ -223,7 +223,7 @@ void main() {
     });
 
     test(
-      'when a client calls streaming method outStreamThrowsSerializableException '
+      'when a client calls streaming method outStreamThrowsSerializableException, '
       'then the diagnostic event handler gets called',
       () async {
         var stream = client.methodStreaming
@@ -238,7 +238,7 @@ void main() {
     );
 
     test(
-      'when a client calls streaming method exceptionThrownBeforeStreamReturn '
+      'when a client calls streaming method exceptionThrownBeforeStreamReturn, '
       'then the diagnostic event handler gets called',
       () async {
         var stream = client.methodStreaming.exceptionThrownBeforeStreamReturn();
@@ -251,8 +251,8 @@ void main() {
       },
     );
 
-    test('when a client calls streaming method exceptionThrownInStreamReturn '
-        'then the diagnostic event handler gets called', () async {
+    test('when a client calls streaming method exceptionThrownInStreamReturn, '
+         'then the diagnostic event handler gets called', () async {
       var stream = client.methodStreaming.exceptionThrownInStreamReturn();
       await expectLater(stream, emitsError(isA<ConnectionClosedException>()));
 
@@ -262,8 +262,8 @@ void main() {
       expect(record.context, isA<StreamOpContext>());
     });
 
-    test('when a client calls method url with malformed json '
-        'then the diagnostic event handler gets called', () async {
+    test('when a client calls method url with malformed json, '
+         'then the diagnostic event handler gets called', () async {
       var response = http.post(
         Uri.parse('${pod.apiUrl}simple/hello'),
         body: '{"name": [42]}',
@@ -277,9 +277,9 @@ void main() {
   });
 
   group(
-    'Given a serverpod server with a web route and a diagnostic event handler',
+    'Given a serverpod server with a web route and a diagnostic event handler,',
     () {
-      var exceptionHandler = TestExceptionHandler();
+      late var exceptionHandler = TestExceptionHandler();
       late Serverpod pod;
 
       setUp(() async {
@@ -298,8 +298,8 @@ void main() {
         exceptionHandler.eventsStreamController.close();
       });
 
-      test('when a client calls web url with malformed json '
-          'then the diagnostic event handler gets called', () async {
+      test('when a client calls web url with malformed json, '
+           'then the diagnostic event handler gets called', () async {
         var response = http.get(
           Uri.parse('${pod.webUrl}exception'),
         );
@@ -315,9 +315,9 @@ void main() {
 
   group(
     'Given a serverpod server with a diagnostic event handler and a missing database, '
-    'when starting serverpod',
+    'when starting serverpod,',
     () {
-      var exceptionHandler = TestExceptionHandler();
+      late var exceptionHandler = TestExceptionHandler();
       late Serverpod pod;
       late DiagnosticEventRecord<ExceptionEvent> record;
 

@@ -23,8 +23,8 @@ void main() {
     '$testClassFileName.dart',
   );
 
-  group('Given class $testClassName when generating code', () {
-    var models = [
+  group('Given class $testClassName, when generating code,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -42,14 +42,14 @@ void main() {
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
 
-    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+    late var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: testClassName,
     );

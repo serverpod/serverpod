@@ -7,7 +7,7 @@ import '../test_utils/email_idp_test_fixture.dart';
 
 void main() {
   withServerpod(
-    'Given an existing email account',
+    'Given an existing email account,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -33,7 +33,7 @@ void main() {
         await fixture.tearDown(session);
       });
 
-      group('when start registration is called for the same email address', () {
+      group('when start registration is called for the same email address,', () {
         late Future<UuidValue> accountRequestIdFuture;
 
         setUp(() async {
@@ -68,7 +68,7 @@ void main() {
       });
 
       group(
-        'when start registration is called for the same email address in uppercase',
+        'when start registration is called for the same email address in uppercase,',
         () {
           late Future<UuidValue> accountRequestIdFuture;
 
@@ -107,7 +107,7 @@ void main() {
   );
 
   withServerpod(
-    'Given no email account',
+    'Given no email account,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -131,7 +131,7 @@ void main() {
         await fixture.tearDown(session);
       });
 
-      group('when startRegistration is called', () {
+      group('when startRegistration is called,', () {
         late Future<UuidValue> accountRequestIdFuture;
         setUp(() async {
           accountRequestIdFuture = fixture.emailIdp.startRegistration(
@@ -151,7 +151,7 @@ void main() {
   );
 
   withServerpod(
-    'Given pending email account request that was not verified',
+    'Given pending email account request that was not verified,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -173,7 +173,7 @@ void main() {
         await fixture.tearDown(session);
       });
 
-      group('when startRegistration is called again with the same email', () {
+      group('when startRegistration is called again with the same email,', () {
         late UuidValue newAccountRequestId;
         setUp(() async {
           newAccountRequestId = await fixture.emailIdp.startRegistration(

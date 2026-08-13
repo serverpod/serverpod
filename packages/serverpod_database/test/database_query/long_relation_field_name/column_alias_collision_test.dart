@@ -37,9 +37,9 @@ void main() {
   ]).build();
 
   group(
-    'Given a query selecting columns from two long-named relations to the same table',
+    'Given a query selecting columns from two long-named relations to the same table,',
     () {
-      var query = SelectQueryBuilder(table: citizenTable).withSelectFields([
+      late var query = SelectQueryBuilder(table: citizenTable).withSelectFields([
         citizenTable.id,
         firstRelation.id,
         secondRelation.id,

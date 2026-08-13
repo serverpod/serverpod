@@ -21,9 +21,9 @@ void main() {
   var expectedTruncatedName =
       'where_count_citizen_thisFieldIsExactly61CharactersLongAndIs89c7';
 
-  group('Given SelectQueryBuilder', () {
-    group('when "count" filtering on relation with a long field name', () {
-      var query = SelectQueryBuilder(
+  group('Given SelectQueryBuilder,', () {
+    group('when "count" filtering on relation with a long field name,', () {
+      late var query = SelectQueryBuilder(
         table: citizenTable,
       ).withWhere(manyRelation.count() > 1).build();
 
@@ -41,9 +41,9 @@ void main() {
       });
     });
   });
-  group('Given CountQueryBuilder', () {
-    group('when "count" filtering on relation with a long field name', () {
-      var query = CountQueryBuilder(
+  group('Given CountQueryBuilder,', () {
+    group('when "count" filtering on relation with a long field name,', () {
+      late var query = CountQueryBuilder(
         table: citizenTable,
       ).withWhere(manyRelation.count() > 1).build();
 
@@ -61,9 +61,9 @@ void main() {
       });
     });
   });
-  group('Given DeleteQueryBuilder', () {
-    group('when "count" filtering on relation with a long field name', () {
-      var query = DeleteQueryBuilder(
+  group('Given DeleteQueryBuilder,', () {
+    group('when "count" filtering on relation with a long field name,', () {
+      late var query = DeleteQueryBuilder(
         table: citizenTable,
       ).withWhere(manyRelation.count() > 1).build();
 

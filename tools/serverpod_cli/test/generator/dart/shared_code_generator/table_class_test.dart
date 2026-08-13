@@ -38,8 +38,8 @@ void main() {
   ]);
   var tableName = 'example_table';
 
-  group('Given a class with table name when generating code', () {
-    var models = [
+  group('Given a class with table name, when generating code,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withTableName(tableName)
@@ -150,9 +150,9 @@ void main() {
   });
 
   group(
-    'Given a class with table name and persistent field when generating code',
+    'Given a class with table name and persistent field, when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -214,9 +214,10 @@ void main() {
   );
 
   group(
-    'Given a class with table name and NON persistent field when generating code',
+    'Given a class with table name and NON persistent field, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -280,9 +281,10 @@ void main() {
   );
 
   group(
-    'Given a class with table name and object relation field when generating code',
+    'Given a class with table name and object relation field, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -324,9 +326,10 @@ void main() {
   );
 
   group(
-    'Given a class with table name and persistent field with scope none when generating code',
+    'Given a class with table name and persistent field with scope none, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -411,9 +414,10 @@ void main() {
     },
   );
   group(
-    'Given a class with table name and object relation field when generating code',
+    'Given a class with table name and object relation field, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -466,11 +470,12 @@ void main() {
   );
 
   group(
-    'Given a class with many relation object relation field when generating code',
+    'Given a class with many relation object relation field, '
+    'when generating code,',
     () {
       var relationFieldName = 'employees';
       var objectRelationType = 'Citizen';
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -555,8 +560,8 @@ void main() {
     },
   );
 
-  group('Given a class with table name when generating code', () {
-    var models = [
+  group('Given a class with table name, when generating code,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withClassName(testClassName)
@@ -639,9 +644,10 @@ void main() {
   });
 
   group(
-    'Given a class with table name and persistent field when generating UpdateTable',
+    'Given a class with table name and persistent field, '
+    'when generating UpdateTable,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -721,9 +727,10 @@ void main() {
   );
 
   group(
-    'Given a class with table name and record field when generating UpdateTable',
+    'Given a class with table name and record field, '
+    'when generating UpdateTable,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -814,9 +821,10 @@ void main() {
   );
 
   group(
-    'Given a class with table name and NON persistent field when generating UpdateTable',
+    'Given a class with table name and NON persistent field, '
+    'when generating UpdateTable,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -864,13 +872,13 @@ void main() {
     },
   );
 
-  group('Given a class with a field with an explicit column name '
-      'when generating code', () {
+  group('Given a class with a field with an explicit column name, '
+        'when generating code,', () {
     const fieldName = 'userName';
     const columnName = 'user_name';
     const columnType = 'String';
 
-    final byNameEnumDefinition = EnumDefinitionBuilder()
+    late final byNameEnumDefinition = EnumDefinitionBuilder()
         .withClassName('ByNameEnum')
         .withFileName('by_name_enum')
         .withSerialized(EnumSerialization.byName)
@@ -882,13 +890,13 @@ void main() {
 
     const enumFieldName = 'enumDefault';
     const enumColumnName = 'enum_default';
-    var enumField = FieldDefinitionBuilder()
+    late var enumField = FieldDefinitionBuilder()
         .withName(enumFieldName)
         .withColumnNameOverride(enumColumnName)
         .withEnumDefinition(byNameEnumDefinition, true)
         .build();
 
-    var models = [
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)

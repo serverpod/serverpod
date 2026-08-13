@@ -5,9 +5,10 @@ import '../../../../test_util.dart';
 
 void main() {
   initTestClientSession();
-  group('Given models with one to many relation', () {
+  group('Given models with one to many relation,', () {
     test(
-      'when deleting models filtered on count of many relation then only matching models are deleted',
+      'when deleting models filtered on count of many relation, '
+      'then only matching models are deleted',
       () async {
         var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
         var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));
@@ -30,7 +31,8 @@ void main() {
     );
 
     test(
-      'when deleting models filtered on filtered many relation count then result is as expected',
+      'when deleting models filtered on filtered many relation count, '
+      'then result is as expected',
       () async {
         var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
         var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));
@@ -53,7 +55,8 @@ void main() {
     );
 
     test(
-      'when deleting models filtered on many relation count in combination with other filter then result is as expected.',
+      'when deleting models filtered on many relation count in combination with other filter, '
+      'then result is as expected.',
       () async {
         var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
         var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));
@@ -77,7 +80,8 @@ void main() {
     );
 
     test(
-      'when deleting models filtered on multiple many relation count then result is as expected.',
+      'when deleting models filtered on multiple many relation count, '
+      'then result is as expected.',
       () async {
         var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
         var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));
@@ -101,7 +105,8 @@ void main() {
     );
 
     test(
-      'when deleting models filtered on multiple filtered many relation count then result is as expected.',
+      'when deleting models filtered on multiple filtered many relation count, '
+      'then result is as expected.',
       () async {
         var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
         var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));
@@ -127,9 +132,10 @@ void main() {
     );
   });
 
-  group('Given models with nested one to many relation', () {
+  group('Given models with nested one to many relation,', () {
     test(
-      'when filtering on nested many relation count then result is as expected',
+      'when filtering on nested many relation count, '
+      'then result is as expected',
       () async {
         var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
         var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));
@@ -167,7 +173,8 @@ void main() {
     );
 
     test(
-      'when deleting models filtered on filtered nested many relation count then result is as expected',
+      'when deleting models filtered on filtered nested many relation count, '
+      'then result is as expected',
       () async {
         var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
         var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));

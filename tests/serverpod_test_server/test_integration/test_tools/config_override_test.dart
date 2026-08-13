@@ -6,14 +6,14 @@ void main() {
   const overriddenId = 'from-with-serverpod-callback';
 
   withServerpod(
-    'Given withServerpod initialized with a config override callback, ',
+    'Given withServerpod initialized with a config override callback,',
     configOverride: (config) => config.copyWith(
       serverId: overriddenId,
       healthCheckInterval: Duration.zero,
     ),
     (sessionBuilder, _) {
       test(
-        'when reading the config from the built session '
+        'when reading the config from the built session, '
         'then it matches the overridden config.',
         () {
           final session = sessionBuilder.build();
@@ -29,10 +29,10 @@ void main() {
   );
 
   withServerpod(
-    'Given withServerpod initialized without config override, ',
+    'Given withServerpod initialized without config override,',
     (sessionBuilder, _) {
       test(
-        'when reading the config from the built session '
+        'when reading the config from the built session, '
         'then it matches the default config.',
         () {
           final session = sessionBuilder.build();

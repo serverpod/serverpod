@@ -5,20 +5,20 @@ import '../../../test_util/builders/model_class_definition_builder.dart';
 import '../../../test_util/builders/serializable_entity_field_definition_builder.dart';
 
 void main() {
-  group('Given a class definition with a Duration field', () {
-    group('when "defaultPersist" is set', () {
-      var field = FieldDefinitionBuilder()
+  group('Given a class definition with a Duration field,', () {
+    group('when "defaultPersist" is set,', () {
+      late var field = FieldDefinitionBuilder()
           .withName('durationDefault')
           .withTypeDefinition('Duration', false)
           .withDefaults(defaultPersistValue: '1d 2h 10min 30s 100ms')
           .build();
 
-      var model = ModelClassDefinitionBuilder()
+      late var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
 
-      var databaseDefinition = createDatabaseDefinitionFromModels(
+      late var databaseDefinition = createDatabaseDefinitionFromModels(
         [model],
         'example',
         [],
@@ -60,18 +60,18 @@ void main() {
       );
     });
 
-    group('when no "defaultPersist" is set', () {
-      var field = FieldDefinitionBuilder()
+    group('when no "defaultPersist" is set,', () {
+      late var field = FieldDefinitionBuilder()
           .withName('durationDefault')
           .withTypeDefinition('Duration', false)
           .build();
 
-      var model = ModelClassDefinitionBuilder()
+      late var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
 
-      var databaseDefinition = createDatabaseDefinitionFromModels(
+      late var databaseDefinition = createDatabaseDefinitionFromModels(
         [model],
         'example',
         [],
@@ -110,19 +110,19 @@ void main() {
       });
     });
 
-    group('when the field is nullable and has a "defaultPersist" value', () {
-      var field = FieldDefinitionBuilder()
+    group('when the field is nullable and has a "defaultPersist" value,', () {
+      late var field = FieldDefinitionBuilder()
           .withName('durationDefault')
           .withTypeDefinition('Duration', true)
           .withDefaults(defaultPersistValue: '1d 2h 10min 30s 100ms')
           .build();
 
-      var model = ModelClassDefinitionBuilder()
+      late var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
 
-      var databaseDefinition = createDatabaseDefinitionFromModels(
+      late var databaseDefinition = createDatabaseDefinitionFromModels(
         [model],
         'example',
         [],
@@ -173,18 +173,18 @@ void main() {
       });
     });
 
-    group('when the field is nullable and has no "defaultPersist" value', () {
-      var field = FieldDefinitionBuilder()
+    group('when the field is nullable and has no "defaultPersist" value,', () {
+      late var field = FieldDefinitionBuilder()
           .withName('durationDefault')
           .withTypeDefinition('Duration', true)
           .build();
 
-      var model = ModelClassDefinitionBuilder()
+      late var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
 
-      var databaseDefinition = createDatabaseDefinitionFromModels(
+      late var databaseDefinition = createDatabaseDefinitionFromModels(
         [model],
         'example',
         [],
@@ -232,19 +232,19 @@ void main() {
       });
     });
 
-    group('when "defaultModelValue" is set', () {
-      var field = FieldDefinitionBuilder()
+    group('when "defaultModelValue" is set,', () {
+      late var field = FieldDefinitionBuilder()
           .withName('durationDefault')
           .withTypeDefinition('Duration', false)
           .withDefaults(defaultModelValue: '1d 2h 10min 30s 100ms')
           .build();
 
-      var model = ModelClassDefinitionBuilder()
+      late var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
 
-      var databaseDefinition = createDatabaseDefinitionFromModels(
+      late var databaseDefinition = createDatabaseDefinitionFromModels(
         [model],
         'example',
         [],
@@ -283,19 +283,19 @@ void main() {
       });
     });
 
-    group('when the field is nullable and "defaultModelValue" is set', () {
-      var field = FieldDefinitionBuilder()
+    group('when the field is nullable and "defaultModelValue" is set,', () {
+      late var field = FieldDefinitionBuilder()
           .withName('durationDefault')
           .withTypeDefinition('Duration', true)
           .withDefaults(defaultModelValue: '1d 2h 10min 30s 100ms')
           .build();
 
-      var model = ModelClassDefinitionBuilder()
+      late var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
 
-      var databaseDefinition = createDatabaseDefinitionFromModels(
+      late var databaseDefinition = createDatabaseDefinitionFromModels(
         [model],
         'example',
         [],

@@ -136,7 +136,8 @@ void main() {
       });
 
       test(
-        'when checking the custom migration hook, then it has been called for the user.',
+        'when checking the custom migration hook, '
+        'then it has been called for the user.',
         () async {
           expect(migratedUsers[userInfo.id!], isNotNull);
         },
@@ -153,7 +154,8 @@ void main() {
       );
 
       test(
-        'when checking the `EmailAccount`, then it has been created with the lower-case email variant.',
+        'when checking the `EmailAccount`, '
+        'then it has been created with the lower-case email variant.',
         () async {
           final emailAccount = await new_auth_email.EmailAccount.db
               .findFirstRow(
@@ -168,7 +170,8 @@ void main() {
       );
 
       test(
-        'when checking the `LegacyUserIdentifier`, then it has been created with the lower-case email variant.',
+        'when checking the `LegacyUserIdentifier`, '
+        'then it has been created with the lower-case email variant.',
         () async {
           final authUserId =
               await AuthBackwardsCompatibility.lookUpLegacyExternalUserIdentifier(
@@ -230,7 +233,8 @@ void main() {
     });
 
     test(
-      'when calling `migrateUsers` successively, then accounts are migrated in the desired batch size.',
+      'when calling `migrateUsers` successively, '
+      'then accounts are migrated in the desired batch size.',
       () async {
         final migratedAccountsStep1 = await AuthMigrations.migrateUsers(
           session,
@@ -322,7 +326,8 @@ void main() {
       });
 
       test(
-        'when checking the custom migration hook, then it has been called for the user.',
+        'when checking the custom migration hook, '
+        'then it has been called for the user.',
         () async {
           expect(migratedUsers[userInfo.id!], isNotNull);
         },
@@ -339,14 +344,16 @@ void main() {
       );
 
       test(
-        'when checking the `EmailAccount`, then no entry has been created for the social-backed account.',
+        'when checking the `EmailAccount`, '
+        'then no entry has been created for the social-backed account.',
         () async {
           expect(await new_auth_email.EmailAccount.db.find(session), isEmpty);
         },
       );
 
       test(
-        'when checking the `LegacyUserIdentifier`, then it has been created with the external user ID.',
+        'when checking the `LegacyUserIdentifier`, '
+        'then it has been created with the external user ID.',
         () async {
           final authUserId =
               await AuthBackwardsCompatibility.lookUpLegacyExternalUserIdentifier(
@@ -421,7 +428,8 @@ void main() {
       });
 
       test(
-        'when looking up the LegacySession by the original AuthKey ID, then it is found with matching hash.',
+        'when looking up the LegacySession by the original AuthKey ID, '
+        'then it is found with matching hash.',
         () async {
           final legacySession = await LegacySession.db.findById(
             session,

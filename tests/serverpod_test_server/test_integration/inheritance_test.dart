@@ -25,7 +25,8 @@ void main() async {
   tearDownAll(() async => await _deleteAll(session));
 
   test(
-    'Given a class that extends another class, then the child-class is a sub-type of the parent-class',
+    'Given a class that extends another class, '
+    'then the child-class is a sub-type of the parent-class',
     () {
       var childClass = ChildClass(
         grandParentField: 'grandParentField',
@@ -38,7 +39,9 @@ void main() async {
   );
 
   test(
-    'Given an instantiated child-class when inserted into the parent-class table, then inherited fields should be retrievable from the parent-class table',
+    'Given an instantiated child-class, '
+    'when inserted into the parent-class table, '
+    'then inherited fields should be retrievable from the parent-class table',
     () async {
       var childClass = ChildClass(
         grandParentField: 'grandParentField',
@@ -56,7 +59,9 @@ void main() async {
   );
 
   test(
-    'Given a sealed top node, when calling a switch statement on its sub-classes, then the subtypes are handled correctly',
+    'Given a sealed top node, '
+    'when calling a switch statement on its sub-classes, '
+    'then the subtypes are handled correctly',
     () async {
       var sealedChild = SealedChild(
         sealedInt: 1,

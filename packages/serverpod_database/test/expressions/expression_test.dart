@@ -9,14 +9,14 @@ void main() {
   ValueEncoder.set(const PostgresValueEncoder());
 
   var testTable = Table<int?>(tableName: 'test');
-  group('Given one expression', () {
+  group('Given one expression,', () {
     var expressionString = 'true = true';
-    var expression = Expression(expressionString);
-    test('when toString is called then expression is returned', () {
+    late var expression = Expression(expressionString);
+    test('when toString is called, then expression is returned', () {
       expect(expression.toString(), expressionString);
     });
 
-    group('when iterating expressions', () {
+    group('when iterating expressions,', () {
       test('then only first expression is returned.', () {
         expect(expression.depthFirst, hasLength(1));
         expect(expression.depthFirst.first, expression);
@@ -31,22 +31,22 @@ void main() {
     });
   });
 
-  group('Given one expression wrapped in NOT expression', () {
-    var expression = const Expression('TRUE');
-    var notWrappedExpression = NotExpression(expression);
+  group('Given one expression wrapped in NOT expression,', () {
+    late var expression = const Expression('TRUE');
+    late var notWrappedExpression = NotExpression(expression);
 
-    test('when toString is called then string matches expected.', () {
+    test('when toString is called, then string matches expected.', () {
       expect(notWrappedExpression.toString(), 'NOT TRUE');
     });
 
     test(
-      'when subExpression is called then wrapped expression is returned',
+      'when subExpression is called, then wrapped expression is returned',
       () {
         expect(notWrappedExpression.subExpression, expression);
       },
     );
 
-    group('when iterating not wrapped expression', () {
+    group('when iterating not wrapped expression,', () {
       test('then both expressions are represented.', () {
         expect(notWrappedExpression.depthFirst, hasLength(2));
       });
@@ -61,8 +61,8 @@ void main() {
     });
   });
 
-  group('Given a NotExpression when wrapExpression is called', () {
-    var notWrappedExpression = NotExpression(const Expression('TRUE'));
+  group('Given a NotExpression, when wrapExpression is called,', () {
+    late var notWrappedExpression = NotExpression(const Expression('TRUE'));
 
     test('then the resolved expression is wrapped in NOT.', () {
       expect(
@@ -76,20 +76,20 @@ void main() {
     });
   });
 
-  group('Given a combined expression wrapped in NOT expression', () {
-    var expression1 = const Expression('true = true');
-    var expression2 = const Expression('"A" = "A"');
+  group('Given a combined expression wrapped in NOT expression,', () {
+    late var expression1 = const Expression('true = true');
+    late var expression2 = const Expression('"A" = "A"');
     var combinedExpression = expression1 & expression2;
-    var notWrappedExpression = NotExpression(combinedExpression);
+    late var notWrappedExpression = NotExpression(combinedExpression);
 
-    test('when toString is called then expression is returned', () {
+    test('when toString is called, then expression is returned', () {
       expect(
         notWrappedExpression.toString(),
         'NOT (true = true AND "A" = "A")',
       );
     });
 
-    group('when iterating not wrapped expression', () {
+    group('when iterating not wrapped expression,', () {
       test('then all expressions are represented.', () {
         expect(notWrappedExpression.depthFirst, hasLength(4));
       });
@@ -111,17 +111,17 @@ void main() {
     });
   });
 
-  group('Given expressions using the ~ (NOT) operator', () {
-    group('Given one expression wrapped using ~ operator', () {
-      var expression = const Expression('TRUE');
+  group('Given expressions using the ~ (NOT) operator,', () {
+    group('Given one expression wrapped using ~ operator,', () {
+      late var expression = const Expression('TRUE');
       var notWrappedExpression = ~expression;
 
-      test('when toString is called then string matches expected.', () {
+      test('when toString is called, then string matches expected.', () {
         expect(notWrappedExpression.toString(), 'NOT TRUE');
       });
 
       test(
-        'when subExpression is called then wrapped expression is returned',
+        'when subExpression is called, then wrapped expression is returned',
         () {
           expect(
             (notWrappedExpression as NotExpression).subExpression,
@@ -130,7 +130,7 @@ void main() {
         },
       );
 
-      group('when iterating not wrapped expression', () {
+      group('when iterating not wrapped expression,', () {
         test('then both expressions are represented.', () {
           expect(notWrappedExpression.depthFirst, hasLength(2));
         });
@@ -145,20 +145,20 @@ void main() {
       });
     });
 
-    group('Given a combined expression wrapped using ~ operator', () {
-      var expression1 = const Expression('true = true');
-      var expression2 = const Expression('"A" = "A"');
+    group('Given a combined expression wrapped using ~ operator,', () {
+      late var expression1 = const Expression('true = true');
+      late var expression2 = const Expression('"A" = "A"');
       var combinedExpression = expression1 & expression2;
       var notWrappedExpression = ~combinedExpression;
 
-      test('when toString is called then expression is returned', () {
+      test('when toString is called, then expression is returned', () {
         expect(
           notWrappedExpression.toString(),
           'NOT (true = true AND "A" = "A")',
         );
       });
 
-      group('when iterating not wrapped expression', () {
+      group('when iterating not wrapped expression,', () {
         test('then all expressions are represented.', () {
           expect(notWrappedExpression.depthFirst, hasLength(4));
         });
@@ -181,21 +181,21 @@ void main() {
     });
   });
 
-  group('Given two AND operator combined expressions', () {
-    var expression1 = const Expression('true = true');
-    var expression2 = const Expression('"A" = "A"');
+  group('Given two AND operator combined expressions,', () {
+    late var expression1 = const Expression('true = true');
+    late var expression2 = const Expression('"A" = "A"');
     var combinedExpression = expression1 & expression2;
 
-    test('when printing expression then output is AND expression.', () {
+    test('when printing expression, then output is AND expression.', () {
       expect(combinedExpression.toString(), '($expression1 AND $expression2)');
     });
 
-    test('when checking expression type then type is TwoPartExpression', () {
+    test('when checking expression type, then type is TwoPartExpression', () {
       expect(combinedExpression, isA<TwoPartExpression>());
     });
 
     group(
-      'when retrieving sub expression then two are returned',
+      'when retrieving sub expression, then two are returned,',
       () {
         var subExpressions =
             (combinedExpression as TwoPartExpression).subExpressions;
@@ -215,7 +215,7 @@ void main() {
       skip: combinedExpression is! TwoPartExpression,
     );
 
-    group('when iterating expressions', () {
+    group('when iterating expressions,', () {
       test('then the expression depth is 3.', () {
         expect(combinedExpression.depthFirst, hasLength(3));
       });
@@ -248,20 +248,20 @@ void main() {
     });
   });
 
-  group('Given two OR operator combined expressions', () {
-    var expression1 = const Expression('true = true');
-    var expression2 = const Expression('"A" = "A"');
+  group('Given two OR operator combined expressions,', () {
+    late var expression1 = const Expression('true = true');
+    late var expression2 = const Expression('"A" = "A"');
     var combinedExpression = expression1 | expression2;
-    test('when printing expression then output is AND expression.', () {
+    test('when printing expression, then output is AND expression.', () {
       expect(combinedExpression.toString(), '($expression1 OR $expression2)');
     });
 
-    test('when checking expression type then type is TwoPartExpression', () {
+    test('when checking expression type, then type is TwoPartExpression', () {
       expect(combinedExpression, isA<TwoPartExpression>());
     });
 
     group(
-      'when retrieving sub expression then two are returned',
+      'when retrieving sub expression, then two are returned,',
       () {
         var subExpressions =
             (combinedExpression as TwoPartExpression).subExpressions;
@@ -282,26 +282,26 @@ void main() {
     );
   });
 
-  group('Given three expressions', () {
-    var expression1 = const Expression('true = true');
-    var expression2 = const Expression('"A" = "A"');
-    var expression3 = const Expression('"B" = "B"');
-    group('combined using the AND operator', () {
+  group('Given three expressions,', () {
+    late var expression1 = const Expression('true = true');
+    late var expression2 = const Expression('"A" = "A"');
+    late var expression3 = const Expression('"B" = "B"');
+    group('combined using the AND operator,', () {
       var partCombined = (expression2 & expression3);
       var combinedExpression = expression1 & partCombined;
-      test('when printing expression then output is AND expression.', () {
+      test('when printing expression, then output is AND expression.', () {
         expect(
           combinedExpression.toString(),
           '($expression1 AND ($expression2 AND $expression3))',
         );
       });
 
-      test('when checking expression type then type is TwoPartExpression', () {
+      test('when checking expression type, then type is TwoPartExpression', () {
         expect(combinedExpression, isA<TwoPartExpression>());
       });
 
       group(
-        'when retrieving sub expression then two are returned',
+        'when retrieving sub expression, then two are returned,',
         () {
           var subExpressions =
               (combinedExpression as TwoPartExpression).subExpressions;
@@ -321,7 +321,7 @@ void main() {
         skip: combinedExpression is! TwoPartExpression,
       );
 
-      group('when iterating expressions', () {
+      group('when iterating expressions,', () {
         test('then order matches expressions.', () {
           var expectedExpressions = [
             combinedExpression,
@@ -355,7 +355,7 @@ void main() {
     });
 
     test(
-      'when combined using the AND operator then output is AND expression.',
+      'when combined using the AND operator, then output is AND expression.',
       () {
         var combinedExpression = expression1 | (expression2 | expression3);
 
@@ -368,23 +368,23 @@ void main() {
   });
 
   group(
-    'Given escaped expression containing symbols that should be escaped',
+    'Given escaped expression containing symbols that should be escaped,',
     () {
       var expressionToEscape = '; DROP TABLE users;';
-      var expression = EscapedExpression(expressionToEscape);
-      test('when toString is called then escaped expression is returned', () {
+      late var expression = EscapedExpression(expressionToEscape);
+      test('when toString is called, then escaped expression is returned', () {
         expect(expression.toString(), '\'; DROP TABLE users;\'');
       });
     },
   );
 
-  group('Given column in expression wrapped in NotExpression', () {
-    ColumnString column = ColumnString('test', testTable);
-    var expression = column.ilike('s%');
-    var notWrappedExpression = NotExpression(expression);
+  group('Given column in expression wrapped in NotExpression,', () {
+    late ColumnString column = ColumnString('test', testTable);
+    late var expression = column.ilike('s%');
+    late var notWrappedExpression = NotExpression(expression);
 
     test(
-      'when retrieving columns then wrapped expression column is returned',
+      'when retrieving columns, then wrapped expression column is returned',
       () {
         expect(notWrappedExpression.columns, hasLength(1));
         expect(notWrappedExpression.columns.first, column);
@@ -392,14 +392,14 @@ void main() {
     );
   });
 
-  group('Given two columns right combined using two part expressions', () {
-    ColumnString firstColumn = ColumnString('test 1', testTable);
-    ColumnString secondColumn = ColumnString('test 2', testTable);
-    Expression expression =
+  group('Given two columns right combined using two part expressions,', () {
+    late ColumnString firstColumn = ColumnString('test 1', testTable);
+    late ColumnString secondColumn = ColumnString('test 2', testTable);
+    late Expression expression =
         firstColumn.equals('test 1') &
         (secondColumn.like('test 2') | firstColumn.equals('test 1'));
 
-    group('when retrieving columns', () {
+    group('when retrieving columns,', () {
       List<Column> columns = expression.columns;
 
       test('then all columns are represented.', () {
@@ -421,12 +421,13 @@ void main() {
   });
 
   group(
-    'Given two columns left combined using two part expressions when retrieving columns',
+    'Given two columns left combined using two part expressions, '
+    'when retrieving columns,',
     () {
-      ColumnString firstColumn = ColumnString('test 1', testTable);
-      ColumnString secondColumn = ColumnString('test 2', testTable);
-      var expression1 = secondColumn.like('test 2');
-      var expression2 = firstColumn.equals('test 1');
+      late ColumnString firstColumn = ColumnString('test 1', testTable);
+      late ColumnString secondColumn = ColumnString('test 2', testTable);
+      late var expression1 = secondColumn.like('test 2');
+      late var expression2 = firstColumn.equals('test 1');
       var firstPart = (expression1 | expression2);
       Expression expression = firstPart & expression2;
 
@@ -448,7 +449,7 @@ void main() {
         expect(columns.last, firstColumn);
       }, skip: columns.length != 3);
 
-      group('when iterating expressions', () {
+      group('when iterating expressions,', () {
         test('then order matches expressions.', () {
           var expectedExpressions = [
             expression,
@@ -482,9 +483,9 @@ void main() {
     },
   );
 
-  group('Given column BETWEEN expression when retrieving columns', () {
-    ColumnInt column = ColumnInt('test 1', testTable);
-    Expression expression = column.between(1, 2);
+  group('Given column BETWEEN expression, when retrieving columns,', () {
+    late ColumnInt column = ColumnInt('test 1', testTable);
+    late Expression expression = column.between(1, 2);
 
     List<Column> columns = expression.columns;
 
@@ -497,9 +498,9 @@ void main() {
     }, skip: columns.length != 1);
   });
 
-  group('Given column IN SET expression when retrieving columns', () {
-    ColumnInt column = ColumnInt('test 1', testTable);
-    Expression expression = column.inSet(<int>{1, 2});
+  group('Given column IN SET expression, when retrieving columns,', () {
+    late ColumnInt column = ColumnInt('test 1', testTable);
+    late Expression expression = column.inSet(<int>{1, 2});
 
     List<Column> columns = expression.columns;
 
@@ -513,11 +514,11 @@ void main() {
   });
 
   group(
-    'Given column in BETWEEN and two part expression when retrieving columns',
+    'Given column in BETWEEN and two part expression, when retrieving columns,',
     () {
-      ColumnInt column = ColumnInt('test 1', testTable);
-      Expression constant = Constant.bool(true);
-      Expression expression = column.between(1, 2) & constant;
+      late ColumnInt column = ColumnInt('test 1', testTable);
+      late Expression constant = Constant.bool(true);
+      late Expression expression = column.between(1, 2) & constant;
 
       List<Column> columns = expression.columns;
 

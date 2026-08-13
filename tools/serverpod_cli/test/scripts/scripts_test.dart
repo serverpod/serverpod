@@ -317,7 +317,7 @@ serverpod:
     },
   );
 
-  group('Platform-specific scripts', () {
+  group('Platform-specific scripts,', () {
     test(
       'Given yaml with platform-specific script with both platforms, '
       'when parsing, '

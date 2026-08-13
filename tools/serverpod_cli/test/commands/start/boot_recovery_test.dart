@@ -124,7 +124,7 @@ void main() {
     },
   );
 
-  group('Given a server that dies before publishing its VM service URI', () {
+  group('Given a server that dies before publishing its VM service URI,', () {
     // 0xC0000409: a Windows-style abort code; the predicate must not
     // enumerate exit codes.
     const abortCode = 3221226505;

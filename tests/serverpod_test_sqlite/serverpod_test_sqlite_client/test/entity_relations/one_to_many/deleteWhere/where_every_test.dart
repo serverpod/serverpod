@@ -6,9 +6,10 @@ import '../../../test_util.dart';
 void main() {
   initTestClientSession();
 
-  group('Given models with one to many relation', () {
+  group('Given models with one to many relation,', () {
     test(
-      'when deleting models filtered by every many relation then result is as expected',
+      'when deleting models filtered by every many relation, '
+      'then result is as expected',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Alex'),
@@ -40,7 +41,8 @@ void main() {
     );
 
     test(
-      'when deleting models filtered on every many relation in combination with other filter then result is as expected.',
+      'when deleting models filtered on every many relation in combination with other filter, '
+      'then result is as expected.',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Alex'),
@@ -78,7 +80,8 @@ void main() {
     );
 
     test(
-      'when deleting models filtered on combined filtered every many relation then result is as expected.',
+      'when deleting models filtered on combined filtered every many relation, '
+      'then result is as expected.',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Alex'),
@@ -113,7 +116,8 @@ void main() {
     );
 
     test(
-      'when deleting models filtered on multiple every many relation then result is as expected.',
+      'when deleting models filtered on multiple every many relation, '
+      'then result is as expected.',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Alex'),
@@ -156,9 +160,10 @@ void main() {
     );
   });
 
-  group('Given models with nested one to many relation', () {
+  group('Given models with nested one to many relation,', () {
     test(
-      'when deleting models filtered on nested every many relation then result is as expected',
+      'when deleting models filtered on nested every many relation, '
+      'then result is as expected',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Alex'),
@@ -215,7 +220,8 @@ void main() {
     );
 
     test(
-      'when deleting models filtered on nested every many relation in combination with separate filter then result is as expected',
+      'when deleting models filtered on nested every many relation in combination with separate filter, '
+      'then result is as expected',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Alex'),

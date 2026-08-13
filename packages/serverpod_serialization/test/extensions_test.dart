@@ -7,35 +7,45 @@ import 'package:test/scaffolding.dart';
 
 void main() {
   test(
-    'Given a bool true, when passed to BoolJsonExtension.fromJson, then it returns true',
+    'Given a bool true, '
+    'when passed to BoolJsonExtension.fromJson, '
+    'then it returns true',
     () {
       expect(BoolJsonExtension.fromJson(true), isTrue);
     },
   );
 
   test(
-    'Given a bool false, when passed to BoolJsonExtension.fromJson, then it returns false',
+    'Given a bool false, '
+    'when passed to BoolJsonExtension.fromJson, '
+    'then it returns false',
     () {
       expect(BoolJsonExtension.fromJson(false), isFalse);
     },
   );
 
   test(
-    'Given an int 1 (SQL boolean true), when passed to BoolJsonExtension.fromJson, then it returns true',
+    'Given an int 1 (SQL boolean true), '
+    'when passed to BoolJsonExtension.fromJson, '
+    'then it returns true',
     () {
       expect(BoolJsonExtension.fromJson(1), isTrue);
     },
   );
 
   test(
-    'Given an int 0 (SQL boolean false), when passed to BoolJsonExtension.fromJson, then it returns false',
+    'Given an int 0 (SQL boolean false), '
+    'when passed to BoolJsonExtension.fromJson, '
+    'then it returns false',
     () {
       expect(BoolJsonExtension.fromJson(0), isFalse);
     },
   );
 
   test(
-    'Given an int other than 0 or 1, when passed to BoolJsonExtension.fromJson, then it throws a DeserializationTypeNotFoundException',
+    'Given an int other than 0 or 1, '
+    'when passed to BoolJsonExtension.fromJson, '
+    'then it throws a DeserializationTypeNotFoundException',
     () {
       expect(
         () => BoolJsonExtension.fromJson(2),
@@ -51,7 +61,9 @@ void main() {
   );
 
   test(
-    'Given an unsupported type, when deserialized to a bool using BoolJsonExtension.fromJson, then it throws a DeserializationTypeNotFoundException',
+    'Given an unsupported type, '
+    'when deserialized to a bool using BoolJsonExtension.fromJson, '
+    'then it throws a DeserializationTypeNotFoundException',
     () {
       expect(
         () => BoolJsonExtension.fromJson('true'),
@@ -61,7 +73,10 @@ void main() {
   );
 
   test(
-    'Given a JSON-formatted UTC date string, when deserialized and then serialized back to JSON, then it matches the original string',
+    'Given a JSON-formatted UTC date string, '
+    'when deserialized and, '
+    'then serialized back to JSON, '
+    'then it matches the original string',
     () {
       String time = '2024-01-01T00:00:00.000Z';
       DateTime dateTime = DateTimeJsonExtension.fromJson(time);
@@ -74,7 +89,9 @@ void main() {
   );
 
   test(
-    'Given a DateTime object, when passed to DateTimeJsonExtension.fromJson, then it matches the original DateTime',
+    'Given a DateTime object, '
+    'when passed to DateTimeJsonExtension.fromJson, '
+    'then it matches the original DateTime',
     () {
       DateTime time = DateTime.parse('2024-01-01T00:00:00.000Z');
       DateTime dateTime = DateTimeJsonExtension.fromJson(time);
@@ -87,7 +104,10 @@ void main() {
   );
 
   test(
-    'Given a JSON-formatted non-UTC date string, when deserialized and then serialized back to JSON, then it does not match the original string due to precision differences',
+    'Given a JSON-formatted non-UTC date string, '
+    'when deserialized and, '
+    'then serialized back to JSON, '
+    'then it does not match the original string due to precision differences',
     () {
       String time = '2024-01-01T00:00:00.000';
       DateTime dateTime = DateTimeJsonExtension.fromJson(time);
@@ -100,7 +120,9 @@ void main() {
   );
 
   test(
-    'Given a JSON-formatted integer representing milliseconds, when deserialized then it matches the original time',
+    'Given a JSON-formatted integer representing milliseconds, '
+    'when deserialized, '
+    'then it matches the original time',
     () {
       DateTime time = DateTime.utc(2024, 1, 1, 10, 11, 12, 13);
       int milliseconds = time.millisecondsSinceEpoch;
@@ -112,7 +134,10 @@ void main() {
   );
 
   test(
-    'Given an integer representing milliseconds, when deserialized to a Duration and then serialized back to milliseconds, then it matches the original integer',
+    'Given an integer representing milliseconds, '
+    'when deserialized to a Duration and, '
+    'then serialized back to milliseconds, '
+    'then it matches the original integer',
     () {
       int milliseconds = 100000;
       Duration duration = DurationJsonExtension.fromJson(milliseconds);
@@ -125,7 +150,9 @@ void main() {
   );
 
   test(
-    'Given a Duration object, when passed to DurationJsonExtension.fromJson, then it remains unchanged',
+    'Given a Duration object, '
+    'when passed to DurationJsonExtension.fromJson, '
+    'then it remains unchanged',
     () {
       Duration value = const Duration(milliseconds: 100000);
       Duration duration = DurationJsonExtension.fromJson(value);
@@ -138,7 +165,10 @@ void main() {
   );
 
   test(
-    'Given a UUID string, when deserialized to a UuidValue and then serialized back to a string, then it matches the original string',
+    'Given a UUID string, '
+    'when deserialized to a UuidValue and, '
+    'then serialized back to a string, '
+    'then it matches the original string',
     () {
       String value = '00000000-0000-0000-0000-000000000000';
       UuidValue uuidValue = UuidValueJsonExtension.fromJson(value);
@@ -151,7 +181,9 @@ void main() {
   );
 
   test(
-    'Given a UuidValue object, when passed to UuidValueJsonExtension.fromJson, then it remains unchanged',
+    'Given a UuidValue object, '
+    'when passed to UuidValueJsonExtension.fromJson, '
+    'then it remains unchanged',
     () {
       UuidValue value = UuidValue.fromString(
         '00000000-0000-0000-0000-000000000000',
@@ -166,7 +198,10 @@ void main() {
   );
 
   test(
-    'Given a Uint8List, when deserialized to a UuidValue and then serialized back to a UuidValue, then it matches the original UuidValue',
+    'Given a Uint8List, '
+    'when deserialized to a UuidValue and, '
+    'then serialized back to a UuidValue, '
+    'then it matches the original UuidValue',
     () {
       UuidValue uuidValue = const Uuid().v4obj();
       Uint8List value = uuidValue.toBytes();
@@ -180,7 +215,9 @@ void main() {
   );
 
   test(
-    'Given invalid UUID string, when deserialized to a UuidValue, then it throws an exception',
+    'Given invalid UUID string, '
+    'when deserialized to a UuidValue, '
+    'then it throws an exception',
     () {
       String value = 'hello world';
       expect(
@@ -190,7 +227,10 @@ void main() {
     },
   );
   test(
-    'Given a base64-encoded string, when deserialized to ByteData and then serialized back to a string, then it matches the original string',
+    'Given a base64-encoded string, '
+    'when deserialized to ByteData and, '
+    'then serialized back to a string, '
+    'then it matches the original string',
     () {
       String value = 'decode(\'AAECAwQFBgc=\', \'base64\')';
       ByteData byteData = ByteDataJsonExtension.fromJson(value);
@@ -203,7 +243,9 @@ void main() {
   );
 
   test(
-    'Given a ByteData object, when passed to ByteDataJsonExtension.fromJson, then it remains unchanged',
+    'Given a ByteData object, '
+    'when passed to ByteDataJsonExtension.fromJson, '
+    'then it remains unchanged',
     () {
       String strValue = 'decode(\'AAECAwQFBgc=\', \'base64\')';
       ByteData value = ByteData.view(
@@ -219,7 +261,9 @@ void main() {
   );
 
   test(
-    'Given a Uint8List, when converted to ByteData via ByteDataJsonExtension.fromJson, then the length of ByteData matches the length of Uint8List',
+    'Given a Uint8List, '
+    'when converted to ByteData via ByteDataJsonExtension.fromJson, '
+    'then the length of ByteData matches the length of Uint8List',
     () {
       String strValue = 'AAECAwQFBgc=';
       Uint8List value = base64Decode(strValue);
@@ -233,7 +277,8 @@ void main() {
   );
 
   test(
-    'Given a Vector object, when serializing to JSON returns a List<double> representation.',
+    'Given a Vector object, '
+    'when serializing to JSON returns a List<double> representation.',
     () {
       Vector vector = const Vector([1.0, 2.0, 3.0]);
 
@@ -243,7 +288,9 @@ void main() {
   );
 
   test(
-    'Given a string representing a List<double>, when deserialized to a Vector using VectorJsonExtension.fromJson, then it creates a valid Vector.',
+    'Given a string representing a List<double>, '
+    'when deserialized to a Vector using VectorJsonExtension.fromJson, '
+    'then it creates a valid Vector.',
     () {
       String listAsString = '[1.0, 2.0, 3.0]';
       Vector vector = VectorJsonExtension.fromJson(listAsString);
@@ -253,7 +300,10 @@ void main() {
   );
 
   test(
-    'Given a List<double>, when deserialized to a Vector and then serialized back to a List<double>, then it matches the original list.',
+    'Given a List<double>, '
+    'when deserialized to a Vector and, '
+    'then serialized back to a List<double>, '
+    'then it matches the original list.',
     () {
       List<double> value = [1.0, 2.0, 3.0];
       Vector vector = VectorJsonExtension.fromJson(value);
@@ -263,7 +313,9 @@ void main() {
   );
 
   test(
-    'Given a Uint8List representing a Vector, when deserialized using VectorJsonExtension.fromJson, then it creates a valid Vector.',
+    'Given a Uint8List representing a Vector, '
+    'when deserialized using VectorJsonExtension.fromJson, '
+    'then it creates a valid Vector.',
     () {
       Vector originalVector = const Vector([1.0, 2.0, 3.0]);
       Vector vector = VectorJsonExtension.fromJson(originalVector.toBinary());
@@ -273,7 +325,9 @@ void main() {
   );
 
   test(
-    'Given a String representation of a Vector, when deserialized using VectorJsonExtension.fromJson, then it creates a valid Vector.',
+    'Given a String representation of a Vector, '
+    'when deserialized using VectorJsonExtension.fromJson, '
+    'then it creates a valid Vector.',
     () {
       Vector originalVector = const Vector([1.0, 2.0, 3.0]);
       Vector vector = VectorJsonExtension.fromJson(originalVector.toString());
@@ -284,7 +338,9 @@ void main() {
   );
 
   test(
-    'Given a Vector object, when passed to VectorJsonExtension.fromJson, then it remains unchanged.',
+    'Given a Vector object, '
+    'when passed to VectorJsonExtension.fromJson, '
+    'then it remains unchanged.',
     () {
       Vector value = const Vector([1.0, 2.0, 3.0]);
       Vector vector = VectorJsonExtension.fromJson(value);
@@ -294,7 +350,9 @@ void main() {
   );
 
   test(
-    'Given an unsupported type, when deserialized to a Vector using VectorJsonExtension.fromJson, then it throws a DeserializationTypeNotFoundException.',
+    'Given an unsupported type, '
+    'when deserialized to a Vector using VectorJsonExtension.fromJson, '
+    'then it throws a DeserializationTypeNotFoundException.',
     () {
       expect(
         () => VectorJsonExtension.fromJson(123),
@@ -314,7 +372,9 @@ void main() {
   );
 
   test(
-    'Given a string representing a List<double>, when deserialized to a HalfVector using HalfVectorJsonExtension.fromJson, then it creates a valid HalfVector.',
+    'Given a string representing a List<double>, '
+    'when deserialized to a HalfVector using HalfVectorJsonExtension.fromJson, '
+    'then it creates a valid HalfVector.',
     () {
       String listAsString = '[1.0, 2.0, 3.0]';
       HalfVector vector = HalfVectorJsonExtension.fromJson(listAsString);
@@ -324,7 +384,10 @@ void main() {
   );
 
   test(
-    'Given a List<double>, when deserialized to a HalfVector and then serialized back to a List<double>, then it matches the original list.',
+    'Given a List<double>, '
+    'when deserialized to a HalfVector and, '
+    'then serialized back to a List<double>, '
+    'then it matches the original list.',
     () {
       List<double> value = [1.0, 2.0, 3.0];
       HalfVector vector = HalfVectorJsonExtension.fromJson(value);
@@ -334,7 +397,9 @@ void main() {
   );
 
   test(
-    'Given a String representation of a HalfVector, when deserialized using HalfVectorJsonExtension.fromJson, then it creates a valid HalfVector.',
+    'Given a String representation of a HalfVector, '
+    'when deserialized using HalfVectorJsonExtension.fromJson, '
+    'then it creates a valid HalfVector.',
     () {
       HalfVector original = const HalfVector([1.0, 2.0, 3.0]);
       HalfVector vector = HalfVectorJsonExtension.fromJson(original.toString());
@@ -345,7 +410,9 @@ void main() {
   );
 
   test(
-    'Given a HalfVector object, when passed to HalfVectorJsonExtension.fromJson, then it remains unchanged.',
+    'Given a HalfVector object, '
+    'when passed to HalfVectorJsonExtension.fromJson, '
+    'then it remains unchanged.',
     () {
       HalfVector value = const HalfVector([1.0, 2.0, 3.0]);
       HalfVector vector = HalfVectorJsonExtension.fromJson(value);
@@ -355,7 +422,9 @@ void main() {
   );
 
   test(
-    'Given an unsupported type, when deserialized to a HalfVector using HalfVectorJsonExtension.fromJson, then it throws a DeserializationTypeNotFoundException.',
+    'Given an unsupported type, '
+    'when deserialized to a HalfVector using HalfVectorJsonExtension.fromJson, '
+    'then it throws a DeserializationTypeNotFoundException.',
     () {
       expect(
         () => HalfVectorJsonExtension.fromJson(123),
@@ -375,7 +444,9 @@ void main() {
   );
 
   test(
-    'Given a string representing a List<double>, when deserialized to a SparseVector using SparseVectorJsonExtension.fromJson, then it creates a valid SparseVector.',
+    'Given a string representing a List<double>, '
+    'when deserialized to a SparseVector using SparseVectorJsonExtension.fromJson, '
+    'then it creates a valid SparseVector.',
     () {
       String listAsString = '[1.0, 0.0, 2.0, 0.0, 3.0]';
       SparseVector vector = SparseVectorJsonExtension.fromJson(listAsString);
@@ -385,7 +456,10 @@ void main() {
   );
 
   test(
-    'Given a List<double>, when deserialized to a SparseVector and then serialized back to a String, then it matches the expected sparse format.',
+    'Given a List<double>, '
+    'when deserialized to a SparseVector and, '
+    'then serialized back to a String, '
+    'then it matches the expected sparse format.',
     () {
       List<double> value = [1.0, 0.0, 2.0, 0.0, 3.0];
       SparseVector vector = SparseVectorJsonExtension.fromJson(value);
@@ -395,7 +469,9 @@ void main() {
   );
 
   test(
-    'Given a SparseVector special format string, when deserialized using SparseVectorJsonExtension.fromJson, then it creates a valid SparseVector.',
+    'Given a SparseVector special format string, '
+    'when deserialized using SparseVectorJsonExtension.fromJson, '
+    'then it creates a valid SparseVector.',
     () {
       String sparseFormat = '{1:1.0,3:2.0,5:3.0}/5';
       SparseVector vector = SparseVectorJsonExtension.fromJson(sparseFormat);
@@ -406,7 +482,9 @@ void main() {
   );
 
   test(
-    'Given a SparseVector object, when passed to SparseVectorJsonExtension.fromJson, then it remains unchanged.',
+    'Given a SparseVector object, '
+    'when passed to SparseVectorJsonExtension.fromJson, '
+    'then it remains unchanged.',
     () {
       SparseVector value = SparseVector([1.0, 0.0, 2.0, 0.0, 3.0]);
       SparseVector vector = SparseVectorJsonExtension.fromJson(value);
@@ -416,7 +494,9 @@ void main() {
   );
 
   test(
-    'Given an unsupported type, when deserialized to a SparseVector using SparseVectorJsonExtension.fromJson, then it throws a DeserializationTypeNotFoundException.',
+    'Given an unsupported type, '
+    'when deserialized to a SparseVector using SparseVectorJsonExtension.fromJson, '
+    'then it throws a DeserializationTypeNotFoundException.',
     () {
       expect(
         () => SparseVectorJsonExtension.fromJson(123),
@@ -436,7 +516,9 @@ void main() {
   );
 
   test(
-    'Given a list of 1\'s and 0\'s, when deserialized to a Bit using BitJsonExtension.fromJson, then it creates a valid Bit vector.',
+    'Given a list of 1\'s and 0\'s, '
+    'when deserialized to a Bit using BitJsonExtension.fromJson, '
+    'then it creates a valid Bit vector.',
     () {
       List<int> value = [1, 0, 1, 0, 1];
       Bit vector = BitJsonExtension.fromJson(value);
@@ -446,7 +528,9 @@ void main() {
   );
 
   test(
-    'Given a string representing a List<bool>, when deserialized to a Bit using BitJsonExtension.fromJson, then it creates a valid Bit vector.',
+    'Given a string representing a List<bool>, '
+    'when deserialized to a Bit using BitJsonExtension.fromJson, '
+    'then it creates a valid Bit vector.',
     () {
       String listAsString = '[true, false, true, false, true]';
       Bit vector = BitJsonExtension.fromJson(listAsString);
@@ -456,7 +540,10 @@ void main() {
   );
 
   test(
-    'Given a List<bool>, when deserialized to a Bit and then serialized back to a String, then it matches the expected bit format.',
+    'Given a List<bool>, '
+    'when deserialized to a Bit and, '
+    'then serialized back to a String, '
+    'then it matches the expected bit format.',
     () {
       List<bool> value = [true, false, true, false, true];
       Bit vector = BitJsonExtension.fromJson(value);
@@ -466,7 +553,9 @@ void main() {
   );
 
   test(
-    'Given a binary string, when deserialized using BitJsonExtension.fromJson, then it creates a valid Bit vector.',
+    'Given a binary string, '
+    'when deserialized using BitJsonExtension.fromJson, '
+    'then it creates a valid Bit vector.',
     () {
       String bitString = '10101';
       Bit vector = BitJsonExtension.fromJson(bitString);
@@ -476,7 +565,9 @@ void main() {
   );
 
   test(
-    'Given a Bit object, when passed to BitJsonExtension.fromJson, then it remains unchanged.',
+    'Given a Bit object, '
+    'when passed to BitJsonExtension.fromJson, '
+    'then it remains unchanged.',
     () {
       Bit value = Bit([true, false, true, false, true]);
       Bit vector = BitJsonExtension.fromJson(value);
@@ -486,7 +577,9 @@ void main() {
   );
 
   test(
-    'Given an unsupported type, when deserialized to a Bit using BitJsonExtension.fromJson, then it throws a DeserializationTypeNotFoundException.',
+    'Given an unsupported type, '
+    'when deserialized to a Bit using BitJsonExtension.fromJson, '
+    'then it throws a DeserializationTypeNotFoundException.',
     () {
       expect(
         () => BitJsonExtension.fromJson(123),
@@ -496,7 +589,9 @@ void main() {
   );
 
   test(
-    'Given a GeographyPoint, when serializing to JSON then it returns the EWKT string.',
+    'Given a GeographyPoint, '
+    'when serializing to JSON, '
+    'then it returns the EWKT string.',
     () {
       const point = GeographyPoint(longitude: 2.3522, latitude: 48.8566);
 
@@ -506,7 +601,9 @@ void main() {
   );
 
   test(
-    'Given an EWKT string, when deserialized using GeographyPointJsonExtension.fromJson, then it creates a valid GeographyPoint.',
+    'Given an EWKT string, '
+    'when deserialized using GeographyPointJsonExtension.fromJson, '
+    'then it creates a valid GeographyPoint.',
     () {
       GeographyPoint point = GeographyPointJsonExtension.fromJson(
         'SRID=3857;POINT(2.3522 48.8566)',
@@ -519,7 +616,9 @@ void main() {
   );
 
   test(
-    'Given a Map, when deserialized using GeographyPointJsonExtension.fromJson, then it creates a valid GeographyPoint.',
+    'Given a Map, '
+    'when deserialized using GeographyPointJsonExtension.fromJson, '
+    'then it creates a valid GeographyPoint.',
     () {
       GeographyPoint point = GeographyPointJsonExtension.fromJson({
         'longitude': -74.006,
@@ -534,7 +633,9 @@ void main() {
   );
 
   test(
-    'Given a Map without srid, when deserialized using GeographyPointJsonExtension.fromJson, then it defaults to Geography.defaultSrid.',
+    'Given a Map without srid, '
+    'when deserialized using GeographyPointJsonExtension.fromJson, '
+    'then it defaults to Geography.defaultSrid.',
     () {
       GeographyPoint point = GeographyPointJsonExtension.fromJson({
         'longitude': 1.0,
@@ -546,7 +647,9 @@ void main() {
   );
 
   test(
-    'Given a Uint8List (EWKB), when deserialized using GeographyPointJsonExtension.fromJson, then it decodes the binary representation.',
+    'Given a Uint8List (EWKB), '
+    'when deserialized using GeographyPointJsonExtension.fromJson, '
+    'then it decodes the binary representation.',
     () {
       // Little-endian EWKB for SRID=4326;POINT(1.0 2.0)
       final ewkb = Uint8List.fromList([
@@ -565,7 +668,9 @@ void main() {
   );
 
   test(
-    'Given a GeographyPoint, when passed to GeographyPointJsonExtension.fromJson, then it remains unchanged.',
+    'Given a GeographyPoint, '
+    'when passed to GeographyPointJsonExtension.fromJson, '
+    'then it remains unchanged.',
     () {
       const value = GeographyPoint(longitude: 1.0, latitude: 2.0);
       GeographyPoint point = GeographyPointJsonExtension.fromJson(value);
@@ -575,7 +680,9 @@ void main() {
   );
 
   test(
-    'Given a GeographyPoint, when serialized and deserialized, then all values are preserved.',
+    'Given a GeographyPoint, '
+    'when serialized and deserialized, '
+    'then all values are preserved.',
     () {
       const original = GeographyPoint(
         longitude: 2.3522,
@@ -591,7 +698,9 @@ void main() {
   );
 
   test(
-    'Given an unsupported type, when deserialized to a GeographyPoint using GeographyPointJsonExtension.fromJson, then it throws an ArgumentError.',
+    'Given an unsupported type, '
+    'when deserialized to a GeographyPoint using GeographyPointJsonExtension.fromJson, '
+    'then it throws an ArgumentError.',
     () {
       expect(
         () => GeographyPointJsonExtension.fromJson(42),
@@ -601,7 +710,9 @@ void main() {
   );
 
   test(
-    'Given a GeographyLineString, when serializing to JSON then it returns the EWKT string.',
+    'Given a GeographyLineString, '
+    'when serializing to JSON, '
+    'then it returns the EWKT string.',
     () {
       const lineString = GeographyLineString(
         points: [
@@ -619,7 +730,9 @@ void main() {
   );
 
   test(
-    'Given an EWKT string, when deserialized using GeographyLineStringJsonExtension.fromJson, then it creates a valid GeographyLineString.',
+    'Given an EWKT string, '
+    'when deserialized using GeographyLineStringJsonExtension.fromJson, '
+    'then it creates a valid GeographyLineString.',
     () {
       GeographyLineString lineString =
           GeographyLineStringJsonExtension.fromJson(
@@ -634,7 +747,9 @@ void main() {
   );
 
   test(
-    'Given a Map, when deserialized using GeographyLineStringJsonExtension.fromJson, then it creates a valid GeographyLineString.',
+    'Given a Map, '
+    'when deserialized using GeographyLineStringJsonExtension.fromJson, '
+    'then it creates a valid GeographyLineString.',
     () {
       GeographyLineString lineString =
           GeographyLineStringJsonExtension.fromJson({
@@ -651,7 +766,9 @@ void main() {
   );
 
   test(
-    'Given a Uint8List (EWKB), when deserialized using GeographyLineStringJsonExtension.fromJson, then it decodes the binary representation.',
+    'Given a Uint8List (EWKB), '
+    'when deserialized using GeographyLineStringJsonExtension.fromJson, '
+    'then it decodes the binary representation.',
     () {
       // Little-endian EWKB for SRID=4326;LINESTRING(0.0 0.0, 1.0 2.0)
       final ewkb = Uint8List.fromList([
@@ -677,7 +794,9 @@ void main() {
   );
 
   test(
-    'Given a GeographyLineString, when serialized and deserialized, then all values are preserved.',
+    'Given a GeographyLineString, '
+    'when serialized and deserialized, '
+    'then all values are preserved.',
     () {
       const original = GeographyLineString(
         points: [
@@ -694,7 +813,9 @@ void main() {
   );
 
   test(
-    'Given a GeographyLineString with a custom SRID, when serialized and deserialized, then the SRID is preserved.',
+    'Given a GeographyLineString with a custom SRID, '
+    'when serialized and deserialized, '
+    'then the SRID is preserved.',
     () {
       const original = GeographyLineString(
         points: [
@@ -712,7 +833,9 @@ void main() {
   );
 
   test(
-    'Given an unsupported type, when deserialized to a GeographyLineString using GeographyLineStringJsonExtension.fromJson, then it throws an ArgumentError.',
+    'Given an unsupported type, '
+    'when deserialized to a GeographyLineString using GeographyLineStringJsonExtension.fromJson, '
+    'then it throws an ArgumentError.',
     () {
       expect(
         () => GeographyLineStringJsonExtension.fromJson(42),
@@ -722,7 +845,9 @@ void main() {
   );
 
   test(
-    'Given a GeographyPolygon, when serializing to JSON then it returns the EWKT string.',
+    'Given a GeographyPolygon, '
+    'when serializing to JSON, '
+    'then it returns the EWKT string.',
     () {
       const polygon = GeographyPolygon(
         exteriorRing: [
@@ -742,7 +867,9 @@ void main() {
   );
 
   test(
-    'Given an EWKT string with a hole, when deserialized using GeographyPolygonJsonExtension.fromJson, then both rings are parsed.',
+    'Given an EWKT string with a hole, '
+    'when deserialized using GeographyPolygonJsonExtension.fromJson, '
+    'then both rings are parsed.',
     () {
       GeographyPolygon polygon = GeographyPolygonJsonExtension.fromJson(
         'SRID=4326;POLYGON('
@@ -759,7 +886,9 @@ void main() {
   );
 
   test(
-    'Given a Map, when deserialized using GeographyPolygonJsonExtension.fromJson, then it creates a valid GeographyPolygon.',
+    'Given a Map, '
+    'when deserialized using GeographyPolygonJsonExtension.fromJson, '
+    'then it creates a valid GeographyPolygon.',
     () {
       GeographyPolygon polygon = GeographyPolygonJsonExtension.fromJson({
         'srid': 4326,
@@ -779,7 +908,9 @@ void main() {
   );
 
   test(
-    'Given a Uint8List (EWKB), when deserialized using GeographyPolygonJsonExtension.fromJson, then it decodes the binary representation.',
+    'Given a Uint8List (EWKB), '
+    'when deserialized using GeographyPolygonJsonExtension.fromJson, '
+    'then it decodes the binary representation.',
     () {
       // Little-endian EWKB for SRID=4326;POLYGON((0 0, 1 0, 1 1, 0 0))
       final ewkb = Uint8List.fromList([
@@ -811,7 +942,9 @@ void main() {
   );
 
   test(
-    'Given a GeographyPolygon with holes, when serialized and deserialized, then the holes are preserved.',
+    'Given a GeographyPolygon with holes, '
+    'when serialized and deserialized, '
+    'then the holes are preserved.',
     () {
       const original = GeographyPolygon(
         exteriorRing: [
@@ -839,7 +972,9 @@ void main() {
   );
 
   test(
-    'Given an unsupported type, when deserialized to a GeographyPolygon using GeographyPolygonJsonExtension.fromJson, then it throws an ArgumentError.',
+    'Given an unsupported type, '
+    'when deserialized to a GeographyPolygon using GeographyPolygonJsonExtension.fromJson, '
+    'then it throws an ArgumentError.',
     () {
       expect(
         () => GeographyPolygonJsonExtension.fromJson(42),
@@ -849,7 +984,9 @@ void main() {
   );
 
   test(
-    'Given a GeographyGeometryCollection, when serializing to JSON then it returns the EWKT string.',
+    'Given a GeographyGeometryCollection, '
+    'when serializing to JSON, '
+    'then it returns the EWKT string.',
     () {
       const collection = GeographyGeometryCollection(
         geometries: [
@@ -869,7 +1006,9 @@ void main() {
   );
 
   test(
-    'Given an EWKT string with mixed types, when deserialized using GeographyGeometryCollectionJsonExtension.fromJson, then all types are parsed.',
+    'Given an EWKT string with mixed types, '
+    'when deserialized using GeographyGeometryCollectionJsonExtension.fromJson, '
+    'then all types are parsed.',
     () {
       GeographyGeometryCollection collection =
           GeographyGeometryCollectionJsonExtension.fromJson(
@@ -888,7 +1027,9 @@ void main() {
   );
 
   test(
-    'Given an EWKT string for an empty collection, when deserialized using GeographyGeometryCollectionJsonExtension.fromJson, then the geometries are empty.',
+    'Given an EWKT string for an empty collection, '
+    'when deserialized using GeographyGeometryCollectionJsonExtension.fromJson, '
+    'then the geometries are empty.',
     () {
       GeographyGeometryCollection collection =
           GeographyGeometryCollectionJsonExtension.fromJson(
@@ -900,7 +1041,9 @@ void main() {
   );
 
   test(
-    'Given a Map with string geometries, when deserialized using GeographyGeometryCollectionJsonExtension.fromJson, then it parses correctly.',
+    'Given a Map with string geometries, '
+    'when deserialized using GeographyGeometryCollectionJsonExtension.fromJson, '
+    'then it parses correctly.',
     () {
       GeographyGeometryCollection collection =
           GeographyGeometryCollectionJsonExtension.fromJson({
@@ -918,7 +1061,9 @@ void main() {
   );
 
   test(
-    'Given a Uint8List (EWKB), when deserialized using GeographyGeometryCollectionJsonExtension.fromJson, then it decodes the binary representation.',
+    'Given a Uint8List (EWKB), '
+    'when deserialized using GeographyGeometryCollectionJsonExtension.fromJson, '
+    'then it decodes the binary representation.',
     () {
       // LE EWKB for SRID=4326;GEOMETRYCOLLECTION(POINT(1.0 2.0))
       final ewkb = Uint8List.fromList([
@@ -942,7 +1087,9 @@ void main() {
   );
 
   test(
-    'Given a GeographyGeometryCollection with mixed types, when serialized and deserialized, then all sub-geometry types are preserved.',
+    'Given a GeographyGeometryCollection with mixed types, '
+    'when serialized and deserialized, '
+    'then all sub-geometry types are preserved.',
     () {
       const original = GeographyGeometryCollection(
         geometries: [
@@ -974,7 +1121,9 @@ void main() {
   );
 
   test(
-    'Given an unsupported type, when deserialized to a GeographyGeometryCollection using GeographyGeometryCollectionJsonExtension.fromJson, then it throws an ArgumentError.',
+    'Given an unsupported type, '
+    'when deserialized to a GeographyGeometryCollection using GeographyGeometryCollectionJsonExtension.fromJson, '
+    'then it throws an ArgumentError.',
     () {
       expect(
         () => GeographyGeometryCollectionJsonExtension.fromJson(42),

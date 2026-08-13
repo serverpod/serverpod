@@ -14,21 +14,21 @@ const generator = DartClientCodeGenerator();
 
 void main() {
   group(
-    'Given a server package named "server" when generating client code',
+    'Given a server package named "server", when generating client code,',
     () {
-      var authCoreModule = ModuleConfigBuilder(
+      late var authCoreModule = ModuleConfigBuilder(
         'serverpod_auth_core',
         'serverpod_auth_core',
       ).build();
 
-      var config = GeneratorConfigBuilder()
+      late var config = GeneratorConfigBuilder()
           .withServerPackage('server')
           .withDartClientPackage('client')
           .withRelativeDartClientPackagePathParts(['..', 'client'])
           .withModules([authCoreModule])
           .build();
 
-      var myModel = ModelClassDefinitionBuilder()
+      late var myModel = ModelClassDefinitionBuilder()
           .withClassName('MyModel')
           .withFileName('my_model')
           .withField(
@@ -48,7 +48,7 @@ void main() {
 
       var models = [myModel];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
@@ -62,8 +62,8 @@ void main() {
         '$fileName.dart',
       ]);
 
-      var myModelCode = codeMap[getExpectedFilePath('my_model')]!;
-      var compilationUnit = parseString(content: myModelCode).unit;
+      late var myModelCode = codeMap[getExpectedFilePath('my_model')]!;
+      late var compilationUnit = parseString(content: myModelCode).unit;
 
       test(
         'then the generated file does not have compilation errors.',

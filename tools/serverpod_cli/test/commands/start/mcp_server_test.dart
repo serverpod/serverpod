@@ -40,7 +40,7 @@ _createPair() async {
 }
 
 void main() {
-  group('Given a ServerpodMcpServer', () {
+  group('Given a ServerpodMcpServer,', () {
     late ServerpodMcpServer server;
     late ServerConnection connection;
 
@@ -78,7 +78,7 @@ void main() {
       },
     );
 
-    group('with no connected callback', () {
+    group('with no connected callback,', () {
       test(
         'when calling apply_migrations, '
         'then it returns an error',
@@ -191,7 +191,7 @@ void main() {
       );
     });
 
-    group('with a connected callback', () {
+    group('with a connected callback,', () {
       test(
         'when calling apply_migrations, '
         'then it invokes the callback and returns success',
@@ -495,7 +495,7 @@ void main() {
           );
         },
       );
-      group('with Flutter log history for one app', () {
+      group('with Flutter log history for one app,', () {
         setUp(() {
           server.getFlutterAppIds = () => ['admin'];
           server.getFlutterLogHistory = (appId) => switch (appId) {
@@ -544,7 +544,7 @@ void main() {
         );
       });
 
-      group('with Flutter log history for several apps', () {
+      group('with Flutter log history for several apps,', () {
         setUp(() {
           server.getFlutterAppIds = () => ['admin', 'customer'];
           server.getFlutterLogHistory = (appId) => switch (appId) {
@@ -589,7 +589,7 @@ void main() {
         );
       });
 
-      group('with spawn_flutter_app wired to a single app', () {
+      group('with spawn_flutter_app wired to a single app,', () {
         late List<String> spawnCalls;
         late bool reportAlreadyRunning;
 
@@ -662,7 +662,7 @@ void main() {
         );
       });
 
-      group('with spawn_flutter_app wired to several apps', () {
+      group('with spawn_flutter_app wired to several apps,', () {
         late List<String> spawnCalls;
 
         setUp(() {
@@ -731,7 +731,7 @@ void main() {
         );
       });
 
-      group('with spawn_flutter_app but no configured apps', () {
+      group('with spawn_flutter_app but no configured apps,', () {
         setUp(() {
           server.getFlutterAppIds = () => [];
           server.onSpawnFlutterApp = (_) async => false;
@@ -754,7 +754,7 @@ void main() {
         );
       });
 
-      group('with launched Flutter apps', () {
+      group('with launched Flutter apps,', () {
         setUp(() {
           // "portal" is launched but not ready (null); "admin" is ready (URI).
           // A non-launched app would simply be absent from the map.
@@ -781,7 +781,7 @@ void main() {
         );
       });
 
-      group('with no launched Flutter apps', () {
+      group('with no launched Flutter apps,', () {
         setUp(() {
           server.getFlutterDtdUris = () => {};
         });

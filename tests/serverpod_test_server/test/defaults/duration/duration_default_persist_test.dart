@@ -3,10 +3,11 @@ import 'package:test/test.dart';
 
 void main() async {
   group(
-    "Given a class with 'defaultPersist' Duration fields",
+    "Given a class with 'defaultPersist' Duration fields,",
     () {
       test(
-        'when an object of the class is created, then the "durationDefaultPersist" field should be null',
+        'when an object of the class is created, '
+        'then the "durationDefaultPersist" field should be null',
         () {
           var object = DurationDefaultPersist();
           expect(object.durationDefaultPersist, isNull);
@@ -14,7 +15,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a specific value for "durationDefaultPersist", then the field value should match the provided value',
+        'when an object of the class is created with a specific value for "durationDefaultPersist", '
+        'then the field value should match the provided value',
         () {
           var duration = Duration(
             days: 3,

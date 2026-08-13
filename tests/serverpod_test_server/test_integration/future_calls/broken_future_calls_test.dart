@@ -19,8 +19,8 @@ class _SimpleFutureCall extends FutureCall<SimpleData>
 
 void main() {
   group(
-    'Given a Serverpod server instance with default config'
-    'and valid registered future calls in the database',
+    'Given a Serverpod server instance with default config '
+    'and valid registered future calls in the database,',
     () {
       late Serverpod server;
       late Session session;
@@ -82,8 +82,8 @@ void main() {
   );
 
   group(
-    'Given a Serverpod server instance with default config and at least 1000'
-    'future calls in the database containing unregistered and broken future calls',
+    'Given a Serverpod server instance with default config and at least 1000 '
+    'future calls in the database containing unregistered and broken future calls,',
     () {
       late Serverpod server;
       late Session session;
@@ -126,7 +126,7 @@ void main() {
         await server.shutdown(exitProcess: false);
       });
 
-      group('when starting Serverpod', () {
+      group('when starting Serverpod,', () {
         setUp(() async {
           await server.start();
         });
@@ -177,8 +177,8 @@ void main() {
   );
 
   group(
-    'Given a Serverpod server instance with default config and less than 1000'
-    'future calls in the database containing unregistered and broken future calls',
+    'Given a Serverpod server instance with default config and less than 1000 '
+    'future calls in the database containing unregistered and broken future calls,',
     () {
       late Serverpod server;
       late Session session;
@@ -221,7 +221,7 @@ void main() {
         await server.shutdown(exitProcess: false);
       });
 
-      group('when starting Serverpod', () {
+      group('when starting Serverpod,', () {
         setUp(() async {
           await server.start();
         });
@@ -270,8 +270,8 @@ void main() {
   );
 
   group(
-    'Given a Serverpod server instance with checkBrokenCalls enabled'
-    'in future call config and database contains unregistered broken future calls',
+    'Given a Serverpod server instance with checkBrokenCalls enabled '
+    'in future call config and database contains unregistered broken future calls,',
     () {
       late Serverpod server;
       late Session session;
@@ -318,7 +318,7 @@ void main() {
         await server.shutdown(exitProcess: false);
       });
 
-      group('when starting Serverpod', () {
+      group('when starting Serverpod,', () {
         setUp(() async {
           await server.start();
         });
@@ -363,8 +363,8 @@ void main() {
   );
 
   group(
-    'Given a Serverpod server instance with checkBrokenCalls disabled'
-    'in future call config and database contains unregistered and broken future calls',
+    'Given a Serverpod server instance with checkBrokenCalls disabled '
+    'in future call config and database contains unregistered and broken future calls,',
     () {
       late Serverpod server;
       late Session session;
@@ -412,7 +412,8 @@ void main() {
       });
 
       test(
-        'when starting Serverpod, then unregistered and broken future calls are not logged',
+        'when starting Serverpod, '
+        'then unregistered and broken future calls are not logged',
         () async {
           await server.start();
           await server.internalLoggingSession.close();
@@ -431,8 +432,8 @@ void main() {
   );
 
   group(
-    'Given a Serverpod server instance with deleteBrokenCalls disabled'
-    'in future call config and database contains unregistered and broken future calls',
+    'Given a Serverpod server instance with deleteBrokenCalls disabled '
+    'in future call config and database contains unregistered and broken future calls,',
     () {
       late Serverpod server;
       late Session session;
@@ -480,7 +481,8 @@ void main() {
       });
 
       test(
-        'when starting Serverpod, then unregistered and broken future calls are not deleted from the database',
+        'when starting Serverpod, '
+        'then unregistered and broken future calls are not deleted from the database',
         () async {
           await server.start();
           final entries = await FutureCallEntry.db.find(session);
@@ -491,8 +493,8 @@ void main() {
   );
 
   group(
-    'Given a Serverpod server instance with deleteBrokenCalls enabled'
-    'in future call config and database contains unregistered future calls',
+    'Given a Serverpod server instance with deleteBrokenCalls enabled '
+    'in future call config and database contains unregistered future calls,',
     () {
       late Serverpod server;
       late Session session;
@@ -540,7 +542,8 @@ void main() {
       });
 
       test(
-        'when starting Serverpod, then unregistered future calls are deleted from the database',
+        'when starting Serverpod, '
+        'then unregistered future calls are deleted from the database',
         () async {
           var entries = await FutureCallEntry.db.find(session);
           var entryNames = entries.map((e) => e.name).toList();
@@ -562,8 +565,8 @@ void main() {
   );
 
   group(
-    'Given a Serverpod server instance with deleteBrokenCalls enabled'
-    'in future call config and broken future calls',
+    'Given a Serverpod server instance with deleteBrokenCalls enabled '
+    'in future call config and broken future calls,',
     () {
       late Serverpod server;
       late Session session;
@@ -610,7 +613,8 @@ void main() {
       });
 
       test(
-        'when starting Serverpod, then broken future calls are deleted from the database',
+        'when starting Serverpod, '
+        'then broken future calls are deleted from the database',
         () async {
           var entries = await FutureCallEntry.db.find(session);
           var entryNames = entries.map((e) => e.name).toList();

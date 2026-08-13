@@ -28,16 +28,17 @@ void main() {
   );
 
   group(
-    'Given an endpoint with Stream with model generic return type when generating protocol files',
+    'Given an endpoint with Stream with model generic return type, '
+    'when generating protocol files,',
     () {
       var modelName = 'example_model';
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(modelName.pascalCase)
             .withFileName(modelName)
             .build(),
       ];
-      var endpoints = [
+      late var endpoints = [
         EndpointDefinitionBuilder().withMethods([
           MethodDefinitionBuilder()
               .withName('streamingMethod')
@@ -50,13 +51,13 @@ void main() {
         ]).build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: models,
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );
@@ -81,17 +82,18 @@ void main() {
   );
 
   group(
-    'Given a model with a field with list of other model when generating protocol files',
+    'Given a model with a field with list of other model, '
+    'when generating protocol files,',
     () {
       var testModelName = 'TestModel';
       var testModelFileName = 'test_model.dart';
       var modelWithListName = 'modelWithList';
       var modelWithListFileName = 'model_with_list.dart';
-      var testModel = ModelClassDefinitionBuilder()
+      late var testModel = ModelClassDefinitionBuilder()
           .withClassName(testModelName)
           .withFileName(testModelFileName)
           .build();
-      var models = [
+      late var models = [
         testModel,
         ModelClassDefinitionBuilder()
             .withClassName(modelWithListName)
@@ -113,13 +115,13 @@ void main() {
             .build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [],
         models: models,
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );
@@ -144,18 +146,19 @@ void main() {
   );
 
   group(
-    'Given an endpoint that returns a list of models when generating protocol files',
+    'Given an endpoint that returns a list of models, '
+    'when generating protocol files,',
     () {
       var testModelName = 'TestModel';
       var testModelFileName = 'test_model.dart';
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testModelName)
             .withFileName(testModelFileName)
             .build(),
       ];
 
-      var endpoints = [
+      late var endpoints = [
         EndpointDefinitionBuilder().withMethods([
           MethodDefinitionBuilder()
               .withName('myEndpoint')
@@ -175,13 +178,13 @@ void main() {
         ]).build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: models,
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );
@@ -206,18 +209,19 @@ void main() {
   );
 
   group(
-    'Given an endpoint that takes a list of models as a parameter when generating protocol files',
+    'Given an endpoint that takes a list of models as a parameter, '
+    'when generating protocol files,',
     () {
       var testModelName = 'TestModel';
       var testModelFileName = 'test_model.dart';
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testModelName)
             .withFileName(testModelFileName)
             .build(),
       ];
 
-      var endpoints = [
+      late var endpoints = [
         EndpointDefinitionBuilder().withMethods([
           MethodDefinitionBuilder().withName('myEndpoint').withParameters([
             ParameterDefinitionBuilder()
@@ -236,13 +240,13 @@ void main() {
         ]).build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: models,
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );
@@ -267,18 +271,19 @@ void main() {
   );
 
   group(
-    'Given an endpoint that takes a list of models as a named parameter when generating protocol files',
+    'Given an endpoint that takes a list of models as a named parameter, '
+    'when generating protocol files,',
     () {
       var testModelName = 'TestModel';
       var testModelFileName = 'test_model.dart';
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testModelName)
             .withFileName(testModelFileName)
             .build(),
       ];
 
-      var endpoints = [
+      late var endpoints = [
         EndpointDefinitionBuilder().withMethods([
           MethodDefinitionBuilder().withName('myEndpoint').withParametersNamed([
             ParameterDefinitionBuilder()
@@ -297,13 +302,13 @@ void main() {
         ]).build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: models,
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );
@@ -328,18 +333,19 @@ void main() {
   );
 
   group(
-    'Given an endpoint that takes a list of models as a named parameter when generating protocol files',
+    'Given an endpoint that takes a list of models as a named parameter, '
+    'when generating protocol files,',
     () {
       var testModelName = 'TestModel';
       var testModelFileName = 'test_model.dart';
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testModelName)
             .withFileName(testModelFileName)
             .build(),
       ];
 
-      var endpoints = [
+      late var endpoints = [
         EndpointDefinitionBuilder().withMethods([
           MethodDefinitionBuilder()
               .withName('myEndpoint')
@@ -364,13 +370,13 @@ void main() {
         ]).build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: models,
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );
@@ -395,16 +401,17 @@ void main() {
   );
 
   group(
-    'Given an endpoint with Stream with a model return type when generating protocol files',
+    'Given an endpoint with Stream with a model return type, '
+    'when generating protocol files,',
     () {
       var modelName = 'example_model';
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(modelName.pascalCase)
             .withFileName(modelName)
             .build(),
       ];
-      var endpoints = [
+      late var endpoints = [
         EndpointDefinitionBuilder().withMethods([
           MethodDefinitionBuilder()
               .withName('streamingMethod')
@@ -417,13 +424,13 @@ void main() {
         ]).build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: models,
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );
@@ -448,9 +455,10 @@ void main() {
   );
 
   group(
-    'Given an endpoint with Stream with a record return type when generating protocol files',
+    'Given an endpoint with Stream with a record return type, '
+    'when generating protocol files,',
     () {
-      var endpoints = [
+      late var endpoints = [
         EndpointDefinitionBuilder().withMethods([
           MethodDefinitionBuilder()
               .withName('streamingMethod')
@@ -465,13 +473,13 @@ void main() {
         ]).build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: [],
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );
@@ -496,9 +504,10 @@ void main() {
   );
 
   group(
-    'Given an endpoint with a Future record return type when generating protocol files',
+    'Given an endpoint with a Future record return type, '
+    'when generating protocol files,',
     () {
-      var endpoints = [
+      late var endpoints = [
         EndpointDefinitionBuilder().withMethods([
           MethodDefinitionBuilder()
               .withName('streamingMethod')
@@ -513,13 +522,13 @@ void main() {
         ]).build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: [],
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );
@@ -544,9 +553,10 @@ void main() {
   );
 
   group(
-    'Given an endpoint with a Future<int> return type and Stream of record parameter when generating protocol files',
+    'Given an endpoint with a Future<int> return type and Stream of record parameter, '
+    'when generating protocol files,',
     () {
-      var endpoints = [
+      late var endpoints = [
         EndpointDefinitionBuilder().withMethods([
           MethodDefinitionBuilder()
               .withName('streamingMethod')
@@ -578,13 +588,13 @@ void main() {
         ]).build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: [],
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );
@@ -609,9 +619,10 @@ void main() {
   );
 
   group(
-    'Given an endpoint with a Future<int> return type and Stream of records (List) parameter when generating protocol files',
+    'Given an endpoint with a Future<int> return type and Stream of records (List) parameter, '
+    'when generating protocol files,',
     () {
-      var endpoints = [
+      late var endpoints = [
         EndpointDefinitionBuilder().withMethods([
           MethodDefinitionBuilder()
               .withName('streamingMethod')
@@ -648,13 +659,13 @@ void main() {
         ]).build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: [],
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );
@@ -678,11 +689,12 @@ void main() {
     },
   );
 
-  group('Given a model with vector fields when generating protocol files', () {
+  group('Given a model with vector fields, '
+        'when generating protocol files,', () {
     var testModelName = 'ModelWithVector';
     var testModelFileName = 'model_with_vector';
 
-    var models = [
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(testModelName)
           .withFileName(testModelFileName)
@@ -692,13 +704,13 @@ void main() {
           .build(),
     ];
 
-    var protocolDefinition = ProtocolDefinition(
+    late var protocolDefinition = ProtocolDefinition(
       endpoints: [],
       models: models,
       futureCalls: [],
     );
 
-    var codeMap = generator.generateProtocolCode(
+    late var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,
       config: config,
     );
@@ -741,12 +753,13 @@ void main() {
   });
 
   group(
-    'Given a model with vector fields and indexes when generating protocol files',
+    'Given a model with vector fields and indexes, '
+    'when generating protocol files,',
     () {
       var testModelName = 'ModelWithVectorIndexes';
       var testModelFileName = 'model_with_vector_indexes';
 
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testModelName)
             .withFileName(testModelFileName)
@@ -825,13 +838,13 @@ void main() {
             .build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [],
         models: models,
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );
@@ -882,7 +895,8 @@ void main() {
   );
 
   group(
-    'Given a model that is referenced in list relations of multiple models when generating protocol files',
+    'Given a model that is referenced in list relations of multiple models, '
+    'when generating protocol files,',
     () {
       var personModelName = 'Person';
       var personModelFileName = 'person';
@@ -891,13 +905,13 @@ void main() {
       var organizationModelName = 'Organization';
       var organizationModelFileName = 'organization';
 
-      var personModel = ModelClassDefinitionBuilder()
+      late var personModel = ModelClassDefinitionBuilder()
           .withClassName(personModelName)
           .withFileName(personModelFileName)
           .withTableName('person')
           .build();
 
-      var cityModel = ModelClassDefinitionBuilder()
+      late var cityModel = ModelClassDefinitionBuilder()
           .withClassName(cityModelName)
           .withFileName(cityModelFileName)
           .withTableName('city')
@@ -908,7 +922,7 @@ void main() {
           )
           .build();
 
-      var organizationModel = ModelClassDefinitionBuilder()
+      late var organizationModel = ModelClassDefinitionBuilder()
           .withClassName(organizationModelName)
           .withFileName(organizationModelFileName)
           .withTableName('organization')
@@ -922,13 +936,13 @@ void main() {
 
       var models = [personModel, cityModel, organizationModel];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [],
         models: models,
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );
@@ -956,9 +970,10 @@ void main() {
   );
 
   group(
-    'Given an endpoint returning a Map with non-String key (e.g., DateTime) when generating protocol files',
+    'Given an endpoint returning a Map with non-String key (e.g., DateTime), '
+    'when generating protocol files,',
     () {
-      var endpoints = [
+      late var endpoints = [
         EndpointDefinitionBuilder().withMethods([
           MethodDefinitionBuilder()
               .withName('dateTimeMapMethod')
@@ -971,13 +986,13 @@ void main() {
         ]).build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: [],
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );
@@ -1002,9 +1017,10 @@ void main() {
   );
 
   group(
-    'Given an endpoint with a Map<int, bool> parameter (non-String key) when generating protocol files',
+    'Given an endpoint with a Map<int, bool> parameter (non-String key), '
+    'when generating protocol files,',
     () {
-      var endpoints = [
+      late var endpoints = [
         EndpointDefinitionBuilder().withMethods([
           MethodDefinitionBuilder().withName('intMapMethod').withParameters([
             ParameterDefinitionBuilder()
@@ -1017,13 +1033,13 @@ void main() {
         ]).build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: [],
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );
@@ -1048,9 +1064,10 @@ void main() {
   );
 
   group(
-    'Given an endpoint returning a nested List containing a Map with non-String key when generating protocol files',
+    'Given an endpoint returning a nested List containing a Map with non-String key, '
+    'when generating protocol files,',
     () {
-      var endpoints = [
+      late var endpoints = [
         EndpointDefinitionBuilder().withMethods([
           MethodDefinitionBuilder()
               .withName('nestedNonStringKeyMapMethod')
@@ -1065,13 +1082,13 @@ void main() {
         ]).build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: [],
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );
@@ -1096,11 +1113,12 @@ void main() {
   );
 
   group(
-    'Given serverOnly models with List field of another serverOnly model when generating protocol files',
+    'Given serverOnly models with List field of another serverOnly model, '
+    'when generating protocol files,',
     () {
       var serverOnlyModel = 'Article';
       var serverOnlyModelWithList = 'ArticleList';
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(serverOnlyModel)
             .withFileName('article')
@@ -1120,13 +1138,13 @@ void main() {
             .build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [],
         models: models,
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );
@@ -1149,17 +1167,18 @@ void main() {
   );
 
   group(
-    'Given an endpoint that returns a named record with a model type when generating protocol files',
+    'Given an endpoint that returns a named record with a model type, '
+    'when generating protocol files,',
     () {
       var testModelName = 'TestModel';
       var testModelFileName = 'test_model';
-      var testModel = ModelClassDefinitionBuilder()
+      late var testModel = ModelClassDefinitionBuilder()
           .withClassName(testModelName)
           .withFileName(testModelFileName)
           .build();
       var models = [testModel];
 
-      var endpoints = [
+      late var endpoints = [
         EndpointDefinitionBuilder().withMethods([
           MethodDefinitionBuilder()
               .withName('myEndpoint')
@@ -1180,13 +1199,13 @@ void main() {
         ]).build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: models,
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );
@@ -1211,17 +1230,18 @@ void main() {
   );
 
   group(
-    'Given an endpoint that returns a named record with a nullable model type when generating protocol files',
+    'Given an endpoint that returns a named record with a nullable model type, '
+    'when generating protocol files,',
     () {
       var testModelName = 'TestModel';
       var testModelFileName = 'test_model';
-      var testModel = ModelClassDefinitionBuilder()
+      late var testModel = ModelClassDefinitionBuilder()
           .withClassName(testModelName)
           .withFileName(testModelFileName)
           .build();
       var models = [testModel];
 
-      var endpoints = [
+      late var endpoints = [
         EndpointDefinitionBuilder().withMethods([
           MethodDefinitionBuilder()
               .withName('myEndpoint')
@@ -1242,13 +1262,13 @@ void main() {
         ]).build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: models,
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );

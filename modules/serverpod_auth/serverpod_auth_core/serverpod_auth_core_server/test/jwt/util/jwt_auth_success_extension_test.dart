@@ -8,10 +8,10 @@ import 'package:serverpod_auth_core_server/src/jwt/util/jwt_auth_success_extensi
 import 'package:test/test.dart';
 
 void main() {
-  group('Given an `AuthSuccess` with a valid JWT refresh token', () {
-    final refreshTokenId = const Uuid().v4obj();
+  group('Given an `AuthSuccess` with a valid JWT refresh token,', () {
+    late final refreshTokenId = const Uuid().v4obj();
 
-    final refreshTokenString = RefreshTokenString.buildRefreshTokenString(
+    late final refreshTokenString = RefreshTokenString.buildRefreshTokenString(
       refreshToken: RefreshToken(
         id: refreshTokenId,
         authUserId: const Uuid().v4obj(),
@@ -23,7 +23,7 @@ void main() {
       rotatingSecret: Uint8List.fromList([5, 6, 7, 8]),
     );
 
-    final authSuccess = AuthSuccess(
+    late final authSuccess = AuthSuccess(
       authStrategy: 'jwt',
       token: 'access-token',
       refreshToken: refreshTokenString,
@@ -32,15 +32,16 @@ void main() {
     );
 
     test(
-      'when reading the `jwtRefreshTokenId` field, then the refresh token ID is returned.',
+      'when reading the `jwtRefreshTokenId` field, '
+      'then the refresh token ID is returned.',
       () {
         expect(authSuccess.jwtRefreshTokenId, refreshTokenId);
       },
     );
   });
 
-  group('Given an `AuthSuccess` with a null refresh token', () {
-    final authSuccess = AuthSuccess(
+  group('Given an `AuthSuccess` with a null refresh token,', () {
+    late final authSuccess = AuthSuccess(
       authStrategy: 'jwt',
       token: 'access-token',
       refreshToken: null,
@@ -49,7 +50,8 @@ void main() {
     );
 
     test(
-      'when reading the `jwtRefreshTokenId` field, then it throws a FormatException.',
+      'when reading the `jwtRefreshTokenId` field, '
+      'then it throws a FormatException.',
       () {
         expect(
           () => authSuccess.jwtRefreshTokenId,
@@ -59,8 +61,8 @@ void main() {
     );
   });
 
-  group('Given an `AuthSuccess` with an invalid refresh token format', () {
-    final authSuccess = AuthSuccess(
+  group('Given an `AuthSuccess` with an invalid refresh token format,', () {
+    late final authSuccess = AuthSuccess(
       authStrategy: 'jwt',
       token: 'access-token',
       refreshToken: 'invalid-refresh-token-format',
@@ -69,7 +71,8 @@ void main() {
     );
 
     test(
-      'when reading the `jwtRefreshTokenId` field, then it throws a FormatException.',
+      'when reading the `jwtRefreshTokenId` field, '
+      'then it throws a FormatException.',
       () {
         expect(
           () => authSuccess.jwtRefreshTokenId,
@@ -79,8 +82,8 @@ void main() {
     );
   });
 
-  group('Given an `AuthSuccess` with a refresh token missing the prefix', () {
-    final authSuccess = AuthSuccess(
+  group('Given an `AuthSuccess` with a refresh token missing the prefix,', () {
+    late final authSuccess = AuthSuccess(
       authStrategy: 'jwt',
       token: 'access-token',
       refreshToken: 'not-sajrt:some:token:parts',
@@ -89,7 +92,8 @@ void main() {
     );
 
     test(
-      'when reading the `jwtRefreshTokenId` field, then it throws a FormatException.',
+      'when reading the `jwtRefreshTokenId` field, '
+      'then it throws a FormatException.',
       () {
         expect(
           () => authSuccess.jwtRefreshTokenId,
@@ -99,8 +103,8 @@ void main() {
     );
   });
 
-  group('Given an `AuthSuccess` with a refresh token with invalid UUID', () {
-    final authSuccess = AuthSuccess(
+  group('Given an `AuthSuccess` with a refresh token with invalid UUID,', () {
+    late final authSuccess = AuthSuccess(
       authStrategy: 'jwt',
       token: 'access-token',
       refreshToken: 'sajrt:invalid-base64-uuid:some:parts',
@@ -109,7 +113,8 @@ void main() {
     );
 
     test(
-      'when reading the `jwtRefreshTokenId` field, then it throws a FormatException.',
+      'when reading the `jwtRefreshTokenId` field, '
+      'then it throws a FormatException.',
       () {
         expect(
           () => authSuccess.jwtRefreshTokenId,

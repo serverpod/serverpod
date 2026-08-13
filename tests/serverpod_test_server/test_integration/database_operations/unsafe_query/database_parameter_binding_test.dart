@@ -6,8 +6,8 @@ import 'package:test/test.dart';
 void main() async {
   var session = await IntegrationTestServer().session();
 
-  group('Given two simple data objects in database', () {
-    group('when querying using positional arguments', () {
+  group('Given two simple data objects in database,', () {
+    group('when querying using positional arguments,', () {
       late SimpleData entry_1;
       late SimpleData entry_2;
       setUpAll(() async {
@@ -49,7 +49,7 @@ void main() async {
       );
     });
 
-    group('when querying using named arguments', () {
+    group('when querying using named arguments,', () {
       late SimpleData entry_1;
       late SimpleData entry_2;
       late DatabaseResult result;
@@ -96,7 +96,7 @@ void main() async {
       );
     });
 
-    group('when executing using positional arguments', () {
+    group('when executing using positional arguments,', () {
       late SimpleData entry_1;
       late SimpleData entry_2;
       setUpAll(() async {
@@ -134,7 +134,7 @@ void main() async {
       );
     });
 
-    group('when executing using named arguments', () {
+    group('when executing using named arguments,', () {
       late SimpleData entry_1;
       late SimpleData entry_2;
       setUpAll(() async {

@@ -4,7 +4,7 @@ import 'package:serverpod_test_server/test_util/service_client.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given protocol model with added index', () {
+  group('Given protocol model with added index,', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -13,7 +13,7 @@ void main() {
     });
 
     test(
-      'when creating and applying migration then contains new index.',
+      'when creating and applying migration, then contains new index.',
       () async {
         var tag = 'add-index';
         var table = 'migrated_table';
@@ -87,7 +87,7 @@ void main() {
     );
   });
 
-  group('Given protocol model with index that is removed', () {
+  group('Given protocol model with index that is removed,', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -96,7 +96,8 @@ void main() {
     });
 
     test(
-      'when creating and applying migration then index is removed from database.',
+      'when creating and applying migration, '
+      'then index is removed from database.',
       () async {
         var tag = 'drop-index';
         var table = 'migrated_table';
@@ -170,7 +171,7 @@ void main() {
     );
   });
 
-  group('Given protocol model with added relation', () {
+  group('Given protocol model with added relation,', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -179,7 +180,8 @@ void main() {
     });
 
     test(
-      'when creating and applying migration then database contains new relation.',
+      'when creating and applying migration, '
+      'then database contains new relation.',
       () async {
         var tag = 'add-relation';
         var table = 'migrated_table';
@@ -247,7 +249,7 @@ void main() {
     );
   });
 
-  group('Given protocol model with relation that is removed', () {
+  group('Given protocol model with relation that is removed,', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -256,7 +258,8 @@ void main() {
     });
 
     test(
-      'when creating and applying migration then relation is removed from database.',
+      'when creating and applying migration, '
+      'then relation is removed from database.',
       () async {
         var tag = 'drop-relation';
         var table = 'migrated_table';

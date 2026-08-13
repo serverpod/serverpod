@@ -55,7 +55,7 @@ Future<int> deleteAll(Session session) async {
 void main() async {
   var session = await IntegrationTestServer().session();
 
-  group('Given an address', () {
+  group('Given an address,', () {
     late List<CitizenInt> citizens;
 
     setUp(() async {
@@ -114,7 +114,8 @@ void main() async {
     );
 
     test(
-      'when trying to attach a citizen to an address that is not stored in the database then an exception is thrown',
+      'when trying to attach a citizen to an address that is not stored in the database, '
+      'then an exception is thrown',
       () async {
         var alice = citizens.first;
         var address = AddressUuid(street: 'Street');
@@ -129,7 +130,8 @@ void main() async {
     );
 
     test(
-      'when trying to attach a citizen that is not stored in the db to an address then an exception is thrown',
+      'when trying to attach a citizen that is not stored in the db to an address, '
+      'then an exception is thrown',
       () async {
         var carol = CitizenInt(name: 'Carol', companyId: Uuid().v4obj());
         var address = AddressUuid(street: 'Street');
@@ -146,7 +148,8 @@ void main() async {
     );
 
     test(
-      'when trying to detach a citizen from an address that is not stored in the database then an exception is thrown',
+      'when trying to detach a citizen from an address that is not stored in the database, '
+      'then an exception is thrown',
       () async {
         var address = AddressUuid(street: 'Street');
 
@@ -160,7 +163,7 @@ void main() async {
     );
   });
 
-  group('Given a citizen ', () {
+  group('Given a citizen,', () {
     late List<CitizenInt> citizens;
     late List<CompanyUuid> companies;
 
@@ -263,7 +266,8 @@ void main() async {
     );
 
     test(
-      'when attaching to an object that already have an entry then the new value is set in the database',
+      'when attaching to an object that already have an entry, '
+      'then the new value is set in the database',
       () async {
         var citizen = citizens.first;
         var company = companies.last;
@@ -281,7 +285,8 @@ void main() async {
     );
 
     test(
-      'when trying to attach a citizen to an address that is not stored in the database then an exception is thrown',
+      'when trying to attach a citizen to an address that is not stored in the database, '
+      'then an exception is thrown',
       () async {
         var alice = citizens.first;
         var address = AddressUuid(street: 'Street');
@@ -296,7 +301,8 @@ void main() async {
     );
 
     test(
-      'when trying to attach a citizen that is not stored in the db to an address then an exception is thrown',
+      'when trying to attach a citizen that is not stored in the db to an address, '
+      'then an exception is thrown',
       () async {
         var carol = CitizenInt(name: 'Carol', companyId: Uuid().v4obj());
         var address = AddressUuid(street: 'Street');
@@ -313,7 +319,8 @@ void main() async {
     );
 
     test(
-      'when trying to detach an address from a citizen that is not stored in the database then an exception is thrown',
+      'when trying to detach an address from a citizen that is not stored in the database, '
+      'then an exception is thrown',
       () async {
         var address = AddressUuid(street: 'Street');
         address = await AddressUuid.db.insertRow(session, address);
@@ -335,7 +342,8 @@ void main() async {
     );
 
     test(
-      'when trying to detach an address from a citizen that has no address in the passed object then an exception is thrown',
+      'when trying to detach an address from a citizen that has no address in the passed object, '
+      'then an exception is thrown',
       () async {
         var alice = citizens.first;
 

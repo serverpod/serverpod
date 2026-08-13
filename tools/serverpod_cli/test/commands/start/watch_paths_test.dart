@@ -6,8 +6,8 @@ import 'package:test/test.dart';
 import '../../test_util/builders/generator_config_builder.dart';
 
 void main() {
-  group('Given the watch-mode watch paths', () {
-    final config = GeneratorConfigBuilder().build();
+  group('Given the watch-mode watch paths,', () {
+    late final config = GeneratorConfigBuilder().build();
 
     test(
       'when there is no Flutter dependency tracker (server-only project), '

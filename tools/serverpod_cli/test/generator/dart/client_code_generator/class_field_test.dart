@@ -26,20 +26,20 @@ void main() {
     '$testClassFileName.dart',
   );
 
-  group('Given an empty class named $testClassName when generating code', () {
-    var models = [
+  group('Given an empty class named $testClassName, when generating code,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFileName]!).unit;
+    late var compilationUnit = parseString(content: codeMap[expectedFileName]!).unit;
 
     test('then generated class imports client version of serverpod.', () {
       expect(
@@ -53,7 +53,7 @@ void main() {
       );
     });
 
-    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+    late var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: testClassName,
     );
@@ -124,19 +124,19 @@ void main() {
     }, skip: maybeClassNamedExample == null);
   });
 
-  group('Given a class with documentation when generating code', () {
+  group('Given a class with documentation, when generating code,', () {
     var documentation = [
       '// This is an example documentation',
       '// This is another example',
     ];
-    var models = [
+    late var models = [
       ModelClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withDocumentation(documentation)
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
@@ -148,21 +148,21 @@ void main() {
     });
   });
 
-  group('Given a class with table name when generating code', () {
-    var models = [
+  group('Given a class with table name, when generating code,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withTableName('example_table')
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFileName]!).unit;
-    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+    late var compilationUnit = parseString(content: codeMap[expectedFileName]!).unit;
+    late var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: testClassName,
     );
@@ -221,8 +221,8 @@ void main() {
     });
   });
 
-  group('Given a class with a none nullable field when generating code', () {
-    var models = [
+  group('Given a class with a none nullable field, when generating code,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -230,13 +230,13 @@ void main() {
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFileName]!).unit;
-    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+    late var compilationUnit = parseString(content: codeMap[expectedFileName]!).unit;
+    late var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: testClassName,
     );
@@ -274,8 +274,8 @@ void main() {
     );
   });
 
-  group('Given a class with a nullable field when generating code', () {
-    var models = [
+  group('Given a class with a nullable field, when generating code,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -283,13 +283,13 @@ void main() {
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFileName]!).unit;
-    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+    late var compilationUnit = parseString(content: codeMap[expectedFileName]!).unit;
+    late var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: testClassName,
     );
@@ -328,9 +328,10 @@ void main() {
   });
 
   group(
-    'Given a class with a non persistent field with scope all when generating code',
+    'Given a class with a non persistent field with scope all, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withFileName(testClassFileName)
             .withField(
@@ -344,15 +345,15 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var compilationUnit = parseString(
+      late var compilationUnit = parseString(
         content: codeMap[expectedFileName]!,
       ).unit;
-      var maybeClassNamedExample =
+      late var maybeClassNamedExample =
           CompilationUnitHelpers.tryFindClassDeclaration(
             compilationUnit,
             name: testClassName,
@@ -378,9 +379,10 @@ void main() {
   );
 
   group(
-    'Given a class with a non persistent field with scope server only when generating code',
+    'Given a class with a non persistent field with scope server only, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withFileName(testClassFileName)
             .withField(
@@ -394,15 +396,15 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var compilationUnit = parseString(
+      late var compilationUnit = parseString(
         content: codeMap[expectedFileName]!,
       ).unit;
-      var maybeClassNamedExample =
+      late var maybeClassNamedExample =
           CompilationUnitHelpers.tryFindClassDeclaration(
             compilationUnit,
             name: testClassName,
@@ -428,9 +430,10 @@ void main() {
   );
 
   group(
-    'Given a class with a non persistent field with scope none when generating code',
+    'Given a class with a non persistent field with scope none, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withFileName(testClassFileName)
             .withField(
@@ -444,15 +447,15 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var compilationUnit = parseString(
+      late var compilationUnit = parseString(
         content: codeMap[expectedFileName]!,
       ).unit;
-      var maybeClassNamedExample =
+      late var maybeClassNamedExample =
           CompilationUnitHelpers.tryFindClassDeclaration(
             compilationUnit,
             name: testClassName,
@@ -477,22 +480,22 @@ void main() {
     },
   );
 
-  group('Given exception class when generating code', () {
-    var models = [
+  group('Given exception class, when generating code,', () {
+    late var models = [
       ExceptionClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFileName]!).unit;
+    late var compilationUnit = parseString(content: codeMap[expectedFileName]!).unit;
 
-    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+    late var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: testClassName,
     );

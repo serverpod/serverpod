@@ -7,7 +7,8 @@ import 'test_tools/serverpod_test_tools.dart';
 void main() {
   withServerpod('Given no users,', (final sessionBuilder, final endpoints) {
     test(
-      'when calling `UserProfile.get` with an unauthenticated user, then an error is thrown.',
+      'when calling `UserProfile.get` with an unauthenticated user, '
+      'then an error is thrown.',
       () async {
         await expectLater(
           () => endpoints.userProfile.get(sessionBuilder),
@@ -17,7 +18,8 @@ void main() {
     );
 
     test(
-      'when calling `UserProfile.get` for a non-existent "auth user", then an error is thrown.',
+      'when calling `UserProfile.get` for a non-existent "auth user", '
+      'then an error is thrown.',
       () async {
         final session = sessionBuilder.copyWith(
           authentication: AuthenticationOverride.authenticationInfo(
@@ -53,7 +55,8 @@ void main() {
       });
 
       test(
-        'when calling `UserProfile.get` for that user, then an error is thrown.',
+        'when calling `UserProfile.get` for that user, '
+        'then an error is thrown.',
         () async {
           await expectLater(
             () => endpoints.userProfile.get(session),
@@ -94,7 +97,8 @@ void main() {
       });
 
       test(
-        'when calling `UserProfile.get` for that user, then the profile is returned containing the user name.',
+        'when calling `UserProfile.get` for that user, '
+        'then the profile is returned containing the user name.',
         () async {
           final profile = await endpoints.userProfile.get(session);
 
@@ -103,7 +107,8 @@ void main() {
       );
 
       test(
-        'when calling `UserProfile.get` for that user, then the profile is returned containing the full name.',
+        'when calling `UserProfile.get` for that user, '
+        'then the profile is returned containing the full name.',
         () async {
           final profile = await endpoints.userProfile.get(session);
 
@@ -112,7 +117,8 @@ void main() {
       );
 
       test(
-        'when calling `UserProfile.get` for that user, then the profile is returned containing the email in lower-case.',
+        'when calling `UserProfile.get` for that user, '
+        'then the profile is returned containing the email in lower-case.',
         () async {
           final profile = await endpoints.userProfile.get(session);
 
@@ -177,7 +183,8 @@ void main() {
       });
 
       test(
-        'when calling `UserProfile.removeUserImage` then the image is removed and imageUrl is null.',
+        'when calling `UserProfile.removeUserImage`, '
+        'then the image is removed and imageUrl is null.',
         () async {
           final profileBefore = await endpoints.userProfile.get(session);
           expect(profileBefore.imageUrl, isNotNull);

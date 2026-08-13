@@ -22,9 +22,9 @@ void main() {
 
   group(
     'Given a clean state, '
-    'when calling performCreate with a context containing all supported IDEs',
+    'when calling performCreate with a context containing all supported IDEs,',
     () {
-      final project = setUpPerformCreateInTempDir(
+      late final project = setUpPerformCreateInTempDir(
         context: TemplateContext(ides: TemplateIde.values),
       );
 

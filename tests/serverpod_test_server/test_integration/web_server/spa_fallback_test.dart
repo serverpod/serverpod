@@ -29,7 +29,7 @@ void main() {
   });
 
   group(
-    'Given a web server with SPA route configured using fallbackMiddleware',
+    'Given a web server with SPA route configured using fallbackMiddleware,',
     () {
       late Serverpod pod;
 
@@ -52,7 +52,7 @@ void main() {
         await pod.shutdown(exitProcess: false);
       });
 
-      test('when requesting existing file then file is served', () async {
+      test('when requesting existing file, then file is served', () async {
         final response = await client.get(
           Uri.parse('${pod.webUrl}app.js'),
         );
@@ -60,7 +60,7 @@ void main() {
         expect(response.body, contains('console.log'));
       });
 
-      test('when requesting index.html then index is served', () async {
+      test('when requesting index.html, then index is served', () async {
         final response = await client.get(
           Uri.parse('${pod.webUrl}index.html'),
         );
@@ -69,7 +69,7 @@ void main() {
       });
 
       test(
-        'when requesting non-existent file then index.html is served',
+        'when requesting non-existent file, then index.html is served',
         () async {
           final response = await client.get(
             Uri.parse('${pod.webUrl}users/123'),
@@ -80,7 +80,7 @@ void main() {
       );
 
       test(
-        'when requesting nested non-existent path then index.html is served',
+        'when requesting nested non-existent path, then index.html is served',
         () async {
           final response = await client.get(
             Uri.parse(
@@ -94,7 +94,7 @@ void main() {
     },
   );
 
-  group('Given a fallbackMiddleware where the fallback also returns 404', () {
+  group('Given a fallbackMiddleware where the fallback also returns 404,', () {
     late Serverpod pod;
 
     setUp(() async {
@@ -116,7 +116,7 @@ void main() {
       await pod.shutdown(exitProcess: false);
     });
 
-    test('when primary and fallback both 404 then 404 is returned', () async {
+    test('when primary and fallback both 404, then 404 is returned', () async {
       final response = await client.get(
         Uri.parse('${pod.webUrl}does-not-exist'),
       );
@@ -124,7 +124,7 @@ void main() {
     });
   });
 
-  group('Given multiple SPAs on different paths', () {
+  group('Given multiple SPAs on different paths,', () {
     late Serverpod pod;
     late Directory adminDir;
     late File adminIndexFile;
@@ -167,7 +167,7 @@ void main() {
       await pod.shutdown(exitProcess: false);
     });
 
-    test('when requesting admin path then admin index is served', () async {
+    test('when requesting admin path, then admin index is served', () async {
       final response = await client.get(
         Uri.parse('${pod.webUrl}admin/users'),
       );
@@ -175,7 +175,7 @@ void main() {
       expect(response.body, contains('Admin SPA'));
     });
 
-    test('when requesting public path then public index is served', () async {
+    test('when requesting public path, then public index is served', () async {
       final response = await client.get(
         Uri.parse('${pod.webUrl}users'),
       );

@@ -5,28 +5,30 @@ import 'package:test/test.dart';
 void main() {
   ValueEncoder.set(const PostgresValueEncoder());
 
-  group('Given a ColumnString', () {
+  group('Given a ColumnString,', () {
     var columnName = 'name';
-    var column = ColumnString(columnName, Table<int?>(tableName: 'test'));
+    late var column = ColumnString(columnName, Table<int?>(tableName: 'test'));
 
     test(
-      'when toString is called then column name withing double quotes is returned.',
+      'when toString is called, '
+      'then column name withing double quotes is returned.',
       () {
         expect(column.toString(), '"test"."$columnName"');
       },
     );
 
-    test('when columnName getter is called then column name is returned.', () {
+    test('when columnName getter is called, then column name is returned.', () {
       expect(column.columnName, columnName);
     });
 
-    test('when type is called then String is returned.', () {
+    test('when type is called, then String is returned.', () {
       expect(column.type, String);
     });
 
-    group('with _ColumnDefaultOperations mixin', () {
+    group('with _ColumnDefaultOperations mixin,', () {
       test(
-        'when equals compared to NULL value then output is IS NULL expression.',
+        'when equals compared to NULL value, '
+        'then output is IS NULL expression.',
         () {
           var comparisonExpression = column.equals(null);
 
@@ -35,7 +37,8 @@ void main() {
       );
 
       test(
-        'when equals compared to String value then output is escaped equals expression.',
+        'when equals compared to String value, '
+        'then output is escaped equals expression.',
         () {
           var comparisonExpression = column.equals('test');
 
@@ -44,7 +47,8 @@ void main() {
       );
 
       test(
-        'when NOT equals compared to NULL value then output is IS NOT NULL expression.',
+        'when NOT equals compared to NULL value, '
+        'then output is IS NOT NULL expression.',
         () {
           var comparisonExpression = column.notEquals(null);
 
@@ -53,7 +57,8 @@ void main() {
       );
 
       test(
-        'when NOT equals compared to String value then output is escaped NOT equals expression.',
+        'when NOT equals compared to String value, '
+        'then output is escaped NOT equals expression.',
         () {
           var comparisonExpression = column.notEquals('test');
 
@@ -65,7 +70,8 @@ void main() {
       );
 
       test(
-        'when like compared to String value then output is escaped like expression.',
+        'when like compared to String value, '
+        'then output is escaped like expression.',
         () {
           var comparisonExpression = column.like('test');
 
@@ -74,7 +80,8 @@ void main() {
       );
 
       test(
-        'when notLike compared to String value then output is escaped notLike expression.',
+        'when notLike compared to String value, '
+        'then output is escaped notLike expression.',
         () {
           var comparisonExpression = column.notLike('test');
 
@@ -86,7 +93,8 @@ void main() {
       );
 
       test(
-        'when ilike compared to String value then output is escaped ilike expression.',
+        'when ilike compared to String value, '
+        'then output is escaped ilike expression.',
         () {
           var comparisonExpression = column.ilike('test');
 
@@ -95,7 +103,8 @@ void main() {
       );
 
       test(
-        'when notIlike compared to String value then output is escaped notIlike expression.',
+        'when notIlike compared to String value, '
+        'then output is escaped notIlike expression.',
         () {
           var comparisonExpression = column.notIlike('test');
 
@@ -107,7 +116,8 @@ void main() {
       );
 
       test(
-        'when checking if expression is in value set then output is IN expression.',
+        'when checking if expression is in value set, '
+        'then output is IN expression.',
         () {
           var comparisonExpression = column.inSet(<String>{'a', 'b', 'c'});
 
@@ -119,7 +129,8 @@ void main() {
       );
 
       test(
-        'when checking if expression is in empty value set then output is FALSE expression.',
+        'when checking if expression is in empty value set, '
+        'then output is FALSE expression.',
         () {
           var comparisonExpression = column.inSet(<String>{});
 
@@ -128,7 +139,8 @@ void main() {
       );
 
       test(
-        'when checking if expression is NOT in empty value set then output is TRUE expression.',
+        'when checking if expression is NOT in empty value set, '
+        'then output is TRUE expression.',
         () {
           var comparisonExpression = column.notInSet(<String>{});
 
@@ -138,7 +150,8 @@ void main() {
     });
 
     test(
-      'when greater than compared to expression then output is operator expression.',
+      'when greater than compared to expression, '
+      'then output is operator expression.',
       () {
         var comparisonExpression = column > const Expression('10');
 
@@ -147,7 +160,8 @@ void main() {
     );
 
     test(
-      'when greater than compared to column type then output is operator expression.',
+      'when greater than compared to column type, '
+      'then output is operator expression.',
       () {
         var comparisonExpression = column > 'test';
 
@@ -156,7 +170,8 @@ void main() {
     );
 
     test(
-      'when greater than compared to column then output is operator expression.',
+      'when greater than compared to column, '
+      'then output is operator expression.',
       () {
         var comparisonExpression = column > column;
 
@@ -165,7 +180,8 @@ void main() {
     );
 
     test(
-      'when greater than compared to unhandled type then argument error is thrown.',
+      'when greater than compared to unhandled type, '
+      'then argument error is thrown.',
       () {
         expect(
           () => column > 10,
@@ -181,7 +197,8 @@ void main() {
     );
 
     test(
-      'when greater or equal than compared to expression then output is operator expression.',
+      'when greater or equal than compared to expression, '
+      'then output is operator expression.',
       () {
         var comparisonExpression = column >= const Expression('10');
 
@@ -190,7 +207,8 @@ void main() {
     );
 
     test(
-      'when greater or equal than compared to column type then output is operator expression.',
+      'when greater or equal than compared to column type, '
+      'then output is operator expression.',
       () {
         var comparisonExpression = column >= 'test';
 
@@ -199,7 +217,8 @@ void main() {
     );
 
     test(
-      'when greater or equal than compared to column then output is operator expression.',
+      'when greater or equal than compared to column, '
+      'then output is operator expression.',
       () {
         var comparisonExpression = column >= column;
 
@@ -208,7 +227,8 @@ void main() {
     );
 
     test(
-      'when greater or equal than compared to unhandled type then argument error is thrown.',
+      'when greater or equal than compared to unhandled type, '
+      'then argument error is thrown.',
       () {
         expect(
           () => column >= 10,
@@ -224,7 +244,8 @@ void main() {
     );
 
     test(
-      'when less than compared to expression then output is operator expression.',
+      'when less than compared to expression, '
+      'then output is operator expression.',
       () {
         var comparisonExpression = column < const Expression('10');
 
@@ -233,7 +254,8 @@ void main() {
     );
 
     test(
-      'when less than compared to column type then output is operator expression.',
+      'when less than compared to column type, '
+      'then output is operator expression.',
       () {
         var comparisonExpression = column < 'test';
 
@@ -242,7 +264,7 @@ void main() {
     );
 
     test(
-      'when less than compared to column then output is operator expression.',
+      'when less than compared to column, then output is operator expression.',
       () {
         var comparisonExpression = column < column;
 
@@ -251,7 +273,8 @@ void main() {
     );
 
     test(
-      'when less than compared to unhandled type then argument error is thrown.',
+      'when less than compared to unhandled type, '
+      'then argument error is thrown.',
       () {
         expect(
           () => column < 10,
@@ -267,7 +290,8 @@ void main() {
     );
 
     test(
-      'when less or equal than compared to expression then output is operator expression.',
+      'when less or equal than compared to expression, '
+      'then output is operator expression.',
       () {
         var comparisonExpression = column <= const Expression('10');
 
@@ -276,7 +300,8 @@ void main() {
     );
 
     test(
-      'when less or equal than compared to column type then output is operator expression.',
+      'when less or equal than compared to column type, '
+      'then output is operator expression.',
       () {
         var comparisonExpression = column <= 'test';
 
@@ -285,7 +310,8 @@ void main() {
     );
 
     test(
-      'when less or equal than compared to column then output is operator expression.',
+      'when less or equal than compared to column, '
+      'then output is operator expression.',
       () {
         var comparisonExpression = column <= column;
 
@@ -294,7 +320,8 @@ void main() {
     );
 
     test(
-      'when less or equal than compared to unhandled type then argument error is thrown.',
+      'when less or equal than compared to unhandled type, '
+      'then argument error is thrown.',
       () {
         expect(
           () => column <= 10,

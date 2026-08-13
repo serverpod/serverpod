@@ -3,10 +3,11 @@ import 'package:test/test.dart';
 
 void main() async {
   group(
-    "Given a class with 'defaultPersist' BigInt fields",
+    "Given a class with 'defaultPersist' BigInt fields,",
     () {
       test(
-        'when an object of the class is created, then the "defaultPersist" BigInt field with a string should be null',
+        'when an object of the class is created, '
+        'then the "defaultPersist" BigInt field with a string should be null',
         () {
           var object = BigIntDefaultPersist();
           expect(object.bigIntDefaultPersistStr, isNull);
@@ -14,7 +15,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a specific value for "bigIntDefaultPersistStr", then the field value should match the provided value',
+        'when an object of the class is created with a specific value for "bigIntDefaultPersistStr", '
+        'then the field value should match the provided value',
         () {
           var bigInt = BigInt.one;
           var object = BigIntDefaultPersist(

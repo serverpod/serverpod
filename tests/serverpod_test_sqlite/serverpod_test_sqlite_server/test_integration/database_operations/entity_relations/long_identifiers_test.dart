@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 void main() async {
   var session = await IntegrationTestServer().session();
 
-  group('Given a model with a list relation to model with max length named fields', () {
+  group('Given a model with a list relation to model with max length named fields,', () {
     tearDown(() async {
       await MultipleMaxFieldName.db.deleteWhere(
         session,
@@ -19,7 +19,8 @@ void main() async {
     });
 
     test(
-      'when filtering on related fields data multiple times then fetched data is as expected.',
+      'when filtering on related fields data multiple times, '
+      'then fetched data is as expected.',
       () async {
         var multipleMaxFieldNames = await MultipleMaxFieldName.db.insert(
           session,
@@ -101,7 +102,7 @@ void main() async {
     );
 
     test(
-      'when filtering on both fields then fetched data is as expected.',
+      'when filtering on both fields, then fetched data is as expected.',
       () async {
         var multipleMaxFieldNames = await MultipleMaxFieldName.db.insert(
           session,
@@ -163,7 +164,7 @@ void main() async {
     );
   });
 
-  group('Given a model with a field that has max allowed length', () {
+  group('Given a model with a field that has max allowed length,', () {
     tearDown(
       () async => await MaxFieldName.db.deleteWhere(
         session,
@@ -171,7 +172,7 @@ void main() async {
       ),
     );
 
-    test('when fetching then data is fetched.', () async {
+    test('when fetching, then data is fetched.', () async {
       var name = 'Test Name';
       var row = await MaxFieldName.db.insertRow(
         session,
@@ -189,7 +190,7 @@ void main() async {
     });
   });
 
-  group('Given a model with a max length relational field', () {
+  group('Given a model with a max length relational field,', () {
     tearDown(() async {
       await LongImplicitIdField.db.deleteWhere(
         session,
@@ -202,7 +203,7 @@ void main() async {
     });
 
     test(
-      'when fetching the relational data then the data is fetched.',
+      'when fetching the relational data, then the data is fetched.',
       () async {
         var longImplicitField = await LongImplicitIdField.db.insertRow(
           session,
@@ -251,7 +252,8 @@ void main() async {
     );
 
     test(
-      'when applying the same filter multiple times on the relational field then data is fetched as expected',
+      'when applying the same filter multiple times on the relational field, '
+      'then data is fetched as expected',
       () async {
         // The concern for this test is that when we create subquery aliases we
         // ensure we don't get an alias collision when the end of the alias is
@@ -312,7 +314,7 @@ void main() async {
     );
   });
 
-  group('Given a relation between two models with long names', () {
+  group('Given a relation between two models with long names,', () {
     tearDown(() async {
       await UserNoteWithALongName.db.deleteWhere(
         session,
@@ -325,7 +327,8 @@ void main() async {
     });
 
     test(
-      'when fetching the model with relational data included then the data is fetched.',
+      'when fetching the model with relational data included, '
+      'then the data is fetched.',
       () async {
         var userNote = await UserNoteWithALongName.db.insertRow(
           session,
@@ -354,7 +357,7 @@ void main() async {
       },
     );
   });
-  group('Given a relation with a model with a long relation field name', () {
+  group('Given a relation with a model with a long relation field name,', () {
     tearDown(() async {
       await UserNote.db.deleteWhere(session, where: (_) => Constant.bool(true));
       await UserNoteCollection.db.deleteWhere(
@@ -364,7 +367,8 @@ void main() async {
     });
 
     test(
-      'when fetching the model with relational data included then the data is fetched.',
+      'when fetching the model with relational data included, '
+      'then the data is fetched.',
       () async {
         var userNote = await UserNote.db.insertRow(
           session,
@@ -394,13 +398,14 @@ void main() async {
     );
   });
 
-  group('Given a self relation', () {
+  group('Given a self relation,', () {
     tearDown(() async {
       await Post.db.deleteWhere(session, where: (_) => Constant.bool(true));
     });
 
     test(
-      'when including the relation so many times the relation path exceeds sql limit then data is still successfully fetched.',
+      'when including the relation so many times the relation path exceeds sql limit, '
+      'then data is still successfully fetched.',
       () async {
         var posts = await Post.db.insert(
           session,
@@ -460,7 +465,8 @@ void main() async {
   });
 
   group(
-    'Given a deep nested relationship with long names when fetching with includes',
+    'Given a deep nested relationship with long names, '
+    'when fetching with includes,',
     () {
       tearDownAll(() async {
         await PersonWithLongTableName.db.deleteWhere(

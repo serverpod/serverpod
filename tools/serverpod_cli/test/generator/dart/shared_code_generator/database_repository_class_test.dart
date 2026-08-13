@@ -34,9 +34,9 @@ void main() {
     '$testClassFileName.dart',
   ]);
 
-  group('Given a class with table name when generating code', () {
+  group('Given a class with table name, when generating code,', () {
     var tableName = 'example_table';
-    var models = [
+    late var models = [
       ModelClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withTableName(tableName)
@@ -45,14 +45,14 @@ void main() {
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
 
-    var baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
+    late var baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: testClassName,
     );
@@ -69,7 +69,7 @@ void main() {
       );
     });
 
-    var repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
+    late var repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: repositoryClassName,
     );
@@ -84,7 +84,7 @@ void main() {
 
     group('then the $repositoryClassName class', () {
       group('has a find method', () {
-        var findMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        late var findMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
           repositoryClass!,
           name: 'find',
         );
@@ -176,7 +176,7 @@ void main() {
       });
 
       group('has a findFirstRow method', () {
-        var findRowMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        late var findRowMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
           repositoryClass!,
           name: 'findFirstRow',
         );
@@ -264,7 +264,7 @@ void main() {
       });
 
       group('has a findById method', () {
-        var findByIdMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        late var findByIdMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
           repositoryClass!,
           name: 'findById',
         );
@@ -327,7 +327,7 @@ void main() {
       });
 
       group('has a lockRows method', () {
-        var lockRowsMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        late var lockRowsMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
           repositoryClass!,
           name: 'lockRows',
         );
@@ -393,7 +393,7 @@ void main() {
       });
 
       group('has an insert method', () {
-        var insertMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        late var insertMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
           repositoryClass!,
           name: 'insert',
         );
@@ -444,7 +444,7 @@ void main() {
       });
 
       group('has an insert row method', () {
-        var insertRowMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        late var insertRowMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
           repositoryClass!,
           name: 'insertRow',
         );
@@ -500,7 +500,7 @@ void main() {
       });
 
       group('has an update method', () {
-        var updateMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        late var updateMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
           repositoryClass!,
           name: 'update',
         );
@@ -544,7 +544,7 @@ void main() {
       });
 
       group('has an update row method', () {
-        var updateRowMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        late var updateRowMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
           repositoryClass!,
           name: 'updateRow',
         );
@@ -593,7 +593,7 @@ void main() {
       });
 
       group('has an delete method', () {
-        var deleteMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        late var deleteMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
           repositoryClass!,
           name: 'delete',
         );
@@ -637,7 +637,7 @@ void main() {
       });
 
       group('has an delete row method', () {
-        var deleteRowMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        late var deleteRowMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
           repositoryClass!,
           name: 'deleteRow',
         );
@@ -686,7 +686,7 @@ void main() {
       });
 
       group('has an delete where method', () {
-        var deleteWhereMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        late var deleteWhereMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
           repositoryClass!,
           name: 'deleteWhere',
         );
@@ -736,7 +736,7 @@ void main() {
       });
 
       group('has an count method', () {
-        var countMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        late var countMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
           repositoryClass!,
           name: 'count',
         );
@@ -793,7 +793,7 @@ void main() {
       });
 
       group('has an updateById method', () {
-        var updateByIdMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        late var updateByIdMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
           repositoryClass!,
           name: 'updateById',
         );
@@ -857,7 +857,7 @@ void main() {
       });
 
       group('has an updateWhere method', () {
-        var updateWhereMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        late var updateWhereMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
           repositoryClass!,
           name: 'updateWhere',
         );
@@ -955,8 +955,8 @@ void main() {
   });
 
   test(
-    'Given a class with table name declared on a shared package '
-    'when generating code '
+    'Given a class with table name declared on a shared package, '
+    'when generating code, '
     'then the DatabaseSession is imported from the serverpod_database package.',
     () {
       var models = [

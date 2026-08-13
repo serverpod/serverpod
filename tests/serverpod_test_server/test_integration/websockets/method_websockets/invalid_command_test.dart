@@ -7,7 +7,7 @@ import 'package:web_socket/web_socket.dart';
 import '../websocket_extensions.dart';
 
 void main() {
-  group('Given method websocket connection', () {
+  group('Given method websocket connection,', () {
     late Serverpod server;
     late WebSocket webSocket;
     var unrecognizedCommandMessage =
@@ -27,7 +27,7 @@ void main() {
     });
 
     test(
-      'when an unrecognized message is sent then connection is closed.',
+      'when an unrecognized message is sent, then connection is closed.',
       () async {
         var webSocketCompleter = Completer<void>();
         webSocket.textEvents.listen(
@@ -47,7 +47,8 @@ void main() {
     );
 
     test(
-      'when an unrecognized message is sent then BadRequestMessage response is received.',
+      'when an unrecognized message is sent, '
+      'then BadRequestMessage response is received.',
       () async {
         var response = webSocket.textEvents.first.timeout(
           Duration(seconds: 10),

@@ -36,7 +36,7 @@ class _CompleterFutureCall extends FutureCall<SimpleData>
 
 void main() {
   withServerpod(
-    'Given FutureCallManager with scheduled FutureCall that is due',
+    'Given FutureCallManager with scheduled FutureCall that is due,',
     (sessionBuilder, _) {
       late FutureCallManager futureCallManager;
       late Session session;
@@ -74,7 +74,7 @@ void main() {
         await session.close();
       });
 
-      group('when start is called', () {
+      group('when start is called,', () {
         setUp(() async {
           await futureCallManager.start();
           await testCall.invocationStarted.future;
@@ -118,7 +118,7 @@ void main() {
 
   withServerpod(
     'Given FutureCallManager with scheduled FutureCall that is due '
-    'and existing valid claim in the database for the FutureCall',
+    'and existing valid claim in the database for the FutureCall,',
     (sessionBuilder, _) {
       late FutureCallManager futureCallManager;
       late Session session;
@@ -161,7 +161,7 @@ void main() {
         await session.close();
       });
 
-      group('when running scheduled FutureCalls', () {
+      group('when running scheduled FutureCalls,', () {
         setUp(() async {
           await futureCallManager.runScheduledFutureCalls();
         });
@@ -180,7 +180,7 @@ void main() {
 
   withServerpod(
     'Given FutureCallManager with scheduled FutureCall that is due '
-    'and existing stale claim in the database for the FutureCall',
+    'and existing stale claim in the database for the FutureCall,',
     (sessionBuilder, _) {
       late FutureCallManager futureCallManager;
       late Session session;
@@ -234,7 +234,7 @@ void main() {
         await session.close();
       });
 
-      group('when running scheduled FutureCalls', () {
+      group('when running scheduled FutureCalls,', () {
         setUp(() async {
           testCall.completer.complete();
           await futureCallManager.runScheduledFutureCalls();
@@ -251,7 +251,7 @@ void main() {
         });
       });
 
-      group('when start is called', () {
+      group('when start is called,', () {
         setUp(() async {
           await futureCallManager.start();
         });
@@ -279,7 +279,7 @@ void main() {
   );
 
   withServerpod(
-    'Given FutureCallManager with scheduled long running FutureCall that is due',
+    'Given FutureCallManager with scheduled long running FutureCall that is due,',
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, _) {
       late FutureCallManager futureCallManager;
@@ -318,7 +318,7 @@ void main() {
         await session.close();
       });
 
-      group('when start is called', () {
+      group('when start is called,', () {
         setUp(() async {
           await futureCallManager.start();
         });
@@ -379,7 +379,7 @@ void main() {
 
   withServerpod(
     'Given a degraded and an active FutureCallManager '
-    'running concurrently and a FutureCall that is due',
+    'running concurrently and a FutureCall that is due,',
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, _) {
       late FutureCallManager degradedFutureCallManager;
@@ -447,7 +447,7 @@ void main() {
         await session.close();
       });
 
-      group('when scanning due future calls on the active instance', () {
+      group('when scanning due future calls on the active instance,', () {
         setUp(() async {
           await activeFutureCallManager.start();
         });

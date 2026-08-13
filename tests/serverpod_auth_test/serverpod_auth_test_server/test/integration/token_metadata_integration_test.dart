@@ -7,7 +7,7 @@ import 'test_tools/serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given an AuthServices configured with a ServerSideSessions with onSessionCreated callback that attaches custom metadata to the session',
+    'Given an AuthServices configured with a ServerSideSessions with onSessionCreated callback that attaches custom metadata to the session,',
     (final sessionBuilder, final endpoints) {
       late Session session;
       late UuidValue authUserId;
@@ -74,7 +74,7 @@ void main() {
   );
 
   withServerpod(
-    'Given an AuthServices configured with a JwtConfig with onRefreshTokenCreated callback that attaches custom metadata to the refresh token',
+    'Given an AuthServices configured with a JwtConfig with onRefreshTokenCreated callback that attaches custom metadata to the refresh token,',
     (final sessionBuilder, final endpoints) {
       late Session session;
       late UuidValue authUserId;
@@ -144,7 +144,7 @@ void main() {
   );
 
   withServerpod(
-    'Given an AuthServices configured with a ServerSideSessions with onSessionCreated callback that attaches custom metadata from the session dynamic userObject',
+    'Given an AuthServices configured with a ServerSideSessions with onSessionCreated callback that attaches custom metadata from the session dynamic userObject,',
     (final sessionBuilder, final endpoints) {
       late Session session;
       late UuidValue authUserId;
@@ -219,7 +219,7 @@ void main() {
   );
 
   withServerpod(
-    'Given an AuthSuccess generated from a ServerSideSessions with no onSessionCreated callback',
+    'Given an AuthSuccess generated from a ServerSideSessions with no onSessionCreated callback,',
     (final sessionBuilder, final endpoints) {
       late Session session;
       late AuthSuccess authSuccess;
@@ -272,7 +272,7 @@ void main() {
   );
 
   withServerpod(
-    'Given an AuthSuccess generated from a JwtConfig with no onRefreshTokenCreated callback',
+    'Given an AuthSuccess generated from a JwtConfig with no onRefreshTokenCreated callback,',
     (final sessionBuilder, final endpoints) {
       late Session session;
       late AuthSuccess authSuccess;

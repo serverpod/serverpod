@@ -7,7 +7,7 @@ void main() async {
   var session = await IntegrationTestServer().session();
   late AuthKey authKey;
 
-  group('Given an authenticated user', () {
+  group('Given an authenticated user,', () {
     setUp(() async {
       authKey = await UserAuthentication.signInUser(
         session,
@@ -25,7 +25,7 @@ void main() async {
     });
 
     test(
-      'when authentication succeeds then authId is set to authKey id',
+      'when authentication succeeds, then authId is set to authKey id',
       () async {
         var result = await authenticationHandler(
           session,
@@ -39,7 +39,7 @@ void main() async {
       },
     );
 
-    test('when authentication fails then authId is null', () async {
+    test('when authentication fails, then authId is null', () async {
       var result = await authenticationHandler(
         session,
         '${authKey.id}:invalid-key',
@@ -51,7 +51,7 @@ void main() async {
       );
     });
 
-    test('when authKey is not found then authentication fails', () async {
+    test('when authKey is not found, then authentication fails', () async {
       var result = await authenticationHandler(
         session,
         '9999:${authKey.key}', // Non-existing keyId
@@ -63,7 +63,7 @@ void main() async {
       );
     });
 
-    test('when key format is invalid then authentication fails', () async {
+    test('when key format is invalid, then authentication fails', () async {
       var result = await authenticationHandler(
         session,
         'invalid-format-key', // Invalid format

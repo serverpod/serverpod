@@ -10,7 +10,8 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   test(
-    'Given a class with a vector field and index with invalid distance function value, then collect an error about invalid distance function value.',
+    'Given a class with a vector field and index with invalid distance function value, '
+    'then collect an error about invalid distance function value.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -52,7 +53,8 @@ void main() {
   );
 
   test(
-    'Given a class with a vector field and index with non-string distance function, then collect an error about parameter type.',
+    'Given a class with a vector field and index with non-string distance function, '
+    'then collect an error about parameter type.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -93,7 +95,8 @@ void main() {
   );
 
   test(
-    'Given a class with a non-vector field and distance function, then collect an error that distance function can only be used with vector indexes.',
+    'Given a class with a non-vector field and distance function, '
+    'then collect an error that distance function can only be used with vector indexes.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -135,7 +138,8 @@ void main() {
   );
 
   test(
-    'Given a class with a vector field and hnsw index with valid distance function, then return a definition where distanceFunction is correctly set.',
+    'Given a class with a vector field and hnsw index with valid distance function, '
+    'then return a definition where distanceFunction is correctly set.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -176,7 +180,8 @@ void main() {
   );
 
   test(
-    'Given a class with a vector field and hnsw index without distance function, then return a definition where distanceFunction defaults to l2.',
+    'Given a class with a vector field and hnsw index without distance function, '
+    'then return a definition where distanceFunction defaults to l2.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -216,7 +221,8 @@ void main() {
   );
 
   test(
-    'Given a class with a half vector field and hnsw index with valid distance function, then return a definition where distanceFunction is correctly set.',
+    'Given a class with a half vector field and hnsw index with valid distance function, '
+    'then return a definition where distanceFunction is correctly set.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -257,7 +263,8 @@ void main() {
   );
 
   test(
-    'Given a class with a half vector field and hnsw index without distance function, then return a definition where distanceFunction defaults to l2.',
+    'Given a class with a half vector field and hnsw index without distance function, '
+    'then return a definition where distanceFunction defaults to l2.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -297,7 +304,8 @@ void main() {
   );
 
   test(
-    'Given a class with a sparse vector field and hnsw index with valid distance function, then return a definition where distanceFunction is correctly set.',
+    'Given a class with a sparse vector field and hnsw index with valid distance function, '
+    'then return a definition where distanceFunction is correctly set.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -338,7 +346,8 @@ void main() {
   );
 
   test(
-    'Given a class with a sparse vector field and hnsw index without distance function, then return a definition where distanceFunction defaults to l2.',
+    'Given a class with a sparse vector field and hnsw index without distance function, '
+    'then return a definition where distanceFunction defaults to l2.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -378,7 +387,8 @@ void main() {
   );
 
   test(
-    'Given a class with a bit field and hnsw index with valid distance function, then return a definition where distanceFunction is correctly set.',
+    'Given a class with a bit field and hnsw index with valid distance function, '
+    'then return a definition where distanceFunction is correctly set.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -419,7 +429,8 @@ void main() {
   );
 
   test(
-    'Given a class with a bit field and hnsw index without distance function, then return a definition where distanceFunction defaults to hamming.',
+    'Given a class with a bit field and hnsw index without distance function, '
+    'then return a definition where distanceFunction defaults to hamming.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -459,7 +470,8 @@ void main() {
   );
 
   test(
-    'Given a class with a vector field and index with jaccard distance function (binary only), then collect an error about invalid distance function.',
+    'Given a class with a vector field and index with jaccard distance function (binary only), '
+    'then collect an error about invalid distance function.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -501,7 +513,8 @@ void main() {
   );
 
   test(
-    'Given a class with a half vector field and index with jaccard distance function (binary only), then collect an error about invalid distance function.',
+    'Given a class with a half vector field and index with jaccard distance function (binary only), '
+    'then collect an error about invalid distance function.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -543,7 +556,8 @@ void main() {
   );
 
   test(
-    'Given a class with a half vector field and ivfflat index with l1 distance function, then collect an error about invalid distance function.',
+    'Given a class with a half vector field and ivfflat index with l1 distance function, '
+    'then collect an error about invalid distance function.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -585,7 +599,8 @@ void main() {
   );
 
   test(
-    'Given a class with a sparse vector field and index with jaccard distance function (binary only), then collect an error about invalid distance function.',
+    'Given a class with a sparse vector field and index with jaccard distance function (binary only), '
+    'then collect an error about invalid distance function.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -627,7 +642,8 @@ void main() {
   );
 
   test(
-    'Given a class with a bit field and index with l2 distance function (not allowed for binary), then collect an error about invalid distance function.',
+    'Given a class with a bit field and index with l2 distance function (not allowed for binary), '
+    'then collect an error about invalid distance function.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(

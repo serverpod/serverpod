@@ -62,9 +62,9 @@ void runS3CompatIntegrationTests({
         return path;
       }
 
-      group('Given no file in the storage', () {
+      group('Given no file in the storage,', () {
         test(
-          'when uploading a file via the upload strategy '
+          'when uploading a file via the upload strategy, '
           'then the file can be retrieved',
           () async {
             final path = testPath('upload-test.txt');
@@ -92,7 +92,7 @@ void runS3CompatIntegrationTests({
         );
       });
 
-      group('Given a successfully uploaded file', () {
+      group('Given a successfully uploaded file,', () {
         late String path;
         final uploadedContent = 'test content';
 
@@ -115,7 +115,7 @@ void runS3CompatIntegrationTests({
         });
 
         test(
-          'when getting the object then the file can be retrieved',
+          'when getting the object, then the file can be retrieved',
           () async {
             final response = await client.getObject(path);
 
@@ -125,7 +125,7 @@ void runS3CompatIntegrationTests({
         );
 
         test(
-          'when calling headObject then it returns 200',
+          'when calling headObject, then it returns 200',
           () async {
             final response = await client.headObject(path);
 
@@ -134,7 +134,7 @@ void runS3CompatIntegrationTests({
         );
 
         test(
-          'when deleting the file then it no longer exists',
+          'when deleting the file, then it no longer exists',
           () async {
             await client.deleteObject(path);
 
@@ -146,7 +146,7 @@ void runS3CompatIntegrationTests({
         );
 
         test(
-          'when overwriting the file then the new content replaces the old',
+          'when overwriting the file, then the new content replaces the old',
           () async {
             final updatedContent = 'Updated content';
             final updatedData = ByteData.view(
@@ -171,9 +171,9 @@ void runS3CompatIntegrationTests({
         );
       });
 
-      group('Given a file path that does not exist', () {
+      group('Given a file path that does not exist,', () {
         test(
-          'when calling headObject then it returns 404',
+          'when calling headObject, then it returns 404',
           () async {
             final response = await client.headObject(
               'non-existent-file-${DateTime.now().millisecondsSinceEpoch}.txt',
@@ -184,7 +184,7 @@ void runS3CompatIntegrationTests({
         );
 
         test(
-          'when retrieving the file then it returns 404',
+          'when retrieving the file, then it returns 404',
           () async {
             final response = await client.getObject(
               'non-existent-file-${DateTime.now().millisecondsSinceEpoch}.txt',
@@ -195,7 +195,7 @@ void runS3CompatIntegrationTests({
         );
 
         test(
-          'when deleting the file then no error is returned',
+          'when deleting the file, then no error is returned',
           () async {
             await client.deleteObject(
               'non-existent-file-${DateTime.now().millisecondsSinceEpoch}.txt',
@@ -204,9 +204,9 @@ void runS3CompatIntegrationTests({
         );
       });
 
-      group('Given binary data to upload', () {
+      group('Given binary data to upload,', () {
         test(
-          'when uploading a binary file then the exact bytes are preserved',
+          'when uploading a binary file, then the exact bytes are preserved',
           () async {
             final path = testPath('binary-test.bin');
             final bytes = Uint8List.fromList(List.generate(256, (i) => i));
@@ -231,9 +231,9 @@ void runS3CompatIntegrationTests({
         );
       });
 
-      group('Given a large binary file to upload (1MB)', () {
+      group('Given a large binary file to upload (1MB),', () {
         test(
-          'when uploading to the storage then the upload succeeds',
+          'when uploading to the storage, then the upload succeeds',
           () async {
             final path = testPath('large-file-test.bin');
             final bytes = Uint8List.fromList(
@@ -263,9 +263,9 @@ void runS3CompatIntegrationTests({
         );
       });
 
-      group('Given a valid upload strategy', () {
+      group('Given a valid upload strategy,', () {
         test(
-          'when creating a direct upload description '
+          'when creating a direct upload description, '
           'then a valid description is returned',
           () async {
             final path = testPath('presigned-description-test.txt');
@@ -292,7 +292,7 @@ void runS3CompatIntegrationTests({
         );
 
         test(
-          'when uploading a file using the description via FileUploader '
+          'when uploading a file using the description via FileUploader, '
           'then the file can be retrieved',
           () async {
             final path = testPath('direct-upload-test.txt');
@@ -331,7 +331,7 @@ void runS3CompatIntegrationTests({
         );
 
         test(
-          'when uploading a file with contentLength via FileUploader '
+          'when uploading a file with contentLength via FileUploader, '
           'then the file can be retrieved',
           () async {
             final path = testPath('direct-upload-content-length-test.txt');
@@ -368,7 +368,7 @@ void runS3CompatIntegrationTests({
         );
 
         test(
-          'when uploading a binary file using the description via FileUploader '
+          'when uploading a binary file using the description via FileUploader, '
           'then the exact bytes are preserved',
           () async {
             final path = testPath('direct-upload-binary-test.bin');
@@ -408,13 +408,13 @@ void runS3CompatIntegrationTests({
       });
 
       group(
-        'Given a new file path with preventOverwrite enabled for uploadData',
+        'Given a new file path with preventOverwrite enabled for uploadData,',
         skip: supportsPreventOverwrite
             ? null
             : 'Upload strategy does not support preventOverwrite',
         () {
           test(
-            'when uploading then the upload succeeds',
+            'when uploading, then the upload succeeds',
             () async {
               final path = testPath('prevent-overwrite-new.txt');
               final content = 'New file content';
@@ -443,13 +443,13 @@ void runS3CompatIntegrationTests({
       );
 
       group(
-        'Given an existing file with preventOverwrite enabled for uploadData',
+        'Given an existing file with preventOverwrite enabled for uploadData,',
         skip: supportsPreventOverwrite
             ? null
             : 'Upload strategy does not support preventOverwrite',
         () {
           test(
-            'when uploading then it throws and preserves the original content',
+            'when uploading, then it throws and preserves the original content',
             () async {
               final path = testPath('prevent-overwrite-existing.txt');
               final data = ByteData.view(
@@ -498,13 +498,13 @@ void runS3CompatIntegrationTests({
       );
 
       group(
-        'Given a new file path with preventOverwrite enabled for direct uploads',
+        'Given a new file path with preventOverwrite enabled for direct uploads,',
         skip: supportsPreventOverwrite
             ? null
             : 'Upload strategy does not support preventOverwrite',
         () {
           test(
-            'when uploading then the upload succeeds',
+            'when uploading, then the upload succeeds',
             () async {
               final path = testPath('prevent-overwrite-direct-new.txt');
               final content = 'New direct upload content';
@@ -542,13 +542,13 @@ void runS3CompatIntegrationTests({
       );
 
       group(
-        'Given an existing file with preventOverwrite enabled for direct uploads',
+        'Given an existing file with preventOverwrite enabled for direct uploads,',
         skip: supportsPreventOverwrite
             ? null
             : 'Upload strategy does not support preventOverwrite',
         () {
           test(
-            'when uploading then it fails and preserves the original content',
+            'when uploading, then it fails and preserves the original content',
             () async {
               final path = testPath('prevent-overwrite-direct-existing.txt');
               final originalData = ByteData.view(
@@ -602,9 +602,9 @@ void runS3CompatIntegrationTests({
         },
       );
 
-      group('Given a path with spaces', () {
+      group('Given a path with spaces,', () {
         test(
-          'when uploading the file then it is handled correctly',
+          'when uploading the file, then it is handled correctly',
           () async {
             final path = testPath('path with spaces/file name.txt');
             final content = 'Content with spaces in path';
@@ -631,9 +631,9 @@ void runS3CompatIntegrationTests({
         );
       });
 
-      group('Given a path with unicode characters', () {
+      group('Given a path with unicode characters,', () {
         test(
-          'when uploading the file then it is handled correctly',
+          'when uploading the file, then it is handled correctly',
           () async {
             final path = testPath('unicode-test-file.txt');
             final content = 'Unicode content: Hello World';

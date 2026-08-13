@@ -11,7 +11,7 @@ import '../../test_utils/email_idp_test_fixture.dart';
 
 void main() {
   withServerpod(
-    'Given a verified account request exists',
+    'Given a verified account request exists,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -79,7 +79,7 @@ void main() {
       });
 
       group(
-        'when complete account creation is called with valid verification token',
+        'when complete account creation is called with valid verification token,',
         () {
           late Future<EmailIdpCompleteAccountCreationResult>
           completeAccountCreationFuture;
@@ -169,7 +169,8 @@ void main() {
       );
 
       test(
-        'when complete account creation is called with invalid password then it throws password policy violation exception',
+        'when complete account creation is called with invalid password, '
+        'then it throws password policy violation exception',
         () async {
           final result = session.db.transaction(
             (final transaction) =>
@@ -189,7 +190,8 @@ void main() {
       );
 
       test(
-        'when complete account creation is called with invalid verification token then it throws invalid verification code exception',
+        'when complete account creation is called with invalid verification token, '
+        'then it throws invalid verification code exception',
         () async {
           final result = session.db.transaction(
             (final transaction) =>
@@ -209,7 +211,8 @@ void main() {
       );
 
       test(
-        'when complete account creation is called with valid verification token after expiration then it throws verification expired exception',
+        'when complete account creation is called with valid verification token after expiration, '
+        'then it throws verification expired exception',
         () async {
           const registrationVerificationCodeLifetime = Duration(hours: 1);
 
@@ -242,7 +245,7 @@ void main() {
   );
 
   withServerpod(
-    'Given an unverified account request exists',
+    'Given an unverified account request exists,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -272,7 +275,8 @@ void main() {
       });
 
       test(
-        'when complete account creation is called with token for unverified request then it throws not verified exception',
+        'when complete account creation is called with token for unverified request, '
+        'then it throws not verified exception',
         () async {
           // Create a fake token with correct format but for unverified request
           final fakeToken = base64Encode(
@@ -299,7 +303,7 @@ void main() {
   );
 
   withServerpod(
-    'Given no account request exists',
+    'Given no account request exists,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -315,7 +319,8 @@ void main() {
       });
 
       test(
-        'when complete account creation is called with invalid verification token then it throws invalid verification code exception',
+        'when complete account creation is called with invalid verification token, '
+        'then it throws invalid verification code exception',
         () async {
           final result = session.db.transaction(
             (final transaction) =>
@@ -335,7 +340,8 @@ void main() {
       );
 
       test(
-        'when complete account creation is called with correctly formatted but missing verification token then it throws not found exception',
+        'when complete account creation is called with correctly formatted but missing verification token, '
+        'then it throws not found exception',
         () async {
           // This test depends in implementation details but ensures we return not
           // found exception when the token is not found.

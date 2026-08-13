@@ -3,10 +3,11 @@ import 'package:test/test.dart';
 
 void main() async {
   group(
-    "Given a class with 'default' fields",
+    "Given a class with 'default' fields,",
     () {
       test(
-        'when an object of the class is created, then the "stringDefault" field should match the default value',
+        'when an object of the class is created, '
+        'then the "stringDefault" field should match the default value',
         () {
           var object = StringDefault();
           expect(
@@ -17,7 +18,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created, then the "stringDefaultNull" field should match the default value',
+        'when an object of the class is created, '
+        'then the "stringDefaultNull" field should match the default value',
         () {
           var object = StringDefault();
           expect(
@@ -28,7 +30,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a specific value for "stringDefault", then the field value should match the provided value',
+        'when an object of the class is created with a specific value for "stringDefault", '
+        'then the field value should match the provided value',
         () {
           var object = StringDefault(
             stringDefault: 'A specific value',
@@ -41,7 +44,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a specific value for "stringDefaultNull", then the field value should match the provided value',
+        'when an object of the class is created with a specific value for "stringDefaultNull", '
+        'then the field value should match the provided value',
         () {
           var object = StringDefault(
             stringDefaultNull: 'A specific null value',
@@ -54,7 +58,8 @@ void main() async {
       );
 
       test(
-        'when an object is created from JSON with missing "stringDefault" key, then the field should have the default value.',
+        'when an object is created from JSON with missing "stringDefault" key, '
+        'then the field should have the default value.',
         () {
           var object = StringDefault.fromJson({});
           expect(
@@ -65,7 +70,8 @@ void main() async {
       );
 
       test(
-        'when an object is created from JSON with missing "stringDefaultNull" key, then the field should have the default value.',
+        'when an object is created from JSON with missing "stringDefaultNull" key, '
+        'then the field should have the default value.',
         () {
           var object = StringDefault.fromJson({});
           expect(
@@ -76,7 +82,8 @@ void main() async {
       );
 
       test(
-        'when an object is created from JSON with explicit values, then the fields should match the provided values.',
+        'when an object is created from JSON with explicit values, '
+        'then the fields should match the provided values.',
         () {
           var object = StringDefault.fromJson({
             'stringDefault': 'Custom value',

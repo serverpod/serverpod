@@ -2,9 +2,9 @@ import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a model with enhanced enum fields', () {
+  group('Given a model with enhanced enum fields,', () {
     test(
-      'when deserializing then enhanced enum properties are preserved',
+      'when deserializing, then enhanced enum properties are preserved',
       () {
         final object = ObjectWithEnumEnhanced(
           byIndex: TestEnumEnhanced.one,
@@ -25,9 +25,9 @@ void main() {
     );
   });
 
-  group('Given a model with nullable enhanced enum field set to null', () {
+  group('Given a model with nullable enhanced enum field set to null,', () {
     test(
-      'when deserializing then it deserializes as null',
+      'when deserializing, then it deserializes as null',
       () {
         final object = ObjectWithEnumEnhanced(
           byIndex: TestEnumEnhanced.one,
@@ -45,9 +45,9 @@ void main() {
     );
   });
 
-  group('Given a model with nullable enhanced enum field set to a value', () {
+  group('Given a model with nullable enhanced enum field set to a value,', () {
     test(
-      'when deserializing then properties are accessible',
+      'when deserializing, then properties are accessible',
       () {
         final object = ObjectWithEnumEnhanced(
           byIndex: TestEnumEnhanced.one,

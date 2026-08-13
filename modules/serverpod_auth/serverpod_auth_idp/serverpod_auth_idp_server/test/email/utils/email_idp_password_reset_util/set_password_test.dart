@@ -7,7 +7,7 @@ import '../../test_utils/email_idp_test_fixture.dart';
 
 void main() {
   withServerpod(
-    'Given email account',
+    'Given email account,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -35,7 +35,8 @@ void main() {
       });
 
       test(
-        'when set password is called with new password then user can authenticate with password',
+        'when set password is called with new password, '
+        'then user can authenticate with password',
         () async {
           const newPassword = 'new$password';
 
@@ -62,7 +63,8 @@ void main() {
       );
 
       test(
-        'when set password is called with null password then user cannot authenticate with empty password',
+        'when set password is called with null password, '
+        'then user cannot authenticate with empty password',
         () async {
           await session.db.transaction(
             (final transaction) => fixture.passwordResetUtil.setPassword(
@@ -90,7 +92,8 @@ void main() {
       );
 
       test(
-        'when set password is called with empty password then user can authenticate with empty password',
+        'when set password is called with empty password, '
+        'then user can authenticate with empty password',
         () async {
           await session.db.transaction(
             (final transaction) => fixture.passwordResetUtil.setPassword(

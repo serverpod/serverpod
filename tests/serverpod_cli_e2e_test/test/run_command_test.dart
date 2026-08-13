@@ -73,7 +73,8 @@ serverpod:
   );
 
   test(
-    'when running a shared script that succeeds, then the exit code is propagated',
+    'when running a shared script that succeeds, '
+    'then the exit code is propagated',
     () async {
       final result = await runServerpod(
         ['run', 'succeed'],
@@ -97,7 +98,7 @@ serverpod:
     },
   );
 
-  group('when running a non-existent script', () {
+  group('when running a non-existent script,', () {
     late ProcessResult result;
 
     setUpAll(() async {
@@ -168,7 +169,7 @@ serverpod:
         : null,
   );
 
-  group('given pubspec without serverpod namespace', () {
+  group('given pubspec without serverpod namespace,', () {
     late String serverDirNoNamespace;
 
     setUpAll(() async {
@@ -211,7 +212,8 @@ dependencies:
     );
 
     test(
-      'when running without script name, then an error about no scripts is shown',
+      'when running without script name, '
+      'then an error about no scripts is shown',
       () async {
         final result = await runServerpod(
           ['run'],

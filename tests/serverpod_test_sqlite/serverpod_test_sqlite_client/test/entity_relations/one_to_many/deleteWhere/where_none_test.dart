@@ -6,9 +6,10 @@ import '../../../test_util.dart';
 void main() {
   initTestClientSession();
 
-  group('Given models with one to many relation', () {
+  group('Given models with one to many relation,', () {
     test(
-      'when deleting models filtered by none many relation then result is as expected.',
+      'when deleting models filtered by none many relation, '
+      'then result is as expected.',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Alex'),
@@ -40,7 +41,8 @@ void main() {
     );
 
     test(
-      'when deleting models filtered by filtered none many relation then result is as expected',
+      'when deleting models filtered by filtered none many relation, '
+      'then result is as expected',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Alex'),
@@ -76,7 +78,8 @@ void main() {
     );
 
     test(
-      'when deleting models filtered on none many relation in combination with other filter then result is as expected.',
+      'when deleting models filtered on none many relation in combination with other filter, '
+      'then result is as expected.',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Alex'),
@@ -112,7 +115,8 @@ void main() {
     );
 
     test(
-      'when deleting models filtered on OR filtered none many relation then result is as expected.',
+      'when deleting models filtered on OR filtered none many relation, '
+      'then result is as expected.',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Alex'),
@@ -147,7 +151,8 @@ void main() {
     );
 
     test(
-      'when deleting models filtered on multiple filtered none many relation then result is as expected.',
+      'when deleting models filtered on multiple filtered none many relation, '
+      'then result is as expected.',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Alex'),
@@ -187,9 +192,9 @@ void main() {
     );
   });
 
-  group('Given models with nested one to many relation', () {
+  group('Given models with nested one to many relation,', () {
     test(
-      'when filtering on nested none many relation then result is as expected',
+      'when filtering on nested none many relation, then result is as expected',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Alex'),
@@ -237,7 +242,8 @@ void main() {
     );
 
     test(
-      'when deleting models filtered on filtered nested none many relation then result is as expected',
+      'when deleting models filtered on filtered nested none many relation, '
+      'then result is as expected',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Alex'),

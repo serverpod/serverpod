@@ -7,7 +7,7 @@ import 'package:web_socket/web_socket.dart';
 import '../websocket_extensions.dart';
 
 void main() {
-  group('Given method websocket connection', () {
+  group('Given method websocket connection,', () {
     late Serverpod server;
     late WebSocket webSocket;
 
@@ -24,7 +24,8 @@ void main() {
       await webSocket.tryClose();
     });
 
-    test('when ping command is sent then pong response is received.', () async {
+    test('when ping command is sent, '
+         'then pong response is received.', () async {
       webSocket.sendText(PingCommand.buildMessage());
 
       var response = await webSocket.textEvents.first;
@@ -36,7 +37,7 @@ void main() {
       expect(message, isA<PongCommand>());
     });
 
-    test('when pong command is sent then no response is received.', () async {
+    test('when pong command is sent, then no response is received.', () async {
       webSocket.sendText(PongCommand.buildMessage());
 
       expectLater(

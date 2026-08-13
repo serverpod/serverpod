@@ -7,9 +7,10 @@ import '../../../../test_util.dart';
 void main() {
   initTestClientSession();
 
-  group('Given models with one to one relation', () {
+  group('Given models with one to one relation,', () {
     test(
-      'when fetching models ordered by relation attributes then result is as expected.',
+      'when fetching models ordered by relation attributes, '
+      'then result is as expected.',
       () async {
         var post = await Post.db.insert(
           session,
@@ -34,9 +35,10 @@ void main() {
     );
   });
 
-  group('Given models with nested one to one relations', () {
+  group('Given models with nested one to one relations,', () {
     test(
-      'when fetching models ordered by nested relation attributes then result is as expected.',
+      'when fetching models ordered by nested relation attributes, '
+      'then result is as expected.',
       () async {
         var post = await Post.db.insert(
           session,

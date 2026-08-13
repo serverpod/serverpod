@@ -9,9 +9,9 @@ import '../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
-  group('Extends property tests', () {
-    group('Given a child-class of an existing class', () {
-      var modelSources = [
+  group('Extends property tests,', () {
+    group('Given a child-class of an existing class,', () {
+      late var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -29,8 +29,8 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var models = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var models = StatefulAnalyzer(
         config,
         modelSources,
         onErrorsCollector(collector),
@@ -62,7 +62,8 @@ void main() {
     });
 
     test(
-      'Given a child-class of a not existing class, then collect an error that no class was found in models',
+      'Given a child-class of a not existing class, '
+      'then collect an error that no class was found in models',
       () {
         var modelSources = [
           ModelSourceBuilder().withYaml(
@@ -97,7 +98,8 @@ void main() {
     );
 
     test(
-      'Given a child-class that extends an external class, then an error is collected that only classes from within the project can be extended',
+      'Given a child-class that extends an external class, '
+      'then an error is collected that only classes from within the project can be extended',
       () {
         var modelSources = [
           ModelSourceBuilder()
@@ -142,9 +144,10 @@ void main() {
     );
 
     group(
-      'Given a child-class with table and a parent-class without table, then the parent-class fields are inherited and no error is collected',
+      'Given a child-class with table and a parent-class without table, '
+      'then the parent-class fields are inherited and no error is collected,',
       () {
-        var modelSources = [
+        late var modelSources = [
           ModelSourceBuilder().withYaml(
             '''
           class: Example
@@ -163,7 +166,7 @@ void main() {
           ).build(),
         ];
 
-        var collector = CodeGenerationCollector();
+        late var collector = CodeGenerationCollector();
         StatefulAnalyzer(
           config,
           modelSources,
@@ -178,9 +181,10 @@ void main() {
     );
 
     group(
-      'Given a child-class with table that have an index on a field created by a parent-class without table, then no error is collected and the index is defined',
+      'Given a child-class with table that have an index on a field created by a parent-class without table, '
+      'then no error is collected and the index is defined,',
       () {
-        var modelSources = [
+        late var modelSources = [
           ModelSourceBuilder().withYaml(
             '''
           class: Example
@@ -203,8 +207,8 @@ void main() {
           ).build(),
         ];
 
-        var collector = CodeGenerationCollector();
-        var models = StatefulAnalyzer(
+        late var collector = CodeGenerationCollector();
+        late var models = StatefulAnalyzer(
           config,
           modelSources,
           onErrorsCollector(collector),
@@ -238,7 +242,9 @@ void main() {
     );
 
     test(
-      'Given a child-class with table, When the parent-class also has a table, then error is collected that only one class in hierarchy can have a table',
+      'Given a child-class with table, '
+      'When the parent-class also has a table, '
+      'then error is collected that only one class in hierarchy can have a table',
       () {
         var modelSources = [
           ModelSourceBuilder().withYaml(
@@ -282,7 +288,9 @@ void main() {
     );
 
     test(
-      'Given a child-class, when a field name already exists within the hierarchy, then an error is collected that child-class cannot be declared with this field.',
+      'Given a child-class, '
+      'when a field name already exists within the hierarchy, '
+      'then an error is collected that child-class cannot be declared with this field.',
       () {
         var modelSources = [
           ModelSourceBuilder().withYaml(
@@ -324,7 +332,9 @@ void main() {
     );
 
     test(
-      'Given a child-class, When the parent-class is serverOnly but the child-class is not, then error is collected that a client class cannot extend a serverOnly class',
+      'Given a child-class, '
+      'When the parent-class is serverOnly but the child-class is not, '
+      'then error is collected that a client class cannot extend a serverOnly class',
       () {
         var modelSources = [
           ModelSourceBuilder().withYaml(
@@ -367,7 +377,9 @@ void main() {
     );
 
     test(
-      'Given a serverOnly child-class, When the parent-class is not serverOnly but the grandparent-class is, then error is collected that a client class cannot extend a serverOnly class',
+      'Given a serverOnly child-class, '
+      'When the parent-class is not serverOnly but the grandparent-class is, '
+      'then error is collected that a client class cannot extend a serverOnly class',
       () {
         var modelSources = [
           ModelSourceBuilder().withYaml(
@@ -419,7 +431,8 @@ void main() {
   });
 
   test(
-    'Given a class, when the sealed property is explicitly set to false, no errors are collected',
+    'Given a class, '
+    'when the sealed property is explicitly set to false, no errors are collected',
     () {
       var modelSources = [
         ModelSourceBuilder().withFileName('example1').withYaml(
@@ -448,7 +461,9 @@ void main() {
   );
 
   test(
-    'Given a class, when the sealed property is set to a non-boolean value, then an error is collected that the value must be a boolean.',
+    'Given a class, '
+    'when the sealed property is set to a non-boolean value, '
+    'then an error is collected that the value must be a boolean.',
     () {
       var modelSources = [
         ModelSourceBuilder().withFileName('example1').withYaml(
@@ -483,7 +498,8 @@ void main() {
   );
 
   test(
-    'Given a sealed class with a table defined, then an error is collected that "sealed" and "table" properties are mutually exclusive',
+    'Given a sealed class with a table defined, '
+    'then an error is collected that "sealed" and "table" properties are mutually exclusive',
     () {
       var modelSources = [
         ModelSourceBuilder().withFileName('example1').withYaml(

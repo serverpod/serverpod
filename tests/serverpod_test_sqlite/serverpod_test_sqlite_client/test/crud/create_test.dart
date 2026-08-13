@@ -7,9 +7,9 @@ import '../test_util.dart';
 void main() {
   initTestClientSession();
 
-  group('Given an empty database', () {
+  group('Given an empty database,', () {
     test(
-      'when batch inserting then all the entries are created in the database.',
+      'when batch inserting, then all the entries are created in the database.',
       () async {
         var data = <UniqueData>[
           UniqueData(number: 1, email: 'info@serverpod.dev'),
@@ -28,7 +28,8 @@ void main() {
     );
 
     test(
-      'when batch inserting with one failing row then no entries are created in the database.',
+      'when batch inserting with one failing row, '
+      'then no entries are created in the database.',
       () async {
         var data = <UniqueData>[
           UniqueData(number: 2, email: 'info@serverpod.dev'),
@@ -62,7 +63,7 @@ void main() {
     );
 
     test(
-      'when batch inserting with an id defined then the id is not ignored.',
+      'when batch inserting with an id defined, then the id is not ignored.',
       () async {
         const int id = 999;
 
@@ -77,7 +78,8 @@ void main() {
     );
 
     test(
-      'when batch inserting with an id defined and other undefined then both are created in the database.',
+      'when batch inserting with an id defined and other undefined, '
+      'then both are created in the database.',
       () async {
         const int id = 1999;
 
@@ -105,7 +107,7 @@ void main() {
     );
   });
 
-  group('Given an object data without an id when calling insertRow', () {
+  group('Given an object data without an id, when calling insertRow', () {
     late SimpleData inserted;
     setUp(() async {
       var simpleData = SimpleData(num: 1);
@@ -120,7 +122,7 @@ void main() {
     });
   });
 
-  group('Given a model without fields when inserting it', () {
+  group('Given a model without fields, when inserting it,', () {
     late EmptyModelWithTable inserted;
     setUp(() async {
       var emptyModel = EmptyModelWithTable();
@@ -135,8 +137,8 @@ void main() {
     });
   });
 
-  group('Given a model with required field', () {
-    test('when inserting then it is created', () async {
+  group('Given a model with required field,', () {
+    test('when inserting, then it is created', () async {
       var model = ModelWithRequiredField(name: 'John', email: null);
       var inserted = await ModelWithRequiredField.db.insertRow(
         session,

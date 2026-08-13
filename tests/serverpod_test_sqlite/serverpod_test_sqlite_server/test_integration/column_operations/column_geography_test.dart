@@ -42,8 +42,8 @@ void main() async {
   setUpAll(() async => await _createTestDatabase(session));
   tearDownAll(() async => await _deleteAll(session));
 
-  group('Given geography columns stored as text in database', () {
-    test('when fetching all then all rows are returned.', () async {
+  group('Given geography columns stored as text in database,', () {
+    test('when fetching all, then all rows are returned.', () async {
       var result = await Types.db.find(
         session,
         where: (_) => Constant.bool(true),
@@ -53,7 +53,7 @@ void main() async {
     });
 
     test(
-      'when reading geography columns then the stored values round-trip.',
+      'when reading geography columns, then the stored values round-trip.',
       () async {
         var result = await Types.db.find(
           session,
@@ -68,7 +68,7 @@ void main() async {
       },
     );
 
-    test('when using intersects then an exception is thrown.', () async {
+    test('when using intersects, then an exception is thrown.', () async {
       await expectLater(
         Types.db.find(
           session,
@@ -78,7 +78,7 @@ void main() async {
       );
     });
 
-    test('when using distanceWithin then an exception is thrown.', () async {
+    test('when using distanceWithin, then an exception is thrown.', () async {
       await expectLater(
         Types.db.find(
           session,
@@ -88,7 +88,7 @@ void main() async {
       );
     });
 
-    test('when ordering by distance then an exception is thrown.', () async {
+    test('when ordering by distance, then an exception is thrown.', () async {
       await expectLater(
         Types.db.find(
           session,

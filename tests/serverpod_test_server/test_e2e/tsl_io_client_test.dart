@@ -6,7 +6,9 @@ import 'package:test/test.dart';
 
 void main() {
   test(
-    'Given valid certificates when a call to the health endpoint of a service with a valid certificate then the requests completes successfully.',
+    'Given valid certificates, '
+    'when a call to the health endpoint of a service with a valid certificate, '
+    'then the requests completes successfully.',
     () async {
       var client = Client('https://api.serverpod.app/');
 
@@ -18,7 +20,9 @@ void main() {
   );
 
   test(
-    'Given no valid certificates when a call to the health endpoint of a service then the requests is rejected with a handshake exception.',
+    'Given no valid certificates, '
+    'when a call to the health endpoint of a service, '
+    'then the requests is rejected with a handshake exception.',
     () async {
       var client = Client(
         'https://api.serverpod.app/',

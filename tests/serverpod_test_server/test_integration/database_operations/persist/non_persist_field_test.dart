@@ -15,7 +15,8 @@ void main() async {
     );
 
     test(
-      'when inserting a single record into the database then non-persisted simple fields should retain their values after insertion, even though they are not stored in the database',
+      'when inserting a single record into the database, '
+      'then non-persisted simple fields should retain their values after insertion, even though they are not stored in the database',
       () async {
         var object = ObjectFieldPersist(
           normal: 'Normal Value',
@@ -35,7 +36,8 @@ void main() async {
     );
 
     test(
-      'when inserting a single record with nested non-persisted fields into the database then the nested fields should retain their values after insertion, even though they are not stored in the database',
+      'when inserting a single record with nested non-persisted fields into the database, '
+      'then the nested fields should retain their values after insertion, even though they are not stored in the database',
       () async {
         var object = ObjectFieldPersist(
           normal: 'Normal Value',
@@ -61,7 +63,8 @@ void main() async {
     );
 
     test(
-      'when inserting multiple records into the database then non-persisted simple fields should retain their values after insertion, even though they are not stored in the database',
+      'when inserting multiple records into the database, '
+      'then non-persisted simple fields should retain their values after insertion, even though they are not stored in the database',
       () async {
         var rows = <ObjectFieldPersist>[];
 
@@ -90,7 +93,8 @@ void main() async {
     );
 
     test(
-      'when inserting multiple records with nested non-persisted fields into the database then the nested fields should retain their values after insertion, even though they are not stored in the database',
+      'when inserting multiple records with nested non-persisted fields into the database, '
+      'then the nested fields should retain their values after insertion, even though they are not stored in the database',
       () async {
         var rows = <ObjectFieldPersist>[];
 
@@ -124,7 +128,8 @@ void main() async {
     );
 
     test(
-      'when updating a single record in the database then non-persisted simple fields should retain their values after update, even though they are not stored in the database',
+      'when updating a single record in the database, '
+      'then non-persisted simple fields should retain their values after update, even though they are not stored in the database',
       () async {
         var object = ObjectFieldPersist(
           normal: 'Normal Value',
@@ -158,7 +163,8 @@ void main() async {
     );
 
     test(
-      'when updating a single record with nested non-persisted fields in the database then the nested fields should retain their values after update, even though they are not stored in the database',
+      'when updating a single record with nested non-persisted fields in the database, '
+      'then the nested fields should retain their values after update, even though they are not stored in the database',
       () async {
         var object = ObjectFieldPersist(
           normal: 'Normal Value',
@@ -203,7 +209,8 @@ void main() async {
     );
 
     test(
-      'when updating multiple records in the database then non-persisted simple fields should retain their values after update, even though they are not stored in the database',
+      'when updating multiple records in the database, '
+      'then non-persisted simple fields should retain their values after update, even though they are not stored in the database',
       () async {
         var rows = <ObjectFieldPersist>[];
 
@@ -248,7 +255,8 @@ void main() async {
     );
 
     test(
-      'when updating multiple records with nested non-persisted fields in the database then the nested fields should retain their values after update, even though they are not stored in the database',
+      'when updating multiple records with nested non-persisted fields in the database, '
+      'then the nested fields should retain their values after update, even though they are not stored in the database',
       () async {
         var rows = <ObjectFieldPersist>[];
 

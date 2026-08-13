@@ -39,8 +39,8 @@ void main() {
   }
 
   test(
-    'Given a model with int serial default '
-    'when parsing the TableDefinition '
+    'Given a model with int serial default, '
+    'when parsing the TableDefinition, '
     'then the columnDefault is "serial" and the id column is primary.',
     () {
       var models = [
@@ -63,8 +63,8 @@ void main() {
   );
 
   test(
-    'Given a model with an int literal default '
-    'when parsing the TableDefinition '
+    'Given a model with an int literal default, '
+    'when parsing the TableDefinition, '
     'then the int default is kept as the original model value.',
     () {
       var models = [
@@ -87,8 +87,8 @@ void main() {
   );
 
   test(
-    'Given a model with a boolean default '
-    'when parsing the TableDefinition '
+    'Given a model with a boolean default, '
+    'when parsing the TableDefinition, '
     'then the boolean default is kept as the original model value.',
     () {
       var models = [
@@ -111,8 +111,8 @@ void main() {
   );
 
   test(
-    'Given a model with a DateTime "now" default '
-    'when parsing the TableDefinition '
+    'Given a model with a DateTime "now" default, '
+    'when parsing the TableDefinition, '
     'then the default is kept as "now".',
     () {
       var models = [
@@ -135,8 +135,8 @@ void main() {
   );
 
   test(
-    'Given a model with a formatted DateTime default '
-    'when parsing the TableDefinition '
+    'Given a model with a formatted DateTime default, '
+    'when parsing the TableDefinition, '
     'then the formatted DateTime default is kept as the original model value.',
     () {
       var models = [
@@ -159,8 +159,8 @@ void main() {
   );
 
   test(
-    'Given a model with a Duration default '
-    'when parsing the TableDefinition '
+    'Given a model with a Duration default, '
+    'when parsing the TableDefinition, '
     'then the Duration default is kept as the original model value.',
     () {
       var models = [
@@ -183,8 +183,8 @@ void main() {
   );
 
   test(
-    'Given a model with an enum default serialized by index '
-    'when parsing the TableDefinition '
+    'Given a model with an enum default serialized by index, '
+    'when parsing the TableDefinition, '
     'then the enum default is converted to the index of the default entry.',
     () {
       var models = [
@@ -217,8 +217,8 @@ void main() {
   );
 
   test(
-    'Given a model with an enum default serialized by name '
-    'when parsing the TableDefinition '
+    'Given a model with an enum default serialized by name, '
+    'when parsing the TableDefinition, '
     'then the enum default is converted to the quoted string value of the default entry.',
     () {
       var models = [
@@ -251,8 +251,8 @@ void main() {
   );
 
   test(
-    'Given a model with a String column with a literal default '
-    'when parsing the TableDefinition '
+    'Given a model with a String column with a literal default, '
+    'when parsing the TableDefinition, '
     'then the literal default is kept as the original model value.',
     () {
       var models = [
@@ -275,8 +275,8 @@ void main() {
   );
 
   test(
-    'Given a model with a "random" default '
-    'when parsing the TableDefinition '
+    'Given a model with a "random" default, '
+    'when parsing the TableDefinition, '
     'then the default is kept as "random".',
     () {
       var models = [
@@ -299,8 +299,8 @@ void main() {
   );
 
   test(
-    'Given a model with a "random_v7" default '
-    'when parsing the TableDefinition '
+    'Given a model with a "random_v7" default, '
+    'when parsing the TableDefinition, '
     'then the default is kept as "random_v7".',
     () {
       var models = [
@@ -323,8 +323,8 @@ void main() {
   );
 
   test(
-    'Given a model with a UuidValue literal default '
-    'when parsing the TableDefinition '
+    'Given a model with a UuidValue literal default, '
+    'when parsing the TableDefinition, '
     'then the UuidValue default is kept as the original model value.',
     () {
       var models = [
@@ -350,8 +350,8 @@ void main() {
   );
 
   test(
-    'Given a model with indexes '
-    'when parsing the TableDefinition '
+    'Given a model with indexes, '
+    'when parsing the TableDefinition, '
     'then the primary key index is not included in the indexes list.',
     () {
       var models = [
@@ -379,8 +379,8 @@ void main() {
   );
 
   test(
-    'Given a client database table '
-    'when parsing the server TableDefinition '
+    'Given a client database table, '
+    'when parsing the server TableDefinition, '
     'then no table is generated.',
     () {
       var models = [

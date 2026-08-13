@@ -14,8 +14,8 @@ void main() {
   group(
     'Given a model from a module with a dynamic field and a project model as data,',
     () {
-      final simpleData = client.SimpleData(num: 1);
-      final model = module.DynamicOnModule(
+      late final simpleData = client.SimpleData(num: 1);
+      late final model = module.DynamicOnModule(
         name: 'test',
         data: simpleData,
       );
@@ -61,9 +61,9 @@ void main() {
   group(
     'Given a serialized model from a module with a dynamic field and a project model as data,',
     () {
-      final simpleData = client.SimpleData(num: 1);
+      late final simpleData = client.SimpleData(num: 1);
 
-      final payload = {
+      late final payload = {
         '__className__': 'serverpod_test_module.DynamicOnModule',
         'name': 'test',
         'data': {
@@ -91,9 +91,9 @@ void main() {
   group(
     'Given a serialized model from a module with a dynamic field and a project model as data wrapped with className,',
     () {
-      final simpleData = client.SimpleData(num: 1);
+      late final simpleData = client.SimpleData(num: 1);
 
-      final payload = {
+      late final payload = {
         'className': 'DynamicOnModule',
         'data': {
           'name': 'test',

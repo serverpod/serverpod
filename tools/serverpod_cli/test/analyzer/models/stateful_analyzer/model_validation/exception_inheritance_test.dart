@@ -98,7 +98,7 @@ void main() {
     'Given a child exception of an existing exception, '
     'when parsing,',
     () {
-      var modelSources = [
+      late var modelSources = [
         ModelSourceBuilder().withFileName('app_exception').withYaml(
           '''
           exception: AppException
@@ -116,8 +116,8 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var models = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var models = StatefulAnalyzer(
         config,
         modelSources,
         onErrorsCollector(collector),
@@ -450,7 +450,7 @@ void main() {
   );
 
   test(
-    'Given a sealed shared package exception and a subclass on the same shared package '
+    'Given a sealed shared package exception and a subclass on the same shared package, '
     'when parsing, '
     'then no error is collected.',
     () {
@@ -499,7 +499,7 @@ void main() {
   );
 
   test(
-    'Given a sealed shared package exception and a subclass on the project package '
+    'Given a sealed shared package exception and a subclass on the project package, '
     'when parsing, '
     'then an error is collected that sealed exceptions cannot be inherited from another package.',
     () {

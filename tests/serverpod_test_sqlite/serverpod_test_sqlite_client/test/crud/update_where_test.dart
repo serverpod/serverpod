@@ -9,7 +9,7 @@ void main() {
   initTestClientSession();
 
   group(
-    'Given database entries with basic matching criteria',
+    'Given database entries with basic matching criteria,',
     () {
       setUp(() async {
         await Types.db.insert(
@@ -23,7 +23,7 @@ void main() {
         );
       });
 
-      group('when updating where with no columns specified', () {
+      group('when updating where with no columns specified,', () {
         test('then ArgumentError is thrown', () {
           expect(
             () => Types.db.updateWhere(
@@ -47,7 +47,7 @@ void main() {
       });
 
       group(
-        'when updating where number equals specific value for a single column',
+        'when updating where number equals specific value for a single column,',
         () {
           const updatedNumber = 42;
           late List<Types> updated;
@@ -87,7 +87,7 @@ void main() {
       );
 
       group(
-        'when updating where number matches complex criteria for a single column',
+        'when updating where number matches complex criteria for a single column,',
         () {
           const updatedComplexNumber = 200;
           late List<Types> updated;
@@ -129,7 +129,7 @@ void main() {
         },
       );
 
-      group('when updating where criteria matches for multiple columns', () {
+      group('when updating where criteria matches for multiple columns,', () {
         const updatedInt = 42;
         const updatedString = 'updated';
         late List<Types> updated;
@@ -183,7 +183,7 @@ void main() {
   );
 
   group(
-    'Given database entries for transaction testing',
+    'Given database entries for transaction testing,',
     () {
       setUp(() async {
         await Types.db.insert(
@@ -196,7 +196,7 @@ void main() {
         );
       });
 
-      group('when updating within an aborted transaction', () {
+      group('when updating within an aborted transaction,', () {
         const transactionUpdatedInt = 999;
 
         setUp(() async {
@@ -233,7 +233,7 @@ void main() {
   );
 
   group(
-    'Given no matching database entries',
+    'Given no matching database entries,',
     () {
       setUp(() async {
         await Types.db.insert(
@@ -245,7 +245,7 @@ void main() {
       });
 
       test(
-        'when updating where no rows match then empty list is returned',
+        'when updating where no rows match, then empty list is returned',
         () async {
           var updated = await Types.db.updateWhere(
             session,
@@ -260,7 +260,7 @@ void main() {
   );
 
   group(
-    'Given database entries with null values',
+    'Given database entries with null values,',
     () {
       setUp(() async {
         await Types.db.insertRow(
@@ -275,7 +275,7 @@ void main() {
         );
       });
 
-      group('when updating where column to non-null value', () {
+      group('when updating where column to non-null value,', () {
         const updatedIntFromNull = 99;
         const updatedStringFromNull = 'was_null';
         late List<Types> updated;
@@ -311,7 +311,7 @@ void main() {
   );
 
   group(
-    'Given database entries with non-null values',
+    'Given database entries with non-null values,',
     () {
       const originalInt = 1;
       const originalString = 'value';
@@ -331,7 +331,7 @@ void main() {
         );
       });
 
-      group('when updating non-null values to null values', () {
+      group('when updating non-null values to null values,', () {
         late List<Types> updated;
 
         setUp(() async {
@@ -377,7 +377,7 @@ void main() {
   );
 
   group(
-    'Given database entries for pagination operations',
+    'Given database entries for pagination operations,',
     () {
       const matchingInt = 100;
 
@@ -424,7 +424,7 @@ void main() {
         );
       });
 
-      group('when updating with limit', () {
+      group('when updating with limit,', () {
         const limitedUpdateString = 'limited_update';
         const limit = 3;
         late List<Types> updated;
@@ -472,7 +472,7 @@ void main() {
         });
       });
 
-      group('when updating in descending order', () {
+      group('when updating in descending order,', () {
         late List<Types> updated;
 
         setUp(() async {
@@ -492,7 +492,7 @@ void main() {
         });
       });
 
-      group('when updating with offset', () {
+      group('when updating with offset,', () {
         late List<Types> updated;
 
         setUp(() async {
@@ -539,7 +539,7 @@ void main() {
         });
       });
 
-      group('when updating with limit and offset', () {
+      group('when updating with limit and offset,', () {
         late List<Types> updated;
 
         setUp(() async {
@@ -562,7 +562,7 @@ void main() {
   );
 
   group(
-    'Given database entries with all supported data types',
+    'Given database entries with all supported data types,',
     () {
       setUp(() async {
         await Types.db.insert(
@@ -623,7 +623,7 @@ void main() {
         );
       });
 
-      group('when updating all supported data types', () {
+      group('when updating all supported data types,', () {
         late List<Types> updated;
 
         setUp(() async {

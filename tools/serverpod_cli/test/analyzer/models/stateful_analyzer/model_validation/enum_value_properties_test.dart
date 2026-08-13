@@ -9,7 +9,7 @@ import '../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
-  group('Given an enum with valid properties when parsing', () {
+  group('Given an enum with valid properties, when parsing,', () {
     late CodeGenerationCollector collector;
     late List<SerializableModelDefinition> definitions;
     late EnumDefinition definition;
@@ -77,7 +77,7 @@ void main() {
     });
   });
 
-  group('Given an enum without properties when parsing', () {
+  group('Given an enum without properties, when parsing,', () {
     late EnumDefinition definition;
 
     setUp(() {
@@ -112,7 +112,7 @@ void main() {
     });
   });
 
-  group('Given an enum value missing a required property when parsing', () {
+  group('Given an enum value missing a required property, when parsing,', () {
     late CodeGenerationCollector collector;
 
     setUp(() {
@@ -158,7 +158,7 @@ void main() {
     );
   });
 
-  group('Given an enum with an unsupported property type when parsing', () {
+  group('Given an enum with an unsupported property type, when parsing,', () {
     late CodeGenerationCollector collector;
 
     setUp(() {
@@ -202,7 +202,7 @@ void main() {
   });
 
   group(
-    'Given an enum value with a property that is not defined when parsing',
+    'Given an enum value with a property that is not defined, when parsing,',
     () {
       late CodeGenerationCollector collector;
 
@@ -248,7 +248,7 @@ void main() {
   );
 
   group(
-    'Given an enum with a reserved keyword as property name when parsing',
+    'Given an enum with a reserved keyword as property name, when parsing,',
     () {
       late CodeGenerationCollector collector;
 

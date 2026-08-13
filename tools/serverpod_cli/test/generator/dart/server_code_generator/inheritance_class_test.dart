@@ -32,9 +32,10 @@ void main() {
   var childTableName = 'child_example_table';
 
   group(
-    'Given a child-class named $childClassName with one primitive var extending a parent-class named $parentClassName with one primitive var when generating code',
+    'Given a child-class named $childClassName with one primitive var extending a parent-class named $parentClassName with one primitive var, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(parentClassName)
             .withFileName(parentClassFileName)
@@ -239,9 +240,10 @@ void main() {
   );
 
   group(
-    'Given a child-class named $childClassName with one primitive var and a var with default value extending a parent-class named $parentClassName with one primitive var and a var with default value when generating code',
+    'Given a child-class named $childClassName with one primitive var and a var with default value extending a parent-class named $parentClassName with one primitive var and a var with default value, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(parentClassName)
             .withFileName(parentClassFileName)
@@ -418,8 +420,8 @@ void main() {
     },
   );
 
-  group('Given a child-class with table name when generating code', () {
-    var models = [
+  group('Given a child-class with table name, when generating code,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(parentClassName)
           .withFileName(parentClassFileName)
@@ -557,9 +559,10 @@ void main() {
   });
 
   group(
-    'Given a child-class with a nullable field inheriting a nullable field when generating code',
+    'Given a child-class with a nullable field inheriting a nullable field, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(parentClassName)
             .withFileName(parentClassFileName)
@@ -632,10 +635,10 @@ void main() {
   );
 
   group(
-    'Given a serverOnly child-class that inherits from a non serverOnly parent '
-    'when generating code',
+    'Given a serverOnly child-class that inherits from a non serverOnly parent, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(parentClassName)
             .withFileName(parentClassFileName)

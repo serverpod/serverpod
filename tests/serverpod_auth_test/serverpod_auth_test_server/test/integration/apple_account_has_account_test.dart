@@ -34,10 +34,10 @@ void main() {
   });
 
   withServerpod(
-    'Given an unauthenticated session',
+    'Given an unauthenticated session,',
     (final sessionBuilder, final endpoints) {
       test(
-        'when calling hasAccount then it returns false',
+        'when calling hasAccount, then it returns false',
         () async {
           final result = await endpoints.appleAccount.hasAccount(
             sessionBuilder,
@@ -48,7 +48,7 @@ void main() {
     },
   );
 
-  withServerpod('Given an authenticated session but no Apple account', (
+  withServerpod('Given an authenticated session but no Apple account,', (
     final sessionBuilder,
     final endpoints,
   ) {
@@ -64,7 +64,7 @@ void main() {
     });
 
     test(
-      'when calling hasAccount then it returns false',
+      'when calling hasAccount, then it returns false',
       () async {
         final result = await endpoints.appleAccount.hasAccount(session);
         expect(result, isFalse);
@@ -72,7 +72,7 @@ void main() {
     );
   });
 
-  withServerpod('Given an authenticated session with an Apple account', (
+  withServerpod('Given an authenticated session with an Apple account,', (
     final sessionBuilder,
     final endpoints,
   ) {
@@ -100,7 +100,7 @@ void main() {
     });
 
     test(
-      'when calling hasAccount then it returns true',
+      'when calling hasAccount, then it returns true',
       () async {
         final result = await endpoints.appleAccount.hasAccount(session);
         expect(result, isTrue);

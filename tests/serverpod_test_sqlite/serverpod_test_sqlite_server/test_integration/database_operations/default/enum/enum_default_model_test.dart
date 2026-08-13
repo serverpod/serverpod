@@ -15,7 +15,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "defaultModel=byName1" field value should be byName1',
+      'when creating a record in the database, '
+      'then the "defaultModel=byName1" field value should be byName1',
       () async {
         var object = EnumDefaultModel();
         var databaseObject = await EnumDefaultModel.db.insertRow(
@@ -30,7 +31,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the nullable "defaultModel=byName2" field value should be byName2',
+      'when creating a record in the database, '
+      'then the nullable "defaultModel=byName2" field value should be byName2',
       () async {
         var object = EnumDefaultModel();
         var databaseObject = await EnumDefaultModel.db.insertRow(
@@ -45,7 +47,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "defaultModel=byIndex1" field value should be byIndex1',
+      'when creating a record in the database, '
+      'then the "defaultModel=byIndex1" field value should be byIndex1',
       () async {
         var object = EnumDefaultModel();
         var databaseObject = await EnumDefaultModel.db.insertRow(
@@ -60,7 +63,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the nullable "defaultModel=byIndex2" field value should be byIndex2',
+      'when creating a record in the database, '
+      'then the nullable "defaultModel=byIndex2" field value should be byIndex2',
       () async {
         var object = EnumDefaultModel();
         var databaseObject = await EnumDefaultModel.db.insertRow(
@@ -75,7 +79,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "byNameEnumDefaultModel" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "byNameEnumDefaultModel" field value should match the provided value',
       () async {
         var specificObject = EnumDefaultModel(
           byNameEnumDefaultModel: ByNameEnum.byName2,
@@ -92,7 +97,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "byNameEnumDefaultModelNull" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "byNameEnumDefaultModelNull" field value should match the provided value',
       () async {
         var specificObject = EnumDefaultModel(
           byNameEnumDefaultModelNull: ByNameEnum.byName1,
@@ -109,7 +115,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "byIndexEnumDefaultModel" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "byIndexEnumDefaultModel" field value should match the provided value',
       () async {
         var specificObject = EnumDefaultModel(
           byIndexEnumDefaultModel: ByIndexEnum.byIndex2,
@@ -126,7 +133,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "byIndexEnumDefaultModelNull" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "byIndexEnumDefaultModelNull" field value should match the provided value',
       () async {
         var specificObject = EnumDefaultModel(
           byIndexEnumDefaultModelNull: ByIndexEnum.byIndex1,

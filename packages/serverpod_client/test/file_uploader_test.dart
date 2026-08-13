@@ -5,8 +5,8 @@ import 'package:test/test.dart';
 
 void main() {
   test(
-    'Given a multipart upload description '
-    'when constructing FileUploader '
+    'Given a multipart upload description, '
+    'when constructing FileUploader, '
     'then it parses without error',
     () {
       final description = jsonEncode({
@@ -26,8 +26,8 @@ void main() {
   );
 
   test(
-    'Given a binary POST upload description '
-    'when constructing FileUploader '
+    'Given a binary POST upload description, '
+    'when constructing FileUploader, '
     'then it parses without error',
     () {
       final description = jsonEncode({
@@ -40,8 +40,8 @@ void main() {
   );
 
   test(
-    'Given a binary PUT upload description '
-    'when constructing FileUploader '
+    'Given a binary PUT upload description, '
+    'when constructing FileUploader, '
     'then it parses without error',
     () {
       final description = jsonEncode({
@@ -60,8 +60,8 @@ void main() {
   );
 
   test(
-    'Given an invalid description with non-JSON input '
-    'when constructing FileUploader '
+    'Given an invalid description with non-JSON input, '
+    'when constructing FileUploader, '
     'then it throws FormatException',
     () {
       expect(
@@ -72,8 +72,8 @@ void main() {
   );
 
   test(
-    'Given an invalid description with missing type '
-    'when constructing FileUploader '
+    'Given an invalid description with missing type, '
+    'when constructing FileUploader, '
     'then it throws FormatException',
     () {
       final description = jsonEncode({
@@ -88,8 +88,8 @@ void main() {
   );
 
   test(
-    'Given an invalid description with unknown type '
-    'when constructing FileUploader '
+    'Given an invalid description with unknown type, '
+    'when constructing FileUploader, '
     'then it throws FormatException',
     () {
       final description = jsonEncode({

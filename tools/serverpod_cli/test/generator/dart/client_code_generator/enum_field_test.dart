@@ -22,9 +22,9 @@ void main() {
   );
 
   group(
-    'Given enum named Example serialized by index when generating code',
+    'Given enum named Example serialized by index, when generating code,',
     () {
-      var models = [
+      late var models = [
         EnumDefinitionBuilder()
             .withClassName('Example')
             .withFileName('example')
@@ -32,7 +32,7 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
@@ -74,9 +74,9 @@ void main() {
   );
 
   group(
-    'Given an enum named Example serialized by name when generating code',
+    'Given an enum named Example serialized by name, when generating code,',
     () {
-      var models = [
+      late var models = [
         EnumDefinitionBuilder()
             .withClassName('Example')
             .withFileName('example')
@@ -84,7 +84,7 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
@@ -108,8 +108,8 @@ void main() {
     },
   );
 
-  group('Given an enum with a value named "name" when generating code', () {
-    var models = [
+  group('Given an enum with a value named "name", when generating code,', () {
+    late var models = [
       EnumDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
@@ -120,7 +120,7 @@ void main() {
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
@@ -140,19 +140,19 @@ void main() {
     });
   });
 
-  group('Given enum with documentation when generating code', () {
+  group('Given enum with documentation, when generating code,', () {
     var documentation = [
       '// This is an example documentation',
       '// This is another example',
     ];
-    var models = [
+    late var models = [
       EnumDefinitionBuilder()
           .withFileName('example')
           .withDocumentation(documentation)
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
@@ -165,9 +165,9 @@ void main() {
   });
 
   group(
-    'Given enum with two values with documentation when generating code',
+    'Given enum with two values with documentation, when generating code,',
     () {
-      var models = [
+      late var models = [
         EnumDefinitionBuilder()
             .withClassName('Example')
             .withFileName('example')
@@ -182,7 +182,7 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );

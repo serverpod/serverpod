@@ -10,7 +10,9 @@ void main() {
   initTestClientSession();
 
   test(
-    'Given a list of entries when finding the first row by ordering and offsetting the query then the correct row is returned.',
+    'Given a list of entries, '
+    'when finding the first row by ordering and offsetting the query, '
+    'then the correct row is returned.',
     () async {
       var data = <UniqueData>[
         UniqueData(number: 1, email: 'info@serverpod.dev'),
@@ -30,9 +32,9 @@ void main() {
     },
   );
 
-  group('Given an empty database', () {
+  group('Given an empty database,', () {
     test(
-      'when trying to find an object by id then null is returned.',
+      'when trying to find an object by id, then null is returned.',
       () async {
         var retrieved = await SimpleData.db.findById(
           session,
@@ -43,7 +45,7 @@ void main() {
       },
     );
 
-    test('when trying to find a row then null is returned.', () async {
+    test('when trying to find a row, then null is returned.', () async {
       var retrieved = await SimpleData.db.findFirstRow(
         session,
         where: (t) => t.num.equals(1),
@@ -52,7 +54,7 @@ void main() {
       expect(retrieved, isNull);
     });
 
-    test('when trying to find all then an empty list is returned.', () async {
+    test('when trying to find all, then an empty list is returned.', () async {
       var retrieved = await SimpleData.db.find(
         session,
         orderBy: (t) => t.id,
@@ -65,7 +67,9 @@ void main() {
   });
 
   test(
-    'Given an object that is inserted when retrieving it by id then the same object is returned.',
+    'Given an object that is inserted, '
+    'when retrieving it by id, '
+    'then the same object is returned.',
     () async {
       var simpleData = SimpleData(num: 1);
       var inserted = await SimpleData.db.insertRow(
@@ -85,7 +89,9 @@ void main() {
   );
 
   test(
-    'Given two inserted objects when finding by row then the filtered row is returned',
+    'Given two inserted objects, '
+    'when finding by row, '
+    'then the filtered row is returned',
     () async {
       var simpleData1 = SimpleData(num: 1);
       var simpleData2 = SimpleData(num: 2);
@@ -103,7 +109,9 @@ void main() {
   );
 
   test(
-    'Given two inserted objects when retrieving all then a list with the two objects is returned.',
+    'Given two inserted objects, '
+    'when retrieving all, '
+    'then a list with the two objects is returned.',
     () async {
       var simpleData1 = SimpleData(num: 1);
       var simpleData2 = SimpleData(num: 2);
@@ -124,7 +132,9 @@ void main() {
   );
 
   test(
-    'Given an inserted empty model when retrieving it then the model is returned.',
+    'Given an inserted empty model, '
+    'when retrieving it, '
+    'then the model is returned.',
     () async {
       var emptyModel = EmptyModelWithTable();
       var inserted = await EmptyModelWithTable.db.insertRow(
@@ -143,7 +153,9 @@ void main() {
   );
 
   test(
-    'Given an object with a `bool` field, when it\'s stored in the database, then it can be read out again',
+    'Given an object with a `bool` field, '
+    'when it\'s stored in the database, '
+    'then it can be read out again',
     () async {
       var object = Types(aBool: true);
       var inserted = await Types.db.insertRow(
@@ -161,7 +173,9 @@ void main() {
   );
 
   test(
-    'Given an object with an `int` field, when it\'s stored in the database, then it can be read out again',
+    'Given an object with an `int` field, '
+    'when it\'s stored in the database, '
+    'then it can be read out again',
     () async {
       var object = Types(
         anInt: 99,
@@ -181,7 +195,9 @@ void main() {
   );
 
   test(
-    'Given an object with a `double` field, when it\'s stored in the database, then it can be read out again',
+    'Given an object with a `double` field, '
+    'when it\'s stored in the database, '
+    'then it can be read out again',
     () async {
       var object = Types(
         aDouble: 1.23,
@@ -201,7 +217,9 @@ void main() {
   );
 
   test(
-    'Given an object with a `DateTime` field, when it\'s stored in the database, then it can be read out again',
+    'Given an object with a `DateTime` field, '
+    'when it\'s stored in the database, '
+    'then it can be read out again',
     () async {
       var object = Types(
         aDateTime: DateTime.utc(2024, 12, 24, 23, 30),
@@ -221,7 +239,9 @@ void main() {
   );
 
   test(
-    'Given an object with a `String` field, when it\'s stored in the database, then it can be read out again',
+    'Given an object with a `String` field, '
+    'when it\'s stored in the database, '
+    'then it can be read out again',
     () async {
       var object = Types(aString: 'Lorem ipsum');
       var inserted = await Types.db.insertRow(
@@ -239,7 +259,9 @@ void main() {
   );
 
   test(
-    'Given an object with a `ByteData` field, when it\'s stored in the database, then it can be read out again',
+    'Given an object with a `ByteData` field, '
+    'when it\'s stored in the database, '
+    'then it can be read out again',
     () async {
       var object = Types(
         aByteData: ByteData.view(Uint8List.fromList([1, 2, 3]).buffer),
@@ -267,7 +289,9 @@ void main() {
   );
 
   test(
-    'Given an object with a `Duration` field, when it\'s stored in the database, then it can be read out again',
+    'Given an object with a `Duration` field, '
+    'when it\'s stored in the database, '
+    'then it can be read out again',
     () async {
       var object = Types(
         aDuration: Duration(hours: 1, minutes: 2, seconds: 3),
@@ -287,7 +311,9 @@ void main() {
   );
 
   test(
-    'Given an object with a `UUID` field, when it\'s stored in the database, then it can be read out again',
+    'Given an object with a `UUID` field, '
+    'when it\'s stored in the database, '
+    'then it can be read out again',
     () async {
       var object = Types(
         aUuid: UuidValue.fromString('b1e66000-1cc3-4ead-a4ab-a548e2047d3a'),
@@ -310,7 +336,9 @@ void main() {
   );
 
   test(
-    'Given an object with a `Uri` field, when it\'s stored in the database, then it can be read out again',
+    'Given an object with a `Uri` field, '
+    'when it\'s stored in the database, '
+    'then it can be read out again',
     () async {
       var uri = Uri.parse('https://serverpod.dev');
 
@@ -335,7 +363,9 @@ void main() {
   );
 
   test(
-    'Given an object with a `BigInt` field, when it\'s stored in the database, then it can be read out again',
+    'Given an object with a `BigInt` field, '
+    'when it\'s stored in the database, '
+    'then it can be read out again',
     () async {
       var object = Types(
         aBigInt: BigInt.two,
@@ -358,7 +388,9 @@ void main() {
   );
 
   test(
-    'Given an object with a Record field, when it\'s stored in the database, then it can be read out again',
+    'Given an object with a Record field, '
+    'when it\'s stored in the database, '
+    'then it can be read out again',
     () async {
       var object = Types(
         aRecord: ('hello', optionalUri: Uri.parse('https://serverpod.dev')),
@@ -381,7 +413,9 @@ void main() {
   );
 
   test(
-    'Given an object with an `enum` field, when it\'s stored in the database, then it can be read out again',
+    'Given an object with an `enum` field, '
+    'when it\'s stored in the database, '
+    'then it can be read out again',
     () async {
       var object = Types(
         anEnum: TestEnum.two,
@@ -404,7 +438,9 @@ void main() {
   );
 
   test(
-    'Given an object with a stringified `enum` field, when it\'s stored in the database, then it can be read out again',
+    'Given an object with a stringified `enum` field, '
+    'when it\'s stored in the database, '
+    'then it can be read out again',
     () async {
       var object = Types(
         aStringifiedEnum: TestEnumStringified.three,
@@ -424,7 +460,7 @@ void main() {
   );
 
   test(
-    'Given model with required field when inserting then it is created',
+    'Given model with required field, when inserting, then it is created',
     () async {
       var model = ModelWithRequiredField(name: 'John', email: null);
       var inserted = await ModelWithRequiredField.db.insertRow(session, model);

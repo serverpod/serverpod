@@ -83,7 +83,8 @@ Future<int> deleteAll(Session session) async {
 
 void main() async {
   var session = await IntegrationTestServer().session();
-  group('Given models with relation when counting on relation attributes', () {
+  group('Given models with relation, '
+        'when counting on relation attributes,', () {
     setUp(() async => await _createTestDatabase(session));
 
     tearDown(() async => await deleteAll(session));
@@ -99,7 +100,8 @@ void main() async {
   });
 
   group(
-    'Given models with nested relation when counting on nested relation attributes',
+    'Given models with nested relation, '
+    'when counting on nested relation attributes,',
     () {
       setUp(() async => await _createTestDatabase(session));
 

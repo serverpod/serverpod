@@ -11,11 +11,12 @@ import 'package:uuid/uuid.dart';
 
 void main() async {
   group(
-    'Given a serverpod project when generate is called with --no-interactive flag',
+    'Given a serverpod project, '
+    'when generate is called with --no-interactive flag,',
     () {
-      var projectName =
+      late var projectName =
           'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
-      var serverDir = path.join(projectName, '${projectName}_server');
+      late var serverDir = path.join(projectName, '${projectName}_server');
 
       setUp(() async {
         var result = await runServerpod(
@@ -108,7 +109,7 @@ void main() async {
     },
   );
 
-  group('Given multiple server directories when generate is called', () {
+  group('Given multiple server directories, when generate is called,', () {
     late String projectRoot;
     late Directory server1;
     late Directory server2;

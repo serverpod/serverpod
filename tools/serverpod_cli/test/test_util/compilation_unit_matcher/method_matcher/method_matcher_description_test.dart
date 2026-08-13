@@ -4,7 +4,9 @@ import '../../compilation_unit_matcher.dart';
 
 void main() {
   test(
-    'Given method matcher when describing matcher then description is correct',
+    'Given method matcher, '
+    'when describing matcher, '
+    'then description is correct',
     () {
       final matcher = containsClass('User').withMethod('methodName') as Matcher;
       final description = StringDescription();
@@ -20,7 +22,9 @@ void main() {
   );
 
   test(
-    'Given override method matcher when describing matcher then description is correct',
+    'Given override method matcher, '
+    'when describing matcher, '
+    'then description is correct',
     () {
       final matcher =
           containsClass('User').withMethod('methodName', isOverride: true)
@@ -36,7 +40,9 @@ void main() {
   );
 
   test(
-    'Given non-override method matcher when describing matcher then description is correct',
+    'Given non-override method matcher, '
+    'when describing matcher, '
+    'then description is correct',
     () {
       final matcher =
           containsClass('User').withMethod('methodName', isOverride: false)
@@ -52,7 +58,9 @@ void main() {
   );
 
   test(
-    'Given String return method matcher when describing matcher then description is correct',
+    'Given String return method matcher, '
+    'when describing matcher, '
+    'then description is correct',
     () {
       final matcher =
           containsClass('User').withMethod('methodName', returnType: 'String')
@@ -68,7 +76,9 @@ void main() {
   );
 
   test(
-    'Given String return override method matcher when describing matcher then description is correct',
+    'Given String return override method matcher, '
+    'when describing matcher, '
+    'then description is correct',
     () {
       final matcher =
           containsClass(

@@ -16,7 +16,8 @@ const generator = DartServerCodeGenerator();
 
 void main() {
   group(
-    'Given a class with serverOnly scoped fields having defaultModelValue when generating server code',
+    'Given a class with serverOnly scoped fields having defaultModelValue, '
+    'when generating server code,',
     () {
       ClassDeclaration? baseClass;
       ConstructorDeclaration? privateConstructor;

@@ -79,7 +79,8 @@ void main() {
       });
 
       test(
-        'when calling `EmailAccounts.authenticate`, then it fails due to no password being set.',
+        'when calling `EmailAccounts.authenticate`, '
+        'then it fails due to no password being set.',
         () async {
           await expectLater(
             newEmailIdp.utils.authentication.authenticate(
@@ -98,7 +99,8 @@ void main() {
       );
 
       test(
-        'when calling `EmailAccounts.authenticate` after `AuthBackwardsCompatibility.importLegacyPasswordIfNeeded`, then it succeeds.',
+        'when calling `EmailAccounts.authenticate` after `AuthBackwardsCompatibility.importLegacyPasswordIfNeeded`, '
+        'then it succeeds.',
         () async {
           await AuthBackwardsCompatibility.importLegacyPasswordIfNeeded(
             session,

@@ -7,10 +7,10 @@ import '../../serverpod_test_tools.dart';
 
 void main() {
   group(
-    'Given ServerSideSessions with default session lifetime configured',
+    'Given ServerSideSessions with default session lifetime configured,',
     () {
       const defaultSessionLifetime = Duration(days: 7);
-      final serverSideSessions = ServerSideSessions(
+      late final serverSideSessions = ServerSideSessions(
         config: ServerSideSessionsConfig(
           sessionKeyHashPepper: 'test-pepper',
           defaultSessionLifetime: defaultSessionLifetime,
@@ -18,7 +18,7 @@ void main() {
       );
 
       withServerpod(
-        'when creating a session without explicit expiresAt',
+        'when creating a session without explicit expiresAt,',
         (final sessionBuilder, final endpoints) {
           late Session session;
           late UuidValue authUserId;
@@ -102,7 +102,7 @@ void main() {
       );
 
       withServerpod(
-        'when creating a session with explicit expiresAt',
+        'when creating a session with explicit expiresAt,',
         (final sessionBuilder, final endpoints) {
           late Session session;
           late UuidValue authUserId;
@@ -169,9 +169,9 @@ void main() {
   );
 
   group(
-    'Given ServerSideSessions with default session inactivity timeout configured',
+    'Given ServerSideSessions with default session inactivity timeout configured,',
     () {
-      final serverSideSessions = ServerSideSessions(
+      late final serverSideSessions = ServerSideSessions(
         config: ServerSideSessionsConfig(
           sessionKeyHashPepper: 'test-pepper',
           defaultSessionInactivityTimeout: const Duration(hours: 2),
@@ -179,7 +179,7 @@ void main() {
       );
 
       withServerpod(
-        'when creating a session without explicit expireAfterUnusedFor',
+        'when creating a session without explicit expireAfterUnusedFor,',
         (final sessionBuilder, final endpoints) {
           late Session session;
           late UuidValue authUserId;
@@ -248,7 +248,7 @@ void main() {
       );
 
       withServerpod(
-        'when creating a session with explicit expireAfterUnusedFor',
+        'when creating a session with explicit expireAfterUnusedFor,',
         (final sessionBuilder, final endpoints) {
           late Session session;
           late UuidValue authUserId;
@@ -294,7 +294,7 @@ void main() {
   );
 
   withServerpod(
-    'Given ServerSideSessions with onSessionCreated callback',
+    'Given ServerSideSessions with onSessionCreated callback,',
     (final sessionBuilder, final endpoints) {
       late Session session;
       late UuidValue authUserId;
@@ -308,7 +308,8 @@ void main() {
       });
 
       test(
-        'when createSession is called, then onSessionCreated is invoked with session, serverSideSessionId and transaction.',
+        'when createSession is called, '
+        'then onSessionCreated is invoked with session, serverSideSessionId and transaction.',
         () async {
           Session? capturedSession;
           UuidValue? capturedAuthUserId;
@@ -361,15 +362,15 @@ void main() {
     },
   );
 
-  group('Given ServerSideSessions with no session configuration defaults', () {
-    final serverSideSessions = ServerSideSessions(
+  group('Given ServerSideSessions with no session configuration defaults,', () {
+    late final serverSideSessions = ServerSideSessions(
       config: ServerSideSessionsConfig(
         sessionKeyHashPepper: 'test-pepper',
       ),
     );
 
     withServerpod(
-      'when creating a session',
+      'when creating a session,',
       (final sessionBuilder, final endpoints) {
         late Session session;
         late UuidValue authUserId;

@@ -2,7 +2,7 @@ import 'package:serverpod_cli/src/migrations/cli_migration_runner.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given runModeFromServerArgs', () {
+  group('Given runModeFromServerArgs,', () {
     test(
       'when args are empty, '
       'then it returns development',

@@ -33,7 +33,7 @@ void main() {
     await directory.delete(recursive: true);
   });
 
-  group('Given a web server with a static directory', () {
+  group('Given a web server with a static directory,', () {
     late Serverpod pod;
 
     setUp(() async {
@@ -44,7 +44,7 @@ void main() {
       await pod.shutdown(exitProcess: false);
     });
 
-    group('and a path cache pattern having a max age of 1 second', () {
+    group('and a path cache pattern having a max age of 1 second,', () {
       setUp(() async {
         pod.webServer.addRoute(
           StaticRoute.directory(
@@ -61,8 +61,8 @@ void main() {
         await pod.startWithDatabase();
       });
 
-      test('when requesting a static file with the same path pattern '
-          'then the cache-control header is set to max-age=1', () async {
+      test('when requesting a static file with the same path pattern, '
+           'then the cache-control header is set to max-age=1', () async {
         var response = await client.get(
           Uri.parse(
             '${pod.webUrl}url_prefix/file1.txt',
@@ -72,8 +72,8 @@ void main() {
         expect(response.headers['cache-control'], 'max-age=1');
       });
 
-      test('when requesting a static file with a different path pattern '
-          'then the cache-control header is set to default max age', () async {
+      test('when requesting a static file with a different path pattern, '
+           'then the cache-control header is set to default max age', () async {
         var response = await client.get(
           Uri.parse(
             '${pod.webUrl}url_prefix/file2.test',
@@ -84,7 +84,7 @@ void main() {
       });
     });
 
-    group('and a path cache string having a max age of 1 second', () {
+    group('and a path cache string having a max age of 1 second,', () {
       setUp(() async {
         pod.webServer.addRoute(
           StaticRoute.directory(
@@ -101,8 +101,8 @@ void main() {
         await pod.startWithDatabase();
       });
 
-      test('when requesting a static file with the same path string '
-          'then the cache-control header is set to max-age=1', () async {
+      test('when requesting a static file with the same path string, '
+           'then the cache-control header is set to max-age=1', () async {
         var response = await client.get(
           Uri.parse(
             '${pod.webUrl}url_prefix/file1.txt',
@@ -112,8 +112,8 @@ void main() {
         expect(response.headers['cache-control'], 'max-age=1');
       });
 
-      test('when requesting a static file with a different path string '
-          'then the cache-control header is set to default max age', () async {
+      test('when requesting a static file with a different path string, '
+           'then the cache-control header is set to default max age', () async {
         var response = await client.get(
           Uri.parse(
             '${pod.webUrl}url_prefix/file2.test',
@@ -124,7 +124,7 @@ void main() {
       });
     });
 
-    group('and cache busting config with ___ separator', () {
+    group('and cache busting config with ___ separator,', () {
       late String file1AssetPath;
 
       setUp(() async {
@@ -151,8 +151,8 @@ void main() {
         expect(file1AssetPath, contains('___'));
       });
 
-      test('when requesting a static file with '
-          'then the file is served correctly', () async {
+      test('when requesting a static file with, '
+           'then the file is served correctly', () async {
         var response = await client.get(
           Uri.parse(
             '${pod.webUrl}$file1AssetPath',
@@ -164,7 +164,7 @@ void main() {
       });
     });
 
-    group('when a nested static file is requested', () {
+    group('when a nested static file is requested,', () {
       setUp(() async {
         pod.webServer.addRoute(
           StaticRoute.directory(directory),
@@ -195,7 +195,7 @@ void main() {
         await pod.startWithDatabase();
       });
 
-      group('and an If-None-Match header', () {
+      group('and an If-None-Match header,', () {
         test('then ETag header is returned with initial request', () async {
           var response = await client.get(
             Uri.parse(
@@ -236,7 +236,7 @@ void main() {
         );
       });
 
-      group('and an If-Modified-Since header', () {
+      group('and an If-Modified-Since header,', () {
         test(
           'then Last-Modified header is returned with initial request',
           () async {
@@ -286,7 +286,7 @@ void main() {
         );
       });
 
-      group('and a Range header for partial content', () {
+      group('and a Range header for partial content,', () {
         test('then byte range requests are supported', () async {
           var response = await client.get(
             Uri.parse(
@@ -331,7 +331,7 @@ void main() {
         });
       });
 
-      group('and Content-Type header validation', () {
+      group('and Content-Type header validation,', () {
         test('then correct content-type is set for text files', () async {
           var response = await client.get(
             Uri.parse(
@@ -344,7 +344,7 @@ void main() {
         });
       });
 
-      group('and HEAD method is used', () {
+      group('and HEAD method is used,', () {
         test(
           'then HEAD requests are supported with same headers as GET',
           () async {

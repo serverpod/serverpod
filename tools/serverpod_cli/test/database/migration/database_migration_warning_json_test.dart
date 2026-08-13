@@ -14,7 +14,8 @@ void main() {
     };
 
     test(
-      'when parsing JSON with "destrucive" key then "destructive" field is set correctly.',
+      'when parsing JSON with "destrucive" key, '
+      'then "destructive" field is set correctly.',
       () {
         final warning = DatabaseMigrationWarning.fromJson(json);
 
@@ -26,7 +27,8 @@ void main() {
     );
 
     test(
-      'when serializing to JSON then uses "destrucive" key for backwards compatibility.',
+      'when serializing to JSON, '
+      'then uses "destrucive" key for backwards compatibility.',
       () {
         final warning = DatabaseMigrationWarning(
           type: DatabaseMigrationWarningType.columnDropped,

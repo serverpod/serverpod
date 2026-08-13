@@ -9,8 +9,8 @@ import '../../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
-  group('Given a class with mixed required nullable fields', () {
-    var models = [
+  group('Given a class with mixed required nullable fields,', () {
+    late var models = [
       ModelSourceBuilder().withYaml(
         '''
           class: Example
@@ -21,8 +21,8 @@ void main() {
           ''',
       ).build(),
     ];
-    var collector = CodeGenerationCollector();
-    var definitions = StatefulAnalyzer(
+    late var collector = CodeGenerationCollector();
+    late var definitions = StatefulAnalyzer(
       config,
       models,
       onErrorsCollector(collector),
@@ -60,8 +60,8 @@ void main() {
     });
   });
 
-  group('Given a class with required on non-nullable field', () {
-    var models = [
+  group('Given a class with required on non-nullable field,', () {
+    late var models = [
       ModelSourceBuilder().withYaml(
         '''
           class: Example
@@ -70,7 +70,7 @@ void main() {
           ''',
       ).build(),
     ];
-    var collector = CodeGenerationCollector();
+    late var collector = CodeGenerationCollector();
     StatefulAnalyzer(
       config,
       models,
@@ -93,8 +93,8 @@ void main() {
     });
   });
 
-  group('Given an exception with mixed required nullable fields', () {
-    var models = [
+  group('Given an exception with mixed required nullable fields,', () {
+    late var models = [
       ModelSourceBuilder().withYaml(
         '''
           exception: Example
@@ -105,8 +105,8 @@ void main() {
           ''',
       ).build(),
     ];
-    var collector = CodeGenerationCollector();
-    var definitions = StatefulAnalyzer(
+    late var collector = CodeGenerationCollector();
+    late var definitions = StatefulAnalyzer(
       config,
       models,
       onErrorsCollector(collector),
@@ -144,8 +144,8 @@ void main() {
     });
   });
 
-  group('Given a exception with required on non-nullable field', () {
-    var models = [
+  group('Given a exception with required on non-nullable field,', () {
+    late var models = [
       ModelSourceBuilder().withYaml(
         '''
           exception: Example
@@ -154,7 +154,7 @@ void main() {
           ''',
       ).build(),
     ];
-    var collector = CodeGenerationCollector();
+    late var collector = CodeGenerationCollector();
     StatefulAnalyzer(
       config,
       models,

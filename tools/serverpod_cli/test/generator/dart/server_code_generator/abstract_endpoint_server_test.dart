@@ -21,13 +21,14 @@ void main() {
   );
 
   group(
-    'Given protocol definition with an abstract endpoint when generating server files',
+    'Given protocol definition with an abstract endpoint, '
+    'when generating server files,',
     () {
       var abstractEndpointName = 'abstractTest';
       var methodName = 'testMethod';
 
       // Create abstract endpoint
-      var abstractEndpoint = EndpointDefinitionBuilder()
+      late var abstractEndpoint = EndpointDefinitionBuilder()
           .withClassName('${abstractEndpointName.pascalCase}Endpoint')
           .withName(abstractEndpointName)
           .withIsAbstract()
@@ -38,7 +39,7 @@ void main() {
           ])
           .build();
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [abstractEndpoint],
         models: [],
         futureCalls: [],
@@ -74,14 +75,15 @@ void main() {
   );
 
   group(
-    'Given protocol definition with a concrete endpoint that extends an abstract base endpoint when generating server files',
+    'Given protocol definition with a concrete endpoint that extends an abstract base endpoint, '
+    'when generating server files,',
     () {
       var abstractEndpointName = 'abstractTest';
       var concreteEndpointName = 'concreteTest';
       var methodName = 'testMethod';
 
       // Create abstract endpoint
-      var abstractEndpoint = EndpointDefinitionBuilder()
+      late var abstractEndpoint = EndpointDefinitionBuilder()
           .withClassName('${abstractEndpointName.pascalCase}Endpoint')
           .withName(abstractEndpointName)
           .withIsAbstract()
@@ -93,7 +95,7 @@ void main() {
           .build();
 
       // Create concrete endpoint
-      var concreteEndpoint = EndpointDefinitionBuilder()
+      late var concreteEndpoint = EndpointDefinitionBuilder()
           .withClassName('${concreteEndpointName.pascalCase}Endpoint')
           .withName(concreteEndpointName)
           .withExtends(abstractEndpoint)
@@ -104,7 +106,7 @@ void main() {
           ])
           .build();
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [abstractEndpoint, concreteEndpoint],
         models: [],
         futureCalls: [],
@@ -144,14 +146,15 @@ void main() {
   );
 
   group(
-    'Given protocol definition with abstract > concrete > abstract subclass > concrete subclass endpoint hierarchy when generating server files',
+    'Given protocol definition with abstract > concrete > abstract subclass > concrete subclass endpoint hierarchy, '
+    'when generating server files,',
     () {
       var abstractBaseEndpointName = 'baseAbstract';
       var concreteBaseEndpointName = 'base';
       var abstractSubClassEndpointName = 'abstractSubClass';
       var concreteSubclassEndpointName = 'subclass';
 
-      var abstractBaseEndpoint = EndpointDefinitionBuilder()
+      late var abstractBaseEndpoint = EndpointDefinitionBuilder()
           .withClassName('BaseAbstractEndpoint')
           .withName(abstractBaseEndpointName)
           .withIsAbstract()
@@ -162,7 +165,7 @@ void main() {
           ])
           .build();
 
-      var concreteBaseEndpoint = EndpointDefinitionBuilder()
+      late var concreteBaseEndpoint = EndpointDefinitionBuilder()
           .withClassName('BaseEndpoint')
           .withName(concreteBaseEndpointName)
           .withExtends(abstractBaseEndpoint)
@@ -173,7 +176,7 @@ void main() {
           ])
           .build();
 
-      var abstractSubClassEndpoint = EndpointDefinitionBuilder()
+      late var abstractSubClassEndpoint = EndpointDefinitionBuilder()
           .withClassName('AbstractSubClassEndpoint')
           .withName(abstractSubClassEndpointName)
           .withIsAbstract()
@@ -185,7 +188,7 @@ void main() {
           ])
           .build();
 
-      var concreteSubclassEndpoint = EndpointDefinitionBuilder()
+      late var concreteSubclassEndpoint = EndpointDefinitionBuilder()
           .withClassName('SubclassEndpoint')
           .withName(concreteSubclassEndpointName)
           .withExtends(abstractSubClassEndpoint)
@@ -196,7 +199,7 @@ void main() {
           ])
           .build();
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [
           abstractBaseEndpoint,
           concreteBaseEndpoint,

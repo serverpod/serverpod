@@ -15,7 +15,8 @@ const generator = DartServerCodeGenerator();
 
 void main() {
   group(
-    'Given a class named BoolDefault with bool fields having defaultModelValue when generating code',
+    'Given a class named BoolDefault with bool fields having defaultModelValue, '
+    'when generating code,',
     () {
       ClassDeclaration? baseClass;
       ConstructorDeclaration? privateConstructor;
@@ -135,7 +136,8 @@ void main() {
   );
 
   group(
-    'Given a class named BoolDefaultPersist with bool fields having defaultPersistValue when generating code',
+    'Given a class named BoolDefaultPersist with bool fields having defaultPersistValue, '
+    'when generating code,',
     () {
       ClassDeclaration? baseClass;
       ConstructorDeclaration? privateConstructor;

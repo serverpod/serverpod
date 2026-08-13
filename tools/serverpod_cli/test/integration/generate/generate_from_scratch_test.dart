@@ -24,7 +24,7 @@ Future<(Directory, Directory)> _buildProject() async {
 
 void main() {
   group(
-    'Given a spy model and a future call referencing it with no generated files',
+    'Given a spy model and a future call referencing it with no generated files,',
     () {
       late Directory projectDir;
       late Directory generatedDir;
@@ -79,7 +79,7 @@ class MyFutureCall extends FutureCall {
       });
 
       group(
-        'when generating',
+        'when generating,',
         () {
           late GenerateResult result;
 
@@ -116,7 +116,7 @@ class MyFutureCall extends FutureCall {
   );
 
   group(
-    'Given a future call and an endpoint importing the generated future calls file with no generated files',
+    'Given a future call and an endpoint importing the generated future calls file with no generated files,',
     () {
       late Directory projectDir;
       late Directory generatedDir;
@@ -194,7 +194,7 @@ class GreetingEndpoint extends Endpoint {
         analyzers = await Analyzers.create(config);
       });
 
-      group('when generating', () {
+      group('when generating,', () {
         late GenerateResult result;
 
         tearDown(() => generatedDir.deleteBestEffort(recursive: true));
@@ -594,7 +594,8 @@ values:
   );
 
   group(
-    'Given a model that is removed from disk when analyzers are updated incrementally',
+    'Given a model that is removed from disk, '
+    'when analyzers are updated incrementally,',
     () {
       late Directory projectDir;
       late GeneratorConfig config;
@@ -631,7 +632,7 @@ fields:
       });
 
       test(
-        'when the model is deleted '
+        'when the model is deleted, '
         'then it is no longer included in generated files',
         () async {
           File(modelPath).deleteSync();

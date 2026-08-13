@@ -15,7 +15,7 @@ void main() {
     await closeLogger();
   });
 
-  group('Given a KernelCompiler with a valid Dart project', () {
+  group('Given a KernelCompiler with a valid Dart project,', () {
     late Directory tempDir;
     late KernelCompiler compiler;
 
@@ -153,7 +153,7 @@ void main() {
     );
   });
 
-  group('Given a KernelCompiler with a file containing errors', () {
+  group('Given a KernelCompiler with a file containing errors,', () {
     late Directory tempDir;
     late KernelCompiler compiler;
 
@@ -205,7 +205,7 @@ void main() {
     );
   });
 
-  group('Given a dependency added to package_config.json', () {
+  group('Given a dependency added to package_config.json,', () {
     late Directory tempDir;
     late KernelCompiler compiler;
     late String mainFile;

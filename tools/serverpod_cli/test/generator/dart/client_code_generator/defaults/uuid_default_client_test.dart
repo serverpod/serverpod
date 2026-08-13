@@ -15,7 +15,8 @@ const generator = DartClientCodeGenerator();
 
 void main() {
   group(
-    'Given a class named UuidDefault with Uuid fields having defaultModelValue when generating code',
+    'Given a class named UuidDefault with Uuid fields having defaultModelValue, '
+    'when generating code,',
     () {
       ClassDeclaration? baseClass;
       ConstructorDeclaration? privateConstructor;
@@ -158,7 +159,8 @@ void main() {
   );
 
   group(
-    'Given a class named UuidDefaultPersist with Uuid fields having defaultPersistValue when generating code',
+    'Given a class named UuidDefaultPersist with Uuid fields having defaultPersistValue, '
+    'when generating code,',
     () {
       ClassDeclaration? baseClass;
       ConstructorDeclaration? privateConstructor;

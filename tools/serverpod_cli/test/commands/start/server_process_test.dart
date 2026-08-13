@@ -54,7 +54,7 @@ void main() {
     await closeLogger();
   });
 
-  group('Given a ServerProcess with a simple exit command', () {
+  group('Given a ServerProcess with a simple exit command,', () {
     late Directory tempDir;
     late ServerProcess serverProcess;
 
@@ -91,7 +91,7 @@ void main() {
     );
   });
 
-  group('Given a ServerProcess with a long-running command', () {
+  group('Given a ServerProcess with a long-running command,', () {
     late Directory tempDir;
     late ServerProcess serverProcess;
 
@@ -143,7 +143,7 @@ void main() {
     );
   });
 
-  group('Given a ServerProcess with VM service enabled', () {
+  group('Given a ServerProcess with VM service enabled,', () {
     late Directory tempDir;
     late String dillPath;
     late String vmServiceInfoFile;
@@ -239,7 +239,7 @@ void main() {
   });
 
   group(
-    'Given a ServerProcess with VM service enabled and a dill path containing spaces',
+    'Given a ServerProcess with VM service enabled and a dill path containing spaces,',
     () {
       late Directory tempDir;
       late String dillPath;

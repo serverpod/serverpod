@@ -7,11 +7,11 @@ import '../../test_tools/serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given a write transaction and a read operation made concurrently without a transaction from the same zone',
+    'Given a write transaction and a read operation made concurrently without a transaction from the same zone,',
     // Rollbacks must be disabled or SQLite will have the test transaction.
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late var session = sessionBuilder.build();
 
       late Future<void> writeTransaction;
       late Completer<void> finishedWriting;
@@ -62,7 +62,7 @@ void main() {
       });
 
       test(
-        'when awaiting the operation then the it succeeds.',
+        'when awaiting the operation, then the it succeeds.',
         () async {
           finishTransaction.complete();
           await expectLater(writeTransaction, completes);
@@ -70,7 +70,8 @@ void main() {
       );
 
       test(
-        'when performing another read operation concurrently then both succeed.',
+        'when performing another read operation concurrently, '
+        'then both succeed.',
         () async {
           // This operation succeeds regardless of the transaction.
           final simpleDatas = await SimpleData.db.find(session);

@@ -7,7 +7,7 @@ import 'fakes/fakes.dart';
 
 void main() {
   withServerpod(
-    'Given a MultiTokenManager with multiple fake managers',
+    'Given a MultiTokenManager with multiple fake managers,',
     (final sessionBuilder, final endpoints) {
       late Session session;
       late FakeTokenStorage defaultStorage;
@@ -41,7 +41,7 @@ void main() {
         );
       });
 
-      group('when issuing a token', () {
+      group('when issuing a token,', () {
         late AuthSuccess authSuccess;
 
         setUp(() async {
@@ -85,7 +85,7 @@ void main() {
         });
       });
 
-      group('when issuing multiple tokens', () {
+      group('when issuing multiple tokens,', () {
         late AuthSuccess firstToken;
         late AuthSuccess secondToken;
 
@@ -125,7 +125,7 @@ void main() {
   );
 
   withServerpod(
-    'Given tokens in multiple managers',
+    'Given tokens in multiple managers,',
     (final sessionBuilder, final endpoints) {
       late Session session;
       late FakeTokenStorage defaultStorage;
@@ -212,7 +212,7 @@ void main() {
         );
       });
 
-      group('when listing all tokens', () {
+      group('when listing all tokens,', () {
         late List<TokenInfo> tokens;
 
         setUp(() async {
@@ -236,7 +236,7 @@ void main() {
         });
       });
 
-      group('when listing tokens by user', () {
+      group('when listing tokens by user,', () {
         late List<TokenInfo> user1Tokens;
         late List<TokenInfo> user2Tokens;
 
@@ -274,7 +274,7 @@ void main() {
         });
       });
 
-      group('when listing tokens by method', () {
+      group('when listing tokens by method,', () {
         late List<TokenInfo> emailTokens;
 
         setUp(() async {
@@ -299,7 +299,7 @@ void main() {
         });
       });
 
-      group('when listing tokens with combined filters', () {
+      group('when listing tokens with combined filters,', () {
         late List<TokenInfo> tokens;
 
         setUp(() async {
@@ -320,7 +320,7 @@ void main() {
         });
       });
 
-      group('when revoking a specific token', () {
+      group('when revoking a specific token,', () {
         setUp(() async {
           await multiTokenManager.revokeToken(
             session,
@@ -345,7 +345,7 @@ void main() {
       });
 
       test(
-        'when revoking a non-existent token then no error should be thrown',
+        'when revoking a non-existent token, then no error should be thrown',
         () async {
           expect(
             () => multiTokenManager.revokeToken(
@@ -357,7 +357,7 @@ void main() {
         },
       );
 
-      group('when revoking all tokens for a user', () {
+      group('when revoking all tokens for a user,', () {
         setUp(() async {
           await multiTokenManager.revokeAllTokens(
             session,
@@ -387,7 +387,7 @@ void main() {
         });
       });
 
-      group('when revoking all tokens by method', () {
+      group('when revoking all tokens by method,', () {
         setUp(() async {
           await multiTokenManager.revokeAllTokens(
             session,
@@ -412,7 +412,7 @@ void main() {
         );
       });
 
-      group('when revoking all tokens with combined filters', () {
+      group('when revoking all tokens with combined filters,', () {
         setUp(() async {
           await multiTokenManager.revokeAllTokens(
             session,
@@ -441,7 +441,7 @@ void main() {
         });
       });
 
-      group('when revoking all tokens without filters', () {
+      group('when revoking all tokens without filters,', () {
         setUp(() async {
           await multiTokenManager.revokeAllTokens(
             session,
@@ -466,7 +466,7 @@ void main() {
         });
       });
 
-      group('when validating a token from the default manager', () {
+      group('when validating a token from the default manager,', () {
         late AuthenticationInfo? authInfo;
 
         setUp(() async {
@@ -493,7 +493,8 @@ void main() {
       });
 
       test(
-        'when validating a token from additional manager 1 then authentication info should be returned',
+        'when validating a token from additional manager 1, '
+        'then authentication info should be returned',
         () async {
           final authInfo = await multiTokenManager.validateToken(
             session,
@@ -510,7 +511,8 @@ void main() {
       );
 
       test(
-        'when validating a token from additional manager 2 then authentication info should be returned',
+        'when validating a token from additional manager 2, '
+        'then authentication info should be returned',
         () async {
           final authInfo = await multiTokenManager.validateToken(
             session,
@@ -527,7 +529,7 @@ void main() {
       );
 
       test(
-        'when validating an invalid token then null should be returned',
+        'when validating an invalid token, then null should be returned',
         () async {
           final authInfo = await multiTokenManager.validateToken(
             session,
@@ -539,7 +541,7 @@ void main() {
       );
 
       test(
-        'when validating an empty token then null should be returned',
+        'when validating an empty token, then null should be returned',
         () async {
           final authInfo = await multiTokenManager.validateToken(session, '');
 
@@ -550,7 +552,7 @@ void main() {
   );
 
   withServerpod(
-    'Given same token is valid in in primary and additional token manager',
+    'Given same token is valid in in primary and additional token manager,',
     (final sessionBuilder, final endpoints) {
       late Session session;
       late MultiTokenManager multiTokenManager;
@@ -585,7 +587,8 @@ void main() {
       });
 
       test(
-        'when validating a token then validation result from primary token manager is returned',
+        'when validating a token, '
+        'then validation result from primary token manager is returned',
         () async {
           final authInfo = await multiTokenManager.validateToken(
             session,
@@ -599,7 +602,7 @@ void main() {
   );
 
   withServerpod(
-    'Given same token is valid in multiple additional token managers',
+    'Given same token is valid in multiple additional token managers,',
     (final sessionBuilder, final endpoints) {
       late Session session;
       late MultiTokenManager multiTokenManager;
@@ -641,7 +644,8 @@ void main() {
       });
 
       test(
-        'when validating a token then validation result from first additional token manager is returned',
+        'when validating a token, '
+        'then validation result from first additional token manager is returned',
         () async {
           final authInfo = await multiTokenManager.validateToken(
             session,
@@ -658,7 +662,7 @@ void main() {
   );
 
   withServerpod(
-    'Given a MultiTokenManager with only a default manager',
+    'Given a MultiTokenManager with only a default manager,',
     (final sessionBuilder, final endpoints) {
       late Session session;
       late FakeTokenStorage storage;
@@ -677,7 +681,7 @@ void main() {
         );
       });
 
-      group('when issuing a token', () {
+      group('when issuing a token,', () {
         late AuthSuccess authSuccess;
 
         setUp(() async {
@@ -707,7 +711,8 @@ void main() {
       });
 
       test(
-        'when listing tokens then all tokens from the default manager should be returned',
+        'when listing tokens, '
+        'then all tokens from the default manager should be returned',
         () async {
           storage.storeToken(
             TokenInfo(
@@ -732,7 +737,7 @@ void main() {
   );
 
   withServerpod(
-    'Given a MultiTokenManager with many additional managers',
+    'Given a MultiTokenManager with many additional managers,',
     (final sessionBuilder, final endpoints) {
       late Session session;
       late MultiTokenManager multiTokenManager;
@@ -812,7 +817,7 @@ void main() {
   );
 
   withServerpod(
-    'Given a MultiTokenManager with kind-aware managers',
+    'Given a MultiTokenManager with kind-aware managers,',
     (final sessionBuilder, final endpoints) {
       late Session session;
       late FakeTokenStorage defaultStorage;
@@ -879,7 +884,7 @@ void main() {
         );
       });
 
-      group('when listing tokens with token issuer filter', () {
+      group('when listing tokens with token issuer filter,', () {
         test(
           'then only tokens from the specified manager should be returned',
           () async {
@@ -943,7 +948,7 @@ void main() {
 
       /// What are we testing here?
       /// That the filter in the fake is correctly implemented?
-      group('when revoking a token with token issuer filter', () {
+      group('when revoking a token with token issuer filter,', () {
         setUp(() async {
           await multiTokenManager.revokeToken(
             session,
@@ -962,7 +967,7 @@ void main() {
         );
       });
 
-      group('when revoking all tokens with token issuer filter', () {
+      group('when revoking all tokens with token issuer filter,', () {
         test(
           'then only the specified manager should process the revocation',
           () async {

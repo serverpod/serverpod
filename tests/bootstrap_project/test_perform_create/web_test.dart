@@ -25,9 +25,9 @@ void main() {
 
   group(
     'Given a TemplateContext with website enabled, '
-    'when performCreate is called with the context and a fullstack template type',
+    'when performCreate is called with the context and a fullstack template type,',
     () {
-      final project = setUpPerformCreateInTempDir(
+      late final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.fullstack,
           website: true,
@@ -162,9 +162,9 @@ void main() {
 
   group(
     'Given a TemplateContext with webapp enabled, '
-    'when performCreate is called with the context and a fullstack template type',
+    'when performCreate is called with the context and a fullstack template type,',
     () {
-      final project = setUpPerformCreateInTempDir(
+      late final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.fullstack,
           webapp: true,
@@ -323,9 +323,9 @@ void main() {
 
   group(
     'Given a TemplateContext with webapp enabled and website disabled, '
-    'when performCreate is called with the context and a fullstack template type',
+    'when performCreate is called with the context and a fullstack template type,',
     () {
-      final project = setUpPerformCreateInTempDir(
+      late final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.fullstack,
           webapp: true,
@@ -396,9 +396,9 @@ void main() {
 
   group(
     'Given a TemplateContext with webapp and website enabled, '
-    'when performCreate is called with the context and a fullstack template type',
+    'when performCreate is called with the context and a fullstack template type,',
     () {
-      final project = setUpPerformCreateInTempDir(
+      late final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.fullstack,
           webapp: true,
@@ -469,9 +469,9 @@ void main() {
 
   group(
     'Given a TemplateContext with webapp and website disabled, '
-    'when performCreate is called with the context and a fullstack template type',
+    'when performCreate is called with the context and a fullstack template type,',
     () {
-      final project = setUpPerformCreateInTempDir(
+      late final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.fullstack,
           webapp: false,
@@ -581,9 +581,9 @@ void main() {
 
   group(
     'Given a TemplateContext with a module template type, '
-    'when performCreate is called, ',
+    'when performCreate is called,',
     () {
-      final project = setUpPerformCreateInTempDir(
+      late final project = setUpPerformCreateInTempDir(
         context: TemplateContext(template: ServerpodTemplateType.module),
       );
 
@@ -600,12 +600,12 @@ void main() {
 
   group(
     'Given a project is created with fullstack template and webapp enabled with an injected config asset, '
-    'and the pod is running with managed public hosts',
+    'and the pod is running with managed public hosts,',
     () {
       Process? startProjectProcess;
       HttpClient? client;
 
-      final project = setUpPerformCreateInTempDir(
+      late final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.fullstack,
           webapp: true,
@@ -712,12 +712,12 @@ void main() {
   group(
     'Given a project is created with fullstack template and webapp and website enabled, '
     'and the pod is running, '
-    'and Flutter web app is not built',
+    'and Flutter web app is not built,',
     () {
       Process? startProjectProcess;
       late int webPort;
 
-      final project = setUpPerformCreateInTempDir(
+      late final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.fullstack,
           webapp: true,
@@ -740,7 +740,7 @@ void main() {
       });
 
       test(
-        'when requesting the static website under / then it is is served',
+        'when requesting the static website under /, then it is is served',
         () async {
           final response = await http.get(
             Uri.parse('http://localhost:$webPort'),
@@ -782,12 +782,12 @@ void main() {
   group(
     'Given a project is created with fullstack template and webapp and website enabled, '
     'and the Flutter web app is built, '
-    'and the pod is running',
+    'and the pod is running,',
     () {
       Process? startProjectProcess;
       late int webPort;
 
-      final project = setUpPerformCreateInTempDir(
+      late final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.fullstack,
           webapp: true,

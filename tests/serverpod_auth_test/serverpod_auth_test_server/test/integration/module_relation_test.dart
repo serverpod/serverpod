@@ -7,10 +7,10 @@ import 'test_tools/serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given UserData model with relation to AuthUser from the auth core module',
+    'Given UserData model with relation to AuthUser from the auth core module,',
     (final sessionBuilder, final endpoints) {
       test(
-        'when creating a UserData with AuthUser relation '
+        'when creating a UserData with AuthUser relation, '
         'then the relation is correctly established',
         () async {
           final session = sessionBuilder.build();
@@ -42,7 +42,7 @@ void main() {
       );
 
       test(
-        'when fetching UserData with include then AuthUser is loaded',
+        'when fetching UserData with include, then AuthUser is loaded',
         () async {
           final session = sessionBuilder.build();
 
@@ -80,7 +80,7 @@ void main() {
       );
 
       test(
-        'when AuthUser is deleted with cascade then UserData is also deleted',
+        'when AuthUser is deleted with cascade, then UserData is also deleted',
         () async {
           final session = sessionBuilder.build();
 
@@ -110,10 +110,10 @@ void main() {
   );
 
   withServerpod(
-    'Given ChallengeTracker model with relation to SecretChallenge from the IDP module',
+    'Given ChallengeTracker model with relation to SecretChallenge from the IDP module,',
     (final sessionBuilder, final endpoints) {
       test(
-        'when creating a ChallengeTracker with SecretChallenge relation '
+        'when creating a ChallengeTracker with SecretChallenge relation, '
         'then the relation is correctly established',
         () async {
           final session = sessionBuilder.build();
@@ -146,7 +146,7 @@ void main() {
       );
 
       test(
-        'when fetching ChallengeTracker with include '
+        'when fetching ChallengeTracker with include, '
         'then SecretChallenge is loaded',
         () async {
           final session = sessionBuilder.build();
@@ -182,7 +182,7 @@ void main() {
       );
 
       test(
-        'when SecretChallenge is deleted with cascade '
+        'when SecretChallenge is deleted with cascade, '
         'then ChallengeTracker is also deleted',
         () async {
           final session = sessionBuilder.build();

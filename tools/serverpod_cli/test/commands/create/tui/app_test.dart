@@ -15,7 +15,7 @@ Future<void> _sendCtrlC(NoctermTester tester) {
 }
 
 void main() {
-  group('Given the create TUI', () {
+  group('Given the create TUI,', () {
     late NoctermTester tester;
     late CreateConfigState state;
     late CreateAppStateHolder holder;
@@ -41,7 +41,8 @@ void main() {
     });
 
     test(
-      'when Ctrl-C is pressed twice without a selection then onQuit is invoked',
+      'when Ctrl-C is pressed twice without a selection, '
+      'then onQuit is invoked',
       () async {
         await _sendCtrlC(tester);
         await _sendCtrlC(tester);

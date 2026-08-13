@@ -64,8 +64,8 @@ void main() {
   });
 
   test(
-    'Given middleware is configured '
-    'when request is made to API endpoint '
+    'Given middleware is configured, '
+    'when request is made to API endpoint, '
     'then response contains custom header',
     () async {
       // Make request to basicTypes/testInt endpoint (returns the same value)
@@ -89,8 +89,8 @@ void main() {
   );
 
   test(
-    'Given counting middleware is configured '
-    'when multiple requests are made '
+    'Given counting middleware is configured, '
+    'when multiple requests are made, '
     'then middleware executes for each request',
     () async {
       // Track multiple executions
@@ -146,8 +146,8 @@ void main() {
   );
 
   test(
-    'Given multiple middleware are configured '
-    'when request is made '
+    'Given multiple middleware are configured, '
+    'when request is made, '
     'then middleware execute in correct order',
     () async {
       final executionOrder = <String>[];
@@ -209,8 +209,8 @@ void main() {
   );
 
   test(
-    'Given server is configured without middleware '
-    'when request is made '
+    'Given server is configured without middleware, '
+    'when request is made, '
     'then server responds normally',
     () async {
       // Shutdown and recreate without middleware

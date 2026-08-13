@@ -17,9 +17,9 @@ void main() {
     ),
   ]).build();
 
-  group('Given SelectQueryBuilder', () {
+  group('Given SelectQueryBuilder,', () {
     group('when filtering causes a long join name.', () {
-      var query = SelectQueryBuilder(
+      late var query = SelectQueryBuilder(
         table: citizenTable,
       ).withWhere(relationTable.id.equals(1)).build();
       var expectedTruncatedName =

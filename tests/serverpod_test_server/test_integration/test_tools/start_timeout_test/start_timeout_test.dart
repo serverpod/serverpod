@@ -9,8 +9,8 @@ import 'package:test/test.dart';
 
 void main() async {
   test(
-    'Given that withServerpod can not find the database and has a timeout set to 0 seconds '
-    'when running the test '
+    'Given that withServerpod can not find the database and has a timeout set to 0 seconds, '
+    'when running the test, '
     'then should timeout immediately',
     () async {
       final result = await runTest('test_that_will_timeout.dart');
@@ -27,8 +27,8 @@ void main() async {
   );
 
   test(
-    'Given that withServerpod can not reach the database '
-    'when running the test '
+    'Given that withServerpod can not reach the database, '
+    'when running the test, '
     'then fails fast with a clear database error',
     () async {
       var timer = Stopwatch()..start();
@@ -51,8 +51,8 @@ void main() async {
   );
 
   test(
-    'Given that withServerpod can find the database and has a timeout set to 4 seconds '
-    'when running the test '
+    'Given that withServerpod can find the database and has a timeout set to 4 seconds, '
+    'when running the test, '
     'then should pass',
     () async {
       final result = await runTest('test_that_will_not_timeout.dart');

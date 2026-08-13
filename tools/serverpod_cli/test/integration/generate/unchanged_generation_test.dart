@@ -20,7 +20,7 @@ void main() {
     // A timestamp no generation run could produce; pinned on protocol.dart
     // between the runs so any rewrite - even one with identical content -
     // is detectable regardless of file system timestamp granularity.
-    final mtimeSentinel = DateTime.utc(2020, 1, 1);
+    late final mtimeSentinel = DateTime.utc(2020, 1, 1);
 
     tearDownAll(() {
       projectDir.deleteIfExists(recursive: true);

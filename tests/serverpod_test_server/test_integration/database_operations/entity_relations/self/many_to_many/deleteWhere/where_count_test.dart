@@ -6,14 +6,15 @@ import 'package:test/test.dart';
 void main() async {
   var session = await IntegrationTestServer().session();
 
-  group('Given models with many to many relation', () {
+  group('Given models with many to many relation,', () {
     tearDown(() async {
       await Member.db.deleteWhere(session, where: (_) => Constant.bool(true));
       await Blocking.db.deleteWhere(session, where: (_) => Constant.bool(true));
     });
 
     test(
-      'when deleting models filtered on many relation count then result is as expected',
+      'when deleting models filtered on many relation count, '
+      'then result is as expected',
       () async {
         var member = await Member.db.insert(session, [
           Member(name: 'Member1'),
@@ -48,7 +49,8 @@ void main() async {
     );
 
     test(
-      'when deleting models filtered on filtered many relation count then result is as expected',
+      'when deleting models filtered on filtered many relation count, '
+      'then result is as expected',
       () async {
         var member = await Member.db.insert(session, [
           Member(name: 'Member1'),
@@ -87,7 +89,8 @@ void main() async {
     );
 
     test(
-      'when deleting models filtered on many relation count in combination with other filter then result is as expected',
+      'when deleting models filtered on many relation count in combination with other filter, '
+      'then result is as expected',
       () async {
         var member = await Member.db.insert(session, [
           Member(name: 'Member1'),
@@ -124,7 +127,8 @@ void main() async {
     );
 
     test(
-      'when deleting models filtered on multiple many relation count then result is as expected',
+      'when deleting models filtered on multiple many relation count, '
+      'then result is as expected',
       () async {
         var member = await Member.db.insert(session, [
           Member(name: 'Member1'),
@@ -158,7 +162,8 @@ void main() async {
     );
 
     test(
-      'when deleting models filtered on multiple filtered many relation count then result is as expected',
+      'when deleting models filtered on multiple filtered many relation count, '
+      'then result is as expected',
       () async {
         var member = await Member.db.insert(session, [
           Member(name: 'Member1'),

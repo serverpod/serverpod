@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 void main() async {
   var session = await IntegrationTestServer().session();
 
-  group('Given models with one to many relation', () {
+  group('Given models with one to many relation,', () {
     tearDown(() async {
       await Order.db.deleteWhere(session, where: (_) => Constant.bool(true));
       await Customer.db.deleteWhere(
@@ -16,7 +16,8 @@ void main() async {
     });
 
     test(
-      'when fetching models ordered on count of many relation then result is as expected.',
+      'when fetching models ordered on count of many relation, '
+      'then result is as expected.',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Alex'),
@@ -46,7 +47,8 @@ void main() async {
     );
 
     test(
-      'when fetching models ordered on count of filtered many relation then result is as expected.',
+      'when fetching models ordered on count of filtered many relation, '
+      'then result is as expected.',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Alex'),
@@ -77,7 +79,7 @@ void main() async {
     );
   });
 
-  group('Given models with multiple one to many relations', () {
+  group('Given models with multiple one to many relations,', () {
     tearDown(() async {
       await Person.db.deleteWhere(
         session,
@@ -90,7 +92,8 @@ void main() async {
       await City.db.deleteWhere(session, where: (_) => Constant.bool(true));
     });
     test(
-      'when fetching models ordered on multiple separate one to many relations then result order is as expected.',
+      'when fetching models ordered on multiple separate one to many relations, '
+      'then result order is as expected.',
       () async {
         var cities = await City.db.insert(session, [
           City(name: 'Stockholm'),

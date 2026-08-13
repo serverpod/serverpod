@@ -13,7 +13,7 @@ import '../test_util/builders/module_config_builder.dart';
 void main() {
   group(
     'Given a project depending on official and custom modules, '
-    'when its protocol features are analyzed, ',
+    'when its protocol features are analyzed,',
     () {
       late List<String> officialModules;
       late ProtocolAnalyticsSnapshot snapshot;

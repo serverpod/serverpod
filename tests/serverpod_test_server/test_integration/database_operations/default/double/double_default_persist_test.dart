@@ -15,7 +15,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "defaultPersist=10.5" field should be 10.5',
+      'when creating a record in the database, '
+      'then the "defaultPersist=10.5" field should be 10.5',
       () async {
         var object = DoubleDefaultPersist();
         var databaseObject = await DoubleDefaultPersist.db.insertRow(
@@ -27,7 +28,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "defaultPersist=10.5" field should be 10.5',
+      'when creating a record in the database with an unsafe query, '
+      'then the "defaultPersist=10.5" field should be 10.5',
       () async {
         await session.db.unsafeQuery(
           '''
@@ -43,7 +45,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "doubleDefaultPersist" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "doubleDefaultPersist" field value should match the provided value',
       () async {
         var specificObject = DoubleDefaultPersist(
           doubleDefaultPersist: 20.5,

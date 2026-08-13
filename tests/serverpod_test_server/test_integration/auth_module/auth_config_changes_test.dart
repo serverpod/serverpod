@@ -9,7 +9,9 @@ void main() async {
   var session = await IntegrationTestServer().session();
 
   test(
-    'Given no validation code length configuration when creating an account then validation code has the default length of 8.',
+    'Given no validation code length configuration, '
+    'when creating an account, '
+    'then validation code has the default length of 8.',
     () async {
       String? generatedValidationCode;
       AuthConfig.set(
@@ -28,7 +30,9 @@ void main() async {
   );
 
   test(
-    'Given a positive integer as validation code length when creating an account then validation code has the specified length.',
+    'Given a positive integer as validation code length, '
+    'when creating an account, '
+    'then validation code has the specified length.',
     () async {
       String? generatedValidationCode;
       AuthConfig.set(
@@ -48,7 +52,9 @@ void main() async {
   );
 
   test(
-    'Given 0 as validation code length when trying to construct AuthConfig then throws.',
+    'Given 0 as validation code length, '
+    'when trying to construct AuthConfig, '
+    'then throws.',
     () {
       expect(
         () => AuthConfig(validationCodeLength: 0),
@@ -64,7 +70,9 @@ void main() async {
   );
 
   test(
-    'Given a negative integer as validation code length when trying to construct AuthConfig then throws.',
+    'Given a negative integer as validation code length, '
+    'when trying to construct AuthConfig, '
+    'then throws.',
     () {
       expect(
         () => AuthConfig(validationCodeLength: -4),

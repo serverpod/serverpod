@@ -85,9 +85,10 @@ Future<int> deleteAll(DatabaseSession session) async {
 void main() {
   initTestClientSession();
 
-  group('Given models with one to one relation', () {
+  group('Given models with one to one relation,', () {
     test(
-      'when fetching models including relation then result includes relation data.',
+      'when fetching models including relation, '
+      'then result includes relation data.',
       () async {
         var towns = await Town.db.insert(session, [
           Town(name: 'Stockholm'),
@@ -112,9 +113,10 @@ void main() {
     );
   });
 
-  group('Given models with nested one to one relations', () {
+  group('Given models with nested one to one relations,', () {
     test(
-      'when fetching models including nested relation then result includes nested relation data.',
+      'when fetching models including nested relation, '
+      'then result includes nested relation data.',
       () async {
         var towns = await Town.db.insert(session, [
           Town(name: 'Stockholm'),
@@ -150,7 +152,8 @@ void main() {
   });
 
   group(
-    'Given models with nested relations when fetching citizens with deep includes.',
+    'Given models with nested relations, '
+    'when fetching citizens with deep includes.',
     () {
       late List<Citizen> citizensWithDeepIncludes;
       setUpAll(() async {
@@ -215,7 +218,8 @@ void main() {
   );
 
   group(
-    'Given models with nested relations when fetching all citizens without includes',
+    'Given models with nested relations, '
+    'when fetching all citizens without includes,',
     () {
       late List<Citizen> citizensWithoutIncludes;
       setUpAll(() async {
@@ -261,7 +265,8 @@ void main() {
   );
 
   group(
-    'Given models with nested relations when fetching all citizens with shallow includes',
+    'Given models with nested relations, '
+    'when fetching all citizens with shallow includes,',
     () {
       late List<Citizen> citizensWithShallowIncludes;
       setUpAll(() async {
@@ -322,7 +327,7 @@ void main() {
     },
   );
 
-  group('Given models with relations when finding by id with includes', () {
+  group('Given models with relations, when finding by id with includes,', () {
     late List<Citizen>? allCitizens;
     setUpAll(() async {
       await _createTestDatabase(session);
@@ -347,7 +352,8 @@ void main() {
   });
 
   group(
-    'Given models with a named relation when fetching from the none origin side',
+    'Given models with a named relation, '
+    'when fetching from the none origin side,',
     () {
       late List<Citizen> citizensIncludingAddress;
       setUpAll(() async {
@@ -380,7 +386,8 @@ void main() {
   );
 
   group(
-    'Given models with a named relation when fetching from the foreign key origin side',
+    'Given models with a named relation, '
+    'when fetching from the foreign key origin side,',
     () {
       late List<Address> addresses;
       setUpAll(() async {
@@ -408,7 +415,7 @@ void main() {
     },
   );
 
-  group('Given models with a named self relation', () {
+  group('Given models with a named self relation,', () {
     late List<Post> posts;
     setUpAll(() async {
       await _createTestDatabase(session);

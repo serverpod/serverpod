@@ -17,7 +17,7 @@ class _TestIndicator extends HealthIndicator<double> {
 }
 
 void main() {
-  group('Given a HealthIndicator when pass() is called', () {
+  group('Given a HealthIndicator, when pass() is called,', () {
     late _TestIndicator indicator;
     late HealthCheckResult result;
 
@@ -52,7 +52,8 @@ void main() {
     });
   });
 
-  group('Given a HealthIndicator when pass() is called with observedValue', () {
+  group('Given a HealthIndicator, '
+        'when pass() is called with observedValue,', () {
     late HealthCheckResult result;
 
     setUp(() {
@@ -69,9 +70,10 @@ void main() {
     });
   });
 
-  group('Given a HealthIndicator when pass() is called with explicit time', () {
+  group('Given a HealthIndicator, '
+        'when pass() is called with explicit time,', () {
     late HealthCheckResult result;
-    final explicitTime = DateTime.utc(2024, 1, 15, 10, 30, 0);
+    late final explicitTime = DateTime.utc(2024, 1, 15, 10, 30, 0);
 
     setUp(() {
       final indicator = _TestIndicator();
@@ -87,7 +89,7 @@ void main() {
     });
   });
 
-  group('Given a HealthIndicator when fail() is called', () {
+  group('Given a HealthIndicator, when fail() is called,', () {
     late _TestIndicator indicator;
     late HealthCheckResult result;
 
@@ -113,7 +115,7 @@ void main() {
     });
   });
 
-  group('Given a HealthIndicator when fail() is called with output', () {
+  group('Given a HealthIndicator, when fail() is called with output,', () {
     late HealthCheckResult result;
 
     setUp(() {
@@ -131,8 +133,8 @@ void main() {
   });
 
   test(
-    'Given a passing HealthCheckResult '
-    'when toJson() is called '
+    'Given a passing HealthCheckResult, '
+    'when toJson() is called, '
     'then status is serialized as "pass"',
     () {
       final indicator = _TestIndicator();
@@ -143,8 +145,8 @@ void main() {
   );
 
   test(
-    'Given a failing HealthCheckResult '
-    'when toJson() is called '
+    'Given a failing HealthCheckResult, '
+    'when toJson() is called, '
     'then status is serialized as "fail"',
     () {
       final indicator = _TestIndicator();
@@ -155,8 +157,8 @@ void main() {
   );
 
   test(
-    'Given a HealthCheckResult with null optional fields '
-    'when toJson() is called '
+    'Given a HealthCheckResult with null optional fields, '
+    'when toJson() is called, '
     'then null fields are omitted',
     () {
       final result = HealthCheckResultInternal.create(
@@ -175,8 +177,8 @@ void main() {
   );
 
   test(
-    'Given a HealthCheckResult with a DateTime observed value '
-    'when toJson() is called '
+    'Given a HealthCheckResult with a DateTime observed value, '
+    'when toJson() is called, '
     'then the observedValue is serialized to ISO8601',
     () {
       final dateValue = DateTime.utc(2024, 6, 15, 12, 0, 0);
@@ -193,8 +195,8 @@ void main() {
   );
 
   test(
-    'Given a HealthCheckResult with all fields set to non-null values '
-    'when toJson() is called '
+    'Given a HealthCheckResult with all fields set to non-null values, '
+    'when toJson() is called, '
     'then all set fields are included',
     () {
       final explicitTime = DateTime.utc(2024, 1, 15, 10, 30, 0);

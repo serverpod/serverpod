@@ -10,9 +10,10 @@ Future<void> _setupTestData(Client client) async {
 void main() {
   var client = Client(serverUrl);
 
-  group('Given the database-roundtrip/echo server', () {
+  group('Given the database-roundtrip/echo server,', () {
     test(
-      'When inserting a new object, then it can be read via a raw query on the server',
+      'When inserting a new object, '
+      'then it can be read via a raw query on the server',
       () async {
         var types = Types();
         types = await client.basicDatabase.insertTypes(types);
@@ -36,7 +37,8 @@ void main() {
     );
 
     test(
-      'When half of the test data are deleted using `WHERE`, then the count will be halved',
+      'When half of the test data are deleted using `WHERE`, '
+      'then the count will be halved',
       () async {
         await _setupTestData(client);
 
@@ -92,7 +94,8 @@ void main() {
     );
 
     test(
-      'When a single item is removed in a transaction, then the count is reduced by one',
+      'When a single item is removed in a transaction, '
+      'then the count is reduced by one',
       () async {
         await _setupTestData(client);
 
@@ -105,7 +108,8 @@ void main() {
     );
 
     test(
-      'When many items are modified in a single transaction, then the operation succeeds',
+      'When many items are modified in a single transaction, '
+      'then the operation succeeds',
       () async {
         await _setupTestData(client);
 

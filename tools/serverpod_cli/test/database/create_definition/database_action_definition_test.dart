@@ -10,10 +10,11 @@ import '../../test_util/builders/serializable_entity_field_definition_builder.da
 
 void main() {
   group(
-    'Given a class definition with a table when generating a database definition',
+    'Given a class definition with a table, '
+    'when generating a database definition,',
     () {
-      var field = FieldDefinitionBuilder().withPrimaryKey().build();
-      var model = ModelClassDefinitionBuilder()
+      late var field = FieldDefinitionBuilder().withPrimaryKey().build();
+      late var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
@@ -48,7 +49,8 @@ void main() {
   );
 
   test(
-    'Given a class definition with a table, then generate a table with that name.',
+    'Given a class definition with a table, '
+    'then generate a table with that name.',
     () {
       var field = FieldDefinitionBuilder().withPrimaryKey().build();
       var model = ModelClassDefinitionBuilder()
@@ -67,27 +69,27 @@ void main() {
     },
   );
   group(
-    'Given a class definition with a foreign relation with onDelete and onUpdate set to "SetNull"',
+    'Given a class definition with a foreign relation with onDelete and onUpdate set to "SetNull",',
     () {
-      var relation = ForeignRelationDefinitionBuilder()
+      late var relation = ForeignRelationDefinitionBuilder()
           .withParentTable('example')
           .withReferenceFieldName('id')
           .withOnDelete(ForeignKeyAction.setNull)
           .withOnUpdate(ForeignKeyAction.setNull)
           .build();
 
-      var field = FieldDefinitionBuilder()
+      late var field = FieldDefinitionBuilder()
           .withName('parentId')
           .withIdType(isNullable: true)
           .withRelation(relation)
           .build();
 
-      var model = ModelClassDefinitionBuilder()
+      late var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
 
-      var databaseDefinition = createDatabaseDefinitionFromModels(
+      late var databaseDefinition = createDatabaseDefinitionFromModels(
         [model],
         'example',
         [],
@@ -143,11 +145,11 @@ void main() {
         );
       }, skip: tablesDoNotExist);
 
-      group('when generating sql code', () {
+      group('when generating sql code,', () {
         var module = 'test-module';
         var version = 'version';
 
-        var sql = databaseDefinition.toPgSql(
+        late var sql = databaseDefinition.toPgSql(
           installedModules: [
             DatabaseMigrationVersion(
               module: module,
@@ -185,13 +187,13 @@ void main() {
   );
 
   group(
-    'Given a class definition with a table with an explicit column name ',
+    'Given a class definition with a table with an explicit column name,',
     () {
       const fieldName = 'userName';
       const columnName = 'user_name';
       const columnType = 'String';
       const tableName = 'example';
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withTableName(tableName)
             .withField(
@@ -221,8 +223,8 @@ void main() {
         expect(column, isNotNull);
       });
 
-      test('with a foreign relation, then the foreign key columns includes '
-          'the explicit column name', () {
+      test('with a foreign relation, '
+           'then the foreign key columns includes the explicit column name', () {
         var relation = ForeignRelationDefinitionBuilder()
             .withParentTable(tableName)
             .withReferenceFieldName('id')
@@ -264,14 +266,15 @@ void main() {
   );
 
   group(
-    'Given a class definition with a serial int field when generating a database definition',
+    'Given a class definition with a serial int field, '
+    'when generating a database definition,',
     () {
-      var field = FieldDefinitionBuilder()
+      late var field = FieldDefinitionBuilder()
           .withName('syncVersion')
           .withTypeDefinition('int', true)
           .withDefaults(defaultPersistValue: defaultIntSerial)
           .build();
-      var model = ModelClassDefinitionBuilder()
+      late var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();

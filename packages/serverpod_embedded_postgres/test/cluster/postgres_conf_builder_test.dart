@@ -6,9 +6,9 @@ import 'package:serverpod_embedded_postgres/src/cluster/postgres_conf_builder.da
 import 'package:test/test.dart';
 
 void main() {
-  group('Given buildPostgresConfBody for UnixTransport', () {
+  group('Given buildPostgresConfBody for UnixTransport,', () {
     test(
-      'when PGDATA has a sibling "run" dir '
+      'when PGDATA has a sibling "run" dir, '
       'then unix_socket_directories is the relative path "../run".',
       () {
         var tmp = Directory.systemTemp.createTempSync('conf_builder_test_');
@@ -31,9 +31,9 @@ void main() {
     );
   });
 
-  group('Given buildPostgresConfBody for TcpTransport', () {
+  group('Given buildPostgresConfBody for TcpTransport,', () {
     test(
-      'when port = 5433 '
+      'when port = 5433, '
       'then listen_addresses is loopback and the explicit port is set.',
       () {
         var tmp = Directory.systemTemp.createTempSync('conf_builder_test_');
@@ -100,9 +100,9 @@ void main() {
     },
   );
 
-  group('Given rewriteManagedBlock', () {
+  group('Given rewriteManagedBlock,', () {
     test(
-      'when the original has no markers then the managed block is appended.',
+      'when the original has no markers, then the managed block is appended.',
       () {
         var original = '# user comment\nshared_buffers = 256MB\n';
 
@@ -117,7 +117,7 @@ void main() {
     );
 
     test(
-      'when the original already has our managed block '
+      'when the original already has our managed block, '
       'then the block is replaced (not duplicated) and outside-block content is preserved.',
       () {
         var first = rewriteManagedBlock('# keep me\n', 'cluster_name = a\n');
@@ -136,7 +136,7 @@ void main() {
     );
 
     test(
-      'when applied twice with the same body then the result is stable.',
+      'when applied twice with the same body, then the result is stable.',
       () {
         var once = rewriteManagedBlock('# preexisting\n', 'cluster_name = z\n');
         var twice = rewriteManagedBlock(once, 'cluster_name = z\n');
@@ -146,7 +146,7 @@ void main() {
     );
 
     test(
-      'when the file has a stray BEGIN with no END '
+      'when the file has a stray BEGIN with no END, '
       'then a StateError is thrown rather than clobbering the rest of the file.',
       () {
         var corrupted = '$confBlockBeginMarker\nbroken\n';

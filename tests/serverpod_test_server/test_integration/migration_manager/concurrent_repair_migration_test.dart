@@ -13,8 +13,8 @@ void main() {
     rollbackDatabase: RollbackDatabase.disabled,
     'Given unapplied repair migration that errors if applied multiple times',
     (sessionBuilder, _) async {
-      final migrationName = MigrationGenerator.createVersionName(null);
-      final testTableName =
+      late final migrationName = MigrationGenerator.createVersionName(null);
+      late final testTableName =
           'test_table_${const Uuid().v4().replaceAll('-', '')}';
       final sqlThatThrowsIfAppliedMultipleTimes =
           '''
@@ -66,7 +66,8 @@ void main() {
       });
 
       test(
-        'when triggering multiple concurrent repair migrations then migration is successfully applied once',
+        'when triggering multiple concurrent repair migrations, '
+        'then migration is successfully applied once',
         () async {
           var migrationManager = MigrationManager.fromDirectory(
             Directory(d.sandbox),

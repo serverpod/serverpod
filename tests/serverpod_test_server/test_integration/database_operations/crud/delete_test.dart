@@ -11,9 +11,10 @@ void main() async {
     await UniqueData.db.deleteWhere(session, where: (_) => Constant.bool(true));
   });
 
-  group('Given an empty database', () {
+  group('Given an empty database,', () {
     test(
-      'when trying to delete a row that doesn\'t exist then an error is thrown.',
+      'when trying to delete a row that doesn\'t exist, '
+      'then an error is thrown.',
       () {
         expect(
           SimpleData.db.deleteRow(
@@ -26,7 +27,8 @@ void main() async {
     );
 
     test(
-      'when trying to batch delete a row that doesn\'t exist then an error is thrown.',
+      'when trying to batch delete a row that doesn\'t exist, '
+      'then an error is thrown.',
       () {
         expect(
           SimpleData.db.delete(
@@ -41,7 +43,7 @@ void main() async {
     );
 
     test(
-      'when trying to delete where (all) then an empty list is returned.',
+      'when trying to delete where (all), then an empty list is returned.',
       () async {
         var result = await SimpleData.db.deleteWhere(
           session,
@@ -53,7 +55,7 @@ void main() async {
     );
   });
 
-  group('Given a list of entries', () {
+  group('Given a list of entries,', () {
     late List<SimpleData> data;
 
     setUp(() async {
@@ -64,7 +66,7 @@ void main() async {
       ]);
     });
 
-    group('when deleting row', () {
+    group('when deleting row,', () {
       late SimpleData deleteResult;
       setUp(() async {
         deleteResult = await SimpleData.db.deleteRow(session, data[0]);
@@ -83,7 +85,7 @@ void main() async {
       });
     });
 
-    group('when deleting multiple rows', () {
+    group('when deleting multiple rows,', () {
       late List<SimpleData> deleteResult;
 
       setUp(() async {
@@ -104,7 +106,7 @@ void main() async {
       });
     });
 
-    group('when deleting based on filter', () {
+    group('when deleting based on filter,', () {
       late List<SimpleData> deleteResult;
 
       setUp(() async {
@@ -128,7 +130,7 @@ void main() async {
       });
     });
 
-    group('when deleting based on filter with orderBy', () {
+    group('when deleting based on filter with orderBy,', () {
       late List<SimpleData> deleteResult;
 
       setUp(() async {
@@ -146,7 +148,7 @@ void main() async {
       });
     });
 
-    group('when deleting based on filter with descending orderBy', () {
+    group('when deleting based on filter with descending orderBy,', () {
       late List<SimpleData> deleteResult;
 
       setUp(() async {
@@ -164,7 +166,7 @@ void main() async {
       });
     });
 
-    group('when deleting based on filter with orderByList', () {
+    group('when deleting based on filter with orderByList,', () {
       late List<SimpleData> deleteResult;
 
       setUp(() async {
@@ -200,7 +202,9 @@ void main() async {
     });
 
     test(
-      'Given an inserted object when deleting that row then the id of the row is returned.',
+      'Given an inserted object, '
+      'when deleting that row, '
+      'then the id of the row is returned.',
       () async {
         var simpleData = SimpleData(num: 1);
         var inserted = await SimpleData.db.insertRow(session, simpleData);
@@ -214,7 +218,9 @@ void main() async {
     );
 
     test(
-      'Given an inserted object when deleting that row then it cannot be retrieved from the db.',
+      'Given an inserted object, '
+      'when deleting that row, '
+      'then it cannot be retrieved from the db.',
       () async {
         var simpleData = SimpleData(num: 1);
         var inserted = await SimpleData.db.insertRow(session, simpleData);
@@ -227,7 +233,9 @@ void main() async {
     );
 
     test(
-      'Given two inserted objects when deleting all then the ids of the rows are returned.',
+      'Given two inserted objects, '
+      'when deleting all, '
+      'then the ids of the rows are returned.',
       () async {
         var simpleData1 = SimpleData(num: 1);
         var simpleData2 = SimpleData(num: 2);
@@ -248,7 +256,9 @@ void main() async {
     );
 
     test(
-      'Given two entries in the database when batch deleting the rows then the deleted ids are returned.',
+      'Given two entries in the database, '
+      'when batch deleting the rows, '
+      'then the deleted ids are returned.',
       () async {
         var data = <UniqueData>[
           UniqueData(number: 1, email: 'info@serverpod.dev'),
@@ -265,7 +275,9 @@ void main() async {
     );
 
     test(
-      'Given two entries in the database when batch deleting with orderBy then deleted rows are returned in ascending order.',
+      'Given two entries in the database, '
+      'when batch deleting with orderBy, '
+      'then deleted rows are returned in ascending order.',
       () async {
         var data = <UniqueData>[
           UniqueData(number: 2, email: 'dev@serverpod.dev'),
@@ -286,7 +298,9 @@ void main() async {
     );
 
     test(
-      'Given two entries in the database when batch deleting with descending orderBy then deleted rows are returned in descending order.',
+      'Given two entries in the database, '
+      'when batch deleting with descending orderBy, '
+      'then deleted rows are returned in descending order.',
       () async {
         var data = <UniqueData>[
           UniqueData(number: 1, email: 'info@serverpod.dev'),
@@ -307,7 +321,9 @@ void main() async {
     );
 
     test(
-      'Given two entries in the database with the same number when batch deleting with orderByList then deleted rows are returned in ascending order of email.',
+      'Given two entries in the database with the same number, '
+      'when batch deleting with orderByList, '
+      'then deleted rows are returned in ascending order of email.',
       () async {
         var data = <UniqueData>[
           UniqueData(number: 1, email: 'info@serverpod.dev'),
@@ -332,7 +348,9 @@ void main() async {
     );
 
     test(
-      'Given two entries in the database when batch deleting the rows then the rows are deleted from the database.',
+      'Given two entries in the database, '
+      'when batch deleting the rows, '
+      'then the rows are deleted from the database.',
       () async {
         var data = <UniqueData>[
           UniqueData(number: 1, email: 'info@serverpod.dev'),
@@ -352,7 +370,8 @@ void main() async {
     );
 
     test(
-      'Given two entries in the database when batch deleting fails no rows are deleted from the database.',
+      'Given two entries in the database, '
+      'when batch deleting fails no rows are deleted from the database.',
       () async {
         var data = <UniqueData>[
           UniqueData(number: 1, email: 'info@serverpod.dev'),
@@ -389,7 +408,8 @@ void main() async {
     );
 
     test(
-      'Given two entries in the database when batch deleting one the other entry is still in the database.',
+      'Given two entries in the database, '
+      'when batch deleting one the other entry is still in the database.',
       () async {
         var data = <UniqueData>[
           UniqueData(number: 1, email: 'info@serverpod.dev'),
@@ -409,7 +429,8 @@ void main() async {
     );
 
     test(
-      'Given two entries in the database when batch deleting one only that id is returned.',
+      'Given two entries in the database, '
+      'when batch deleting one only that id is returned.',
       () async {
         var data = <UniqueData>[
           UniqueData(number: 1, email: 'info@serverpod.dev'),
@@ -426,8 +447,8 @@ void main() async {
     );
 
     test(
-      'Given an inserted entry '
-      'when batch deleting with noReturn set to true '
+      'Given an inserted entry, '
+      'when batch deleting with noReturn set to true, '
       'then an empty list is returned but the rows are removed.',
       () async {
         var inserted = (await UniqueData.db.insert(session, [
@@ -446,8 +467,8 @@ void main() async {
     );
 
     test(
-      'Given two inserted entries '
-      'when deleting rows matching a where expression with noReturn set to true '
+      'Given two inserted entries, '
+      'when deleting rows matching a where expression with noReturn set to true, '
       'then an empty list is returned but the matching rows are removed.',
       () async {
         await UniqueData.db.insert(session, [

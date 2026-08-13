@@ -7,7 +7,7 @@ void testSuite<T extends TokenManager>(
   final TokenManagerBuilder<T> Function() createTokenManagerBuilder,
 ) {
   group(
-    'Given a token manager builder',
+    'Given a token manager builder,',
     () {
       late TokenManagerBuilder<T> builder;
       late AuthUsers authUsers;
@@ -36,7 +36,8 @@ void testSuite<T extends TokenManager>(
       );
 
       test(
-        'when building with different authUsers instances, then different instances are created',
+        'when building with different authUsers instances, '
+        'then different instances are created',
         () {
           const authUsers1 = AuthUsers();
           const authUsers2 = AuthUsers();

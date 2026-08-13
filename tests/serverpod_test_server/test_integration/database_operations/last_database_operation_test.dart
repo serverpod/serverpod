@@ -6,7 +6,7 @@ import '../test_tools/serverpod_test_tools.dart';
 
 void main() async {
   withServerpod(
-    'Given a running server',
+    'Given a running server,',
     // Disable health checks to avoid the health check updating the last database
     // operation time and causing flakiness on the test.
     configOverride: (config) =>
@@ -24,21 +24,21 @@ void main() async {
         serverpod = session.serverpod;
       });
 
-      test('when server starts '
-          'then lastDatabaseOperationTime is set due to startup routines', () {
+      test('when server starts, '
+           'then lastDatabaseOperationTime is set due to startup routines', () {
         expect(serverpod.lastDatabaseOperationTime, isNotNull);
       });
 
-      test('when no database operations are performed '
-          'then lastDatabaseOperationTime is not updated', () async {
+      test('when no database operations are performed, '
+           'then lastDatabaseOperationTime is not updated', () async {
         final beforeOperation = serverpod.lastDatabaseOperationTime!;
 
         await Future.delayed(const Duration(seconds: 2));
         expect(serverpod.lastDatabaseOperationTime, equals(beforeOperation));
       });
 
-      test('when performing any database operation '
-          'then lastDatabaseOperationTime is updated', () async {
+      test('when performing any database operation, '
+           'then lastDatabaseOperationTime is updated', () async {
         final beforeOperation = serverpod.lastDatabaseOperationTime!;
 
         await SimpleData.db.insertRow(session, SimpleData(num: 1));
@@ -47,8 +47,8 @@ void main() async {
         expect(afterOperation.isAfter(beforeOperation), isTrue);
       });
 
-      test('when performing a database operation that fails '
-          'then lastDatabaseOperationTime is still updated', () async {
+      test('when performing a database operation that fails, '
+           'then lastDatabaseOperationTime is still updated', () async {
         final row = await SimpleData.db.insertRow(session, SimpleData(num: 1));
         final beforeOperation = serverpod.lastDatabaseOperationTime!;
 
@@ -61,8 +61,8 @@ void main() async {
         expect(afterOperation.isAfter(beforeOperation), isTrue);
       });
 
-      test('when performing multiple database operations '
-          'then lastDatabaseOperationTime is updated after each one', () async {
+      test('when performing multiple database operations, '
+           'then lastDatabaseOperationTime is updated after each one', () async {
         final beforeOperation = serverpod.lastDatabaseOperationTime!;
 
         await SimpleData.db.insertRow(session, SimpleData(num: 2));

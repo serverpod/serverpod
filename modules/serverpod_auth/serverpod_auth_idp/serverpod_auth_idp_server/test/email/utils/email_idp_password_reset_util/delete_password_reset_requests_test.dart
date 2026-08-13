@@ -8,7 +8,7 @@ import '../../test_utils/email_idp_test_fixture.dart';
 
 void main() {
   withServerpod(
-    'Given password reset request exists within verification code lifetime',
+    'Given password reset request exists within verification code lifetime,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -52,7 +52,8 @@ void main() {
       });
 
       test(
-        'when deleting password reset requests without older than then request can still be verified',
+        'when deleting password reset requests without older than, '
+        'then request can still be verified',
         () async {
           await session.db.transaction(
             (final transaction) =>
@@ -79,7 +80,8 @@ void main() {
       );
 
       test(
-        'when deleting request that are older than zero then attempting to verify request throws request not found exception',
+        'when deleting request that are older than zero, '
+        'then attempting to verify request throws request not found exception',
         () async {
           await session.db.transaction(
             (final transaction) =>
@@ -111,7 +113,7 @@ void main() {
   );
 
   withServerpod(
-    'Given verified password reset request',
+    'Given verified password reset request,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -166,7 +168,8 @@ void main() {
       });
 
       test(
-        'when deleting password reset requests without older than then request can still be completed',
+        'when deleting password reset requests without older than, '
+        'then request can still be completed',
         () async {
           await session.db.transaction(
             (final transaction) =>
@@ -193,7 +196,8 @@ void main() {
       );
 
       test(
-        'when deleting request that are older than zero then attempting to complete request throws request not found exception',
+        'when deleting request that are older than zero, '
+        'then attempting to complete request throws request not found exception',
         () async {
           await session.db.transaction(
             (final transaction) =>
@@ -225,7 +229,7 @@ void main() {
   );
 
   withServerpod(
-    'Given password reset request exists created before verification code lifetime',
+    'Given password reset request exists created before verification code lifetime,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -281,7 +285,8 @@ void main() {
       // This test validates that we accurately remove expired requests by
       // attempting to complete a request in the past that should have been removed.
       test(
-        'when deleting password reset requests without older than then attempting to verify request in the past throws request not found exception',
+        'when deleting password reset requests without older than, '
+        'then attempting to verify request in the past throws request not found exception',
         () async {
           await session.db.transaction(
             (final transaction) =>
@@ -315,7 +320,7 @@ void main() {
   );
 
   withServerpod(
-    'Given password reset requests for two users',
+    'Given password reset requests for two users,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -374,7 +379,8 @@ void main() {
       });
 
       test(
-        'when deleting password reset request for first user then second user can still verify its request',
+        'when deleting password reset request for first user, '
+        'then second user can still verify its request',
         () async {
           final secondResult = session.db.transaction((
             final transaction,
@@ -398,7 +404,7 @@ void main() {
         },
       );
 
-      group('when deleting password reset request for all users', () {
+      group('when deleting password reset request for all users,', () {
         setUp(() async {
           await session.db.transaction(
             (final transaction) =>

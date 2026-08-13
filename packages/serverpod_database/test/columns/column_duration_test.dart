@@ -5,28 +5,30 @@ import 'package:test/test.dart';
 void main() {
   ValueEncoder.set(const PostgresValueEncoder());
 
-  group('Given a ColumnDuration', () {
+  group('Given a ColumnDuration,', () {
     var columnName = 'age';
-    var column = ColumnDuration(columnName, Table<int?>(tableName: 'test'));
+    late var column = ColumnDuration(columnName, Table<int?>(tableName: 'test'));
 
     test(
-      'when toString is called then column name withing double quotes is returned.',
+      'when toString is called, '
+      'then column name withing double quotes is returned.',
       () {
         expect(column.toString(), '"test"."$columnName"');
       },
     );
 
-    test('when columnName getter is called then column name is returned.', () {
+    test('when columnName getter is called, then column name is returned.', () {
       expect(column.columnName, columnName);
     });
 
-    test('when type is called then Duration is returned.', () {
+    test('when type is called, then Duration is returned.', () {
       expect(column.type, Duration);
     });
 
-    group('with _ColumnDefaultOperations mixin', () {
+    group('with _ColumnDefaultOperations mixin,', () {
       test(
-        'when equals compared to NULL value then output is IS NULL expression.',
+        'when equals compared to NULL value, '
+        'then output is IS NULL expression.',
         () {
           var comparisonExpression = column.equals(null);
 
@@ -35,7 +37,8 @@ void main() {
       );
 
       test(
-        'when equals compared to duration value then output is equals expression.',
+        'when equals compared to duration value, '
+        'then output is equals expression.',
         () {
           var comparisonExpression = column.equals(const Duration(hours: 10));
 
@@ -44,7 +47,8 @@ void main() {
       );
 
       test(
-        'when NOT equals compared to NULL value then output is IS NOT NULL expression.',
+        'when NOT equals compared to NULL value, '
+        'then output is IS NOT NULL expression.',
         () {
           var comparisonExpression = column.notEquals(null);
 
@@ -53,7 +57,8 @@ void main() {
       );
 
       test(
-        'when NOT equals compared to duration value then output is NOT equals expression.',
+        'when NOT equals compared to duration value, '
+        'then output is NOT equals expression.',
         () {
           var comparisonExpression = column.notEquals(
             const Duration(hours: 10),
@@ -67,7 +72,8 @@ void main() {
       );
 
       test(
-        'when checking if expression is in value set then output is IN expression.',
+        'when checking if expression is in value set, '
+        'then output is IN expression.',
         () {
           var comparisonExpression = column.inSet(<Duration>{
             const Duration(hours: 10),
@@ -83,7 +89,8 @@ void main() {
       );
 
       test(
-        'when checking if expression is in empty value set then output is FALSE expression.',
+        'when checking if expression is in empty value set, '
+        'then output is FALSE expression.',
         () {
           var comparisonExpression = column.inSet(<Duration>{});
 
@@ -92,7 +99,8 @@ void main() {
       );
 
       test(
-        'when checking if expression is NOT in value set then output is NOT IN expression.',
+        'when checking if expression is NOT in value set, '
+        'then output is NOT IN expression.',
         () {
           var comparisonExpression = column.notInSet(<Duration>{
             const Duration(hours: 10),
@@ -108,7 +116,8 @@ void main() {
       );
 
       test(
-        'when checking if expression is NOT in empty value set then output is TRUE expression.',
+        'when checking if expression is NOT in empty value set, '
+        'then output is TRUE expression.',
         () {
           var comparisonExpression = column.notInSet(<Duration>{});
 
@@ -117,9 +126,10 @@ void main() {
       );
     });
 
-    group('with _ColumnNumberOperations mixin', () {
+    group('with _ColumnNumberOperations mixin,', () {
       test(
-        'when checking if expression is between duration values then output is between expression.',
+        'when checking if expression is between duration values, '
+        'then output is between expression.',
         () {
           var comparisonExpression = column.between(
             const Duration(hours: 10),
@@ -134,7 +144,8 @@ void main() {
       );
 
       test(
-        'when checking if expression is NOT between duration values then output is NOT between expression.',
+        'when checking if expression is NOT between duration values, '
+        'then output is NOT between expression.',
         () {
           var comparisonExpression = column.notBetween(
             const Duration(hours: 10),
@@ -148,7 +159,8 @@ void main() {
         },
       );
       test(
-        'when greater than compared to expression then output is operator expression.',
+        'when greater than compared to expression, '
+        'then output is operator expression.',
         () {
           var comparisonExpression = column > const Expression('10');
 
@@ -157,7 +169,8 @@ void main() {
       );
 
       test(
-        'when greater than compared to column type then output is operator expression.',
+        'when greater than compared to column type, '
+        'then output is operator expression.',
         () {
           var comparisonExpression = column > const Duration(hours: 10);
 
@@ -166,7 +179,8 @@ void main() {
       );
 
       test(
-        'when greater than compared to column then output is operator expression.',
+        'when greater than compared to column, '
+        'then output is operator expression.',
         () {
           var comparisonExpression = column > column;
 
@@ -175,7 +189,8 @@ void main() {
       );
 
       test(
-        'when greater than compared to unhandled type then argument error is thrown.',
+        'when greater than compared to unhandled type, '
+        'then argument error is thrown.',
         () {
           expect(
             () => column > 'string is unhandled',
@@ -191,7 +206,8 @@ void main() {
       );
 
       test(
-        'when greater or equal than compared to expression then output is operator expression.',
+        'when greater or equal than compared to expression, '
+        'then output is operator expression.',
         () {
           var comparisonExpression = column >= const Expression('10');
 
@@ -200,7 +216,8 @@ void main() {
       );
 
       test(
-        'when greater or equal than compared to column type then output is operator expression.',
+        'when greater or equal than compared to column type, '
+        'then output is operator expression.',
         () {
           var comparisonExpression = column >= const Duration(hours: 10);
 
@@ -209,7 +226,8 @@ void main() {
       );
 
       test(
-        'when greater or equal than compared to column then output is operator expression.',
+        'when greater or equal than compared to column, '
+        'then output is operator expression.',
         () {
           var comparisonExpression = column >= column;
 
@@ -218,7 +236,8 @@ void main() {
       );
 
       test(
-        'when greater or equal than compared to unhandled type then argument error is thrown.',
+        'when greater or equal than compared to unhandled type, '
+        'then argument error is thrown.',
         () {
           expect(
             () => column >= 'string is unhandled',
@@ -234,7 +253,8 @@ void main() {
       );
 
       test(
-        'when less than compared to expression then output is operator expression.',
+        'when less than compared to expression, '
+        'then output is operator expression.',
         () {
           var comparisonExpression = column < const Expression('10');
 
@@ -243,7 +263,8 @@ void main() {
       );
 
       test(
-        'when less than compared to column type then output is operator expression.',
+        'when less than compared to column type, '
+        'then output is operator expression.',
         () {
           var comparisonExpression = column < const Duration(hours: 10);
 
@@ -252,7 +273,8 @@ void main() {
       );
 
       test(
-        'when less than compared to column then output is operator expression.',
+        'when less than compared to column, '
+        'then output is operator expression.',
         () {
           var comparisonExpression = column < column;
 
@@ -261,7 +283,8 @@ void main() {
       );
 
       test(
-        'when less than compared to unhandled type then argument error is thrown.',
+        'when less than compared to unhandled type, '
+        'then argument error is thrown.',
         () {
           expect(
             () => column < 'string is unhandled',
@@ -277,7 +300,8 @@ void main() {
       );
 
       test(
-        'when less or equal than compared to expression then output is operator expression.',
+        'when less or equal than compared to expression, '
+        'then output is operator expression.',
         () {
           var comparisonExpression = column <= const Expression('10');
 
@@ -286,7 +310,8 @@ void main() {
       );
 
       test(
-        'when less or equal than compared to column type then output is operator expression.',
+        'when less or equal than compared to column type, '
+        'then output is operator expression.',
         () {
           var comparisonExpression = column <= const Duration(hours: 10);
 
@@ -295,7 +320,8 @@ void main() {
       );
 
       test(
-        'when less or equal than compared to column then output is operator expression.',
+        'when less or equal than compared to column, '
+        'then output is operator expression.',
         () {
           var comparisonExpression = column <= column;
 
@@ -304,7 +330,8 @@ void main() {
       );
 
       test(
-        'when less or equal than compared to unhandled type then argument error is thrown.',
+        'when less or equal than compared to unhandled type, '
+        'then argument error is thrown.',
         () {
           expect(
             () => column <= 'string is unhandled',

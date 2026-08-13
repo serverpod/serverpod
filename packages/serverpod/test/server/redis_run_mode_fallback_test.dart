@@ -23,7 +23,7 @@ void main() {
 
   group(
     'Given Redis is enabled but unreachable in development run mode, '
-    'when Serverpod completes startup, ',
+    'when Serverpod completes startup,',
     () {
       late Serverpod pod;
 
@@ -61,7 +61,7 @@ void main() {
 
   group(
     'Given Redis is enabled but unreachable in production run mode, '
-    'when Serverpod completes startup, ',
+    'when Serverpod completes startup,',
     () {
       late Serverpod pod;
 

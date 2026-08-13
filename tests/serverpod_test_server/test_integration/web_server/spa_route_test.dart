@@ -28,7 +28,7 @@ void main() {
     client.close();
   });
 
-  group('Given a web server with SpaRoute', () {
+  group('Given a web server with SpaRoute,', () {
     late Serverpod pod;
 
     setUp(() async {
@@ -45,7 +45,7 @@ void main() {
       await pod.shutdown(exitProcess: false);
     });
 
-    test('when requesting existing file then file is served', () async {
+    test('when requesting existing file, then file is served', () async {
       final response = await client.get(
         Uri.parse('${pod.webUrl}app.js'),
       );
@@ -53,7 +53,7 @@ void main() {
       expect(response.body, contains('console.log'));
     });
 
-    test('when requesting index.html then index is served', () async {
+    test('when requesting index.html, then index is served', () async {
       final response = await client.get(
         Uri.parse('${pod.webUrl}index.html'),
       );
@@ -62,7 +62,7 @@ void main() {
     });
 
     test(
-      'when requesting non-existent file then fallback is served',
+      'when requesting non-existent file, then fallback is served',
       () async {
         final response = await client.get(
           Uri.parse('${pod.webUrl}users/123'),
@@ -73,7 +73,7 @@ void main() {
     );
 
     test(
-      'when requesting nested non-existent path then fallback is served',
+      'when requesting nested non-existent path, then fallback is served',
       () async {
         final response = await client.get(
           Uri.parse(
@@ -86,7 +86,7 @@ void main() {
     );
 
     test(
-      'when requesting / then fallback is served',
+      'when requesting /, then fallback is served',
       () async {
         final response = await client.get(
           Uri.parse(pod.webUrl),
@@ -97,7 +97,7 @@ void main() {
     );
   });
 
-  group('Given a SpaRoute with custom fallback', () {
+  group('Given a SpaRoute with custom fallback,', () {
     late Serverpod pod;
     late File customFallback;
 
@@ -121,7 +121,7 @@ void main() {
       }
     });
 
-    test('when fallback is triggered then custom fallback is used', () async {
+    test('when fallback is triggered, then custom fallback is used', () async {
       final response = await client.get(
         Uri.parse('${pod.webUrl}non-existent'),
       );
@@ -130,7 +130,7 @@ void main() {
     });
   });
 
-  group('Given a SpaRoute mounted at a specific prefix path', () {
+  group('Given a SpaRoute mounted at a specific prefix path,', () {
     late Serverpod pod;
 
     setUp(() async {
@@ -145,7 +145,7 @@ void main() {
       await pod.shutdown(exitProcess: false);
     });
 
-    test('when requesting existing file then file is served', () async {
+    test('when requesting existing file, then file is served', () async {
       final response = await client.get(
         Uri.parse('${pod.webUrl}app/app.js'),
       );
@@ -154,7 +154,7 @@ void main() {
     });
 
     test(
-      'when requesting non-existent nested path then fallback is served',
+      'when requesting non-existent nested path, then fallback is served',
       () async {
         final response = await client.get(
           Uri.parse('${pod.webUrl}app/nested/deep/path'),
@@ -165,7 +165,7 @@ void main() {
     );
 
     test(
-      'when requesting existing file without prefix then 404 is returned',
+      'when requesting existing file without prefix, then 404 is returned',
       () async {
         final response = await client.get(
           Uri.parse('${pod.webUrl}app.js'),
@@ -175,7 +175,7 @@ void main() {
     );
   });
 
-  group('Given multiple SpaRoutes on different paths', () {
+  group('Given multiple SpaRoutes on different paths,', () {
     late Serverpod pod;
     late Directory adminDir;
     late File adminIndexFile;
@@ -204,7 +204,7 @@ void main() {
       await pod.shutdown(exitProcess: false);
     });
 
-    test('when requesting admin path then admin fallback is served', () async {
+    test('when requesting admin path, then admin fallback is served', () async {
       final response = await client.get(
         Uri.parse('${pod.webUrl}admin/users'),
       );
@@ -213,7 +213,7 @@ void main() {
     });
 
     test(
-      'when requesting public path then public fallback is served',
+      'when requesting public path, then public fallback is served',
       () async {
         final response = await client.get(
           Uri.parse('${pod.webUrl}users'),
@@ -224,7 +224,7 @@ void main() {
     );
   });
 
-  group('Given a SpaRoute with cache control', () {
+  group('Given a SpaRoute with cache control,', () {
     late Serverpod pod;
 
     setUp(() async {
@@ -245,7 +245,7 @@ void main() {
       await pod.shutdown(exitProcess: false);
     });
 
-    test('when cache control is set then headers are applied', () async {
+    test('when cache control is set, then headers are applied', () async {
       final response = await client.get(
         Uri.parse('${pod.webUrl}app.js'),
       );

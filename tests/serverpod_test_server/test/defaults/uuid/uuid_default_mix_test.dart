@@ -4,10 +4,11 @@ import 'package:test/test.dart';
 
 void main() async {
   group(
-    "Given a class with mixed UUID fields defaults",
+    "Given a class with mixed UUID fields defaults,",
     () {
       test(
-        'when the field has both "default" and "defaultModel", then the field value should be the "defaultModel" value',
+        'when the field has both "default" and "defaultModel", '
+        'then the field value should be the "defaultModel" value',
         () {
           var object = UuidDefaultMix();
           expect(
@@ -18,7 +19,8 @@ void main() async {
       );
 
       test(
-        'when the field has both "default" and "defaultPersist", then the field value should be the "default" value',
+        'when the field has both "default" and "defaultPersist", '
+        'then the field value should be the "default" value',
         () {
           var object = UuidDefaultMix();
           expect(
@@ -29,7 +31,8 @@ void main() async {
       );
 
       test(
-        'when the field has both "defaultModel" and "defaultPersist", then the field value should be the "defaultModel" value',
+        'when the field has both "defaultModel" and "defaultPersist", '
+        'then the field value should be the "defaultModel" value',
         () {
           var object = UuidDefaultMix();
           expect(
@@ -40,7 +43,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a value for "uuidDefaultAndDefaultModel", then the field value should match the provided value',
+        'when an object of the class is created with a value for "uuidDefaultAndDefaultModel", '
+        'then the field value should match the provided value',
         () {
           var uuid = UuidValue.fromString(
             '3f2504e0-4f89-11d3-9a0c-0305e82c3301',
@@ -56,7 +60,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a value for "uuidDefaultAndDefaultPersist", then the field value should match the provided value',
+        'when an object of the class is created with a value for "uuidDefaultAndDefaultPersist", '
+        'then the field value should match the provided value',
         () {
           var uuid = UuidValue.fromString(
             '3f2504e0-4f89-11d3-9a0c-0305e82c3301',
@@ -72,7 +77,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a value for "uuidDefaultModelAndDefaultPersist", then the field value should match the provided value',
+        'when an object of the class is created with a value for "uuidDefaultModelAndDefaultPersist", '
+        'then the field value should match the provided value',
         () {
           var uuid = UuidValue.fromString(
             '3f2504e0-4f89-11d3-9a0c-0305e82c3301',

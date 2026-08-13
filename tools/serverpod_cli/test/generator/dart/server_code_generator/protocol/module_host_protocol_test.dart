@@ -13,7 +13,7 @@ const _moduleName = 'example_module';
 const _projectName = 'example_project';
 
 void main() {
-  group('Given a module protocol when generating code', () {
+  group('Given a module protocol, when generating code,', () {
     late final moduleConfig = GeneratorConfigBuilder()
         .withName(_moduleName)
         .withPackageType(PackageType.module)
@@ -89,7 +89,7 @@ void main() {
   });
 
   group(
-    'Given a project protocol with a module dependency when generating code',
+    'Given a project protocol with a module dependency, when generating code,',
     () {
       late final projectConfig = GeneratorConfigBuilder()
           .withName(_projectName)

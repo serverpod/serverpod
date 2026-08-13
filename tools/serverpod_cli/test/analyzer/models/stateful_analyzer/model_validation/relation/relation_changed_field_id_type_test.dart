@@ -10,9 +10,9 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   group(
-    'Given two classes with different id types and a one to one relation defined in an object relation field on the class that holds the foreign key',
+    'Given two classes with different id types and a one to one relation defined in an object relation field on the class that holds the foreign key,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -38,8 +38,8 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
@@ -68,9 +68,9 @@ void main() {
   );
 
   group(
-    'Given two classes with different id types and a named one to one relation defined in object relation fields on both classes',
+    'Given two classes with different id types and a named one to one relation defined in object relation fields on both classes,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -97,8 +97,8 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
@@ -137,8 +137,8 @@ void main() {
     },
   );
 
-  group('Given two classes with different id types and a one to many relation', () {
-    var models = [
+  group('Given two classes with different id types and a one to many relation,', () {
+    late var models = [
       ModelSourceBuilder().withFileName('employee').withYaml(
         '''
         class: Employee
@@ -159,8 +159,8 @@ void main() {
       ).build(),
     ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
+    late var collector = CodeGenerationCollector();
+    late StatefulAnalyzer analyzer = StatefulAnalyzer(
       config,
       models,
       onErrorsCollector(collector),
@@ -205,9 +205,9 @@ void main() {
   });
 
   group(
-    'Given two classes with different id types and one to many independent relations defined without specifying a name',
+    'Given two classes with different id types and one to many independent relations defined without specifying a name,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withFileName('employee').withYaml(
           '''
         class: Employee
@@ -228,8 +228,8 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
@@ -284,9 +284,9 @@ void main() {
   );
 
   group(
-    'Given two classes with different id types and an implicit one to many relation',
+    'Given two classes with different id types and an implicit one to many relation,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withFileName('employee').withYaml(
           '''
         class: Employee
@@ -307,8 +307,8 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
@@ -344,9 +344,9 @@ void main() {
   );
 
   group(
-    'Given two classes with different id types and a one to many relation on a foreign key field',
+    'Given two classes with different id types and a one to many relation on a foreign key field,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withFileName('employee').withYaml(
           '''
         class: Employee
@@ -367,8 +367,8 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late StatefulAnalyzer analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),

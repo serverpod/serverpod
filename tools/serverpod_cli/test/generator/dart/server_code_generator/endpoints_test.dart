@@ -22,7 +22,8 @@ void main() {
     'endpoints.dart',
   );
   group(
-    'Given protocol definition without endpoints when generating endpoints file',
+    'Given protocol definition without endpoints, '
+    'when generating endpoints file,',
     () {
       late Map<String, String> codeMap;
       late String? endpointsFile;
@@ -60,7 +61,7 @@ void main() {
   );
 
   group(
-    'Given protocol definition with endpoint when generating endpoints file',
+    'Given protocol definition with endpoint, when generating endpoints file,',
     () {
       var endpointName = 'testing';
       late Map<String, String> codeMap;
@@ -105,7 +106,8 @@ void main() {
   );
 
   group(
-    'Given protocol definition with multiple endpoints when generating endpoints file',
+    'Given protocol definition with multiple endpoints, '
+    'when generating endpoints file,',
     () {
       var firstEndpointName = 'testing1';
       var secondEndpointName = 'testing2';
@@ -165,7 +167,8 @@ void main() {
   );
 
   group(
-    'Given a protocol definition with a method with Stream return value when generating endpoints file',
+    'Given a protocol definition with a method with Stream return value, '
+    'when generating endpoints file,',
     () {
       var endpointName = 'testing';
       var methodName = 'streamMethod';
@@ -225,7 +228,8 @@ void main() {
   );
 
   group(
-    'Given a protocol definition with a method with only a Stream parameter when generating endpoints file',
+    'Given a protocol definition with a method with only a Stream parameter, '
+    'when generating endpoints file,',
     () {
       var endpointName = 'testing';
       var methodName = 'streamMethod';
@@ -308,7 +312,8 @@ void main() {
   );
 
   group(
-    'Given a protocol definition with a method with "@Deprecated(..)" annotation when generating endpoints file',
+    'Given a protocol definition with a method with "@Deprecated(..)" annotation, '
+    'when generating endpoints file,',
     () {
       var endpointName = 'testing';
       var methodName = 'deprecatedMethod';
@@ -365,9 +370,9 @@ void main() {
   );
 
   group(
-    'Given a protocol definition with an endpoint defined in the lib folder',
+    'Given a protocol definition with an endpoint defined in the lib folder,',
     () {
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [
           EndpointDefinitionBuilder()
               .withClassName('MyEndpoint')

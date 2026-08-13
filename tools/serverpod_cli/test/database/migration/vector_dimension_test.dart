@@ -8,22 +8,23 @@ import '../../test_util/builders/database/table_definition_builder.dart';
 
 void main() {
   group(
-    'Given table with vector column with dimension 1536 as source and dimension 768 as target',
+    'Given table with vector column with dimension 1536 as source and dimension 768 as target,',
     () {
-      var sourceDefinition = _singleVectorColumnDatabaseDefinition(1536);
-      var targetDefinition = _singleVectorColumnDatabaseDefinition(768);
+      late var sourceDefinition = _singleVectorColumnDatabaseDefinition(1536);
+      late var targetDefinition = _singleVectorColumnDatabaseDefinition(768);
 
-      var migration = generateDatabaseMigration(
+      late var migration = generateDatabaseMigration(
         databaseSource: sourceDefinition,
         databaseTarget: targetDefinition,
       );
 
-      test('when migration is generated then one action is created.', () {
+      test('when migration is generated, then one action is created.', () {
         expect(migration.actions, hasLength(1));
       });
 
       test(
-        'when migration is generated then action is to alter the table with drop and add column.',
+        'when migration is generated, '
+        'then action is to alter the table with drop and add column.',
         () {
           var action = migration.actions.first;
           expect(action.type, DatabaseMigrationActionType.alterTable);
@@ -43,7 +44,8 @@ void main() {
       );
 
       test(
-        'when migration is generated then warning is created for destructive change.',
+        'when migration is generated, '
+        'then warning is created for destructive change.',
         () {
           expect(migration.warnings, hasLength(1));
           expect(
@@ -54,7 +56,7 @@ void main() {
         },
       );
 
-      group('when SQL is generated', () {
+      group('when SQL is generated,', () {
         late var sql = migration.toPgSql(
           databaseDefinition: targetDefinition,
           installedModules: [],
@@ -73,22 +75,23 @@ void main() {
   );
 
   group(
-    'Given table with vector column with dimension 768 as source and dimension 1536 as target',
+    'Given table with vector column with dimension 768 as source and dimension 1536 as target,',
     () {
-      var sourceDefinition = _singleVectorColumnDatabaseDefinition(768);
-      var targetDefinition = _singleVectorColumnDatabaseDefinition(1536);
+      late var sourceDefinition = _singleVectorColumnDatabaseDefinition(768);
+      late var targetDefinition = _singleVectorColumnDatabaseDefinition(1536);
 
-      var migration = generateDatabaseMigration(
+      late var migration = generateDatabaseMigration(
         databaseSource: sourceDefinition,
         databaseTarget: targetDefinition,
       );
 
-      test('when migration is generated then one action is created.', () {
+      test('when migration is generated, then one action is created.', () {
         expect(migration.actions, hasLength(1));
       });
 
       test(
-        'when migration is generated then action is to alter the table with drop and add column.',
+        'when migration is generated, '
+        'then action is to alter the table with drop and add column.',
         () {
           var action = migration.actions.first;
           expect(action.type, DatabaseMigrationActionType.alterTable);
@@ -108,7 +111,8 @@ void main() {
       );
 
       test(
-        'when migration is generated then warning is created for destructive change.',
+        'when migration is generated, '
+        'then warning is created for destructive change.',
         () {
           expect(migration.warnings, hasLength(1));
           expect(
@@ -122,49 +126,50 @@ void main() {
   );
 
   group(
-    'Given table with vector column with same dimension in source and target',
+    'Given table with vector column with same dimension in source and target,',
     () {
-      var sourceDefinition = _singleVectorColumnDatabaseDefinition(768);
-      var targetDefinition = _singleVectorColumnDatabaseDefinition(768);
+      late var sourceDefinition = _singleVectorColumnDatabaseDefinition(768);
+      late var targetDefinition = _singleVectorColumnDatabaseDefinition(768);
 
-      var migration = generateDatabaseMigration(
+      late var migration = generateDatabaseMigration(
         databaseSource: sourceDefinition,
         databaseTarget: targetDefinition,
       );
 
-      test('when migration is generated then no actions are created.', () {
+      test('when migration is generated, then no actions are created.', () {
         expect(migration.actions, hasLength(0));
       });
 
-      test('when migration is generated then no warnings are created.', () {
+      test('when migration is generated, then no warnings are created.', () {
         expect(migration.warnings, hasLength(0));
       });
     },
   );
 
   group(
-    'Given table with halfvec column with dimension 512 as source and dimension 256 as target',
+    'Given table with halfvec column with dimension 512 as source and dimension 256 as target,',
     () {
-      var sourceDefinition = _singleVectorColumnDatabaseDefinition(
+      late var sourceDefinition = _singleVectorColumnDatabaseDefinition(
         512,
         columnType: ColumnType.halfvec,
       );
-      var targetDefinition = _singleVectorColumnDatabaseDefinition(
+      late var targetDefinition = _singleVectorColumnDatabaseDefinition(
         256,
         columnType: ColumnType.halfvec,
       );
 
-      var migration = generateDatabaseMigration(
+      late var migration = generateDatabaseMigration(
         databaseSource: sourceDefinition,
         databaseTarget: targetDefinition,
       );
 
-      test('when migration is generated then one action is created.', () {
+      test('when migration is generated, then one action is created.', () {
         expect(migration.actions, hasLength(1));
       });
 
       test(
-        'when migration is generated then action is to alter the table with drop and add column.',
+        'when migration is generated, '
+        'then action is to alter the table with drop and add column.',
         () {
           var action = migration.actions.first;
           expect(action.type, DatabaseMigrationActionType.alterTable);

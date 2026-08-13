@@ -85,7 +85,7 @@ Future<int> deleteAll(Session session) async {
 void main() async {
   var session = await IntegrationTestServer().session();
 
-  group('Given models with one to one relation', () {
+  group('Given models with one to one relation,', () {
     tearDown(() async {
       await CompanyUuid.db.deleteWhere(
         session,
@@ -98,7 +98,8 @@ void main() async {
     });
 
     test(
-      'when fetching models ordered by relation attributes then result is as expected.',
+      'when fetching models ordered by relation attributes, '
+      'then result is as expected.',
       () async {
         var towns = await TownInt.db.insert(session, [
           TownInt(name: 'Stockholm'),
@@ -129,7 +130,7 @@ void main() async {
     );
   });
 
-  group('Given models with nested one to one relations', () {
+  group('Given models with nested one to one relations,', () {
     tearDown(() async {
       await CitizenInt.db.deleteWhere(
         session,
@@ -146,7 +147,8 @@ void main() async {
     });
 
     test(
-      'when fetching models ordered by nested relation attributes then result is as expected.',
+      'when fetching models ordered by nested relation attributes, '
+      'then result is as expected.',
       () async {
         var towns = await TownInt.db.insert(session, [
           TownInt(name: 'Stockholm'),
@@ -187,7 +189,8 @@ void main() async {
     );
   });
 
-  group('Given models with relations when ordering on relation attributes', () {
+  group('Given models with relations, '
+        'when ordering on relation attributes,', () {
     late List<CitizenInt> citizensOrderedByCompanyName;
     setUpAll(() async {
       await _createTestDatabase(session);
@@ -206,7 +209,7 @@ void main() async {
   });
 
   group(
-    'Given models with relations when ordering on nested relation attributes',
+    'Given models with relations, when ordering on nested relation attributes,',
     () {
       late List<CitizenInt> citizensOrderedByCompanyTownName;
       setUpAll(() async {

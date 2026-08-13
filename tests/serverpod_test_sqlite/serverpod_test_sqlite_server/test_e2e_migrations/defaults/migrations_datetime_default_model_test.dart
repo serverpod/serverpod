@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 
 void main() {
   group(
-    'Given an empty database and new protocol model with table and fields with "defaultModel" value',
+    'Given an empty database and new protocol model with table and fields with "defaultModel" value,',
     () {
       tearDown(() async {
         await MigrationTestUtils.migrationTestCleanup(
@@ -15,7 +15,8 @@ void main() {
       });
 
       test(
-        'when creating and applying migration, then the database does not contain default values for "dateTimeDefaultNow" with "defaultModel".',
+        'when creating and applying migration, '
+        'then the database does not contain default values for "dateTimeDefaultNow" with "defaultModel".',
         () async {
           var tableName = 'migrated_table';
           var tag = 'add-table';
@@ -81,7 +82,8 @@ void main() {
       );
 
       test(
-        'when creating and applying migration, then the database does not contain default values for "dateTimeDefaultStr" with "defaultModel".',
+        'when creating and applying migration, '
+        'then the database does not contain default values for "dateTimeDefaultStr" with "defaultModel".',
         () async {
           var tableName = 'migrated_table';
           var tag = 'add-table';

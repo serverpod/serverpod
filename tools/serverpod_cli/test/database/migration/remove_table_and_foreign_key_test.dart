@@ -8,10 +8,10 @@ import '../../test_util/builders/database/table_definition_builder.dart';
 
 void main() {
   group(
-    'Given two tables with a foreign key relation '
-    'when the referenced table is dropped and the foreign key column is removed from the other table',
+    'Given two tables with a foreign key relation, '
+    'when the referenced table is dropped and the foreign key column is removed from the other table,',
     () {
-      var sourceDefinition = DatabaseDefinitionBuilder()
+      late var sourceDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder().withName('child_entity').build(),
@@ -42,7 +42,7 @@ void main() {
           )
           .build();
 
-      var targetDefinition = DatabaseDefinitionBuilder()
+      late var targetDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -53,12 +53,12 @@ void main() {
           // child_entity table removed
           .build();
 
-      var migration = generateDatabaseMigration(
+      late var migration = generateDatabaseMigration(
         databaseSource: sourceDefinition,
         databaseTarget: targetDefinition,
       );
 
-      var psql = migration.toPgSql(
+      late var psql = migration.toPgSql(
         databaseDefinition: targetDefinition,
         installedModules: [],
         removedModules: [],
@@ -117,10 +117,10 @@ void main() {
   );
 
   group(
-    'Given two tables with a foreign key relation '
-    'when the referenced table and the foreign key pointing to it are removed',
+    'Given two tables with a foreign key relation, '
+    'when the referenced table and the foreign key pointing to it are removed,',
     () {
-      var sourceDefinition = DatabaseDefinitionBuilder()
+      late var sourceDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -167,7 +167,7 @@ void main() {
           )
           .build();
 
-      var targetDefinition = DatabaseDefinitionBuilder()
+      late var targetDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -185,7 +185,7 @@ void main() {
           // grant_bundle table removed
           .build();
 
-      var migration = generateDatabaseMigration(
+      late var migration = generateDatabaseMigration(
         databaseSource: sourceDefinition,
         databaseTarget: targetDefinition,
       );
@@ -285,10 +285,10 @@ void main() {
   );
 
   group(
-    'Given two tables with a foreign key relation '
-    'when only the referenced table is removed but the foreign key pointing to it remains',
+    'Given two tables with a foreign key relation, '
+    'when only the referenced table is removed but the foreign key pointing to it remains,',
     () {
-      var sourceDefinition = DatabaseDefinitionBuilder()
+      late var sourceDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -328,7 +328,7 @@ void main() {
           )
           .build();
 
-      var targetDefinition = DatabaseDefinitionBuilder()
+      late var targetDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -356,7 +356,7 @@ void main() {
           )
           .build();
 
-      var migration = generateDatabaseMigration(
+      late var migration = generateDatabaseMigration(
         databaseSource: sourceDefinition,
         databaseTarget: targetDefinition,
       );
@@ -385,10 +385,10 @@ void main() {
   );
 
   group(
-    'Given a table with multiple foreign keys with sequential constraint names (_fk_0, _fk_1, etc.) '
-    'when the first foreign key and its referenced table are removed',
+    'Given a table with multiple foreign keys with sequential constraint names (_fk_0, _fk_1, etc.), '
+    'when the first foreign key and its referenced table are removed,',
     () {
-      var sourceDefinition = DatabaseDefinitionBuilder()
+      late var sourceDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -459,7 +459,7 @@ void main() {
           )
           .build();
 
-      var targetDefinition = DatabaseDefinitionBuilder()
+      late var targetDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -609,10 +609,9 @@ void main() {
 
   group(
     'Given a table that references another table by foreign key, '
-    'when the referenced table is dropped and replaced by a new table and the '
-    'referencing table uses a new column while reusing the same constraint name,',
+    'when the referenced table is dropped and replaced by a new table and the referencing table uses a new column while reusing the same constraint name,',
     () {
-      var sourceDefinition = DatabaseDefinitionBuilder()
+      late var sourceDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder().withName('old_server_settings').build(),
@@ -643,7 +642,7 @@ void main() {
           )
           .build();
 
-      var targetDefinition = DatabaseDefinitionBuilder()
+      late var targetDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder().withName('new_server_settings').build(),

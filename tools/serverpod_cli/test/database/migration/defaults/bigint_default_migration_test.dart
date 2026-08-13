@@ -7,9 +7,10 @@ import '../../../test_util/builders/database/database_definition_builder.dart';
 import '../../../test_util/builders/database/table_definition_builder.dart';
 
 void main() {
-  group('Given a database table definition with a BigInt column', () {
+  group('Given a database table definition with a BigInt column,', () {
     test(
-      'when generating SQL with a specific BigInt default value, then the table should have the correct default value.',
+      'when generating SQL with a specific BigInt default value, '
+      'then the table should have the correct default value.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -40,7 +41,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with no columnDefault, then the table should not have a default value for the BigInt field.',
+      'when generating SQL with no columnDefault, '
+      'then the table should not have a default value for the BigInt field.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -72,7 +74,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with nullable BigInt field and columnDefault, then the table should be nullable with the correct default value.',
+      'when generating SQL with nullable BigInt field and columnDefault, '
+      'then the table should be nullable with the correct default value.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -104,7 +107,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with nullable BigInt field and no columnDefault, then the table should be nullable with no default value.',
+      'when generating SQL with nullable BigInt field and no columnDefault, '
+      'then the table should be nullable with no default value.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -137,9 +141,10 @@ void main() {
     );
   });
 
-  group('Given a SQLite database table definition with a BigInt column ', () {
+  group('Given a SQLite database table definition with a BigInt column,', () {
     test(
-      'when generating SQL with a specific BigInt default value, then TEXT keeps the abstract default expression.',
+      'when generating SQL with a specific BigInt default value, '
+      'then TEXT keeps the abstract default expression.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withDefaultModules()
@@ -173,7 +178,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with no columnDefault, then the BigInt column has no DEFAULT.',
+      'when generating SQL with no columnDefault, '
+      'then the BigInt column has no DEFAULT.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withDefaultModules()
@@ -203,7 +209,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with nullable BigInt field and columnDefault, then the column is nullable with default.',
+      'when generating SQL with nullable BigInt field and columnDefault, '
+      'then the column is nullable with default.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withDefaultModules()
@@ -238,7 +245,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with nullable BigInt field and no columnDefault, then the column has no DEFAULT.',
+      'when generating SQL with nullable BigInt field and no columnDefault, '
+      'then the column has no DEFAULT.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withDefaultModules()

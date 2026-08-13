@@ -10,8 +10,8 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   test(
-    'Given a shared model and a server model with the same class name '
-    'when analyzing models '
+    'Given a shared model and a server model with the same class name, '
+    'when analyzing models, '
     'then an error is collected that server models cannot share names with shared package models.',
     () {
       var models = <ModelSource>[
@@ -59,8 +59,8 @@ fields:
   );
 
   test(
-    'Given a shared model and a server model with different class names '
-    'when analyzing models '
+    'Given a shared model and a server model with different class names, '
+    'when analyzing models, '
     'then no error is collected for class name conflict.',
     () {
       var models = <ModelSource>[
@@ -97,8 +97,8 @@ fields:
   );
 
   test(
-    'Given a shared enum and a server enum with the same name '
-    'when analyzing models '
+    'Given a shared enum and a server enum with the same name, '
+    'when analyzing models, '
     'then an error is collected that server enums cannot share names with shared package enums.',
     () {
       var models = <ModelSource>[
@@ -147,8 +147,8 @@ values:
   );
 
   test(
-    'Given a shared enum and a server enum with different names '
-    'when analyzing models '
+    'Given a shared enum and a server enum with different names, '
+    'when analyzing models, '
     'then no error is collected for enum name conflict.',
     () {
       var models = <ModelSource>[
@@ -187,8 +187,8 @@ values:
   );
 
   test(
-    'Given a shared exception and a server exception with the same name '
-    'when analyzing models '
+    'Given a shared exception and a server exception with the same name, '
+    'when analyzing models, '
     'then an error is collected that server exceptions cannot share names with shared package exceptions.',
     () {
       var models = <ModelSource>[
@@ -236,8 +236,8 @@ fields:
   );
 
   test(
-    'Given a shared exception and a server exception with different names '
-    'when analyzing models '
+    'Given a shared exception and a server exception with different names, '
+    'when analyzing models, '
     'then no error is collected for exception name conflict.',
     () {
       var models = <ModelSource>[

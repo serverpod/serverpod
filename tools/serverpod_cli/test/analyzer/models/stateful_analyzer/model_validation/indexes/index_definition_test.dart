@@ -10,7 +10,8 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   test(
-    'Given a class with the index property defined but without any index, then collect an error that at least one index has to be added.',
+    'Given a class with the index property defined but without any index, '
+    'then collect an error that at least one index has to be added.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -47,7 +48,8 @@ void main() {
   );
 
   test(
-    'Given a class with an index that does not define the fields keyword, then collect an error that fields are required.',
+    'Given a class with an index that does not define the fields keyword, '
+    'then collect an error that fields are required.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -85,9 +87,10 @@ void main() {
   );
 
   group(
-    'Given a class with an index defined as an empty map when fields keyword is missing',
+    'Given a class with an index defined as an empty map, '
+    'when fields keyword is missing,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withYaml(
           '''
 class: Example
@@ -137,7 +140,8 @@ indexes:
   );
 
   test(
-    'Given a class with an index with a defined field, then the definition contains the index.',
+    'Given a class with an index with a defined field, '
+    'then the definition contains the index.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -168,9 +172,9 @@ indexes:
   );
 
   group(
-    'Given a class with an index with a defined field',
+    'Given a class with an index with a defined field,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -184,13 +188,13 @@ indexes:
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       var errors = collector.errors;
       test('then no errors are collected.', () {
@@ -221,11 +225,11 @@ indexes:
 
   group(
     'Given a class with an index with a defined field '
-    'that has an explicit column name',
+    'that has an explicit column name,',
     () {
       const columnOverride = 'example_name';
       const indexName = 'example_override_index';
-      var models = [
+      late var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -238,13 +242,13 @@ indexes:
           ''',
         ).build(),
       ];
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       var errors = collector.errors;
       test('then no errors are collected.', () {
@@ -275,9 +279,9 @@ indexes:
   );
 
   group(
-    'Given a class with an index with two defined fields',
+    'Given a class with an index with two defined fields,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -292,13 +296,13 @@ indexes:
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       var errors = collector.errors;
       test('then no errors are collected.', () {
@@ -341,13 +345,13 @@ indexes:
   );
 
   group(
-    'Given a class with an index with two defined fields'
-    'and both have explicit column names',
+    'Given a class with an index with two defined fields '
+    'and both have explicit column names,',
     () {
       const nameOverride = 'example_name';
       const fooOverride = 'example_foo';
       const indexName = 'example_override_index';
-      var models = [
+      late var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -362,13 +366,13 @@ indexes:
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       var errors = collector.errors;
       test('then no errors are collected.', () {
@@ -417,7 +421,8 @@ indexes:
   );
 
   test(
-    'Given a class with two indexes, then the definition contains both the index names.',
+    'Given a class with two indexes, '
+    'then the definition contains both the index names.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -454,7 +459,8 @@ indexes:
   );
 
   test(
-    'Given a class with an index with an invalid key, then collect an error indicating that the key is invalid.',
+    'Given a class with an index with an invalid key, '
+    'then collect an error indicating that the key is invalid.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(

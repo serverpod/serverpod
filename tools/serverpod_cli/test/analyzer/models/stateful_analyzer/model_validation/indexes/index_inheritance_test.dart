@@ -11,7 +11,7 @@ void main() {
 
   test(
     'Given a parent model with an index and a child model with a table that extends it, '
-    'when analyzing models '
+    'when analyzing models, '
     'then the child model inherits the index with the table name prefix.',
     () {
       var models = [
@@ -66,7 +66,7 @@ void main() {
 
   test(
     'Given a grandchild model with a table that extends a child model that extends a parent model with an index, '
-    'when analyzing models '
+    'when analyzing models, '
     'then the grandchild model inherits the index with the table name prefix.',
     () {
       var models = [
@@ -128,9 +128,10 @@ void main() {
   );
 
   group(
-    'Given an inherited index whose name combined with the table name exceeds the 63 character index name limitation, then collect an error that the index name is too long.',
+    'Given an inherited index whose name combined with the table name exceeds the 63 character index name limitation, '
+    'then collect an error that the index name is too long.',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withYaml(
           '''
 class: ParentBase
@@ -195,7 +196,7 @@ fields:
 
   test(
     'Given a parent model with a gin index with a non-default operator class and a child model with a table that extends it, '
-    'when analyzing models '
+    'when analyzing models, '
     'then the child model inherits the index with the operator class preserved.',
     () {
       var jsonbConfig = GeneratorConfigBuilder().build();

@@ -6,9 +6,9 @@ import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a ServerpodCloudEmailClient', () {
+  group('Given a ServerpodCloudEmailClient,', () {
     test(
-      'when sending a sign-up email '
+      'when sending a sign-up email, '
       'then it posts a well-formed request and completes on a 200 response',
       () async {
         late http.Request captured;
@@ -45,7 +45,7 @@ void main() {
     );
 
     test(
-      'when sending a password-reset email '
+      'when sending a password-reset email, '
       'then it uses the lostpassword emailType',
       () async {
         late http.Request captured;
@@ -76,7 +76,7 @@ void main() {
     });
 
     test(
-      'when the service responds with 400 '
+      'when the service responds with 400, '
       'then it throws a ServerpodCloudEmailException with the parsed error message',
       () async {
         final client = ServerpodCloudEmailClient(
@@ -104,7 +104,7 @@ void main() {
     );
 
     test(
-      'when the service responds with 401 '
+      'when the service responds with 401, '
       'then it throws a ServerpodCloudEmailException',
       () async {
         final client = ServerpodCloudEmailClient(
@@ -134,7 +134,7 @@ void main() {
     );
 
     test(
-      'when the service responds with a non-JSON error body '
+      'when the service responds with a non-JSON error body, '
       'then the raw body is used as the message',
       () async {
         final client = ServerpodCloudEmailClient(

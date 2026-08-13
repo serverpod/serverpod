@@ -18,7 +18,7 @@ class _TestIndicator extends HealthIndicator<double> {
 }
 
 void main() {
-  group('Given default HealthConfig when created', () {
+  group('Given default HealthConfig, when created,', () {
     late HealthConfig config;
 
     setUp(() {
@@ -39,8 +39,8 @@ void main() {
   });
 
   test(
-    'Given HealthConfig created with custom cacheTtl '
-    'when accessing cacheTtl '
+    'Given HealthConfig created with custom cacheTtl, '
+    'when accessing cacheTtl, '
     'then the custom value is preserved',
     () {
       const config = HealthConfig(
@@ -52,8 +52,8 @@ void main() {
   );
 
   test(
-    'Given HealthConfig created with additionalReadinessIndicators '
-    'when accessing additionalReadinessIndicators '
+    'Given HealthConfig created with additionalReadinessIndicators, '
+    'when accessing additionalReadinessIndicators, '
     'then the indicators are preserved',
     () {
       final indicators = [
@@ -71,8 +71,8 @@ void main() {
   );
 
   test(
-    'Given HealthConfig created with additionalStartupIndicators '
-    'when accessing additionalStartupIndicators '
+    'Given HealthConfig created with additionalStartupIndicators, '
+    'when accessing additionalStartupIndicators, '
     'then the indicators are preserved',
     () {
       final indicators = [
@@ -88,8 +88,8 @@ void main() {
   );
 
   test(
-    'Given HealthConfig created with all custom options '
-    'when accessing all properties '
+    'Given HealthConfig created with all custom options, '
+    'when accessing all properties, '
     'then all values are preserved',
     () {
       final additionalReadinessIndicators = [_TestIndicator('readiness:test')];

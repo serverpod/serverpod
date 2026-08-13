@@ -21,10 +21,11 @@ void main() {
   });
 
   group(
-    'Given an endpoint file with incomplete endpoint class defined when analyzed',
+    'Given an endpoint file with incomplete endpoint class defined, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -63,10 +64,11 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint file with incomplete endpoint method defined when analyzed',
+    'Given an endpoint file with incomplete endpoint method defined, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -105,10 +107,10 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint method that returns a Future with multiple defined types',
+    'Given an endpoint method that returns a Future with multiple defined types,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -147,9 +149,9 @@ class ExampleEndpoint extends Endpoint {
     },
   );
 
-  group('Given a valid and an invalid endpoint file when analyzed', () {
-    var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
+  group('Given a valid and an invalid endpoint file, when analyzed,', () {
+    late var collector = CodeGenerationCollector();
+    late var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
 
@@ -199,9 +201,9 @@ class ExampleEndpointValid extends Endpoint {
     });
   });
 
-  group('Given an invalid dart file without an endpoint definition', () {
-    var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
+  group('Given an invalid dart file without an endpoint definition,', () {
+    late var collector = CodeGenerationCollector();
+    late var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
 
@@ -227,10 +229,10 @@ class InvalidClass {
   });
 
   group(
-    'Given an invalid dart file without an endpoint definition and a valid endpoint definition file',
+    'Given an invalid dart file without an endpoint definition and a valid endpoint definition file,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 

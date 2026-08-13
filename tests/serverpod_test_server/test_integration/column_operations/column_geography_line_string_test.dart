@@ -43,8 +43,8 @@ void main() async {
   setUpAll(() async => await _createTestDatabase(session));
   tearDownAll(() async => await _deleteAll(session));
 
-  group('Given geography line string column in database', () {
-    test('when fetching all then all rows are returned.', () async {
+  group('Given geography line string column in database,', () {
+    test('when fetching all, then all rows are returned.', () async {
       var result = await Types.db.find(
         session,
         where: (_) => Constant.bool(true),
@@ -54,7 +54,8 @@ void main() async {
     });
 
     test(
-      'when filtering with intersects then line strings overlapping the polygon are returned.',
+      'when filtering with intersects, '
+      'then line strings overlapping the polygon are returned.',
       () async {
         var result = await Types.db.find(
           session,
@@ -67,7 +68,8 @@ void main() async {
     );
 
     test(
-      'when filtering with distanceWithin then line strings within the distance are returned.',
+      'when filtering with distanceWithin, '
+      'then line strings within the distance are returned.',
       () async {
         var result = await Types.db.find(
           session,
@@ -80,7 +82,7 @@ void main() async {
     );
 
     test(
-      'when ordering by distance then closest rows are returned first.',
+      'when ordering by distance, then closest rows are returned first.',
       () async {
         var result = await Types.db.find(
           session,

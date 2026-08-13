@@ -9,16 +9,16 @@ import '../../../../../test_util/builders/model_source_builder.dart';
 
 void main() {
   var config = GeneratorConfigBuilder().build();
-  group('Given a class without the fields key', () {
-    var models = [
+  group('Given a class without the fields key,', () {
+    late var models = [
       ModelSourceBuilder().withYaml(
         '''
           class: Example
           ''',
       ).build(),
     ];
-    var collector = CodeGenerationCollector();
-    var definitions = StatefulAnalyzer(
+    late var collector = CodeGenerationCollector();
+    late var definitions = StatefulAnalyzer(
       config,
       models,
       onErrorsCollector(collector),
@@ -38,16 +38,16 @@ void main() {
     });
   });
 
-  group('Given an exception without the fields key', () {
-    var models = [
+  group('Given an exception without the fields key,', () {
+    late var models = [
       ModelSourceBuilder().withYaml(
         '''
           exception: Example
           ''',
       ).build(),
     ];
-    var collector = CodeGenerationCollector();
-    var definitions = StatefulAnalyzer(
+    late var collector = CodeGenerationCollector();
+    late var definitions = StatefulAnalyzer(
       config,
       models,
       onErrorsCollector(collector),
@@ -66,9 +66,10 @@ void main() {
       expect(definition?.className, 'Example');
     });
   });
-  group('Test invalid top level fields key values', () {
+  group('Test invalid top level fields key values,', () {
     test(
-      'Given a class with the fields key defined but without any field, then collect an error that at least one field has to be added.',
+      'Given a class with the fields key defined but without any field, '
+      'then collect an error that at least one field has to be added.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -100,7 +101,8 @@ void main() {
     );
 
     test(
-      'Given an exception with the fields key defined but without any field, then collect an error that at least one field has to be added.',
+      'Given an exception with the fields key defined but without any field, '
+      'then collect an error that at least one field has to be added.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -132,7 +134,8 @@ void main() {
     );
 
     test(
-      'Given an class with the fields key defined as a primitive datatype instead of a Map, then collect an error that at least one field has to be added.',
+      'Given an class with the fields key defined as a primitive datatype instead of a Map, '
+      'then collect an error that at least one field has to be added.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -164,7 +167,8 @@ void main() {
     );
 
     test(
-      'Given an enum with the fields key defined, then collect an error that fields are not allowed.',
+      'Given an enum with the fields key defined, '
+      'then collect an error that fields are not allowed.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -199,7 +203,8 @@ void main() {
 
   group('Testing key of fields.', () {
     test(
-      'Given a class with a field key that is not a string, then collect an error that field keys have to be of the type string.',
+      'Given a class with a field key that is not a string, '
+      'then collect an error that field keys have to be of the type string.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -364,7 +369,8 @@ void main() {
     );
 
     test(
-      'Given a class with a valid field key, then an entity with that field is generated.',
+      'Given a class with a valid field key, '
+      'then an entity with that field is generated.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -429,7 +435,8 @@ void main() {
   );
 
   test(
-    'Given a class with a field name longer than 61 characters, then an error is collected.',
+    'Given a class with a field name longer than 61 characters, '
+    'then an error is collected.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -466,9 +473,10 @@ void main() {
   );
 
   group(
-    'Given a class with a field name that is 61 characters when analyzing models',
+    'Given a class with a field name that is 61 characters, '
+    'when analyzing models,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -478,13 +486,13 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late StatefulAnalyzer analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       var errors = collector.errors;
       test('then no errors are collected.', () {

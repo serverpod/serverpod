@@ -7,9 +7,9 @@ import 'package:test/test.dart';
 void main() {
   var client = Client(serverUrl);
 
-  test('Given the test server '
-      'when request is too large '
-      'then the server should respond with an error.', () {
+  test('Given the test server, '
+       'when request is too large, '
+       'then the server should respond with an error.', () {
     expectLater(
       client.upload.uploadByteData('path', ByteData(1 << 20)),
       throwsA(

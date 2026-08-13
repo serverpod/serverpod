@@ -3,13 +3,13 @@ import 'package:test/test.dart';
 import '../../compilation_unit_matcher.dart';
 
 void main() {
-  group('Given empty string', () {
+  group('Given empty string,', () {
     const actual = '';
-    test('when negate matching with class then test passes', () {
+    test('when negate matching with class, then test passes', () {
       expect(actual, isNot(containsClass('User')));
     });
 
-    test('when matching with class then mismatch description is correct', () {
+    test('when matching with class, then mismatch description is correct', () {
       final matcher = containsClass('User') as Matcher;
       final description = StringDescription();
       matcher.describeMismatch(actual, description, {}, false);
@@ -22,7 +22,9 @@ void main() {
   });
 
   test(
-    'Given empty compilation unit when negate matching with class name then test passes',
+    'Given empty compilation unit, '
+    'when negate matching with class name, '
+    'then test passes',
     () {
       late final compilationUnit = parseCode('');
 
@@ -33,14 +35,14 @@ void main() {
     },
   );
 
-  group('Given compilation unit with class', () {
+  group('Given compilation unit with class,', () {
     late final compilationUnit = parseCode(
       '''
       class User {}
       ''',
     );
 
-    test('when matching with class name then test passes', () {
+    test('when matching with class name, then test passes', () {
       expect(
         compilationUnit,
         containsClass('User'),
@@ -48,7 +50,7 @@ void main() {
     });
 
     test(
-      'when negate matching with non-existent class name then test passes',
+      'when negate matching with non-existent class name, then test passes',
       () {
         expect(
           compilationUnit,
@@ -58,7 +60,8 @@ void main() {
     );
 
     test(
-      'when matching with non-existent class name then mismatch description is correct',
+      'when matching with non-existent class name, '
+      'then mismatch description is correct',
       () {
         final matcher = containsClass('NonExistentClass') as Matcher;
         final description = StringDescription();
@@ -75,7 +78,9 @@ void main() {
   });
 
   test(
-    'Given class matcher matching "User" when fetching description then description reflects matcher requirements',
+    'Given class matcher matching "User", '
+    'when fetching description, '
+    'then description reflects matcher requirements',
     () {
       final matcher = containsClass('User') as Matcher;
       final description = StringDescription();
@@ -89,7 +94,9 @@ void main() {
   );
 
   test(
-    'Given class and named constructor matcher when matching on empty name then exception is thrown',
+    'Given class and named constructor matcher, '
+    'when matching on empty name, '
+    'then exception is thrown',
     () {
       expect(
         () => containsClass('User').withNamedConstructor(''),

@@ -3,7 +3,7 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given an McpCommand', () {
+  group('Given an McpCommand,', () {
     late McpCommand command;
 
     setUp(() {

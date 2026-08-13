@@ -8,7 +8,7 @@ import '../../test_utils/email_idp_test_fixture.dart';
 
 void main() {
   withServerpod(
-    'Given max password reset attempt within timeframe has been reached for user',
+    'Given max password reset attempt within timeframe has been reached for user,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -52,7 +52,8 @@ void main() {
       });
 
       test(
-        'when deleting password reset attempts without older than then user can still not request password reset',
+        'when deleting password reset attempts without older than, '
+        'then user can still not request password reset',
         () async {
           await session.db.transaction(
             (final transaction) =>
@@ -80,7 +81,8 @@ void main() {
       );
 
       test(
-        'when deleting password reset attempts that are older than zero then can request password reset',
+        'when deleting password reset attempts that are older than zero, '
+        'then can request password reset',
         () async {
           await session.db.transaction(
             (final transaction) =>
@@ -107,7 +109,7 @@ void main() {
   );
 
   withServerpod(
-    'Given max password reset attempts exist for user in the past that is before configured timeframe',
+    'Given max password reset attempts exist for user in the past that is before configured timeframe,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -163,7 +165,8 @@ void main() {
       // attempting to create a new password reset request in the past where the
       // existing request attempts would have prevented it.
       test(
-        'when deleting password reset request attempts without older than then requesting new password reset in the past succeeds',
+        'when deleting password reset request attempts without older than, '
+        'then requesting new password reset in the past succeeds',
         () async {
           await session.db.transaction(
             (final transaction) =>
@@ -192,7 +195,7 @@ void main() {
   );
 
   withServerpod(
-    'Given password reset attempt within timeframe has been reached for two users',
+    'Given password reset attempt within timeframe has been reached for two users,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -249,7 +252,7 @@ void main() {
         await fixture.tearDown(session);
       });
 
-      group('when deleting all password reset attempts for first user', () {
+      group('when deleting all password reset attempts for first user,', () {
         setUp(() async {
           await session.db.transaction(
             (final transaction) =>
@@ -291,7 +294,8 @@ void main() {
       });
 
       test(
-        'when deleting all password reset attempts for all users then both users can request password reset',
+        'when deleting all password reset attempts for all users, '
+        'then both users can request password reset',
         () async {
           await session.db.transaction(
             (final transaction) =>

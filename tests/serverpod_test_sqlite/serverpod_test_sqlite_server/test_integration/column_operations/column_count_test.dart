@@ -13,8 +13,8 @@ void main() async {
     );
   });
 
-  group('Given count column in database', () {
-    test('when filtering on equals then matching row is returned.', () async {
+  group('Given count column in database,', () {
+    test('when filtering on equals, then matching row is returned.', () async {
       var customers = await Customer.db.insert(session, [
         Customer(name: 'Customer 1'),
         Customer(name: 'Customer 2'),
@@ -38,7 +38,7 @@ void main() async {
     });
 
     test(
-      'when filtering on equals zero then matching row is returned.',
+      'when filtering on equals zero, then matching row is returned.',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Customer 1'),
@@ -61,7 +61,7 @@ void main() async {
     );
 
     test(
-      'when filtering using notEquals then matching rows are returned.',
+      'when filtering using notEquals, then matching rows are returned.',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Customer 1'),
@@ -90,7 +90,7 @@ void main() async {
     );
 
     test(
-      'when filtering using notEquals zero then matching rows are returned.',
+      'when filtering using notEquals zero, then matching rows are returned.',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Customer 1'),
@@ -118,7 +118,7 @@ void main() async {
       },
     );
 
-    test('when filtering on inSet then matching row is returned.', () async {
+    test('when filtering on inSet, then matching row is returned.', () async {
       var customers = await Customer.db.insert(session, [
         Customer(name: 'Customer 1'),
         Customer(name: 'Customer 2'),
@@ -144,7 +144,7 @@ void main() async {
       expect(resultNames, contains(customers[2].name));
     });
 
-    test('when filtering with an empty inSet then no rows are.', () async {
+    test('when filtering with an empty inSet, then no rows are.', () async {
       var customers = await Customer.db.insert(session, [
         Customer(name: 'Customer 1'),
         Customer(name: 'Customer 2'),
@@ -167,7 +167,8 @@ void main() async {
       expect(result, isEmpty);
     });
 
-    test('when filtering on notInSet then matching row is returned.', () async {
+    test('when filtering on notInSet, '
+         'then matching row is returned.', () async {
       var customers = await Customer.db.insert(session, [
         Customer(name: 'Customer 1'),
         Customer(name: 'Customer 2'),
@@ -194,7 +195,7 @@ void main() async {
     });
 
     test(
-      'when filtering with empty notInSet then all rows are returned.',
+      'when filtering with empty notInSet, then all rows are returned.',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Customer 1'),
@@ -222,7 +223,7 @@ void main() async {
     );
 
     test(
-      'when filtering on greater than then matching rows are returned.',
+      'when filtering on greater than, then matching rows are returned.',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Customer 1'),
@@ -251,7 +252,8 @@ void main() async {
     );
 
     test(
-      'when filtering using greater or equal than then matching rows are returned.',
+      'when filtering using greater or equal than, '
+      'then matching rows are returned.',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Customer 1'),
@@ -280,7 +282,8 @@ void main() async {
     );
 
     test(
-      'when filtering using greater or equal than with zero then matching rows are returned.',
+      'when filtering using greater or equal than with zero, '
+      'then matching rows are returned.',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Customer 1'),
@@ -310,7 +313,8 @@ void main() async {
     );
 
     test(
-      'when filtering using greater or equal than with negative value then matching rows are returned.',
+      'when filtering using greater or equal than with negative value, '
+      'then matching rows are returned.',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Customer 1'),
@@ -340,7 +344,7 @@ void main() async {
     );
 
     test(
-      'when filtering using less than then matching rows are returned.',
+      'when filtering using less than, then matching rows are returned.',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Customer 1'),
@@ -369,7 +373,8 @@ void main() async {
     );
 
     test(
-      'when filtering using less or equal than then matching rows are returned.',
+      'when filtering using less or equal than, '
+      'then matching rows are returned.',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Customer 1'),
@@ -398,7 +403,7 @@ void main() async {
     );
 
     test(
-      'when filtering using between then matching rows are returned.',
+      'when filtering using between, then matching rows are returned.',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Customer 1'),
@@ -427,7 +432,7 @@ void main() async {
     );
 
     test(
-      'when filtering notBetween then matching rows are returned.',
+      'when filtering notBetween, then matching rows are returned.',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Customer 1'),

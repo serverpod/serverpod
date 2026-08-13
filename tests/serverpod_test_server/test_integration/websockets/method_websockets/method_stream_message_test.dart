@@ -9,7 +9,7 @@ import 'package:web_socket/web_socket.dart';
 import '../websocket_extensions.dart';
 
 void main() {
-  group('Given method websocket connection', () {
+  group('Given method websocket connection,', () {
     late Serverpod server;
     late WebSocket webSocket;
 
@@ -27,7 +27,8 @@ void main() {
     });
 
     test(
-      'when a MethodStreamMessage is sent to the server without an open stream then response is a CloseMethodStreamCommand with error reason.',
+      'when a MethodStreamMessage is sent to the server without an open stream, '
+      'then response is a CloseMethodStreamCommand with error reason.',
       () async {
         var closeMethodCommand = Completer<CloseMethodStreamCommand>();
         webSocket.textEvents.listen((event) {
@@ -63,14 +64,14 @@ void main() {
     );
 
     group(
-      'when a stream is opened to an endpoint that returns a Future with a value',
+      'when a stream is opened to an endpoint that returns a Future with a value,',
       () {
         late Completer<MethodStreamMessage> endpointResponse;
-        TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
+        late TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
 
         var endpoint = 'methodStreaming';
         var method = 'directOneIntReturnWithStreamInput';
-        var connectionId = const Uuid().v4obj();
+        late var connectionId = const Uuid().v4obj();
 
         setUp(() async {
           endpointResponse = Completer<MethodStreamMessage>();
@@ -141,7 +142,7 @@ void main() {
     );
 
     group(
-      'when a stream is opened to an endpoint that returns a stream of numbers counting to the input value starting from 0',
+      'when a stream is opened to an endpoint that returns a stream of numbers counting to the input value starting from 0,',
       () {
         late List<int> endpointResponses;
         late Completer<CloseMethodStreamCommand> closeMethodStreamCommand;
@@ -150,7 +151,7 @@ void main() {
 
         var endpoint = 'methodStreaming';
         var method = 'intStreamFromValue';
-        var connectionId = const Uuid().v4obj();
+        late var connectionId = const Uuid().v4obj();
 
         setUp(() async {
           endpointResponses = [];
@@ -236,7 +237,7 @@ void main() {
     );
 
     group(
-      'when a stream is opened to an endpoint that returns a stream of SimpleData objects with numbers counting to the input value starting from 0',
+      'when a stream is opened to an endpoint that returns a stream of SimpleData objects with numbers counting to the input value starting from 0,',
       () {
         late List<SimpleData> endpointResponses;
         late Completer<CloseMethodStreamCommand> closeMethodStreamCommand;
@@ -245,7 +246,7 @@ void main() {
 
         var endpoint = 'methodStreaming';
         var method = 'simpleDataStream';
-        var connectionId = const Uuid().v4obj();
+        late var connectionId = const Uuid().v4obj();
 
         setUp(() async {
           endpointResponses = [];
@@ -331,7 +332,7 @@ void main() {
     );
 
     group(
-      'when multiple methods streams are open and one of them with Future response is closed',
+      'when multiple methods streams are open and one of them with Future response is closed,',
       () {
         late Completer<void> returningStreamClosed;
         late Completer<void> webSocketCompleter;
@@ -429,7 +430,7 @@ void main() {
     );
 
     group(
-      'when multiple methods streams are open and one of them with Stream response is closed',
+      'when multiple methods streams are open and one of them with Stream response is closed,',
       () {
         late Completer<void> returningStreamClosed;
         late Completer<void> webSocketCompleter;
@@ -527,7 +528,7 @@ void main() {
   });
 
   group(
-    'Given method stream connection to an endpoint with a stream return',
+    'Given method stream connection to an endpoint with a stream return,',
     () {
       var endpoint = 'methodStreaming';
       var method = 'intEchoStream';
@@ -549,13 +550,13 @@ void main() {
       });
 
       group(
-        'when MethodStreamMessage is passed targeting the endpoint method',
+        'when MethodStreamMessage is passed targeting the endpoint method,',
         () {
           late Completer<BadRequestMessage> badRequestMessage;
           late Completer<void> webSocketCompleter;
-          TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
+          late TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
 
-          var connectionId = const Uuid().v4obj();
+          late var connectionId = const Uuid().v4obj();
 
           setUp(() async {
             badRequestMessage = Completer<BadRequestMessage>();

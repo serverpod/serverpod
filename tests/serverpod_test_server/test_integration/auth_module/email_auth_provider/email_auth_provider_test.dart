@@ -14,8 +14,8 @@ void main() async {
     ),
   );
 
-  withServerpod('Given create account request ', (sessionBuilder, _) {
-    var session = sessionBuilder.build();
+  withServerpod('Given create account request,', (sessionBuilder, _) {
+    late var session = sessionBuilder.build();
     var userName = 'test';
     var email = 'test@serverpod.dev';
     var password = 'password';
@@ -25,7 +25,7 @@ void main() async {
     });
 
     test(
-      'when inspecting password hash then password is hashed using Argon2id',
+      'when inspecting password hash, then password is hashed using Argon2id',
       () async {
         var createAccountRequest = await EmailCreateAccountRequest.db
             .findFirstRow(
@@ -49,8 +49,8 @@ void main() async {
     );
   });
 
-  withServerpod('Given a created user', (sessionBuilder, _) {
-    var session = sessionBuilder.build();
+  withServerpod('Given a created user,', (sessionBuilder, _) {
+    late var session = sessionBuilder.build();
     var userName = 'test';
     var email = 'test@serverpod.dev';
     var password = 'password';
@@ -60,7 +60,7 @@ void main() async {
     });
 
     test(
-      'when inspecting email auth hash then password is hashed using Argon2id',
+      'when inspecting email auth hash, then password is hashed using Argon2id',
       () async {
         var emailAuth = await EmailAuth.db.findFirstRow(
           session,
@@ -82,11 +82,11 @@ void main() async {
     );
   });
 
-  withServerpod('Given user with legacy password hash when authenticating', (
+  withServerpod('Given user with legacy password hash, when authenticating,', (
     sessionBuilder,
     _,
   ) {
-    var session = sessionBuilder.build();
+    late var session = sessionBuilder.build();
     var userName = 'test';
     var email = 'test@serverpod.dev';
     var password = 'hunter2';
@@ -136,11 +136,11 @@ void main() async {
     });
   });
 
-  withServerpod('Given all password hash types in database', (
+  withServerpod('Given all password hash types in database,', (
     sessionBuilder,
     _,
   ) {
-    var session = sessionBuilder.build();
+    late var session = sessionBuilder.build();
 
     setUp(
       () async => await EmailAuth.db.insert(session, [
@@ -199,7 +199,8 @@ void main() async {
     );
 
     test(
-      'when migrating auth entries then updated rows matches legacy hashes stored.',
+      'when migrating auth entries, '
+      'then updated rows matches legacy hashes stored.',
       () async {
         var updatedRows = await Emails.migrateLegacyPasswordHashes(
           session,
@@ -210,7 +211,8 @@ void main() async {
     );
 
     test(
-      'when migrating auth entries with a maxMigratedEntries then updated rows matches maxMigratedEntries legacy hashes stored.',
+      'when migrating auth entries with a maxMigratedEntries, '
+      'then updated rows matches maxMigratedEntries legacy hashes stored.',
       () async {
         var updatedRows = await Emails.migrateLegacyPasswordHashes(
           session,
@@ -222,7 +224,8 @@ void main() async {
     );
 
     test(
-      'when migrating auth entries with a maxMigratedEntries then updated rows matches maxMigratedEntries legacy hashes stored.',
+      'when migrating auth entries with a maxMigratedEntries, '
+      'then updated rows matches maxMigratedEntries legacy hashes stored.',
       () async {
         var updatedRows = await Emails.migrateLegacyPasswordHashes(
           session,
@@ -234,7 +237,8 @@ void main() async {
     );
 
     test(
-      'when migrating auth entries multiple times with maxMigratedEntries defined then total updated rows matches total legacy hashes stored.',
+      'when migrating auth entries multiple times with maxMigratedEntries defined, '
+      'then total updated rows matches total legacy hashes stored.',
       () async {
         var migrateHashes = () => Emails.migrateLegacyPasswordHashes(
           session,
@@ -251,7 +255,8 @@ void main() async {
     );
 
     test(
-      'when migrating auth entries then all legacy hashes are stored with migrate algorithm.',
+      'when migrating auth entries, '
+      'then all legacy hashes are stored with migrate algorithm.',
       () async {
         await Emails.migrateLegacyPasswordHashes(session, batchSize: 2);
 
@@ -277,7 +282,7 @@ void main() async {
       },
     );
 
-    group('when migrating auth entries', () {
+    group('when migrating auth entries,', () {
       setUp(() async => await Emails.migrateLegacyPasswordHashes(session));
 
       test(
@@ -360,7 +365,7 @@ void main() async {
     });
   });
 
-  group('Given password not matching the hash when validating password', () {
+  group('Given password not matching the hash, when validating password,', () {
     // This is the hash from the password 'hunter4'
     var hunter4PasswordHash =
         '2ee3dc6432300eabf9630ac7827d6dd23fd23cc9120ec4cd58f8f66bd3ce2db9';

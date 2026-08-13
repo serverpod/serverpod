@@ -36,7 +36,7 @@ void main() {
         await _cleanUpDatabase(sessionBuilder.build());
       });
 
-      group('when calling `startRegistration`', () {
+      group('when calling `startRegistration`,', () {
         late UuidValue receivedAccountRequestId;
         late UuidValue clientReceivedRequestId;
         String? receivedVerificationCode;
@@ -73,7 +73,7 @@ void main() {
           expect(receivedAccountRequestId, isNotNull);
         });
 
-        test('then the client received correct request id. ', () async {
+        test('then the client received correct request id.', () async {
           expect(clientReceivedRequestId, receivedAccountRequestId);
         });
       });
@@ -99,7 +99,7 @@ void main() {
         },
       );
 
-      group('when calling `startPasswordReset` for a non existing email', () {
+      group('when calling `startPasswordReset` for a non existing email,', () {
         UuidValue? receivedPasswordResetRequestId;
         UuidValue? clientReceivedRequestId;
         String? receivedVerificationCode;
@@ -140,7 +140,7 @@ void main() {
           expect(receivedPasswordResetRequestId, isNull);
         });
 
-        test('then the client received a request id. ', () async {
+        test('then the client received a request id.', () async {
           expect(clientReceivedRequestId, isNotNull);
         });
 
@@ -198,7 +198,7 @@ void main() {
       });
 
       group(
-        'when calling `verifyRegistrationCode` with the correct verification code, ',
+        'when calling `verifyRegistrationCode` with the correct verification code,',
         () {
           late Future<String> verificationToken;
 
@@ -390,7 +390,8 @@ void main() {
       });
 
       test(
-        'when calling `login` with the correct credentials, then it succeeds returning a valid session key.',
+        'when calling `login` with the correct credentials, '
+        'then it succeeds returning a valid session key.',
         () async {
           final authSuccess = await endpoints.emailAccount.login(
             sessionBuilder,
@@ -409,7 +410,8 @@ void main() {
       );
 
       test(
-        'when calling `login` with the wrong password, then it throws an error with `invalidCredentials`.',
+        'when calling `login` with the wrong password, '
+        'then it throws an error with `invalidCredentials`.',
         () async {
           await expectLater(
             () => endpoints.emailAccount.login(
@@ -428,7 +430,7 @@ void main() {
         },
       );
 
-      group('when calling `startRegistration`', () {
+      group('when calling `startRegistration`,', () {
         UuidValue? receivedAccountRequestId;
         UuidValue? clientReceivedRequestId;
 
@@ -461,7 +463,8 @@ void main() {
       });
 
       test(
-        'when calling `startPasswordReset`, then the verification code is sent out.',
+        'when calling `startPasswordReset`, '
+        'then the verification code is sent out.',
         () async {
           await endpoints.emailAccount.startPasswordReset(
             sessionBuilder,
@@ -956,7 +959,8 @@ void main() {
       });
 
       test(
-        'when calling `login` with the old credentials, then it throws an error with reason `invalidCredentials`.',
+        'when calling `login` with the old credentials, '
+        'then it throws an error with reason `invalidCredentials`.',
         () async {
           await expectLater(
             () => endpoints.emailAccount.login(
@@ -976,7 +980,8 @@ void main() {
       );
 
       test(
-        'when calling `login` with the new credentials, then it succeeds returning a valid session key.',
+        'when calling `login` with the new credentials, '
+        'then it succeeds returning a valid session key.',
         () async {
           final authSuccess = await endpoints.emailAccount.login(
             sessionBuilder,
@@ -995,7 +1000,8 @@ void main() {
       );
 
       test(
-        'when trying to use the session key from before the password change, then the authentication handler returns `null`.',
+        'when trying to use the session key from before the password change, '
+        'then the authentication handler returns `null`.',
         () async {
           expect(
             await AuthServices.instance.tokenManager.validateToken(

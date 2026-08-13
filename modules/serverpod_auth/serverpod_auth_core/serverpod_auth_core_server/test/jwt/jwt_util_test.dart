@@ -38,7 +38,8 @@ void main() {
       );
 
       test(
-        'when two JWTs are created within the same second, then they are unique.',
+        'when two JWTs are created within the same second, '
+        'then they are unique.',
         () {
           final refreshToken = _createRefreshToken();
           final jwt1 = jwtUtil.createJwt(refreshToken);
@@ -57,7 +58,8 @@ void main() {
       });
 
       test(
-        'when a JWT is requested for the refresh token, then it throws an error.',
+        'when a JWT is requested for the refresh token, '
+        'then it throws an error.',
         () {
           expect(
             () => jwtUtil.createJwt(refreshToken),
@@ -76,7 +78,8 @@ void main() {
       });
 
       test(
-        'when a JWT is requested for the refresh token, then it throws an error.',
+        'when a JWT is requested for the refresh token, '
+        'then it throws an error.',
         () {
           expect(
             () => jwtUtil.createJwt(refreshToken),
@@ -100,7 +103,8 @@ void main() {
       });
 
       test(
-        'when the JWT is inspected, then its `refreshTokenId` matches the refresh token.',
+        'when the JWT is inspected, '
+        'then its `refreshTokenId` matches the refresh token.',
         () {
           final tokenData = jwtUtil.verifyJwt(jwt);
           expect(tokenData.refreshTokenId, refreshToken.id);
@@ -108,7 +112,8 @@ void main() {
       );
 
       test(
-        'when the JWT is inspected, then its `authUserId` matches the refresh token.',
+        'when the JWT is inspected, '
+        'then its `authUserId` matches the refresh token.',
         () {
           final tokenData = jwtUtil.verifyJwt(jwt);
           expect(tokenData.authUserId, refreshToken.authUserId);
@@ -116,7 +121,8 @@ void main() {
       );
 
       test(
-        'when the JWT is decoded, then it will contain the `authUserId` as `subject`.',
+        'when the JWT is decoded, '
+        'then it will contain the `authUserId` as `subject`.',
         () {
           expect(
             dart_jsonwebtoken.JWT.decode(jwt).subject,
@@ -126,7 +132,8 @@ void main() {
       );
 
       test(
-        'when the JWT is decoded, then it contains an unique `jwtId` that is different from the refresh token ID.',
+        'when the JWT is decoded, '
+        'then it contains an unique `jwtId` that is different from the refresh token ID.',
         () {
           expect(dart_jsonwebtoken.JWT.decode(jwt).jwtId, isNotNull);
           expect(
@@ -148,7 +155,8 @@ void main() {
       );
 
       test(
-        'when the JWT is decoded, then it will contain no issuer per the default configuration.',
+        'when the JWT is decoded, '
+        'then it will contain no issuer per the default configuration.',
         () {
           expect(
             dart_jsonwebtoken.JWT.decode(jwt).issuer,
@@ -168,7 +176,8 @@ void main() {
       );
 
       test(
-        'when the JWT without scopes is decoded, then it does not even contain their associated key.',
+        'when the JWT without scopes is decoded, '
+        'then it does not even contain their associated key.',
         () {
           expect(
             (dart_jsonwebtoken.JWT.decode(jwt).payload as Map).containsKey(
@@ -200,7 +209,8 @@ void main() {
         });
 
         test(
-          'when the JWT data is inspected, then its `scopes` match the refresh token.',
+          'when the JWT data is inspected, '
+          'then its `scopes` match the refresh token.',
           () {
             final tokenData = jwtUtil.verifyJwt(jwt);
             expect(
@@ -211,7 +221,8 @@ void main() {
         );
 
         test(
-          'when the JWT with scopes is decoded, then it contains the scopes as a List as the claim "dev.serverpod.scopeNames".',
+          'when the JWT with scopes is decoded, '
+          'then it contains the scopes as a List as the claim "dev.serverpod.scopeNames".',
           () {
             expect(
               (dart_jsonwebtoken.JWT.decode(jwt).payload
@@ -246,7 +257,8 @@ void main() {
         });
 
         test(
-          'when the JWT data is inspected, then its `extraClaims` match the refresh token ones.',
+          'when the JWT data is inspected, '
+          'then its `extraClaims` match the refresh token ones.',
           () {
             final tokenData = jwtUtil.verifyJwt(jwt);
 
@@ -290,7 +302,8 @@ void main() {
       );
 
       test(
-        'when two JWTs are created within the same second, then their are unique.',
+        'when two JWTs are created within the same second, '
+        'then their are unique.',
         () {
           final refreshToken = _createRefreshToken();
           final jwt1 = jwtUtil.createJwt(refreshToken);
@@ -309,7 +322,8 @@ void main() {
       });
 
       test(
-        'when a JWT is requested for the refresh token, then it throws an error.',
+        'when a JWT is requested for the refresh token, '
+        'then it throws an error.',
         () {
           expect(
             () => jwtUtil.createJwt(refreshToken),
@@ -328,7 +342,8 @@ void main() {
       });
 
       test(
-        'when a JWT is requested for the refresh token, then it throws an error.',
+        'when a JWT is requested for the refresh token, '
+        'then it throws an error.',
         () {
           expect(
             () => jwtUtil.createJwt(refreshToken),
@@ -352,7 +367,8 @@ void main() {
       });
 
       test(
-        'when the JWT is inspected, then its `refreshTokenId` matches the refresh token.',
+        'when the JWT is inspected, '
+        'then its `refreshTokenId` matches the refresh token.',
         () {
           final tokenData = jwtUtil.verifyJwt(jwt);
           expect(tokenData.refreshTokenId, refreshToken.id);
@@ -360,7 +376,8 @@ void main() {
       );
 
       test(
-        'when the JWT is inspected, then its `authUserId` matches the refresh token.',
+        'when the JWT is inspected, '
+        'then its `authUserId` matches the refresh token.',
         () {
           final tokenData = jwtUtil.verifyJwt(jwt);
           expect(tokenData.authUserId, refreshToken.authUserId);
@@ -368,7 +385,8 @@ void main() {
       );
 
       test(
-        'when the JWT is decoded, then it will contain the `authUserId` as `subject`.',
+        'when the JWT is decoded, '
+        'then it will contain the `authUserId` as `subject`.',
         () {
           expect(
             dart_jsonwebtoken.JWT.decode(jwt).subject,
@@ -378,7 +396,8 @@ void main() {
       );
 
       test(
-        'when the JWT is decoded, then it contains an unique `jwtId` that is different from the refresh token ID.',
+        'when the JWT is decoded, '
+        'then it contains an unique `jwtId` that is different from the refresh token ID.',
         () {
           expect(dart_jsonwebtoken.JWT.decode(jwt).jwtId, isNotNull);
           expect(
@@ -400,7 +419,8 @@ void main() {
       );
 
       test(
-        'when the JWT is decoded, then it will contain no issuer per the default configuration.',
+        'when the JWT is decoded, '
+        'then it will contain no issuer per the default configuration.',
         () {
           expect(
             dart_jsonwebtoken.JWT.decode(jwt).issuer,
@@ -420,7 +440,8 @@ void main() {
       );
 
       test(
-        'when the JWT without scopes is decoded, then it does not even contain their associated key.',
+        'when the JWT without scopes is decoded, '
+        'then it does not even contain their associated key.',
         () {
           expect(
             (dart_jsonwebtoken.JWT.decode(jwt).payload as Map).containsKey(
@@ -452,7 +473,8 @@ void main() {
         });
 
         test(
-          'when the JWT data is inspected, then its `scopes` match the refresh token.',
+          'when the JWT data is inspected, '
+          'then its `scopes` match the refresh token.',
           () {
             final tokenData = jwtUtil.verifyJwt(jwt);
             expect(
@@ -463,7 +485,8 @@ void main() {
         );
 
         test(
-          'when the JWT with scopes is decoded, then it contains the scopes as a List as the claim "dev.serverpod.scopeNames".',
+          'when the JWT with scopes is decoded, '
+          'then it contains the scopes as a List as the claim "dev.serverpod.scopeNames".',
           () {
             expect(
               (dart_jsonwebtoken.JWT.decode(jwt).payload
@@ -498,7 +521,8 @@ void main() {
         });
 
         test(
-          'when the JWT data is inspected, then its `extraClaims` match the refresh token ones.',
+          'when the JWT data is inspected, '
+          'then its `extraClaims` match the refresh token ones.',
           () {
             final tokenData = jwtUtil.verifyJwt(jwt);
 
@@ -513,7 +537,9 @@ void main() {
   });
 
   test(
-    'Given a token issued with HMAC when validated by HMAC with different key then validation fails',
+    'Given a token issued with HMAC, '
+    'when validated by HMAC with different key, '
+    'then validation fails',
     () {
       final jwt = Jwt(
         config: JwtConfig(
@@ -541,7 +567,9 @@ void main() {
   );
 
   test(
-    'Given a token issued with HMAC HS256 when validated by HMAC HS256 with different key then validation fails',
+    'Given a token issued with HMAC HS256, '
+    'when validated by HMAC HS256 with different key, '
+    'then validation fails',
     () {
       final jwt = Jwt(
         config: JwtConfig(
@@ -569,7 +597,9 @@ void main() {
   );
 
   test(
-    'Given a token issued with issuer configured when decoding token then issuer is present',
+    'Given a token issued with issuer configured, '
+    'when decoding token, '
+    'then issuer is present',
     () {
       const issuer =
           'https://github.com/serverpod/serverpod/tree/main/modules/serverpod_auth/serverpod_auth_jwt_server';
@@ -590,7 +620,9 @@ void main() {
   );
 
   test(
-    'Given a HS256 token issued with issuer configured when decoding token then issuer is present',
+    'Given a HS256 token issued with issuer configured, '
+    'when decoding token, '
+    'then issuer is present',
     () {
       const issuer =
           'https://github.com/serverpod/serverpod/tree/main/modules/serverpod_auth/serverpod_auth_jwt_server';
@@ -611,7 +643,9 @@ void main() {
   );
 
   test(
-    'Given a HS512 token when validated by a HS512 JWTUtil with a different issuer then validation fails',
+    'Given a HS512 token, '
+    'when validated by a HS512 JWTUtil with a different issuer, '
+    'then validation fails',
     () {
       final initialHS512Util = Jwt(
         config: JwtConfig(
@@ -638,7 +672,9 @@ void main() {
   );
 
   test(
-    'Given a HS256 token when validated by a HS256 JWTUtil with a different issuer then validation fails',
+    'Given a HS256 token, '
+    'when validated by a HS256 JWTUtil with a different issuer, '
+    'then validation fails',
     () {
       final initialHS256Util = Jwt(
         config: JwtConfig(
@@ -696,7 +732,8 @@ void main() {
       );
 
       test(
-        'when the JWT is decoded, then it names ES512 as its `alg` and includes a `kid`.',
+        'when the JWT is decoded, '
+        'then it names ES512 as its `alg` and includes a `kid`.',
         () {
           final header = dart_jsonwebtoken.JWT.decode(jwtToken).header!;
           expect(header['alg'], equals('ES512'));
@@ -707,7 +744,8 @@ void main() {
       );
 
       test(
-        'when two JWTs are created with the same key, then they share the same `kid`.',
+        'when two JWTs are created with the same key, '
+        'then they share the same `kid`.',
         () {
           final jwt2 = jwtUtil.createJwt(refreshToken);
           final kid1 = dart_jsonwebtoken.JWT.decode(jwtToken).header!['kid'];
@@ -732,7 +770,8 @@ void main() {
       });
 
       test(
-        'when the configuration is changed to HMAC with the previous public key as a fallback, then the validation succeeds.',
+        'when the configuration is changed to HMAC with the previous public key as a fallback, '
+        'then the validation succeeds.',
         () {
           final jwt = Jwt(
             config: JwtConfig(
@@ -807,7 +846,8 @@ void main() {
       });
 
       test(
-        'when the configuration is changed to ES512 with the HS256 as a fallback, then the validation succeeds.',
+        'when the configuration is changed to ES512 with the HS256 as a fallback, '
+        'then the validation succeeds.',
         () {
           final jwt = Jwt(
             config: JwtConfig(
@@ -827,7 +867,8 @@ void main() {
 
   group('Given multiple fallback verification algorithms,', () {
     test(
-      'when a token is signed with the primary algorithm, then it verifies successfully.',
+      'when a token is signed with the primary algorithm, '
+      'then it verifies successfully.',
       () {
         final primaryAlgorithm = _hs512Algorithm();
         final jwt = Jwt(
@@ -855,7 +896,8 @@ void main() {
     );
 
     test(
-      'when a token is signed with the first fallback algorithm, then it verifies successfully.',
+      'when a token is signed with the first fallback algorithm, '
+      'then it verifies successfully.',
       () {
         final firstFallbackAlgorithm = _es512Algorithm();
         final jwtCreator = Jwt(
@@ -887,7 +929,8 @@ void main() {
     );
 
     test(
-      'when a token is signed with the second fallback algorithm, then it verifies successfully.',
+      'when a token is signed with the second fallback algorithm, '
+      'then it verifies successfully.',
       () {
         final secondFallbackAlgorithm = JwtAlgorithm.hmacSha512(
           SecretKey('fallback-key-2'),
@@ -919,7 +962,8 @@ void main() {
     );
 
     test(
-      'when a token is signed with none of the configured algorithms, then verification fails.',
+      'when a token is signed with none of the configured algorithms, '
+      'then verification fails.',
       () {
         final unknownAlgorithm = JwtAlgorithm.hmacSha512(
           SecretKey('unknown-key'),
@@ -954,7 +998,8 @@ void main() {
     );
 
     test(
-      'when configured with an empty fallback list, then only the primary algorithm is used.',
+      'when configured with an empty fallback list, '
+      'then only the primary algorithm is used.',
       () {
         final primaryAlgorithm = _hs512Algorithm();
         final jwt = Jwt(

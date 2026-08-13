@@ -6,9 +6,10 @@ import 'package:test/test.dart';
 void main() {
   ValueEncoder.set(const PostgresValueEncoder());
 
-  group('Given tables with different foreign keys', () {
+  group('Given tables with different foreign keys,', () {
     test(
-      'when a foreign key is missing in the target table then mismatches include missing foreign key',
+      'when a foreign key is missing in the target table, '
+      'then mismatches include missing foreign key',
       () {
         var tableA = TableDefinition(
           name: 'test_table',
@@ -67,7 +68,8 @@ void main() {
     );
 
     test(
-      'when foreign keys have different definitions then mismatches include foreign key mismatch',
+      'when foreign keys have different definitions, '
+      'then mismatches include foreign key mismatch',
       () {
         var tableA = TableDefinition(
           name: 'test_table',

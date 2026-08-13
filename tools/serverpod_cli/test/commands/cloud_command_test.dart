@@ -3,7 +3,7 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a CloudCommand', () {
+  group('Given a CloudCommand,', () {
     late CloudCommand command;
 
     setUp(() {
@@ -23,7 +23,7 @@ void main() {
       },
     );
 
-    group('when parsing configuration with scloud args, ', () {
+    group('when parsing configuration with scloud args,', () {
       late final argResults = command.argParser.parse([
         'deploy',
         '--project',

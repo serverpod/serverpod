@@ -18,7 +18,7 @@ void main() {
   late int requestCount;
 
   group(
-    'Given a Client with an authKeyProvider that does not support refresh',
+    'Given a Client with an authKeyProvider that does not support refresh,',
     () {
       setUp(() async {
         requestCount = 0;
@@ -40,7 +40,7 @@ void main() {
       tearDown(() async => await closeServer());
 
       test(
-        'when first call fails with 401 then no retry is attempted.',
+        'when first call fails with 401, then no retry is attempted.',
         () async {
           await expectLater(
             client.callServerEndpoint<String>('test', 'method', {
@@ -55,7 +55,7 @@ void main() {
     },
   );
 
-  group('Given a Client with an authKeyProvider that supports refresh', () {
+  group('Given a Client with an authKeyProvider that supports refresh,', () {
     late TestRefresherAuthKeyProvider authKeyProvider;
     late List<String> receivedAuthHeaders;
     late List<Response> serverResponses;
@@ -90,7 +90,7 @@ void main() {
 
     tearDown(() async => await closeServer());
 
-    test('when first call succeeds then no retry is attempted.', () async {
+    test('when first call succeeds, then no retry is attempted.', () async {
       serverResponses = [
         Response.ok(
           body: Body.fromString('"success"'),
@@ -108,8 +108,8 @@ void main() {
       expect(authKeyProvider.refreshCallCount, 0);
     });
 
-    test('when first call fails with 401 but refresh succeeds '
-        'then request is retried.', () async {
+    test('when first call fails with 401 but refresh succeeds, '
+         'then request is retried.', () async {
       serverResponses = [
         Response.unauthorized(),
         Response.ok(body: Body.fromString('"success"')),
@@ -133,8 +133,8 @@ void main() {
       expect(receivedAuthHeaders[1], contains('refreshed-token'));
     });
 
-    test('when first call fails with 401 and refresh fails '
-        'then original exception is rethrown.', () async {
+    test('when first call fails with 401 and refresh fails, '
+         'then original exception is rethrown.', () async {
       serverResponses = [
         Response.unauthorized(),
       ];
@@ -151,7 +151,7 @@ void main() {
     });
 
     test(
-      'when first call fails with 401, refresh succeeds and second call also fails with 401 '
+      'when first call fails with 401, refresh succeeds and second call also fails with 401, '
       'then no second retry is attempted and original exception is rethrown.',
       () async {
         serverResponses = [
@@ -176,8 +176,8 @@ void main() {
       },
     );
 
-    test('when first call fails with non-401 error '
-        'then no retry is attempted.', () async {
+    test('when first call fails with non-401 error, '
+         'then no retry is attempted.', () async {
       serverResponses = [
         Response.internalServerError(),
       ];

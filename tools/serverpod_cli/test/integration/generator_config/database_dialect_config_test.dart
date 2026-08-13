@@ -26,7 +26,9 @@ void main() {
   });
 
   test(
-    'Given no run-mode database config when loading GeneratorConfig then database dialect is postgres.',
+    'Given no run-mode database config, '
+    'when loading GeneratorConfig, '
+    'then database dialect is postgres.',
     () async {
       var projectDir = createMockServerpodProject(
         projectName: 'my_project',
@@ -43,7 +45,9 @@ void main() {
   );
 
   test(
-    'Given SQLite database in a run-mode YAML when loading GeneratorConfig then dialect is sqlite.',
+    'Given SQLite database in a run-mode YAML, '
+    'when loading GeneratorConfig, '
+    'then dialect is sqlite.',
     () async {
       var projectDir = createMockServerpodProject(
         projectName: 'my_project',
@@ -66,7 +70,9 @@ database:
   );
 
   test(
-    'Given PostgreSQL database in a run-mode YAML when loading GeneratorConfig then dialect is postgres.',
+    'Given PostgreSQL database in a run-mode YAML, '
+    'when loading GeneratorConfig, '
+    'then dialect is postgres.',
     () async {
       var projectDir = createMockServerpodProject(
         projectName: 'my_project',
@@ -92,7 +98,9 @@ database:
   );
 
   test(
-    'Given conflicting database dialects across run-mode YAMLs when loading GeneratorConfig then StateError is thrown.',
+    'Given conflicting database dialects across run-mode YAMLs, '
+    'when loading GeneratorConfig, '
+    'then StateError is thrown.',
     () async {
       var projectDir = createMockServerpodProject(
         projectName: 'my_project',

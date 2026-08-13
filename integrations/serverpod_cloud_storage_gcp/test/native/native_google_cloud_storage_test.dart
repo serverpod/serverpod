@@ -69,7 +69,7 @@ void main() {
     mockSession = MockSession();
   });
 
-  group('Given a NativeGoogleCloudStorage with public bucket', () {
+  group('Given a NativeGoogleCloudStorage with public bucket,', () {
     late NativeGoogleCloudStorage storage;
     late MockStorageApi mockStorageApi;
     late MockObjectsResource mockObjects;
@@ -88,7 +88,7 @@ void main() {
     });
 
     test(
-      'when accessing storageId '
+      'when accessing storageId, '
       'then it returns the configured value',
       () {
         expect(storage.storageId, 'test-storage');
@@ -96,7 +96,7 @@ void main() {
     );
 
     test(
-      'when accessing bucket '
+      'when accessing bucket, '
       'then it returns the configured value',
       () {
         expect(storage.bucket, 'test-bucket');
@@ -104,14 +104,14 @@ void main() {
     );
 
     test(
-      'when accessing public '
+      'when accessing public, '
       'then it returns the configured value',
       () {
         expect(storage.public, isTrue);
       },
     );
 
-    group('Given an existing file', () {
+    group('Given an existing file,', () {
       setUp(() {
         when(
           () => mockObjects.get(
@@ -123,7 +123,7 @@ void main() {
       });
 
       test(
-        'when checking if it exists then it returns true',
+        'when checking if it exists, then it returns true',
         () async {
           final exists = await storage.fileExists(
             session: mockSession,
@@ -142,7 +142,7 @@ void main() {
       );
     });
 
-    group('Given a file that does not exist', () {
+    group('Given a file that does not exist,', () {
       setUp(() {
         when(
           () => mockObjects.get(
@@ -154,7 +154,7 @@ void main() {
       });
 
       test(
-        'when checking if it exists then it returns false',
+        'when checking if it exists, then it returns false',
         () async {
           final exists = await storage.fileExists(
             session: mockSession,
@@ -166,7 +166,7 @@ void main() {
       );
     });
 
-    group('Given a server error', () {
+    group('Given a server error,', () {
       setUp(() {
         when(
           () => mockObjects.get(
@@ -178,7 +178,7 @@ void main() {
       });
 
       test(
-        'when checking if a file exists then it rethrows the error',
+        'when checking if a file exists, then it rethrows the error',
         () async {
           expect(
             () => storage.fileExists(
@@ -192,7 +192,7 @@ void main() {
     });
 
     test(
-      'when storing a file then it uploads with publicRead ACL',
+      'when storing a file, then it uploads with publicRead ACL',
       () async {
         when(
           () => mockObjects.insert(
@@ -224,7 +224,7 @@ void main() {
     );
 
     test(
-      'when storing a file with preventOverwrite '
+      'when storing a file with preventOverwrite, '
       'then it passes ifGenerationMatch 0',
       () async {
         when(
@@ -257,7 +257,7 @@ void main() {
       },
     );
 
-    group('Given an existing file with content', () {
+    group('Given an existing file with content,', () {
       final fileContent = [1, 2, 3, 4, 5];
 
       setUp(() {
@@ -276,7 +276,7 @@ void main() {
       });
 
       test(
-        'when retrieving the file then it returns the file data',
+        'when retrieving the file, then it returns the file data',
         () async {
           final result = await storage.retrieveFile(
             session: mockSession,
@@ -289,7 +289,7 @@ void main() {
       );
     });
 
-    group('Given a missing file', () {
+    group('Given a missing file,', () {
       setUp(() {
         when(
           () => mockObjects.get(
@@ -301,7 +301,7 @@ void main() {
       });
 
       test(
-        'when retrieving the file then it returns null',
+        'when retrieving the file, then it returns null',
         () async {
           final result = await storage.retrieveFile(
             session: mockSession,
@@ -313,7 +313,7 @@ void main() {
       );
     });
 
-    group('Given an existing file in the bucket', () {
+    group('Given an existing file in the bucket,', () {
       setUp(() {
         when(
           () => mockObjects.get(
@@ -325,7 +325,7 @@ void main() {
       });
 
       test(
-        'when getting the public URL then it returns the URL',
+        'when getting the public URL, then it returns the URL',
         () async {
           final url = await storage.getPublicUrl(
             session: mockSession,
@@ -341,7 +341,7 @@ void main() {
       );
     });
 
-    group('Given a missing file in the bucket', () {
+    group('Given a missing file in the bucket,', () {
       setUp(() {
         when(
           () => mockObjects.get(
@@ -353,7 +353,7 @@ void main() {
       });
 
       test(
-        'when getting the public URL then it returns null',
+        'when getting the public URL, then it returns null',
         () async {
           final url = await storage.getPublicUrl(
             session: mockSession,
@@ -365,7 +365,7 @@ void main() {
       );
     });
 
-    group('Given a file to delete', () {
+    group('Given a file to delete,', () {
       setUp(() {
         when(
           () => mockObjects.delete('test-bucket', 'to-delete.txt'),
@@ -373,7 +373,7 @@ void main() {
       });
 
       test(
-        'when deleting the file then it calls delete on the objects resource',
+        'when deleting the file, then it calls delete on the objects resource',
         () async {
           await storage.deleteFile(
             session: mockSession,
@@ -387,7 +387,7 @@ void main() {
       );
     });
 
-    group('Given a file that has already been deleted', () {
+    group('Given a file that has already been deleted,', () {
       setUp(() {
         when(
           () => mockObjects.delete('test-bucket', 'already-deleted.txt'),
@@ -395,7 +395,7 @@ void main() {
       });
 
       test(
-        'when deleting the file then it silently ignores the 404 error',
+        'when deleting the file, then it silently ignores the 404 error',
         () async {
           await expectLater(
             storage.deleteFile(
@@ -408,7 +408,7 @@ void main() {
       );
     });
 
-    group('Given a server error on delete', () {
+    group('Given a server error on delete,', () {
       setUp(() {
         when(
           () => mockObjects.delete('test-bucket', 'error.txt'),
@@ -416,7 +416,7 @@ void main() {
       });
 
       test(
-        'when deleting a file then it rethrows the error',
+        'when deleting a file, then it rethrows the error',
         () async {
           expect(
             () => storage.deleteFile(session: mockSession, path: 'error.txt'),
@@ -426,9 +426,9 @@ void main() {
       );
     });
 
-    group('Given no signing credentials', () {
+    group('Given no signing credentials,', () {
       test(
-        'when creating a direct upload description then it returns null',
+        'when creating a direct upload description, then it returns null',
         () async {
           final description = await storage.createDirectFileUploadDescription(
             session: mockSession,
@@ -440,7 +440,7 @@ void main() {
       );
     });
 
-    group('Given an uploaded file', () {
+    group('Given an uploaded file,', () {
       setUp(() {
         when(
           () => mockObjects.get(
@@ -452,7 +452,7 @@ void main() {
       });
 
       test(
-        'when verifying the direct file upload then it returns true',
+        'when verifying the direct file upload, then it returns true',
         () async {
           final verified = await storage.verifyDirectFileUpload(
             session: mockSession,
@@ -464,7 +464,7 @@ void main() {
       );
     });
 
-    group('Given a file that was not uploaded', () {
+    group('Given a file that was not uploaded,', () {
       setUp(() {
         when(
           () => mockObjects.get(
@@ -476,7 +476,7 @@ void main() {
       });
 
       test(
-        'when verifying the direct file upload then it returns false',
+        'when verifying the direct file upload, then it returns false',
         () async {
           final verified = await storage.verifyDirectFileUpload(
             session: mockSession,
@@ -489,7 +489,7 @@ void main() {
     });
   });
 
-  group('Given a NativeGoogleCloudStorage with private bucket', () {
+  group('Given a NativeGoogleCloudStorage with private bucket,', () {
     late NativeGoogleCloudStorage storage;
     late MockStorageApi mockStorageApi;
     late MockObjectsResource mockObjects;
@@ -508,7 +508,7 @@ void main() {
     });
 
     test(
-      'when storing a file then it uploads without publicRead ACL',
+      'when storing a file, then it uploads without publicRead ACL',
       () async {
         when(
           () => mockObjects.insert(
@@ -540,7 +540,7 @@ void main() {
     );
 
     test(
-      'when getting public URL then it returns null',
+      'when getting public URL, then it returns null',
       () async {
         final url = await storage.getPublicUrl(
           session: mockSession,
@@ -552,7 +552,7 @@ void main() {
     );
   });
 
-  group('Given a NativeGoogleCloudStorage with custom public host', () {
+  group('Given a NativeGoogleCloudStorage with custom public host,', () {
     late NativeGoogleCloudStorage storage;
     late MockStorageApi mockStorageApi;
     late MockObjectsResource mockObjects;
@@ -571,7 +571,7 @@ void main() {
       );
     });
 
-    group('Given an existing file', () {
+    group('Given an existing file,', () {
       setUp(() {
         when(
           () => mockObjects.get(
@@ -583,7 +583,7 @@ void main() {
       });
 
       test(
-        'when getting the public URL then it uses the custom host',
+        'when getting the public URL, then it uses the custom host',
         () async {
           final url = await storage.getPublicUrl(
             session: mockSession,
@@ -597,7 +597,7 @@ void main() {
     });
   });
 
-  group('Given a NativeGoogleCloudStorage with signing credentials', () {
+  group('Given a NativeGoogleCloudStorage with signing credentials,', () {
     late NativeGoogleCloudStorage storage;
     late MockStorageApi mockStorageApi;
     late MockObjectsResource mockObjects;
@@ -623,7 +623,7 @@ void main() {
     });
 
     test(
-      'when creating a direct upload description '
+      'when creating a direct upload description, '
       'then it returns a valid upload description',
       () async {
         final description = await storage.createDirectFileUploadDescription(
@@ -643,7 +643,7 @@ void main() {
     );
 
     test(
-      'when creating a direct upload description '
+      'when creating a direct upload description, '
       'then the URL contains required GCP signed URL parameters',
       () async {
         final description = await storage.createDirectFileUploadDescription(
@@ -671,7 +671,7 @@ void main() {
     );
 
     test(
-      'when creating a direct upload description '
+      'when creating a direct upload description, '
       'then it detects MIME types correctly',
       () async {
         final pngDescription = await storage.createDirectFileUploadDescription(
@@ -710,7 +710,7 @@ void main() {
     );
 
     test(
-      'when creating a direct upload description '
+      'when creating a direct upload description, '
       'then it includes public-read ACL header when public is true',
       () async {
         final description = await storage.createDirectFileUploadDescription(
@@ -723,9 +723,9 @@ void main() {
       },
     );
 
-    group('Given a contentLength option', () {
+    group('Given a contentLength option,', () {
       test(
-        'when creating a direct upload description '
+        'when creating a direct upload description, '
         'then it includes Content-Length in headers',
         () async {
           final description = await storage
@@ -741,7 +741,7 @@ void main() {
       );
 
       test(
-        'when creating a direct upload description '
+        'when creating a direct upload description, '
         'then the signed URL includes content-length in signed headers',
         () async {
           final description = await storage
@@ -759,9 +759,9 @@ void main() {
       );
     });
 
-    group('Given a contentLength exceeding maxFileSize', () {
+    group('Given a contentLength exceeding maxFileSize,', () {
       test(
-        'when creating a direct upload description '
+        'when creating a direct upload description, '
         'then it throws',
         () async {
           expect(
@@ -777,9 +777,9 @@ void main() {
       );
     });
 
-    group('Given a contentLength equal to maxFileSize', () {
+    group('Given a contentLength equal to maxFileSize,', () {
       test(
-        'when creating a direct upload description '
+        'when creating a direct upload description, '
         'then it succeeds',
         () async {
           final description = await storage
@@ -797,9 +797,9 @@ void main() {
       );
     });
 
-    group('Given no contentLength option', () {
+    group('Given no contentLength option,', () {
       test(
-        'when creating a direct upload description '
+        'when creating a direct upload description, '
         'then it does not include Content-Length in headers',
         () async {
           final description = await storage.createDirectFileUploadDescription(
@@ -815,9 +815,9 @@ void main() {
       );
     });
 
-    group('Given a preventOverwrite option', () {
+    group('Given a preventOverwrite option,', () {
       test(
-        'when creating a direct upload description '
+        'when creating a direct upload description, '
         'then it includes x-goog-if-generation-match header set to 0',
         () async {
           final description = await storage
@@ -835,7 +835,7 @@ void main() {
       );
 
       test(
-        'when creating a direct upload description '
+        'when creating a direct upload description, '
         'then the signed URL includes x-goog-if-generation-match in signed headers',
         () async {
           final description = await storage
@@ -853,9 +853,9 @@ void main() {
       );
     });
 
-    group('Given no preventOverwrite option', () {
+    group('Given no preventOverwrite option,', () {
       test(
-        'when creating a direct upload description '
+        'when creating a direct upload description, '
         'then it does not include x-goog-if-generation-match header',
         () async {
           final description = await storage.createDirectFileUploadDescription(
@@ -875,7 +875,7 @@ void main() {
     });
   });
 
-  group('Given a NativeGoogleCloudStorage with public set to false', () {
+  group('Given a NativeGoogleCloudStorage with public set to false,', () {
     late NativeGoogleCloudStorage storage;
     late MockStorageApi mockStorageApi;
     late MockObjectsResource mockObjects;
@@ -901,7 +901,7 @@ void main() {
     });
 
     test(
-      'when creating a direct upload description '
+      'when creating a direct upload description, '
       'then it includes private ACL header',
       () async {
         final description = await storage.createDirectFileUploadDescription(
@@ -915,7 +915,7 @@ void main() {
     );
   });
 
-  group('Given a NativeGoogleCloudStorage with ADC (authClient) signing', () {
+  group('Given a NativeGoogleCloudStorage with ADC (authClient) signing,', () {
     late NativeGoogleCloudStorage storage;
     late MockStorageApi mockStorageApi;
     late MockObjectsResource mockObjects;
@@ -958,7 +958,7 @@ void main() {
     });
 
     test(
-      'when creating a direct upload description '
+      'when creating a direct upload description, '
       'then it calls IAM signBlob API',
       () async {
         final description = await storage.createDirectFileUploadDescription(
@@ -988,7 +988,7 @@ void main() {
     );
 
     test(
-      'when creating a direct upload description '
+      'when creating a direct upload description, '
       'then it returns a valid upload description with signed URL',
       () async {
         final description = await storage.createDirectFileUploadDescription(
@@ -1017,7 +1017,7 @@ void main() {
     );
 
     test(
-      'when creating a direct upload description '
+      'when creating a direct upload description, '
       'then the signBlob request contains the payload',
       () async {
         await storage.createDirectFileUploadDescription(
@@ -1043,7 +1043,7 @@ void main() {
       },
     );
 
-    group('Given a signBlob error response', () {
+    group('Given a signBlob error response,', () {
       setUp(() {
         when(
           () => mockAuthClient.post(
@@ -1058,7 +1058,7 @@ void main() {
       });
 
       test(
-        'when creating a direct upload description then it throws',
+        'when creating a direct upload description, then it throws',
         () async {
           expect(
             () => storage.createDirectFileUploadDescription(
@@ -1072,7 +1072,7 @@ void main() {
     });
 
     test(
-      'when storing a file '
+      'when storing a file, '
       'then it works the same as with service account credentials',
       () async {
         when(

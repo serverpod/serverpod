@@ -10,8 +10,8 @@ void main() {
   client.Protocol();
 
   group('Given a project model with a shared model in payload,', () {
-    final sharedModel = shared.SharedModel(name: 'test', data: 42);
-    final object = client.ObjectWithDynamic(
+    late final sharedModel = shared.SharedModel(name: 'test', data: 42);
+    late final object = client.ObjectWithDynamic(
       payload: sharedModel,
       jsonbPayload: null,
       payloadList: [sharedModel],

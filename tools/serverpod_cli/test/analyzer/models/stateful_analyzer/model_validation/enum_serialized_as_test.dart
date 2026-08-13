@@ -10,8 +10,8 @@ import '../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
-  group('Given a valid enum definition when validating', () {
-    var modelSources = [
+  group('Given a valid enum definition, when validating,', () {
+    late var modelSources = [
       ModelSourceBuilder().withYaml(
         '''
         enum: ExampleEnum
@@ -22,14 +22,14 @@ void main() {
       ).build(),
     ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(
+    late var collector = CodeGenerationCollector();
+    late var analyzer = StatefulAnalyzer(
       config,
       modelSources,
       onErrorsCollector(collector),
     );
 
-    var definitions = analyzer.validateAll();
+    late var definitions = analyzer.validateAll();
 
     var definition = definitions.first as EnumDefinition;
 
@@ -43,9 +43,10 @@ void main() {
   });
 
   group(
-    'Given a valid enum definition with serialized set to int when validating',
+    'Given a valid enum definition with serialized set to int, '
+    'when validating,',
     () {
-      var modelSources = [
+      late var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
         enum: ExampleEnum
@@ -57,14 +58,14 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         modelSources,
         onErrorsCollector(collector),
       );
 
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       var definition = definitions.first as EnumDefinition;
 
@@ -79,9 +80,10 @@ void main() {
   );
 
   group(
-    'Given a valid enum definition with serialized set to string when validating',
+    'Given a valid enum definition with serialized set to string, '
+    'when validating,',
     () {
-      var modelSources = [
+      late var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
         enum: ExampleEnum
@@ -93,14 +95,14 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         modelSources,
         onErrorsCollector(collector),
       );
 
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       var definition = definitions.first as EnumDefinition;
 
@@ -115,7 +117,9 @@ void main() {
   );
 
   test(
-    'Given a valid enum definition with serialized set to an invalid value when validating then collect an error that the serialized value is invalid.',
+    'Given a valid enum definition with serialized set to an invalid value, '
+    'when validating, '
+    'then collect an error that the serialized value is invalid.',
     () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -147,9 +151,9 @@ void main() {
   );
 
   group(
-    'Given a class with a field with the type ExampleEnum serialized as an int',
+    'Given a class with a field with the type ExampleEnum serialized as an int,',
     () {
-      var modelSources = [
+      late var modelSources = [
         ModelSourceBuilder().withFileName('example').withYaml(
           '''
         class: Example
@@ -168,13 +172,13 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late StatefulAnalyzer analyzer = StatefulAnalyzer(
         config,
         modelSources,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       var definition = definitions.first as ClassDefinition;
 
@@ -196,9 +200,9 @@ void main() {
   );
 
   group(
-    'Given a class with a field with the type ExampleEnum serialized as a String',
+    'Given a class with a field with the type ExampleEnum serialized as a String,',
     () {
-      var modelSources = [
+      late var modelSources = [
         ModelSourceBuilder().withFileName('example').withYaml(
           '''
         class: Example
@@ -217,13 +221,13 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late StatefulAnalyzer analyzer = StatefulAnalyzer(
         config,
         modelSources,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       var definition = definitions.first as ClassDefinition;
 

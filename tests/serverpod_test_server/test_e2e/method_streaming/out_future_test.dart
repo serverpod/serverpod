@@ -11,7 +11,9 @@ void main() {
   var client = Client(serverUrl)..authKeyProvider = TestAuthKeyManager();
 
   test(
-    'Given a streaming method that returns first value from stream, when calling the method, then the first value is received.',
+    'Given a streaming method that returns first value from stream, '
+    'when calling the method, '
+    'then the first value is received.',
     () async {
       var stream = Stream<int>.fromIterable([1, 2, 3]);
       var result = client.methodStreaming.intReturnFromStream(stream);
@@ -20,7 +22,9 @@ void main() {
   );
 
   test(
-    'Given a streaming method with void return after input stream is closed when calling the method, then the method returns once input stream is complete.',
+    'Given a streaming method with void return after input stream is closed, '
+    'when calling the method, '
+    'then the method returns once input stream is complete.',
     () async {
       var stream = Stream<int>.fromIterable([1, 2, 3]);
       var responseFuture = client.methodStreaming.voidReturnAfterStream(stream);
@@ -29,7 +33,9 @@ void main() {
   );
 
   test(
-    'Given a streaming method with int return that throws an exception when calling the method, then ServerpodClientException is thrown.',
+    'Given a streaming method with int return that throws an exception, '
+    'when calling the method, '
+    'then ServerpodClientException is thrown.',
     () async {
       var stream = Stream<int>.fromIterable([1, 2, 3]);
       var responseFuture = client.methodStreaming.throwsException(stream);
@@ -41,7 +47,9 @@ void main() {
   );
 
   test(
-    'Given a streaming method with int return that throws a serializable exception when calling the method, then the exception is thrown.',
+    'Given a streaming method with int return that throws a serializable exception, '
+    'when calling the method, '
+    'then the exception is thrown.',
     () async {
       var stream = Stream<int>.fromIterable([1, 2, 3]);
       var responseFuture = client.methodStreaming.throwsSerializableException(
@@ -52,7 +60,9 @@ void main() {
   );
 
   test(
-    'Given a streaming method with void return that throws an exception when calling the method, then ServerpodClientException is thrown.',
+    'Given a streaming method with void return that throws an exception, '
+    'when calling the method, '
+    'then ServerpodClientException is thrown.',
     () async {
       var stream = Stream<int>.fromIterable([1, 2, 3]);
       var responseFuture = client.methodStreaming.throwsExceptionVoid(stream);
@@ -64,7 +74,9 @@ void main() {
   );
 
   test(
-    'Given a streaming method with void return that throws a serializable exception when calling the method, then the exception is thrown.',
+    'Given a streaming method with void return that throws a serializable exception, '
+    'when calling the method, '
+    'then the exception is thrown.',
     () async {
       var stream = Stream<int>.fromIterable([1, 2, 3]);
       var responseFuture = client.methodStreaming

@@ -7,7 +7,7 @@ import '../../test_utils/email_idp_test_fixture.dart';
 
 void main() {
   withServerpod(
-    'Given no existing account or pending request',
+    'Given no existing account or pending request,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -34,7 +34,8 @@ void main() {
       });
 
       test(
-        'when starting account creation with valid email and password then it returns account request id',
+        'when starting account creation with valid email and password, '
+        'then it returns account request id',
         () async {
           final accountRequestId = await session.db.transaction(
             (final transaction) =>
@@ -50,7 +51,8 @@ void main() {
       );
 
       test(
-        'when starting account creation with uppercase email then account creation can be verified with lowercase email',
+        'when starting account creation with uppercase email, '
+        'then account creation can be verified with lowercase email',
         () async {
           final accountRequestId = await session.db.transaction(
             (final transaction) =>
@@ -75,7 +77,8 @@ void main() {
       );
 
       test(
-        'when starting account creation with email with spaces then account create can be verified with trimmed email',
+        'when starting account creation with email with spaces, '
+        'then account create can be verified with trimmed email',
         () async {
           final accountRequestId = await session.db.transaction(
             (final transaction) =>
@@ -100,7 +103,8 @@ void main() {
       );
 
       test(
-        'when starting account creation with invalid email format then it throws email invalid exception',
+        'when starting account creation with invalid email format, '
+        'then it throws email invalid exception',
         () async {
           final startAccountCreationFuture = session.db.transaction(
             (final transaction) =>
@@ -121,7 +125,8 @@ void main() {
   );
 
   withServerpod(
-    'Given successful account creation request when capturing output from send verification code callback',
+    'Given successful account creation request, '
+    'when capturing output from send verification code callback,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -193,7 +198,7 @@ void main() {
   );
 
   withServerpod(
-    'Given existing email account',
+    'Given existing email account,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -219,7 +224,8 @@ void main() {
       });
 
       test(
-        'when starting account creation with same email then it throws email already registered exception',
+        'when starting account creation with same email, '
+        'then it throws email already registered exception',
         () async {
           final startAccountCreationFuture = session.db.transaction(
             (final transaction) =>
@@ -240,7 +246,7 @@ void main() {
   );
 
   withServerpod(
-    'Given pending account request',
+    'Given pending account request,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -267,7 +273,7 @@ void main() {
         await fixture.tearDown(session);
       });
 
-      group('when starting another account creation with same email', () {
+      group('when starting another account creation with same email,', () {
         late UuidValue newAccountRequestId;
         setUp(() async {
           newAccountRequestId = await session.db.transaction(

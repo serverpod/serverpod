@@ -473,8 +473,7 @@ indexes:
 
       test(
         'when creating a migration, '
-        'then it fails at the top level because of the module definition and '
-        'leaves registries unchanged.',
+        'then it fails at the top level because of the module definition and leaves registries unchanged.',
         () async {
           var result = await createMigrationAction(config: config);
 

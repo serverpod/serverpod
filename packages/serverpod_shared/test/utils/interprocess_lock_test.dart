@@ -18,7 +18,7 @@ void main() {
     if (tempDir.existsSync()) tempDir.deleteSync(recursive: true);
   });
 
-  group('Given an unheld lock path acquired via acquire', () {
+  group('Given an unheld lock path acquired via acquire,', () {
     late InterProcessLock lock;
 
     setUp(() async {
@@ -29,7 +29,7 @@ void main() {
     });
 
     test(
-      'when released '
+      'when released, '
       'then the lock file is removed',
       () async {
         expect(File(lockPath).existsSync(), isTrue);
@@ -40,7 +40,7 @@ void main() {
     );
   });
 
-  group('Given an unheld lock path acquired via withLock', () {
+  group('Given an unheld lock path acquired via withLock,', () {
     late bool ran;
     late bool heldDuringAction;
 
@@ -58,7 +58,7 @@ void main() {
     });
 
     test(
-      'when the action completes '
+      'when the action completes, '
       'then the lock is held during the action and released after',
       () {
         expect(ran, isTrue);
@@ -69,7 +69,7 @@ void main() {
   });
 
   group(
-    'Given an unheld lock path acquired via withLock whose action throws',
+    'Given an unheld lock path acquired via withLock whose action throws,',
     () {
       late Object? caughtError;
 
@@ -87,7 +87,7 @@ void main() {
       });
 
       test(
-        'when the call has completed '
+        'when the call has completed, '
         'then the error propagates and the lock is still released',
         () {
           expect(caughtError, isA<StateError>());
@@ -97,7 +97,7 @@ void main() {
     },
   );
 
-  group('Given a held lock', () {
+  group('Given a held lock,', () {
     late InterProcessLock lock;
 
     setUp(() async {
@@ -110,7 +110,7 @@ void main() {
     tearDown(() => lock.release());
 
     test(
-      'when released twice '
+      'when released twice, '
       'then the second release is a no-op',
       () async {
         await lock.release();
@@ -120,7 +120,7 @@ void main() {
     );
 
     test(
-      'when a second acquire is attempted '
+      'when a second acquire is attempted, '
       'then it times out until the lock is released',
       () async {
         await expectLater(
@@ -144,7 +144,7 @@ void main() {
     );
 
     test(
-      'when another holder has reclaimed and re-taken it '
+      'when another holder has reclaimed and re-taken it, '
       'then release does not delete their lock file',
       () async {
         // Simulate another acquirer reclaiming and re-taking the lock by
@@ -158,7 +158,7 @@ void main() {
     );
   });
 
-  group('Given a held lock refreshed by its heartbeat', () {
+  group('Given a held lock refreshed by its heartbeat,', () {
     late InterProcessLock lock;
 
     setUp(() async {
@@ -173,7 +173,7 @@ void main() {
     tearDown(() => lock.release());
 
     test(
-      'when a competing acquire waits past the age cap '
+      'when a competing acquire waits past the age cap, '
       'then it still times out',
       () async {
         // Wait past the age cap.
@@ -191,7 +191,7 @@ void main() {
     );
   });
 
-  group('Given a lock file older than the age cap', () {
+  group('Given a lock file older than the age cap,', () {
     setUp(() {
       File(lockPath).writeAsStringSync('held');
       File(lockPath).setLastModifiedSync(
@@ -200,7 +200,7 @@ void main() {
     });
 
     test(
-      'when acquired with the age policy '
+      'when acquired with the age policy, '
       'then it is reclaimed',
       () async {
         var lock = await InterProcessLock.acquire(
@@ -214,7 +214,7 @@ void main() {
     );
   });
 
-  group('Given a lock file whose holder process is gone', () {
+  group('Given a lock file whose holder process is gone,', () {
     setUp(() {
       // A PID far above any real process table entry, so the
       // holder reads as dead and the lock is reclaimed immediately.
@@ -222,7 +222,7 @@ void main() {
     });
 
     test(
-      'when acquired with the processLiveness policy '
+      'when acquired with the processLiveness policy, '
       'then it is reclaimed',
       () async {
         var lock = await InterProcessLock.acquire(

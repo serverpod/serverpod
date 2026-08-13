@@ -8,7 +8,7 @@ import '../../test_util/builders/database/table_definition_builder.dart';
 
 void main() {
   group(
-    'Given a unique index that treats nulls as distinct as source and as not distinct as target,'
+    'Given a unique index that treats nulls as distinct as source and as not distinct as target, '
     'when the migration is generated,',
     () {
       late DatabaseMigration migration;

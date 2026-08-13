@@ -44,7 +44,8 @@ void main() {
   );
 
   testWidgets(
-    'ChatView: Shows `leading` when there are no more earlier messages to load',
+    'ChatView: Shows `leading`, '
+    'when there are no more earlier messages to load',
     (tester) async {
       var mockController = MockChatController();
       var mockMessage = ChatMessage(

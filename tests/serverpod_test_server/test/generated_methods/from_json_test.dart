@@ -6,9 +6,10 @@ import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a a class with non-nullable field, ', () {
+  group('Given a a class with non-nullable field,', () {
     test(
-      'when deserializing from JSON with a null value, then a TypeError is thrown',
+      'when deserializing from JSON with a null value, '
+      'then a TypeError is thrown',
       () {
         expect(
           () => SimpleData.fromJson({"num": null}),
@@ -28,9 +29,10 @@ void main() {
     );
   });
 
-  group('Given a class with a nullable integer field, ', () {
+  group('Given a class with a nullable integer field,', () {
     test(
-      'when deserializing from JSON with a correct value, then the result matches the expected value',
+      'when deserializing from JSON with a correct value, '
+      'then the result matches the expected value',
       () {
         expect(
           Types.fromJson({'anInt': 1}).anInt,
@@ -40,7 +42,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with an incorrect value type, then a TypeError is thrown',
+      'when deserializing from JSON with an incorrect value type, '
+      'then a TypeError is thrown',
       () {
         expect(
           () => Types.fromJson({'anInt': '1'}).anInt,
@@ -50,7 +53,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with a null value, then the field is correctly set to null',
+      'when deserializing from JSON with a null value, '
+      'then the field is correctly set to null',
       () {
         expect(
           Types.fromJson({'anInt': null}).anInt,
@@ -60,9 +64,10 @@ void main() {
     );
   });
 
-  group('Given a class with a nullable double field, ', () {
+  group('Given a class with a nullable double field,', () {
     test(
-      'when deserializing from JSON with a correct value, then the result matches the expected value',
+      'when deserializing from JSON with a correct value, '
+      'then the result matches the expected value',
       () {
         expect(
           Types.fromJson({'aDouble': 20.20}).aDouble,
@@ -72,7 +77,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with an incorrect value type, then a TypeError is thrown',
+      'when deserializing from JSON with an incorrect value type, '
+      'then a TypeError is thrown',
       () {
         expect(
           () => Types.fromJson({'aDouble': '20.20'}).aDouble,
@@ -82,7 +88,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with a null value, then the field is correctly set to null',
+      'when deserializing from JSON with a null value, '
+      'then the field is correctly set to null',
       () {
         expect(
           Types.fromJson({'aDouble': null}).aDouble,
@@ -92,7 +99,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with a int type value, then the result matches the expected value',
+      'when deserializing from JSON with a int type value, '
+      'then the result matches the expected value',
       () {
         expect(
           Types.fromJson({'aDouble': 1}).aDouble,
@@ -102,9 +110,10 @@ void main() {
     );
   });
 
-  group('Given a class with a nullable boolean field, ', () {
+  group('Given a class with a nullable boolean field,', () {
     test(
-      'when deserializing from JSON with a correct value, then the result matches the expected value',
+      'when deserializing from JSON with a correct value, '
+      'then the result matches the expected value',
       () {
         expect(
           Types.fromJson({'aBool': true}).aBool,
@@ -114,7 +123,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with an incorrect value type, then a DeserializationTypeNotFoundException is thrown',
+      'when deserializing from JSON with an incorrect value type, '
+      'then a DeserializationTypeNotFoundException is thrown',
       () {
         expect(
           () => Types.fromJson({'aBool': 'true'}).aBool,
@@ -124,7 +134,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with a null value, then the field is correctly set to null',
+      'when deserializing from JSON with a null value, '
+      'then the field is correctly set to null',
       () {
         expect(
           Types.fromJson({'aBool': null}).aBool,
@@ -134,9 +145,10 @@ void main() {
     );
   });
 
-  group('Given a class with a nullable string field, ', () {
+  group('Given a class with a nullable string field,', () {
     test(
-      'when deserializing from JSON with a correct value, then the result matches the expected value',
+      'when deserializing from JSON with a correct value, '
+      'then the result matches the expected value',
       () {
         expect(
           Types.fromJson({'aString': 'test'}).aString,
@@ -146,7 +158,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with an incorrect value type, then a TypeError is thrown',
+      'when deserializing from JSON with an incorrect value type, '
+      'then a TypeError is thrown',
       () {
         expect(
           () => Types.fromJson({'aString': 111}).aString,
@@ -156,7 +169,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with a null value, then the field is correctly set to null',
+      'when deserializing from JSON with a null value, '
+      'then the field is correctly set to null',
       () {
         expect(
           Types.fromJson({'aString': null}).aString,
@@ -166,9 +180,10 @@ void main() {
     );
   });
 
-  group('Given a class with a nullable DateTime field, ', () {
+  group('Given a class with a nullable DateTime field,', () {
     test(
-      'when deserializing from a JSON string representing a DateTime, then the result matches the expected value',
+      'when deserializing from a JSON string representing a DateTime, '
+      'then the result matches the expected value',
       () {
         expect(
           Types.fromJson({'aDateTime': '2024-01-01T00:00:00.000Z'}).aDateTime,
@@ -178,7 +193,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with a DateTime object, then the result matches the expected value',
+      'when deserializing from JSON with a DateTime object, '
+      'then the result matches the expected value',
       () {
         expect(
           Types.fromJson({
@@ -190,7 +206,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with an integer representing milliseconds, then the result matches the expected value',
+      'when deserializing from JSON with an integer representing milliseconds, '
+      'then the result matches the expected value',
       () {
         expect(
           Types.fromJson({'aDateTime': 111}).aDateTime,
@@ -200,7 +217,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with an incorrect value type, then a TypeError is thrown',
+      'when deserializing from JSON with an incorrect value type, '
+      'then a TypeError is thrown',
       () {
         expect(
           () => Types.fromJson({'aDateTime': 111.1}).aString,
@@ -210,7 +228,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with a null value, then the field is correctly set to null',
+      'when deserializing from JSON with a null value, '
+      'then the field is correctly set to null',
       () {
         expect(
           Types.fromJson({'aDateTime': null}).aDateTime,
@@ -220,9 +239,10 @@ void main() {
     );
   });
 
-  group('Given a class with a nullable Duration field, ', () {
+  group('Given a class with a nullable Duration field,', () {
     test(
-      'when deserializing from JSON with an integer representing milliseconds, then the result matches the expected value',
+      'when deserializing from JSON with an integer representing milliseconds, '
+      'then the result matches the expected value',
       () {
         expect(
           Types.fromJson({'aDuration': 1000}).aDuration?.inMilliseconds,
@@ -232,7 +252,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with a Duration object, then the result matches the expected value',
+      'when deserializing from JSON with a Duration object, '
+      'then the result matches the expected value',
       () {
         expect(
           Types.fromJson({
@@ -244,7 +265,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with an incorrect value type, then a TypeError is thrown',
+      'when deserializing from JSON with an incorrect value type, '
+      'then a TypeError is thrown',
       () {
         expect(
           () => Types.fromJson({'aDuration': 111.1}).aDuration,
@@ -254,7 +276,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with a null value, then the field is correctly set to null',
+      'when deserializing from JSON with a null value, '
+      'then the field is correctly set to null',
       () {
         expect(
           Types.fromJson({'aDuration': null}).aDuration?.inMilliseconds,
@@ -264,9 +287,10 @@ void main() {
     );
   });
 
-  group('Given a class with nullable UuidValue field, ', () {
+  group('Given a class with nullable UuidValue field,', () {
     test(
-      'when deserializing from JSON with a UUID string, then the result matches the expected value',
+      'when deserializing from JSON with a UUID string, '
+      'then the result matches the expected value',
       () {
         expect(
           Types.fromJson({
@@ -278,7 +302,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with a UuidValue object, then the result matches the expected value',
+      'when deserializing from JSON with a UuidValue object, '
+      'then the result matches the expected value',
       () {
         expect(
           Types.fromJson({
@@ -292,7 +317,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with an incorrect value type, then a TypeError is thrown',
+      'when deserializing from JSON with an incorrect value type, '
+      'then a TypeError is thrown',
       () {
         expect(
           () => Types.fromJson({'aUuid': 111}).aUuid,
@@ -302,7 +328,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with a null value, then the field is correctly set to null',
+      'when deserializing from JSON with a null value, '
+      'then the field is correctly set to null',
       () {
         expect(
           Types.fromJson({'aUuid': null}).aUuid?.uuid,
@@ -312,9 +339,10 @@ void main() {
     );
   });
 
-  group('Given a class with nullable Uri field, ', () {
+  group('Given a class with nullable Uri field,', () {
     test(
-      'when deserializing from JSON with a Uri string, then the result matches the expected value',
+      'when deserializing from JSON with a Uri string, '
+      'then the result matches the expected value',
       () {
         expect(
           Types.fromJson({'aUri': 'https://serverpod.dev'}).aUri,
@@ -324,7 +352,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with a Uri object, then the result matches the expected value',
+      'when deserializing from JSON with a Uri object, '
+      'then the result matches the expected value',
       () {
         expect(
           Types.fromJson({'aUri': Uri.parse('https://serverpod.dev')}).aUri,
@@ -334,7 +363,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with a null value, then the field is correctly set to null',
+      'when deserializing from JSON with a null value, '
+      'then the field is correctly set to null',
       () {
         expect(
           Types.fromJson({'aUri': null}).aUri,
@@ -344,9 +374,10 @@ void main() {
     );
   });
 
-  group('Given a class with nullable BigInt field, ', () {
+  group('Given a class with nullable BigInt field,', () {
     test(
-      'when deserializing from JSON with a Big string, then the result matches the expected value',
+      'when deserializing from JSON with a Big string, '
+      'then the result matches the expected value',
       () {
         expect(
           Types.fromJson({'aBigInt': '-12345678901234567890'}).aBigInt,
@@ -356,7 +387,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with a BigInt object, then the result matches the expected value',
+      'when deserializing from JSON with a BigInt object, '
+      'then the result matches the expected value',
       () {
         expect(
           Types.fromJson({
@@ -368,7 +400,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with a null value, then the field is correctly set to null',
+      'when deserializing from JSON with a null value, '
+      'then the field is correctly set to null',
       () {
         expect(
           Types.fromJson({'aBigInt': null}).aBigInt,
@@ -378,9 +411,10 @@ void main() {
     );
   });
 
-  group('Given a class with a nullable ByteData field, ', () {
+  group('Given a class with a nullable ByteData field,', () {
     test(
-      'when deserializing from JSON with a base64-encoded string, then the result matches the expected value',
+      'when deserializing from JSON with a base64-encoded string, '
+      'then the result matches the expected value',
       () {
         expect(
           Types.fromJson({
@@ -392,7 +426,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with a ByteData object, then the result matches the expected value',
+      'when deserializing from JSON with a ByteData object, '
+      'then the result matches the expected value',
       () {
         ByteData value = ByteData.view(base64Decode('AAECAwQFBgc=').buffer);
         expect(
@@ -403,7 +438,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with a Uint8List object derived, then the result matches the expected value',
+      'when deserializing from JSON with a Uint8List object derived, '
+      'then the result matches the expected value',
       () {
         Uint8List value = base64Decode('AAECAwQFBgc=');
         expect(
@@ -414,7 +450,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with an incorrect value type, then a TypeError is thrown',
+      'when deserializing from JSON with an incorrect value type, '
+      'then a TypeError is thrown',
       () {
         expect(
           () => Types.fromJson({'aByteData': 111}).aByteData,
@@ -424,7 +461,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with a null value, then the field is correctly set to null',
+      'when deserializing from JSON with a null value, '
+      'then the field is correctly set to null',
       () {
         expect(
           Types.fromJson({'aByteData': null}).aByteData,
@@ -434,9 +472,10 @@ void main() {
     );
   });
 
-  group('Given a class with a nullable Enum field serialized as int, ', () {
+  group('Given a class with a nullable Enum field serialized as int,', () {
     test(
-      'when deserializing with correct value in JSON, then the result matches the expected value',
+      'when deserializing with correct value in JSON, '
+      'then the result matches the expected value',
       () {
         var types = Types.fromJson({'anEnum': 0});
         expect(
@@ -447,7 +486,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with an incorrect value type, then a TypeError is thrown',
+      'when deserializing from JSON with an incorrect value type, '
+      'then a TypeError is thrown',
       () {
         expect(
           () => Types.fromJson({'anEnum': 'one'}),
@@ -457,7 +497,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with an invalid value, then a TypeError is thrown',
+      'when deserializing from JSON with an invalid value, '
+      'then a TypeError is thrown',
       () {
         expect(
           () => Types.fromJson({'anEnum': -1}),
@@ -471,7 +512,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with a null value, then the field is correctly set to null',
+      'when deserializing from JSON with a null value, '
+      'then the field is correctly set to null',
       () {
         expect(
           Types.fromJson({'anEnum': null}).anEnum,
@@ -481,9 +523,10 @@ void main() {
     );
   });
 
-  group('Given a class with a nullable Enum field serialized as String, ', () {
+  group('Given a class with a nullable Enum field serialized as String,', () {
     test(
-      'when deserializing with correct value in JSON, then the result matches the expected value',
+      'when deserializing with correct value in JSON, '
+      'then the result matches the expected value',
       () {
         var types = Types.fromJson({'aStringifiedEnum': 'one'});
         expect(
@@ -494,7 +537,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with an incorrect value type, then a TypeError is thrown',
+      'when deserializing from JSON with an incorrect value type, '
+      'then a TypeError is thrown',
       () {
         expect(
           () => Types.fromJson({'aStringifiedEnum': 1}),
@@ -504,7 +548,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with an invalid value, then a TypeError is thrown',
+      'when deserializing from JSON with an invalid value, '
+      'then a TypeError is thrown',
       () {
         expect(
           () => Types.fromJson({'aStringifiedEnum': 'four'}),
@@ -514,7 +559,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with a null value, then the field is correctly set to null',
+      'when deserializing from JSON with a null value, '
+      'then the field is correctly set to null',
       () {
         expect(
           Types.fromJson({'aStringifiedEnum': null}).aStringifiedEnum,
@@ -524,9 +570,10 @@ void main() {
     );
   });
 
-  group('Given a class with a nullable List field, ', () {
+  group('Given a class with a nullable List field,', () {
     test(
-      'when deserializing with correct value types in JSON, then the result matches the expected value',
+      'when deserializing with correct value types in JSON, '
+      'then the result matches the expected value',
       () {
         var typeList = TypesList.fromJson({
           'anInt': [1, 2],
@@ -537,7 +584,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with an incorrect value type, then a TypeError is thrown',
+      'when deserializing from JSON with an incorrect value type, '
+      'then a TypeError is thrown',
       () {
         expect(
           () => TypesList.fromJson({
@@ -549,7 +597,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with a null value, then the field is correctly set to null',
+      'when deserializing from JSON with a null value, '
+      'then the field is correctly set to null',
       () {
         expect(
           TypesList.fromJson({'anInt': null}).anInt,
@@ -559,9 +608,10 @@ void main() {
     );
   });
 
-  group('Given a class with a nullable Set and nested objects, ', () {
+  group('Given a class with a nullable Set and nested objects,', () {
     test(
-      'when deserializing with correct value type in JSON, then the result matches the expected value',
+      'when deserializing with correct value type in JSON, '
+      'then the result matches the expected value',
       () {
         var typeList = TypesSet.fromJson({
           'anObject': [
@@ -576,7 +626,8 @@ void main() {
     );
 
     test(
-      'when deserializing with null in JSON, then the result matches the expected value',
+      'when deserializing with null in JSON, '
+      'then the result matches the expected value',
       () {
         var typeList = TypesSet.fromJson({'aDateTime': null});
         expect(
@@ -587,7 +638,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with an incorrect value type, then a TypeError is thrown',
+      'when deserializing from JSON with an incorrect value type, '
+      'then a TypeError is thrown',
       () {
         expect(
           () => TypesSet.fromJson({
@@ -601,9 +653,10 @@ void main() {
     );
   });
 
-  group('Given a class with a nullable Set field, ', () {
+  group('Given a class with a nullable Set field,', () {
     test(
-      'when deserializing with correct value types in JSON, then the result matches the expected value',
+      'when deserializing with correct value types in JSON, '
+      'then the result matches the expected value',
       () {
         var typeList = TypesSet.fromJson({
           'anInt': [1, 2],
@@ -614,7 +667,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with an incorrect value type, then a TypeError is thrown',
+      'when deserializing from JSON with an incorrect value type, '
+      'then a TypeError is thrown',
       () {
         expect(
           () => TypesSet.fromJson({
@@ -626,7 +680,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with duplicate values, then duplicates are removed',
+      'when deserializing from JSON with duplicate values, '
+      'then duplicates are removed',
       () {
         var typeSet = TypesSet.fromJson({
           'aString': ['test', 'test'],
@@ -637,7 +692,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with a null value, then the field is correctly set to null',
+      'when deserializing from JSON with a null value, '
+      'then the field is correctly set to null',
       () {
         expect(
           TypesList.fromJson({'anInt': null}).anInt,
@@ -648,7 +704,9 @@ void main() {
   });
 
   test(
-    'Given a class with a non-nullable List field when deserializing with null value provided in JSON, then a TypeError is thrown',
+    'Given a class with a non-nullable List field, '
+    'when deserializing with null value provided in JSON, '
+    'then a TypeError is thrown',
     () {
       expect(
         () => SimpleDataList.fromJson({'rows': null}),
@@ -657,9 +715,10 @@ void main() {
     },
   );
 
-  group('Given a class with a nullable List and nested objects, ', () {
+  group('Given a class with a nullable List and nested objects,', () {
     test(
-      'when deserializing with correct value type in JSON, then the result matches the expected value',
+      'when deserializing with correct value type in JSON, '
+      'then the result matches the expected value',
       () {
         var typeList = TypesList.fromJson({
           'anObject': [
@@ -674,7 +733,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with an incorrect value type, then a TypeError is thrown',
+      'when deserializing from JSON with an incorrect value type, '
+      'then a TypeError is thrown',
       () {
         expect(
           () => TypesList.fromJson({
@@ -688,9 +748,10 @@ void main() {
     );
   });
 
-  group('Given a class with a nullable Map, ', () {
+  group('Given a class with a nullable Map,', () {
     test(
-      'when deserializing with correct values provided in JSON, then the result matches the expected value',
+      'when deserializing with correct values provided in JSON, '
+      'then the result matches the expected value',
       () {
         expect(
           TypesMap.fromJson({
@@ -704,7 +765,8 @@ void main() {
     );
 
     test(
-      'when deserializing with a missing key and value in JSON, then a TypeError is thrown',
+      'when deserializing with a missing key and value in JSON, '
+      'then a TypeError is thrown',
       () {
         expect(
           () => SimpleDataMap.fromJson({
@@ -716,7 +778,8 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with an invalid value types, then a TypeError is thrown',
+      'when deserializing from JSON with an invalid value types, '
+      'then a TypeError is thrown',
       () {
         expect(
           () => TypesMap.fromJson({
@@ -734,7 +797,9 @@ void main() {
   });
 
   test(
-    'Given a class with a non-nullable Map when deserializing with null value provided in JSON, then a TypeError is thrown',
+    'Given a class with a non-nullable Map, '
+    'when deserializing with null value provided in JSON, '
+    'then a TypeError is thrown',
     () {
       expect(
         () => SimpleDataMap.fromJson({'data': null}),
@@ -744,7 +809,9 @@ void main() {
   );
 
   test(
-    'Given a class with a non-nullable Set when deserializing with null value provided in JSON, then a TypeError is thrown',
+    'Given a class with a non-nullable Set, '
+    'when deserializing with null value provided in JSON, '
+    'then a TypeError is thrown',
     () {
       expect(
         () => TypesSetRequired.fromJson({'anInt': null}),
@@ -754,7 +821,9 @@ void main() {
   );
 
   test(
-    'Given a class with a non-nullable Set when deserializing with correct values provided in JSON, then the result matches the input',
+    'Given a class with a non-nullable Set, '
+    'when deserializing with correct values provided in JSON, '
+    'then the result matches the input',
     () {
       expect(
         TypesSetRequired.fromJson({

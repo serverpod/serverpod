@@ -128,7 +128,7 @@ Future<NoctermTester> _pump(ServerWatchState state, Size size) async {
 
 void main() {
   group(
-    'Given a rendered terminal at least as wide as the side-by-side cutoff',
+    'Given a rendered terminal at least as wide as the side-by-side cutoff,',
     () {
       late NoctermTester tester;
 
@@ -162,7 +162,7 @@ void main() {
       });
 
       test(
-        'when an app tab is clicked then it is selected and the view updates',
+        'when an app tab is clicked, then it is selected and the view updates',
         () async {
           // The Admin tab is selected initially, so only its log shows.
           expect(tester.terminalState.containsText('admin-log-line'), isTrue);
@@ -179,7 +179,7 @@ void main() {
     },
   );
 
-  group('Given a rendered terminal narrower than the side-by-side cutoff', () {
+  group('Given a rendered terminal narrower than the side-by-side cutoff,', () {
     late NoctermTester tester;
 
     setUp(() async {
@@ -203,7 +203,7 @@ void main() {
     });
 
     test(
-      'when a tab is clicked in the merged strip then it is selected',
+      'when a tab is clicked in the merged strip, then it is selected',
       () async {
         expect(tester.terminalState.containsText('admin-log-line'), isTrue);
         expect(tester.terminalState.containsText('server-log-line'), isFalse);
@@ -218,7 +218,7 @@ void main() {
     );
   });
 
-  group('Given the launch panel is open with the running app focused', () {
+  group('Given the launch panel is open with the running app focused,', () {
     late NoctermTester tester;
 
     setUp(() async {
@@ -252,7 +252,7 @@ void main() {
     });
   });
 
-  group('Given the launch panel is open with a stopped app focused', () {
+  group('Given the launch panel is open with a stopped app focused,', () {
     late NoctermTester tester;
 
     setUp(() async {
@@ -287,7 +287,7 @@ void main() {
     });
   });
 
-  group('Given the launch panel is open with a launching app focused', () {
+  group('Given the launch panel is open with a launching app focused,', () {
     late NoctermTester tester;
 
     setUp(() async {
@@ -313,7 +313,7 @@ void main() {
     );
   });
 
-  group('Given a ready Flutter app tab with a configured device', () {
+  group('Given a ready Flutter app tab with a configured device,', () {
     late NoctermTester tester;
 
     setUp(() async {
@@ -328,7 +328,7 @@ void main() {
     });
   });
 
-  group('Given a ready Flutter app tab without a configured device', () {
+  group('Given a ready Flutter app tab without a configured device,', () {
     late NoctermTester tester;
 
     setUp(() async {
@@ -340,7 +340,7 @@ void main() {
     });
   });
 
-  group('Given a ready Flutter app tab with a published URL', () {
+  group('Given a ready Flutter app tab with a published URL,', () {
     late NoctermTester tester;
 
     setUp(() async {
@@ -359,7 +359,7 @@ void main() {
     });
   });
 
-  group('Given a structured log with stack-traced error entries', () {
+  group('Given a structured log with stack-traced error entries,', () {
     late ServerWatchState state;
     late NoctermTester tester;
 
@@ -404,7 +404,7 @@ void main() {
     });
 
     test(
-      'when one entry is clicked then the others stays collapsed',
+      'when one entry is clicked, then the others stays collapsed',
       () async {
         expect(tester.terminalState.findText('E Expand'), hasLength(2));
 
@@ -432,7 +432,7 @@ void main() {
   });
 
   group(
-    'Given a scrollback with a stack trace taller than the viewport',
+    'Given a scrollback with a stack trace taller than the viewport,',
     () {
       late NoctermTester tester;
 
@@ -471,8 +471,8 @@ void main() {
       });
 
       test(
-        'when the trace is expanded and collapsed then the clicked entry '
-        'stays in view',
+        'when the trace is expanded and collapsed, '
+        'then the clicked entry stays in view',
         () async {
           final expand = tester.terminalState.findText('E Expand').first;
           await tester.tap(expand.x, expand.y);

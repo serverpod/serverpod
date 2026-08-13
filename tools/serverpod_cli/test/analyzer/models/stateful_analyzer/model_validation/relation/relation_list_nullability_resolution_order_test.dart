@@ -48,7 +48,7 @@ void main() {
     return company.findField('employees')!.relation as ListRelationDefinition;
   }
 
-  group('Given a named one to many relation with a required foreign key', () {
+  group('Given a named one to many relation with a required foreign key,', () {
     var employeeYaml = '''
         class: Employee
         table: employee
@@ -56,8 +56,8 @@ void main() {
           company: Company?, relation(name=company_employees)
         ''';
 
-    test('when the foreign class is analyzed before the list owner '
-        'then the nullableRelation is set to false.', () {
+    test('when the foreign class is analyzed before the list owner, '
+         'then the nullableRelation is set to false.', () {
       var relation = resolveListRelation([
         (fileName: 'employee', yaml: employeeYaml),
         (fileName: 'company', yaml: companyYaml),
@@ -66,8 +66,8 @@ void main() {
       expect(relation.nullableRelation, isFalse);
     });
 
-    test('when the list owner is analyzed before the foreign class '
-        'then the nullableRelation is set to false.', () {
+    test('when the list owner is analyzed before the foreign class, '
+         'then the nullableRelation is set to false.', () {
       var relation = resolveListRelation([
         (fileName: 'company', yaml: companyYaml),
         (fileName: 'employee', yaml: employeeYaml),
@@ -77,7 +77,7 @@ void main() {
     });
   });
 
-  group('Given a named one to many relation with an optional foreign key', () {
+  group('Given a named one to many relation with an optional foreign key,', () {
     var employeeYaml = '''
         class: Employee
         table: employee
@@ -85,8 +85,8 @@ void main() {
           company: Company?, relation(name=company_employees, optional)
         ''';
 
-    test('when the foreign class is analyzed before the list owner '
-        'then the nullableRelation is set to true.', () {
+    test('when the foreign class is analyzed before the list owner, '
+         'then the nullableRelation is set to true.', () {
       var relation = resolveListRelation([
         (fileName: 'employee', yaml: employeeYaml),
         (fileName: 'company', yaml: companyYaml),
@@ -95,8 +95,8 @@ void main() {
       expect(relation.nullableRelation, isTrue);
     });
 
-    test('when the list owner is analyzed before the foreign class '
-        'then the nullableRelation is set to true.', () {
+    test('when the list owner is analyzed before the foreign class, '
+         'then the nullableRelation is set to true.', () {
       var relation = resolveListRelation([
         (fileName: 'company', yaml: companyYaml),
         (fileName: 'employee', yaml: employeeYaml),
@@ -107,7 +107,7 @@ void main() {
   });
 
   group('Given a named one to many relation with an explicit nullable '
-      'foreign key field', () {
+        'foreign key field,', () {
     var employeeYaml = '''
         class: Employee
         table: employee
@@ -116,8 +116,8 @@ void main() {
           company: Company?, relation(name=company_employees, field=companyId)
         ''';
 
-    test('when the foreign class is analyzed before the list owner '
-        'then the nullableRelation is set to true.', () {
+    test('when the foreign class is analyzed before the list owner, '
+         'then the nullableRelation is set to true.', () {
       var relation = resolveListRelation([
         (fileName: 'employee', yaml: employeeYaml),
         (fileName: 'company', yaml: companyYaml),
@@ -126,8 +126,8 @@ void main() {
       expect(relation.nullableRelation, isTrue);
     });
 
-    test('when the list owner is analyzed before the foreign class '
-        'then the nullableRelation is set to true.', () {
+    test('when the list owner is analyzed before the foreign class, '
+         'then the nullableRelation is set to true.', () {
       var relation = resolveListRelation([
         (fileName: 'company', yaml: companyYaml),
         (fileName: 'employee', yaml: employeeYaml),
@@ -138,7 +138,7 @@ void main() {
   });
 
   group('Given a named one to many relation with an explicit non-nullable '
-      'foreign key field', () {
+        'foreign key field,', () {
     var employeeYaml = '''
         class: Employee
         table: employee
@@ -147,8 +147,8 @@ void main() {
           company: Company?, relation(name=company_employees, field=companyId)
         ''';
 
-    test('when the foreign class is analyzed before the list owner '
-        'then the nullableRelation is set to false.', () {
+    test('when the foreign class is analyzed before the list owner, '
+         'then the nullableRelation is set to false.', () {
       var relation = resolveListRelation([
         (fileName: 'employee', yaml: employeeYaml),
         (fileName: 'company', yaml: companyYaml),
@@ -157,8 +157,8 @@ void main() {
       expect(relation.nullableRelation, isFalse);
     });
 
-    test('when the list owner is analyzed before the foreign class '
-        'then the nullableRelation is set to false.', () {
+    test('when the list owner is analyzed before the foreign class, '
+         'then the nullableRelation is set to false.', () {
       var relation = resolveListRelation([
         (fileName: 'company', yaml: companyYaml),
         (fileName: 'employee', yaml: employeeYaml),

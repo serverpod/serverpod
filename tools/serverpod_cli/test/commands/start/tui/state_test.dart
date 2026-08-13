@@ -5,8 +5,8 @@ import 'package:test/test.dart';
 
 void main() {
   test(
-    'Given a ServerWatchState with configured apps '
-    'when created '
+    'Given a ServerWatchState with configured apps, '
+    'when created, '
     'then defaults are correct',
     () {
       final state = ServerWatchState();
@@ -23,7 +23,7 @@ void main() {
     },
   );
 
-  group('Given a ServerWatchState with entries in every log buffer', () {
+  group('Given a ServerWatchState with entries in every log buffer,', () {
     late ServerWatchState state;
     late AppLogTab appTab;
 
@@ -36,7 +36,7 @@ void main() {
       appTab.logHistory.add('structured flutter entry');
     });
 
-    test('when clearLogs is called then every log buffer is emptied', () {
+    test('when clearLogs is called, then every log buffer is emptied', () {
       state.clearLogs();
 
       expect(state.logHistory, isEmpty);
@@ -47,7 +47,7 @@ void main() {
   });
 
   group(
-    'Given a ServerWatchState with in-progress operations and log entries',
+    'Given a ServerWatchState with in-progress operations and log entries,',
     () {
       late ServerWatchState state;
       late TrackedOperation operation;
@@ -63,7 +63,7 @@ void main() {
         appTab.lines.add('raw flutter line');
       });
 
-      test('when clearLogs is called then activeOperations are preserved', () {
+      test('when clearLogs is called, then activeOperations are preserved', () {
         state.clearLogs();
 
         expect(state.activeOperations, hasLength(1));
@@ -73,8 +73,8 @@ void main() {
   );
 
   test(
-    'Given a ServerWatchState without configured apps '
-    'when created '
+    'Given a ServerWatchState without configured apps, '
+    'when created, '
     'then only the main area exists',
     () {
       final state = ServerWatchState();
@@ -84,7 +84,7 @@ void main() {
     },
   );
 
-  group('Given a ServerWatchState with two companion app tabs', () {
+  group('Given a ServerWatchState with two companion app tabs,', () {
     late ServerWatchState state;
     late AppLogTab admin;
     late AppLogTab portal;
@@ -96,7 +96,7 @@ void main() {
     });
 
     test(
-      'when a log line is appended to each app '
+      'when a log line is appended to each app, '
       'then each tab keeps only its own lines',
       () {
         admin.lines.add('admin stdout');

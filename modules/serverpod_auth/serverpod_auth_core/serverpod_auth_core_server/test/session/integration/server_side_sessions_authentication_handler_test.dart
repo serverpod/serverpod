@@ -27,7 +27,8 @@ void main() {
       });
 
       test(
-        'when calling `authenticationHandler` with an unrelated string, then it returns `null`.',
+        'when calling `authenticationHandler` with an unrelated string, '
+        'then it returns `null`.',
         () async {
           expect(
             await serverSideSessions.authenticationHandler(
@@ -40,7 +41,8 @@ void main() {
       );
 
       test(
-        'when calling `authenticationHandler` with an invalid string fitting the pattern, then it returns `null`.',
+        'when calling `authenticationHandler` with an invalid string fitting the pattern, '
+        'then it returns `null`.',
         () async {
           expect(
             await serverSideSessions.authenticationHandler(
@@ -80,7 +82,8 @@ void main() {
     });
 
     test(
-      'when calling `authenticationHandler` with the session key, then it returns an `AuthenticationInfo` for the user.',
+      'when calling `authenticationHandler` with the session key, '
+      'then it returns an `AuthenticationInfo` for the user.',
       () async {
         final authInfo = await serverSideSessions.authenticationHandler(
           session,
@@ -95,7 +98,8 @@ void main() {
     );
 
     test(
-      'when calling `authenticationHandler` with the wrong secret in the session key, then it returns `null`.',
+      'when calling `authenticationHandler` with the wrong secret in the session key, '
+      'then it returns `null`.',
       () async {
         final sessionData = tryParseServerSideSessionToken(
           session,
@@ -120,7 +124,8 @@ void main() {
     );
 
     test(
-      'when calling `authenticationHandler` after the pepper has been changed, then it returns `null`.',
+      'when calling `authenticationHandler` after the pepper has been changed, '
+      'then it returns `null`.',
       () async {
         final differentPepperServerSideSessions = ServerSideSessions(
           config: ServerSideSessionsConfig(
@@ -165,7 +170,8 @@ void main() {
     });
 
     test(
-      'when calling `authenticationHandler` with the session key, then it returns an `AuthenticationInfo` with the correct scopes.',
+      'when calling `authenticationHandler` with the session key, '
+      'then it returns an `AuthenticationInfo` with the correct scopes.',
       () async {
         final authInfo = await serverSideSessions.authenticationHandler(
           session,
@@ -183,7 +189,7 @@ void main() {
   withServerpod(
     'Given an auth session with an expiration date,',
     (final sessionBuilder, final endpoints) {
-      final expiresAt = DateTime.now().add(const Duration(days: 1));
+      late final expiresAt = DateTime.now().add(const Duration(days: 1));
       late Session session;
       late UuidValue authUserId;
       late String serverSideSessionToken;
@@ -203,7 +209,8 @@ void main() {
       });
 
       test(
-        'when calling `authenticationHandler` right away, then it returns an `AuthenticationInfo` for the user.',
+        'when calling `authenticationHandler` right away, '
+        'then it returns an `AuthenticationInfo` for the user.',
         () async {
           final authInfo = await serverSideSessions.authenticationHandler(
             session,
@@ -218,7 +225,8 @@ void main() {
       );
 
       test(
-        'when calling `authenticationHandler` after the expiration date, then it returns `null`.',
+        'when calling `authenticationHandler` after the expiration date, '
+        'then it returns `null`.',
         () async {
           final authInfo = await withClock(
             Clock.fixed(expiresAt.add(const Duration(seconds: 1))),
@@ -237,7 +245,7 @@ void main() {
     },
   );
 
-  withServerpod('Given an auth session which will expire when unused,', (
+  withServerpod('Given an auth session which will expire, when unused,', (
     final sessionBuilder,
     final endpoints,
   ) {
@@ -261,7 +269,8 @@ void main() {
     });
 
     test(
-      'when calling `authenticationHandler` right away, then it returns an `AuthenticationInfo` for the user.',
+      'when calling `authenticationHandler` right away, '
+      'then it returns an `AuthenticationInfo` for the user.',
       () async {
         final authInfo = await serverSideSessions.authenticationHandler(
           session,
@@ -276,7 +285,9 @@ void main() {
     );
 
     test(
-      'when calling `authenticationHandler` within the time limit and then afterwards, then it returns an `AuthenticationInfo` for the user (as the lifetime was extended).',
+      'when calling `authenticationHandler` within the time limit and, '
+      'then afterwards, '
+      'then it returns an `AuthenticationInfo` for the user (as the lifetime was extended).',
       () async {
         final firstUseTime = DateTime.now().add(
           expireAfterUnusedFor - const Duration(minutes: 1),
@@ -313,7 +324,8 @@ void main() {
     );
 
     test(
-      'when calling `authenticationHandler` after the inactivity time limit, then it returns `null`',
+      'when calling `authenticationHandler` after the inactivity time limit, '
+      'then it returns `null`',
       () async {
         final authInfo = await withClock(
           Clock.fixed(
@@ -363,7 +375,8 @@ void main() {
       });
 
       test(
-        'when calling `authenticationHandler` with the new pepper only then it returns `null`.',
+        'when calling `authenticationHandler` with the new pepper only, '
+        'then it returns `null`.',
         () async {
           final newPepperServerSideSessions = ServerSideSessions(
             config: ServerSideSessionsConfig(
@@ -385,7 +398,8 @@ void main() {
       );
 
       test(
-        'when calling `authenticationHandler` with the new pepper and old pepper in fallback list then it returns the user.',
+        'when calling `authenticationHandler` with the new pepper and old pepper in fallback list, '
+        'then it returns the user.',
         () async {
           final rotatedPepperServerSideSessions = ServerSideSessions(
             config: ServerSideSessionsConfig(
@@ -408,7 +422,8 @@ void main() {
       );
 
       test(
-        'when calling `authenticationHandler` with multiple fallback peppers then it tries each until a match is found.',
+        'when calling `authenticationHandler` with multiple fallback peppers, '
+        'then it tries each until a match is found.',
         () async {
           final rotatedPepperServerSideSessions = ServerSideSessions(
             config: ServerSideSessionsConfig(
@@ -467,7 +482,8 @@ void main() {
       });
 
       test(
-        'when calling `authenticationHandler` with the current pepper and fallback peppers then it validates successfully.',
+        'when calling `authenticationHandler` with the current pepper and fallback peppers, '
+        'then it validates successfully.',
         () async {
           final serverSideSessionsWithFallback = ServerSideSessions(
             config: ServerSideSessionsConfig(
@@ -502,7 +518,7 @@ void main() {
 
     // The secret the client presents. The pre-fix digest is
     // sha512(secret + pepper), with the stored salt never mixed in.
-    final secret = Uint8List.fromList(List.generate(32, (final i) => i + 7));
+    late final secret = Uint8List.fromList(List.generate(32, (final i) => i + 7));
 
     setUp(() async {
       session = sessionBuilder.build();

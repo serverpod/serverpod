@@ -3,8 +3,8 @@ import 'package:test/test.dart';
 
 void main() {
   test(
-    'Given a SharedNotFoundException object '
-    'when serialized '
+    'Given a SharedNotFoundException object, '
+    'when serialized, '
     'then it produces JSON with the concrete exception class name.',
     () {
       final exception = SharedNotFoundException(
@@ -21,8 +21,8 @@ void main() {
   );
 
   test(
-    'Given a SharedValidationException object '
-    'when serialized '
+    'Given a SharedValidationException object, '
+    'when serialized, '
     'then it produces JSON with the concrete exception class name.',
     () {
       final exception = SharedValidationException(
@@ -39,8 +39,8 @@ void main() {
   );
 
   test(
-    'Given a SharedNotFoundException object '
-    'when deserialized as SharedSealedAppException '
+    'Given a SharedNotFoundException object, '
+    'when deserialized as SharedSealedAppException, '
     'then it maintains the runtime type.',
     () {
       final exception = SharedNotFoundException(
@@ -61,8 +61,8 @@ void main() {
   );
 
   test(
-    'Given a SharedNotFoundException object '
-    'when deserialized using deserializeByClassName '
+    'Given a SharedNotFoundException object, '
+    'when deserialized using deserializeByClassName, '
     'then it deserializes as the concrete exception type.',
     () {
       final exception = SharedNotFoundException(
@@ -84,8 +84,8 @@ void main() {
   );
 
   test(
-    'Given JSON for a sealed shared exception subtype '
-    'when deserialized using the sealed parent className '
+    'Given JSON for a sealed shared exception subtype, '
+    'when deserialized using the sealed parent className, '
     'then deserialization fails because the parent is not registered.',
     () {
       final exception = SharedNotFoundException(
@@ -104,8 +104,8 @@ void main() {
   );
 
   test(
-    'Given a SharedNotFoundException object '
-    'when using copyWith through a sealed parent reference '
+    'Given a SharedNotFoundException object, '
+    'when using copyWith through a sealed parent reference, '
     'then it creates a copy with updated values.',
     () {
       final exception = SharedNotFoundException(
@@ -124,8 +124,8 @@ void main() {
   );
 
   test(
-    'Given a SharedObjectWithSealedException '
-    'when created with sealed exception fields '
+    'Given a SharedObjectWithSealedException, '
+    'when created with sealed exception fields, '
     'then it serializes and deserializes correctly.',
     () {
       final notFound = SharedNotFoundException(
@@ -149,8 +149,8 @@ void main() {
   );
 
   test(
-    'Given a SharedExtendedAppException '
-    'when created '
+    'Given a SharedExtendedAppException, '
+    'when created, '
     'then it is a subtype of SharedBaseAppException.',
     () {
       final exception = SharedExtendedAppException(
@@ -163,8 +163,8 @@ void main() {
   );
 
   test(
-    'Given a SharedExtendedAppException object '
-    'when round-tripped through JSON '
+    'Given a SharedExtendedAppException object, '
+    'when round-tripped through JSON, '
     'then inherited and child fields are preserved.',
     () {
       final exception = SharedExtendedAppException(

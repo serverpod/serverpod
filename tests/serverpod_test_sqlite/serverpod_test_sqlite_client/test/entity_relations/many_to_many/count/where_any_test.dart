@@ -6,9 +6,10 @@ import '../../../test_util.dart';
 void main() {
   initTestClientSession();
 
-  group('Given models with many to many relation', () {
+  group('Given models with many to many relation,', () {
     test(
-      'when counting models filtered by any many relation then result is as expected',
+      'when counting models filtered by any many relation, '
+      'then result is as expected',
       () async {
         var students = await Student.db.insert(session, [
           Student(name: 'Alex'),
@@ -38,7 +39,8 @@ void main() {
     );
 
     test(
-      'when counting models filtered by filtered any many relation then result is as expected',
+      'when counting models filtered by filtered any many relation, '
+      'then result is as expected',
       () async {
         var students = await Student.db.insert(session, [
           Student(name: 'Alex'),
@@ -79,7 +81,8 @@ void main() {
     );
 
     test(
-      'when counting models filtered by any many relation in combination with other filter then result is as expected',
+      'when counting models filtered by any many relation in combination with other filter, '
+      'then result is as expected',
       () async {
         var students = await Student.db.insert(session, [
           Student(name: 'Alex'),
@@ -116,7 +119,8 @@ void main() {
     );
 
     test(
-      'when counting models filtered by multiple filtered any many relation then result is as expected',
+      'when counting models filtered by multiple filtered any many relation, '
+      'then result is as expected',
       () async {
         var students = await Student.db.insert(session, [
           Student(name: 'Alex'),

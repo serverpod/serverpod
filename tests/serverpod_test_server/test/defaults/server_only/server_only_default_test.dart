@@ -3,10 +3,11 @@ import 'package:test/test.dart';
 
 void main() async {
   group(
-    "Given a class with serverOnly scoped fields with default values",
+    "Given a class with serverOnly scoped fields with default values,",
     () {
       test(
-        'when an instance is created on server, then serverOnly fields have default values.',
+        'when an instance is created on server, '
+        'then serverOnly fields have default values.',
         () {
           var serverObject = ServerOnlyDefault(
             normalField: 'test value',
@@ -19,7 +20,8 @@ void main() async {
       );
 
       test(
-        'when serverOnly field values are explicitly provided, then those values are used.',
+        'when serverOnly field values are explicitly provided, '
+        'then those values are used.',
         () {
           var serverObject = ServerOnlyDefault(
             normalField: 'test value',
@@ -34,7 +36,8 @@ void main() async {
       );
 
       test(
-        'when creating a new object with copyWith, then serverOnly defaults are preserved.',
+        'when creating a new object with copyWith, '
+        'then serverOnly defaults are preserved.',
         () {
           var original = ServerOnlyDefault(
             normalField: 'original',

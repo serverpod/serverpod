@@ -6,13 +6,14 @@ import 'package:test/test.dart';
 void main() async {
   var session = await IntegrationTestServer().session();
 
-  group('Given models with one to many relation ', () {
+  group('Given models with one to many relation,', () {
     tearDown(() async {
       await Cat.db.deleteWhere(session, where: (_) => db.Constant.bool(true));
     });
 
     test(
-      'when counting models filtered on none many relation then result is as expected.',
+      'when counting models filtered on none many relation, '
+      'then result is as expected.',
       () async {
         var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
         var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));
@@ -33,7 +34,8 @@ void main() async {
     );
 
     test(
-      'when counting models filtered on filtered none many relation then result is as expected',
+      'when counting models filtered on filtered none many relation, '
+      'then result is as expected',
       () async {
         var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
         var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));
@@ -53,7 +55,8 @@ void main() async {
     );
 
     test(
-      'when counting models filtered on multiple none many relation then result is as expected.',
+      'when counting models filtered on multiple none many relation, '
+      'then result is as expected.',
       () async {
         var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
         var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));
@@ -75,13 +78,14 @@ void main() async {
     );
   });
 
-  group('Given models with nested one to many relation', () {
+  group('Given models with nested one to many relation,', () {
     tearDown(() async {
       await Cat.db.deleteWhere(session, where: (_) => db.Constant.bool(true));
     });
 
     test(
-      'when counting models filtered on nested none many relation then result is as expected',
+      'when counting models filtered on nested none many relation, '
+      'then result is as expected',
       () async {
         var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
         var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));
@@ -105,7 +109,8 @@ void main() async {
     );
 
     test(
-      'when counting models filtered on filtered nested none many relation then result is as expected',
+      'when counting models filtered on filtered nested none many relation, '
+      'then result is as expected',
       () async {
         var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
         var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));

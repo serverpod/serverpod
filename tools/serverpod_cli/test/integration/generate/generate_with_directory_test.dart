@@ -10,7 +10,9 @@ void main() {
   tearDown(() async => await tempDir.delete(recursive: true));
 
   test(
-    'Given a non-existent directory when GeneratorConfig.load is called with a directory path then ServerpodProjectNotFoundException is thrown.',
+    'Given a non-existent directory, '
+    'when GeneratorConfig.load is called with a directory path, '
+    'then ServerpodProjectNotFoundException is thrown.',
     () async {
       final nonExistentPath = path.join(tempDir.path, 'nonexistent');
 
@@ -32,7 +34,9 @@ void main() {
   );
 
   test(
-    'Given a directory without serverpod dependency when GeneratorConfig.load is called with a directory path then ServerpodProjectNotFoundException is thrown.',
+    'Given a directory without serverpod dependency, '
+    'when GeneratorConfig.load is called with a directory path, '
+    'then ServerpodProjectNotFoundException is thrown.',
     () async {
       final serverDir = Directory(path.join(tempDir.path, 'server'));
       await serverDir.create(recursive: true);

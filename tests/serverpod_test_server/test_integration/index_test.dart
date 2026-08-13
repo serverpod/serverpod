@@ -7,7 +7,8 @@ import 'package:serverpod_database/serverpod_database.dart';
 void main() async {
   Session session = await IntegrationTestServer().session();
 
-  group('Given declared ObjectWithVector class when analyzing database schema', () {
+  group('Given declared ObjectWithVector class, '
+        'when analyzing database schema,', () {
     late List<IndexDefinition> indexes;
 
     setUpAll(() async {
@@ -100,7 +101,8 @@ void main() async {
     );
   });
 
-  group('Given declared ObjectWithHalfVector class when analyzing database schema', () {
+  group('Given declared ObjectWithHalfVector class, '
+        'when analyzing database schema,', () {
     late List<IndexDefinition> indexes;
 
     setUpAll(() async {
@@ -194,7 +196,8 @@ void main() async {
   });
 
   group(
-    'Given declared ObjectWithSparseVector class when analyzing database schema',
+    'Given declared ObjectWithSparseVector class, '
+    'when analyzing database schema,',
     () {
       late List<IndexDefinition> indexes;
 
@@ -256,7 +259,8 @@ void main() async {
     },
   );
 
-  group('Given declared ObjectWithBit class when analyzing database schema', () {
+  group('Given declared ObjectWithBit class, '
+        'when analyzing database schema,', () {
     late List<IndexDefinition> indexes;
 
     setUpAll(() async {
@@ -344,7 +348,7 @@ void main() async {
   });
 
   group(
-    'Given declared ObjectWithJsonb class when analyzing database schema',
+    'Given declared ObjectWithJsonb class, when analyzing database schema,',
     () {
       late List<IndexDefinition> indexes;
 
@@ -412,7 +416,8 @@ void main() async {
   );
 
   group(
-    'Given declared ObjectWithGeographyPoint class when analyzing database schema',
+    'Given declared ObjectWithGeographyPoint class, '
+    'when analyzing database schema,',
     () {
       late List<IndexDefinition> indexes;
 
@@ -468,7 +473,8 @@ void main() async {
   );
 
   group(
-    'Given declared ObjectWithGeographyLineString class when analyzing database schema',
+    'Given declared ObjectWithGeographyLineString class, '
+    'when analyzing database schema,',
     () {
       late List<IndexDefinition> indexes;
 
@@ -524,7 +530,8 @@ void main() async {
   );
 
   group(
-    'Given declared ObjectWithGeographyPolygon class when analyzing database schema',
+    'Given declared ObjectWithGeographyPolygon class, '
+    'when analyzing database schema,',
     () {
       late List<IndexDefinition> indexes;
 
@@ -580,7 +587,8 @@ void main() async {
   );
 
   group(
-    'Given declared ObjectWithGeographyGeometryCollection class when analyzing database schema',
+    'Given declared ObjectWithGeographyGeometryCollection class, '
+    'when analyzing database schema,',
     () {
       late List<IndexDefinition> indexes;
 

@@ -20,7 +20,8 @@ void main() {
 
   for (var indexType in validIndexTypes) {
     test(
-      'Given a class with an index type explicitly set to $indexType, then use that type',
+      'Given a class with an index type explicitly set to $indexType, '
+      'then use that type',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -130,7 +131,8 @@ void main() {
   );
 
   test(
-    'Given a class with an index without a type set, then default to type btree',
+    'Given a class with an index without a type set, '
+    'then default to type btree',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -281,7 +283,8 @@ void main() {
   );
 
   test(
-    'Given a class with an index type explicitly set to an invalid type, then collect an error that only the defined index types can be used.',
+    'Given a class with an index type explicitly set to an invalid type, '
+    'then collect an error that only the defined index types can be used.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -321,7 +324,8 @@ void main() {
   );
 
   test(
-    'Given a class with an index with an invalid type, then collect an error indicating that the type is invalid.',
+    'Given a class with an index with an invalid type, '
+    'then collect an error indicating that the type is invalid.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -361,7 +365,8 @@ void main() {
   );
 
   test(
-    'Given a class with an index on vector fields and no explicit type, then default to type "hnsw".',
+    'Given a class with an index on vector fields and no explicit type, '
+    'then default to type "hnsw".',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -393,7 +398,8 @@ void main() {
   );
 
   test(
-    'Given a class with an index on half vector fields and no explicit type, then default to type "hnsw".',
+    'Given a class with an index on half vector fields and no explicit type, '
+    'then default to type "hnsw".',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -425,7 +431,8 @@ void main() {
   );
 
   test(
-    'Given a class with an index on sparse vector fields and no explicit type, then default to type "hnsw".',
+    'Given a class with an index on sparse vector fields and no explicit type, '
+    'then default to type "hnsw".',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -457,7 +464,8 @@ void main() {
   );
 
   test(
-    'Given a class with an index on bit vector fields and no explicit type, then default to type "hnsw".',
+    'Given a class with an index on bit vector fields and no explicit type, '
+    'then default to type "hnsw".',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -489,7 +497,8 @@ void main() {
   );
 
   test(
-    'Given a class with an index on vector fields with explicit type "hnsw", then use that type.',
+    'Given a class with an index on vector fields with explicit type "hnsw", '
+    'then use that type.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -522,7 +531,8 @@ void main() {
   );
 
   test(
-    'Given a class with an index on vector fields with explicit type "ivfflat", then use that type.',
+    'Given a class with an index on vector fields with explicit type "ivfflat", '
+    'then use that type.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -555,7 +565,8 @@ void main() {
   );
 
   test(
-    'Given a class with a sparse vector field and an index type explicitly set to "ivfflat", then collect an error that only HNSW is supported for SparseVector.',
+    'Given a class with a sparse vector field and an index type explicitly set to "ivfflat", '
+    'then collect an error that only HNSW is supported for SparseVector.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -595,7 +606,8 @@ void main() {
   );
 
   test(
-    'Given a class with a vector field and an index type explicitly set to an invalid type, then collect an error that only vector index types can be used.',
+    'Given a class with a vector field and an index type explicitly set to an invalid type, '
+    'then collect an error that only vector index types can be used.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -635,7 +647,8 @@ void main() {
   );
 
   test(
-    'Given a class with a half vector field and an index type explicitly set to an invalid type, then collect an error that only vector index types can be used.',
+    'Given a class with a half vector field and an index type explicitly set to an invalid type, '
+    'then collect an error that only vector index types can be used.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -675,7 +688,8 @@ void main() {
   );
 
   test(
-    'Given a class with a sparse vector field and an index type explicitly set to an invalid type, then collect an error that only vector index types can be used.',
+    'Given a class with a sparse vector field and an index type explicitly set to an invalid type, '
+    'then collect an error that only vector index types can be used.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -715,7 +729,8 @@ void main() {
   );
 
   test(
-    'Given a class with a bit vector field and an index type explicitly set to an invalid type, then collect an error that only vector index types can be used.',
+    'Given a class with a bit vector field and an index type explicitly set to an invalid type, '
+    'then collect an error that only vector index types can be used.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -755,7 +770,8 @@ void main() {
   );
 
   test(
-    'Given a class with an index on a geography field and no explicit type, then default to type "gist".',
+    'Given a class with an index on a geography field and no explicit type, '
+    'then default to type "gist".',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -792,7 +808,8 @@ void main() {
 
   for (var indexType in ['gist', 'spgist']) {
     test(
-      'Given a class with a geography field and an index type explicitly set to $indexType, then use that type.',
+      'Given a class with a geography field and an index type explicitly set to $indexType, '
+      'then use that type.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -830,7 +847,8 @@ void main() {
   }
 
   test(
-    'Given a class with a geography field and an unsupported index type, then collect an error that only gist and spgist can be used.',
+    'Given a class with a geography field and an unsupported index type, '
+    'then collect an error that only gist and spgist can be used.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(

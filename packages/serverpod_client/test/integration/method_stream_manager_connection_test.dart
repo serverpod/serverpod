@@ -35,7 +35,9 @@ class TestSerializableException extends SerializableException {}
 
 void main() async {
   test(
-    'Given no websocket server when attempting to connect then WebSocketConnectException is thrown.',
+    'Given no websocket server, '
+    'when attempting to connect, '
+    'then WebSocketConnectException is thrown.',
     () {
       var streamManager = ClientMethodStreamManager(
         connectionTimeout: const Duration(milliseconds: 100),
@@ -52,7 +54,7 @@ void main() async {
     },
   );
 
-  group('Given non responsive websocket server', () {
+  group('Given non responsive websocket server,', () {
     Completer<Uri> callbackUrlFuture;
     late Uri webSocketHost;
     late Future<void> Function() closeServer;
@@ -78,7 +80,8 @@ void main() async {
     tearDown(() async => await closeServer());
 
     test(
-      'when trying to open method stream then ConnectionAttemptTimedOutException is thrown.',
+      'when trying to open method stream, '
+      'then ConnectionAttemptTimedOutException is thrown.',
       () async {
         var streamManager = ClientMethodStreamManager(
           connectionTimeout: const Duration(milliseconds: 100),
@@ -96,7 +99,8 @@ void main() async {
     );
 
     test(
-      'when trying to open multiple method streams then a connection attempt is made for each method stream.',
+      'when trying to open multiple method streams, '
+      'then a connection attempt is made for each method stream.',
       () async {
         var streamManager = ClientMethodStreamManager(
           connectionTimeout: const Duration(milliseconds: 100),
@@ -123,7 +127,7 @@ void main() async {
     );
   });
 
-  group('Given websocket server that completes initialization sequence', () {
+  group('Given websocket server that completes initialization sequence,', () {
     Completer<Uri> callbackUrlFuture;
     late Uri webSocketHost;
     late Future<void> Function() closeServer;
@@ -163,7 +167,8 @@ void main() async {
 
     tearDown(() async => await closeServer());
     test(
-      'when trying to open multiple method streams at once then single connection is validated using ping commands.',
+      'when trying to open multiple method streams at once, '
+      'then single connection is validated using ping commands.',
       () async {
         var streamManager = ClientMethodStreamManager(
           connectionTimeout: const Duration(milliseconds: 100),
@@ -188,7 +193,7 @@ void main() async {
   });
 
   group(
-    'Given websocket server that completes initialization sequence with error',
+    'Given websocket server that completes initialization sequence with error,',
     () {
       Completer<Uri> callbackUrlFuture;
       late Completer<void> webSocketClosed;
@@ -234,7 +239,8 @@ void main() async {
 
       tearDown(() async => await closeServer());
       test(
-        'when trying to open method stream then websocket connection is closed.',
+        'when trying to open method stream, '
+        'then websocket connection is closed.',
         () async {
           var streamManager = ClientMethodStreamManager(
             connectionTimeout: const Duration(milliseconds: 100),
@@ -256,7 +262,8 @@ void main() async {
   );
 
   group(
-    'Given websocket server that completes initialization sequence and then closes method stream',
+    'Given websocket server that completes initialization sequence and, '
+    'then closes method stream',
     () {
       Completer<Uri> callbackUrlFuture;
       late Completer<void> webSocketClosed;
@@ -328,7 +335,7 @@ void main() async {
     },
   );
 
-  group('Given open method streaming connection', () {
+  group('Given open method streaming connection,', () {
     Completer<Uri> callbackUrlFuture;
     late RelicWebSocket testWebSocket;
     late Completer<void> webSocketClosed;
@@ -384,7 +391,8 @@ void main() async {
 
     tearDown(() async => await closeServer());
     test(
-      'when websocket connection is closed then outbound stream is closed with exception.',
+      'when websocket connection is closed, '
+      'then outbound stream is closed with exception.',
       () async {
         var errorCompleter = Completer();
         var outputController = streamConnectionDetails.outputController;
@@ -404,7 +412,7 @@ void main() async {
     );
   });
 
-  group('Given single connected method stream', () {
+  group('Given single connected method stream,', () {
     Completer<Uri> callbackUrlFuture;
     late Completer<CloseMethodStreamCommand> closeMethodStreamCommandCompleter;
     late Completer<void> webSocketClosed;
@@ -453,7 +461,8 @@ void main() async {
     tearDown(() async => await closeServer());
 
     test(
-      'when output stream stops being listened to then CloseMethodStreamCommand is sent.',
+      'when output stream stops being listened to, '
+      'then CloseMethodStreamCommand is sent.',
       () async {
         var streamManager = ClientMethodStreamManager(
           connectionTimeout: const Duration(milliseconds: 100),
@@ -478,7 +487,8 @@ void main() async {
     );
 
     test(
-      'when output stream stops being listened to then WebSocket connection is closed.',
+      'when output stream stops being listened to, '
+      'then WebSocket connection is closed.',
       () async {
         var streamManager = ClientMethodStreamManager(
           connectionTimeout: const Duration(milliseconds: 100),
@@ -613,7 +623,7 @@ void main() async {
     );
   });
 
-  group('Given idle method stream connection', () {
+  group('Given idle method stream connection,', () {
     Completer<Uri> callbackUrlFuture;
     late Future<void> Function() closeServer;
     late MethodStreamConnectionDetails streamConnectionDetails;
@@ -665,7 +675,8 @@ void main() async {
     tearDown(() async => await closeServer());
 
     test(
-      'when no messages are received then stream closes with idle timeout exception.',
+      'when no messages are received, '
+      'then stream closes with idle timeout exception.',
       () async {
         var errorCompleter = Completer<Object>();
         streamConnectionDetails.outputController.stream.listen(
@@ -681,7 +692,7 @@ void main() async {
     );
   });
 
-  group('Given active method stream connection', () {
+  group('Given active method stream connection,', () {
     Completer<Uri> callbackUrlFuture;
     late Future<void> Function() closeServer;
     late MethodStreamConnectionDetails streamConnectionDetails;
@@ -740,7 +751,8 @@ void main() async {
     });
 
     test(
-      'when messages are received regularly then idle timeout is delayed until inactivity.',
+      'when messages are received regularly, '
+      'then idle timeout is delayed until inactivity.',
       () async {
         var errorCompleter = Completer<Object>();
         streamConnectionDetails.outputController.stream.listen(

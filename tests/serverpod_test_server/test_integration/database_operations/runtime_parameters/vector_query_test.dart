@@ -23,10 +23,10 @@ const largeEfSearch = 500;
 
 void main() {
   withServerpod(
-    'Given a large number of vectors with very similar distances',
+    'Given a large number of vectors with very similar distances,',
     (sessionBuilder, _) {
-      final session = sessionBuilder.build();
-      final queryVector = Vector(
+      late final session = sessionBuilder.build();
+      late final queryVector = Vector(
         [0.5, 0.5] + List.filled(vectorDimension - 2, 0.0),
       );
 

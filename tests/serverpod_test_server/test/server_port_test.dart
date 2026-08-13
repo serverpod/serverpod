@@ -5,9 +5,9 @@ import 'package:serverpod_test_server/src/web/routes/root.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a server with all services running on port zero', () {
+  group('Given a server with all services running on port zero,', () {
     late Serverpod server;
-    final portZeroConfig = ServerConfig(
+    late final portZeroConfig = ServerConfig(
       port: 0,
       publicScheme: 'http',
       publicHost: 'localhost',

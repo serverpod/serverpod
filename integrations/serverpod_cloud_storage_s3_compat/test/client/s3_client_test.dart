@@ -3,7 +3,7 @@ import 'package:serverpod_cloud_storage_s3_compat/serverpod_cloud_storage_s3_com
 import 'package:test/test.dart';
 
 void main() {
-  group('Given an S3Client with custom endpoints', () {
+  group('Given an S3Client with custom endpoints,', () {
     late S3Client client;
 
     setUp(() {
@@ -18,7 +18,7 @@ void main() {
       );
     });
 
-    group('when building signed params for GET request', () {
+    group('when building signed params for GET request,', () {
       late SignedRequestParams params;
 
       setUp(() {
@@ -56,7 +56,7 @@ void main() {
     });
 
     test(
-      'when building signed params for HEAD request '
+      'when building signed params for HEAD request, '
       'then it generates valid params',
       () {
         final params = client.buildSignedParams(
@@ -70,7 +70,7 @@ void main() {
     );
 
     test(
-      'when building signed params for DELETE request '
+      'when building signed params for DELETE request, '
       'then it generates valid params',
       () {
         final params = client.buildSignedParams(
@@ -84,7 +84,7 @@ void main() {
     );
 
     test(
-      'when building signed params with query parameters '
+      'when building signed params with query parameters, '
       'then the URI includes the query parameters',
       () {
         final params = client.buildSignedParams(
@@ -98,7 +98,7 @@ void main() {
     );
   });
 
-  group('Given an S3Client with HTTP custom endpoints', () {
+  group('Given an S3Client with HTTP custom endpoints,', () {
     late S3Client client;
 
     setUp(() {
@@ -114,7 +114,7 @@ void main() {
     });
 
     test(
-      'when building signed params '
+      'when building signed params, '
       'then the URI has the custom host and port',
       () {
         final params = client.buildSignedParams(key: 'test.txt');
@@ -126,7 +126,7 @@ void main() {
     );
   });
 
-  group('Given an S3Client', () {
+  group('Given an S3Client,', () {
     late S3Client client;
 
     setUp(() {
@@ -142,7 +142,7 @@ void main() {
     });
 
     test(
-      'when checking a 200 response for errors '
+      'when checking a 200 response for errors, '
       'then it does not throw',
       () {
         final response = http.Response('OK', 200);
@@ -152,7 +152,7 @@ void main() {
     );
 
     test(
-      'when checking a 204 response for errors '
+      'when checking a 204 response for errors, '
       'then it does not throw',
       () {
         final response = http.Response('', 204);
@@ -162,7 +162,7 @@ void main() {
     );
 
     test(
-      'when checking a 403 response for errors '
+      'when checking a 403 response for errors, '
       'then it throws NoPermissionsException',
       () {
         final response = http.Response('Forbidden', 403);
@@ -175,7 +175,7 @@ void main() {
     );
 
     test(
-      'when checking a 404 response for errors '
+      'when checking a 404 response for errors, '
       'then it throws S3Exception',
       () {
         final response = http.Response('Not Found', 404);
@@ -188,7 +188,7 @@ void main() {
     );
 
     test(
-      'when checking a 500 response for errors '
+      'when checking a 500 response for errors, '
       'then it throws S3Exception',
       () {
         final response = http.Response('Internal Server Error', 500);

@@ -21,9 +21,9 @@ void main() {
   var expectedTruncatedName =
       'where_any_citizen_thisFieldIsExactly61CharactersLongAndIsTh7547';
 
-  group('Given SelectQueryBuilder', () {
-    group('when "any" filtering on relation with a long field name', () {
-      var query = SelectQueryBuilder(
+  group('Given SelectQueryBuilder,', () {
+    group('when "any" filtering on relation with a long field name,', () {
+      late var query = SelectQueryBuilder(
         table: citizenTable,
       ).withWhere(manyRelation.any()).build();
 
@@ -42,8 +42,8 @@ void main() {
     });
   });
 
-  group('Given CountQueryBuilder', () {
-    var query = CountQueryBuilder(
+  group('Given CountQueryBuilder,', () {
+    late var query = CountQueryBuilder(
       table: citizenTable,
     ).withWhere(manyRelation.any()).build();
 
@@ -61,8 +61,8 @@ void main() {
     });
   });
 
-  group('Given DeleteQueryBuilder', () {
-    var query = DeleteQueryBuilder(
+  group('Given DeleteQueryBuilder,', () {
+    late var query = DeleteQueryBuilder(
       table: citizenTable,
     ).withWhere(manyRelation.any()).build();
 

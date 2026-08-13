@@ -11,7 +11,7 @@ void main() async {
   late Session session;
 
   group(
-    'Given a session with slow method call when logging is enabled',
+    'Given a session with slow method call, when logging is enabled,',
     () {
       setUp(() async {
         server = IntegrationTestServer.create();
@@ -28,7 +28,8 @@ void main() async {
       });
 
       test(
-        'when session is logged then time field should be set to start time not end time.',
+        'when session is logged, '
+        'then time field should be set to start time not end time.',
         () async {
           var settings = RuntimeSettingsBuilder().build();
           await server.updateRuntimeSettings(settings);

@@ -12,7 +12,9 @@ void main() {
   );
 
   test(
-    'Given method call with stream response when exception occurs during call setup then exception is received in stream.',
+    'Given method call with stream response, '
+    'when exception occurs during call setup, '
+    'then exception is received in stream.',
     () async {
       var stream = Stream<int>.fromIterable([1, 2, 3]);
       var methodStream = client.methodStreaming.intEchoStream(stream);
@@ -30,7 +32,9 @@ void main() {
   );
 
   test(
-    'Given method call with future response when exception occurs during call setup then future is resolved with exception.',
+    'Given method call with future response, '
+    'when exception occurs during call setup, '
+    'then future is resolved with exception.',
     () async {
       var stream = Stream<int>.fromIterable([1, 2, 3]);
 

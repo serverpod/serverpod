@@ -233,7 +233,7 @@ dependencies:
 }
 
 void main() {
-  group('Given a FlutterAppManager with two configured apps', () {
+  group('Given a FlutterAppManager with two configured apps,', () {
     late _ManagerFixture f;
     late String launchedAppId;
 
@@ -250,7 +250,7 @@ void main() {
     tearDown(() => f.dispose());
 
     test(
-      'when initialize is called then each app gets its own info file',
+      'when initialize is called, then each app gets its own info file',
       () async {
         await f.manager.initialize();
 
@@ -279,13 +279,13 @@ void main() {
       },
     );
 
-    group('that is initialized', () {
+    group('that is initialized,', () {
       setUp(() async {
         await f.manager.initialize();
       });
 
       test(
-        'when two apps are launched then both run concurrently',
+        'when two apps are launched, then both run concurrently',
         () async {
           await f.manager.launch('app-a');
           await f.manager.launch('app-b');
@@ -297,7 +297,7 @@ void main() {
       );
 
       test(
-        'when launch is called then onEnsureAppTab is invoked',
+        'when launch is called, then onEnsureAppTab is invoked',
         () async {
           await f.manager.launch('app-a');
 
@@ -306,7 +306,7 @@ void main() {
       );
 
       test(
-        'when launch starts then isLaunching is true',
+        'when launch starts, then isLaunching is true',
         () async {
           // `launch` flips the spawn-in-flight flag synchronously, before its
           // first await, so the app reads as launching the instant the call is
@@ -320,7 +320,8 @@ void main() {
       );
 
       test(
-        'when stopAll is called then running apps stop and info files are removed',
+        'when stopAll is called, '
+        'then running apps stop and info files are removed',
         () async {
           await f.manager.launch('app-a');
           final infoFile = p.join(
@@ -339,7 +340,8 @@ void main() {
       );
 
       test(
-        'when stop is called then only that app stops and its info file remains',
+        'when stop is called, '
+        'then only that app stops and its info file remains',
         () async {
           await f.manager.launch('app-a');
           await f.manager.launch('app-b');
@@ -360,7 +362,7 @@ void main() {
       );
 
       test(
-        'when stop is called for an unknown or stopped app then it is a no-op',
+        'when stop is called for an unknown or stopped app, then it is a no-op',
         () async {
           await f.manager.stop('does-not-exist');
           await f.manager.stop('app-a');
@@ -370,8 +372,8 @@ void main() {
       );
 
       test(
-        'when an app is stopped then its entry is dropped from dtdUris while '
-        'others remain',
+        'when an app is stopped, '
+        'then its entry is dropped from dtdUris while others remain',
         () async {
           await f.manager.launch('app-a');
           await f.manager.launch('app-b');
@@ -391,7 +393,8 @@ void main() {
       );
 
       test(
-        'when changed paths are under one app lib then only that app id matches',
+        'when changed paths are under one app lib, '
+        'then only that app id matches',
         () async {
           await f.manager.launch('app-a');
           await f.manager.launch('app-b');
@@ -410,7 +413,7 @@ void main() {
     });
   });
 
-  group('Given a FlutterAppManager wired with per-app log sinks', () {
+  group('Given a FlutterAppManager wired with per-app log sinks,', () {
     late _ManagerFixture f;
     late Map<String, List<String>> sinkLines;
 
@@ -434,7 +437,7 @@ void main() {
     tearDown(() => f.dispose());
 
     test(
-      'when stdoutSinkFor is called then each app gets its own sink target',
+      'when stdoutSinkFor is called, then each app gets its own sink target',
       () async {
         f.manager.stdoutSinkFor(f.appConfig('app-a')).write('line-a\n');
         f.manager.stdoutSinkFor(f.appConfig('app-b')).write('line-b\n');
@@ -447,7 +450,7 @@ void main() {
   });
 
   group(
-    'Given an initialized FlutterAppManager running an app on a web device',
+    'Given an initialized FlutterAppManager running an app on a web device,',
     () {
       late _ManagerFixture f;
       // Completed by onReady once the shim publishes its web URL, so the test
@@ -473,7 +476,7 @@ void main() {
       tearDown(() => f.dispose());
 
       test(
-        'when launch completes then onReady receives the app URL',
+        'when launch completes, then onReady receives the app URL',
         () async {
           await f.manager.launch('project');
 
@@ -488,7 +491,7 @@ void main() {
       );
 
       group(
-        'when the app is stopped',
+        'when the app is stopped,',
         () {
           setUp(() async {
             await f.manager.launch('project');
@@ -521,7 +524,7 @@ void main() {
   );
 
   group(
-    'Given an initialized FlutterAppManager running an app on a desktop device',
+    'Given an initialized FlutterAppManager running an app on a desktop device,',
     () {
       late _ManagerFixture f;
       // Completed by onReady; desktop devices never publish a web URL, so
@@ -549,8 +552,8 @@ void main() {
       tearDown(() => f.dispose());
 
       test(
-        'when the app finishes launching then onReady fires once without a '
-        'URL and the app is running, not launching',
+        'when the app finishes launching, '
+        'then onReady fires once without a URL and the app is running, not launching',
         () async {
           await f.manager.launch('project');
 
@@ -568,7 +571,7 @@ void main() {
   );
 
   group(
-    'Given an initialized FlutterAppManager whose app exits during the build',
+    'Given an initialized FlutterAppManager whose app exits during the build,',
     () {
       late _ManagerFixture f;
       late Completer<FlutterAppConfig> launchFailed;
@@ -590,7 +593,8 @@ void main() {
       tearDown(() => f.dispose());
 
       test(
-        'when launch is attempted then onLaunchFailed fires and onReady does not',
+        'when launch is attempted, '
+        'then onLaunchFailed fires and onReady does not',
         () async {
           await f.manager.launch('project');
 
@@ -608,7 +612,8 @@ void main() {
       );
 
       test(
-        'when stderr is emitted then its typed log event keeps the app identity',
+        'when stderr is emitted, '
+        'then its typed log event keeps the app identity',
         () async {
           await f.manager.launch('project');
           await launchFailed.future.timeout(const Duration(seconds: 30));
@@ -628,7 +633,7 @@ void main() {
     },
   );
 
-  group('Given an initialized FlutterAppManager', () {
+  group('Given an initialized FlutterAppManager,', () {
     late _ManagerFixture f;
 
     setUp(() async {
@@ -639,7 +644,7 @@ void main() {
 
     tearDown(() => f.dispose());
 
-    group('with an app removed from the flutter_apps config', () {
+    group('with an app removed from the flutter_apps config,', () {
       setUp(() {
         f.serverPubspecFile.writeAsStringSync('''
 name: project_server
@@ -651,7 +656,7 @@ serverpod:
       });
 
       test(
-        'when loadApps is called '
+        'when loadApps is called, '
         'then the removed app is stopped and dropped from the app list',
         () async {
           expect(f.manager.apps.length, 2);
@@ -665,7 +670,7 @@ serverpod:
       );
     });
 
-    group('with an additional app in the flutter_apps config', () {
+    group('with an additional app in the flutter_apps config,', () {
       setUp(() {
         f.serverPubspecFile.writeAsStringSync('''
 name: project_server
@@ -682,7 +687,7 @@ serverpod:
       });
 
       test(
-        'when loadApps is called '
+        'when loadApps is called, '
         'then the new app is added and existing ones remain',
         () async {
           expect(f.manager.apps.length, 2);
@@ -699,7 +704,7 @@ serverpod:
     });
 
     test(
-      'when loadApps is called without config changes '
+      'when loadApps is called without config changes, '
       'then the app list is unchanged',
       () async {
         expect(f.manager.apps.length, 2);
@@ -759,9 +764,7 @@ serverpod:
   );
 
   test(
-    'Given a FlutterAppManager with a single app configured without a device '
-    'and SERVERPOD_LAUNCHED_FROM_IDE environment variable is enabled, '
-    'and an IDE device info file, '
+    'Given a FlutterAppManager with a single app configured without a device and SERVERPOD_LAUNCHED_FROM_IDE environment variable is enabled, and an IDE device info file, '
     'when the app is launched, '
     'then the IDE device info drives the spawn device',
     () async {
@@ -783,9 +786,7 @@ serverpod:
   );
 
   test(
-    'Given a FlutterAppManager with a single app configured with a device '
-    'and SERVERPOD_LAUNCHED_FROM_IDE environment variable is enabled, '
-    'and an IDE device info file, '
+    'Given a FlutterAppManager with a single app configured with a device and SERVERPOD_LAUNCHED_FROM_IDE environment variable is enabled, and an IDE device info file, '
     'when the app is launched, '
     'then the configured device is used',
     () async {
@@ -805,9 +806,7 @@ serverpod:
   );
 
   test(
-    'Given a FlutterAppManager with a single app configured without a device '
-    'and SERVERPOD_LAUNCHED_FROM_IDE environment variable is enabled, '
-    'and an IDE device info file, '
+    'Given a FlutterAppManager with a single app configured without a device and SERVERPOD_LAUNCHED_FROM_IDE environment variable is enabled, and an IDE device info file, '
     'when a device is added to the pubspec while running, '
     'then it takes over on the next launch',
     () async {
@@ -841,9 +840,7 @@ serverpod:
   );
 
   test(
-    'Given a FlutterAppManager with multiple configured apps '
-    'and SERVERPOD_LAUNCHED_FROM_IDE environment variable is enabled, '
-    'and an IDE device info file, '
+    'Given a FlutterAppManager with multiple configured apps and SERVERPOD_LAUNCHED_FROM_IDE environment variable is enabled, and an IDE device info file, '
     'when an app is launched, '
     'then the IDE device info is ignored',
     () async {
@@ -871,8 +868,7 @@ serverpod:
   );
 
   test(
-    'Given a FlutterAppManager with a malformed IDE device info file, '
-    'and SERVERPOD_LAUNCHED_FROM_IDE environment variable is enabled, '
+    'Given a FlutterAppManager with a malformed IDE device info file, and SERVERPOD_LAUNCHED_FROM_IDE environment variable is enabled, '
     'when the IDE device is read, '
     'then it returns null',
     () async {
@@ -890,8 +886,7 @@ serverpod:
   );
 
   test(
-    'Given a FlutterAppManager with an IDE device info file, '
-    'and SERVERPOD_LAUNCHED_FROM_IDE environment variable is enabled, '
+    'Given a FlutterAppManager with an IDE device info file, and SERVERPOD_LAUNCHED_FROM_IDE environment variable is enabled, '
     'when the manager is disposed, '
     'then the IDE device info file is removed',
     () async {
@@ -919,8 +914,7 @@ serverpod:
   );
 
   test(
-    'Given a FlutterAppManager with an IDE device info file, '
-    'and SERVERPOD_LAUNCHED_FROM_IDE environment variable is disabled, '
+    'Given a FlutterAppManager with an IDE device info file, and SERVERPOD_LAUNCHED_FROM_IDE environment variable is disabled, '
     'when an app is launched, '
     'then the IDE device info is ignored and the file is left in place',
     () async {
@@ -952,8 +946,7 @@ serverpod:
   );
 
   test(
-    'Given a FlutterAppManager with an IDE device info file, '
-    'and SERVERPOD_LAUNCHED_FROM_IDE environment variable is not set, '
+    'Given a FlutterAppManager with an IDE device info file, and SERVERPOD_LAUNCHED_FROM_IDE environment variable is not set, '
     'when an app is launched, '
     'then the IDE device info is ignored and the file is left in place',
     () async {
@@ -985,8 +978,7 @@ serverpod:
   );
 
   test(
-    'Given a FlutterAppManager with an IDE device info file, '
-    'and SERVERPOD_LAUNCHED_FROM_IDE environment variable is disabled, '
+    'Given a FlutterAppManager with an IDE device info file, and SERVERPOD_LAUNCHED_FROM_IDE environment variable is disabled, '
     'when the manager is disposed, '
     'then the IDE device info file is left in place',
     () async {
@@ -1004,8 +996,7 @@ serverpod:
   );
 
   test(
-    'Given a FlutterAppManager with an IDE device info file, '
-    'and SERVERPOD_LAUNCHED_FROM_IDE environment variable is not set, '
+    'Given a FlutterAppManager with an IDE device info file, and SERVERPOD_LAUNCHED_FROM_IDE environment variable is not set, '
     'when the manager is disposed, '
     'then the IDE device info file is left in place',
     () async {

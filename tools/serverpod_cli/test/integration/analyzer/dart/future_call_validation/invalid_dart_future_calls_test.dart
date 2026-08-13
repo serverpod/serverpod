@@ -26,9 +26,10 @@ void main() {
   });
 
   group(
-    'Given a future call file with incomplete future call class defined when analyzed',
+    'Given a future call file with incomplete future call class defined, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -74,9 +75,10 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a future call file with incomplete future call method defined when analyzed',
+    'Given a future call file with incomplete future call method defined, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -122,9 +124,9 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a future call method that returns a Future with multiple defined types',
+    'Given a future call method that returns a Future with multiple defined types,',
     () {
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -171,8 +173,8 @@ class ExampleFutureCall extends FutureCall {
     },
   );
 
-  group('Given a valid and an invalid future call file when analyzed', () {
-    var collector = CodeGenerationCollector();
+  group('Given a valid and an invalid future call file, when analyzed,', () {
+    late var collector = CodeGenerationCollector();
     late Directory testDirectory;
 
     late List<FutureCallDefinition> futureCallDefinitions;
@@ -228,8 +230,8 @@ class ExampleFutureCallValid extends FutureCall {
     });
   });
 
-  group('Given an invalid dart file without an future call definition', () {
-    var collector = CodeGenerationCollector();
+  group('Given an invalid dart file without an future call definition,', () {
+    late var collector = CodeGenerationCollector();
     late Directory testDirectory;
 
     late FutureCallsAnalyzer analyzer;
@@ -261,9 +263,9 @@ class InvalidClass {
   });
 
   group(
-    'Given an invalid dart file without an future call definition and a valid future call definition file',
+    'Given an invalid dart file without an future call definition and a valid future call definition file,',
     () {
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;

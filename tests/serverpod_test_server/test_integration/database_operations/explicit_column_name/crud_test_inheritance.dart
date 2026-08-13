@@ -5,9 +5,9 @@ import '../../test_tools/serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given a child class with explicit column name that extends another class',
+    'Given a child class with explicit column name that extends another class,',
     (sessionBuilder, endpoints) {
-      final session = sessionBuilder.build();
+      late final session = sessionBuilder.build();
       const parentValue = 'parentValue';
       const childValue = 'childValue';
 
@@ -22,7 +22,7 @@ void main() {
         db = ChildClassExplicitColumn.db;
       });
 
-      test('when inserting an entry then it is created', () async {
+      test('when inserting an entry, then it is created', () async {
         final inserted = await db.insertRow(session, data);
 
         expect(inserted.id, isNotNull);
@@ -30,7 +30,7 @@ void main() {
         expect(inserted.childField, childValue);
       });
 
-      group('Given an entry in the database', () {
+      group('Given an entry in the database,', () {
         late ChildClassExplicitColumn inserted;
 
         setUp(() async {
@@ -38,7 +38,7 @@ void main() {
         });
 
         test(
-          'when fetching the entry by id then the same object is returned',
+          'when fetching the entry by id, then the same object is returned',
           () async {
             final retrieved = await db.findById(session, inserted.id!);
 
@@ -49,7 +49,7 @@ void main() {
           },
         );
 
-        group('when updating the entry', () {
+        group('when updating the entry,', () {
           late ChildClassExplicitColumn updatedReturn;
           const newChildField = 'newChildValue';
 
@@ -72,7 +72,7 @@ void main() {
           });
         });
 
-        test('when deleting the entry then it is deleted', () async {
+        test('when deleting the entry, then it is deleted', () async {
           final result = await db.deleteRow(session, inserted);
 
           expect(result, isNotNull);

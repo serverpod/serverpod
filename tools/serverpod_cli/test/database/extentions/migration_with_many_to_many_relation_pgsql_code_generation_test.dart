@@ -6,7 +6,9 @@ import '../../test_util/database_definition_helpers.dart';
 
 void main() {
   test(
-    'Given a table that is referenced by another one, when it is renamed, then the migration code should drop both tables and recreate them in a working order',
+    'Given a table that is referenced by another one, '
+    'when it is renamed, '
+    'then the migration code should drop both tables and recreate them in a working order',
     () {
       var sourceModels = [
         ModelSourceBuilder().withFileName('target').withYaml(
@@ -86,7 +88,9 @@ fields:
   );
 
   test(
-    'Given a table that is optionally referenced by another one, when it is renamed, then the migration code should drop both tables and recreate them in a working order',
+    'Given a table that is optionally referenced by another one, '
+    'when it is renamed, '
+    'then the migration code should drop both tables and recreate them in a working order',
     () {
       var sourceModels = [
         ModelSourceBuilder().withFileName('target').withYaml(
@@ -166,7 +170,9 @@ fields:
   );
 
   test(
-    'Given two tables that reference each other, when one is renamed, then the migration code should drop both tables and recreate them in a working order',
+    'Given two tables that reference each other, '
+    'when one is renamed, '
+    'then the migration code should drop both tables and recreate them in a working order',
     () {
       var sourceModels = [
         ModelSourceBuilder().withFileName('a').withYaml(
@@ -249,7 +255,9 @@ fields:
   );
 
   test(
-    'Given two tables that reference each other, when one is renamed, then the migration code should not mention an unrelated table',
+    'Given two tables that reference each other, '
+    'when one is renamed, '
+    'then the migration code should not mention an unrelated table',
     () {
       var sourceModels = [
         ModelSourceBuilder().withFileName('a').withYaml(
@@ -330,7 +338,9 @@ fields:
   );
 
   test(
-    'Given a table that is referenced by another one, when it is renamed while the pointing table is dropping the reference column, then the migration code should only drop and recreate the renamed table and drop just the column on the "pointing" one',
+    'Given a table that is referenced by another one, '
+    'when it is renamed while the pointing table is dropping the reference column, '
+    'then the migration code should only drop and recreate the renamed table and drop just the column on the "pointing" one',
     () {
       var sourceModels = [
         ModelSourceBuilder().withFileName('target').withYaml(

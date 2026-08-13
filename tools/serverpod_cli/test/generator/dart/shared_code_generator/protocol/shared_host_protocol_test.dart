@@ -11,7 +11,7 @@ const _sharedPackageName = 'example_shared';
 const _projectName = 'example_project';
 
 void main() {
-  group('Given a shared package protocol when generating code', () {
+  group('Given a shared package protocol, when generating code,', () {
     late final sharedConfig = GeneratorConfigBuilder()
         .withName(_projectName)
         .withSharedModelsSourcePathsParts({
@@ -96,7 +96,7 @@ void main() {
   });
 
   group(
-    'Given a project protocol with a shared package when generating code',
+    'Given a project protocol with a shared package, when generating code,',
     () {
       late final projectConfig = GeneratorConfigBuilder()
           .withName(_projectName)

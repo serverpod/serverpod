@@ -9,7 +9,7 @@ import 'package:test_descriptor/test_descriptor.dart' as d;
 import '../../test_util/server_directory_finder_helpers.dart';
 
 void main() {
-  group('ServerDirectoryFinder.findOrPrompt with interactive flag', () {
+  group('ServerDirectoryFinder.findOrPrompt with interactive flag,', () {
     test(
       'Given multiple server directories exist, '
       'when findOrPrompt is called with interactive=false, '

@@ -9,7 +9,8 @@ import '../../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().withAuthModule().build();
   test(
-    'Given a module class with the same table name as a user defined table then there is an error reported.',
+    'Given a module class with the same table name as a user defined table, '
+    'then there is an error reported.',
     () {
       var models = [
         ModelSourceBuilder()
@@ -59,7 +60,8 @@ void main() {
   );
 
   test(
-    'Given a table with a name longer than 56 characters then there is an error reported.',
+    'Given a table with a name longer than 56 characters, '
+    'then there is an error reported.',
     () {
       var models = [
         ModelSourceBuilder().withFileName('user').withYaml(
@@ -93,9 +95,9 @@ void main() {
   );
 
   group(
-    'Given a table with a name that is 56 characters when analyzing models',
+    'Given a table with a name that is 56 characters, when analyzing models,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withFileName('user').withYaml(
           '''
         class: User
@@ -106,13 +108,13 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late StatefulAnalyzer analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       var errors = collector.errors;
 

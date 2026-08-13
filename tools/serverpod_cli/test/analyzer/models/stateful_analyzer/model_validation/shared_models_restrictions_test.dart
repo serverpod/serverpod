@@ -10,8 +10,8 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   test(
-    'Given a shared package model when the model has a table property with "database: all" '
-    'when analyzing model '
+    'Given a shared package model, '
+    'when the model has a table property with "database: all" when analyzing model, '
     'then no error is collected.',
     () {
       var models = <ModelSource>[
@@ -46,8 +46,8 @@ fields:
   );
 
   test(
-    'Given a shared package model when the model has a table property without "database: all" '
-    'when analyzing model '
+    'Given a shared package model, '
+    'when the model has a table property without "database: all" when analyzing model, '
     'then an error is collected that the table requires "database: all".',
     () {
       var models = <ModelSource>[
@@ -86,8 +86,8 @@ fields:
   );
 
   test(
-    'Given a shared package model when the model has a serverOnly property '
-    'when analyzing model '
+    'Given a shared package model, '
+    'when the model has a serverOnly property when analyzing model, '
     'then an error is collected that serverOnly is not allowed in shared packages.',
     () {
       var models = <ModelSource>[
@@ -125,8 +125,8 @@ fields:
   );
 
   test(
-    'Given a shared package model when the model has a field with scope serverOnly '
-    'when analyzing model '
+    'Given a shared package model, '
+    'when the model has a field with scope serverOnly when analyzing model, '
     'then an error is collected that field is part of a shared model and can not have scope defined to "serverOnly".',
     () {
       var models = <ModelSource>[
@@ -167,8 +167,8 @@ fields:
   );
 
   test(
-    'Given a sealed shared package model and a subclass on the same shared package '
-    'when analyzing model '
+    'Given a sealed shared package model and a subclass on the same shared package, '
+    'when analyzing model, '
     'then no error is collected.',
     () {
       var models = <ModelSource>[
@@ -267,8 +267,8 @@ fields:
   );
 
   test(
-    'Given a sealed shared package model and a subclass on the project package '
-    'when analyzing model '
+    'Given a sealed shared package model and a subclass on the project package, '
+    'when analyzing model, '
     'then an error is collected that sealed models can not be inherited from.',
     () {
       var models = <ModelSource>[

@@ -9,7 +9,7 @@ import '../../websocket_extensions.dart';
 
 void main() {
   group(
-    'Given a method stream connection to an endpoint that echoes multiple input streams',
+    'Given a method stream connection to an endpoint that echoes multiple input streams,',
     () {
       var endpoint = 'methodStreaming';
       var method = 'multipleIntEchoStreams';
@@ -30,16 +30,16 @@ void main() {
         await webSocket.tryClose();
       });
 
-      group('when values are passed to both streams', () {
+      group('when values are passed to both streams,', () {
         late Completer<void> allResponsesReceived;
         late List<int> endpointResponses;
-        TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
+        late TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
         var inputValuesStream1 = [1, 2, 3, 4];
         var inputValuesStream2 = [1, 2, 3, 4];
 
         var inputStreamParameter1 = 'stream1';
         var inputStreamParameter2 = 'stream2';
-        var connectionId = const Uuid().v4obj();
+        late var connectionId = const Uuid().v4obj();
 
         setUp(() async {
           allResponsesReceived = Completer<void>();
@@ -143,14 +143,14 @@ void main() {
         );
       });
 
-      group('when one stream parameter is closed', () {
+      group('when one stream parameter is closed,', () {
         late Completer<int> endpointResponse;
-        TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
+        late TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
         var inputValue = 2;
 
         var closedStreamParameter = 'stream1';
         var openStreamParameter = 'stream2';
-        var connectionId = const Uuid().v4obj();
+        late var connectionId = const Uuid().v4obj();
 
         setUp(() async {
           endpointResponse = Completer<int>();
@@ -227,13 +227,13 @@ void main() {
         });
       });
 
-      group('when both streams are closed', () {
+      group('when both streams are closed,', () {
         late Completer<CloseMethodStreamCommand> closeMethodStreamCommand;
-        TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
+        late TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
 
         var inputStreamParameter1 = 'stream1';
         var inputStreamParameter2 = 'stream2';
-        var connectionId = const Uuid().v4obj();
+        late var connectionId = const Uuid().v4obj();
 
         setUp(() async {
           closeMethodStreamCommand = Completer<CloseMethodStreamCommand>();

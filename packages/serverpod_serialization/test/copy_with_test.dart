@@ -19,9 +19,11 @@ class SimpleData {
 }
 
 void main() {
-  group('on ByteData', () {
+  group('on ByteData,', () {
     test(
-      'Given a ByteData when modifying the original after creating a copy then the copy is left unmodified',
+      'Given a ByteData, '
+      'when modifying the original after creating a copy, '
+      'then the copy is left unmodified',
       () {
         ByteData byteData = Uint8List.fromList([
           0,
@@ -43,20 +45,21 @@ void main() {
     );
 
     group(
-      'Given a ByteData when specifying a slice of the buffer and modifying the original after creating a copy',
+      'Given a ByteData, '
+      'when specifying a slice of the buffer and modifying the original after creating a copy,',
       () {
-        ByteBuffer buffer = Uint8List.fromList([0, 1, 2, 3, 4]).buffer;
+        late ByteBuffer buffer = Uint8List.fromList([0, 1, 2, 3, 4]).buffer;
 
         var offsetInBytes = 2;
         var lengthInBytes = 1;
 
-        ByteData byteDataView = ByteData.view(
+        late ByteData byteDataView = ByteData.view(
           buffer,
           offsetInBytes,
           lengthInBytes,
         );
 
-        var clone = byteDataView.clone();
+        late var clone = byteDataView.clone();
 
         buffer.asByteData().setUint8(0, 9);
 
@@ -82,9 +85,10 @@ void main() {
     );
   });
 
-  group('Given a Vector', () {
+  group('Given a Vector,', () {
     test(
-      'when both the original and copy are serialized then they produce identical results.',
+      'when both the original and copy are serialized, '
+      'then they produce identical results.',
       () {
         Vector originalVector = const Vector([1.0, 2.0, 3.0]);
 
@@ -95,7 +99,8 @@ void main() {
     );
 
     test(
-      'when clone is created, then the clone and original are deeply equal but not the same instance.',
+      'when clone is created, '
+      'then the clone and original are deeply equal but not the same instance.',
       () {
         Vector originalVector = const Vector([1.0, 2.0, 3.0]);
 
@@ -108,9 +113,10 @@ void main() {
     );
   });
 
-  group('Given a HalfVector', () {
+  group('Given a HalfVector,', () {
     test(
-      'when both the original and copy are serialized then they produce identical results.',
+      'when both the original and copy are serialized, '
+      'then they produce identical results.',
       () {
         HalfVector originalVector = const HalfVector([1.0, 2.0, 3.0]);
 
@@ -121,7 +127,8 @@ void main() {
     );
 
     test(
-      'when clone is created, then the clone and original are deeply equal but not the same instance.',
+      'when clone is created, '
+      'then the clone and original are deeply equal but not the same instance.',
       () {
         HalfVector originalVector = const HalfVector([1.0, 2.0, 3.0]);
 
@@ -134,9 +141,10 @@ void main() {
     );
   });
 
-  group('Given a SparseVector', () {
+  group('Given a SparseVector,', () {
     test(
-      'when both the original and copy are serialized then they produce identical results.',
+      'when both the original and copy are serialized, '
+      'then they produce identical results.',
       () {
         SparseVector originalVector = SparseVector([1.0, 0.0, 2.0, 0.0, 3.0]);
 
@@ -147,7 +155,8 @@ void main() {
     );
 
     test(
-      'when clone is created, then the clone and original are deeply equal but not the same instance.',
+      'when clone is created, '
+      'then the clone and original are deeply equal but not the same instance.',
       () {
         SparseVector originalVector = SparseVector([1.0, 0.0, 2.0, 0.0, 3.0]);
 
@@ -167,9 +176,10 @@ void main() {
     );
   });
 
-  group('Given a Bit vector', () {
+  group('Given a Bit vector,', () {
     test(
-      'when both the original and copy are serialized then they produce identical results.',
+      'when both the original and copy are serialized, '
+      'then they produce identical results.',
       () {
         Bit originalVector = Bit([true, false, true, false, true]);
 
@@ -180,7 +190,8 @@ void main() {
     );
 
     test(
-      'when clone is created, then the clone and original are deeply equal but not the same instance.',
+      'when clone is created, '
+      'then the clone and original are deeply equal but not the same instance.',
       () {
         Bit originalVector = Bit([true, false, true, false, true]);
 

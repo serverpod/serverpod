@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 import '../../compilation_unit_matcher.dart';
 
 void main() {
-  group('Given compilation unit with class and method with no parameters', () {
+  group('Given compilation unit with class and method with no parameters,', () {
     late final compilationUnit = parseCode(
       '''
       class User {
@@ -13,7 +13,8 @@ void main() {
     );
 
     test(
-      'when negate matching with non-existent method parameter then test passes',
+      'when negate matching with non-existent method parameter, '
+      'then test passes',
       () {
         expect(
           compilationUnit,
@@ -27,7 +28,7 @@ void main() {
     );
   });
 
-  group('Given compilation unit with class and method with typed parameter', () {
+  group('Given compilation unit with class and method with typed parameter,', () {
     late final compilationUnit = parseCode(
       '''
       class User {
@@ -36,7 +37,7 @@ void main() {
     ''',
     );
 
-    test('when matching class and method with parameter then test passes', () {
+    test('when matching class and method with parameter, then test passes', () {
       expect(
         compilationUnit,
         containsClass('User').withMethod('greet').withParameter('name'),
@@ -44,7 +45,7 @@ void main() {
     });
 
     test(
-      'when matching class and method with typed parameter then test passes',
+      'when matching class and method with typed parameter, then test passes',
       () {
         expect(
           compilationUnit,
@@ -56,7 +57,8 @@ void main() {
     );
 
     test(
-      'when negate matching class method with invalid "extra properties" and parameter then test passes',
+      'when negate matching class method with invalid "extra properties" and parameter, '
+      'then test passes',
       () {
         expect(
           compilationUnit,
@@ -70,7 +72,8 @@ void main() {
     );
 
     test(
-      'when negate matching class with parameter with invalid type then test passes',
+      'when negate matching class with parameter with invalid type, '
+      'then test passes',
       () {
         expect(
           compilationUnit,

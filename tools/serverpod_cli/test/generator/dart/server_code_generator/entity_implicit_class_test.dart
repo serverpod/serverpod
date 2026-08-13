@@ -24,7 +24,8 @@ void main() {
   );
 
   test(
-    'Given a class with no fields that should persist but is scoped too none then no implicit class is generated.',
+    'Given a class with no fields that should persist but is scoped too none, '
+    'then no implicit class is generated.',
     () {
       var models = [
         ModelClassDefinitionBuilder()
@@ -44,7 +45,7 @@ void main() {
       expect(compilationUnit, isNot(containsClass('${testClassName}Implicit')));
     },
   );
-  group('Given a class with a field that should persist but is scoped too none', () {
+  group('Given a class with a field that should persist but is scoped too none,', () {
     late final models = [
       ModelClassDefinitionBuilder()
           .withClassName(testClassName)
@@ -180,8 +181,8 @@ void main() {
     );
   });
 
-  group('Given a class with two fields that should persist but is scoped too none', () {
-    var models = [
+  group('Given a class with two fields that should persist but is scoped too none,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -281,7 +282,7 @@ void main() {
   });
 
   group(
-    'Given a child class with table that extends parent class with field and has hidden serializable field',
+    'Given a child class with table that extends parent class with field and has hidden serializable field,',
     () {
       var baseClassName = 'BaseEntity';
       var baseClassFileName = 'base_entity';
@@ -289,7 +290,7 @@ void main() {
       var childClassName = 'ChildEntity';
       var childClassFileName = 'child_entity';
 
-      var childFilePath = path.join(
+      late var childFilePath = path.join(
         'lib',
         'src',
         'generated',
@@ -297,7 +298,7 @@ void main() {
       );
 
       // Create base class with a shared field
-      var baseClass = ModelClassDefinitionBuilder()
+      late var baseClass = ModelClassDefinitionBuilder()
           .withClassName(baseClassName)
           .withFileName(baseClassFileName)
           .withSimpleField('sharedField', 'String')
@@ -305,7 +306,7 @@ void main() {
 
       // Create child class with table that extends base class
       // and has a hidden serializable field (scope: none, shouldPersist: true)
-      var childClass = ModelClassDefinitionBuilder()
+      late var childClass = ModelClassDefinitionBuilder()
           .withClassName(childClassName)
           .withFileName(childClassFileName)
           .withTableName('child_entity')
@@ -323,12 +324,12 @@ void main() {
 
       var models = [baseClass, childClass];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var compilationUnit = parseCode(codeMap[childFilePath]!);
+      late var compilationUnit = parseCode(codeMap[childFilePath]!);
 
       var implicitClassName = '${childClassName}Implicit';
 

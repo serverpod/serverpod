@@ -4,7 +4,7 @@ import 'package:serverpod_test_server/test_util/service_client.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given existing migration registry', () {
+  group('Given existing migration registry,', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
         serviceClient: serviceClient,
@@ -12,7 +12,7 @@ void main() {
     });
 
     test(
-      'when creating migration then migration is added to registry.',
+      'when creating migration, then migration is added to registry.',
       () async {
         var tag = 'add-migration';
         var migrationRegistry = MigrationTestUtils.readMigrationRegistryFile();
@@ -43,7 +43,7 @@ fields:
     );
   });
 
-  group('Given existing migration registry', () {
+  group('Given existing migration registry,', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
         serviceClient: serviceClient,
@@ -51,7 +51,7 @@ fields:
     });
 
     test(
-      'when creating multiple migrations then all are added to registry.',
+      'when creating multiple migrations, then all are added to registry.',
       () async {
         var tag = 'add-multiple-migrations';
         var migrationRegistry = MigrationTestUtils.readMigrationRegistryFile();

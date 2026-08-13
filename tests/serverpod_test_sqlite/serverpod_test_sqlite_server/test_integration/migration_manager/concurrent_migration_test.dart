@@ -13,10 +13,10 @@ void main() {
     rollbackDatabase: RollbackDatabase.disabled,
     'Given unapplied migration that errors if applied multiple times',
     (sessionBuilder, _) async {
-      final migrationName = MigrationGenerator.createVersionName(null);
+      late final migrationName = MigrationGenerator.createVersionName(null);
       late List<String> existingMigrations;
       late String migrationRegistryContents;
-      final testTableName =
+      late final testTableName =
           'test_table_${const Uuid().v4().replaceAll('-', '')}';
       final sqlThatThrowsIfAppliedMultipleTimes =
           '''
@@ -102,7 +102,8 @@ void main() {
       });
 
       test(
-        'when triggering multiple concurrent then migration is successfully applied once',
+        'when triggering multiple concurrent, '
+        'then migration is successfully applied once',
         () async {
           var migrationManager = MigrationManager.fromDirectory(
             Directory(d.sandbox),

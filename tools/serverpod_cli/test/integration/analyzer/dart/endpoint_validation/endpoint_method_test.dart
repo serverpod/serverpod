@@ -24,9 +24,9 @@ void main() {
     testProjectDirectory.deleteSync(recursive: true);
   });
 
-  group('Given a valid endpoint with a method when analyzed', () {
-    var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
+  group('Given a valid endpoint with a method, when analyzed,', () {
+    late var collector = CodeGenerationCollector();
+    late var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
 
@@ -85,10 +85,11 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
-    'Given a valid endpoint method with a first positional nullable `Session` parameter when analyzed',
+    'Given a valid endpoint method with a first positional nullable `Session` parameter, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -157,10 +158,11 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint with a method that has a `Session` as second positional parameter when analyzed',
+    'Given an endpoint with a method that has a `Session` as second positional parameter, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -193,10 +195,11 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint with a method that has a `Session` as required named parameter when analyzed',
+    'Given an endpoint with a method that has a `Session` as required named parameter, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -231,10 +234,11 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint method without a first positional `Session` param and the other parameters are not a `Session` parameter when analyzed',
+    'Given an endpoint method without a first positional `Session` param and the other parameters are not a `Session` parameter, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -275,10 +279,11 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint method without a first positional `Session` param and the first parameter instead contains a named `Session` parameter when analyzed',
+    'Given an endpoint method without a first positional `Session` param and the first parameter instead contains a named `Session` parameter, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -319,10 +324,11 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint method without a first positional `Session` param and the first parameter instead contains an optional `Session` parameter when analyzed',
+    'Given an endpoint method without a first positional `Session` param and the first parameter instead contains an optional `Session` parameter, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -363,7 +369,9 @@ class ExampleEndpoint extends Endpoint {
   );
 
   test(
-    'Given an endpoint method with a Stream<void> return when analyzed then an error is reported',
+    'Given an endpoint method with a Stream<void> return, '
+    'when analyzed, '
+    'then an error is reported',
     () async {
       var collector = CodeGenerationCollector();
       var testDirectory = Directory(
@@ -399,9 +407,10 @@ class ExampleEndpoint extends Endpoint {
     },
   );
 
-  group('Given an endpoint method with a stream return type when analyzed', () {
-    var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
+  group('Given an endpoint method with a stream return type, '
+        'when analyzed,', () {
+    late var collector = CodeGenerationCollector();
+    late var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
 
@@ -453,9 +462,9 @@ class ExampleEndpoint extends Endpoint {
     });
   });
 
-  group('Given an endpoint method with a stream parameter when analyzed', () {
-    var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
+  group('Given an endpoint method with a stream parameter, when analyzed,', () {
+    late var collector = CodeGenerationCollector();
+    late var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
 
@@ -497,10 +506,10 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
-    'Given an endpoint method that does not return Future when analyzed',
+    'Given an endpoint method that does not return Future, when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -548,10 +557,11 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint method that returns a Future missing defined type when analyzed',
+    'Given an endpoint method that returns a Future missing defined type, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -603,10 +613,11 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint method that returns a Stream missing defined type when analyzed',
+    'Given an endpoint method that returns a Stream missing defined type, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -659,10 +670,11 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint method that returns a Stream with nullable type when analyzed',
+    'Given an endpoint method that returns a Stream with nullable type, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -716,10 +728,11 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint method that returns a Stream with dynamic type when analyzed',
+    'Given an endpoint method that returns a Stream with dynamic type, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -772,10 +785,11 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint method with Stream parameter that returns a Future with nullable type when analyzed',
+    'Given an endpoint method with Stream parameter that returns a Future with nullable type, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -828,10 +842,10 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint method that returns a Future null type when analyzed',
+    'Given an endpoint method that returns a Future null type, when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -872,10 +886,11 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint method that returns a Future with dynamic type when analyzed',
+    'Given an endpoint method that returns a Future with dynamic type, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -927,9 +942,9 @@ class ExampleEndpoint extends Endpoint {
     },
   );
 
-  group('Given a valid endpoint with private method when analyzed', () {
-    var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
+  group('Given a valid endpoint with private method, when analyzed,', () {
+    late var collector = CodeGenerationCollector();
+    late var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
 
@@ -968,9 +983,9 @@ class ExampleEndpoint extends Endpoint {
     });
   });
 
-  group('Given a valid endpoint with static method when analyzed', () {
-    var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
+  group('Given a valid endpoint with static method, when analyzed,', () {
+    late var collector = CodeGenerationCollector();
+    late var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
 
@@ -1007,10 +1022,10 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
-    'Given a valid endpoint with static and instance methods when analyzed',
+    'Given a valid endpoint with static and instance methods, when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -1049,10 +1064,10 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given a valid endpoint with multiple methods defined when analyzed',
+    'Given a valid endpoint with multiple methods defined, when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -1102,9 +1117,9 @@ class ExampleEndpoint extends Endpoint {
     },
   );
 
-  group('Given a valid endpoint method with documentation when analyzed', () {
-    var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
+  group('Given a valid endpoint method with documentation, when analyzed,', () {
+    late var collector = CodeGenerationCollector();
+    late var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
 
@@ -1149,10 +1164,10 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
-    'Given a valid endpoint method with {@macro} reference and template defined in same class',
+    'Given a valid endpoint method with {@macro} reference and template defined in same class,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -1228,10 +1243,10 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given a valid endpoint method with {@macro} reference but no matching template',
+    'Given a valid endpoint method with {@macro} reference but no matching template,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -1277,10 +1292,10 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given a valid endpoint method with "@Deprecated(<string literal>)" annotation',
+    'Given a valid endpoint method with "@Deprecated(<string literal>)" annotation,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -1329,10 +1344,10 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given a valid endpoint method with "@Deprecated(<string const expr>)" annotation',
+    'Given a valid endpoint method with "@Deprecated(<string const expr>)" annotation,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -1382,9 +1397,9 @@ class ExampleEndpoint extends Endpoint {
     },
   );
 
-  group('Given a valid endpoint method with "@deprecated" annotation', () {
-    var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
+  group('Given a valid endpoint method with "@deprecated" annotation,', () {
+    late var collector = CodeGenerationCollector();
+    late var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
 
@@ -1431,9 +1446,9 @@ class ExampleEndpoint extends Endpoint {
     });
   });
 
-  group('Given an endpoint method with a void return type', () {
-    var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
+  group('Given an endpoint method with a void return type,', () {
+    late var collector = CodeGenerationCollector();
+    late var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
 
@@ -1472,9 +1487,9 @@ class ExampleEndpoint extends Endpoint {
     });
   });
 
-  group('Given an endpoint method with a record return type', () {
-    var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
+  group('Given an endpoint method with a record return type,', () {
+    late var collector = CodeGenerationCollector();
+    late var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
 
@@ -1532,9 +1547,9 @@ class ExampleEndpoint extends Endpoint {
     });
   });
 
-  group('Given an endpoint method with a function as return type', () {
-    var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
+  group('Given an endpoint method with a function as return type,', () {
+    late var collector = CodeGenerationCollector();
+    late var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
 
@@ -1601,10 +1616,11 @@ Error on line 6, column 31 of .+: The type "String Function\(\)" is not a suppor
   });
 
   group(
-    'Given valid endpoint with a single method marked as `@doNotGenerate` when analyzed',
+    'Given valid endpoint with a single method marked as `@doNotGenerate`, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -1651,8 +1667,8 @@ class ExampleEndpoint extends Endpoint {
     'Given an endpoint method that has non serializable parameters after the first positional Session parameter, '
     'when analyzing,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -1704,8 +1720,8 @@ class ExampleEndpoint extends Endpoint {
 
   group('Given an endpoint method with a non serializable model return type, '
       'when analyzing,', () {
-    var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
+    late var collector = CodeGenerationCollector();
+    late var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
 
@@ -1764,8 +1780,8 @@ fields:
     'Given an endpoint method with a direct registered custom model return type, '
     'when analyzing,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -1818,8 +1834,8 @@ class ExampleEndpoint extends Endpoint {
     'Given an endpoint method with a return type whose generic type argument is a registered custom model, '
     'when analyzing,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -1876,8 +1892,8 @@ class ExampleEndpoint extends Endpoint {
     'Given an endpoint method with a map parameter whose value type is a registered custom model, '
     'when analyzing,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -1936,8 +1952,8 @@ class ExampleEndpoint extends Endpoint {
     'Given an endpoint method with a parameter whose generic type argument is a registered custom model, '
     'when analyzing,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -1995,8 +2011,8 @@ class ExampleEndpoint extends Endpoint {
     'Given an endpoint method with a return type whose generic type argument is not serializable, '
     'when analyzing,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -2046,8 +2062,8 @@ class ExampleEndpoint extends Endpoint {
     'Given an endpoint method with a parameter whose generic type argument is not serializable, '
     'when analyzing,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 

@@ -22,8 +22,8 @@ void main() async {
   setUpAll(() async => await _createTestDatabase(session));
   tearDownAll(() async => await _deleteAll(session));
 
-  group('Given string column in database', () {
-    test('when fetching all then all rows are returned.', () async {
+  group('Given string column in database,', () {
+    test('when fetching all, then all rows are returned.', () async {
       var result = await Types.db.find(
         session,
         where: (_) => Constant.bool(true),
@@ -33,7 +33,7 @@ void main() async {
     });
 
     test(
-      'when filtering using equals then matching row is returned.',
+      'when filtering using equals, then matching row is returned.',
       () async {
         var result = await Types.db.find(
           session,
@@ -45,7 +45,7 @@ void main() async {
     );
 
     test(
-      'when filtering using equals with null then matching row is returned.',
+      'when filtering using equals with null, then matching row is returned.',
       () async {
         var result = await await Types.db.find(
           session,
@@ -57,7 +57,7 @@ void main() async {
     );
 
     test(
-      'when filtering using notEquals then matching rows are returned.',
+      'when filtering using notEquals, then matching rows are returned.',
       () async {
         var result = await Types.db.find(
           session,
@@ -69,7 +69,8 @@ void main() async {
     );
 
     test(
-      'when filtering using notEquals with null then matching rows are returned.',
+      'when filtering using notEquals with null, '
+      'then matching rows are returned.',
       () async {
         var result = await Types.db.find(
           session,
@@ -81,7 +82,7 @@ void main() async {
     );
 
     test(
-      'when filtering using inSet then matching rows are returned.',
+      'when filtering using inSet, then matching rows are returned.',
       () async {
         var result = await Types.db.find(
           session,
@@ -93,7 +94,7 @@ void main() async {
     );
 
     test(
-      'when filtering using empty inSet then no rows are returned.',
+      'when filtering using empty inSet, then no rows are returned.',
       () async {
         var result = await Types.db.find(
           session,
@@ -105,7 +106,7 @@ void main() async {
     );
 
     test(
-      'when filtering using notInSet then matching row is returned.',
+      'when filtering using notInSet, then matching row is returned.',
       () async {
         var result = await Types.db.find(
           session,
@@ -117,7 +118,7 @@ void main() async {
     );
 
     test(
-      'when filtering using empty notInSet then all rows are returned.',
+      'when filtering using empty notInSet, then all rows are returned.',
       () async {
         var result = await Types.db.find(
           session,
@@ -128,7 +129,7 @@ void main() async {
       },
     );
 
-    test('when filtering using like then matching row is returned.', () async {
+    test('when filtering using like, then matching row is returned.', () async {
       var result = await Types.db.find(
         session,
         where: (t) => t.aString.like('on%'),
@@ -138,7 +139,7 @@ void main() async {
       expect(result.first.aString, 'one');
     });
 
-    test('when filtering using like then matching row is returned.', () async {
+    test('when filtering using like, then matching row is returned.', () async {
       var result = await Types.db.find(
         session,
         where: (t) => t.aString.notLike('on%'),
@@ -147,7 +148,8 @@ void main() async {
       expect(result, hasLength(2));
     });
 
-    test('when filtering using ilike then matching row is returned.', () async {
+    test('when filtering using ilike, '
+         'then matching row is returned.', () async {
       var result = await Types.db.find(
         session,
         where: (t) => t.aString.ilike('On%'),
@@ -157,7 +159,8 @@ void main() async {
       expect(result.first.aString, 'one');
     });
 
-    test('when filtering using ilike then matching row is returned.', () async {
+    test('when filtering using ilike, '
+         'then matching row is returned.', () async {
       var result = await Types.db.find(
         session,
         where: (t) => t.aString.notIlike('On%'),
@@ -167,7 +170,8 @@ void main() async {
     });
 
     test(
-      'when filtering using "greater than" then lexicographically posterior rows are returned.',
+      'when filtering using "greater than", '
+      'then lexicographically posterior rows are returned.',
       () async {
         var result = await Types.db.find(
           session,
@@ -180,7 +184,8 @@ void main() async {
     );
 
     test(
-      'when filtering using "greater or equal than" then equal and lexicographically posterior rows are returned.',
+      'when filtering using "greater or equal than", '
+      'then equal and lexicographically posterior rows are returned.',
       () async {
         var result = await Types.db.find(
           session,
@@ -193,7 +198,8 @@ void main() async {
     );
 
     test(
-      'when filtering using "less than" then lexicographically preceding rows are returned.',
+      'when filtering using "less than", '
+      'then lexicographically preceding rows are returned.',
       () async {
         var result = await Types.db.find(
           session,
@@ -206,7 +212,8 @@ void main() async {
     );
 
     test(
-      'when filtering using "less or equal than" then equal and lexicographically preceding rows are returned.',
+      'when filtering using "less or equal than", '
+      'then equal and lexicographically preceding rows are returned.',
       () async {
         var result = await Types.db.find(
           session,

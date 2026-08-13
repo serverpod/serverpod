@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 void main() {
   late ProcessResult result;
 
-  group('Given a serverpod config with session logs and database support', () {
+  group('Given a serverpod config with session logs and database support,', () {
     setUpAll(() async {
       result = await Process.run(
         'dart',
@@ -16,28 +16,31 @@ void main() {
     });
 
     test(
-      'when the loading of the config was successful then the exit code should be zero',
+      'when the loading of the config was successful, '
+      'then the exit code should be zero',
       () {
         expect(result.exitCode, 0, reason: 'The exit code should be zero');
       },
     );
 
     test(
-      'when the config is loaded, then the session persistent logging is enabled as per configuration',
+      'when the config is loaded, '
+      'then the session persistent logging is enabled as per configuration',
       () async {
         expect(result.stdout, contains('session persistent log enabled: true'));
       },
     );
 
     test(
-      'when the config is loaded, then the session console logging is enabled as per configuration',
+      'when the config is loaded, '
+      'then the session console logging is enabled as per configuration',
       () async {
         expect(result.stdout, contains('session console log enabled: true'));
       },
     );
   });
 
-  group('Given a serverpod config with session logs but no database support', () {
+  group('Given a serverpod config with session logs but no database support,', () {
     setUpAll(() async {
       result = await Process.run(
         'dart',
@@ -68,7 +71,7 @@ void main() {
   });
 
   group(
-    'Given a serverpod config with environment variables overriding session logs',
+    'Given a serverpod config with environment variables overriding session logs,',
     () {
       setUpAll(() async {
         result = await Process.run(
@@ -84,14 +87,16 @@ void main() {
       });
 
       test(
-        'when the loading of the config was successful then the exit code should be zero',
+        'when the loading of the config was successful, '
+        'then the exit code should be zero',
         () {
           expect(result.exitCode, 0, reason: 'The exit code should be zero');
         },
       );
 
       test(
-        'when the config is loaded, then the session persistent logging is disabled by environment variable',
+        'when the config is loaded, '
+        'then the session persistent logging is disabled by environment variable',
         () async {
           expect(
             result.stdout,
@@ -101,7 +106,8 @@ void main() {
       );
 
       test(
-        'when the config is loaded, then the session console logging is disabled by environment variable',
+        'when the config is loaded, '
+        'then the session console logging is disabled by environment variable',
         () async {
           expect(result.stdout, contains('session console log enabled: false'));
         },
@@ -110,7 +116,7 @@ void main() {
   );
 
   group(
-    'Given a serverpod config without session logs configured and no environment variables',
+    'Given a serverpod config without session logs configured and no environment variables,',
     () {
       setUpAll(() async {
         result = await Process.run(
@@ -122,14 +128,16 @@ void main() {
       });
 
       test(
-        'when the loading of the config was successful then the exit code should be zero',
+        'when the loading of the config was successful, '
+        'then the exit code should be zero',
         () {
           expect(result.exitCode, 0, reason: 'The exit code should be zero');
         },
       );
 
       test(
-        'when the config is loaded, then the session persistent logging defaults to disabled',
+        'when the config is loaded, '
+        'then the session persistent logging defaults to disabled',
         () async {
           expect(
             result.stdout,
@@ -139,7 +147,8 @@ void main() {
       );
 
       test(
-        'when the config is loaded, then the session console logging defaults to enabled',
+        'when the config is loaded, '
+        'then the session console logging defaults to enabled',
         () async {
           expect(result.stdout, contains('session console log enabled: true'));
         },

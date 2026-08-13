@@ -8,13 +8,13 @@ import '../../test_util/builders/database/database_definition_builder.dart';
 import '../../test_util/builders/database/table_definition_builder.dart';
 
 void main() {
-  group('Given a table migration with a column rename', () {
+  group('Given a table migration with a column rename,', () {
     const tableName = 'example_table';
     const oldColumnName = 'old_name';
     const newColumnName = 'new_name';
     const modelFieldName = 'myField';
 
-    var sourceDefinition = DatabaseDefinitionBuilder()
+    late var sourceDefinition = DatabaseDefinitionBuilder()
         .withDefaultModules()
         .withTable(
           TableDefinitionBuilder()
@@ -30,7 +30,7 @@ void main() {
         )
         .build();
 
-    var targetDefinition = DatabaseDefinitionBuilder()
+    late var targetDefinition = DatabaseDefinitionBuilder()
         .withDefaultModules()
         .withTable(
           TableDefinitionBuilder()
@@ -46,19 +46,20 @@ void main() {
         )
         .build();
 
-    var migration = generateDatabaseMigration(
+    late var migration = generateDatabaseMigration(
       databaseSource: sourceDefinition,
       databaseTarget: targetDefinition,
     );
 
-    var psql = migration.toPgSql(
+    late var psql = migration.toPgSql(
       databaseDefinition: targetDefinition,
       installedModules: [],
       removedModules: [],
     );
 
     test(
-      'when generating PostgreSQL then ALTER TABLE RENAME COLUMN statement is generated.',
+      'when generating PostgreSQL, '
+      'then ALTER TABLE RENAME COLUMN statement is generated.',
       () {
         expect(
           psql,
@@ -70,7 +71,8 @@ void main() {
     );
 
     test(
-      'when generating PostgreSQL then DROP COLUMN statement is not generated.',
+      'when generating PostgreSQL, '
+      'then DROP COLUMN statement is not generated.',
       () {
         expect(
           psql,
@@ -80,7 +82,7 @@ void main() {
     );
 
     test(
-      'when generating PostgreSQL then ADD COLUMN statement is not generated.',
+      'when generating PostgreSQL, then ADD COLUMN statement is not generated.',
       () {
         expect(
           psql,
@@ -90,7 +92,7 @@ void main() {
     );
   });
 
-  group('Given a table migration with multiple column renames', () {
+  group('Given a table migration with multiple column renames,', () {
     const tableName = 'example_table';
     const oldName1 = 'old_name_1';
     const newName1 = 'new_name_1';
@@ -99,7 +101,7 @@ void main() {
     const modelField1 = 'fieldOne';
     const modelField2 = 'fieldTwo';
 
-    var sourceDefinition = DatabaseDefinitionBuilder()
+    late var sourceDefinition = DatabaseDefinitionBuilder()
         .withDefaultModules()
         .withTable(
           TableDefinitionBuilder()
@@ -122,7 +124,7 @@ void main() {
         )
         .build();
 
-    var targetDefinition = DatabaseDefinitionBuilder()
+    late var targetDefinition = DatabaseDefinitionBuilder()
         .withDefaultModules()
         .withTable(
           TableDefinitionBuilder()
@@ -145,19 +147,20 @@ void main() {
         )
         .build();
 
-    var migration = generateDatabaseMigration(
+    late var migration = generateDatabaseMigration(
       databaseSource: sourceDefinition,
       databaseTarget: targetDefinition,
     );
 
-    var psql = migration.toPgSql(
+    late var psql = migration.toPgSql(
       databaseDefinition: targetDefinition,
       installedModules: [],
       removedModules: [],
     );
 
     test(
-      'when generating PostgreSQL then both RENAME COLUMN statements are generated.',
+      'when generating PostgreSQL, '
+      'then both RENAME COLUMN statements are generated.',
       () {
         expect(
           psql,
@@ -175,14 +178,14 @@ void main() {
     );
   });
 
-  group('Given a table migration with rename and add operations', () {
+  group('Given a table migration with rename and add operations,', () {
     const tableName = 'example_table';
     const renamedOldName = 'old_name';
     const renamedNewName = 'new_name';
     const addedColumnName = 'added_column';
     const renamedModelField = 'renamedField';
 
-    var sourceDefinition = DatabaseDefinitionBuilder()
+    late var sourceDefinition = DatabaseDefinitionBuilder()
         .withDefaultModules()
         .withTable(
           TableDefinitionBuilder()
@@ -198,7 +201,7 @@ void main() {
         )
         .build();
 
-    var targetDefinition = DatabaseDefinitionBuilder()
+    late var targetDefinition = DatabaseDefinitionBuilder()
         .withDefaultModules()
         .withTable(
           TableDefinitionBuilder()
@@ -222,18 +225,18 @@ void main() {
         )
         .build();
 
-    var migration = generateDatabaseMigration(
+    late var migration = generateDatabaseMigration(
       databaseSource: sourceDefinition,
       databaseTarget: targetDefinition,
     );
 
-    var psql = migration.toPgSql(
+    late var psql = migration.toPgSql(
       databaseDefinition: targetDefinition,
       installedModules: [],
       removedModules: [],
     );
 
-    test('when generating PostgreSQL then rename appears before add.', () {
+    test('when generating PostgreSQL, then rename appears before add.', () {
       var renameIndex = psql.indexOf('RENAME COLUMN');
       var addIndex = psql.indexOf('ADD COLUMN');
       expect(renameIndex, isNot(-1));
@@ -242,13 +245,13 @@ void main() {
     });
   });
 
-  group('Given a table migration with renamed column and nullability change', () {
+  group('Given a table migration with renamed column and nullability change,', () {
     const tableName = 'example_table';
     const oldColumnName = 'old_name';
     const newColumnName = 'new_name';
     const modelFieldName = 'nullableField';
 
-    var sourceDefinition = DatabaseDefinitionBuilder()
+    late var sourceDefinition = DatabaseDefinitionBuilder()
         .withDefaultModules()
         .withTable(
           TableDefinitionBuilder()
@@ -265,7 +268,7 @@ void main() {
         )
         .build();
 
-    var targetDefinition = DatabaseDefinitionBuilder()
+    late var targetDefinition = DatabaseDefinitionBuilder()
         .withDefaultModules()
         .withTable(
           TableDefinitionBuilder()
@@ -282,19 +285,20 @@ void main() {
         )
         .build();
 
-    var migration = generateDatabaseMigration(
+    late var migration = generateDatabaseMigration(
       databaseSource: sourceDefinition,
       databaseTarget: targetDefinition,
     );
 
-    var psql = migration.toPgSql(
+    late var psql = migration.toPgSql(
       databaseDefinition: targetDefinition,
       installedModules: [],
       removedModules: [],
     );
 
     test(
-      'when generating PostgreSQL then both RENAME and DROP NOT NULL statements are generated.',
+      'when generating PostgreSQL, '
+      'then both RENAME and DROP NOT NULL statements are generated.',
       () {
         expect(
           psql,
@@ -312,7 +316,8 @@ void main() {
     );
 
     test(
-      'when generating PostgreSQL then rename appears before nullability change.',
+      'when generating PostgreSQL, '
+      'then rename appears before nullability change.',
       () {
         var renameIndex = psql.indexOf('RENAME COLUMN');
         var dropNotNullIndex = psql.indexOf('DROP NOT NULL');

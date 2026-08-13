@@ -5,7 +5,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Templates', () {
+  group('Templates,', () {
     late Directory tempDir;
 
     setUp(() {
@@ -17,7 +17,9 @@ void main() {
     });
 
     test(
-      'Given missing templates folder when loading templates then no templates are loaded',
+      'Given missing templates folder, '
+      'when loading templates, '
+      'then no templates are loaded',
       () async {
         var uniqueUuid = const Uuid().v4();
         var nonExistingDirectory = Directory(
@@ -31,7 +33,9 @@ void main() {
     );
 
     test(
-      'Given flat template structure when loading templates then all templates are loaded',
+      'Given flat template structure, '
+      'when loading templates, '
+      'then all templates are loaded',
       () async {
         // Create flat template structure
         var template1 = File(path.join(tempDir.path, 'template1.html'));
@@ -56,7 +60,9 @@ void main() {
     );
 
     test(
-      'Given nested template structure when loading templates then nested paths are preserved',
+      'Given nested template structure, '
+      'when loading templates, '
+      'then nested paths are preserved',
       () async {
         // Create nested template structure
         var adminDir = Directory(path.join(tempDir.path, 'admin'));
@@ -89,7 +95,9 @@ void main() {
     );
 
     test(
-      'Given mixed flat and nested structure when loading templates then all templates are accessible',
+      'Given mixed flat and nested structure, '
+      'when loading templates, '
+      'then all templates are accessible',
       () async {
         // Create flat template
         var baseTemplate = File(path.join(tempDir.path, 'base.html'));
@@ -118,7 +126,9 @@ void main() {
     );
 
     test(
-      'Given deeply nested structure when loading templates then full nested path key is preserved',
+      'Given deeply nested structure, '
+      'when loading templates, '
+      'then full nested path key is preserved',
       () async {
         // Create deeply nested structure: admin/users/management/forms/edit.html
         var adminDir = Directory(path.join(tempDir.path, 'admin'));
@@ -147,7 +157,9 @@ void main() {
     );
 
     test(
-      'Given non-html files in directories when loading templates then only html files are loaded',
+      'Given non-html files in directories, '
+      'when loading templates, '
+      'then only html files are loaded',
       () async {
         // Create directory with mixed file types
         var adminDir = Directory(path.join(tempDir.path, 'admin'));

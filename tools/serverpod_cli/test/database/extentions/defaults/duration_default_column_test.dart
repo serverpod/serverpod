@@ -5,8 +5,8 @@ import 'package:test/test.dart';
 
 void main() {
   group('Given Duration column definition', () {
-    group('with no default value', () {
-      ColumnDefinition defaultColumn = ColumnDefinition(
+    group('with no default value,', () {
+      late ColumnDefinition defaultColumn = ColumnDefinition(
         name: 'durationDefault',
         columnType: ColumnType.bigint,
         isNullable: false,
@@ -14,7 +14,8 @@ void main() {
       );
 
       test(
-        'when converting to PostgreSQL SQL code, then it should not have the default value',
+        'when converting to PostgreSQL SQL code, '
+        'then it should not have the default value',
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
@@ -24,7 +25,8 @@ void main() {
       );
 
       test(
-        'when converting to SQLite SQL code, then it should not have the default value',
+        'when converting to SQLite SQL code, '
+        'then it should not have the default value',
         () {
           expect(
             defaultColumn.toSqlFragment(),
@@ -34,9 +36,9 @@ void main() {
       );
     });
 
-    group('with 94230100ms as default value', () {
+    group('with 94230100ms as default value,', () {
       // This corresponds to 1d 2h 10min 30s 100ms
-      ColumnDefinition defaultColumn = ColumnDefinition(
+      late ColumnDefinition defaultColumn = ColumnDefinition(
         name: 'durationDefault',
         columnType: ColumnType.bigint,
         isNullable: false,
@@ -45,7 +47,8 @@ void main() {
       );
 
       test(
-        'when converting to PostgreSQL SQL code, then it should have the default value in milliseconds',
+        'when converting to PostgreSQL SQL code, '
+        'then it should have the default value in milliseconds',
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
@@ -55,7 +58,8 @@ void main() {
       );
 
       test(
-        'when converting to SQLite SQL code, then it should have the default value in milliseconds',
+        'when converting to SQLite SQL code, '
+        'then it should have the default value in milliseconds',
         () {
           expect(
             defaultColumn.toSqlFragment(),
@@ -65,9 +69,9 @@ void main() {
       );
     });
 
-    group('with 177640100ms as default value', () {
+    group('with 177640100ms as default value,', () {
       // This corresponds to 2d 1h 20min 40s 100ms
-      ColumnDefinition defaultColumn = ColumnDefinition(
+      late ColumnDefinition defaultColumn = ColumnDefinition(
         name: 'durationDefault',
         columnType: ColumnType.bigint,
         isNullable: false,
@@ -76,7 +80,8 @@ void main() {
       );
 
       test(
-        'when converting to PostgreSQL SQL code, then it should have the default value in milliseconds',
+        'when converting to PostgreSQL SQL code, '
+        'then it should have the default value in milliseconds',
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
@@ -86,7 +91,8 @@ void main() {
       );
 
       test(
-        'when converting to SQLite SQL code, then it should have the default value in milliseconds',
+        'when converting to SQLite SQL code, '
+        'then it should have the default value in milliseconds',
         () {
           expect(
             defaultColumn.toSqlFragment(),
@@ -96,8 +102,8 @@ void main() {
       );
     });
 
-    group('with nullable column and no default value', () {
-      ColumnDefinition defaultColumn = ColumnDefinition(
+    group('with nullable column and no default value,', () {
+      late ColumnDefinition defaultColumn = ColumnDefinition(
         name: 'durationDefault',
         columnType: ColumnType.bigint,
         isNullable: true,
@@ -105,7 +111,8 @@ void main() {
       );
 
       test(
-        'when converting to PostgreSQL SQL code, then it should be nullable with no default value',
+        'when converting to PostgreSQL SQL code, '
+        'then it should be nullable with no default value',
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
@@ -115,7 +122,8 @@ void main() {
       );
 
       test(
-        'when converting to SQLite SQL code, then it should be nullable with no default value',
+        'when converting to SQLite SQL code, '
+        'then it should be nullable with no default value',
         () {
           expect(
             defaultColumn.toSqlFragment(),
@@ -125,8 +133,8 @@ void main() {
       );
     });
 
-    group('with nullable column and 94230100ms as default value', () {
-      ColumnDefinition defaultColumn = ColumnDefinition(
+    group('with nullable column and 94230100ms as default value,', () {
+      late ColumnDefinition defaultColumn = ColumnDefinition(
         name: 'durationDefault',
         columnType: ColumnType.bigint,
         isNullable: true,
@@ -135,7 +143,8 @@ void main() {
       );
 
       test(
-        'when converting to PostgreSQL SQL code, then it should be nullable with the default value in milliseconds',
+        'when converting to PostgreSQL SQL code, '
+        'then it should be nullable with the default value in milliseconds',
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
@@ -145,7 +154,8 @@ void main() {
       );
 
       test(
-        'when converting to SQLite SQL code, then it should be nullable with the default value in milliseconds',
+        'when converting to SQLite SQL code, '
+        'then it should be nullable with the default value in milliseconds',
         () {
           expect(
             defaultColumn.toSqlFragment(),
@@ -155,8 +165,8 @@ void main() {
       );
     });
 
-    group('with nullable column and 177640100ms as default value', () {
-      ColumnDefinition defaultColumn = ColumnDefinition(
+    group('with nullable column and 177640100ms as default value,', () {
+      late ColumnDefinition defaultColumn = ColumnDefinition(
         name: 'durationDefault',
         columnType: ColumnType.bigint,
         isNullable: true,
@@ -165,7 +175,8 @@ void main() {
       );
 
       test(
-        'when converting to PostgreSQL SQL code, then it should be nullable with the default value in milliseconds',
+        'when converting to PostgreSQL SQL code, '
+        'then it should be nullable with the default value in milliseconds',
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
@@ -175,7 +186,8 @@ void main() {
       );
 
       test(
-        'when converting to SQLite SQL code, then it should be nullable with the default value in milliseconds',
+        'when converting to SQLite SQL code, '
+        'then it should be nullable with the default value in milliseconds',
         () {
           expect(
             defaultColumn.toSqlFragment(),

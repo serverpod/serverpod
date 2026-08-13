@@ -20,9 +20,9 @@ void main() {
     testProjectDirectory.deleteSync(recursive: true);
   });
 
-  group('Given an endpoint that extends another endpoint when analyzed', () {
-    var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
+  group('Given an endpoint that extends another endpoint, when analyzed,', () {
+    late var collector = CodeGenerationCollector();
+    late var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
 
@@ -83,10 +83,11 @@ class SubclassEndpoint extends BaseEndpoint {
   });
 
   group(
-    'Given a endpoint that extends another endpoint and overrides a method when analyzed',
+    'Given a endpoint that extends another endpoint and overrides a method, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -145,10 +146,11 @@ class SubclassEndpoint extends BaseEndpoint {
   );
 
   group(
-    'Given an endpoint that extends another endpoint annotated with @doNotGenerate when analyzed',
+    'Given an endpoint that extends another endpoint annotated with @doNotGenerate, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -209,10 +211,11 @@ class SubclassEndpoint extends BaseEndpoint {
   );
 
   group(
-    'Given an endpoint that extends another endpoint annotated as @doNotGenerate that also extends another endpoint when analyzed',
+    'Given an endpoint that extends another endpoint annotated as @doNotGenerate that also extends another endpoint, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 

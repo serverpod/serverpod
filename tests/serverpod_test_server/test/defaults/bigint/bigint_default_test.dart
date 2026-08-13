@@ -3,10 +3,11 @@ import 'package:test/test.dart';
 
 void main() async {
   group(
-    "Given a class with 'default' BigInt fields",
+    "Given a class with 'default' BigInt fields,",
     () {
       test(
-        'when an object of the class is created, then the "default" BigInt field with a string should match the default',
+        'when an object of the class is created, '
+        'then the "default" BigInt field with a string should match the default',
         () {
           var object = BigIntDefault();
           expect(
@@ -17,7 +18,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created, then the nullable "default" BigInt field with a string should match the default',
+        'when an object of the class is created, '
+        'then the nullable "default" BigInt field with a string should match the default',
         () {
           var object = BigIntDefault();
           expect(
@@ -28,7 +30,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a value for "bigintDefaultStr", then the field value should match the provided value',
+        'when an object of the class is created with a value for "bigintDefaultStr", '
+        'then the field value should match the provided value',
         () {
           var bigInt = BigInt.one;
           ;
@@ -43,7 +46,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a value for "bigintDefaultStrNull", then the field value should match the provided value',
+        'when an object of the class is created with a value for "bigintDefaultStrNull", '
+        'then the field value should match the provided value',
         () {
           var bigInt = BigInt.one;
           var object = BigIntDefault(

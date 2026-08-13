@@ -8,7 +8,9 @@ void main() {
   var client = Client(serverUrl)..authKeyProvider = TestAuthKeyManager();
 
   test(
-    'Given a streaming method that returns a stream of integers, when calling the method, then the expected integers are received.',
+    'Given a streaming method that returns a stream of integers, '
+    'when calling the method, '
+    'then the expected integers are received.',
     () async {
       var stream = client.methodStreaming.simpleStream();
 
@@ -20,7 +22,9 @@ void main() {
   );
 
   test(
-    'Given a streaming method that returns a stream of integers based on the parameter when calling the method, then the expected integers are received.',
+    'Given a streaming method that returns a stream of integers based on the parameter, '
+    'when calling the method, '
+    'then the expected integers are received.',
     () async {
       var value = 5;
       var stream = client.methodStreaming.intStreamFromValue(value);
@@ -33,7 +37,9 @@ void main() {
   );
 
   test(
-    'Given a streaming method that throws an exception when calling the method, then stream is closed with a ConnectionClosedException.',
+    'Given a streaming method that throws an exception, '
+    'when calling the method, '
+    'then stream is closed with a ConnectionClosedException.',
     () async {
       var stream = client.methodStreaming.outStreamThrowsException();
 
@@ -45,7 +51,9 @@ void main() {
   );
 
   test(
-    'Given a streaming method that throws a serializable exception when calling the method, then stream is closed with the Serializable exception thrown',
+    'Given a streaming method that throws a serializable exception, '
+    'when calling the method, '
+    'then stream is closed with the Serializable exception thrown',
     () async {
       var stream = client.methodStreaming
           .outStreamThrowsSerializableException();
@@ -58,7 +66,9 @@ void main() {
   );
 
   test(
-    'Given a streaming method that is not a generator that throws an exception before the stream is returned when calling the method, then stream is closed with ServerpodClientException.',
+    'Given a streaming method that is not a generator that throws an exception before the stream is returned, '
+    'when calling the method, '
+    'then stream is closed with ServerpodClientException.',
     () async {
       var stream = client.methodStreaming.exceptionThrownBeforeStreamReturn();
 
@@ -70,7 +80,9 @@ void main() {
   );
 
   test(
-    'Given a streaming method that is not a generator that throws an exception as its first message when calling method, then stream is closed with ServerpodClientException.',
+    'Given a streaming method that is not a generator that throws an exception as its first message, '
+    'when calling method, '
+    'then stream is closed with ServerpodClientException.',
     () async {
       var stream = client.methodStreaming.exceptionThrownInStreamReturn();
 
@@ -82,7 +94,9 @@ void main() {
   );
 
   test(
-    'Given a streaming method that echoes a stream of lists of integers, when calling the method, then the input values are returned.',
+    'Given a streaming method that echoes a stream of lists of integers, '
+    'when calling the method, '
+    'then the input values are returned.',
     () async {
       var response = client.methodStreaming.simpleListInOutIntStream(
         Stream.fromIterable([
@@ -102,7 +116,9 @@ void main() {
   );
 
   test(
-    'Given a streaming method that echoes a stream of nullable lists of data objects, when calling the method, then the input values are returned.',
+    'Given a streaming method that echoes a stream of nullable lists of data objects, '
+    'when calling the method, '
+    'then the input values are returned.',
     () async {
       var response = client.methodStreaming
           .simpleNullableListInOutNullableDataStream(
@@ -131,7 +147,9 @@ void main() {
   );
 
   test(
-    'Given a streaming method that echoes a stream lists of nullable data objects, when calling the method, then the input values are returned.',
+    'Given a streaming method that echoes a stream lists of nullable data objects, '
+    'when calling the method, '
+    'then the input values are returned.',
     () async {
       var response = client.methodStreaming.simpleListInOutNullableDataStream(
         Stream.fromIterable([
@@ -161,7 +179,9 @@ void main() {
   );
 
   test(
-    'Given a streaming method that echoes a stream lists of `UserInfo` objects (type from another module), when calling the method, then the input values are returned.',
+    'Given a streaming method that echoes a stream lists of `UserInfo` objects (type from another module), '
+    'when calling the method, '
+    'then the input values are returned.',
     () async {
       var response = client.methodStreaming
           .simpleListInOutOtherModuleTypeStream(
@@ -193,7 +213,9 @@ void main() {
   );
 
   test(
-    'Given a streaming method that echoes a stream of lists of data objects, when calling the method, then the input values are returned.',
+    'Given a streaming method that echoes a stream of lists of data objects, '
+    'when calling the method, '
+    'then the input values are returned.',
     () async {
       var response = client.methodStreaming.simpleListInOutDataStream(
         Stream.fromIterable([
@@ -219,7 +241,9 @@ void main() {
   );
 
   test(
-    'Given a streaming method that echoes a stream of sets of integers, when calling the method, then the input values are returned.',
+    'Given a streaming method that echoes a stream of sets of integers, '
+    'when calling the method, '
+    'then the input values are returned.',
     () async {
       var response = client.methodStreaming.simpleSetInOutIntStream(
         Stream.fromIterable([
@@ -239,7 +263,9 @@ void main() {
   );
 
   test(
-    'Given a streaming method that echoes a stream of sets of data objects, when calling the method, then the input values are returned.',
+    'Given a streaming method that echoes a stream of sets of data objects, '
+    'when calling the method, '
+    'then the input values are returned.',
     () async {
       var response = client.methodStreaming.simpleSetInOutDataStream(
         Stream.fromIterable([
@@ -265,7 +291,9 @@ void main() {
   );
 
   test(
-    'Given a streaming method that echoes a flattened stream of sets of data objects, when calling the method, then the input values are returned.',
+    'Given a streaming method that echoes a flattened stream of sets of data objects, '
+    'when calling the method, '
+    'then the input values are returned.',
     () async {
       var response = client.methodStreaming.nestedSetInListInOutDataStream(
         Stream.fromIterable([

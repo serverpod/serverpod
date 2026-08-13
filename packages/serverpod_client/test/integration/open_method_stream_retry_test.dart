@@ -18,7 +18,7 @@ class TestSerializationManager extends SerializationManager {}
 
 void main() {
   group(
-    'Given a ClientMethodStreamManager with an authKeyProvider that does not support refresh',
+    'Given a ClientMethodStreamManager with an authKeyProvider that does not support refresh,',
     () {
       late ClientMethodStreamManager streamManager;
       late TestNonRefresherAuthKeyProvider authKeyProvider;
@@ -65,7 +65,7 @@ void main() {
       tearDown(() async => await closeServer());
 
       test(
-        'when first open method stream connection fails with authenticationFailed '
+        'when first open method stream connection fails with authenticationFailed, '
         'then no retry is attempted.',
         () async {
           var connectionDetails = MethodStreamConnectionDetailsBuilder()
@@ -93,7 +93,7 @@ void main() {
   late TestRefresherAuthKeyProvider authKeyProvider;
 
   group(
-    'Given a ClientMethodStreamManager with an authKeyProvider that supports refresh',
+    'Given a ClientMethodStreamManager with an authKeyProvider that supports refresh,',
     () {
       late ClientMethodStreamManager streamManager;
       late Uri webSocketHost;
@@ -145,8 +145,8 @@ void main() {
 
       tearDown(() async => await closeServer());
 
-      test('when first open method stream connection succeeds '
-          'then no retry is attempted.', () async {
+      test('when first open method stream connection succeeds, '
+           'then no retry is attempted.', () async {
         serverResponses = [
           OpenMethodStreamResponseType.success,
         ];
@@ -162,7 +162,7 @@ void main() {
       });
 
       test(
-        'when first open method stream connection fails with authenticationFailed and refresh succeeds '
+        'when first open method stream connection fails with authenticationFailed and refresh succeeds, '
         'then request is retried.',
         () async {
           serverResponses = [
@@ -189,7 +189,7 @@ void main() {
       );
 
       test(
-        'when first open method stream connection fails with authenticationFailed but refresh fails '
+        'when first open method stream connection fails with authenticationFailed but refresh fails, '
         'then original exception is rethrown.',
         () async {
           serverResponses = [
@@ -219,7 +219,7 @@ void main() {
       );
 
       test(
-        'when first open method stream connection fails with authenticationFailed, refresh succeeds and second open method stream connection also fails with authenticationFailed '
+        'when first open method stream connection fails with authenticationFailed, refresh succeeds and second open method stream connection also fails with authenticationFailed, '
         'then no second retry is attempted and original exception is rethrown.',
         () async {
           serverResponses = [
@@ -255,7 +255,7 @@ void main() {
       );
 
       test(
-        'when first open method stream connection fails with non-authenticationFailed error '
+        'when first open method stream connection fails with non-authenticationFailed error, '
         'then no retry is attempted.',
         () async {
           serverResponses = [

@@ -15,7 +15,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "default=now" field should be in UTC',
+      'when creating a record in the database, '
+      'then the "default=now" field should be in UTC',
       () async {
         var object = DateTimeDefault();
         var databaseObject = await DateTimeDefault.db.insertRow(
@@ -27,7 +28,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "default" field with UTC string should be in UTC',
+      'when creating a record in the database, '
+      'then the "default" field with UTC string should be in UTC',
       () async {
         var object = DateTimeDefault();
         var databaseObject = await DateTimeDefault.db.insertRow(
@@ -39,7 +41,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the nullable "default" field with UTC string should be in UTC',
+      'when creating a record in the database, '
+      'then the nullable "default" field with UTC string should be in UTC',
       () async {
         var object = DateTimeDefault();
         var databaseObject = await DateTimeDefault.db.insertRow(
@@ -51,7 +54,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "default=now" field value should match the current time',
+      'when creating a record in the database, '
+      'then the "default=now" field value should match the current time',
       () async {
         var object = DateTimeDefault();
         var databaseObject = await DateTimeDefault.db.insertRow(
@@ -69,7 +73,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "default" field value should match the default',
+      'when creating a record in the database, '
+      'then the "default" field value should match the default',
       () async {
         var object = DateTimeDefault();
         var databaseObject = await DateTimeDefault.db.insertRow(
@@ -84,7 +89,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the nullable "default" field value should match the default',
+      'when creating a record in the database, '
+      'then the nullable "default" field value should match the default',
       () async {
         var object = DateTimeDefault();
         var databaseObject = await DateTimeDefault.db.insertRow(
@@ -99,7 +105,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "dateTimeDefaultNow" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "dateTimeDefaultNow" field value should match the provided value',
       () async {
         var date = DateTime.parse('2024-05-01T22:00:00.000Z');
         var specificObject = DateTimeDefault(
@@ -117,7 +124,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "dateTimeDefaultStr" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "dateTimeDefaultStr" field value should match the provided value',
       () async {
         var date = DateTime.parse('2024-05-01T22:00:00.000Z');
         var specificObject = DateTimeDefault(
@@ -135,7 +143,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "dateTimeDefaultStrNull" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "dateTimeDefaultStrNull" field value should match the provided value',
       () async {
         var date = DateTime.parse('2024-05-01T22:00:00.000Z');
         var specificObject = DateTimeDefault(

@@ -8,7 +8,9 @@ void main() {
   var client = Client(serverUrl);
 
   test(
-    'Given the test server, when an int stream is sent to the server, then it is returned verbatim',
+    'Given the test server, '
+    'when an int stream is sent to the server, '
+    'then it is returned verbatim',
     () async {
       var result = await client.basicTypesStreaming
           .testInt(Stream.fromIterable([0, null, 1]))
@@ -19,7 +21,9 @@ void main() {
   );
 
   test(
-    'Given the test server, when a double stream is sent to the server, then it is returned verbatim',
+    'Given the test server, '
+    'when a double stream is sent to the server, '
+    'then it is returned verbatim',
     () async {
       var result = await client.basicTypesStreaming
           .testDouble(Stream.fromIterable([1.2, null, 3.4]))
@@ -30,7 +34,9 @@ void main() {
   );
 
   test(
-    'Given the test server, when a boolean stream is sent to the server, then it is returned verbatim',
+    'Given the test server, '
+    'when a boolean stream is sent to the server, '
+    'then it is returned verbatim',
     () async {
       var result = await client.basicTypesStreaming
           .testBool(Stream.fromIterable([true, null, false]))
@@ -41,7 +47,9 @@ void main() {
   );
 
   test(
-    'Given the test server, when a string stream is sent to the server, then it is returned verbatim',
+    'Given the test server, '
+    'when a string stream is sent to the server, '
+    'then it is returned verbatim',
     () async {
       var result = await client.basicTypesStreaming
           .testString(Stream.fromIterable(['first', 'null', null, 'last']))
@@ -52,7 +60,9 @@ void main() {
   );
 
   test(
-    'Given the test server, when a `DateTime` stream is sent to the server, then it is returned verbatim',
+    'Given the test server, '
+    'when a `DateTime` stream is sent to the server, '
+    'then it is returned verbatim',
     () async {
       var dateTime = DateTime.utc(1976, 9, 10, 2, 10);
 
@@ -65,7 +75,9 @@ void main() {
   );
 
   test(
-    'Given the test server, when some `ByteData` stream is sent to the server, then it is returned verbatim',
+    'Given the test server, '
+    'when some `ByteData` stream is sent to the server, '
+    'then it is returned verbatim',
     () async {
       final byteData1 = createByteData();
       final byteData2 = createByteData();
@@ -82,7 +94,9 @@ void main() {
   );
 
   test(
-    'Given the test server, when a `Duration` stream is sent to the server, then it is returned verbatim',
+    'Given the test server, '
+    'when a `Duration` stream is sent to the server, '
+    'then it is returned verbatim',
     () async {
       var duration = const Duration(seconds: 1);
 
@@ -95,7 +109,9 @@ void main() {
   );
 
   test(
-    'Given the test server, when a UUID stream is sent to the server, then it is returned verbatim',
+    'Given the test server, '
+    'when a UUID stream is sent to the server, '
+    'then it is returned verbatim',
     () async {
       var uuid = UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11');
 
@@ -108,7 +124,9 @@ void main() {
   );
 
   test(
-    'Given the test server, when a `Uri` stream is sent to the server, then it is returned verbatim',
+    'Given the test server, '
+    'when a `Uri` stream is sent to the server, '
+    'then it is returned verbatim',
     () async {
       var uri = Uri.parse(
         'https://docs.serverpod.dev/contribute#working-on-serverpod',
@@ -123,7 +141,9 @@ void main() {
   );
 
   test(
-    'Given the test server, when a `BigInt` stream is sent to the server, then it is returned verbatim',
+    'Given the test server, '
+    'when a `BigInt` stream is sent to the server, '
+    'then it is returned verbatim',
     () async {
       var bigInt = BigInt.parse('-12345678901234567890');
       var bigInt2 = BigInt.parse('12345678901234567890');
