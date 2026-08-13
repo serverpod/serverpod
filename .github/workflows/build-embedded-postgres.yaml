@@ -139,7 +139,7 @@ jobs:
       # step prints; the exit code still propagates.
       - name: Install PsExec (Windows)
         if: matrix.os == 'windows'
-        run: choco install pstools --no-progress -y --limit-output
+        run: choco install pstools --no-progress -y --limit-output --checksum "4F49964CC9CBAC2B5D87BDC8F9526012E9C4B243D8B7D0C0BB51F254A721CA2E"
       - name: Extract bundle for the smoke test (Windows / MSYS2)
         if: matrix.os == 'windows'
         shell: msys2 {0}
