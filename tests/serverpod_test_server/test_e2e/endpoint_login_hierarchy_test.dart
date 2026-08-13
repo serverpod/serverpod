@@ -36,7 +36,7 @@ void main() {
               isA<ServerpodClientHttpException>()
                   .having(
                     (e) => e.message,
-                    'statusCode',
+                    'message',
                     contains('Unauthorized'),
                   )
                   .having((e) => e.statusCode, 'statusCode', 401),
@@ -76,7 +76,7 @@ void main() {
               isA<ServerpodClientHttpException>()
                   .having(
                     (e) => e.message,
-                    'statusCode',
+                    'message',
                     contains('Unauthorized'),
                   )
                   .having((e) => e.statusCode, 'statusCode', 401),
@@ -100,7 +100,7 @@ void main() {
             () async => await client.myAdmin.echo('hello'),
             throwsA(
               isA<ServerpodClientHttpException>()
-                  .having((e) => e.message, 'statusCode', contains('Forbidden'))
+                  .having((e) => e.message, 'message', contains('Forbidden'))
                   .having((e) => e.statusCode, 'statusCode', 403),
             ),
           );
@@ -139,7 +139,7 @@ void main() {
               isA<ServerpodClientHttpException>()
                   .having(
                     (e) => e.message,
-                    'statusCode',
+                    'message',
                     contains('Unauthorized'),
                   )
                   .having((e) => e.statusCode, 'statusCode', 401),
@@ -163,7 +163,7 @@ void main() {
             () async => await client.myConcreteAdmin.echo('hello'),
             throwsA(
               isA<ServerpodClientHttpException>()
-                  .having((e) => e.message, 'statusCode', contains('Forbidden'))
+                  .having((e) => e.message, 'message', contains('Forbidden'))
                   .having((e) => e.statusCode, 'statusCode', 403),
             ),
           );
