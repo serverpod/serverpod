@@ -35,6 +35,8 @@ class _SignInScreenState extends State<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
     return _isSignedIn
         ? widget.child
         : Center(
@@ -43,13 +45,15 @@ class _SignInScreenState extends State<SignInScreen> {
               onAuthenticated: () {
                 context.showSnackBar(
                   message: 'User authenticated.',
-                  backgroundColor: Colors.green,
+                  backgroundColor: colors.primaryContainer,
+                  foregroundColor: colors.onPrimaryContainer,
                 );
               },
               onError: (error) {
                 context.showSnackBar(
                   message: 'Authentication failed: $error',
-                  backgroundColor: Colors.red,
+                  backgroundColor: colors.errorContainer,
+                  foregroundColor: colors.onErrorContainer,
                 );
               },
             ),
@@ -60,11 +64,12 @@ class _SignInScreenState extends State<SignInScreen> {
 extension on BuildContext {
   void showSnackBar({
     required String message,
-    Color? backgroundColor,
+    required Color backgroundColor,
+    required Color foregroundColor,
   }) {
     ScaffoldMessenger.of(this).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(message, style: TextStyle(color: foregroundColor)),
         backgroundColor: backgroundColor,
         duration: const Duration(seconds: 5),
       ),
