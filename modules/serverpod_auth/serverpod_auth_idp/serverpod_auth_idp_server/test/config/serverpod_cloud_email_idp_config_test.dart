@@ -35,8 +35,8 @@ void main() {
     setUpAll(() => initServerpodWithPasswords('test:\n  database: "test"'));
 
     test(
-      'when constructing ServerpodCloudEmailIdpConfig then it throws a '
-      'PasswordNotFoundException for emailSecretHashPepper',
+      'when constructing ServerpodCloudEmailIdpConfig '
+      'then it throws a PasswordNotFoundException for emailSecretHashPepper',
       () {
         expect(
           () => ServerpodCloudEmailIdpConfig(appDisplayName: 'My App'),
@@ -62,8 +62,8 @@ void main() {
       );
 
       test(
-        'when constructing ServerpodCloudEmailIdpConfig then it succeeds '
-        'without the cloud email key (codes are logged to the console)',
+        'when constructing ServerpodCloudEmailIdpConfig '
+        'then it succeeds without the cloud email key (codes are logged to the console)',
         () {
           final config = ServerpodCloudEmailIdpConfig(appDisplayName: 'My App');
           expect(config, isA<EmailIdpConfig>());
@@ -82,8 +82,8 @@ void main() {
       );
 
       test(
-        'when constructing ServerpodCloudEmailIdpConfig then it still succeeds '
-        '(the key is read lazily, so the server boots without it)',
+        'when constructing ServerpodCloudEmailIdpConfig '
+        'then it still succeeds (the key is read lazily, so the server boots without it)',
         () {
           final config = ServerpodCloudEmailIdpConfig(
             appDisplayName: 'My App',

@@ -27,9 +27,9 @@ module.SharedModuleTable _roundTrip(Object? data) {
 
 void main() {
   test(
-    'Given a project object in the dynamic field of a module shared-package '
-    'table, when round-tripping it through the SQLite consumer server '
-    'protocol, then the project object survives.',
+    'Given a project object in the dynamic field of a module shared-package table, '
+    'when round-tripping it through the SQLite consumer server protocol, '
+    'then the project object survives.',
     () {
       final result = _roundTrip(sqlite.SimpleData(num: 42));
 
@@ -41,9 +41,9 @@ void main() {
   );
 
   test(
-    'Given a project shared-package object in the dynamic field of a module '
-    'shared-package table, when round-tripping it through the SQLite consumer '
-    'server protocol, then the shared object survives.',
+    'Given a project shared-package object in the dynamic field of a module shared-package table, '
+    'when round-tripping it through the SQLite consumer server protocol, '
+    'then the shared object survives.',
     () {
       final result = _roundTrip(
         sqlite_shared.SharedModel(name: 'shared', data: 7),
@@ -61,9 +61,9 @@ void main() {
   );
 
   test(
-    'Given a module object in the dynamic field of a module shared-package '
-    'table, when round-tripping it through the SQLite consumer server '
-    'protocol, then the module object survives.',
+    'Given a module object in the dynamic field of a module shared-package table, '
+    'when round-tripping it through the SQLite consumer server protocol, '
+    'then the module object survives.',
     () {
       final result = _roundTrip(
         auth.TokenPair(refreshToken: 'refresh', accessToken: 'access'),
