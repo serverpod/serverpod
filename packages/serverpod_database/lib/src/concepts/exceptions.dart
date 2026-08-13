@@ -7,7 +7,7 @@ class DatabaseException implements Exception {
   final String message;
 
   @override
-  String toString() => 'DatabaseException: $message';
+  String toString() => '$runtimeType: $message';
 }
 
 /// Exception thrown when an exception occurs during a database query.
