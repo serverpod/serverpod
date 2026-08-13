@@ -64,7 +64,14 @@ void main() {
       );
 
       test('then a base ServerpodClientHttpException is created', () {
-        expect(exception, isA<ServerpodClientHttpException>());
+        expect(
+          exception,
+          isA<ServerpodClientHttpException>().having(
+            (e) => e.statusCode,
+            'statusCode',
+            499,
+          ),
+        );
       });
 
       test('then the message is an unknown error', () {
