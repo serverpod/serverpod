@@ -844,7 +844,8 @@ class UnresolvedObjectRelationDefinition extends RelationDefinition {
   /// On update behavior in the database.
   final ForeignKeyAction onUpdate;
 
-  /// Only used for implicit relations, toggles if the relation id is nullable.
+  /// Whether the generated relation id is nullable. Used for implicit
+  /// relations and for `field=` relations when the foreign key is generated.
   final bool nullableRelation;
 
   UnresolvedObjectRelationDefinition({

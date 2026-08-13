@@ -90,6 +90,68 @@ void main() {
   });
 
   test(
+    'Given a class with a non-optional serverOnly relation that names an undeclared foreign key field, '
+    'when the model is analyzed, '
+    'then no errors are collected.',
+    () {
+      var models = [
+        parentClassModel,
+        ModelSourceBuilder()
+            .withYaml(
+              '''
+                class: Comment
+                table: comment
+                fields:
+                  post: Post?, relation(field=postId), scope=serverOnly
+                ''',
+            )
+            .withFileName('comment_class')
+            .build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+
+      expect(collector.errors, isEmpty);
+    },
+  );
+
+  test(
+    'Given a class with an optional serverOnly relation that names an undeclared foreign key field, '
+    'when the model is analyzed, '
+    'then no errors are collected.',
+    () {
+      var models = [
+        parentClassModel,
+        ModelSourceBuilder()
+            .withYaml(
+              '''
+                class: Comment
+                table: comment
+                fields:
+                  post: Post?, relation(optional, field=postId), scope=serverOnly
+                ''',
+            )
+            .withFileName('comment_class')
+            .build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+
+      expect(collector.errors, isEmpty);
+    },
+  );
+
+  test(
     'Given a class with an optional relation and "serverOnly" scope '
     'when analyzed then no errors are generated for an object relation',
     () {

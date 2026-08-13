@@ -167,4 +167,80 @@ void main() {
       expect(relation.nullableRelation, isFalse);
     });
   });
+
+  group(
+    'Given a named one to many relation that names an undeclared non-optional foreign key,',
+    () {
+      var employeeYaml = '''
+        class: Employee
+        table: employee
+        fields:
+          company: Company?, relation(name=company_employees, field=companyId)
+        ''';
+
+      test(
+        'when the foreign class is analyzed before the list owner, '
+        'then the nullableRelation is set to false.',
+        () {
+          var relation = resolveListRelation([
+            (fileName: 'employee', yaml: employeeYaml),
+            (fileName: 'company', yaml: companyYaml),
+          ]);
+
+          expect(relation.nullableRelation, isFalse);
+        },
+      );
+
+      test(
+        'when the list owner is analyzed before the foreign class, '
+        'then the nullableRelation is set to false.',
+        () {
+          var relation = resolveListRelation([
+            (fileName: 'company', yaml: companyYaml),
+            (fileName: 'employee', yaml: employeeYaml),
+          ]);
+
+          expect(relation.nullableRelation, isFalse);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a named one to many relation that names an undeclared optional foreign key,',
+    () {
+      var employeeYaml = '''
+        class: Employee
+        table: employee
+        fields:
+          company: Company?, relation(name=company_employees, optional, field=companyId)
+        ''';
+
+      test(
+        'when the foreign class is analyzed before the list owner, '
+        'then the nullableRelation is set to true.',
+        () {
+          var relation = resolveListRelation([
+            (fileName: 'employee', yaml: employeeYaml),
+            (fileName: 'company', yaml: companyYaml),
+          ]);
+
+          expect(relation.nullableRelation, isTrue);
+        },
+      );
+
+      test(
+        'when the list owner is analyzed before the foreign class, '
+        'then the nullableRelation is set to true.',
+        () {
+          var relation = resolveListRelation([
+            (fileName: 'company', yaml: companyYaml),
+            (fileName: 'employee', yaml: employeeYaml),
+          ]);
+
+          expect(relation.nullableRelation, isTrue);
+        },
+      );
+    },
+  );
 }

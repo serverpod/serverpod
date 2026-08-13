@@ -357,7 +357,29 @@ class ModelDependencyResolver {
     String relationFieldName,
   ) {
     var field = classDefinition.findField(relationFieldName);
-    if (field == null) return;
+    if (field == null) {
+      var relationFieldType = relation.nullableRelation
+          ? referenceDefinition.idField.type.asNullable
+          : referenceDefinition.idField.type.asNonNullable;
+
+      field = SerializableModelFieldDefinition(
+        name: relationFieldName,
+        shouldPersist: true,
+        scope: fieldDefinition.scope,
+        type: relationFieldType,
+        isRequired: false,
+        documentation: [
+          '/// The foreign key of the [${fieldDefinition.name}] relation.',
+        ],
+      );
+
+      _injectForeignRelationField(
+        classDefinition,
+        fieldDefinition,
+        field,
+      );
+      _resolveFieldIndexes(field, classDefinition);
+    }
 
     if (field.relation != null) {
       fieldDefinition.relation = UnresolvableObjectRelationDefinition(

@@ -4,6 +4,7 @@ import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/models/converter/converter.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/base.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/default.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
@@ -567,6 +568,42 @@ class Restrictions {
       return [
         SourceSpanSeverityException(
           'The "optional" property should be omitted on id fields.',
+          span,
+        ),
+      ];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validateOptionalValue(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    var booleanErrors = BooleanValueRestriction().validate(
+      parentNodeName,
+      content,
+      span,
+    );
+    if (booleanErrors.isNotEmpty) return booleanErrors;
+
+    if (!_isYamlTrue(content)) return [];
+
+    var definition = documentDefinition;
+    if (definition is! ClassDefinition) return [];
+
+    var field = definition.findField(parentNodeName);
+    if (field == null) return [];
+
+    var foreignKeyFieldName = _relationForeignKeyFieldName(field.relation);
+    if (foreignKeyFieldName == null) return [];
+
+    var foreignKeyField = definition.findField(foreignKeyFieldName);
+    if (foreignKeyField != null && !foreignKeyField.type.nullable) {
+      return [
+        SourceSpanSeverityException(
+          'An optional relation requires the foreign key field "$foreignKeyFieldName" to be nullable.',
           span,
         ),
       ];
@@ -2927,5 +2964,22 @@ class Restrictions {
     return currentModel.fields
         .where((field) => field.jsonKey == jsonKey)
         .toList();
+  }
+
+  String? _relationForeignKeyFieldName(RelationDefinition? relation) {
+    return switch (relation) {
+      ObjectRelationDefinition(:final fieldName) => fieldName,
+      UnresolvedObjectRelationDefinition(:final fieldName) => fieldName,
+      UnresolvableObjectRelationDefinition(
+        :final objectRelationDefinition,
+      ) =>
+        objectRelationDefinition.fieldName,
+      _ => null,
+    };
+  }
+
+  bool _isYamlTrue(dynamic content) {
+    return content == true ||
+        (content is String && content.toLowerCase() == 'true');
   }
 }
