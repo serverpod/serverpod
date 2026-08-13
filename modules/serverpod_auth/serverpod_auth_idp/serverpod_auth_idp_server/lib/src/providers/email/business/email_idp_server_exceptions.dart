@@ -56,18 +56,6 @@ final class EmailAccountAlreadyRegisteredException
 final class EmailAccountRequestInvalidEmailException
     extends EmailAccountRequestServerException {}
 
-// NOTE: This exception is no longer being used after fixing the bug where
-// users could not request a new verification code until the previous one had
-// expired. The exception can be removed in the next major version if no other
-// use is found for it.
-/// Exception thrown when an email account request already exists.
-final class EmailAccountRequestAlreadyExistsException
-    extends EmailAccountRequestServerException {}
-
-/// Exception thrown when requesting password reset for an inexistent account.
-final class EmailPasswordResetAccountNotFoundException
-    extends EmailPasswordResetServerException {}
-
 /// Exception thrown when trying to complete a password reset request with an
 /// invalid verification code.
 final class EmailPasswordResetInvalidVerificationCodeException

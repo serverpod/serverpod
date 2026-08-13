@@ -16,7 +16,6 @@ import 'package:serverpod_cli/src/util/string_manipulation.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
-import 'package:super_string/super_string.dart';
 
 import '../config/config.dart';
 

@@ -72,6 +72,35 @@ void main() {
     );
 
     test(
+      'when the field is of type int and the defaultPersist is set to "serial", '
+      'then the field should have a "default persist" value',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            syncVersion: int?, defaultPersist=serial
+          ''',
+          ).build(),
+        ];
+
+        var collector = CodeGenerationCollector();
+        var definitions = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
+
+        expect(collector.errors, isEmpty);
+
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields.last.defaultPersistValue, 'serial');
+      },
+    );
+
+    test(
       'when the field is of type int and the defaultPersist is empty, then an error is generated',
       () {
         var models = [

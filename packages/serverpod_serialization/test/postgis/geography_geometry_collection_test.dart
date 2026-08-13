@@ -32,8 +32,8 @@ void main() {
       });
 
       test(
-        'when converted to EWKT then it matches the SRID and GEOMETRYCOLLECTION '
-        'string with sub-geometries emitted without their own SRID prefix.',
+        'when converted to EWKT '
+        'then it matches the SRID and GEOMETRYCOLLECTION string with sub-geometries emitted without their own SRID prefix.',
         () {
           expect(
             collection.toEwkt(),

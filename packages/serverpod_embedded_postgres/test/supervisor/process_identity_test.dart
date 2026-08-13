@@ -85,8 +85,8 @@ void main() {
     );
 
     test(
-      'when the recorded pid is alive but the running process is not our '
-      'postgres then foreign is returned.',
+      'when the recorded pid is alive but the running process is not our postgres '
+      'then foreign is returned.',
       () {
         // Use the current Dart process - it's alive but its identity does
         // not match the fake postmaster we claim, on any platform.
