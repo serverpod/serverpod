@@ -84,8 +84,8 @@ void main() {
       );
 
       test(
-        'when calling endpoint with Android User-Agent and params have special '
-        'characters then it URL encodes correctly.',
+        'when calling endpoint with Android User-Agent and params have special characters '
+        'then it URL encodes correctly.',
         () async {
           final response = await callRoute(
             route,
@@ -127,8 +127,8 @@ void main() {
       );
 
       test(
-        'when calling endpoint with Web User-Agent then it returns 303 with'
-        ' web redirection URI.',
+        'when calling endpoint with Web User-Agent '
+        'then it returns 303 with web redirection URI.',
         () async {
           final response = await callRoute(
             route,
@@ -163,8 +163,8 @@ void main() {
       );
 
       test(
-        'when calling endpoint with Web User-Agent and params have special '
-        'characters then it URL encodes correctly.',
+        'when calling endpoint with Web User-Agent and params have special characters '
+        'then it URL encodes correctly.',
         () async {
           final response = await callRoute(
             route,
