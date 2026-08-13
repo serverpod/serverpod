@@ -22,28 +22,29 @@ serverpod:
     # Build the Flutter web app and copy it to the server's web directory.
     # Windows uses xcopy since flutter's --output flag doesn't work there.
     # See: https://github.com/flutter/flutter/issues/157886
+    # On failure, clean and retry once to clear stale Flutter build caches.
     flutter_build:
       windows: >-
         (if exist web\app rmdir /S /Q web\app)
         & cd /D ..\projectname_flutter
-        && flutter clean
         # {{#website}}
-        && flutter build web --base-href /app/
+        & set ARGS=web --base-href /app/
         # {{/website}}
         # {{^website}}
-        && flutter build web --base-href /
+        & set ARGS=web --base-href /
         # {{/website}}
+        && (call flutter build %ARGS% || (flutter clean && call flutter build %ARGS%))
         && xcopy /E /I /Y build\web ..\projectname_server\web\app
       posix: |
         rm -rf ../projectname_server/web/app
         cd ../projectname_flutter
-        flutter clean
         # {{#website}}
-        flutter build web --base-href /app/ --output ../projectname_server/web/app
+        set -- web --base-href /app/ --output ../projectname_server/web/app
         # {{/website}}
         # {{^website}}
-        flutter build web --base-href / --output ../projectname_server/web/app
+        set -- web --base-href / --output ../projectname_server/web/app
         # {{/website}}
+        flutter build "$@" || { flutter clean && flutter build "$@"; }
 
   # Companion Flutter apps that `serverpod start` can launch (Ctrl+R), keyed
   # by a display alias. The default device is the web server, opening the
