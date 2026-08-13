@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:http/http.dart' as http;
 import 'package:serverpod_client/serverpod_client.dart';
 
@@ -57,6 +59,8 @@ class ServerpodClientRequestDelegateImpl
     } on http.ClientException catch (e) {
       var message = 'Unknown server response code. ($e)';
       throw ServerpodClientNetworkException(message);
+    } on TimeoutException {
+      throw const ServerpodClientException('Request timed out');
     }
   }
 
