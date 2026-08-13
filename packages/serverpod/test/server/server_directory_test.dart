@@ -57,8 +57,8 @@ webServer:
     });
 
     test(
-      'when Serverpod is constructed with serverDirectory pointing at the '
-      'temp dir, then it loads config from there even though cwd is unrelated',
+      'when Serverpod is constructed with serverDirectory pointing at the temp dir, '
+      'then it loads config from there even though cwd is unrelated',
       () async {
         // Pin run mode so SERVERPOD_RUN_MODE in the environment can't
         // redirect the load to a config file that doesn't exist.
@@ -77,8 +77,8 @@ webServer:
     );
 
     test(
-      'when Serverpod is constructed without serverDirectory while cwd points '
-      'at the temp dir, then it falls back to cwd and loads config from there',
+      'when Serverpod is constructed without serverDirectory while cwd points at the temp dir, '
+      'then it falls back to cwd and loads config from there',
       () async {
         // Point cwd at the laid-out server dir; the constructor should resolve
         // serverDirectory to it via the Directory.current fallback.

@@ -22,8 +22,8 @@ void main() {
 
   group('Given model with an explicit column field name', () {
     test(
-      'when building the select query then the explicit column name '
-      'is used in the sql',
+      'when building the select query '
+      'then the explicit column name is used in the sql',
       () {
         final table = TableWithColumnOverride();
         final tableName = table.tableName;

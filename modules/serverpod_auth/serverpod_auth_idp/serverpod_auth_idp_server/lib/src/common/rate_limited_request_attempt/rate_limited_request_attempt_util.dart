@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
 
@@ -95,6 +97,10 @@ class DatabaseRateLimitedRequestAttemptUtil<T>
     final rateLimitExceeded = await session.db.transaction((
       final transaction,
     ) async {
+      // Taken before the savepoint, so that rolling the savepoint back on a
+      // rate limited attempt does not release it early.
+      await _lockNonce(session, nonce: nonce, transaction: transaction);
+
       final savePoint = await transaction.createSavepoint();
       await recordAttempt(
         session,
@@ -126,6 +132,54 @@ class DatabaseRateLimitedRequestAttemptUtil<T>
     }
 
     return rateLimitExceeded;
+  }
+
+  /// Serialises concurrent [hasTooManyAttempts] checks for the same [nonce].
+  ///
+  /// Recording the attempt and counting the attempts are two statements, and
+  /// two PostgreSQL transactions running them at once cannot see each other's
+  /// uncommitted insert. Without a lock both would read the same count and both
+  /// would be let through, so a burst of parallel requests would spend the
+  /// budget once between them instead of once each.
+  ///
+  /// A transaction scoped advisory lock keyed on the nonce makes the pair
+  /// atomic against other checks for the same nonce while leaving different
+  /// nonces free to run in parallel. It is released when the transaction ends.
+  ///
+  /// No-op on SQLite, which permits only one write transaction at a time and
+  /// therefore already serialises these checks - the same reasoning that makes
+  /// `lockRows` a no-op on that adapter.
+  Future<void> _lockNonce(
+    final Session session, {
+    required final T nonce,
+    required final Transaction transaction,
+  }) async {
+    if (session.db.dialect != DatabaseDialect.postgres) return;
+
+    await session.db.unsafeQuery(
+      'SELECT pg_advisory_xact_lock(@key)',
+      parameters: QueryParameters.named({'key': _lockKey(nonce)}),
+      transaction: transaction,
+    );
+  }
+
+  /// A stable 64 bit key for [nonce] within this limiter's domain and source.
+  ///
+  /// FNV-1a. A collision would only make two unrelated nonces wait on each
+  /// other, never let an attempt through, so the hash carries no security
+  /// weight.
+  int _lockKey(final T nonce) {
+    const offsetBasis = 0xcbf29ce484222325;
+    const prime = 0x100000001b3;
+
+    var hash = offsetBasis;
+    for (final unit in utf8.encode(
+      '${config.domain}:${config.source}:${config.nonceToString(nonce)}',
+    )) {
+      hash = (hash ^ unit) * prime;
+    }
+
+    return hash;
   }
 
   @override

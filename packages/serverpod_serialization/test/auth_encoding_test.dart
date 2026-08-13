@@ -127,47 +127,55 @@ void main() {
       ...standardBearerAuthKeys,
       ...standardNonBasicAuthKeys,
     ]) {
-      test('Given an auth key in valid HTTP auth header format '
-          '"${_stripControlCharacters(key)}" ($descr) '
-          'when checking its validity '
-          'then it should correctly be recognized as valid', () {
-        expect(isValidAuthHeaderValue(key), isTrue);
-      });
+      test(
+        'Given an auth key in valid HTTP auth header format "${_stripControlCharacters(key)}" ($descr) '
+        'when checking its validity '
+        'then it should correctly be recognized as valid',
+        () {
+          expect(isValidAuthHeaderValue(key), isTrue);
+        },
+      );
     }
 
     for (var (key, descr) in [
       ...conventionalAuthKeys,
       ...arbitraryAuthKeys,
     ]) {
-      test('Given an auth key in invalid HTTP auth header format '
-          '"${_stripControlCharacters(key)}" ($descr) '
-          'when checking its validity '
-          'then it should correctly recognize it as invalid', () {
-        expect(isValidAuthHeaderValue(key), isFalse);
-      });
+      test(
+        'Given an auth key in invalid HTTP auth header format "${_stripControlCharacters(key)}" ($descr) '
+        'when checking its validity '
+        'then it should correctly recognize it as invalid',
+        () {
+          expect(isValidAuthHeaderValue(key), isFalse);
+        },
+      );
     }
   });
 
   group('Basic auth header wrapping checking:', () {
     for (var (key, descr) in standardBasicAuthKeys) {
-      test('Given an auth key in "Basic" HTTP auth header format '
-          '"${_stripControlCharacters(key)}" ($descr) '
-          'when checking if it is wrapped '
-          'then it should correctly recognize it as a wrapped auth key', () {
-        expect(isWrappedBasicAuthHeaderValue(key), isTrue);
-      });
+      test(
+        'Given an auth key in "Basic" HTTP auth header format "${_stripControlCharacters(key)}" ($descr) '
+        'when checking if it is wrapped '
+        'then it should correctly recognize it as a wrapped auth key',
+        () {
+          expect(isWrappedBasicAuthHeaderValue(key), isTrue);
+        },
+      );
     }
 
     for (var (key, descr) in invalidBasicAuthKeys) {
-      test('Given an auth key in "Basic" HTTP auth header with invalid format '
-          '"${_stripControlCharacters(key)}" ($descr) '
-          'when checking if it is wrapped '
-          'then it should reject it with the proper exception', () {
-        expect(
-          () => isWrappedBasicAuthHeaderValue(key),
-          throwsA(isA<AuthHeaderEncodingException>()),
-        );
-      });
+      test(
+        'Given an auth key in "Basic" HTTP auth header with invalid format "${_stripControlCharacters(key)}" ($descr) '
+        'when checking if it is wrapped '
+        'then it should reject it with the proper exception',
+        () {
+          expect(
+            () => isWrappedBasicAuthHeaderValue(key),
+            throwsA(isA<AuthHeaderEncodingException>()),
+          );
+        },
+      );
     }
 
     for (var (key, descr) in [
@@ -176,20 +184,21 @@ void main() {
       ...standardNonBasicAuthKeys,
       ...arbitraryAuthKeys,
     ]) {
-      test('Given an auth key not in "Basic" HTTP auth header format '
-          '"${_stripControlCharacters(key)}" ($descr) '
-          'when checking if it is wrapped '
-          'then it should correctly recognize it as not wrapped', () {
-        expect(isWrappedBasicAuthHeaderValue(key), isFalse);
-      });
+      test(
+        'Given an auth key not in "Basic" HTTP auth header format "${_stripControlCharacters(key)}" ($descr) '
+        'when checking if it is wrapped '
+        'then it should correctly recognize it as not wrapped',
+        () {
+          expect(isWrappedBasicAuthHeaderValue(key), isFalse);
+        },
+      );
     }
   });
 
   group('Bearer auth header wrapping checking:', () {
     for (var (key, descr) in standardBearerAuthKeys) {
       test(
-        'Given an auth key in "Bearer" HTTP auth header format '
-        '"${_stripControlCharacters(key)}" ($descr) '
+        'Given an auth key in "Bearer" HTTP auth header format "${_stripControlCharacters(key)}" ($descr) '
         'when checking if it is wrapped '
         'then it should correctly recognize it as a wrapped bearer auth key',
         () {
@@ -199,15 +208,17 @@ void main() {
     }
 
     for (var (key, descr) in invalidBearerAuthKeys) {
-      test('Given an auth key in "Bearer" HTTP auth header with invalid format '
-          '"${_stripControlCharacters(key)}" ($descr) '
-          'when checking if it is wrapped '
-          'then it should reject it with the proper exception', () {
-        expect(
-          () => isWrappedBearerAuthHeaderValue(key),
-          throwsA(isA<AuthHeaderEncodingException>()),
-        );
-      });
+      test(
+        'Given an auth key in "Bearer" HTTP auth header with invalid format "${_stripControlCharacters(key)}" ($descr) '
+        'when checking if it is wrapped '
+        'then it should reject it with the proper exception',
+        () {
+          expect(
+            () => isWrappedBearerAuthHeaderValue(key),
+            throwsA(isA<AuthHeaderEncodingException>()),
+          );
+        },
+      );
     }
 
     for (var (key, descr) in [
@@ -216,12 +227,14 @@ void main() {
       ...standardNonBasicAuthKeys,
       ...arbitraryAuthKeys,
     ]) {
-      test('Given an auth key not in "Bearer" HTTP auth header format '
-          '"${_stripControlCharacters(key)}" ($descr) '
-          'when checking if it is wrapped '
-          'then it should correctly recognize it as not wrapped', () {
-        expect(isWrappedBearerAuthHeaderValue(key), isFalse);
-      });
+      test(
+        'Given an auth key not in "Bearer" HTTP auth header format "${_stripControlCharacters(key)}" ($descr) '
+        'when checking if it is wrapped '
+        'then it should correctly recognize it as not wrapped',
+        () {
+          expect(isWrappedBearerAuthHeaderValue(key), isFalse);
+        },
+      );
     }
   });
 
