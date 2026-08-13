@@ -131,22 +131,17 @@ void main() async {
         var key = 'username-4711:password-4711';
         await incorrectAuthKeyManager.put(key);
 
-        var clientException;
-        try {
-          await client.echoRequest.echoAuthenticationKey();
-        } catch (e) {
-          clientException = e;
-        }
-
-        expect(
-          clientException,
-          isA<ServerpodClientBadRequest>()
-              .having((e) => e.statusCode, 'statusCode', equals(400))
-              .having(
-                (e) => e.message,
-                'message',
-                startsWith('Bad request: '),
-              ),
+        await expectLater(
+          () async => await client.echoRequest.echoAuthenticationKey(),
+          throwsA(
+            isA<ServerpodClientBadRequest>()
+                .having((e) => e.statusCode, 'statusCode', equals(400))
+                .having(
+                  (e) => e.message,
+                  'message',
+                  startsWith('Bad request: '),
+                ),
+          ),
         );
       },
     );
@@ -229,24 +224,19 @@ void main() async {
         var key = 'doubled-bearer jwt-token-4712';
         await authKeyManager.put(key);
 
-        var clientException;
-        try {
-          await client.echoRequest.echoHttpHeader('authorization');
-        } catch (e) {
-          clientException = e;
-        }
-
-        expect(
-          clientException,
-          isA<ServerpodClientBadRequest>()
-              .having((e) => e.statusCode, 'statusCode', equals(400))
-              .having(
-                (e) => e.message,
-                'message',
-                equals(
-                  'Bad request: Request has invalid "authorization" header',
+        await expectLater(
+          () async => await client.echoRequest.echoHttpHeader('authorization'),
+          throwsA(
+            isA<ServerpodClientBadRequest>()
+                .having((e) => e.statusCode, 'statusCode', equals(400))
+                .having(
+                  (e) => e.message,
+                  'message',
+                  equals(
+                    'Bad request: Request has invalid "authorization" header',
+                  ),
                 ),
-              ),
+          ),
         );
       },
     );
