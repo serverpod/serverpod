@@ -1,3 +1,13 @@
+## 3.4.12
+
+- fix: Fixes Google Sign-In accepting an access token minted for a different OAuth client that could be used to takeover an account.
+- fix: Fixes improper neutralization of string values in Serverpod's ORM that exposes SQL injection from user input.
+- fix: Includes session key salt in the session key hash.
+- fix: Makes the login rate limit bound guesses per user.
+- fix: Prevents rotating a refresh token for a blocked auth user.
+- chore: Allows overriding the default cache header for `FlutterRoute` from env vars.
+- chore: Polishes and adds dark theme to the default Flutter app.
+
 ## 3.4.11
 
 - fix: Adds missing export of `DeepCollectionEquality` for shared models.
@@ -361,7 +371,10 @@ Serverpod now supports polymorphism on models and endpoints. This allows you to 
 - chore: Marks `AuthenticationKeyManager` as deprecated in favour of the new `ClientAuthKeyProvider` interface.
 - chore: Bumps minimum Dart version to 3.8.0 and Flutter version to 3.32.0.
 
-### 2.9.3
+## 2.9.4
+- fix: Fixes improper neutralization of string values in Serverpod's ORM that exposes SQL injection from user input. Backported from 3.4.12.
+
+## 2.9.3
 - chore: Bumps `jose` dependency on legacy auth to fix `CVE-2026-34240`. Backported from 3.4.6.
 
 ## 2.9.2
