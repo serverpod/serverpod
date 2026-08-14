@@ -127,7 +127,11 @@ class GoogleIdpUtils {
     );
   }
 
-  /// Returns the account details for the given [accessToken].
+  /// Returns the account details named by the verified [idToken].
+  ///
+  /// When an [accessToken] is supplied, Google's userinfo endpoint is consulted
+  /// as well, but only to fill in profile fields the ID token does not carry.
+  /// The identity always comes from the ID token.
   Future<GoogleAccountDetails> fetchAccountDetails(
     final Session session, {
     required final String idToken,
@@ -158,7 +162,24 @@ class GoogleIdpUtils {
         session.logAndThrow('Failed to get user info from Google');
       }
 
-      data = jsonDecode(response.body);
+      final userInfo = jsonDecode(response.body);
+      if (userInfo is! Map<String, dynamic>) {
+        session.logAndThrow('Unexpected user info response from Google');
+      }
+
+      // Google's userinfo endpoint honours an access token minted by any OAuth
+      // client, so - unlike the ID token, whose `aud` is pinned to this
+      // application above - an access token proves nothing about who the caller
+      // is. Require it to describe the same account the ID token names, and let
+      // the verified claims win wherever the two disagree, so userinfo can only
+      // contribute profile fields the ID token did not carry.
+      if (userInfo['sub'] != data['sub']) {
+        session.logAndThrow(
+          'Google user info does not match the verified ID token',
+        );
+      }
+
+      data = {...userInfo, ...data};
     }
 
     GoogleAccountDetails details;
