@@ -73,14 +73,14 @@ jobs:
             flutter-version: "3.38.4"
             lint: lint_strict
           - name: latest
-            flutter-version: "3.44.4"
+            flutter-version: "3.47.0"
             lint: lint
           - name: downgrade, floor
             flutter-version: "3.38.4"
             downgrade: true
             lint: lint_loose
           - name: downgrade, latest
-            flutter-version: "3.44.4"
+            flutter-version: "3.47.0"
             downgrade: true
             lint: lint_loose
     steps:
@@ -278,7 +278,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.38.4", "3.44.4"]
+        flutter-version: ["3.38.4", "3.47.0"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: ./.github/actions/use-flutter
@@ -732,7 +732,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.44.4"]
+        flutter-version: ["3.38.4", "3.47.0"]
         os: [ubuntu-latest, windows-latest]
         include:
           - compiler: dart2js
@@ -740,7 +740,7 @@ jobs:
             platform: chrome
           - os: windows-latest
             platform: edge
-          - flutter-version: "3.44.4"
+          - flutter-version: "3.47.0"
             platform: chrome
             compiler: dart2wasm
 
@@ -764,7 +764,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        flutter-version: ["3.38.4", "3.44.4"]
+        flutter-version: ["3.38.4", "3.47.0"]
         os: [windows-latest, ubuntu-latest]
         path: ["packages/serverpod_flutter"]
     steps:
@@ -856,7 +856,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.44.4"]
+        flutter-version: ["3.38.4", "3.47.0"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: ./.github/actions/use-flutter
@@ -901,7 +901,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.38.4", "3.44.4"]
+        flutter-version: ["3.38.4", "3.47.0"]
         module:
           - server: tests/serverpod_auth_test/serverpod_auth_test_server
             client: tests/serverpod_auth_test/serverpod_auth_test_flutter
@@ -1029,7 +1029,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.44.4"]
+        flutter-version: ["3.38.4", "3.47.0"]
         os: [windows-latest, ubuntu-latest]
         shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
     steps:
@@ -1133,7 +1133,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.44.4"]
+        flutter-version: ["3.38.4", "3.47.0"]
         os: [ubuntu-latest]
         shard: [0, 1, 2]
         path: ["tests/serverpod_cli_e2e_test"]
