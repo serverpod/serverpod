@@ -112,10 +112,7 @@ class MainScreen extends StatelessComponent {
                                 children: [
                                   Expanded(
                                     child: state.useSideBySideLayout
-                                        ? _buildSideBySideLayout(
-                                            st,
-                                            constraints,
-                                          )
+                                        ? _buildSideBySideLayout(st)
                                         : _buildMergedColumn(st),
                                   ),
                                   if (state.activeOperations.isNotEmpty)
@@ -130,7 +127,11 @@ class MainScreen extends StatelessComponent {
                                     ),
                                   if (state.alert case final alert?) ...[
                                     const SizedBox(height: 1),
-                                    Divider(color: st.subtleDivider),
+                                    Divider(
+                                      color: st.subtleDivider,
+                                      indent: -1,
+                                      endIndent: -1,
+                                    ),
                                     Padding(
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 1,
@@ -173,41 +174,59 @@ class MainScreen extends StatelessComponent {
     );
   }
 
-  Component _buildSideBySideLayout(
-    ServerpodThemeData st,
-    BoxConstraints constraints,
-  ) {
+  Component _buildSideBySideLayout(ServerpodThemeData st) {
     final tabAreas = state.tabs.areas;
-    final tabAreasCount = tabAreas.length;
-    final dividerPositionFactor = (1 / tabAreasCount) * 0.99;
 
-    // Stack is used here to position the dividers correctly,
-    // removing small gaps between the area panes and dividers.
+    // The dividers reach one cell into the surrounding border rows and merge
+    // with them (┬/┴). When operations or an alert render below the panes,
+    // the bottom end stops at the pane edge instead - the row below is
+    // content, not the border.
+    final reachesBottomBorder =
+        state.activeOperations.isEmpty && state.alert == null;
+
+    // The dividers paint in an underlay so every pane paints after them:
+    // blending only joins what is already in the buffer, so rules and tab
+    // underlines reaching into a divider from either side need it painted
+    // first. Both layers are built by the same loop so their flex geometry
+    // stays in lockstep - the pane layer reserves each divider's column with
+    // an equal-width spacer.
+    final dividerLayer = <Component>[];
+    final paneLayer = <Component>[];
+    for (var i = 0; i < tabAreas.length; i++) {
+      if (i > 0) {
+        dividerLayer.add(
+          VerticalDivider(
+            color: st.subtleDivider,
+            width: 1,
+            thickness: 1,
+            indent: -1,
+            endIndent: reachesBottomBorder ? -1 : 0,
+          ),
+        );
+        paneLayer.add(const SizedBox(width: 1));
+      }
+      dividerLayer.add(
+        Expanded(flex: tabAreas[i].flex, child: const SizedBox.shrink()),
+      );
+      paneLayer.add(
+        Expanded(
+          flex: tabAreas[i].flex,
+          child: _buildAreaPane(st, tabAreas[i], i),
+        ),
+      );
+    }
+
     return Stack(
+      fit: StackFit.expand,
       children: [
         Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            for (var i = 0; i < tabAreasCount; i++)
-              Expanded(
-                flex: tabAreas[i].flex,
-                child: _buildAreaPane(st, tabAreas[i], i),
-              ),
-          ],
+          children: dividerLayer,
         ),
-        if (tabAreasCount > 1)
-          for (var i = 1; i <= tabAreasCount - 1; i++)
-            Positioned(
-              left: constraints.maxWidth * dividerPositionFactor * i,
-              child: SizedBox(
-                height: constraints.maxHeight,
-                child: VerticalDivider(
-                  color: st.subtleDivider,
-                  width: 1,
-                  thickness: 1,
-                ),
-              ),
-            ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: paneLayer,
+        ),
       ],
     );
   }
@@ -244,7 +263,7 @@ class MainScreen extends StatelessComponent {
                   ),
                 ),
               ),
-              const Divider(),
+              const Divider(indent: -1, endIndent: -1),
               Expanded(
                 child: Scrollbar(
                   controller: appPanelScrollController,
@@ -564,7 +583,7 @@ class MainScreen extends StatelessComponent {
             },
           ),
         ),
-        Divider(color: st.subtleDivider),
+        Divider(color: st.subtleDivider, indent: -1, endIndent: -1),
       ],
     );
   }
@@ -610,7 +629,7 @@ class MainScreen extends StatelessComponent {
             ),
           ),
         ),
-        Divider(color: st.subtleDivider),
+        Divider(color: st.subtleDivider, indent: -1, endIndent: -1),
         Expanded(
           child: _buildRawOutputView(state.rawLines, rawScrollController),
         ),
