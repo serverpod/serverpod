@@ -1,3 +1,14 @@
+## 4.0.0-beta.3
+
+- fix: Improves the `serverpod start` TUI borders and dividers with T-junction characters.
+- fix: Fixes Google Sign-In accepting an access token minted for a different OAuth client that could be used to takeover an account.
+- fix: Fixes improper neutralization of string values in Serverpod's ORM that exposes SQL injection from user input.
+- fix: Includes session key salt in the session key hash.
+- fix: Makes the login rate limit bound guesses per user.
+- fix: Prevents rotating a refresh token for a blocked auth user.
+- chore: Ensures project build runs on a clean folder to avoid compilation issues.
+- chore: Polishes and adds dark theme to the default Flutter app.
+
 ## 4.0.0-beta.2
 
 - feat: BREAKING. Changes default message central delivery to global with fallback to local.
