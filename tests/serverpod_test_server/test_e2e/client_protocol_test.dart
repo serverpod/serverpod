@@ -46,7 +46,7 @@ void main() {
   );
 
   test('when calling method with optional arg, '
-       'then echoes the value', () async {
+      'then echoes the value', () async {
     final result = await client.methodSignaturePermutations.echoOptionalArg(
       'OptionalArg',
     );

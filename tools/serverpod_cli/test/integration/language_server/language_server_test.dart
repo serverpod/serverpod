@@ -27,7 +27,7 @@ void main() {
   });
 
   group('Given an initialized language server for a project without model '
-        'files,', () {
+      'files,', () {
     late LanguageServerTestSession session;
     late String modelsDir;
 

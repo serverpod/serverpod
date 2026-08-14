@@ -8,7 +8,7 @@ void main() async {
   Session session = await IntegrationTestServer().session();
 
   group('Given declared ObjectWithVector class, '
-        'when analyzing database schema,', () {
+      'when analyzing database schema,', () {
     late List<IndexDefinition> indexes;
 
     setUpAll(() async {
@@ -102,7 +102,7 @@ void main() async {
   });
 
   group('Given declared ObjectWithHalfVector class, '
-        'when analyzing database schema,', () {
+      'when analyzing database schema,', () {
     late List<IndexDefinition> indexes;
 
     setUpAll(() async {
@@ -260,7 +260,7 @@ void main() async {
   );
 
   group('Given declared ObjectWithBit class, '
-        'when analyzing database schema,', () {
+      'when analyzing database schema,', () {
     late List<IndexDefinition> indexes;
 
     setUpAll(() async {

@@ -167,7 +167,7 @@ class ExampleEndpoint {
   );
 
   group('Given same endpoint class definition in multiple files, '
-        'when analyzed,', () {
+      'when analyzed,', () {
     late var collector = CodeGenerationCollector();
     late var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),

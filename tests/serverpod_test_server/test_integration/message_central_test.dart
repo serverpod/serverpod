@@ -26,8 +26,8 @@ void main() async {
   });
 
   test('Given no listeners on channel, '
-       'when a message is posted to channel, '
-       'then true is returned.', () async {
+      'when a message is posted to channel, '
+      'then true is returned.', () async {
     final result = await messageCentral.postMessage(
       channelName,
       SimpleData(num: 42),

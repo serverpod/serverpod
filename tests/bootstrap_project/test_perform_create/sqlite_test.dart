@@ -24,7 +24,7 @@ void main() {
     'Given a TemplateContext with sqlite enabled, '
     'when performCreate is called with the context and a fullstack template type,',
     () {
-      late final project = setUpPerformCreateInTempDir(
+      final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.fullstack,
           sqlite: true,
@@ -79,7 +79,7 @@ void main() {
     'Given a TemplateContext with sqlite disabled, '
     'when performCreate is called with the context and a fullstack template type,',
     () {
-      late final project = setUpPerformCreateInTempDir(
+      final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.fullstack,
           sqlite: false,
@@ -134,7 +134,7 @@ void main() {
     'Given a TemplateContext with sqlite enabled, '
     'when performCreate is called with the context and a module template type,',
     () {
-      late final project = setUpPerformCreateInTempDir(
+      final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.module,
           sqlite: true,
@@ -156,7 +156,7 @@ void main() {
     'Given a TemplateContext with sqlite disabled, '
     'when performCreate is called with the context and a module template type,',
     () {
-      late final project = setUpPerformCreateInTempDir(
+      final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.module,
           sqlite: false,

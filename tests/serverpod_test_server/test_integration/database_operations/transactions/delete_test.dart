@@ -119,81 +119,84 @@ void main() async {
     });
   });
 
-  group('Given inserting object and starting transaction that is cancelled,', () {
-    late UniqueData insertedData;
-    setUp(() async {
-      var data = UniqueData(number: 111, email: 'test@serverpod.dev');
+  group(
+    'Given inserting object and starting transaction that is cancelled,',
+    () {
+      late UniqueData insertedData;
+      setUp(() async {
+        var data = UniqueData(number: 111, email: 'test@serverpod.dev');
 
-      insertedData = await UniqueData.db.insertRow(
-        session,
-        data,
+        insertedData = await UniqueData.db.insertRow(
+          session,
+          data,
+        );
+      });
+
+      test(
+        'when calling `delete` before cancelling, '
+        'then does not delete the object.',
+        () async {
+          await session.db.transaction(
+            (transaction) async {
+              await UniqueData.db.delete(
+                session,
+                [insertedData],
+                transaction: transaction,
+              );
+
+              await transaction.cancel();
+            },
+          );
+
+          var fetchedData = await UniqueData.db.find(session);
+          expect(fetchedData, hasLength(1));
+          expect(fetchedData.first.number, 111);
+        },
       );
-    });
 
-    test(
-      'when calling `delete` before cancelling, '
-      'then does not delete the object.',
-      () async {
-        await session.db.transaction(
-          (transaction) async {
-            await UniqueData.db.delete(
-              session,
-              [insertedData],
-              transaction: transaction,
-            );
+      test(
+        'when calling `deleteWhere` before cancelling, '
+        'then does not delete the object.',
+        () async {
+          await session.db.transaction(
+            (transaction) async {
+              await UniqueData.db.deleteWhere(
+                session,
+                where: (_) => Constant.bool(true),
+                transaction: transaction,
+              );
 
-            await transaction.cancel();
-          },
-        );
+              await transaction.cancel();
+            },
+          );
 
-        var fetchedData = await UniqueData.db.find(session);
-        expect(fetchedData, hasLength(1));
-        expect(fetchedData.first.number, 111);
-      },
-    );
+          var fetchedData = await UniqueData.db.find(session);
+          expect(fetchedData, hasLength(1));
+          expect(fetchedData.first.number, 111);
+        },
+      );
 
-    test(
-      'when calling `deleteWhere` before cancelling, '
-      'then does not delete the object.',
-      () async {
-        await session.db.transaction(
-          (transaction) async {
-            await UniqueData.db.deleteWhere(
-              session,
-              where: (_) => Constant.bool(true),
-              transaction: transaction,
-            );
+      test(
+        'when calling `deleteRow` before cancelling, '
+        'then does not delete the object.',
+        () async {
+          await session.db.transaction(
+            (transaction) async {
+              await UniqueData.db.deleteRow(
+                session,
+                insertedData,
+                transaction: transaction,
+              );
 
-            await transaction.cancel();
-          },
-        );
+              await transaction.cancel();
+            },
+          );
 
-        var fetchedData = await UniqueData.db.find(session);
-        expect(fetchedData, hasLength(1));
-        expect(fetchedData.first.number, 111);
-      },
-    );
-
-    test(
-      'when calling `deleteRow` before cancelling, '
-      'then does not delete the object.',
-      () async {
-        await session.db.transaction(
-          (transaction) async {
-            await UniqueData.db.deleteRow(
-              session,
-              insertedData,
-              transaction: transaction,
-            );
-
-            await transaction.cancel();
-          },
-        );
-
-        var fetchedData = await UniqueData.db.find(session);
-        expect(fetchedData, hasLength(1));
-        expect(fetchedData.first.number, 111);
-      },
-    );
-  });
+          var fetchedData = await UniqueData.db.find(session);
+          expect(fetchedData, hasLength(1));
+          expect(fetchedData.first.number, 111);
+        },
+      );
+    },
+  );
 }

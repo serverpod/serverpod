@@ -1314,8 +1314,8 @@ database:
   });
 
   test('Given a SQLite database config, '
-       'when converting to string, '
-       'then toString does not mention postgres data path.', () {
+      'when converting to string, '
+      'then toString does not mention postgres data path.', () {
     var serverpodConfig = '''
 apiServer:
   port: 8080

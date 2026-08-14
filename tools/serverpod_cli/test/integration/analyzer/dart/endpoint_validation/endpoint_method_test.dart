@@ -408,7 +408,7 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group('Given an endpoint method with a stream return type, '
-        'when analyzed,', () {
+      'when analyzed,', () {
     late var collector = CodeGenerationCollector();
     late var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),

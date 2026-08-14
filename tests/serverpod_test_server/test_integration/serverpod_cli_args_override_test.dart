@@ -70,21 +70,24 @@ void main() {
         },
       );
 
-      test('when role is set to monolith in config and maintenance in CLI args, '
-           'then server uses maintenance role', () {
-        final config = ServerpodConfigBuilder()
-            .withRole(ServerpodRole.monolith)
-            .build();
+      test(
+        'when role is set to monolith in config and maintenance in CLI args, '
+        'then server uses maintenance role',
+        () {
+          final config = ServerpodConfigBuilder()
+              .withRole(ServerpodRole.monolith)
+              .build();
 
-        final serverpod = Serverpod(
-          ['--role', 'maintenance'],
-          Protocol(),
-          Endpoints(),
-          config: config,
-        );
+          final serverpod = Serverpod(
+            ['--role', 'maintenance'],
+            Protocol(),
+            Endpoints(),
+            config: config,
+          );
 
-        expect(serverpod.config.role, equals(ServerpodRole.maintenance));
-      });
+          expect(serverpod.config.role, equals(ServerpodRole.maintenance));
+        },
+      );
 
       test(
         'when applyMigrations is set to false in config and true in CLI args, '
@@ -181,7 +184,7 @@ void main() {
       );
 
       test('when invalid CLI args are provided with valid config, '
-           'then server uses config values', () {
+          'then server uses config values', () {
         final config = ServerpodConfigBuilder()
             .withRunMode('development')
             .withServerId('config-server')
@@ -206,7 +209,7 @@ void main() {
   );
 
   test('Given no config, no CLI args, and no env variable are provided, '
-       'then server defaults to development mode', () {
+      'then server defaults to development mode', () {
     final serverpod = Serverpod(
       [],
       Protocol(),

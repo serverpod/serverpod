@@ -24,7 +24,7 @@ void main() {
   );
 
   group('Given a class with an explicit column name, '
-        'when generating code,', () {
+      'when generating code,', () {
     const noColumnFieldName = 'name';
     const columnFieldName = 'userName';
     const columnName = 'user_name';
@@ -56,12 +56,15 @@ void main() {
       config: config,
     );
 
-    late var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late var compilationUnit = parseString(
+      content: codeMap[expectedFilePath]!,
+    ).unit;
 
-    late var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
-      compilationUnit,
-      name: testClassName,
-    );
+    late var maybeClassNamedExample =
+        CompilationUnitHelpers.tryFindClassDeclaration(
+          compilationUnit,
+          name: testClassName,
+        );
 
     group('then fromJson method should get', () {
       test('field name from jsonSerialization for field with column set', () {

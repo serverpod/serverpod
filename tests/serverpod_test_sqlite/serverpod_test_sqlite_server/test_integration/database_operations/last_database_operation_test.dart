@@ -25,12 +25,12 @@ void main() async {
       });
 
       test('when server starts, '
-           'then lastDatabaseOperationTime is set due to startup routines', () {
+          'then lastDatabaseOperationTime is set due to startup routines', () {
         expect(serverpod.lastDatabaseOperationTime, isNotNull);
       });
 
       test('when no database operations are performed, '
-           'then lastDatabaseOperationTime is not updated', () async {
+          'then lastDatabaseOperationTime is not updated', () async {
         final beforeOperation = serverpod.lastDatabaseOperationTime!;
 
         await Future.delayed(const Duration(seconds: 2));
@@ -38,7 +38,7 @@ void main() async {
       });
 
       test('when performing any database operation, '
-           'then lastDatabaseOperationTime is updated', () async {
+          'then lastDatabaseOperationTime is updated', () async {
         final beforeOperation = serverpod.lastDatabaseOperationTime!;
 
         await SimpleData.db.insertRow(session, SimpleData(num: 1));
@@ -48,7 +48,7 @@ void main() async {
       });
 
       test('when performing a database operation that fails, '
-           'then lastDatabaseOperationTime is still updated', () async {
+          'then lastDatabaseOperationTime is still updated', () async {
         final row = await SimpleData.db.insertRow(session, SimpleData(num: 1));
         final beforeOperation = serverpod.lastDatabaseOperationTime!;
 
@@ -62,7 +62,7 @@ void main() async {
       });
 
       test('when performing multiple database operations, '
-           'then lastDatabaseOperationTime is updated after each one', () async {
+          'then lastDatabaseOperationTime is updated after each one', () async {
         final beforeOperation = serverpod.lastDatabaseOperationTime!;
 
         await SimpleData.db.insertRow(session, SimpleData(num: 2));

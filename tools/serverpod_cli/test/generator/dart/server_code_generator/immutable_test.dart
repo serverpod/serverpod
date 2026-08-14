@@ -50,10 +50,11 @@ void main() {
         );
 
         group('has a hashCode method', () {
-          late var hashCodeGetter = CompilationUnitHelpers.tryFindMethodDeclaration(
-            baseClass!,
-            name: 'hashCode',
-          );
+          late var hashCodeGetter =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                baseClass!,
+                name: 'hashCode',
+              );
 
           test('declared.', () {
             expect(
@@ -86,10 +87,11 @@ void main() {
         }, skip: baseClass == null);
 
         group('has a == operator', () {
-          late var equalsOperator = CompilationUnitHelpers.tryFindMethodDeclaration(
-            baseClass!,
-            name: '==',
-          );
+          late var equalsOperator =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                baseClass!,
+                name: '==',
+              );
 
           test('declared.', () {
             expect(
@@ -190,10 +192,11 @@ void main() {
         );
 
         group('has a hashCode method', () {
-          late var hashCodeGetter = CompilationUnitHelpers.tryFindMethodDeclaration(
-            baseClass!,
-            name: 'hashCode',
-          );
+          late var hashCodeGetter =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                baseClass!,
+                name: 'hashCode',
+              );
 
           test('declared.', () {
             expect(
@@ -226,10 +229,11 @@ void main() {
         }, skip: baseClass == null);
 
         group('has a == operator', () {
-          late var equalsOperator = CompilationUnitHelpers.tryFindMethodDeclaration(
-            baseClass!,
-            name: '==',
-          );
+          late var equalsOperator =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                baseClass!,
+                name: '==',
+              );
 
           test('declared.', () {
             expect(

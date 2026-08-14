@@ -25,7 +25,7 @@ void main() {
     'Given a TemplateContext with postgres enabled, '
     'when performCreate is called with the context and a fullstack template type,',
     () {
-      late final project = setUpPerformCreateInTempDir(
+      final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.fullstack,
           postgres: true,
@@ -143,7 +143,7 @@ void main() {
     'Given a TemplateContext with postgres disabled, '
     'when performCreate is called with the context and a fullstack template type,',
     () {
-      late final project = setUpPerformCreateInTempDir(
+      final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.fullstack,
           postgres: false,
@@ -223,7 +223,7 @@ void main() {
     'Given a TemplateContext with postgres enabled, '
     'when performCreate is called with the context and a module template type,',
     () {
-      late final project = setUpPerformCreateInTempDir(
+      final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.module,
           postgres: true,
@@ -325,7 +325,7 @@ void main() {
     'Given a TemplateContext with postgres disabled, '
     'when performCreate is called with the context and a module template type,',
     () {
-      late final project = setUpPerformCreateInTempDir(
+      final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.module,
           postgres: false,

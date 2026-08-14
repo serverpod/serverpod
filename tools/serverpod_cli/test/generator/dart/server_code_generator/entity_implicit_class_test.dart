@@ -181,105 +181,108 @@ void main() {
     );
   });
 
-  group('Given a class with two fields that should persist but is scoped too none,', () {
-    late var models = [
-      ModelClassDefinitionBuilder()
-          .withClassName(testClassName)
-          .withFileName(testClassFileName)
-          .withTableName('example')
-          .withField(
-            FieldDefinitionBuilder()
-                .withName('_firstName')
-                .withType(TypeDefinition(className: 'String', nullable: true))
-                .withShouldPersist(true)
-                .withScope(ModelFieldScopeDefinition.none)
-                .build(),
-          )
-          .withField(
-            FieldDefinitionBuilder()
-                .withName('_age')
-                .withType(TypeDefinition.int.asNullable)
-                .withShouldPersist(true)
-                .withScope(ModelFieldScopeDefinition.none)
-                .build(),
-          )
-          .build(),
-    ];
+  group(
+    'Given a class with two fields that should persist but is scoped too none,',
+    () {
+      late var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName(testClassName)
+            .withFileName(testClassFileName)
+            .withTableName('example')
+            .withField(
+              FieldDefinitionBuilder()
+                  .withName('_firstName')
+                  .withType(TypeDefinition(className: 'String', nullable: true))
+                  .withShouldPersist(true)
+                  .withScope(ModelFieldScopeDefinition.none)
+                  .build(),
+            )
+            .withField(
+              FieldDefinitionBuilder()
+                  .withName('_age')
+                  .withType(TypeDefinition.int.asNullable)
+                  .withShouldPersist(true)
+                  .withScope(ModelFieldScopeDefinition.none)
+                  .build(),
+            )
+            .build(),
+      ];
 
-    late var codeMap = generator.generateSerializableModelsCode(
-      models: models,
-      config: config,
-    );
+      late var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
 
-    late var compilationUnit = parseCode(codeMap[expectedFilePath]!);
+      late var compilationUnit = parseCode(codeMap[expectedFilePath]!);
 
-    test(
-      'then the implicit class has the field name with type set to nullable String',
-      () {
-        expect(
-          compilationUnit,
-          containsClass('${testClassName}Implicit').withField(
-            '_firstName',
-            isNullable: true,
-            isOverride: true,
-            type: 'String',
-          ),
-        );
-      },
-    );
+      test(
+        'then the implicit class has the field name with type set to nullable String',
+        () {
+          expect(
+            compilationUnit,
+            containsClass('${testClassName}Implicit').withField(
+              '_firstName',
+              isNullable: true,
+              isOverride: true,
+              type: 'String',
+            ),
+          );
+        },
+      );
 
-    test(
-      'then the implicit class has the field age with type set to nullable int',
-      () {
-        expect(
-          compilationUnit,
-          containsClass('${testClassName}Implicit').withField(
-            '_age',
-            isNullable: true,
-            isOverride: true,
-            type: 'int',
-          ),
-        );
-      },
-    );
+      test(
+        'then the implicit class has the field age with type set to nullable int',
+        () {
+          expect(
+            compilationUnit,
+            containsClass('${testClassName}Implicit').withField(
+              '_age',
+              isNullable: true,
+              isOverride: true,
+              type: 'int',
+            ),
+          );
+        },
+      );
 
-    test(
-      'then the implicit class has a private constructor with params from the original class and the additional fields',
-      () {
-        expect(
-          compilationUnit,
-          containsClass(
-            '${testClassName}Implicit',
-          ).withNamedConstructor('_').withTypedParameter('id', 'int?'),
-        );
-        expect(
-          compilationUnit,
-          containsClass('${testClassName}Implicit')
-              .withNamedConstructor('_')
-              .withTypedParameter('\$_firstName', 'String?'),
-        );
-        expect(
-          compilationUnit,
-          containsClass(
-            '${testClassName}Implicit',
-          ).withNamedConstructor('_').withTypedParameter('\$_age', 'int?'),
-        );
-      },
-    );
+      test(
+        'then the implicit class has a private constructor with params from the original class and the additional fields',
+        () {
+          expect(
+            compilationUnit,
+            containsClass(
+              '${testClassName}Implicit',
+            ).withNamedConstructor('_').withTypedParameter('id', 'int?'),
+          );
+          expect(
+            compilationUnit,
+            containsClass('${testClassName}Implicit')
+                .withNamedConstructor('_')
+                .withTypedParameter('\$_firstName', 'String?'),
+          );
+          expect(
+            compilationUnit,
+            containsClass(
+              '${testClassName}Implicit',
+            ).withNamedConstructor('_').withTypedParameter('\$_age', 'int?'),
+          );
+        },
+      );
 
-    test(
-      'then the implicit class has private constructor with call to super with og parameters',
-      () {
-        expect(
-          compilationUnit,
-          containsClass('${testClassName}Implicit')
-              .withNamedConstructor('_')
-              .withSuperInitializer()
-              .withNamedArgument('id', 'id'),
-        );
-      },
-    );
-  });
+      test(
+        'then the implicit class has private constructor with call to super with og parameters',
+        () {
+          expect(
+            compilationUnit,
+            containsClass('${testClassName}Implicit')
+                .withNamedConstructor('_')
+                .withSuperInitializer()
+                .withNamedArgument('id', 'id'),
+          );
+        },
+      );
+    },
+  );
 
   group(
     'Given a child class with table that extends parent class with field and has hidden serializable field,',

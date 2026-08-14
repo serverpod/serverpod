@@ -179,7 +179,7 @@ void main() {
       });
 
       test('when listAccounts is called, '
-           'then empty list is returned', () async {
+          'then empty list is returned', () async {
         final accounts = await session.db.transaction(
           (final transaction) => fixture.emailIdp.utils.account.listAccounts(
             session,

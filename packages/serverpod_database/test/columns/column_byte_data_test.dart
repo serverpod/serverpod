@@ -9,7 +9,10 @@ void main() {
 
   group('Given a ColumnByteData,', () {
     var columnName = 'configuration';
-    late var column = ColumnByteData(columnName, Table<int?>(tableName: 'test'));
+    late var column = ColumnByteData(
+      columnName,
+      Table<int?>(tableName: 'test'),
+    );
 
     test(
       'when toString is called, '

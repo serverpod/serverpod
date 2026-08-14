@@ -425,10 +425,11 @@ void main() {
       ).unit;
 
       group('then ${grandparent.className}', () {
-        late var grandparentClass = CompilationUnitHelpers.tryFindClassDeclaration(
-          grandparentCompilationUnit,
-          name: grandparent.className,
-        );
+        late var grandparentClass =
+            CompilationUnitHelpers.tryFindClassDeclaration(
+              grandparentCompilationUnit,
+              name: grandparent.className,
+            );
 
         test('has a copyWith method', () {
           var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
@@ -491,10 +492,11 @@ void main() {
           name: child.className,
         );
 
-        late var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-          childClass!,
-          name: 'copyWith',
-        );
+        late var copyWithMethod =
+            CompilationUnitHelpers.tryFindMethodDeclaration(
+              childClass!,
+              name: 'copyWith',
+            );
 
         test('defined', () {
           expect(copyWithMethod, isNotNull);
@@ -610,15 +612,17 @@ void main() {
       });
 
       group('then ${grandparent.className} has a copyWith method', () {
-        late var grandparentClass = CompilationUnitHelpers.tryFindClassDeclaration(
-          grandparentCompilationUnit,
-          name: grandparent.className,
-        );
+        late var grandparentClass =
+            CompilationUnitHelpers.tryFindClassDeclaration(
+              grandparentCompilationUnit,
+              name: grandparent.className,
+            );
 
-        late var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-          grandparentClass!,
-          name: 'copyWith',
-        );
+        late var copyWithMethod =
+            CompilationUnitHelpers.tryFindMethodDeclaration(
+              grandparentClass!,
+              name: 'copyWith',
+            );
 
         test('defined', () {
           expect(copyWithMethod, isNotNull);
@@ -655,10 +659,11 @@ void main() {
           name: child.className,
         );
 
-        late var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-          childClass!,
-          name: 'copyWith',
-        );
+        late var copyWithMethod =
+            CompilationUnitHelpers.tryFindMethodDeclaration(
+              childClass!,
+              name: 'copyWith',
+            );
 
         group('has a copyWith method', () {
           test('defined', () {
@@ -694,7 +699,7 @@ void main() {
   );
 
   group('Given a hierarchy: sealed > sealed > normal, '
-        'when generating code,', () {
+      'when generating code,', () {
     late var grandparent = ModelClassDefinitionBuilder()
         .withClassName('ExampleGrandparent')
         .withFileName('example_grandparent')
@@ -864,7 +869,9 @@ void main() {
       late var parentCompilationUnit = parseString(
         content: codeMap[parentPath]!,
       ).unit;
-      late var childCompilationUnit = parseString(content: codeMap[childPath]!).unit;
+      late var childCompilationUnit = parseString(
+        content: codeMap[childPath]!,
+      ).unit;
 
       group('then ${grandparent.className}', () {
         test('has a part directive with ${parent.className} uri', () {
@@ -970,7 +977,9 @@ void main() {
       late var parentCompilationUnit = parseString(
         content: codeMap[parentPath]!,
       ).unit;
-      late var childCompilationUnit = parseString(content: codeMap[childPath]!).unit;
+      late var childCompilationUnit = parseString(
+        content: codeMap[childPath]!,
+      ).unit;
 
       group('then ${grandparent.className}', () {
         test('has a part directive with ${parent.className} uri', () {
@@ -1075,7 +1084,9 @@ void main() {
       late var parentCompilationUnit = parseString(
         content: codeMap[parentPath]!,
       ).unit;
-      late var childCompilationUnit = parseString(content: codeMap[childPath]!).unit;
+      late var childCompilationUnit = parseString(
+        content: codeMap[childPath]!,
+      ).unit;
 
       group('then ${grandparent.className}', () {
         test('has a part directive with ${parent.className} uri', () {

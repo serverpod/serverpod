@@ -189,7 +189,7 @@ void main() async {
   });
 
   group('Given models with relations, '
-        'when ordering on relation attributes,', () {
+      'when ordering on relation attributes,', () {
     late List<CitizenInt> citizensOrderedByCompanyName;
     setUpAll(() async {
       await _createTestDatabase(session);

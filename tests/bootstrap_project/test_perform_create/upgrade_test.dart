@@ -29,7 +29,7 @@ void main() {
     () {
       late CreateConfigStateResult result;
 
-      late final project = setUpPerformCreateInTempDir(
+      final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.fullstack,
           auth: false,
@@ -84,7 +84,7 @@ void main() {
     () {
       late CreateConfigStateResult result;
 
-      late final project = setUpPerformCreateInTempDir(
+      final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.fullstack,
           auth: true,

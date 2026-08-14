@@ -371,7 +371,7 @@ void main() {
       });
 
       group('when getting foreign field query alias, '
-            'then alias is truncated,', () {
+          'then alias is truncated,', () {
         test('then alias is truncated', () {
           expect(
             tableRelation?.foreignFieldQueryAlias,
@@ -405,10 +405,12 @@ void main() {
     late var addressTable = Table<int?>(
       tableName: 'address_address_address_address_address_address_address',
     );
-    late Table relationTable = TableRelationBuilder(companyTable).withRelationsFrom([
-      BuilderRelation(citizenTable, 'customer'),
-      BuilderRelation(addressTable, 'billing_address'),
-    ]).build();
+    late Table relationTable = TableRelationBuilder(companyTable)
+        .withRelationsFrom([
+          BuilderRelation(citizenTable, 'customer'),
+          BuilderRelation(addressTable, 'billing_address'),
+        ])
+        .build();
 
     var tableRelation = relationTable.tableRelation;
 

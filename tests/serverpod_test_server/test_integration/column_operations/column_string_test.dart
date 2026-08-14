@@ -149,7 +149,7 @@ void main() async {
     });
 
     test('when filtering using ilike, '
-         'then matching row is returned.', () async {
+        'then matching row is returned.', () async {
       var result = await Types.db.find(
         session,
         where: (t) => t.aString.ilike('On%'),
@@ -160,7 +160,7 @@ void main() async {
     });
 
     test('when filtering using ilike, '
-         'then matching row is returned.', () async {
+        'then matching row is returned.', () async {
       var result = await Types.db.find(
         session,
         where: (t) => t.aString.notIlike('On%'),

@@ -77,96 +77,99 @@ fields:
     );
   });
 
-  group('Given database with migrations that would be destructive if reverted,', () {
-    tearDownAll(() async {
-      await MigrationTestUtils.migrationTestCleanup(
-        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
-        serviceClient: serviceClient,
-      );
-    });
+  group(
+    'Given database with migrations that would be destructive if reverted,',
+    () {
+      tearDownAll(() async {
+        await MigrationTestUtils.migrationTestCleanup(
+          resetSql: 'DROP TABLE IF EXISTS migrated_table;',
+          serviceClient: serviceClient,
+        );
+      });
 
-    setUpAll(() async {
-      var firstMigrationProtocols = {
-        'migrated_table': '''
+      setUpAll(() async {
+        var firstMigrationProtocols = {
+          'migrated_table': '''
 class: MigratedTable
 table: migrated_table
 fields:
   anInt: int
 ''',
-      };
+        };
 
-      var secondMigrationProtocols = {
-        'migrated_table': '''
+        var secondMigrationProtocols = {
+          'migrated_table': '''
 class: MigratedTable
 table: migrated_table
 fields:
   anInt: int
   aString: String?
 ''',
-      };
+        };
 
-      await MigrationTestUtils.createInitialState(
-        migrationProtocols: [
-          firstMigrationProtocols,
-          secondMigrationProtocols,
-        ],
+        await MigrationTestUtils.createInitialState(
+          migrationProtocols: [
+            firstMigrationProtocols,
+            secondMigrationProtocols,
+          ],
+        );
+      });
+
+      tearDown(() {
+        MigrationTestUtils.removeRepairMigration();
+      });
+
+      test(
+        'when creating repair migration towards older migration, '
+        'then a migration is not created.',
+        () async {
+          var migrationVersions =
+              await MigrationTestUtils.loadMigrationRegistry();
+          var previousMigrationIndex = migrationVersions.length - 2;
+          var previousMigrationName = migrationVersions[previousMigrationIndex];
+
+          var exitCode = await MigrationTestUtils.runCreateRepairMigration(
+            targetVersion: previousMigrationName,
+          );
+
+          expect(
+            exitCode,
+            isNot(0),
+            reason: 'Should not create a repair migration but exit code was 0.',
+          );
+        },
       );
-    });
 
-    tearDown(() {
-      MigrationTestUtils.removeRepairMigration();
-    });
+      test(
+        'when creating repair migration towards older migration with --force, '
+        'then migration is created.',
+        () async {
+          var migrationVersions =
+              await MigrationTestUtils.loadMigrationRegistry();
+          var previousMigrationIndex = migrationVersions.length - 2;
+          var previousMigrationName = migrationVersions[previousMigrationIndex];
 
-    test(
-      'when creating repair migration towards older migration, '
-      'then a migration is not created.',
-      () async {
-        var migrationVersions =
-            await MigrationTestUtils.loadMigrationRegistry();
-        var previousMigrationIndex = migrationVersions.length - 2;
-        var previousMigrationName = migrationVersions[previousMigrationIndex];
+          var exitCode = await MigrationTestUtils.runCreateRepairMigration(
+            targetVersion: previousMigrationName,
+            force: true,
+          );
+          expect(
+            exitCode,
+            0,
+            reason: 'Should create a repair migration.',
+          );
 
-        var exitCode = await MigrationTestUtils.runCreateRepairMigration(
-          targetVersion: previousMigrationName,
-        );
-
-        expect(
-          exitCode,
-          isNot(0),
-          reason: 'Should not create a repair migration but exit code was 0.',
-        );
-      },
-    );
-
-    test(
-      'when creating repair migration towards older migration with --force, '
-      'then migration is created.',
-      () async {
-        var migrationVersions =
-            await MigrationTestUtils.loadMigrationRegistry();
-        var previousMigrationIndex = migrationVersions.length - 2;
-        var previousMigrationName = migrationVersions[previousMigrationIndex];
-
-        var exitCode = await MigrationTestUtils.runCreateRepairMigration(
-          targetVersion: previousMigrationName,
-          force: true,
-        );
-        expect(
-          exitCode,
-          0,
-          reason: 'Should create a repair migration.',
-        );
-
-        var maybeRepairMigration =
-            MigrationTestUtils.tryLoadRepairMigrationFile();
-        expect(
-          maybeRepairMigration,
-          isNotNull,
-          reason: 'Should find repair migration on disk.',
-        );
-      },
-    );
-  });
+          var maybeRepairMigration =
+              MigrationTestUtils.tryLoadRepairMigrationFile();
+          expect(
+            maybeRepairMigration,
+            isNotNull,
+            reason: 'Should find repair migration on disk.',
+          );
+        },
+      );
+    },
+  );
 
   group(
     'Given database with migrations that are non destructive if reverted,',

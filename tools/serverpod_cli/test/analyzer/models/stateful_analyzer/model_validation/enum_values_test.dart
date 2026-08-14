@@ -395,7 +395,7 @@ void main() {
   );
 
   test('Given a value with snake_case value, '
-       'then no errors are generated.', () {
+      'then no errors are generated.', () {
     var modelSources = [
       ModelSourceBuilder().withYaml(
         '''
@@ -421,7 +421,7 @@ void main() {
   });
 
   test('Given a value with PascalCase value, '
-       'then no errors are generated.', () {
+      'then no errors are generated.', () {
     var modelSources = [
       ModelSourceBuilder().withYaml(
         '''

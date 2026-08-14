@@ -487,7 +487,7 @@ void main() {
   );
 
   group('Given a primitive object is not in the cache and a cache miss handler '
-        'is specified to return an object,', () {
+      'is specified to return an object,', () {
     const cacheKey = 'testKey';
     int? retrieved;
     setUp(() async {
@@ -498,7 +498,7 @@ void main() {
     });
 
     test('when the object is retrieved, '
-         'then the cache miss handler returns the correct object', () {
+        'then the cache miss handler returns the correct object', () {
       expect(retrieved, equals(1337));
     });
 
@@ -526,7 +526,7 @@ void main() {
       });
 
       test('when the object is retrieved, '
-           'then the cache miss handler returns the correct object', () {
+          'then the cache miss handler returns the correct object', () {
         expect(retrieved?.length, equals(1));
         expect(retrieved?[0].num, equals(1337));
       });

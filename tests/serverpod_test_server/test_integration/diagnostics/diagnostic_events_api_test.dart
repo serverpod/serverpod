@@ -16,7 +16,7 @@ void main() {
     ),
     (sessionBuilder, endpoints) {
       test('when calling an endpoint method that submits an exception event, '
-           'then the diagnostic event handler gets called', () async {
+          'then the diagnostic event handler gets called', () async {
         final result = await endpoints.diagnosticEventTest.submitExceptionEvent(
           sessionBuilder,
         );

@@ -85,7 +85,7 @@ void main() {
     );
 
     test('when requesting a JSON widget route, '
-         'then the content-type is application/json', () async {
+        'then the content-type is application/json', () async {
       var response = await http.get(
         Uri.parse('${serverpod.webUrl}json-route'),
       );
@@ -107,7 +107,7 @@ void main() {
     );
 
     test('when requesting a JSON widget route, '
-         'then both content-type and cache headers are set correctly', () async {
+        'then both content-type and cache headers are set correctly', () async {
       var response = await http.get(
         Uri.parse('${serverpod.webUrl}json-route'),
       );
@@ -139,7 +139,7 @@ void main() {
     );
 
     test('when requesting a redirect widget route, '
-         'then the location header is set correctly', () async {
+        'then the location header is set correctly', () async {
       var client = http.Client();
       var request = http.Request(
         'GET',

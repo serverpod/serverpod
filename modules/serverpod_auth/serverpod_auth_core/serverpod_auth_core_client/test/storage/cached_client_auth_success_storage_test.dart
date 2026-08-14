@@ -80,7 +80,9 @@ void main() {
     );
 
     group('when calling set with a new AuthSuccess data,', () {
-      late final authSuccessNew = _authSuccess.copyWith(token: 'different-token');
+      late final authSuccessNew = _authSuccess.copyWith(
+        token: 'different-token',
+      );
 
       setUp(() async {
         await storage.set(authSuccessNew);

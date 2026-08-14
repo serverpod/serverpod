@@ -7,53 +7,71 @@ import '../../test_util/builders/database/database_definition_builder.dart';
 import '../../test_util/builders/database/table_definition_builder.dart';
 
 void main() {
-  group('Given table with int column as source and bigint column as target,', () {
-    late var sourceDefinition = _singleColumnDatabaseDefinition(ColumnType.integer);
-    late var targetDefinition = _singleColumnDatabaseDefinition(ColumnType.bigint);
+  group(
+    'Given table with int column as source and bigint column as target,',
+    () {
+      late var sourceDefinition = _singleColumnDatabaseDefinition(
+        ColumnType.integer,
+      );
+      late var targetDefinition = _singleColumnDatabaseDefinition(
+        ColumnType.bigint,
+      );
 
-    late var migration = generateDatabaseMigration(
-      databaseSource: sourceDefinition,
-      databaseTarget: targetDefinition,
-    );
+      late var migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
 
-    // We leave it to the user to make the column type migration.
-    // The reason is that just altering the column type can be a very expensive
-    // operation, especially if the table is large.
-    test('then no migration actions are created.', () {
-      expect(migration.actions, hasLength(0));
-    });
+      // We leave it to the user to make the column type migration.
+      // The reason is that just altering the column type can be a very expensive
+      // operation, especially if the table is large.
+      test('then no migration actions are created.', () {
+        expect(migration.actions, hasLength(0));
+      });
 
-    test('then no warnings are created.', () {
-      expect(migration.warnings, hasLength(0));
-    });
-  });
+      test('then no warnings are created.', () {
+        expect(migration.warnings, hasLength(0));
+      });
+    },
+  );
 
-  group('Given table with bigint column as source and int column as target,', () {
-    late var sourceDefinition = _singleColumnDatabaseDefinition(ColumnType.bigint);
-    late var targetDefinition = _singleColumnDatabaseDefinition(ColumnType.integer);
+  group(
+    'Given table with bigint column as source and int column as target,',
+    () {
+      late var sourceDefinition = _singleColumnDatabaseDefinition(
+        ColumnType.bigint,
+      );
+      late var targetDefinition = _singleColumnDatabaseDefinition(
+        ColumnType.integer,
+      );
 
-    late var migration = generateDatabaseMigration(
-      databaseSource: sourceDefinition,
-      databaseTarget: targetDefinition,
-    );
+      late var migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
 
-    // We leave it to the user to make the column type migration.
-    // The reason is that just altering the column type can be a very expensive
-    // operation, especially if the table is large.
-    test('then no migration actions are created.', () {
-      expect(migration.actions, hasLength(0));
-    });
+      // We leave it to the user to make the column type migration.
+      // The reason is that just altering the column type can be a very expensive
+      // operation, especially if the table is large.
+      test('then no migration actions are created.', () {
+        expect(migration.actions, hasLength(0));
+      });
 
-    test('then no warnings are created.', () {
-      expect(migration.warnings, hasLength(0));
-    });
-  });
+      test('then no warnings are created.', () {
+        expect(migration.warnings, hasLength(0));
+      });
+    },
+  );
 
   group(
     'Given table with json column as source and jsonb column as target,',
     () {
-      late var sourceDefinition = _singleColumnDatabaseDefinition(ColumnType.json);
-      late var targetDefinition = _singleColumnDatabaseDefinition(ColumnType.jsonb);
+      late var sourceDefinition = _singleColumnDatabaseDefinition(
+        ColumnType.json,
+      );
+      late var targetDefinition = _singleColumnDatabaseDefinition(
+        ColumnType.jsonb,
+      );
 
       late var migration = generateDatabaseMigration(
         databaseSource: sourceDefinition,
@@ -83,8 +101,12 @@ void main() {
   group(
     'Given table with jsonb column as source and json column as target,',
     () {
-      late var sourceDefinition = _singleColumnDatabaseDefinition(ColumnType.jsonb);
-      late var targetDefinition = _singleColumnDatabaseDefinition(ColumnType.json);
+      late var sourceDefinition = _singleColumnDatabaseDefinition(
+        ColumnType.jsonb,
+      );
+      late var targetDefinition = _singleColumnDatabaseDefinition(
+        ColumnType.json,
+      );
 
       late var migration = generateDatabaseMigration(
         databaseSource: sourceDefinition,
@@ -114,7 +136,9 @@ void main() {
   group(
     'Given table with non-nullable json column as source and nullable jsonb column as target,',
     () {
-      late var sourceDefinition = _singleColumnDatabaseDefinition(ColumnType.json);
+      late var sourceDefinition = _singleColumnDatabaseDefinition(
+        ColumnType.json,
+      );
       var sourceTable = sourceDefinition.tables.first;
       late var sourceColumn = sourceTable.columns.firstWhere(
         (c) => c.name == 'test_column',

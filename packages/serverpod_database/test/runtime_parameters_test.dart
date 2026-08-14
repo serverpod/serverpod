@@ -355,7 +355,7 @@ void main() {
 
     group('with constructor validation,', () {
       test('when iterative scan is strict, '
-           'then assertion error is thrown.', () {
+          'then assertion error is thrown.', () {
         expect(
           () => IvfflatIndexQueryOptions(iterativeScan: IterativeScan.strict),
           throwsA(isA<AssertionError>()),
@@ -375,7 +375,7 @@ void main() {
       );
 
       test('when iterative scan is off, '
-           'then no assertion error is thrown.', () {
+          'then no assertion error is thrown.', () {
         expect(
           () =>
               const IvfflatIndexQueryOptions(iterativeScan: IterativeScan.off),
@@ -780,7 +780,7 @@ void main() {
     });
 
     test('when buildCheckValues is called, '
-         'then SELECT statement is correct.', () {
+        'then SELECT statement is correct.', () {
       var params = MapRuntimeParameters({
         'a': 1,
         'b': 'x',

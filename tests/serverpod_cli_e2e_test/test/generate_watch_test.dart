@@ -19,7 +19,7 @@ const generateWatchCompletionKeywords = [
 
 void main() async {
   group('Given a model file that is changed, '
-        'when generate watch is active,', () {
+      'when generate watch is active,', () {
     late var projectName = createRandomProjectName();
     var (serverDir, _, clientDir) = createProjectFolderPaths(projectName);
 
@@ -322,7 +322,7 @@ fields:
   );
 
   group('Given an endpoint file that is changed, '
-        'when generate watch is active,', () {
+      'when generate watch is active,', () {
     late var projectName = createRandomProjectName();
     var (serverDir, _, _) = createProjectFolderPaths(projectName);
 
@@ -796,7 +796,7 @@ fields:
   );
 
   group('Given a generated file that is changed, '
-        'when generate watch is active,', () {
+      'when generate watch is active,', () {
     late var projectName = createRandomProjectName();
     var (serverDir, _, clientDir) = createProjectFolderPaths(projectName);
 

@@ -105,13 +105,13 @@ void main() {
     });
 
     test('when converted to EWKT, '
-         'then it has an empty GEOMETRYCOLLECTION.', () {
+        'then it has an empty GEOMETRYCOLLECTION.', () {
       expect(collection.toEwkt(), 'SRID=4326;GEOMETRYCOLLECTION()');
     });
   });
 
   group('Given two GeographyGeometryCollections with the same geometries and '
-        'SRID,', () {
+      'SRID,', () {
     const a = GeographyGeometryCollection(geometries: [london, paris]);
     const b = GeographyGeometryCollection(geometries: [london, paris]);
 

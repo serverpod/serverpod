@@ -121,49 +121,54 @@ void main() {
     );
   });
 
-  group('Given compilation unit with class and unnamed factory constructor,', () {
-    late final compilationUnit = parseCode(
-      '''
+  group(
+    'Given compilation unit with class and unnamed factory constructor,',
+    () {
+      late final compilationUnit = parseCode(
+        '''
       class User {
         factory User() => User();
       }
     ''',
-    );
+      );
 
-    test(
-      'when matching class and unnamed factory constructor, then test passes',
-      () {
-        expect(
-          compilationUnit,
-          containsClass('User').withUnnamedConstructor(isFactory: true),
-        );
-      },
-    );
+      test(
+        'when matching class and unnamed factory constructor, then test passes',
+        () {
+          expect(
+            compilationUnit,
+            containsClass('User').withUnnamedConstructor(isFactory: true),
+          );
+        },
+      );
 
-    test(
-      'when negate matching class and unnamed non-factory constructor, '
-      'then test passes',
-      () {
-        expect(
-          compilationUnit,
-          isNot(containsClass('User').withUnnamedConstructor(isFactory: false)),
-        );
-      },
-    );
+      test(
+        'when negate matching class and unnamed non-factory constructor, '
+        'then test passes',
+        () {
+          expect(
+            compilationUnit,
+            isNot(
+              containsClass('User').withUnnamedConstructor(isFactory: false),
+            ),
+          );
+        },
+      );
 
-    test(
-      'when negate matching class and named factory constructor, '
-      'then test passes',
-      () {
-        expect(
-          compilationUnit,
-          isNot(
-            containsClass('User').withNamedConstructor('_', isFactory: true),
-          ),
-        );
-      },
-    );
-  });
+      test(
+        'when negate matching class and named factory constructor, '
+        'then test passes',
+        () {
+          expect(
+            compilationUnit,
+            isNot(
+              containsClass('User').withNamedConstructor('_', isFactory: true),
+            ),
+          );
+        },
+      );
+    },
+  );
 
   group('Given compilation unit with class and named factory constructor,', () {
     late final compilationUnit = parseCode(

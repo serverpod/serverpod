@@ -37,7 +37,9 @@ void main() {
       config: config,
     );
 
-    late var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late var compilationUnit = parseString(
+      content: codeMap[expectedFilePath]!,
+    ).unit;
 
     late var baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
@@ -59,7 +61,7 @@ void main() {
     late var repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: repositoryClassName,
-    );
+    )!;
 
     test('then the class name $repositoryClassName is generated', () {
       expect(
@@ -72,7 +74,7 @@ void main() {
     group('then the $repositoryClassName class', () {
       group('has a find method', () {
         late var findMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-          repositoryClass!,
+          repositoryClass,
           name: 'find',
         );
         test('defined', () {
@@ -163,10 +165,11 @@ void main() {
       });
 
       group('has a findFirstRow method', () {
-        late var findRowMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-          repositoryClass!,
-          name: 'findFirstRow',
-        );
+        late var findRowMethod =
+            CompilationUnitHelpers.tryFindMethodDeclaration(
+              repositoryClass,
+              name: 'findFirstRow',
+            );
         test('defined', () {
           expect(
             CompilationUnitHelpers.hasMethodDeclaration(
@@ -251,10 +254,11 @@ void main() {
       });
 
       group('has a findById method', () {
-        late var findByIdMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-          repositoryClass!,
-          name: 'findById',
-        );
+        late var findByIdMethod =
+            CompilationUnitHelpers.tryFindMethodDeclaration(
+              repositoryClass,
+              name: 'findById',
+            );
         test('defined', () {
           expect(
             CompilationUnitHelpers.hasMethodDeclaration(
@@ -314,10 +318,11 @@ void main() {
       });
 
       group('has a lockRows method', () {
-        late var lockRowsMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-          repositoryClass!,
-          name: 'lockRows',
-        );
+        late var lockRowsMethod =
+            CompilationUnitHelpers.tryFindMethodDeclaration(
+              repositoryClass,
+              name: 'lockRows',
+            );
 
         test('defined', () {
           expect(
@@ -381,7 +386,7 @@ void main() {
 
       group('has an insert method', () {
         late var insertMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-          repositoryClass!,
+          repositoryClass,
           name: 'insert',
         );
         test('defined', () {
@@ -438,10 +443,11 @@ void main() {
       });
 
       group('has an insert row method', () {
-        late var insertRowMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-          repositoryClass!,
-          name: 'insertRow',
-        );
+        late var insertRowMethod =
+            CompilationUnitHelpers.tryFindMethodDeclaration(
+              repositoryClass,
+              name: 'insertRow',
+            );
         test('defined', () {
           expect(
             CompilationUnitHelpers.hasMethodDeclaration(
@@ -495,7 +501,7 @@ void main() {
 
       group('has an update method', () {
         late var updateMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-          repositoryClass!,
+          repositoryClass,
           name: 'update',
         );
         test('defined', () {
@@ -545,10 +551,11 @@ void main() {
       });
 
       group('has an update row method', () {
-        late var updateRowMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-          repositoryClass!,
-          name: 'updateRow',
-        );
+        late var updateRowMethod =
+            CompilationUnitHelpers.tryFindMethodDeclaration(
+              repositoryClass,
+              name: 'updateRow',
+            );
         test('defined', () {
           expect(
             CompilationUnitHelpers.hasMethodDeclaration(
@@ -595,7 +602,7 @@ void main() {
 
       group('has an delete method', () {
         late var deleteMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-          repositoryClass!,
+          repositoryClass,
           name: 'delete',
         );
         test('defined', () {
@@ -659,10 +666,11 @@ void main() {
       });
 
       group('has an delete row method', () {
-        late var deleteRowMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-          repositoryClass!,
-          name: 'deleteRow',
-        );
+        late var deleteRowMethod =
+            CompilationUnitHelpers.tryFindMethodDeclaration(
+              repositoryClass,
+              name: 'deleteRow',
+            );
         test('defined', () {
           expect(
             CompilationUnitHelpers.hasMethodDeclaration(
@@ -708,10 +716,11 @@ void main() {
       });
 
       group('has an delete where method', () {
-        late var deleteWhereMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-          repositoryClass!,
-          name: 'deleteWhere',
-        );
+        late var deleteWhereMethod =
+            CompilationUnitHelpers.tryFindMethodDeclaration(
+              repositoryClass,
+              name: 'deleteWhere',
+            );
         test('defined', () {
           expect(
             CompilationUnitHelpers.hasMethodDeclaration(
@@ -780,7 +789,7 @@ void main() {
 
       group('has an count method', () {
         late var countMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-          repositoryClass!,
+          repositoryClass,
           name: 'count',
         );
         test('defined', () {
@@ -836,10 +845,11 @@ void main() {
       });
 
       group('has an updateById method', () {
-        late var updateByIdMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-          repositoryClass!,
-          name: 'updateById',
-        );
+        late var updateByIdMethod =
+            CompilationUnitHelpers.tryFindMethodDeclaration(
+              repositoryClass,
+              name: 'updateById',
+            );
         test('defined', () {
           expect(
             CompilationUnitHelpers.hasMethodDeclaration(
@@ -898,10 +908,11 @@ void main() {
       });
 
       group('has an updateWhere method', () {
-        late var updateWhereMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-          repositoryClass!,
-          name: 'updateWhere',
-        );
+        late var updateWhereMethod =
+            CompilationUnitHelpers.tryFindMethodDeclaration(
+              repositoryClass,
+              name: 'updateWhere',
+            );
         test('defined', () {
           expect(
             CompilationUnitHelpers.hasMethodDeclaration(
@@ -995,7 +1006,7 @@ void main() {
           );
         });
       });
-    }, skip: repositoryClass == null);
+    });
   });
 
   test(

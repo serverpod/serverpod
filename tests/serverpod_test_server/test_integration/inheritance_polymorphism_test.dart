@@ -13,7 +13,7 @@ void main() async {
     late PolymorphicParent returned;
 
     group('Given a PolymorphicParent object, '
-          'when sent through polymorphicRoundtrip,', () {
+        'when sent through polymorphicRoundtrip,', () {
       late final original = PolymorphicParent(parent: 'This is a parent');
 
       setUpAll(() async {
@@ -38,7 +38,7 @@ void main() async {
     });
 
     group('Given a PolymorphicChild object, '
-          'when sent through polymorphicRoundtrip,', () {
+        'when sent through polymorphicRoundtrip,', () {
       late final original = PolymorphicChild(
         parent: 'This is a parent',
         child: 'This is a child',
@@ -66,7 +66,7 @@ void main() async {
     });
 
     group('Given a PolymorphicGrandChild object, '
-          'when sent through polymorphicRoundtrip,', () {
+        'when sent through polymorphicRoundtrip,', () {
       late final original = PolymorphicGrandChild(
         parent: 'This is a parent',
         child: 'This is a child',
@@ -95,7 +95,7 @@ void main() async {
     });
 
     group('Given a PolymorphicChildContainer object, '
-          'when sent through polymorphicContainerRoundtrip,', () {
+        'when sent through polymorphicContainerRoundtrip,', () {
       late var original = PolymorphicChildContainer(
         child: PolymorphicGrandChild(
           parent: 'PolymorphicParent 1',
@@ -171,7 +171,7 @@ void main() async {
     });
 
     group('Given a ModulePolymorphicChildContainer object, '
-          'when sent through polymorphicContainerRoundtrip,', () {
+        'when sent through polymorphicContainerRoundtrip,', () {
       late var original = ModulePolymorphicChildContainer(
         moduleObject: ModulePolymorphicGrandChild(
           parent: 'ModulePolymorphicParent 1',
@@ -239,7 +239,7 @@ void main() async {
     // NOTE: This already worked before the polymorphism fix due to the usage
     // of `deserializeByClassName` on the streaming endpoint.
     group('Given a PolymorphicChild object, '
-          'when sent through polymorphicStreamingRoundtrip,', () {
+        'when sent through polymorphicStreamingRoundtrip,', () {
       late final original = PolymorphicChild(
         parent: 'This is a parent',
         child: 'This is a child',

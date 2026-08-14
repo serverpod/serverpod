@@ -77,7 +77,7 @@ void main() {
       });
 
       test('when starting the server, '
-           'then it does not print startup lifecycle messages', () async {
+          'then it does not print startup lifecycle messages', () async {
         await _waitForServerToStart(timeout: startupTimeout);
         await Future.delayed(signalDelay);
 
@@ -90,7 +90,7 @@ void main() {
       });
 
       test('when shutting down the server, '
-           'then it does not print lifecycle messages', () async {
+          'then it does not print lifecycle messages', () async {
         await _waitForServerToStart(timeout: startupTimeout);
         await Future.delayed(signalDelay);
         process.kill(ProcessSignal.sigint);
@@ -137,7 +137,7 @@ void main() {
       });
 
       test('when starting the server, '
-           'then it prints lifecycle messages', () async {
+          'then it prints lifecycle messages', () async {
         await _waitForServerToStart(timeout: startupTimeout);
         await Future.delayed(signalDelay);
 
@@ -150,7 +150,7 @@ void main() {
       });
 
       test('when shutting down the server, '
-           'then it prints lifecycle messages', () async {
+          'then it prints lifecycle messages', () async {
         await _waitForServerToStart(timeout: startupTimeout);
         await Future.delayed(signalDelay);
         process.kill(ProcessSignal.sigint);

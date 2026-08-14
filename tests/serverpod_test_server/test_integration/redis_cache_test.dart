@@ -24,8 +24,8 @@ void main() {
   tearDown(() async => await cache.clear());
 
   test('Given an object is stored in the cache, '
-       'when it is retrieved, '
-       'then the correct object is returned', () async {
+      'when it is retrieved, '
+      'then the correct object is returned', () async {
     var entry = SimpleData(num: 0);
 
     await cache.put('entry', entry);
@@ -186,8 +186,8 @@ void main() {
   );
 
   test('Given an object is stored in the cache with a lifetime, '
-       'when the lifetime expires, '
-       'then the object is no longer retrievable', () async {
+      'when the lifetime expires, '
+      'then the object is no longer retrievable', () async {
     var entry = SimpleData(num: 0);
 
     await cache.put(
@@ -204,8 +204,8 @@ void main() {
   });
 
   test('Given multiple objects are stored with the same key, '
-       'when a new object is added, '
-       'then the last object overwrites the previous one', () async {
+      'when a new object is added, '
+      'then the last object overwrites the previous one', () async {
     var entryA = SimpleData(num: 0);
     var entryB = SimpleData(num: 1);
 
@@ -217,8 +217,8 @@ void main() {
   });
 
   test('Given a key is invalidated, '
-       'when the key is retrieved, '
-       'then the object is no longer retrievable', () async {
+      'when the key is retrieved, '
+      'then the object is no longer retrievable', () async {
     await cache.put('entry:1337', SimpleData(num: 1337));
 
     await cache.invalidateKey('entry:1337');
@@ -227,14 +227,14 @@ void main() {
   });
 
   test('Given an object is not in the cache, '
-       'when it is retrieved, '
-       'then null is returned', () async {
+      'when it is retrieved, '
+      'then null is returned', () async {
     var retrieved = await cache.get<SimpleData>('invalidEntry');
     expect(retrieved, isNull);
   });
 
   group('Given an object is not in the cache and a cache miss handler '
-        'is specified to return an object,', () {
+      'is specified to return an object,', () {
     const cacheKey = 'testKey';
     SimpleData? retrieved;
     setUp(() async {
@@ -245,7 +245,7 @@ void main() {
     });
 
     test('when the object is retrieved, '
-         'then the cache miss handler returns the correct object', () {
+        'then the cache miss handler returns the correct object', () {
       expect(retrieved?.num, equals(1337));
     });
 
@@ -260,7 +260,7 @@ void main() {
   });
 
   group('Given a primitive object is not in the cache and a cache miss handler '
-        'is specified to return an object,', () {
+      'is specified to return an object,', () {
     const cacheKey = 'testKey';
     int? retrieved;
     setUp(() async {
@@ -271,7 +271,7 @@ void main() {
     });
 
     test('when the object is retrieved, '
-         'then the cache miss handler returns the correct object', () {
+        'then the cache miss handler returns the correct object', () {
       expect(retrieved, equals(1337));
     });
 
@@ -299,7 +299,7 @@ void main() {
       });
 
       test('when the object is retrieved, '
-           'then the cache miss handler returns the correct object', () {
+          'then the cache miss handler returns the correct object', () {
         expect(retrieved?.length, equals(1));
         expect(retrieved?[0].num, equals(1337));
       });
@@ -317,7 +317,7 @@ void main() {
   );
 
   group('Given an object is not in the cache and '
-        'the cache miss handler returns null,', () {
+      'the cache miss handler returns null,', () {
     const cacheKey = 'testKey';
     SimpleData? retrieved;
     setUp(() async {
@@ -328,19 +328,19 @@ void main() {
     });
 
     test('when the object is retrieved, '
-         'then null is returned', () {
+        'then null is returned', () {
       expect(retrieved, isNull);
     });
 
     test('when the object is retrieved again, '
-         'then no value is set in the cache', () async {
+        'then no value is set in the cache', () async {
       var value = await cache.get<SimpleData>(cacheKey);
       expect(value, isNull);
     });
   });
 
   group('Given an object is already in the cache '
-        'and a cache miss handler is specified,', () {
+      'and a cache miss handler is specified,', () {
     const cacheKey = 'testKey';
     SimpleData? retrieved;
     setUp(() async {
@@ -352,12 +352,12 @@ void main() {
     });
 
     test('when the object is retrieved, '
-         'then the object already in the cache is returned', () {
+        'then the object already in the cache is returned', () {
       expect(retrieved?.num, equals(1));
     });
 
     test('when the object is retrieved again, '
-         'then the object in the cache is still retrievable', () async {
+        'then the object in the cache is still retrievable', () async {
       var value = await cache.get<SimpleData>(cacheKey);
       expect(value?.num, equals(1));
     });
@@ -383,7 +383,7 @@ void main() {
     });
 
     test('when a global message is published to the channel, '
-         'then postMessage returns true', () async {
+        'then postMessage returns true', () async {
       final result = await session.messages.postMessage(
         channelName,
         messageSent,
@@ -394,7 +394,7 @@ void main() {
     });
 
     test('when a global message is published to the channel, '
-         'then the message is received', () async {
+        'then the message is received', () async {
       await session.messages.postMessage(
         channelName,
         messageSent,
@@ -411,7 +411,7 @@ void main() {
     });
 
     test('when a global message is published to the channel, '
-         'then confirmation is received', () async {
+        'then confirmation is received', () async {
       var published = await session.messages.postMessage(
         channelName,
         messageSent,
@@ -467,7 +467,7 @@ void main() {
     });
 
     test('when a message is published with the default auto scope, '
-         'then the message is received', () async {
+        'then the message is received', () async {
       await session.messages.postMessage(
         channelName,
         messageSent,
@@ -483,7 +483,7 @@ void main() {
     });
 
     test('when a global message is published to a channel with no listeners, '
-         'then the publish is still successful', () async {
+        'then the publish is still successful', () async {
       var uniqueChannelName = Uuid().v4();
       var published = await session.messages.postMessage(
         uniqueChannelName,
@@ -525,7 +525,7 @@ void main() {
     // Auto scope only falls back to local delivery when Redis is not
     // enabled, not when the connection is down.
     test('when publishing a message with auto scope, '
-         'then the publish fails', () async {
+        'then the publish fails', () async {
       var published = await session.messages.postMessage(
         'testChannel',
         SimpleData(num: 1337),

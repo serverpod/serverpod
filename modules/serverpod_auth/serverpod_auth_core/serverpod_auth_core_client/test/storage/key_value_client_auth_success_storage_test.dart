@@ -32,29 +32,32 @@ void main() {
     },
   );
 
-  group('Given a KeyValueClientAuthSuccessStorage created with custom key,', () {
-    const customKey = 'custom_auth_key';
+  group(
+    'Given a KeyValueClientAuthSuccessStorage created with custom key,',
+    () {
+      const customKey = 'custom_auth_key';
 
-    setUp(() {
-      storage = TestKeyValueAuthSuccessStorage.create(
-        authSuccessStorageKey: customKey,
-      );
-    });
+      setUp(() {
+        storage = TestKeyValueAuthSuccessStorage.create(
+          authSuccessStorageKey: customKey,
+        );
+      });
 
-    test('when calling set, then it uses the custom key', () async {
-      await storage.set(_authSuccess);
+      test('when calling set, then it uses the custom key', () async {
+        await storage.set(_authSuccess);
 
-      expect(await storage.delegate.get(customKey), isNotNull);
-    });
+        expect(await storage.delegate.get(customKey), isNotNull);
+      });
 
-    test('when calling get, then it uses the custom key.', () async {
-      await storage.delegate.set(customKey, _authSuccess.toString());
+      test('when calling get, then it uses the custom key.', () async {
+        await storage.delegate.set(customKey, _authSuccess.toString());
 
-      final result = await storage.get();
+        final result = await storage.get();
 
-      expect(result, isNotNull);
-    });
-  });
+        expect(result, isNotNull);
+      });
+    },
+  );
 
   group('Given an uninitialized KeyValueClientAuthSuccessStorage,', () {
     setUp(() {

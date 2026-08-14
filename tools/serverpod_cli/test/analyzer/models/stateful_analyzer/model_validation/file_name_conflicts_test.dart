@@ -9,7 +9,7 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   group('Given two models with the same generated file path, '
-        'when analyzing,', () {
+      'when analyzing,', () {
     late var modelSources = [
       ModelSourceBuilder()
           .withFileName('example')

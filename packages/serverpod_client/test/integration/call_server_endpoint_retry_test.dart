@@ -109,7 +109,7 @@ void main() {
     });
 
     test('when first call fails with 401 but refresh succeeds, '
-         'then request is retried.', () async {
+        'then request is retried.', () async {
       serverResponses = [
         Response.unauthorized(),
         Response.ok(body: Body.fromString('"success"')),
@@ -134,7 +134,7 @@ void main() {
     });
 
     test('when first call fails with 401 and refresh fails, '
-         'then original exception is rethrown.', () async {
+        'then original exception is rethrown.', () async {
       serverResponses = [
         Response.unauthorized(),
       ];
@@ -177,7 +177,7 @@ void main() {
     );
 
     test('when first call fails with non-401 error, '
-         'then no retry is attempted.', () async {
+        'then no retry is attempted.', () async {
       serverResponses = [
         Response.internalServerError(),
       ];

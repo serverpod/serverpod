@@ -5,8 +5,8 @@ import 'package:test/test.dart';
 
 void main() {
   test('Given no database is created, '
-       'when ValueEncoder instance is accessed, '
-       'then throws StateError', () {
+      'when ValueEncoder instance is accessed, '
+      'then throws StateError', () {
     expect(
       () => ValueEncoder.instance,
       throwsA(
@@ -43,7 +43,7 @@ void main() {
     });
 
     test('when ValueEncoder instance is accessed, '
-         'then throws StateError', () {
+        'then throws StateError', () {
       expect(
         () => ValueEncoder.instance,
         throwsA(
@@ -88,7 +88,7 @@ void main() {
     });
 
     test('when ValueEncoder instance is accessed, '
-         'then returns the SqliteValueEncoder instance', () {
+        'then returns the SqliteValueEncoder instance', () {
       expect(ValueEncoder.instance, isA<SqliteValueEncoder>());
     });
   });

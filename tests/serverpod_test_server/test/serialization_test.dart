@@ -14,32 +14,32 @@ void main() {
     final toEncodable = SerializationManager.toEncodable;
 
     test('when calling on null, '
-         'then returns null', () {
+        'then returns null', () {
       expect(toEncodable(null), null);
     });
 
     test('when calling on a bool true, '
-         'then returns true', () {
+        'then returns true', () {
       expect(toEncodable(true), true);
     });
 
     test('when calling on a bool false, '
-         'then returns false', () {
+        'then returns false', () {
       expect(toEncodable(false), false);
     });
 
     test('when calling on a int, '
-         'then returns int', () {
+        'then returns int', () {
       expect(toEncodable(42), 42);
     });
 
     test('when calling on a double, '
-         'then returns double', () {
+        'then returns double', () {
       expect(toEncodable(3.14), 3.14);
     });
 
     test('when calling on a String, '
-         'then returns String', () {
+        'then returns String', () {
       expect(toEncodable('hello'), 'hello');
     });
 
@@ -122,7 +122,7 @@ void main() {
     );
 
     test('when calling on a UuidValue, '
-         'then returns string', () {
+        'then returns string', () {
       expect(
         toEncodable(UuidValue.nil), // ignore: deprecated_member_use
         '00000000-0000-0000-0000-000000000000',
@@ -130,7 +130,7 @@ void main() {
     });
 
     test('when calling on a Uri, '
-         'then returns string', () {
+        'then returns string', () {
       expect(
         toEncodable(Uri.parse('https://serverpod.dev')),
         'https://serverpod.dev',
@@ -138,17 +138,17 @@ void main() {
     });
 
     test('when calling on a BigInt, '
-         'then returns string', () {
+        'then returns string', () {
       expect(toEncodable(BigInt.from(123456789)), '123456789');
     });
 
     test('when calling on a Vector, '
-         'then returns list', () {
+        'then returns list', () {
       expect(toEncodable(Vector([1.0, 2.0, 3.0])), [1.0, 2.0, 3.0]);
     });
 
     test('when calling on a HalfVector, '
-         'then returns list', () {
+        'then returns list', () {
       expect(toEncodable(HalfVector([1.0, 2.0, 3.0])), [1.0, 2.0, 3.0]);
     });
 
@@ -237,7 +237,7 @@ void main() {
     );
 
     test('when calling on a Record, '
-         'then throws Exception', () {
+        'then throws Exception', () {
       final record = (1, 'two');
 
       expect(

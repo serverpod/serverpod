@@ -29,9 +29,11 @@ void main() {
       onErrorsCollector(collector),
     );
     late var definitions = analyzer.validateAll();
-    late var classDefinition = definitions.whereType<ClassDefinition>().firstWhere(
-      (d) => d.className == 'Cat',
-    );
+    late var classDefinition = definitions
+        .whereType<ClassDefinition>()
+        .firstWhere(
+          (d) => d.className == 'Cat',
+        );
 
     var errors = collector.errors;
 

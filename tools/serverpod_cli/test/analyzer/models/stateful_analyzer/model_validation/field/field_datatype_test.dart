@@ -1472,65 +1472,70 @@ fields:
     });
   });
 
-  group('Given a class with a type set to the class name of a custom type,', () {
-    late var type = TypeDefinition(
-      className: 'CustomExample',
-      generics: const [],
-      nullable: false,
-      url: 'package:shared_package/src/lib/custom_example.dart',
-      customClass: true,
-    );
+  group(
+    'Given a class with a type set to the class name of a custom type,',
+    () {
+      late var type = TypeDefinition(
+        className: 'CustomExample',
+        generics: const [],
+        nullable: false,
+        url: 'package:shared_package/src/lib/custom_example.dart',
+        customClass: true,
+      );
 
-    late var config = GeneratorConfigBuilder().withExtraClasses([type]).build();
-    late var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+      late var config = GeneratorConfigBuilder().withExtraClasses([
+        type,
+      ]).build();
+      late var models = [
+        ModelSourceBuilder().withYaml(
+          '''
           class: Example
           fields:
             name: CustomExample
           ''',
-      ).build(),
-    ];
+        ).build(),
+      ];
 
-    late var collector = CodeGenerationCollector();
-    late StatefulAnalyzer analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    late var definitions = analyzer.validateAll();
-
-    test('then no errors was generated', () {
-      expect(
-        collector.errors,
-        isEmpty,
-        reason: 'Expected no errors, but one was generated.',
+      late var collector = CodeGenerationCollector();
+      late StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
       );
-    });
+      late var definitions = analyzer.validateAll();
 
-    test('then the field type is set.', () {
-      var definition = definitions.first as ClassDefinition;
-      expect(definition.fields.first.type.className, 'CustomExample');
-    });
+      test('then no errors was generated', () {
+        expect(
+          collector.errors,
+          isEmpty,
+          reason: 'Expected no errors, but one was generated.',
+        );
+      });
 
-    test('then the type url is set to the custom type.', () {
-      var definition = definitions.first as ClassDefinition;
-      expect(
-        definition.fields.first.type.url,
-        'package:shared_package/src/lib/custom_example.dart',
-      );
-    });
+      test('then the field type is set.', () {
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields.first.type.className, 'CustomExample');
+      });
 
-    test('then the type is not nullable', () {
-      var definition = definitions.first as ClassDefinition;
-      expect(definition.fields.first.type.nullable, isFalse);
-    });
+      test('then the type url is set to the custom type.', () {
+        var definition = definitions.first as ClassDefinition;
+        expect(
+          definition.fields.first.type.url,
+          'package:shared_package/src/lib/custom_example.dart',
+        );
+      });
 
-    test('then field type does not have projectModelDefinition set', () {
-      var definition = definitions.first as ClassDefinition;
-      expect(definition.fields.first.type.projectModelDefinition, isNull);
-    });
-  });
+      test('then the type is not nullable', () {
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields.first.type.nullable, isFalse);
+      });
+
+      test('then field type does not have projectModelDefinition set', () {
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields.first.type.projectModelDefinition, isNull);
+      });
+    },
+  );
 
   group(
     'Given a class with a nullable type set to the class name of a custom type,',
@@ -1543,7 +1548,9 @@ fields:
         customClass: true,
       );
 
-      late var config = GeneratorConfigBuilder().withExtraClasses([type]).build();
+      late var config = GeneratorConfigBuilder().withExtraClasses([
+        type,
+      ]).build();
       late var models = [
         ModelSourceBuilder().withYaml(
           '''
@@ -1693,47 +1700,50 @@ fields:
     });
   });
 
-  group('Given a class with a field type to a module that is not imported,', () {
-    late var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+  group(
+    'Given a class with a field type to a module that is not imported,',
+    () {
+      late var models = [
+        ModelSourceBuilder().withYaml(
+          '''
           class: Example
           fields:
             user: module:auth:UserInfo
           ''',
-      ).build(),
-    ];
+        ).build(),
+      ];
 
-    late var collector = CodeGenerationCollector();
-    late StatefulAnalyzer analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    analyzer.validateAll();
-
-    test('then an error that the module does not exist is reported.', () {
-      expect(
-        collector.errors,
-        isNotEmpty,
-        reason: 'Expected an error, but none was generated.',
+      late var collector = CodeGenerationCollector();
+      late StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
       );
+      analyzer.validateAll();
 
-      var error = collector.errors.first;
+      test('then an error that the module does not exist is reported.', () {
+        expect(
+          collector.errors,
+          isNotEmpty,
+          reason: 'Expected an error, but none was generated.',
+        );
 
-      expect(error.message, 'The referenced module "auth" is not found.');
-    });
+        var error = collector.errors.first;
 
-    test('then the error message location pinpoints the module name.', () {
-      var error = collector.errors.first;
+        expect(error.message, 'The referenced module "auth" is not found.');
+      });
 
-      expect(error.span?.start.line, 2);
-      expect(error.span?.start.column, 25);
+      test('then the error message location pinpoints the module name.', () {
+        var error = collector.errors.first;
 
-      expect(error.span?.end.line, 2);
-      expect(error.span?.end.column, 29);
-    });
-  });
+        expect(error.span?.start.line, 2);
+        expect(error.span?.start.column, 25);
+
+        expect(error.span?.end.line, 2);
+        expect(error.span?.end.column, 29);
+      });
+    },
+  );
 
   test(
     'Given a class with a field type reference to serverpod that is not imported, '

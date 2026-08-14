@@ -90,34 +90,37 @@ void main() {
     );
   });
 
-  group('Given compilation unit with class with multiple named constructors,', () {
-    late final compilationUnit = parseCode(
-      '''
+  group(
+    'Given compilation unit with class with multiple named constructors,',
+    () {
+      late final compilationUnit = parseCode(
+        '''
       class User {
         User();
         User.named();
         User._();
       }
     ''',
-    );
+      );
 
-    test(
-      'when matching with non-existent named constructor, '
-      'then mismatch description is correct',
-      () {
-        final matcher =
-            containsClass('User').withNamedConstructor('nonExistent')
-                as Matcher;
-        final description = StringDescription();
-        matcher.describeMismatch(compilationUnit, description, {}, false);
+      test(
+        'when matching with non-existent named constructor, '
+        'then mismatch description is correct',
+        () {
+          final matcher =
+              containsClass('User').withNamedConstructor('nonExistent')
+                  as Matcher;
+          final description = StringDescription();
+          matcher.describeMismatch(compilationUnit, description, {}, false);
 
-        expect(
-          description.toString(),
-          equals(
-            'does not contain "nonExistent" named constructor. Found named constructors: [named, _]',
-          ),
-        );
-      },
-    );
-  });
+          expect(
+            description.toString(),
+            equals(
+              'does not contain "nonExistent" named constructor. Found named constructors: [named, _]',
+            ),
+          );
+        },
+      );
+    },
+  );
 }

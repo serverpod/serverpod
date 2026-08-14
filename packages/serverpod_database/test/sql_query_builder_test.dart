@@ -237,7 +237,7 @@ void main() {
     );
 
     test('when query with limit is built, '
-         'then output is query with limit.', () {
+        'then output is query with limit.', () {
       var query = SelectQueryBuilder(table: citizenTable).withLimit(10).build();
 
       expect(
@@ -323,7 +323,7 @@ void main() {
     );
 
     test('when all properties configured is built, '
-         'then output is valid SQL.', () {
+        'then output is valid SQL.', () {
       var manyRelationTable = Table<int?>(
         tableName: companyTable.tableName,
         tableRelation: TableRelation([

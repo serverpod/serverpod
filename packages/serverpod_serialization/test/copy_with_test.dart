@@ -48,20 +48,23 @@ void main() {
       'Given a ByteData, '
       'when specifying a slice of the buffer and modifying the original after creating a copy,',
       () {
-        late ByteBuffer buffer = Uint8List.fromList([0, 1, 2, 3, 4]).buffer;
+        const offsetInBytes = 2;
+        const lengthInBytes = 1;
 
-        var offsetInBytes = 2;
-        var lengthInBytes = 1;
+        late ByteBuffer buffer;
+        late ByteData byteDataView;
+        late ByteData clone;
 
-        late ByteData byteDataView = ByteData.view(
-          buffer,
-          offsetInBytes,
-          lengthInBytes,
-        );
-
-        late var clone = byteDataView.clone();
-
-        buffer.asByteData().setUint8(0, 9);
+        setUp(() {
+          buffer = Uint8List.fromList([0, 1, 2, 3, 4]).buffer;
+          byteDataView = ByteData.view(
+            buffer,
+            offsetInBytes,
+            lengthInBytes,
+          );
+          clone = byteDataView.clone();
+          buffer.asByteData().setUint8(0, 9);
+        });
 
         test('then the copy buffer has the full original data.', () {
           expect(

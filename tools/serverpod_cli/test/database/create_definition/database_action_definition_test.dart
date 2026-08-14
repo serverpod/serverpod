@@ -224,7 +224,7 @@ void main() {
       });
 
       test('with a foreign relation, '
-           'then the foreign key columns includes the explicit column name', () {
+          'then the foreign key columns includes the explicit column name', () {
         var relation = ForeignRelationDefinitionBuilder()
             .withParentTable(tableName)
             .withReferenceFieldName('id')

@@ -6,163 +6,171 @@ import 'package:test/test.dart';
 void main() async {
   var session = await IntegrationTestServer().session();
 
-  group('Given a model with a list relation to model with max length named fields,', () {
-    tearDown(() async {
-      await MultipleMaxFieldName.db.deleteWhere(
-        session,
-        where: (_) => Constant.bool(true),
+  group(
+    'Given a model with a list relation to model with max length named fields,',
+    () {
+      tearDown(() async {
+        await MultipleMaxFieldName.db.deleteWhere(
+          session,
+          where: (_) => Constant.bool(true),
+        );
+        await RelationToMultipleMaxFieldName.db.deleteWhere(
+          session,
+          where: (_) => Constant.bool(true),
+        );
+      });
+
+      test(
+        'when filtering on related fields data multiple times, '
+        'then fetched data is as expected.',
+        () async {
+          var multipleMaxFieldNames = await MultipleMaxFieldName.db.insert(
+            session,
+            [
+              MultipleMaxFieldName(
+                thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1:
+                    'First 1',
+                thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2:
+                    'First 2',
+              ),
+              MultipleMaxFieldName(
+                thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1:
+                    'Second 1',
+                thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2:
+                    'Second 2',
+              ),
+              MultipleMaxFieldName(
+                thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1:
+                    'Third 1',
+                thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2:
+                    'Third 2',
+              ),
+            ],
+          );
+
+          var relationToMultipleMaxFieldNames =
+              await RelationToMultipleMaxFieldName.db.insert(session, [
+                RelationToMultipleMaxFieldName(
+                  name: 'First',
+                ),
+                RelationToMultipleMaxFieldName(
+                  name: 'Second',
+                ),
+                RelationToMultipleMaxFieldName(
+                  name: 'Third',
+                ),
+              ]);
+
+          // Attach ("First 1", "First 2") to "First"
+          await RelationToMultipleMaxFieldName.db.attachRow
+              .multipleMaxFieldNames(
+                session,
+                relationToMultipleMaxFieldNames[0],
+                multipleMaxFieldNames[0],
+              );
+
+          // Attach ("Second 1", "Second 2") to "Second"
+          await RelationToMultipleMaxFieldName.db.attachRow
+              .multipleMaxFieldNames(
+                session,
+                relationToMultipleMaxFieldNames[1],
+                multipleMaxFieldNames[1],
+              );
+
+          // Attach ("Third 1", "Third 2") to "Third"
+          await RelationToMultipleMaxFieldName.db.attachRow
+              .multipleMaxFieldNames(
+                session,
+                relationToMultipleMaxFieldNames[2],
+                multipleMaxFieldNames[2],
+              );
+
+          var fetched = await RelationToMultipleMaxFieldName.db.find(
+            session,
+            where: (t) =>
+                t.multipleMaxFieldNames.any(
+                  (t) => t
+                      .thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1
+                      .ilike('First 1'),
+                ) |
+                t.multipleMaxFieldNames.any(
+                  (t) => t
+                      .thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2
+                      .ilike('Second 2'),
+                ),
+          );
+
+          var fetchedNamed = fetched.map((e) => e.name).toList();
+          expect(fetchedNamed, hasLength(2));
+          expect(fetchedNamed, containsAll(['First', 'Second']));
+        },
       );
-      await RelationToMultipleMaxFieldName.db.deleteWhere(
-        session,
-        where: (_) => Constant.bool(true),
+
+      test(
+        'when filtering on both fields, then fetched data is as expected.',
+        () async {
+          var multipleMaxFieldNames = await MultipleMaxFieldName.db.insert(
+            session,
+            [
+              MultipleMaxFieldName(
+                thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1:
+                    'First 1',
+                thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2:
+                    'First 2',
+              ),
+              MultipleMaxFieldName(
+                thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1:
+                    'Second 1',
+                thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2:
+                    'Second 2',
+              ),
+            ],
+          );
+
+          var relationToMultipleMaxFieldNames =
+              await RelationToMultipleMaxFieldName.db.insert(session, [
+                RelationToMultipleMaxFieldName(
+                  name: 'First',
+                ),
+                RelationToMultipleMaxFieldName(
+                  name: 'Second',
+                ),
+              ]);
+
+          // Attach ("First 1", "First 2") to "First"
+          await RelationToMultipleMaxFieldName.db.attachRow
+              .multipleMaxFieldNames(
+                session,
+                relationToMultipleMaxFieldNames[0],
+                multipleMaxFieldNames[0],
+              );
+
+          // Attach ("Second 1", "Second 2") to "Second"
+          await RelationToMultipleMaxFieldName.db.attachRow
+              .multipleMaxFieldNames(
+                session,
+                relationToMultipleMaxFieldNames[1],
+                multipleMaxFieldNames[1],
+              );
+
+          var fetched = await RelationToMultipleMaxFieldName.db.find(
+            session,
+            where: (t) => t.multipleMaxFieldNames.any(
+              (t) =>
+                  t.thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1
+                      .ilike('First 1') &
+                  t.thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2
+                      .ilike('First 2'),
+            ),
+          );
+
+          var fetchedNamed = fetched.map((e) => e.name).toList();
+          expect(fetchedNamed, hasLength(1));
+          expect(fetchedNamed, ['First']);
+        },
       );
-    });
-
-    test(
-      'when filtering on related fields data multiple times, '
-      'then fetched data is as expected.',
-      () async {
-        var multipleMaxFieldNames = await MultipleMaxFieldName.db.insert(
-          session,
-          [
-            MultipleMaxFieldName(
-              thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1:
-                  'First 1',
-              thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2:
-                  'First 2',
-            ),
-            MultipleMaxFieldName(
-              thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1:
-                  'Second 1',
-              thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2:
-                  'Second 2',
-            ),
-            MultipleMaxFieldName(
-              thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1:
-                  'Third 1',
-              thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2:
-                  'Third 2',
-            ),
-          ],
-        );
-
-        var relationToMultipleMaxFieldNames =
-            await RelationToMultipleMaxFieldName.db.insert(session, [
-              RelationToMultipleMaxFieldName(
-                name: 'First',
-              ),
-              RelationToMultipleMaxFieldName(
-                name: 'Second',
-              ),
-              RelationToMultipleMaxFieldName(
-                name: 'Third',
-              ),
-            ]);
-
-        // Attach ("First 1", "First 2") to "First"
-        await RelationToMultipleMaxFieldName.db.attachRow.multipleMaxFieldNames(
-          session,
-          relationToMultipleMaxFieldNames[0],
-          multipleMaxFieldNames[0],
-        );
-
-        // Attach ("Second 1", "Second 2") to "Second"
-        await RelationToMultipleMaxFieldName.db.attachRow.multipleMaxFieldNames(
-          session,
-          relationToMultipleMaxFieldNames[1],
-          multipleMaxFieldNames[1],
-        );
-
-        // Attach ("Third 1", "Third 2") to "Third"
-        await RelationToMultipleMaxFieldName.db.attachRow.multipleMaxFieldNames(
-          session,
-          relationToMultipleMaxFieldNames[2],
-          multipleMaxFieldNames[2],
-        );
-
-        var fetched = await RelationToMultipleMaxFieldName.db.find(
-          session,
-          where: (t) =>
-              t.multipleMaxFieldNames.any(
-                (t) => t
-                    .thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1
-                    .ilike('First 1'),
-              ) |
-              t.multipleMaxFieldNames.any(
-                (t) => t
-                    .thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2
-                    .ilike('Second 2'),
-              ),
-        );
-
-        var fetchedNamed = fetched.map((e) => e.name).toList();
-        expect(fetchedNamed, hasLength(2));
-        expect(fetchedNamed, containsAll(['First', 'Second']));
-      },
-    );
-
-    test(
-      'when filtering on both fields, then fetched data is as expected.',
-      () async {
-        var multipleMaxFieldNames = await MultipleMaxFieldName.db.insert(
-          session,
-          [
-            MultipleMaxFieldName(
-              thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1:
-                  'First 1',
-              thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2:
-                  'First 2',
-            ),
-            MultipleMaxFieldName(
-              thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1:
-                  'Second 1',
-              thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2:
-                  'Second 2',
-            ),
-          ],
-        );
-
-        var relationToMultipleMaxFieldNames =
-            await RelationToMultipleMaxFieldName.db.insert(session, [
-              RelationToMultipleMaxFieldName(
-                name: 'First',
-              ),
-              RelationToMultipleMaxFieldName(
-                name: 'Second',
-              ),
-            ]);
-
-        // Attach ("First 1", "First 2") to "First"
-        await RelationToMultipleMaxFieldName.db.attachRow.multipleMaxFieldNames(
-          session,
-          relationToMultipleMaxFieldNames[0],
-          multipleMaxFieldNames[0],
-        );
-
-        // Attach ("Second 1", "Second 2") to "Second"
-        await RelationToMultipleMaxFieldName.db.attachRow.multipleMaxFieldNames(
-          session,
-          relationToMultipleMaxFieldNames[1],
-          multipleMaxFieldNames[1],
-        );
-
-        var fetched = await RelationToMultipleMaxFieldName.db.find(
-          session,
-          where: (t) => t.multipleMaxFieldNames.any(
-            (t) =>
-                t.thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1
-                    .ilike('First 1') &
-                t.thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2
-                    .ilike('First 2'),
-          ),
-        );
-
-        var fetchedNamed = fetched.map((e) => e.name).toList();
-        expect(fetchedNamed, hasLength(1));
-        expect(fetchedNamed, ['First']);
-      },
-    );
-  });
+    },
+  );
 
   group('Given a model with a field that has max allowed length,', () {
     tearDown(

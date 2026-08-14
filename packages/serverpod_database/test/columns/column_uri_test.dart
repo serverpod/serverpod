@@ -37,7 +37,7 @@ void main() {
       );
 
       test('when equals compared to uri, '
-           'then output is equals expression.', () {
+          'then output is equals expression.', () {
         var comparisonExpression = column.equals(
           Uri.parse('https://serverpod.dev/'),
         );

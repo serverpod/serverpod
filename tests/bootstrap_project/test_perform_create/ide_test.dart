@@ -24,7 +24,7 @@ void main() {
     'Given a clean state, '
     'when calling performCreate with a context containing all supported IDEs,',
     () {
-      late final project = setUpPerformCreateInTempDir(
+      final project = setUpPerformCreateInTempDir(
         context: TemplateContext(ides: TemplateIde.values),
       );
 

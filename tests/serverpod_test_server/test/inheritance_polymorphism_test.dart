@@ -176,8 +176,8 @@ void main() {
   );
 
   test('Given a PolymorphicChild object, '
-       'when deserialized as PolymorphicParent, '
-       'then it maintains the runtimeType as PolymorphicChild.', () {
+      'when deserialized as PolymorphicParent, '
+      'then it maintains the runtimeType as PolymorphicChild.', () {
     final child = PolymorphicChild(
       parent: 'This is a parent',
       child: 'This is a child',
@@ -193,8 +193,8 @@ void main() {
   });
 
   test('Given a PolymorphicGrandChild object, '
-       'when deserialized as PolymorphicParent, '
-       'then it maintains the runtimeType as PolymorphicGrandChild.', () {
+      'when deserialized as PolymorphicParent, '
+      'then it maintains the runtimeType as PolymorphicGrandChild.', () {
     final grandPolymorphicChild = PolymorphicGrandChild(
       parent: 'This is a parent',
       child: 'This is a child',
@@ -212,8 +212,8 @@ void main() {
   });
 
   test('Given a class that holds PolymorphicChild objects in a container, '
-       'when deserialized, '
-       'then PolymorphicGrandChild objects maintain their runtime type.', () {
+      'when deserialized, '
+      'then PolymorphicGrandChild objects maintain their runtime type.', () {
     final container = PolymorphicChildContainer(
       child: PolymorphicGrandChild(
         parent: 'PolymorphicParent 1',
@@ -348,8 +348,8 @@ void main() {
   // If a class was a subset of another with same types on all common fields,
   // it would deserialize as the other class.
   test('Given an object that has all fields of PolymorphicParent, '
-       'when deserialized as PolymorphicParent, '
-       'then it raises an exception.', () {
+      'when deserialized as PolymorphicParent, '
+      'then it raises an exception.', () {
     final other = SimilarButNotParent(parent: 'This is not a parent');
 
     final json = other.toJson();
@@ -361,8 +361,8 @@ void main() {
   });
 
   test('Given an unrelated object that does not have PolymorphicParent fields, '
-       'when deserialized as PolymorphicParent, '
-       'then it raises an exception.', () {
+      'when deserialized as PolymorphicParent, '
+      'then it raises an exception.', () {
     final unrelated = UnrelatedToPolymorphism(
       unrelated: 'An unrelated message',
     );

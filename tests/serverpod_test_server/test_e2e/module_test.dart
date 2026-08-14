@@ -11,19 +11,19 @@ void main() {
 
   group('Given a module,', () {
     test('when calling a non-module endpoint that uses a module object, '
-         'then should return true to indicate nothing went wrong', () async {
+        'then should return true to indicate nothing went wrong', () async {
       var success = await client.moduleSerialization.serializeModuleObject();
       expect(success, equals(true));
     });
 
     test('when calling endpoint method hello, '
-         'then returns greeting', () async {
+        'then returns greeting', () async {
       var result = await client.modules.module.module.hello('World');
       expect(result, equals('Hello World'));
     });
 
     test('when calling a non-module endpoint that modifies a module object, '
-         'then should return modified object', () async {
+        'then should return modified object', () async {
       var moduleClass = module.ModuleClass(
         name: 'foo',
         data: 0,
@@ -35,7 +35,7 @@ void main() {
     });
 
     test('when calling endpoint method that modifies object, '
-         'then returns modified object', () async {
+        'then returns modified object', () async {
       var moduleClass = module.ModuleClass(
         name: 'foo',
         data: 0,

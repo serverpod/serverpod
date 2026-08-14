@@ -146,7 +146,7 @@ void main() {
       tearDown(() async => await closeServer());
 
       test('when first open method stream connection succeeds, '
-           'then no retry is attempted.', () async {
+          'then no retry is attempted.', () async {
         serverResponses = [
           OpenMethodStreamResponseType.success,
         ];

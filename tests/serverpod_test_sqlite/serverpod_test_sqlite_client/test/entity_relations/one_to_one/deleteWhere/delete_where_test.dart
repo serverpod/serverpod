@@ -86,7 +86,7 @@ void main() {
   initTestClientSession();
 
   group('Given models with relation, '
-        'when deleting on relation attributes,', () {
+      'when deleting on relation attributes,', () {
     setUp(() async => await _createTestDatabase(session));
 
     test('then expected number of models are removed.', () async {

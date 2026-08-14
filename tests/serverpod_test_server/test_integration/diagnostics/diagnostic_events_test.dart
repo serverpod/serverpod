@@ -24,7 +24,7 @@ void main() {
   const timeout = Duration(seconds: 3);
 
   group('Given a serverpod server with a diagnostic event handler, '
-        'when starting serverpod with its web server port already in use,', () {
+      'when starting serverpod with its web server port already in use,', () {
     late var exceptionHandler = TestExceptionHandler();
     late Serverpod pod;
     late DiagnosticEventRecord<ExceptionEvent> record;
@@ -180,7 +180,7 @@ void main() {
     });
 
     test('when a client calls an endpoint method that throws an exception, '
-         'then the diagnostic event handler gets called', () async {
+        'then the diagnostic event handler gets called', () async {
       final result = client.exceptionTest.throwNormalException();
       await expectLater(result, throwsA(isA<Exception>()));
 
@@ -209,7 +209,7 @@ void main() {
     });
 
     test('when a client calls streaming method outStreamThrowsException, '
-         'then the diagnostic event handler gets called', () async {
+        'then the diagnostic event handler gets called', () async {
       final stream = client.methodStreaming.outStreamThrowsException();
       await expectLater(stream, emitsError(isA<ConnectionClosedException>()));
 
@@ -252,7 +252,7 @@ void main() {
     );
 
     test('when a client calls streaming method exceptionThrownInStreamReturn, '
-         'then the diagnostic event handler gets called', () async {
+        'then the diagnostic event handler gets called', () async {
       var stream = client.methodStreaming.exceptionThrownInStreamReturn();
       await expectLater(stream, emitsError(isA<ConnectionClosedException>()));
 
@@ -263,7 +263,7 @@ void main() {
     });
 
     test('when a client calls method url with malformed json, '
-         'then the diagnostic event handler gets called', () async {
+        'then the diagnostic event handler gets called', () async {
       var response = http.post(
         Uri.parse('${pod.apiUrl}simple/hello'),
         body: '{"name": [42]}',
@@ -299,7 +299,7 @@ void main() {
       });
 
       test('when a client calls web url with malformed json, '
-           'then the diagnostic event handler gets called', () async {
+          'then the diagnostic event handler gets called', () async {
         var response = http.get(
           Uri.parse('${pod.webUrl}exception'),
         );

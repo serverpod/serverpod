@@ -6,8 +6,8 @@ import 'package:test/test.dart';
 
 void main() {
   test('Given a client, '
-       'when calling an endpoint multiple times in quick succession, '
-       'then all streams complete successfully', () async {
+      'when calling an endpoint multiple times in quick succession, '
+      'then all streams complete successfully', () async {
     var client = Client(serverUrl);
     var numMessages = 1000;
     List<Future> streamCompleteFutures = [];
@@ -22,8 +22,8 @@ void main() {
   });
 
   test('Given multiple method streaming connections to the same endpoint, '
-       'when streams are listened, paused and resumed, '
-       'then all streams complete successfully', () async {
+      'when streams are listened, paused and resumed, '
+      'then all streams complete successfully', () async {
     var client = Client(serverUrl);
     var numMessages = 1000;
     List<Future> streamCompleteFutures = [];

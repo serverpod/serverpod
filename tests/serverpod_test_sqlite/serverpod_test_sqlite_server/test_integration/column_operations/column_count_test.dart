@@ -168,7 +168,7 @@ void main() async {
     });
 
     test('when filtering on notInSet, '
-         'then matching row is returned.', () async {
+        'then matching row is returned.', () async {
       var customers = await Customer.db.insert(session, [
         Customer(name: 'Customer 1'),
         Customer(name: 'Customer 2'),

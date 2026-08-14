@@ -7,8 +7,8 @@ enum TestTag { include, exclude }
 
 void main() async {
   test('Given custom tag, '
-       'when including test tag, '
-       'then test is run', () async {
+      'when including test tag, '
+      'then test is run', () async {
     final result = await runTest(
       TestTag.include,
       'customTag',
@@ -20,8 +20,8 @@ void main() async {
   });
 
   test('Given custom tag, '
-       'when excluding test tag, '
-       'then test is not run', () async {
+      'when excluding test tag, '
+      'then test is not run', () async {
     final result = await runTest(
       TestTag.exclude,
       'customTag',
@@ -38,8 +38,8 @@ void main() async {
   });
 
   test('Given default tag, '
-       'when including test tag, '
-       'then test is run', () async {
+      'when including test tag, '
+      'then test is run', () async {
     final result = await runTest(
       TestTag.include,
       'integration',
@@ -51,8 +51,8 @@ void main() async {
   });
 
   test('Given default tag, '
-       'when excluding test tag, '
-       'then test is not run', () async {
+      'when excluding test tag, '
+      'then test is not run', () async {
     final result = await runTest(
       TestTag.exclude,
       'integration',

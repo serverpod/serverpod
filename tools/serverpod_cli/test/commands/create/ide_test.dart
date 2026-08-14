@@ -34,7 +34,9 @@ void main() {
     });
 
     group('when rendering its config,', () {
-      late final config = ide.effectiveConfig(serverDirRelative: 'my_app_server');
+      late final config = ide.effectiveConfig(
+        serverDirRelative: 'my_app_server',
+      );
 
       test('then the server dir is embedded in the serverpod entry', () {
         expect(config, contains('"--server-dir", "my_app_server"'));

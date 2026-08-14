@@ -63,10 +63,11 @@ void main() {
         });
 
         group('has a copyWith method', () {
-          late var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            baseClass!,
-            name: 'copyWith',
-          );
+          late var copyWithMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                baseClass!,
+                name: 'copyWith',
+              );
           test('declared', () {
             expect(
               copyWithMethod,
@@ -134,10 +135,11 @@ void main() {
         });
 
         group('has a copyWith method', () {
-          late var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            copyWithClass!,
-            name: 'copyWith',
-          );
+          late var copyWithMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                copyWithClass!,
+                name: 'copyWith',
+              );
           test('declared', () {
             expect(copyWithMethod, isNotNull);
           });
@@ -218,10 +220,11 @@ void main() {
         );
 
         group('has a copyWith method', () {
-          late var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            baseClass!,
-            name: 'copyWith',
-          );
+          late var copyWithMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                baseClass!,
+                name: 'copyWith',
+              );
 
           test('with no params.', () {
             expect(
@@ -239,10 +242,11 @@ void main() {
 
       group('then the class named _${testClassName}Impl', () {
         group('has a copyWith method', () {
-          late var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            copyWithClass!,
-            name: 'copyWith',
-          );
+          late var copyWithMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                copyWithClass!,
+                name: 'copyWith',
+              );
 
           test('with no params', () {
             expect(
@@ -309,10 +313,11 @@ void main() {
         );
 
         group('has a copyWith method', () {
-          late var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            baseClass!,
-            name: 'copyWith',
-          );
+          late var copyWithMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                baseClass!,
+                name: 'copyWith',
+              );
 
           test('with no params.', () {
             expect(
@@ -330,10 +335,11 @@ void main() {
 
       group('then the class named _${testClassName}Impl', () {
         group('has a copyWith method', () {
-          late var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            copyWithClass!,
-            name: 'copyWith',
-          );
+          late var copyWithMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                copyWithClass!,
+                name: 'copyWith',
+              );
 
           test('with no params', () {
             expect(
@@ -374,7 +380,9 @@ void main() {
       config: config,
     );
 
-    late var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late var compilationUnit = parseString(
+      content: codeMap[expectedFilePath]!,
+    ).unit;
 
     late var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
@@ -420,7 +428,9 @@ void main() {
       config: config,
     );
 
-    late var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late var compilationUnit = parseString(
+      content: codeMap[expectedFilePath]!,
+    ).unit;
 
     late var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
@@ -464,7 +474,9 @@ void main() {
       config: config,
     );
 
-    late var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late var compilationUnit = parseString(
+      content: codeMap[expectedFilePath]!,
+    ).unit;
 
     late var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
@@ -508,7 +520,9 @@ void main() {
       config: config,
     );
 
-    late var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late var compilationUnit = parseString(
+      content: codeMap[expectedFilePath]!,
+    ).unit;
 
     late var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,

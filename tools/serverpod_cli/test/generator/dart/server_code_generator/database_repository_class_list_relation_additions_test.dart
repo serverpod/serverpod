@@ -35,7 +35,9 @@ void main() {
       config: config,
     );
 
-    late var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late var compilationUnit = parseString(
+      content: codeMap[expectedFilePath]!,
+    ).unit;
 
     test(
       'then a class named ${testClassName}AttachRepository is NOT generated',
@@ -240,10 +242,11 @@ void main() {
             );
           });
 
-          late var peopleMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            repositoryAttachClass!,
-            name: 'people',
-          );
+          late var peopleMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                repositoryAttachClass!,
+                name: 'people',
+              );
 
           test('has a people method defined.', () {
             expect(peopleMethod, isNotNull, reason: 'Missing people method.');
@@ -288,10 +291,11 @@ void main() {
       group(
         'then the ${testClassName}DetachRowRepository',
         () {
-          late var peopleMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            repositoryDetachRowClass!,
-            name: 'people',
-          );
+          late var peopleMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                repositoryDetachRowClass!,
+                name: 'people',
+              );
 
           test('has a people method defined.', () {
             expect(peopleMethod, isNotNull, reason: 'Missing people method.');
@@ -350,10 +354,11 @@ void main() {
             );
           });
 
-          late var peopleMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            repositoryDetachClass!,
-            name: 'people',
-          );
+          late var peopleMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                repositoryDetachClass!,
+                name: 'people',
+              );
 
           test('has a people method defined.', () {
             expect(peopleMethod, isNotNull, reason: 'Missing people method.');
@@ -421,10 +426,11 @@ void main() {
             );
           });
 
-          late var citizensMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            repositoryAttachClass!,
-            name: 'citizens',
-          );
+          late var citizensMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                repositoryAttachClass!,
+                name: 'citizens',
+              );
 
           test('has a citizens method defined.', () {
             expect(
@@ -457,10 +463,11 @@ void main() {
           );
 
       group('then the ${testClassName}AttachRowRepository', () {
-        late var citizenMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-          repositoryAttachRowClass!,
-          name: 'citizens',
-        );
+        late var citizenMethod =
+            CompilationUnitHelpers.tryFindMethodDeclaration(
+              repositoryAttachRowClass!,
+              name: 'citizens',
+            );
 
         test('has a citizens method defined.', () {
           expect(citizenMethod, isNotNull, reason: 'Missing citizens method.');
@@ -502,10 +509,11 @@ void main() {
             );
           });
 
-          late var citizensMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            repositoryDetachClass!,
-            name: 'citizens',
-          );
+          late var citizensMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                repositoryDetachClass!,
+                name: 'citizens',
+              );
 
           test('has a citizens method defined.', () {
             expect(
@@ -538,10 +546,11 @@ void main() {
           );
 
       group('then the ${testClassName}DetachRowRepository', () {
-        late var citizenMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-          repositoryDetachRowClass!,
-          name: 'citizens',
-        );
+        late var citizenMethod =
+            CompilationUnitHelpers.tryFindMethodDeclaration(
+              repositoryDetachRowClass!,
+              name: 'citizens',
+            );
 
         test('has a citizens method defined.', () {
           expect(citizenMethod, isNotNull, reason: 'Missing citizens method.');

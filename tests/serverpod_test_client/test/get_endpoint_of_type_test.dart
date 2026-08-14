@@ -6,14 +6,14 @@ void main() {
 
   group('Given a client with multiple endpoints,', () {
     test('when getEndpointOfType is called with a unique endpoint type, '
-         'then it returns the correct endpoint.', () {
+        'then it returns the correct endpoint.', () {
       var endpoint = client.getEndpointOfType<EndpointIndependent>();
       expect(endpoint, isA<EndpointIndependent>());
       expect(endpoint.name, 'independent');
     });
 
     test('when getEndpointOfType is called with EndpointRef type, '
-         'then it throws StateError due to multiple matches.', () {
+        'then it throws StateError due to multiple matches.', () {
       expect(
         () => client.getEndpointOfType<EndpointRef>(),
         throwsA(isA<ServerpodClientMultipleEndpointsFound>()),
@@ -21,7 +21,7 @@ void main() {
     });
 
     test('when getEndpointOfType is called with a non-existent endpoint type, '
-         'then it throws StateError due to no matches.', () {
+        'then it throws StateError due to no matches.', () {
       expect(
         () => client.getEndpointOfType<NonExistentEndpoint>(),
         throwsA(
@@ -35,7 +35,7 @@ void main() {
     });
 
     test('when getEndpointOfType is called with a name that is not found, '
-         'then it throws endpoint not found exception due to no matches', () {
+        'then it throws endpoint not found exception due to no matches', () {
       expect(
         () => client.getEndpointOfType('wrong-name'),
         throwsA(

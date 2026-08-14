@@ -47,12 +47,15 @@ void main() {
       config: config,
     );
 
-    late var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late var compilationUnit = parseString(
+      content: codeMap[expectedFilePath]!,
+    ).unit;
 
-    late var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
-      compilationUnit,
-      name: testClassName,
-    );
+    late var maybeClassNamedExample =
+        CompilationUnitHelpers.tryFindClassDeclaration(
+          compilationUnit,
+          name: testClassName,
+        );
 
     test(
       'then fromJson method should pass data as dynamic to custom class fromJson',

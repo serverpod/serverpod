@@ -245,30 +245,33 @@ void main() {
         );
       });
 
-      group('an access token for a refresh token with extra claims defined,', () {
-        late RefreshToken refreshToken;
-        late String jwt;
+      group(
+        'an access token for a refresh token with extra claims defined,',
+        () {
+          late RefreshToken refreshToken;
+          late String jwt;
 
-        setUp(() {
-          refreshToken = _createRefreshToken().copyWith(
-            extraClaims: jsonEncode({'b': 1, 'a': 'test'}),
-          );
-          jwt = jwtUtil.createJwt(refreshToken);
-        });
-
-        test(
-          'when the JWT data is inspected, '
-          'then its `extraClaims` match the refresh token ones.',
-          () {
-            final tokenData = jwtUtil.verifyJwt(jwt);
-
-            expect(
-              tokenData.extraClaims,
-              {'b': 1, 'a': 'test'},
+          setUp(() {
+            refreshToken = _createRefreshToken().copyWith(
+              extraClaims: jsonEncode({'b': 1, 'a': 'test'}),
             );
-          },
-        );
-      });
+            jwt = jwtUtil.createJwt(refreshToken);
+          });
+
+          test(
+            'when the JWT data is inspected, '
+            'then its `extraClaims` match the refresh token ones.',
+            () {
+              final tokenData = jwtUtil.verifyJwt(jwt);
+
+              expect(
+                tokenData.extraClaims,
+                {'b': 1, 'a': 'test'},
+              );
+            },
+          );
+        },
+      );
     });
   });
 
@@ -509,30 +512,33 @@ void main() {
         );
       });
 
-      group('an access token for a refresh token with extra claims defined,', () {
-        late RefreshToken refreshToken;
-        late String jwt;
+      group(
+        'an access token for a refresh token with extra claims defined,',
+        () {
+          late RefreshToken refreshToken;
+          late String jwt;
 
-        setUp(() {
-          refreshToken = _createRefreshToken().copyWith(
-            extraClaims: jsonEncode({'b': 1, 'a': 'test'}),
-          );
-          jwt = jwtUtil.createJwt(refreshToken);
-        });
-
-        test(
-          'when the JWT data is inspected, '
-          'then its `extraClaims` match the refresh token ones.',
-          () {
-            final tokenData = jwtUtil.verifyJwt(jwt);
-
-            expect(
-              tokenData.extraClaims,
-              {'b': 1, 'a': 'test'},
+          setUp(() {
+            refreshToken = _createRefreshToken().copyWith(
+              extraClaims: jsonEncode({'b': 1, 'a': 'test'}),
             );
-          },
-        );
-      });
+            jwt = jwtUtil.createJwt(refreshToken);
+          });
+
+          test(
+            'when the JWT data is inspected, '
+            'then its `extraClaims` match the refresh token ones.',
+            () {
+              final tokenData = jwtUtil.verifyJwt(jwt);
+
+              expect(
+                tokenData.extraClaims,
+                {'b': 1, 'a': 'test'},
+              );
+            },
+          );
+        },
+      );
     });
   });
 

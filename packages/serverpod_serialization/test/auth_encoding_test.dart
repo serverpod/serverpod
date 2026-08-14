@@ -255,12 +255,15 @@ void main() {
         },
       );
 
-      test('Given auth key "${_stripControlCharacters(key)}" ($descr) when wrapping and unwrapping it as basic auth, '
-           'then it should result in the same value', () {
-        var wrapped = wrapAsBasicAuthHeaderValue(key);
-        var unwrapped = unwrapAuthHeaderValue(wrapped);
-        expect(unwrapped, key);
-      });
+      test(
+        'Given auth key "${_stripControlCharacters(key)}" ($descr) when wrapping and unwrapping it as basic auth, '
+        'then it should result in the same value',
+        () {
+          var wrapped = wrapAsBasicAuthHeaderValue(key);
+          var unwrapped = unwrapAuthHeaderValue(wrapped);
+          expect(unwrapped, key);
+        },
+      );
     }
   });
 
@@ -275,18 +278,21 @@ void main() {
         },
       );
 
-      test('Given bearer token "${_stripControlCharacters(token)}" ($descr) when wrapping and unwrapping it as bearer auth, '
-           'then it should result in the same value', () {
-        var wrapped = wrapAsBearerAuthHeaderValue(token);
-        var unwrapped = unwrapAuthHeaderValue(wrapped);
-        expect(unwrapped, token);
-      });
+      test(
+        'Given bearer token "${_stripControlCharacters(token)}" ($descr) when wrapping and unwrapping it as bearer auth, '
+        'then it should result in the same value',
+        () {
+          var wrapped = wrapAsBearerAuthHeaderValue(token);
+          var unwrapped = unwrapAuthHeaderValue(wrapped);
+          expect(unwrapped, token);
+        },
+      );
     }
   });
 
   test('Given a null auth value, '
-       'when unwrapping it, '
-       'then it should return null', () {
+      'when unwrapping it, '
+      'then it should return null', () {
     expect(unwrapAuthHeaderValue(null), isNull);
   });
 }

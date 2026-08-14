@@ -7,7 +7,10 @@ void main() {
 
   group('Given a ColumnDuration,', () {
     var columnName = 'age';
-    late var column = ColumnDuration(columnName, Table<int?>(tableName: 'test'));
+    late var column = ColumnDuration(
+      columnName,
+      Table<int?>(tableName: 'test'),
+    );
 
     test(
       'when toString is called, '

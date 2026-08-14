@@ -128,7 +128,7 @@ void main() {
       );
 
       test('when calling echoSimpleData, '
-           'then should echo the object', () async {
+          'then should echo the object', () async {
         final data = SimpleData(num: 1);
         var result = await endpoints.testTools.echoSimpleData(
           sessionBuilder,
@@ -345,7 +345,7 @@ void main() {
       });
 
       test('when calling echoRecords, '
-           'then should return the records', () async {
+          'then should return the records', () async {
         final records = [
           ('hello', (2, true)),
           ('world', (4, false)),

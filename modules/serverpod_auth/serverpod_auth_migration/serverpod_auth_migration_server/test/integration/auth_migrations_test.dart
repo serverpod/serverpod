@@ -196,78 +196,81 @@ void main() {
     },
   );
 
-  withServerpod('Given five legacy `serverpod_auth` email-based user accounts,', (
-    final sessionBuilder,
-    final endpoints,
-  ) {
-    late Session session;
-    late UserMigrationFunction userMigration;
+  withServerpod(
+    'Given five legacy `serverpod_auth` email-based user accounts,',
+    (
+      final sessionBuilder,
+      final endpoints,
+    ) {
+      late Session session;
+      late UserMigrationFunction userMigration;
 
-    final migratedUsers = <int, UuidValue>{};
+      final migratedUsers = <int, UuidValue>{};
 
-    setUp(() async {
-      session = sessionBuilder.build();
+      setUp(() async {
+        session = sessionBuilder.build();
 
-      userMigration =
-          (
-            final session, {
-            required final newAuthUserId,
-            required final oldUserId,
-            final transaction,
-          }) async {
-            migratedUsers[oldUserId] = newAuthUserId;
-          };
+        userMigration =
+            (
+              final session, {
+              required final newAuthUserId,
+              required final oldUserId,
+              final transaction,
+            }) async {
+              migratedUsers[oldUserId] = newAuthUserId;
+            };
 
-      for (var i = 0; i < 5; i++) {
-        await legacy_auth.Emails.createUser(
-          session,
-          'user name',
-          'test_$i@serverpod.dev',
-          'Somepassword123!',
-        );
-      }
-    });
+        for (var i = 0; i < 5; i++) {
+          await legacy_auth.Emails.createUser(
+            session,
+            'user name',
+            'test_$i@serverpod.dev',
+            'Somepassword123!',
+          );
+        }
+      });
 
-    tearDown(() {
-      migratedUsers.clear();
-    });
+      tearDown(() {
+        migratedUsers.clear();
+      });
 
-    test(
-      'when calling `migrateUsers` successively, '
-      'then accounts are migrated in the desired batch size.',
-      () async {
-        final migratedAccountsStep1 = await AuthMigrations.migrateUsers(
-          session,
-          userMigration: userMigration,
-          maxUsers: 2,
-          transaction: session.transaction,
-        );
-        expect(migratedAccountsStep1, 2);
-        expect(migratedUsers, hasLength(2));
-        expect(await MigratedUser.db.count(session), 2);
+      test(
+        'when calling `migrateUsers` successively, '
+        'then accounts are migrated in the desired batch size.',
+        () async {
+          final migratedAccountsStep1 = await AuthMigrations.migrateUsers(
+            session,
+            userMigration: userMigration,
+            maxUsers: 2,
+            transaction: session.transaction,
+          );
+          expect(migratedAccountsStep1, 2);
+          expect(migratedUsers, hasLength(2));
+          expect(await MigratedUser.db.count(session), 2);
 
-        final migratedAccountsStep2 = await AuthMigrations.migrateUsers(
-          session,
-          userMigration: userMigration,
-          maxUsers: 2,
-          transaction: session.transaction,
-        );
-        expect(migratedAccountsStep2, 2);
-        expect(migratedUsers, hasLength(4));
-        expect(await MigratedUser.db.count(session), 4);
+          final migratedAccountsStep2 = await AuthMigrations.migrateUsers(
+            session,
+            userMigration: userMigration,
+            maxUsers: 2,
+            transaction: session.transaction,
+          );
+          expect(migratedAccountsStep2, 2);
+          expect(migratedUsers, hasLength(4));
+          expect(await MigratedUser.db.count(session), 4);
 
-        final migratedAccountsStep3 = await AuthMigrations.migrateUsers(
-          session,
-          userMigration: userMigration,
-          maxUsers: 2,
-          transaction: session.transaction,
-        );
-        expect(migratedAccountsStep3, 1);
-        expect(migratedUsers, hasLength(5));
-        expect(await MigratedUser.db.count(session), 5);
-      },
-    );
-  });
+          final migratedAccountsStep3 = await AuthMigrations.migrateUsers(
+            session,
+            userMigration: userMigration,
+            maxUsers: 2,
+            transaction: session.transaction,
+          );
+          expect(migratedAccountsStep3, 1);
+          expect(migratedUsers, hasLength(5));
+          expect(await MigratedUser.db.count(session), 5);
+        },
+      );
+    },
+  );
 
   withServerpod(
     'Given a legacy `serverpod_auth` social-login-based user account migrated with `migrateUsers`,',

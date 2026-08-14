@@ -864,7 +864,7 @@ void main() {
   );
 
   group('Given a class with a field with an explicit column name, '
-        'when generating code,', () {
+      'when generating code,', () {
     const fieldName = 'userName';
     const columnName = 'user_name';
     const columnType = 'String';

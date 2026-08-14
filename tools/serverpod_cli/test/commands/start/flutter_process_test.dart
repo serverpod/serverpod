@@ -436,8 +436,8 @@ void main() {
   );
 
   test('Given a wss URI, '
-       'when getting the http URI, '
-       'then the scheme swaps to https', () {
+      'when getting the http URI, '
+      'then the scheme swaps to https', () {
     // Uri.toString() strips the port when it matches the scheme default.
     expect(
       FlutterProcess.httpFromWs('wss://example.com:9443/ws'),
@@ -446,8 +446,8 @@ void main() {
   });
 
   test('Given a ws URI with a path other than /ws, '
-       'when getting the http URI, '
-       'then the path is left alone', () {
+      'when getting the http URI, '
+      'then the path is left alone', () {
     expect(
       FlutterProcess.httpFromWs('ws://127.0.0.1:54321/different'),
       'http://127.0.0.1:54321/different',

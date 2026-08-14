@@ -32,7 +32,7 @@ void main() {
     );
 
     test('when refresh succeeds, '
-         'then returns new auth header value.', () async {
+        'then returns new auth header value.', () async {
       delegate.setRefresh(() {
         delegate.setAuthKey('refreshed-token');
         return RefreshAuthKeyResult.success;
@@ -45,7 +45,7 @@ void main() {
     });
 
     test('when multiple refreshAuthKey calls are made concurrently, '
-         'then only one call performs refresh due to locking.', () async {
+        'then only one call performs refresh due to locking.', () async {
       delegate.setRefresh(() async {
         await Future.delayed(const Duration(milliseconds: 50));
         return RefreshAuthKeyResult.success;
@@ -59,7 +59,7 @@ void main() {
     });
 
     test('when multiple authHeaderValue calls are made concurrently, '
-         'then only one call performs refresh due to locking.', () async {
+        'then only one call performs refresh due to locking.', () async {
       delegate.setRefresh(() async {
         await Future.delayed(const Duration(milliseconds: 50));
         delegate.setAuthKey('refreshed-token');
@@ -198,7 +198,7 @@ void main() {
     );
 
     test('when refreshing throws an exception, '
-         'then refreshAuthKey rethrows the exception.', () async {
+        'then refreshAuthKey rethrows the exception.', () async {
       delegate.setRefresh(() => throw Exception('Refresh failed'));
 
       await expectLater(provider.refreshAuthKey(), throwsA(isA<Exception>()));
@@ -222,7 +222,7 @@ void main() {
     );
 
     test('when refreshing throws an exception, '
-         'then authHeaderValue rethrows the exception.', () async {
+        'then authHeaderValue rethrows the exception.', () async {
       delegate.setRefresh(() => throw Exception('Refresh failed'));
 
       await expectLater(provider.authHeaderValue, throwsA(isA<Exception>()));
@@ -246,7 +246,7 @@ void main() {
     );
 
     test('when calling refreshAuthKey without setting force parameter, '
-         'then delegate is called with force set to false.', () async {
+        'then delegate is called with force set to false.', () async {
       delegate.setRefresh(() => RefreshAuthKeyResult.failedUnauthorized);
 
       await provider.refreshAuthKey();
@@ -255,7 +255,7 @@ void main() {
     });
 
     test('when calling refreshAuthKey with force parameter set to true, '
-         'then delegate is also called with force set to true.', () async {
+        'then delegate is also called with force set to true.', () async {
       delegate.setRefresh(() => RefreshAuthKeyResult.failedUnauthorized);
 
       await provider.refreshAuthKey(force: true);

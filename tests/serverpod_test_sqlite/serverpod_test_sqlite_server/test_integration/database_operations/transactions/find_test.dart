@@ -201,8 +201,8 @@ void main() async {
   });
 
   test('Given list relation, '
-       'when creating all objects inside a transaction, '
-       'then includeList should include the related objects', () async {
+      'when creating all objects inside a transaction, '
+      'then includeList should include the related objects', () async {
     await session.db.transaction((transaction) async {
       var serverpod = await Organization.db.insertRow(
         session,
@@ -252,7 +252,7 @@ void main() async {
     });
 
     test('when creating all objects inside a transaction, '
-         'then includeList should include the nested related objects', () async {
+        'then includeList should include the nested related objects', () async {
       await session.db.transaction((transaction) async {
         var stockholm = await City.db.insertRow(
           session,

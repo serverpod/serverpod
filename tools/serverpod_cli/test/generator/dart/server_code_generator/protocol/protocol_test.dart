@@ -690,7 +690,7 @@ void main() {
   );
 
   group('Given a model with vector fields, '
-        'when generating protocol files,', () {
+      'when generating protocol files,', () {
     var testModelName = 'ModelWithVector';
     var testModelFileName = 'model_with_vector';
 

@@ -518,7 +518,9 @@ void main() {
 
     // The secret the client presents. The pre-fix digest is
     // sha512(secret + pepper), with the stored salt never mixed in.
-    late final secret = Uint8List.fromList(List.generate(32, (final i) => i + 7));
+    late final secret = Uint8List.fromList(
+      List.generate(32, (final i) => i + 7),
+    );
 
     setUp(() async {
       session = sessionBuilder.build();

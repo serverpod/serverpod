@@ -23,7 +23,7 @@ void main() {
       });
 
       test('when finding rows with lock mode forUpdate, '
-           'then the query succeeds and returns the locked rows.', () async {
+          'then the query succeeds and returns the locked rows.', () async {
         await session.db.transaction((transaction) async {
           final rows = await SimpleData.db.find(
             session,
@@ -38,7 +38,7 @@ void main() {
       });
 
       test('when finding rows with lock mode forShare, '
-           'then the query succeeds and returns the locked rows.', () async {
+          'then the query succeeds and returns the locked rows.', () async {
         await session.db.transaction((transaction) async {
           final rows = await SimpleData.db.find(
             session,
@@ -53,7 +53,7 @@ void main() {
       });
 
       test('when finding a row by id with lock mode forUpdate, '
-           'then the query succeeds and returns the locked row.', () async {
+          'then the query succeeds and returns the locked row.', () async {
         await session.db.transaction((transaction) async {
           final row = await SimpleData.db.findById(
             session,
@@ -68,7 +68,7 @@ void main() {
       });
 
       test('when finding first row with lock mode forUpdate, '
-           'then the query succeeds and returns the locked row.', () async {
+          'then the query succeeds and returns the locked row.', () async {
         await session.db.transaction((transaction) async {
           final row = await SimpleData.db.findFirstRow(
             session,
@@ -83,7 +83,7 @@ void main() {
       });
 
       test('when locking rows without returning data, '
-           'then the query succeeds and the row is still accessible.', () async {
+          'then the query succeeds and the row is still accessible.', () async {
         await session.db.transaction((transaction) async {
           await SimpleData.db.lockRows(
             session,
@@ -455,7 +455,7 @@ void main() {
       });
 
       test('when using find with lockMode, '
-           'then throws ArgumentError.', () async {
+          'then throws ArgumentError.', () async {
         expect(
           () => SimpleData.db.find(
             session,
@@ -467,7 +467,7 @@ void main() {
       });
 
       test('when using findById with lockMode, '
-           'then throws ArgumentError.', () async {
+          'then throws ArgumentError.', () async {
         expect(
           () => SimpleData.db.findById(
             session,
@@ -479,7 +479,7 @@ void main() {
       });
 
       test('when using findFirstRow with lockMode, '
-           'then throws ArgumentError.', () async {
+          'then throws ArgumentError.', () async {
         expect(
           () => SimpleData.db.findFirstRow(
             session,

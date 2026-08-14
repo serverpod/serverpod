@@ -35,7 +35,9 @@ void main() {
       config: config,
     );
 
-    late var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late var compilationUnit = parseString(
+      content: codeMap[expectedFilePath]!,
+    ).unit;
 
     test(
       'then a class named ${testClassName}AttachRowRepository is NOT generated',
@@ -156,7 +158,7 @@ void main() {
           CompilationUnitHelpers.tryFindClassDeclaration(
             compilationUnit,
             name: '${testClassName}AttachRowRepository',
-          );
+          )!;
 
       group(
         'then the ${testClassName}AttachRowRepository',
@@ -164,7 +166,7 @@ void main() {
           test('has a private constructor', () {
             var constructor =
                 CompilationUnitHelpers.tryFindConstructorDeclaration(
-                  repositoryAttachClass!,
+                  repositoryAttachClass,
                   name: '_',
                 );
             expect(
@@ -174,10 +176,11 @@ void main() {
             );
           });
 
-          late var companyMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            repositoryAttachClass!,
-            name: 'company',
-          );
+          late var companyMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                repositoryAttachClass,
+                name: 'company',
+              );
 
           test('has a company method defined.', () {
             expect(companyMethod, isNotNull, reason: 'Missing company method.');
@@ -196,10 +199,11 @@ void main() {
             skip: companyMethod == null,
           );
 
-          late var addressMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            repositoryAttachClass,
-            name: 'address',
-          );
+          late var addressMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                repositoryAttachClass,
+                name: 'address',
+              )!;
 
           test('has a address method defined.', () {
             expect(addressMethod, isNotNull, reason: 'Missing address method.');
@@ -209,13 +213,12 @@ void main() {
             'the address method has the input params of session, example, address and named param transaction',
             () {
               expect(
-                addressMethod?.parameters?.toSource(),
+                addressMethod.parameters?.toSource(),
                 matches(
                   r'\(_i\d\.DatabaseSession session, Example example, Address address, \{_i\d\.Transaction\? transaction\}\)',
                 ),
               );
             },
-            skip: addressMethod == null,
           );
 
           test('has no method for the id field', () {
@@ -270,14 +273,14 @@ void main() {
           CompilationUnitHelpers.tryFindClassDeclaration(
             compilationUnit,
             name: '${testClassName}DetachRowRepository',
-          );
+          )!;
       group(
         'then the ${testClassName}DetachRowRepository',
         () {
           test('has a private constructor', () {
             var constructor =
                 CompilationUnitHelpers.tryFindConstructorDeclaration(
-                  repositoryDetachClass!,
+                  repositoryDetachClass,
                   name: '_',
                 );
             expect(
@@ -287,10 +290,11 @@ void main() {
             );
           });
 
-          late var companyMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            repositoryDetachClass!,
-            name: 'company',
-          );
+          late var companyMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                repositoryDetachClass,
+                name: 'company',
+              );
 
           test('has a company method defined.', () {
             expect(companyMethod, isNotNull, reason: 'Missing company method.');
@@ -309,10 +313,11 @@ void main() {
             skip: companyMethod == null,
           );
 
-          late var addressMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            repositoryDetachClass,
-            name: 'address',
-          );
+          late var addressMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                repositoryDetachClass,
+                name: 'address',
+              );
 
           test(
             'has NOT an address method defined for none nullable relation.',
@@ -441,10 +446,11 @@ void main() {
       group(
         'then the address method is not generated for none nullable relation.',
         () {
-          late var addressMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            repositoryDetachClass!,
-            name: 'address',
-          );
+          late var addressMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                repositoryDetachClass!,
+                name: 'address',
+              );
 
           test('', () {
             expect(addressMethod, isNull, reason: 'Missing address method.');
@@ -480,10 +486,11 @@ void main() {
         content: codeMap[expectedFilePath]!,
       ).unit;
 
-      late var attachRowRepository = CompilationUnitHelpers.tryFindClassDeclaration(
-        compilationUnit,
-        name: '${testClassName}AttachRowRepository',
-      );
+      late var attachRowRepository =
+          CompilationUnitHelpers.tryFindClassDeclaration(
+            compilationUnit,
+            name: '${testClassName}AttachRowRepository',
+          );
 
       group('then the attach method for example', () {
         late var method = CompilationUnitHelpers.tryFindMethodDeclaration(
@@ -547,15 +554,17 @@ void main() {
         content: codeMap[multiWordExpectedFilePath]!,
       ).unit;
 
-      late var attachRowRepository = CompilationUnitHelpers.tryFindClassDeclaration(
-        compilationUnit,
-        name: '${multiWordClassName}AttachRowRepository',
-      );
+      late var attachRowRepository =
+          CompilationUnitHelpers.tryFindClassDeclaration(
+            compilationUnit,
+            name: '${multiWordClassName}AttachRowRepository',
+          );
 
-      late var detachRowRepository = CompilationUnitHelpers.tryFindClassDeclaration(
-        compilationUnit,
-        name: '${multiWordClassName}DetachRowRepository',
-      );
+      late var detachRowRepository =
+          CompilationUnitHelpers.tryFindClassDeclaration(
+            compilationUnit,
+            name: '${multiWordClassName}DetachRowRepository',
+          );
 
       group('then the attach method for address', () {
         late var method = CompilationUnitHelpers.tryFindMethodDeclaration(

@@ -554,7 +554,8 @@ void main() {
         () {
           late Completer<BadRequestMessage> badRequestMessage;
           late Completer<void> webSocketCompleter;
-          late TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
+          late TestCompleterTimeout testCompleterTimeout =
+              TestCompleterTimeout();
 
           late var connectionId = const Uuid().v4obj();
 

@@ -251,8 +251,8 @@ void main() {
   });
 
   test('Given version subcommand, '
-       'when run, '
-       'then prints only version', () async {
+      'when run, '
+      'then prints only version', () async {
     await fixture.runner.run(['version']);
 
     var logOutput = fixture.logOutput;

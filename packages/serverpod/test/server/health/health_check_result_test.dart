@@ -53,7 +53,7 @@ void main() {
   });
 
   group('Given a HealthIndicator, '
-        'when pass() is called with observedValue,', () {
+      'when pass() is called with observedValue,', () {
     late HealthCheckResult result;
 
     setUp(() {
@@ -71,7 +71,7 @@ void main() {
   });
 
   group('Given a HealthIndicator, '
-        'when pass() is called with explicit time,', () {
+      'when pass() is called with explicit time,', () {
     late HealthCheckResult result;
     late final explicitTime = DateTime.utc(2024, 1, 15, 10, 30, 0);
 

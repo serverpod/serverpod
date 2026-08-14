@@ -271,7 +271,7 @@ void main() {
   );
 
   group('Given a grandparent non-table class with id defined and a grandchild table class that extends its parent, '
-        'when analyzing,', () {
+      'when analyzing,', () {
     late var modelSources = [
       ModelSourceBuilder().withYaml(
         '''
@@ -422,7 +422,7 @@ void main() {
   );
 
   group('Given a parent non-table class with a declared id field using a constant default value and a child table class that extends it, '
-        'when analyzing,', () {
+      'when analyzing,', () {
     late var modelSources = [
       ModelSourceBuilder().withYaml(
         '''
@@ -469,7 +469,7 @@ void main() {
   });
 
   group('Given a parent non-table class with id field of type UuidValue and no default value and a child table class that extends it, '
-        'when analyzing,', () {
+      'when analyzing,', () {
     late var modelSources = [
       ModelSourceBuilder().withYaml(
         '''

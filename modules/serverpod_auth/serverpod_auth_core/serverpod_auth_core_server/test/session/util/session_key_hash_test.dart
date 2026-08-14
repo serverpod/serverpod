@@ -122,7 +122,9 @@ void main() {
       late final secret = Uint8List.fromList(List.generate(32, (final i) => i));
 
       // Any stored salt: the pre-fix digest never mixed it in.
-      late final salt = Uint8List.fromList(List.generate(16, (final i) => 255 - i));
+      late final salt = Uint8List.fromList(
+        List.generate(16, (final i) => 255 - i),
+      );
 
       late final legacyHash = _legacySaltlessHash(secret, 'test-pepper');
 
@@ -234,7 +236,9 @@ void main() {
       );
 
       late final secret = Uint8List.fromList(List.generate(32, (final i) => i));
-      late final salt = Uint8List.fromList(List.generate(16, (final i) => 255 - i));
+      late final salt = Uint8List.fromList(
+        List.generate(16, (final i) => 255 - i),
+      );
 
       // An empty hash reached `hash[0]` and threw a RangeError, turning a
       // corrupt row into a server error rather than a failed authentication.

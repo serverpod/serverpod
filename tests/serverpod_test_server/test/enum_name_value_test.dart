@@ -7,24 +7,24 @@ void main() {
     () {
       group('when calling "toString()"', () {
         test('on the value "type", '
-             'then it should return the Dart code name "type"', () {
+            'then it should return the Dart code name "type"', () {
           expect(ByNameEnumWithNameValue.type.toString(), 'type');
         });
 
         test('on the value "name", '
-             'then it should return the Dart code name "name"', () {
+            'then it should return the Dart code name "name"', () {
           expect(ByNameEnumWithNameValue.name.toString(), 'name');
         });
       });
 
       group('when calling "toJson()"', () {
         test('on the value "type", '
-             'then it should return the Dart code name "type"', () {
+            'then it should return the Dart code name "type"', () {
           expect(ByNameEnumWithNameValue.type.toJson(), 'type');
         });
 
         test('on the value "name", '
-             'then it should return the Dart code name "name"', () {
+            'then it should return the Dart code name "name"', () {
           expect(ByNameEnumWithNameValue.name.toJson(), 'name');
         });
       });
@@ -56,24 +56,24 @@ void main() {
     () {
       group('when calling "toString()"', () {
         test('on the value "type", '
-             'then it should return the Dart code name "type"', () {
+            'then it should return the Dart code name "type"', () {
           expect(ByIndexEnumWithNameValue.type.toString(), 'type');
         });
 
         test('on the value "name", '
-             'then it should return the Dart code name "name"', () {
+            'then it should return the Dart code name "name"', () {
           expect(ByIndexEnumWithNameValue.name.toString(), 'name');
         });
       });
 
       group('when calling "toJson()"', () {
         test('on the value "type", '
-             'then it should return the Dart code name "type"', () {
+            'then it should return the Dart code name "type"', () {
           expect(ByIndexEnumWithNameValue.type.toJson(), 0);
         });
 
         test('on the value "name", '
-             'then it should return the Dart code name "name"', () {
+            'then it should return the Dart code name "name"', () {
           expect(ByIndexEnumWithNameValue.name.toJson(), 1);
         });
       });

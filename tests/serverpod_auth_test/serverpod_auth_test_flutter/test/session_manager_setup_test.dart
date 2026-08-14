@@ -10,7 +10,9 @@ void main() {
   group('Given a `Client` declaration,', () {
     group('when creating the session manager directly,', () {
       late final client = Client('http://localhost:8080/');
-      late final authSessionManager = FlutterAuthSessionManager(storage: storage);
+      late final authSessionManager = FlutterAuthSessionManager(
+        storage: storage,
+      );
 
       test('then accessing `client.auth` throws.', () {
         expect(() => client.auth, throwsStateError);
@@ -65,22 +67,30 @@ void main() {
     });
   });
 
-  group('Given more than one Client sharing the same auth session manager,', () {
-    late final sharedSessionManager = FlutterAuthSessionManager(storage: storage);
+  group(
+    'Given more than one Client sharing the same auth session manager,',
+    () {
+      late final sharedSessionManager = FlutterAuthSessionManager(
+        storage: storage,
+      );
 
-    late final client1 = Client('http://localhost:8080/')
-      ..authSessionManager = sharedSessionManager;
-    late final client2 = Client('http://localhost:8080/')
-      ..authSessionManager = sharedSessionManager;
+      late final client1 = Client('http://localhost:8080/')
+        ..authSessionManager = sharedSessionManager;
+      late final client2 = Client('http://localhost:8080/')
+        ..authSessionManager = sharedSessionManager;
 
-    test('when accessing `client.auth`, then it is the same instance.', () {
-      expect(client1.auth, sharedSessionManager);
-      expect(client1.auth, client2.auth);
-    });
+      test('when accessing `client.auth`, then it is the same instance.', () {
+        expect(client1.auth, sharedSessionManager);
+        expect(client1.auth, client2.auth);
+      });
 
-    test('when retrieving caller from `client.auth`, '
-         'then it is the caller from the latest configured client.', () {
-      expect(sharedSessionManager.caller, client2.modules.serverpod_auth_core);
-    });
-  });
+      test('when retrieving caller from `client.auth`, '
+          'then it is the caller from the latest configured client.', () {
+        expect(
+          sharedSessionManager.caller,
+          client2.modules.serverpod_auth_core,
+        );
+      });
+    },
+  );
 }

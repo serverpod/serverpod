@@ -195,7 +195,7 @@ void main() {
             "('[\"dart\",\"flutter\"]'), ('[]'), ('[\"special\"]')",
           );
 
-          // Migrate json → jsonb
+          // Migrate json -> jsonb
           var exitCode = await MigrationTestUtils.createMigrationFromProtocols(
             protocols: jsonbProtocol,
             tag: tag,
@@ -203,7 +203,7 @@ void main() {
           expect(exitCode, 0);
           expect(await MigrationTestUtils.runApplyMigrations(), 0);
 
-          // Verify data preserved after json → jsonb
+          // Verify data preserved after json -> jsonb
           var resultAfterJsonb = await serviceClient.insights.runQueries([
             'SELECT data FROM migrated_table ORDER BY id;',
           ]);
@@ -214,7 +214,7 @@ void main() {
           expect(rowsAfterJsonb[1][0], []);
           expect(rowsAfterJsonb[2][0], ['special']);
 
-          // Migrate jsonb → json
+          // Migrate jsonb -> json
           exitCode = await MigrationTestUtils.createMigrationFromProtocols(
             protocols: jsonProtocol,
             tag: tag,
@@ -222,7 +222,7 @@ void main() {
           expect(exitCode, 0);
           expect(await MigrationTestUtils.runApplyMigrations(), 0);
 
-          // Verify data preserved after jsonb → json
+          // Verify data preserved after jsonb -> json
           var resultAfterJson = await serviceClient.insights.runQueries([
             'SELECT data FROM migrated_table ORDER BY id;',
           ]);

@@ -39,7 +39,9 @@ void main() {
       config: config,
     );
 
-    late var compilationUnit = parseString(content: codeMap[expectedFileName]!).unit;
+    late var compilationUnit = parseString(
+      content: codeMap[expectedFileName]!,
+    ).unit;
 
     test('then generated class imports client version of serverpod.', () {
       expect(
@@ -53,10 +55,11 @@ void main() {
       );
     });
 
-    late var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
-      compilationUnit,
-      name: testClassName,
-    );
+    late var maybeClassNamedExample =
+        CompilationUnitHelpers.tryFindClassDeclaration(
+          compilationUnit,
+          name: testClassName,
+        );
 
     test('then a class named $testClassName is generated.', () {
       expect(
@@ -161,11 +164,14 @@ void main() {
       config: config,
     );
 
-    late var compilationUnit = parseString(content: codeMap[expectedFileName]!).unit;
-    late var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
-      compilationUnit,
-      name: testClassName,
-    );
+    late var compilationUnit = parseString(
+      content: codeMap[expectedFileName]!,
+    ).unit;
+    late var maybeClassNamedExample =
+        CompilationUnitHelpers.tryFindClassDeclaration(
+          compilationUnit,
+          name: testClassName,
+        );
     group(
       'then the class named $testClassName',
       () {
@@ -235,11 +241,14 @@ void main() {
       config: config,
     );
 
-    late var compilationUnit = parseString(content: codeMap[expectedFileName]!).unit;
-    late var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
-      compilationUnit,
-      name: testClassName,
-    );
+    late var compilationUnit = parseString(
+      content: codeMap[expectedFileName]!,
+    ).unit;
+    late var maybeClassNamedExample =
+        CompilationUnitHelpers.tryFindClassDeclaration(
+          compilationUnit,
+          name: testClassName,
+        );
 
     group(
       'then the class name $testClassName',
@@ -288,11 +297,14 @@ void main() {
       config: config,
     );
 
-    late var compilationUnit = parseString(content: codeMap[expectedFileName]!).unit;
-    late var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
-      compilationUnit,
-      name: testClassName,
-    );
+    late var compilationUnit = parseString(
+      content: codeMap[expectedFileName]!,
+    ).unit;
+    late var maybeClassNamedExample =
+        CompilationUnitHelpers.tryFindClassDeclaration(
+          compilationUnit,
+          name: testClassName,
+        );
 
     group(
       'then the class named $testClassName',
@@ -493,12 +505,15 @@ void main() {
       config: config,
     );
 
-    late var compilationUnit = parseString(content: codeMap[expectedFileName]!).unit;
+    late var compilationUnit = parseString(
+      content: codeMap[expectedFileName]!,
+    ).unit;
 
-    late var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
-      compilationUnit,
-      name: testClassName,
-    );
+    late var maybeClassNamedExample =
+        CompilationUnitHelpers.tryFindClassDeclaration(
+          compilationUnit,
+          name: testClassName,
+        );
     test(
       'then class implements SerializableException.',
       () {

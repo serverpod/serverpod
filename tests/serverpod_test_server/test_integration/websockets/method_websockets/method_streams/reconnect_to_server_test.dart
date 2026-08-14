@@ -26,8 +26,8 @@ void main() {
   });
 
   test('Given a connected streaming method, '
-       'when server is restarted, '
-       'then streaming method can successfully reconnect.', () async {
+      'when server is restarted, '
+      'then streaming method can successfully reconnect.', () async {
     // This method constantly yields a new integer every [delay] milliseconds.
     var outStream = client.methodStreaming.neverEndingStreamWithDelay(100);
     {

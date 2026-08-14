@@ -518,7 +518,7 @@ void main() {
       );
 
       test('when creating multiple SimpleData in parallel, '
-           'then should have inserted all', () async {
+          'then should have inserted all', () async {
         await Future.wait([
           SimpleData.db.insertRow(
             session,
@@ -591,7 +591,7 @@ void main() {
         });
 
         test('when calling database operation updateRow, '
-             'then should update row', () async {
+            'then should update row', () async {
           insertedSimpleData1.num = 10;
           var updatedSimpleData = await SimpleData.db.updateRow(
             session,
@@ -601,7 +601,7 @@ void main() {
         });
 
         test('when calling database operation update, '
-             'then should update rows', () async {
+            'then should update rows', () async {
           var simpleDatas = await SimpleData.db.update(
             session,
             insertedSimpleDatas.map((s) => s..num = s.num + 10).toList(),
@@ -610,7 +610,7 @@ void main() {
         });
 
         test('when calling database operation findById, '
-             'then should find the saved row by id', () async {
+            'then should find the saved row by id', () async {
           var simpleData = await SimpleData.db.findById(
             session,
             insertedSimpleData1.id!,
@@ -620,7 +620,7 @@ void main() {
         });
 
         test('when calling database operation findFirstRow, '
-             'then should be possible to find first row', () async {
+            'then should be possible to find first row', () async {
           var simpleData = await SimpleData.db.findFirstRow(session);
 
           expect(simpleData, isNotNull);
@@ -628,13 +628,13 @@ void main() {
         });
 
         test('when calling database operation find, '
-             'then should be possible to find all rows', () async {
+            'then should be possible to find all rows', () async {
           var simpleDatas = await SimpleData.db.find(session);
           expect(simpleDatas.length, 2);
         });
 
         test('when calling database operation deleteRow, '
-             'then should delete rows', () async {
+            'then should delete rows', () async {
           await SimpleData.db.deleteRow(session, insertedSimpleData1);
           var simpleDatas = await SimpleData.db.find(session);
           expect(simpleDatas.length, 1);
@@ -642,7 +642,7 @@ void main() {
         });
 
         test('when calling database operation deleteWhere, '
-             'then rows should be deleted', () async {
+            'then rows should be deleted', () async {
           await SimpleData.db.deleteWhere(
             session,
             where: (t) => t.num.equals(1),
@@ -655,7 +655,7 @@ void main() {
         });
 
         test('when calling database operation delete, '
-             'then rows should be deleted', () async {
+            'then rows should be deleted', () async {
           await SimpleData.db.delete(
             session,
             insertedSimpleDatas,
@@ -666,7 +666,7 @@ void main() {
         });
 
         test('when calling database operation count, '
-             'then rows should be counted', () async {
+            'then rows should be counted', () async {
           var count = await SimpleData.db.count(session);
           expect(count, 2);
         });

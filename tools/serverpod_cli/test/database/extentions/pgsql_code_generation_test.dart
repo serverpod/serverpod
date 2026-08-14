@@ -12,7 +12,7 @@ import '../../test_util/builders/model_class_definition_builder.dart';
 
 void main() {
   group('Given classes with a circular relation, '
-        'when generating migration,', () {
+      'when generating migration,', () {
     /**
      * Citizen -> Company -> Town -> Citizen
      */

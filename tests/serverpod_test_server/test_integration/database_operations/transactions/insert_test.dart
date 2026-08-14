@@ -71,36 +71,42 @@ void main() async {
     },
   );
 
-  group('Given inserting an object inside a transaction that is committed,', () {
-    late UniqueData data = UniqueData(number: 111, email: 'test@serverpod.dev');
+  group(
+    'Given inserting an object inside a transaction that is committed,',
+    () {
+      late UniqueData data = UniqueData(
+        number: 111,
+        email: 'test@serverpod.dev',
+      );
 
-    test('when calling `insert`, then does create the object.', () async {
-      await session.db.transaction((transaction) async {
-        await UniqueData.db.insert(
-          session,
-          [data],
-          transaction: transaction,
-        );
+      test('when calling `insert`, then does create the object.', () async {
+        await session.db.transaction((transaction) async {
+          await UniqueData.db.insert(
+            session,
+            [data],
+            transaction: transaction,
+          );
+        });
+
+        var insertedData = await UniqueData.db.find(session);
+        expect(insertedData, hasLength(1));
+        expect(insertedData.first.number, 111);
       });
 
-      var insertedData = await UniqueData.db.find(session);
-      expect(insertedData, hasLength(1));
-      expect(insertedData.first.number, 111);
-    });
+      test('when calling `insertRow`, then does create the object.', () async {
+        await session.db.transaction((transaction) async {
+          await UniqueData.db.insertRow(
+            session,
+            data,
+            transaction: transaction,
+          );
+        });
 
-    test('when calling `insertRow`, then does create the object.', () async {
-      await session.db.transaction((transaction) async {
-        await UniqueData.db.insertRow(
-          session,
-          data,
-          transaction: transaction,
-        );
+        var insertedData = await UniqueData.db.findFirstRow(session);
+        expect(insertedData?.number, 111);
       });
-
-      var insertedData = await UniqueData.db.findFirstRow(session);
-      expect(insertedData?.number, 111);
-    });
-  });
+    },
+  );
 
   group('Given starting transaction that is cancelled,', () {
     late UniqueData data = UniqueData(number: 111, email: 'test@serverpod.dev');

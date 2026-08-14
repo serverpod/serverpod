@@ -14,7 +14,7 @@ void main() {
       late var session = sessionBuilder.build();
 
       test('when inserting an object, '
-           'then should be persisted if transaction completes', () async {
+          'then should be persisted if transaction completes', () async {
         await session.db.transaction((transaction) async {
           await SimpleData.db.insertRow(
             session,
@@ -58,7 +58,7 @@ void main() {
       );
 
       test('when inserting objects in parallel, '
-           'then should be persisted if transaction completes', () async {
+          'then should be persisted if transaction completes', () async {
         await session.db.transaction((transaction) async {
           await Future.wait([
             SimpleData.db.insertRow(
@@ -86,7 +86,7 @@ void main() {
       });
 
       test('when inserting an object in parallel to a transaction, '
-           'then should throw exception due to concurrent operations', () async {
+          'then should throw exception due to concurrent operations', () async {
         var future = Future.wait([
           session.db.transaction((transaction) {
             return SimpleData.db.insertRow(
@@ -115,7 +115,7 @@ void main() {
       });
 
       test('when inserting an object without transaction but is executed inside a transaction, '
-           'then should throw exception due to concurrent operations', () async {
+          'then should throw exception due to concurrent operations', () async {
         var future = session.db.transaction((tx) async {
           await SimpleData.db.insertRow(
             session,
@@ -141,7 +141,7 @@ void main() {
       });
 
       test('when executing transactions in parallel, '
-           'then should throw exception due to concurrent operations', () async {
+          'then should throw exception due to concurrent operations', () async {
         var future = Future.wait([
           session.db.transaction((tx) async {}),
           session.db.transaction((tx) async {}),
@@ -162,7 +162,7 @@ void main() {
       });
 
       test('when database exception occurs, '
-           'then should not fail `dart test` by leaking exceptions', () async {
+          'then should not fail `dart test` by leaking exceptions', () async {
         var future = session.db.transaction((transaction) async {
           var data = UniqueData(number: 1, email: 'test@test.com');
           await UniqueData.db.insertRow(
@@ -242,7 +242,7 @@ void main() {
       });
 
       test('when next test is run, '
-           'then database operations should still work', () async {
+          'then database operations should still work', () async {
         await SimpleData.db.insertRow(session, SimpleData(num: 1));
 
         expect(await SimpleData.db.find(session), hasLength(1));
@@ -264,7 +264,7 @@ void main() {
       });
 
       test('when inserting an object in parallel to a transaction, '
-           'then should persist both', () async {
+          'then should persist both', () async {
         await Future.wait([
           session.db.transaction((transaction) {
             return SimpleData.db.insertRow(
@@ -308,7 +308,7 @@ void main() {
       );
 
       test('when inserting objects inside transactions in parallel, '
-           'then should persist objects', () async {
+          'then should persist objects', () async {
         await Future.wait([
           session.db.transaction(
             (transaction) => SimpleData.db.insertRow(

@@ -81,37 +81,44 @@ void main() {
     );
   });
 
-  group('Given a CustomEndpointConfig with HTTPS base URI and path prefix,', () {
-    late CustomEndpointConfig config;
+  group(
+    'Given a CustomEndpointConfig with HTTPS base URI and path prefix,',
+    () {
+      late CustomEndpointConfig config;
 
-    setUp(() {
-      config = CustomEndpointConfig(
-        baseUri: Uri.https('s3.example.com', '/v1/storage'),
-        serviceName: 'Custom S3',
+      setUp(() {
+        config = CustomEndpointConfig(
+          baseUri: Uri.https('s3.example.com', '/v1/storage'),
+          serviceName: 'Custom S3',
+        );
+      });
+
+      test(
+        'when building bucket URI, '
+        'then it correctly joins the base path with bucket',
+        () {
+          final uri = config.buildBucketUri('my-bucket', 'us-east-1');
+
+          expect(uri.scheme, 'https');
+          expect(uri.path, '/v1/storage/my-bucket');
+        },
       );
-    });
 
-    test(
-      'when building bucket URI, '
-      'then it correctly joins the base path with bucket',
-      () {
-        final uri = config.buildBucketUri('my-bucket', 'us-east-1');
+      test(
+        'when building public URI, '
+        'then it correctly joins all path components',
+        () {
+          final uri = config.buildPublicUri(
+            'my-bucket',
+            'us-east-1',
+            'file.txt',
+          );
 
-        expect(uri.scheme, 'https');
-        expect(uri.path, '/v1/storage/my-bucket');
-      },
-    );
-
-    test(
-      'when building public URI, '
-      'then it correctly joins all path components',
-      () {
-        final uri = config.buildPublicUri('my-bucket', 'us-east-1', 'file.txt');
-
-        expect(uri.path, '/v1/storage/my-bucket/file.txt');
-      },
-    );
-  });
+          expect(uri.path, '/v1/storage/my-bucket/file.txt');
+        },
+      );
+    },
+  );
 
   test(
     'Given a CustomEndpointConfig with default service name, '

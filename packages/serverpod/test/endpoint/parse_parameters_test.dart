@@ -117,7 +117,7 @@ void main() {
     };
 
     test('when parsing valid parameter string, '
-         'then parameters are parsed.', () {
+        'then parameters are parsed.', () {
       expect(
         parseParameters(
           {'arg1': 42, 'arg2': 'value'},

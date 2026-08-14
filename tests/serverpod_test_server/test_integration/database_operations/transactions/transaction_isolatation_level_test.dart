@@ -36,7 +36,7 @@ void main() async {
           });
 
           test('when row is modified after first statement in transaction, '
-               'then transaction observes the updated value.', () async {
+              'then transaction observes the updated value.', () async {
             var c1 = Completer();
             var c2 = Completer();
             var transactionFuture = session.db.transaction(
@@ -92,7 +92,7 @@ void main() async {
       );
 
       test('when row is modified after first statement in transaction, '
-           'then transaction does NOT observe the updated value.', () async {
+          'then transaction does NOT observe the updated value.', () async {
         var testData = await SimpleData.db.insertRow(
           session,
           SimpleData(num: 1),
@@ -132,7 +132,7 @@ void main() async {
       });
 
       test('when read row is concurrently modified by other transaction, '
-           'then modifications are preserved', () async {
+          'then modifications are preserved', () async {
         var testData1 = await SimpleData.db.insertRow(
           session,
           SimpleData(num: 1),
@@ -217,7 +217,7 @@ void main() async {
       );
 
       test('when row is modified after first statement in transaction, '
-           'then transaction does NOT observe the updated value.', () async {
+          'then transaction does NOT observe the updated value.', () async {
         var testData = await SimpleData.db.insertRow(
           session,
           SimpleData(num: 1),
@@ -256,7 +256,7 @@ void main() async {
       });
 
       test('when read row is concurrently modified by other transaction, '
-           'then database exception is thrown for one transaction', () async {
+          'then database exception is thrown for one transaction', () async {
         var testData1 = await SimpleData.db.insertRow(
           session,
           SimpleData(num: 1),

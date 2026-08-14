@@ -9,8 +9,8 @@ void main() {
   const migrationApiVersion = DatabaseConstants.migrationApiVersion;
 
   test('Given a v2 definition, '
-       'when normalized, '
-       'then it is returned unchanged.', () {
+      'when normalized, '
+      'then it is returned unchanged.', () {
     var def = DatabaseDefinition(
       schemaVersion: 2,
       moduleName: moduleName,
@@ -41,8 +41,8 @@ void main() {
   });
 
   test('Given a v1 definition, '
-       'when normalized, '
-       'then the schemaVersion is set to 2.', () {
+      'when normalized, '
+      'then the schemaVersion is set to 2.', () {
     var def = DatabaseDefinition(
       moduleName: moduleName,
       tables: [
@@ -70,8 +70,8 @@ void main() {
   });
 
   test('Given a v1 definition with a serial default, '
-       'when normalized, '
-       'then the serial default is converted to "serial".', () {
+      'when normalized, '
+      'then the serial default is converted to "serial".', () {
     var def = DatabaseDefinition(
       moduleName: moduleName,
       tables: [
@@ -171,8 +171,8 @@ void main() {
   );
 
   test('Given a v1 definition with a "CURRENT_TIMESTAMP" default, '
-       'when normalized, '
-       'then the CURRENT_TIMESTAMP default is converted to "now".', () {
+      'when normalized, '
+      'then the CURRENT_TIMESTAMP default is converted to "now".', () {
     var def = DatabaseDefinition(
       moduleName: moduleName,
       tables: [
@@ -377,8 +377,8 @@ void main() {
   );
 
   test('Given a v1 definition with a String column with a literal default, '
-       'when normalized, '
-       'then the literal default is restored to the original model value.', () {
+      'when normalized, '
+      'then the literal default is restored to the original model value.', () {
     var def = DatabaseDefinition(
       moduleName: moduleName,
       tables: [
@@ -442,8 +442,8 @@ void main() {
   );
 
   test('Given a v1 definition with a "gen_random_uuid()" default, '
-       'when normalized, '
-       'then the gen_random_uuid default is converted to "random".', () {
+      'when normalized, '
+      'then the gen_random_uuid default is converted to "random".', () {
     var def = DatabaseDefinition(
       moduleName: moduleName,
       tables: [
@@ -474,8 +474,8 @@ void main() {
   });
 
   test('Given a v1 definition with a "gen_random_uuid_v7()" default, '
-       'when normalized, '
-       'then the gen_random_uuid_v7 default is converted to random_v7.', () {
+      'when normalized, '
+      'then the gen_random_uuid_v7 default is converted to random_v7.', () {
     var def = DatabaseDefinition(
       moduleName: moduleName,
       tables: [
@@ -540,8 +540,8 @@ void main() {
   );
 
   test('Given a v1 definition with a primary key index, '
-       'when normalized, '
-       'then the primary key index is removed.', () {
+      'when normalized, '
+      'then the primary key index is removed.', () {
     var def = DatabaseDefinition(
       moduleName: moduleName,
       tables: [
@@ -596,8 +596,8 @@ void main() {
   });
 
   test('Given a migration with no alter table actions, '
-       'when normalized, '
-       'then it is returned unchanged.', () {
+      'when normalized, '
+      'then it is returned unchanged.', () {
     var migration = DatabaseMigration(
       actions: [
         DatabaseMigrationAction(
@@ -657,8 +657,8 @@ void main() {
   });
 
   test('Given a migration with alter table that has no changeDefault, '
-       'when normalized, '
-       'then the alter table action is returned unchanged.', () {
+      'when normalized, '
+      'then the alter table action is returned unchanged.', () {
     var migration = DatabaseMigration(
       actions: [
         DatabaseMigrationAction(

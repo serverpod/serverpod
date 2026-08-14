@@ -27,7 +27,7 @@ dependencies:
 ''');
 
       test('when calling validateServerpodPackagesVersion with same version, '
-           'then no warnings are returned', () {
+          'then no warnings are returned', () {
         var packageWarnings = validateServerpodPackagesVersion(
           Version(1, 1, 0),
           explicitVersion,

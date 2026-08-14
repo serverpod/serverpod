@@ -159,7 +159,7 @@ void main() async {
     });
 
     test('when cancelling a non-scheduled FutureCall, '
-         'then scheduled FutureCall is not removed', () async {
+        'then scheduled FutureCall is not removed', () async {
       await futureCallManager.cancelFutureCall('non-existing-identifier');
 
       final futureCallEntries = await FutureCallEntry.db.find(

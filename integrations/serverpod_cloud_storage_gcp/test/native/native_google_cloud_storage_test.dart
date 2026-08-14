@@ -929,7 +929,7 @@ void main() {
       mockSession = MockSession();
       when(() => mockStorageApi.objects).thenReturn(mockObjects);
 
-      // Mock the IAM signBlob response — return a fixed signature for any
+      // Mock the IAM signBlob response - return a fixed signature for any
       // request to the signBlob endpoint.
       when(
         () => mockAuthClient.post(

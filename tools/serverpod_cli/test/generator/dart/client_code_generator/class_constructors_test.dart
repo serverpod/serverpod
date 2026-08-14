@@ -112,10 +112,11 @@ void main() {
         });
 
         group('has a copyWith method', () {
-          late var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            baseClass!,
-            name: 'copyWith',
-          );
+          late var copyWithMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                baseClass!,
+                name: 'copyWith',
+              );
           test('declared', () {
             expect(
               copyWithMethod,

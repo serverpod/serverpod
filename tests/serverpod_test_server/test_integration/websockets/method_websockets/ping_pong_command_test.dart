@@ -25,7 +25,7 @@ void main() {
     });
 
     test('when ping command is sent, '
-         'then pong response is received.', () async {
+        'then pong response is received.', () async {
       webSocket.sendText(PingCommand.buildMessage());
 
       var response = await webSocket.textEvents.first;

@@ -20,9 +20,12 @@ void main() {
       'serverpod_auth_core',
     ).build();
 
-    late var config = GeneratorConfigBuilder().withName(projectName).withModules([
-      authCoreModule,
-    ]).build();
+    late var config = GeneratorConfigBuilder()
+        .withName(projectName)
+        .withModules([
+          authCoreModule,
+        ])
+        .build();
 
     late var myDomainData = ModelClassDefinitionBuilder()
         .withClassName('MyDomainData')

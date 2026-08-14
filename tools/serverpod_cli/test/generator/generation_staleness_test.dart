@@ -281,7 +281,7 @@ formatter:
   });
 
   group('Given a source edited after enumeration but before the stamp is '
-        'written (the mid-generation race),', () {
+      'written (the mid-generation race),', () {
     setUp(() async {
       // The walk stamps each source as it reads it.
       final stamps = await enumerateSourceFiles(config);
@@ -314,7 +314,7 @@ formatter:
   });
 
   group('Given a source whose size changed but mtime did not '
-        '(a same-tick edit),', () {
+      '(a same-tick edit),', () {
     // A second-aligned mtime so setLastModified round-trips exactly (the
     // filesystem here truncates mtimes to whole seconds).
     late final pinnedMtime = DateTime(2026, 1, 1, 12, 0, 0);

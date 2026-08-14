@@ -62,7 +62,7 @@ void main() {
       });
 
       test('when requesting a static file with the same path pattern, '
-           'then the cache-control header is set to max-age=1', () async {
+          'then the cache-control header is set to max-age=1', () async {
         var response = await client.get(
           Uri.parse(
             '${pod.webUrl}url_prefix/file1.txt',
@@ -73,7 +73,7 @@ void main() {
       });
 
       test('when requesting a static file with a different path pattern, '
-           'then the cache-control header is set to default max age', () async {
+          'then the cache-control header is set to default max age', () async {
         var response = await client.get(
           Uri.parse(
             '${pod.webUrl}url_prefix/file2.test',
@@ -102,7 +102,7 @@ void main() {
       });
 
       test('when requesting a static file with the same path string, '
-           'then the cache-control header is set to max-age=1', () async {
+          'then the cache-control header is set to max-age=1', () async {
         var response = await client.get(
           Uri.parse(
             '${pod.webUrl}url_prefix/file1.txt',
@@ -113,7 +113,7 @@ void main() {
       });
 
       test('when requesting a static file with a different path string, '
-           'then the cache-control header is set to default max age', () async {
+          'then the cache-control header is set to default max age', () async {
         var response = await client.get(
           Uri.parse(
             '${pod.webUrl}url_prefix/file2.test',
@@ -152,7 +152,7 @@ void main() {
       });
 
       test('when requesting a static file with, '
-           'then the file is served correctly', () async {
+          'then the file is served correctly', () async {
         var response = await client.get(
           Uri.parse(
             '${pod.webUrl}$file1AssetPath',

@@ -10,7 +10,7 @@ void main() {
       late var session = sessionBuilder.build();
 
       test('when querying runtime parameters globally, '
-           'then no database parameters are set.', () async {
+          'then no database parameters are set.', () async {
         // Forces the pgvector extension to load. After the extension is loaded,
         // parameters default will return a value instead of null. Without this
         // query, the order of the tests can cause a null value to be returned.

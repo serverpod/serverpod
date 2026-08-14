@@ -73,7 +73,8 @@ void main() {
     });
 
     group('when filtering on multiple any many relation,', () {
-      late var where = manyRelation.any((t) => t.id.equals(1)) & manyRelation.any();
+      late var where =
+          manyRelation.any((t) => t.id.equals(1)) & manyRelation.any();
       late var query = SelectQueryBuilder(
         table: citizenTable,
       ).withWhere(where).build();
@@ -158,7 +159,8 @@ void main() {
     });
 
     group('when filtering on multiple any many relation,', () {
-      late var where = manyRelation.any((t) => t.id.equals(1)) & manyRelation.any();
+      late var where =
+          manyRelation.any((t) => t.id.equals(1)) & manyRelation.any();
       late var query = DeleteQueryBuilder(
         table: citizenTable,
       ).withWhere(where).build();

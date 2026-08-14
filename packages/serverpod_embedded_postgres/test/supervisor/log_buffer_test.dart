@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 void main() {
   group('Given a LogBuffer,', () {
     test('when fewer than capacity lines are added, '
-         'then all are retained.', () {
+        'then all are retained.', () {
       var buf = LogBuffer(capacity: 5);
 
       buf.add('a');

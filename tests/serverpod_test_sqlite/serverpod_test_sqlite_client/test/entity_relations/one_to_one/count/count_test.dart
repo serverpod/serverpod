@@ -86,7 +86,7 @@ void main() {
   initTestClientSession();
 
   group('Given models with relation, '
-        'when counting on relation attributes,', () {
+      'when counting on relation attributes,', () {
     setUp(() async => await _createTestDatabase(session));
 
     test('then expected number of models are found.', () async {

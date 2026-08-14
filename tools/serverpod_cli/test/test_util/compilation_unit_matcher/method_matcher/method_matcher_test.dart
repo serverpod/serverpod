@@ -64,7 +64,7 @@ void main() {
     );
 
     test('when negate matching class and override method, '
-         'then test passes', () {
+        'then test passes', () {
       expect(
         compilationUnit,
         isNot(containsClass('User').withMethod('methodName', isOverride: true)),

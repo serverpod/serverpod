@@ -9,7 +9,7 @@ import 'package:uuid/uuid.dart';
 
 void main() async {
   group('Given a serverpod project, '
-        'when generate is called from anywhere,', () {
+      'when generate is called from anywhere,', () {
     late var projectName =
         'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
     late var serverDir = path.join(projectName, '${projectName}_server');

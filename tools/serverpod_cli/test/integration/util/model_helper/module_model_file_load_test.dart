@@ -78,7 +78,7 @@ fields:
     });
 
     group('placed in the module "lib/src/protocol" directory, '
-          'when loaded,', () {
+        'when loaded,', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -227,7 +227,7 @@ fields:
     });
 
     group('placed in the module "lib/src/protocol" directory, '
-          'when loaded,', () {
+        'when loaded,', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -413,7 +413,7 @@ fields:
     });
 
     group('placed in the module "lib/src/protocol" directory, '
-          'when loaded,', () {
+        'when loaded,', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -608,7 +608,7 @@ fields:
     });
 
     group('placed in a feature directory inside of "lib/src", '
-          'when loaded,', () {
+        'when loaded,', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -694,7 +694,7 @@ fields:
     });
 
     group('placed in the module "lib/src/protocol" directory, '
-          'when loaded,', () {
+        'when loaded,', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -889,7 +889,7 @@ fields:
     });
 
     group('placed in a feature directory inside of "lib/src", '
-          'when loaded,', () {
+        'when loaded,', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -975,7 +975,7 @@ fields:
     });
 
     group('placed in the module "lib/src/protocol" directory, '
-          'when loaded,', () {
+        'when loaded,', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -1170,7 +1170,7 @@ fields:
     });
 
     group('placed in a feature directory inside of "lib/src", '
-          'when loaded,', () {
+        'when loaded,', () {
       late List<ModelSource> models;
 
       setUp(() async {

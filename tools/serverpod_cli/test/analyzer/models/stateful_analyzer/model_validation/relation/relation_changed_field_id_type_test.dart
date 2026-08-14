@@ -137,72 +137,75 @@ void main() {
     },
   );
 
-  group('Given two classes with different id types and a one to many relation,', () {
-    late var models = [
-      ModelSourceBuilder().withFileName('employee').withYaml(
-        '''
+  group(
+    'Given two classes with different id types and a one to many relation,',
+    () {
+      late var models = [
+        ModelSourceBuilder().withFileName('employee').withYaml(
+          '''
         class: Employee
         table: employee
         fields:
           id: int?, defaultPersist=serial
           company: Company?, relation(name=company_employees)
         ''',
-      ).build(),
-      ModelSourceBuilder().withFileName('company').withYaml(
-        '''
+        ).build(),
+        ModelSourceBuilder().withFileName('company').withYaml(
+          '''
         class: Company
         table: company
         fields:
           id: UuidValue?, defaultModel=random
           employees: List<Employee>?, relation(name=company_employees)
         ''',
-      ).build(),
-    ];
+        ).build(),
+      ];
 
-    late var collector = CodeGenerationCollector();
-    late StatefulAnalyzer analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    late final definitions = analyzer.validateAll();
+      late var collector = CodeGenerationCollector();
+      late StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      late final definitions = analyzer.validateAll();
 
-    test('then no errors are collected.', () {
-      expect(collector.errors, isEmpty);
-    });
+      test('then no errors are collected.', () {
+        expect(collector.errors, isEmpty);
+      });
 
-    late final employeeClass = definitions.first as ModelClassDefinition;
-    late final companyClass = definitions.last as ModelClassDefinition;
+      late final employeeClass = definitions.first as ModelClassDefinition;
+      late final companyClass = definitions.last as ModelClassDefinition;
 
-    test(
-      'then the list relation has the foreign key owner id type on the company side of int.',
-      () {
-        var field = companyClass.findField('employees');
-        var relation = field?.relation as ListRelationDefinition;
+      test(
+        'then the list relation has the foreign key owner id type on the company side of int.',
+        () {
+          var field = companyClass.findField('employees');
+          var relation = field?.relation as ListRelationDefinition;
 
-        expect(relation.foreignKeyOwnerIdType.className, 'int');
-      },
-    );
+          expect(relation.foreignKeyOwnerIdType.className, 'int');
+        },
+      );
 
-    test(
-      'then the object relation has parent table id type on the employee side of int.',
-      () {
-        var field = employeeClass.findField('company');
-        var relation = field?.relation as ObjectRelationDefinition;
+      test(
+        'then the object relation has parent table id type on the employee side of int.',
+        () {
+          var field = employeeClass.findField('company');
+          var relation = field?.relation as ObjectRelationDefinition;
 
-        expect(relation.parentTableIdType.className, 'int');
-      },
-    );
+          expect(relation.parentTableIdType.className, 'int');
+        },
+      );
 
-    test(
-      'then the object relation has the foreign id field of type UuidValue.',
-      () {
-        var field = employeeClass.findField('companyId');
+      test(
+        'then the object relation has the foreign id field of type UuidValue.',
+        () {
+          var field = employeeClass.findField('companyId');
 
-        expect(field?.type.className, 'UuidValue');
-      },
-    );
-  });
+          expect(field?.type.className, 'UuidValue');
+        },
+      );
+    },
+  );
 
   group(
     'Given two classes with different id types and one to many independent relations defined without specifying a name,',

@@ -27,7 +27,7 @@ void main() {
     'Given a TemplateContext with website enabled, '
     'when performCreate is called with the context and a fullstack template type,',
     () {
-      late final project = setUpPerformCreateInTempDir(
+      final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.fullstack,
           website: true,
@@ -164,7 +164,7 @@ void main() {
     'Given a TemplateContext with webapp enabled, '
     'when performCreate is called with the context and a fullstack template type,',
     () {
-      late final project = setUpPerformCreateInTempDir(
+      final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.fullstack,
           webapp: true,
@@ -325,7 +325,7 @@ void main() {
     'Given a TemplateContext with webapp enabled and website disabled, '
     'when performCreate is called with the context and a fullstack template type,',
     () {
-      late final project = setUpPerformCreateInTempDir(
+      final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.fullstack,
           webapp: true,
@@ -398,7 +398,7 @@ void main() {
     'Given a TemplateContext with webapp and website enabled, '
     'when performCreate is called with the context and a fullstack template type,',
     () {
-      late final project = setUpPerformCreateInTempDir(
+      final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.fullstack,
           webapp: true,
@@ -471,7 +471,7 @@ void main() {
     'Given a TemplateContext with webapp and website disabled, '
     'when performCreate is called with the context and a fullstack template type,',
     () {
-      late final project = setUpPerformCreateInTempDir(
+      final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.fullstack,
           webapp: false,
@@ -583,7 +583,7 @@ void main() {
     'Given a TemplateContext with a module template type, '
     'when performCreate is called,',
     () {
-      late final project = setUpPerformCreateInTempDir(
+      final project = setUpPerformCreateInTempDir(
         context: TemplateContext(template: ServerpodTemplateType.module),
       );
 
@@ -605,7 +605,7 @@ void main() {
       Process? startProjectProcess;
       HttpClient? client;
 
-      late final project = setUpPerformCreateInTempDir(
+      final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.fullstack,
           webapp: true,
@@ -717,7 +717,7 @@ void main() {
       Process? startProjectProcess;
       late int webPort;
 
-      late final project = setUpPerformCreateInTempDir(
+      final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.fullstack,
           webapp: true,
@@ -787,7 +787,7 @@ void main() {
       Process? startProjectProcess;
       late int webPort;
 
-      late final project = setUpPerformCreateInTempDir(
+      final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.fullstack,
           webapp: true,

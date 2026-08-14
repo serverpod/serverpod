@@ -166,10 +166,11 @@ void main() {
         });
 
         group('has a copyWith method', () {
-          late var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            childClass!,
-            name: 'copyWith',
-          );
+          late var copyWithMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                childClass!,
+                name: 'copyWith',
+              );
 
           test('declared', () {
             expect(
@@ -389,10 +390,11 @@ void main() {
         });
 
         group('has a copyWith method', () {
-          late var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            childClass!,
-            name: 'copyWith',
-          );
+          late var copyWithMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                childClass!,
+                name: 'copyWith',
+              );
 
           test(
             'with the named params set where all variables are nullable.',

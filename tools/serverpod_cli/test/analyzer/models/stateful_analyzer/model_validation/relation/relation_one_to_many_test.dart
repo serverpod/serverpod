@@ -36,9 +36,11 @@ void main() {
       onErrorsCollector(collector),
     );
     late var definitions = analyzer.validateAll();
-    late var companyDefinition = definitions.whereType<ClassDefinition>().firstWhere(
-      (d) => d.className == 'Company',
-    );
+    late var companyDefinition = definitions
+        .whereType<ClassDefinition>()
+        .firstWhere(
+          (d) => d.className == 'Company',
+        );
 
     late var employeeDefinition = definitions
         .whereType<ClassDefinition>()
@@ -641,9 +643,11 @@ void main() {
           .whereType<ClassDefinition>()
           .firstWhere((d) => d.className == 'Customer');
 
-      late var orderDefinition = definitions.whereType<ClassDefinition>().firstWhere(
-        (d) => d.className == 'Order',
-      );
+      late var orderDefinition = definitions
+          .whereType<ClassDefinition>()
+          .firstWhere(
+            (d) => d.className == 'Order',
+          );
 
       var errors = collector.errors;
 
@@ -747,9 +751,11 @@ void main() {
         onErrorsCollector(collector),
       );
       late var definitions = analyzer.validateAll();
-      late var classDefinition = definitions.whereType<ClassDefinition>().firstWhere(
-        (d) => d.className == 'Customer',
-      );
+      late var classDefinition = definitions
+          .whereType<ClassDefinition>()
+          .firstWhere(
+            (d) => d.className == 'Customer',
+          );
 
       var errors = collector.errors;
 
@@ -811,9 +817,11 @@ void main() {
     late var employeeDefinition = definitions
         .whereType<ClassDefinition>()
         .firstWhere((d) => d.className == 'Employee');
-    late var companyDefinition = definitions.whereType<ClassDefinition>().firstWhere(
-      (d) => d.className == 'Company',
-    );
+    late var companyDefinition = definitions
+        .whereType<ClassDefinition>()
+        .firstWhere(
+          (d) => d.className == 'Company',
+        );
 
     var errors = collector.errors;
 

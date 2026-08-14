@@ -35,7 +35,9 @@ void main() {
       models: models,
       config: config,
     );
-    late var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late var compilationUnit = parseString(
+      content: codeMap[expectedFilePath]!,
+    ).unit;
 
     test('then a class named ${testClassName}Include is generated.', () {
       expect(
@@ -173,10 +175,11 @@ void main() {
             : false,
       );
 
-      late var includeListClass = CompilationUnitHelpers.tryFindClassDeclaration(
-        compilationUnit,
-        name: '${testClassName}IncludeList',
-      );
+      late var includeListClass =
+          CompilationUnitHelpers.tryFindClassDeclaration(
+            compilationUnit,
+            name: '${testClassName}IncludeList',
+          );
 
       group(
         'then the class named ${testClassName}IncludeList',

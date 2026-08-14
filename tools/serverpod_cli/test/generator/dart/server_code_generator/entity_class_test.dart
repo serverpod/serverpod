@@ -197,10 +197,11 @@ void main() {
       });
 
       group('has a constructor', () {
-        late var constructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
-          maybeClassNamedExample!,
-          name: '_',
-        );
+        late var constructor =
+            CompilationUnitHelpers.tryFindConstructorDeclaration(
+              maybeClassNamedExample!,
+              name: '_',
+            );
 
         test('defined', () {
           expect(constructor, isNotNull, reason: 'No private constructor');

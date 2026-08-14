@@ -103,59 +103,62 @@ void main() async {
     });
   });
 
-  group('Given inserting object and starting transaction that is cancelled,', () {
-    late UniqueData insertedData;
-    setUp(() async {
-      var data = UniqueData(number: 111, email: 'test@serverpod.dev');
+  group(
+    'Given inserting object and starting transaction that is cancelled,',
+    () {
+      late UniqueData insertedData;
+      setUp(() async {
+        var data = UniqueData(number: 111, email: 'test@serverpod.dev');
 
-      insertedData = await UniqueData.db.insertRow(
-        session,
-        data,
+        insertedData = await UniqueData.db.insertRow(
+          session,
+          data,
+        );
+      });
+
+      test(
+        'when calling `update` before cancelling, '
+        'then does not update the object.',
+        () async {
+          await session.db.transaction(
+            (transaction) async {
+              await UniqueData.db.update(
+                session,
+                [insertedData.copyWith(number: 222)],
+                transaction: transaction,
+              );
+
+              await transaction.cancel();
+            },
+          );
+
+          var fetchedData = await UniqueData.db.find(session);
+          expect(fetchedData, hasLength(1));
+          expect(fetchedData.first.number, 111);
+        },
       );
-    });
 
-    test(
-      'when calling `update` before cancelling, '
-      'then does not update the object.',
-      () async {
-        await session.db.transaction(
-          (transaction) async {
-            await UniqueData.db.update(
-              session,
-              [insertedData.copyWith(number: 222)],
-              transaction: transaction,
-            );
+      test(
+        'when calling `updateRow` before cancelling, '
+        'then does not update the object.',
+        () async {
+          await session.db.transaction(
+            (transaction) async {
+              await UniqueData.db.updateRow(
+                session,
+                insertedData.copyWith(number: 222),
+                transaction: transaction,
+              );
 
-            await transaction.cancel();
-          },
-        );
+              await transaction.cancel();
+            },
+          );
 
-        var fetchedData = await UniqueData.db.find(session);
-        expect(fetchedData, hasLength(1));
-        expect(fetchedData.first.number, 111);
-      },
-    );
-
-    test(
-      'when calling `updateRow` before cancelling, '
-      'then does not update the object.',
-      () async {
-        await session.db.transaction(
-          (transaction) async {
-            await UniqueData.db.updateRow(
-              session,
-              insertedData.copyWith(number: 222),
-              transaction: transaction,
-            );
-
-            await transaction.cancel();
-          },
-        );
-
-        var fetchedData = await UniqueData.db.find(session);
-        expect(fetchedData, hasLength(1));
-        expect(fetchedData.first.number, 111);
-      },
-    );
-  });
+          var fetchedData = await UniqueData.db.find(session);
+          expect(fetchedData, hasLength(1));
+          expect(fetchedData.first.number, 111);
+        },
+      );
+    },
+  );
 }

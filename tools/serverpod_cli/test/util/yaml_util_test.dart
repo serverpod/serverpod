@@ -8,24 +8,24 @@ void main() {
   ascii = false; // force uni-code glyphs on windows
 
   test('Given an empty string, '
-       'when calling loadYamlMap, '
-       'then it returns an empty YamlMap', () {
+      'when calling loadYamlMap, '
+      'then it returns an empty YamlMap', () {
     late YamlMap map;
     expect(() => map = loadYamlMap(''), returnsNormally);
     expect(map, isEmpty);
   });
 
   test('Given a whitespace only string, '
-       'when calling loadYamlMap, '
-       'then it returns an empty YamlMap', () {
+      'when calling loadYamlMap, '
+      'then it returns an empty YamlMap', () {
     late YamlMap map;
     expect(() => map = loadYamlMap('\t \n'), returnsNormally);
     expect(map, isEmpty);
   });
 
   test('Given a valid yaml string, '
-       'when calling loadYamlMap, '
-       'then it returns a correct YamlMap', () {
+      'when calling loadYamlMap, '
+      'then it returns a correct YamlMap', () {
     const yamlString = '''
     key: value
     ''';
@@ -34,23 +34,26 @@ void main() {
     expect(map, {'key': 'value'});
   });
 
-  test('Given a yaml string with a scalar, '
-       'when calling loadYamlMap, '
-       'then it throws a SourceSpanException and it has the correct error message', () {
-    const yamlString = 'scalar';
-    expect(
-      () => loadYamlMap(yamlString),
-      throwsA(
-        isA<SourceSpanException>().having(
-          (e) => e.toString(),
-          'Expected a map',
-          'Error on line 1, column 1: Expected a map\n'
-              '  ╷\n'
-              '1 │ scalar\n'
-              '  │ ^^^^^^\n'
-              '  ╵',
+  test(
+    'Given a yaml string with a scalar, '
+    'when calling loadYamlMap, '
+    'then it throws a SourceSpanException and it has the correct error message',
+    () {
+      const yamlString = 'scalar';
+      expect(
+        () => loadYamlMap(yamlString),
+        throwsA(
+          isA<SourceSpanException>().having(
+            (e) => e.toString(),
+            'Expected a map',
+            'Error on line 1, column 1: Expected a map\n'
+                '  ╷\n'
+                '1 │ scalar\n'
+                '  │ ^^^^^^\n'
+                '  ╵',
+          ),
         ),
-      ),
-    );
-  });
+      );
+    },
+  );
 }

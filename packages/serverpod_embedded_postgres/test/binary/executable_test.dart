@@ -9,7 +9,7 @@ void main() {
     late var installDir = Directory(p.join('install', '16.13.0'));
 
     test('when getting the binary executable, '
-         'then it lands in the bin/ directory.', () {
+        'then it lands in the bin/ directory.', () {
       var path = binExecutable(installDir, 'postgres');
 
       expect(p.dirname(path), p.join(installDir.path, 'bin'));

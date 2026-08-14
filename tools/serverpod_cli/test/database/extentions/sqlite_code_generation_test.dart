@@ -22,7 +22,7 @@ List<DatabaseMigrationVersionModel> _sqliteModules(DatabaseDefinition def) =>
 
 void main() {
   group('Given classes with a circular relation, when generating migration, '
-        'when generating SQL for SQLite,', () {
+      'when generating SQL for SQLite,', () {
     var citizen = 'citizen';
     var company = 'company';
     var town = 'town';
@@ -258,7 +258,9 @@ void main() {
         )
         .build();
     var sourceTable = sourceDefinition.tables.first;
-    late var sourceColumn = sourceTable.columns.firstWhere((c) => c.name == 'data');
+    late var sourceColumn = sourceTable.columns.firstWhere(
+      (c) => c.name == 'data',
+    );
     late var targetDefinition = sourceDefinition.copyWith(
       tables: [
         sourceTable.copyWith(
@@ -315,7 +317,9 @@ void main() {
         )
         .build();
     var sourceTable = sourceDefinition.tables.first;
-    late var sourceColumn = sourceTable.columns.firstWhere((c) => c.name == 'data');
+    late var sourceColumn = sourceTable.columns.firstWhere(
+      (c) => c.name == 'data',
+    );
     late var targetDefinition = sourceDefinition.copyWith(
       tables: [
         sourceTable.copyWith(

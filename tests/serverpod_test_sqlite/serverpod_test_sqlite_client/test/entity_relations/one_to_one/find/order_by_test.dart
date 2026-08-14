@@ -164,7 +164,7 @@ void main() {
   });
 
   group('Given models with relations, '
-        'when ordering on relation attributes,', () {
+      'when ordering on relation attributes,', () {
     late List<Citizen> citizensOrderedByCompanyName;
     setUpAll(() async {
       await _createTestDatabase(session);
