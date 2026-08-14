@@ -1026,7 +1026,8 @@ class PostgresDatabaseConnection
               .map((column) {
                 var unformattedValue = row[column.columnName];
 
-                var formattedValue = poolManager.encoder.convert(
+                var formattedValue = poolManager.encoder.encodeColumnValue(
+                  column,
                   unformattedValue,
                 );
 

@@ -53,13 +53,6 @@ class SqliteValueEncoder implements ValueEncoder {
     } else if (input is BigInt) {
       return "'${input.toString()}'";
     } else if (input is String) {
-      if (input.startsWith('decode(\'') && input.endsWith('\', \'base64\')')) {
-        // This is a bit of a hack to get ByteData working. Strings that starts
-        // with `decode('` and ends with `', 'base64') will be incorrectly
-        // encoded to base64. Best would be to find a better way to detect when
-        // we are trying to store a ByteData.
-        return input;
-      }
       if (!escapeStrings) return input;
       return "'${_escapeString(input)}'";
     } else if (input is Geography) {
