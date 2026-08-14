@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 import 'package:postgres/postgres.dart' as pg;
 import 'package:serverpod/src/database/adapters/postgres/postgres_database_result.dart';
 import 'package:serverpod/src/database/adapters/postgres/postgres_result_parser.dart';
+import 'package:serverpod/src/database/adapters/postgres/value_encoder.dart';
 import 'package:serverpod/src/database/concepts/columns.dart';
 import 'package:serverpod/src/database/concepts/exceptions.dart';
 import 'package:serverpod/src/database/concepts/includes.dart';
@@ -712,8 +713,10 @@ class DatabaseConnection {
       var values = column.map((column) {
         var unformattedValue = row[column.columnName];
 
-        var formattedValue =
-            DatabasePoolManager.encoder.convert(unformattedValue);
+        var formattedValue = DatabasePoolManager.encoder.encodeColumnValue(
+          column,
+          unformattedValue,
+        );
 
         return '$formattedValue::${_convertToPostgresType(column)}';
       }).join(', ');

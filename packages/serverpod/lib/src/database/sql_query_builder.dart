@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod/database.dart';
+import 'package:serverpod/src/database/adapters/postgres/value_encoder.dart';
 import 'package:serverpod/src/database/concepts/table_relation.dart';
 import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -342,7 +343,8 @@ class InsertQueryBuilder {
         .map((row) {
       var values = selectedColumns.map((column) {
         var unformattedValue = row[column.columnName];
-        return DatabasePoolManager.encoder.convert(
+        return DatabasePoolManager.encoder.encodeColumnValue(
+          column,
           unformattedValue,
           hasDefaults: column.hasDefault,
         );
