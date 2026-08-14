@@ -85,15 +85,11 @@ class EndpointAuthTest extends _i2.EndpointRef {
       );
 
   /// Creates a new session authentication for the test user.
-  ///
-  /// Unauthenticated like real sign-in endpoints, so that cookie issuance
-  /// treats the call as the caller signing in.
   _i3.Future<_i4.AuthSuccess> createSasToken(_i2.UuidValue authUserId) =>
       caller.callServerEndpoint<_i4.AuthSuccess>(
         'authTest',
         'createSasToken',
         {'authUserId': authUserId},
-        authenticated: false,
       );
 
   _i3.Future<void> deleteSasTokens(_i2.UuidValue authUserId) =>
@@ -104,15 +100,11 @@ class EndpointAuthTest extends _i2.EndpointRef {
       );
 
   /// Creates a new JWT token for the test user.
-  ///
-  /// Unauthenticated like real sign-in endpoints, so that cookie issuance
-  /// treats the call as the caller signing in.
   _i3.Future<_i4.AuthSuccess> createJwtToken(_i2.UuidValue authUserId) =>
       caller.callServerEndpoint<_i4.AuthSuccess>(
         'authTest',
         'createJwtToken',
         {'authUserId': authUserId},
-        authenticated: false,
       );
 
   /// Deletes all refresh tokens for the test user.

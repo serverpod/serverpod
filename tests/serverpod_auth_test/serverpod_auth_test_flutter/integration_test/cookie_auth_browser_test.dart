@@ -30,6 +30,15 @@ void main() {
     return;
   }
 
+  setUp(() async {
+    // All tests share the browser's cookie jar, and a signed-in cookie from
+    // a previous test would make the server reject a new sign-in for a
+    // different user. Start every test signed out.
+    final client = _newClient(TestStorage());
+    await client.modules.serverpod_auth_core.status.signOutDevice();
+    client.close();
+  });
+
   testWidgets(
     'Given an SAS cookie sign-in '
     'when making unauthenticated calls and streams '
@@ -61,7 +70,7 @@ void main() {
 
   testWidgets(
     'Given cookie authentication '
-    'when signing in, switching users, and signing out '
+    'when signing in, signing out, and signing in as another user '
     'then method streams reconnect with the current identity.',
     (_) async {
       final client = _newClient(TestStorage());
@@ -94,11 +103,15 @@ void main() {
           );
       expect(await userAValue.future, userA.toString());
 
+      // Switching users requires a sign-out first; signing in as another
+      // user from an authenticated session is rejected by the server.
+      await client.auth.signOutDevice();
+      await userADone.future.timeout(const Duration(seconds: 2));
+      await userASubscription.cancel();
+
       final userB = await client.authTest.createTestUser();
       final userBAuth = await client.authTest.createSasToken(userB);
       await client.auth.updateSignedInUser(userBAuth);
-      await userADone.future.timeout(const Duration(seconds: 2));
-      await userASubscription.cancel();
 
       expect(
         await client.authenticatedStreamingTest

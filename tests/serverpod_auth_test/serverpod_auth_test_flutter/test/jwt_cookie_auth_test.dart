@@ -123,7 +123,7 @@ void main() {
 
     test(
       'when creating a JWT token for another user '
-      'then the refresh token stays in the body and no cookie is set.',
+      'then the call is rejected and no cookie is set.',
       () async {
         final otherUserId = await _createTestUser();
 
@@ -137,9 +137,8 @@ void main() {
           },
         );
 
-        expect(response.statusCode, 200);
-        final body = jsonDecode(response.body) as Map<String, dynamic>;
-        expect(body['refreshToken'], isNotEmpty);
+        expect(response.statusCode, isNot(200));
+        expect(response.body, contains('SignInWhileAuthenticatedException'));
         expect(response.headers['set-cookie'], isNull);
       },
     );

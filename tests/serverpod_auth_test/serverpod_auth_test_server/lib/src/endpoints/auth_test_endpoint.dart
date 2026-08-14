@@ -21,20 +21,17 @@ class AuthTestEndpoint extends Endpoint {
   }
 
   /// Creates a new session authentication for the test user.
-  ///
-  /// Unauthenticated like real sign-in endpoints, so that cookie issuance
-  /// treats the call as the caller signing in.
-  @unauthenticatedClientCall
   Future<AuthSuccess> createSasToken(
     final Session session,
     final UuidValue authUserId,
   ) async {
-    return _serverSideSessions.createSession(
-      session,
-      authUserId: authUserId,
-      method: 'test',
-      scopes: {},
-    );
+    return AuthServices.getTokenManager<ServerSideSessionsTokenManager>()
+        .issueToken(
+          session,
+          authUserId: authUserId,
+          method: 'test',
+          scopes: {},
+        );
   }
 
   Future<void> deleteSasTokens(
@@ -48,10 +45,6 @@ class AuthTestEndpoint extends Endpoint {
   }
 
   /// Creates a new JWT token for the test user.
-  ///
-  /// Unauthenticated like real sign-in endpoints, so that cookie issuance
-  /// treats the call as the caller signing in.
-  @unauthenticatedClientCall
   Future<AuthSuccess> createJwtToken(
     final Session session,
     final UuidValue authUserId,

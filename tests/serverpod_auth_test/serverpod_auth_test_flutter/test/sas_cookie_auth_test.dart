@@ -76,7 +76,7 @@ void main() {
 
     test(
       'when creating a session for another user '
-      'then the token stays in the body and no cookie is set.',
+      'then the call is rejected and no cookie is set.',
       () async {
         final otherUserId = await _createTestUser();
 
@@ -90,9 +90,8 @@ void main() {
           },
         );
 
-        expect(response.statusCode, 200);
-        final body = jsonDecode(response.body) as Map<String, dynamic>;
-        expect(body['token'], isNotEmpty);
+        expect(response.statusCode, isNot(200));
+        expect(response.body, contains('SignInWhileAuthenticatedException'));
         expect(response.headers['set-cookie'], isNull);
       },
     );

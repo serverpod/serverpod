@@ -18,6 +18,10 @@ void main() {
       addTearDown(client.close);
 
       final userA = await client.authTest.createTestUser();
+      // Minted before signing in as A: an authenticated caller may not
+      // create a session for another user.
+      final userB = await client.authTest.createTestUser();
+      final userBAuth = await client.authTest.createSasToken(userB);
       await client.auth.updateSignedInUser(
         await client.authTest.createSasToken(userA),
       );
@@ -34,10 +38,7 @@ void main() {
           );
       expect(await firstValue.future, userA.toString());
 
-      final userB = await client.authTest.createTestUser();
-      await client.auth.updateSignedInUser(
-        await client.authTest.createSasToken(userB),
-      );
+      await client.auth.updateSignedInUser(userBAuth);
 
       await Future<void>.delayed(const Duration(milliseconds: 300));
       expect(done.isCompleted, isFalse);
