@@ -163,6 +163,12 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
   }
 
   /// Updates the signed in user on the storage.
+  ///
+  /// When the signed-in identity changes (sign-in, sign-out, or user
+  /// switch), open method streams are closed gracefully: subscriptions
+  /// receive `onDone` without an error, and new streams connect with the
+  /// current identity. A same-identity update, such as a JWT token
+  /// rotation, keeps streams running.
   Future<void> updateSignedInUser(AuthSuccess? authInfo) async {
     final persistedAuthInfo = _usesCookieAuth && authInfo != null
         ? _validateAndSanitizeCookieAuthInfo(authInfo)
@@ -172,12 +178,9 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
         _authInfo?.authStrategy != authInfo?.authStrategy;
     await storage.set(persistedAuthInfo);
     _authInfo = authInfo;
-    if (_usesCookieAuth && identityChanged) {
-      // The method-stream WebSocket authenticates from the cookie captured at
-      // handshake time, so a socket from before the identity change would
-      // keep the old identity. Closing it makes the next stream reconnect
-      // with a fresh handshake; a same-identity update (e.g. a JWT token
-      // rotation) keeps streams running.
+    if (identityChanged) {
+      // A method stream authenticates when it opens, so a stream from before
+      // the identity change would keep serving the old identity.
       await _caller?.client.closeStreamingMethodConnections(exception: null);
     }
     onAuthInfoChanged?.call(_authInfo);
@@ -231,12 +234,10 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
   }
 
   Future<bool> _signOut({required bool allDevices}) async {
-    // In cookie mode, close streams before the server revokes the session:
-    // revocation error-closes any stream still open on the socket, racing the
-    // clean close that updateSignedInUser performs afterwards.
-    if (_usesCookieAuth) {
-      await _caller?.client.closeStreamingMethodConnections(exception: null);
-    }
+    // Close streams before the server revokes the session: revocation
+    // error-closes any stream still open on the socket, racing the clean
+    // close that updateSignedInUser performs afterwards.
+    await _caller?.client.closeStreamingMethodConnections(exception: null);
     try {
       switch (allDevices) {
         case true:

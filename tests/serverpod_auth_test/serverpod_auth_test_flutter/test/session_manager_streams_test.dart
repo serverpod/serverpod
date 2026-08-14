@@ -10,7 +10,7 @@ void main() {
   test(
     'Given a header-mode session manager with an open method stream '
     'when the signed-in user changes '
-    'then the stream stays open.',
+    'then the stream is closed gracefully.',
     () async {
       final client = Client(
         'http://localhost:8080/',
@@ -40,8 +40,7 @@ void main() {
 
       await client.auth.updateSignedInUser(userBAuth);
 
-      await Future<void>.delayed(const Duration(milliseconds: 300));
-      expect(done.isCompleted, isFalse);
+      await done.future.timeout(const Duration(seconds: 2));
       await subscription.cancel();
     },
   );
