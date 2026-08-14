@@ -1,11 +1,11 @@
 ## 4.0.0-beta.3
 
 - fix: Improves the `serverpod start` TUI borders and dividers with T-junction characters.
-- fix: Fixes Google Sign-In accepting an access token minted for a different OAuth client that could be used to takeover an account.
-- fix: Fixes improper neutralization of string values in Serverpod's ORM that exposes SQL injection from user input.
-- fix: Includes session key salt in the session key hash.
-- fix: Makes the login rate limit bound guesses per user.
-- fix: Prevents rotating a refresh token for a blocked auth user.
+- fix: Fixes Google Sign-In accepting an access token minted for a different OAuth client that could be used to takeover an account. Backported to 3.4.12.
+- fix: Fixes improper neutralization of string values in Serverpod's ORM that exposes SQL injection from user input. Backported to 3.4.12.
+- fix: Includes session key salt in the session key hash. Backported to 3.4.12.
+- fix: Makes the login rate limit bound guesses per user. Backported to 3.4.12.
+- fix: Prevents rotating a refresh token for a blocked auth user. Backported to 3.4.12.
 - chore: Ensures project build runs on a clean folder to avoid compilation issues.
 - chore: Polishes and adds dark theme to the default Flutter app.
 
@@ -280,6 +280,16 @@
 - refactor: Decouples all database-related code from `serverpod` into the new `serverpod_database` package to allow supporting client-side databases in the future.
 - refactor: Removes database-specific default values from the definition files to allow supporting extra database dialects.
 - refactor: Reduces the time taken to run incremental generation steps with the `--watch` flag by x15 and regular `generate` command by 20%.
+
+## 3.4.12
+
+- fix: Fixes Google Sign-In accepting an access token minted for a different OAuth client that could be used to takeover an account.
+- fix: Fixes improper neutralization of string values in Serverpod's ORM that exposes SQL injection from user input. Also backported to 2.9.4.
+- fix: Includes session key salt in the session key hash.
+- fix: Makes the login rate limit bound guesses per user.
+- fix: Prevents rotating a refresh token for a blocked auth user.
+- chore: Allows overriding the default cache header for `FlutterRoute` from env vars.
+- chore: Polishes and adds dark theme to the default Flutter app.
 
 ## 3.4.11
 
@@ -644,7 +654,10 @@ Serverpod now supports polymorphism on models and endpoints. This allows you to 
 - chore: Marks `AuthenticationKeyManager` as deprecated in favour of the new `ClientAuthKeyProvider` interface.
 - chore: Bumps minimum Dart version to 3.8.0 and Flutter version to 3.32.0.
 
-### 2.9.3
+## 2.9.4
+- fix: Fixes improper neutralization of string values in Serverpod's ORM that exposes SQL injection from user input. Backported from 3.4.12.
+
+## 2.9.3
 - chore: Bumps `jose` dependency on legacy auth to fix `CVE-2026-34240`. Backported from 3.4.6.
 
 ## 2.9.2
