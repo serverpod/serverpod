@@ -1,4 +1,7 @@
-### 2.9.3
+## 2.9.4
+- fix: Fixes improper neutralization of string values in Serverpod's ORM that exposes SQL injection from user input.
+
+## 2.9.3
 - chore: Bumps `jose` dependency on legacy auth to fix `CVE-2026-34240`.
 
 ## 2.9.2
