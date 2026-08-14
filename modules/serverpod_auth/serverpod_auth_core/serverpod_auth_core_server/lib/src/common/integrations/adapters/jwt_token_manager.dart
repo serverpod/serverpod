@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/src/generated/common/models/auth_success.dart';
 
@@ -13,61 +14,51 @@ import '../token_manager.dart';
 /// This class is used to bridge the gap between the [Jwt]
 /// and the [TokenManager] interface. It delegates all operations to the
 /// [Jwt] instance.
-class JwtTokenManager implements TokenManager {
+class JwtTokenManager extends TokenManager {
   /// The name of the token issuer.
   static String get tokenIssuerName => AuthStrategy.jwt.name;
 
   /// The [Jwt] instance.
   final Jwt jwt;
 
-  final JwtConfig _config;
-
   /// Creates a new [JwtTokenManager] instance.
   JwtTokenManager({
     required final JwtConfig config,
     final AuthUsers authUsers = const AuthUsers(),
-  }) : _config = config,
-       jwt = Jwt(
+  }) : jwt = Jwt(
          config: config,
          authUsers: authUsers,
        );
 
   @override
-  Future<AuthSuccess> issueToken(
+  Future<AuthSuccess> createToken(
     final Session session, {
     required final UuidValue authUserId,
     required final String method,
     final Set<Scope>? scopes,
     final Transaction? transaction,
-  }) async {
-    final authSuccess = await jwt.createTokens(
+  }) {
+    return jwt.createTokens(
       session,
       authUserId: authUserId,
       method: method,
       scopes: scopes,
       transaction: transaction,
     );
-    if (!session.isWebAuthCookieRequest) return authSuccess;
-
-    // Only the caller's own tokens may be issued via the browser cookie;
-    // minting for another user (e.g. an admin flow) returns the refresh token
-    // in the body instead of replacing the caller's cookie identity.
-    final callerIdentifier = session.authenticated?.userIdentifier;
-    if (callerIdentifier != null && callerIdentifier != authUserId.toString()) {
-      return authSuccess;
-    }
-
-    final refreshToken = authSuccess.refreshToken;
-    if (refreshToken == null) return authSuccess;
-
-    final maxAgeSeconds = _config.refreshTokenLifetime.inSeconds;
-    session.writeWebAuthRefreshCookie(
-      refreshToken,
-      maxAgeSeconds: maxAgeSeconds > 0 ? maxAgeSeconds : null,
-      path: jwtRefreshCookiePath(session),
-    );
-    return authSuccess.copyWith(refreshToken: null);
   }
+
+  @override
+  DateTime? refreshTokenExpiresAt() {
+    // Slack for the delay between minting and the cookie write, so the
+    // cookie does not outlive the token.
+    return clock.now().toUtc().add(
+      jwt.config.refreshTokenLifetime - const Duration(seconds: 10),
+    );
+  }
+
+  @override
+  String? refreshCookiePath(final Session session) =>
+      jwtRefreshCookiePath(session);
 
   @override
   Future<List<TokenInfo>> listTokens(
