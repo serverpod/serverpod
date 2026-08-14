@@ -17,7 +17,7 @@ class PostgresValueEncoder extends PostgresTextEncoder implements ValueEncoder {
     if (input == null) {
       return hasDefaults ? 'DEFAULT' : 'NULL';
     } else if (input is ByteData) {
-      return input.base64encodedString();
+      return "'\\x${_hexEncode(Uint8List.sublistView(input))}'";
     } else if (input is DateTime) {
       return super.convert(
         SerializationManager.encode(input),
@@ -31,17 +31,11 @@ class PostgresValueEncoder extends PostgresTextEncoder implements ValueEncoder {
     } else if (input is UuidValue) {
       return "'${input.uuid}'";
     } else if (input is Uri) {
-      return "'${input.toString()}'";
+      // Uri.toString() does not percent-encode `'`, so it must be escaped like
+      // any other free-form text or it becomes an injection sink.
+      return super.convert(input.toString(), escapeStrings: escapeStrings);
     } else if (input is BigInt) {
       return '\'${input.toString()}\'';
-    } else if (input is String &&
-        input.startsWith('decode(\'') &&
-        input.endsWith('\', \'base64\')')) {
-      // This is a bit of a hack to get ByteData working. Strings that starts
-      // with `convert('` and ends with `', 'base64') will be incorrectly
-      // encoded to base64. Best would be to find a better way to detect when we
-      // are trying to store a ByteData.
-      return input;
     } else if (input is Vector) {
       return '\'${input.toString().replaceAll(' ', '')}\'';
     } else if (input is HalfVector) {
@@ -72,4 +66,16 @@ class PostgresValueEncoder extends PostgresTextEncoder implements ValueEncoder {
       );
     }
   }
+}
+
+const _hexDigits = '0123456789abcdef';
+
+String _hexEncode(Uint8List bytes) {
+  var codeUnits = Uint8List(bytes.length * 2);
+  var i = 0;
+  for (var byte in bytes) {
+    codeUnits[i++] = _hexDigits.codeUnitAt(byte >> 4);
+    codeUnits[i++] = _hexDigits.codeUnitAt(byte & 0x0f);
+  }
+  return String.fromCharCodes(codeUnits);
 }

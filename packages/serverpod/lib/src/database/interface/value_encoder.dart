@@ -1,3 +1,7 @@
+import 'package:serverpod_serialization/serverpod_serialization.dart';
+
+import '../concepts/columns.dart';
+
 /// Interface for value encoders.
 ///
 /// Can be accessed through the [instance] property if a database has been
@@ -29,4 +33,24 @@ abstract interface class ValueEncoder {
   /// Tries to convert an object to a string.
   /// Returns `null` if the conversion fails.
   String? tryConvert(Object? input, {bool escapeStrings = false});
+}
+
+/// Encoding of a value for the column it is destined for.
+extension ColumnValueEncoding on ValueEncoder {
+  /// Converts a column value to a string, applying column-specific coercion.
+  String encodeColumnValue(
+    Column column,
+    dynamic value, {
+    bool hasDefaults = false,
+  }) {
+    return convert(
+      switch (column) {
+        ColumnByteData() when value != null => ByteDataJsonExtension.fromJson(
+          value,
+        ),
+        _ => value,
+      },
+      hasDefaults: hasDefaults,
+    );
+  }
 }

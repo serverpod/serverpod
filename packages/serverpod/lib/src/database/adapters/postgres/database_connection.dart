@@ -10,6 +10,7 @@ import 'package:serverpod/src/database/adapters/postgres/sql_query_builder.dart'
 import 'package:serverpod/src/database/concepts/column_value.dart';
 import 'package:serverpod/src/database/concepts/columns.dart';
 import 'package:serverpod/src/database/interface/database_connection.dart';
+import 'package:serverpod/src/database/interface/value_encoder.dart';
 import 'package:serverpod/src/database/concepts/exceptions.dart';
 import 'package:serverpod/src/database/concepts/includes.dart';
 import 'package:serverpod/src/database/concepts/order.dart';
@@ -953,7 +954,8 @@ class PostgresDatabaseConnection
               .map((column) {
                 var unformattedValue = row[column.columnName];
 
-                var formattedValue = poolManager.encoder.convert(
+                var formattedValue = poolManager.encoder.encodeColumnValue(
+                  column,
                   unformattedValue,
                 );
 
