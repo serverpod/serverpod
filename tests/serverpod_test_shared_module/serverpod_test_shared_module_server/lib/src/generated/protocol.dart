@@ -65,7 +65,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
           'className': dataClassName,
           'data': data,
         });
-      } on FormatException catch (_) {
+      } on _i1.DeserializationClassNameNotFoundException catch (_) {
         // If the className is not recognized (e.g., older client receiving
         // data with a new subtype), fall back to deserializing without the
         // className, using the expected type T.
@@ -116,7 +116,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
     }
     try {
       return _i3.Protocol().deserializeByClassName(data);
-    } on FormatException catch (_) {}
+    } on _i1.DeserializationClassNameNotFoundException catch (_) {}
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
       return _i2.Protocol().deserializeByClassName(data);
@@ -177,7 +177,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
       for (final protocol in _hostProtocols) {
         try {
           return protocol.deserializeByClassName(value);
-        } on FormatException catch (_) {}
+        } on _i1.DeserializationClassNameNotFoundException catch (_) {}
       }
     }
     return deserializeByClassName(value);
