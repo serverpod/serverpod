@@ -1,0 +1,8 @@
+# Many side of a named one-to-many relation. `customCompanyId` is generated from
+# `field=`. `customPreviousCompanyId` is generated as nullable because of `optional`.
+class: GeneratedRelationEmployee
+table: generated_relation_employee
+fields:
+  name: String
+  company: GeneratedRelationCompany?, relation(name=generated_relation_company_employees, field=customCompanyId)
+  previousCompany: GeneratedRelationCompany?, relation(optional, field=customPreviousCompanyId)
