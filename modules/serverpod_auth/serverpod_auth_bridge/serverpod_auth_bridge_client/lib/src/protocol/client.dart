@@ -76,7 +76,7 @@ class EndpointLegacyEmail extends _i1.EndpointRef {
     },
   );
 
-  /// Stub — registration is not supported via legacy endpoints.
+  /// Stub - registration is not supported via legacy endpoints.
   _i2.Future<bool> createAccountRequest(
     String userName,
     String email,
@@ -91,7 +91,7 @@ class EndpointLegacyEmail extends _i1.EndpointRef {
     },
   );
 
-  /// Stub — account creation is not supported via legacy endpoints.
+  /// Stub - account creation is not supported via legacy endpoints.
   _i2.Future<_i3.LegacyUserInfo?> createAccount(
     String email,
     String verificationCode,
@@ -104,7 +104,7 @@ class EndpointLegacyEmail extends _i1.EndpointRef {
     },
   );
 
-  /// Stub — password change is not supported via legacy endpoints.
+  /// Stub - password change is not supported via legacy endpoints.
   _i2.Future<bool> changePassword(
     String oldPassword,
     String newPassword,
@@ -117,7 +117,7 @@ class EndpointLegacyEmail extends _i1.EndpointRef {
     },
   );
 
-  /// Stub — password reset initiation is not supported via legacy endpoints.
+  /// Stub - password reset initiation is not supported via legacy endpoints.
   _i2.Future<bool> initiatePasswordReset(String email) =>
       caller.callServerEndpoint<bool>(
         'serverpod_auth_bridge.legacyEmail',
@@ -125,7 +125,7 @@ class EndpointLegacyEmail extends _i1.EndpointRef {
         {'email': email},
       );
 
-  /// Stub — password reset is not supported via legacy endpoints.
+  /// Stub - password reset is not supported via legacy endpoints.
   _i2.Future<bool> resetPassword(
     String verificationCode,
     String password,
