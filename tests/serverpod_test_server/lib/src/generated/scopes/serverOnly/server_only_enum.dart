@@ -14,7 +14,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 enum ServerOnlyEnum implements _i1.SerializableModel {
   foo,
-  bar;
+  bar,
+  ;
 
   static ServerOnlyEnum fromJson(int index) {
     switch (index) {
@@ -24,7 +25,8 @@ enum ServerOnlyEnum implements _i1.SerializableModel {
         return ServerOnlyEnum.bar;
       default:
         throw ArgumentError(
-            'Value "$index" cannot be converted to "ServerOnlyEnum"');
+          'Value "$index" cannot be converted to "ServerOnlyEnum"',
+        );
     }
   }
 

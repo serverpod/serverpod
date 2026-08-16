@@ -1,31 +1,35 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:args/args.dart';
+import 'package:ci/ci.dart' as ci;
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:pub_semver/pub_semver.dart';
+import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
 import 'package:serverpod_cli/src/commands/language_server.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
-import 'package:serverpod_cli/src/downloads/resource_manager.dart';
-import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/update_prompt/prompt_to_update.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
+import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 import '../commands/version.dart' show VersionCommand;
+import '../generated/completion_script_carapace.dart';
 
 Future<void> _preCommandEnvironmentChecks() async {
   // Check that required tools are installed
   if (!await CommandLineTools.existsCommand('dart', ['--version'])) {
     log.error(
-        'Failed to run serverpod. You need to have dart installed and in your \$PATH');
+      'Failed to run serverpod. You need to have dart installed and in your \$PATH',
+    );
     throw ExitException.error();
   }
-  if (!await CommandLineTools.existsCommand('flutter', ['--version'])) {
+  if (!ci.isCI &&
+      !await CommandLineTools.existsCommand('flutter', ['--version'])) {
     log.error(
-        'Failed to run serverpod. You need to have flutter installed and in your \$PATH');
-    throw ExitException.error();
-  }
-
-  if (!loadEnvironmentVars()) {
+      'Failed to run serverpod. You need to have flutter installed and in your \$PATH',
+    );
     throw ExitException.error();
   }
 }
@@ -34,10 +38,7 @@ Future<void> _preCommandPrints(ServerpodCommandRunner runner) async {
   if (runner._productionMode) {
     await promptToUpdateIfNeeded(runner._cliVersion);
   } else {
-    log.debug(
-      'Development mode. Using templates from: ${resourceManager.templateDirectory.path}',
-    );
-    log.debug('SERVERPOD_HOME is set to $serverpodHome');
+    log.debug('Development mode.');
   }
 }
 
@@ -59,12 +60,20 @@ class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {
     super.onBeforeRunCommand,
     super.setLogLevel,
     super.onAnalyticsEvent,
-  })  : _productionMode = productionMode,
-        _cliVersion = cliVersion,
-        super(globalOptions: GlobalOption.values);
+    super.enableCompletionCommand,
+    super.embeddedCompletions,
+  }) : _productionMode = productionMode,
+       _cliVersion = cliVersion,
+       super(globalOptions: GlobalOption.values);
 
   @override
   Future<void> runCommand(ArgResults topLevelResults) async {
+    // `--no-analytics` is resolved by [BetterCommandRunner.run] before this
+    // point, so this is the one place the opt-out state is final. Every `cli.*`
+    // call site reads it from the singleton instead of taking a flag. Set
+    // before the `--version` early return so the state is never stale.
+    cliAnalytics.enabled = analyticsEnabled();
+
     if (globalConfiguration.value(GlobalOption.version)) {
       await commands['version']?.run();
       return; // Exit early to prevent showing help text
@@ -79,6 +88,23 @@ class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {
     }
     CommandLineExperimentalFeatures.initialize(experimentalFeatures);
 
+    // Counted straight off the registered command list, so a renamed or newly
+    // added command is picked up without touching the analytics code.
+    final commandName = topLevelResults.command?.name;
+    if (commandName != null &&
+        commands.containsKey(commandName) &&
+        cliAnalytics.enabled) {
+      final serverDir = findServerDirectory(Directory.current);
+      if (serverDir != null) {
+        unawaited(
+          cliAnalytics.recordCommandInvocation(
+            serverDir: serverDir.path,
+            commandName: commandName,
+          ),
+        );
+      }
+    }
+
     await super.runCommand(topLevelResults);
   }
 
@@ -91,12 +117,17 @@ class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {
     return ServerpodCommandRunner(
       'serverpod',
       'Manage your serverpod app development',
+      enableCompletionCommand: true,
+      embeddedCompletions: [completionScriptCarapace],
       messageOutput: MessageOutput(
         usageLogger: log.info,
       ),
       setLogLevel: _configureLogLevel,
       onBeforeRunCommand: onBeforeRunCommand,
-      onAnalyticsEvent: (String event) => analytics.track(event: event),
+      onAnalyticsEvent: (event, properties) => analytics.track(
+        event: event,
+        properties: properties,
+      ),
       productionMode: productionMode,
       cliVersion: cliVersion,
     );
@@ -125,6 +156,14 @@ enum GlobalOption<V> implements OptionDefinition<V> {
   quiet(BetterCommandRunnerFlags.quietOption),
   verbose(BetterCommandRunnerFlags.verboseOption),
   analytics(BetterCommandRunnerFlags.analyticsOption),
+  interactive(
+    FlagOption(
+      argName: 'interactive',
+      negatable: true,
+      helpText:
+          'Enable interactive prompts. Automatically disabled in CI environments.',
+    ),
+  ),
   version(
     FlagOption(
       argName: 'version',
@@ -141,7 +180,8 @@ enum GlobalOption<V> implements OptionDefinition<V> {
       helpText:
           'Enable experimental features. Experimental features might be removed at any time.',
     ),
-  );
+  ),
+  ;
 
   const GlobalOption(this.option);
 

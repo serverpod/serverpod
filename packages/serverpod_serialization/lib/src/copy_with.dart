@@ -3,6 +3,11 @@ import 'dart:typed_data';
 import 'package:uuid/uuid.dart';
 
 import 'pgvector.dart';
+import 'postgis/geography_geometry_collection.dart'
+    show GeographyGeometryCollection;
+import 'postgis/geography_line_string.dart' show GeographyLineString;
+import 'postgis/geography_point.dart' show GeographyPoint;
+import 'postgis/geography_polygon.dart' show GeographyPolygon;
 
 /// Adds clone method that create a deep copy of a ByteData.
 extension CloneByteData on ByteData {
@@ -11,9 +16,9 @@ extension CloneByteData on ByteData {
   ByteData clone() {
     Int8List uint8ListView = buffer.asInt8List();
     return Int8List.fromList(uint8ListView).buffer.asByteData(
-          offsetInBytes,
-          lengthInBytes,
-        );
+      offsetInBytes,
+      lengthInBytes,
+    );
   }
 }
 
@@ -78,4 +83,8 @@ const _nonMutableTypes = [
   UuidValue,
   Uri,
   BigInt,
+  GeographyPoint,
+  GeographyLineString,
+  GeographyPolygon,
+  GeographyGeometryCollection,
 ];

@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i2;
 
-abstract class ObjectWithCustomClass implements _i1.SerializableModel {
+abstract class ObjectWithCustomClass
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ObjectWithCustomClass._({
     required this.customClassWithoutProtocolSerialization,
     required this.customClassWithProtocolSerialization,
@@ -22,56 +23,95 @@ abstract class ObjectWithCustomClass implements _i1.SerializableModel {
 
   factory ObjectWithCustomClass({
     required _i2.CustomClassWithoutProtocolSerialization
-        customClassWithoutProtocolSerialization,
+    customClassWithoutProtocolSerialization,
     required _i2.CustomClassWithProtocolSerialization
-        customClassWithProtocolSerialization,
+    customClassWithProtocolSerialization,
     required _i2.CustomClassWithProtocolSerializationMethod
-        customClassWithProtocolSerializationMethod,
+    customClassWithProtocolSerializationMethod,
   }) = _ObjectWithCustomClassImpl;
 
   factory ObjectWithCustomClass.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ObjectWithCustomClass(
       customClassWithoutProtocolSerialization:
           _i2.CustomClassWithoutProtocolSerialization.fromJson(
-              jsonSerialization['customClassWithoutProtocolSerialization']),
+            jsonSerialization['customClassWithoutProtocolSerialization'],
+          ),
       customClassWithProtocolSerialization:
           _i2.CustomClassWithProtocolSerialization.fromJson(
-              jsonSerialization['customClassWithProtocolSerialization']),
+            jsonSerialization['customClassWithProtocolSerialization'],
+          ),
       customClassWithProtocolSerializationMethod:
           _i2.CustomClassWithProtocolSerializationMethod.fromJson(
-              jsonSerialization['customClassWithProtocolSerializationMethod']),
+            jsonSerialization['customClassWithProtocolSerializationMethod'],
+          ),
     );
   }
 
   _i2.CustomClassWithoutProtocolSerialization
-      customClassWithoutProtocolSerialization;
+  customClassWithoutProtocolSerialization;
 
   _i2.CustomClassWithProtocolSerialization customClassWithProtocolSerialization;
 
   _i2.CustomClassWithProtocolSerializationMethod
-      customClassWithProtocolSerializationMethod;
+  customClassWithProtocolSerializationMethod;
 
   /// Returns a shallow copy of this [ObjectWithCustomClass]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   ObjectWithCustomClass copyWith({
     _i2.CustomClassWithoutProtocolSerialization?
-        customClassWithoutProtocolSerialization,
+    customClassWithoutProtocolSerialization,
     _i2.CustomClassWithProtocolSerialization?
-        customClassWithProtocolSerialization,
+    customClassWithProtocolSerialization,
     _i2.CustomClassWithProtocolSerializationMethod?
-        customClassWithProtocolSerializationMethod,
+    customClassWithProtocolSerializationMethod,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ObjectWithCustomClass',
       'customClassWithoutProtocolSerialization':
           customClassWithoutProtocolSerialization.toJson(),
       'customClassWithProtocolSerialization':
           customClassWithProtocolSerialization.toJson(),
       'customClassWithProtocolSerializationMethod':
           customClassWithProtocolSerializationMethod.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'ObjectWithCustomClass',
+      'customClassWithoutProtocolSerialization':
+          // ignore: unnecessary_type_check
+          customClassWithoutProtocolSerialization is _i1.ProtocolSerialization
+          ? (customClassWithoutProtocolSerialization
+                    as _i1.ProtocolSerialization)
+                .toJsonForProtocol()
+          :
+            // ignore: dead_code
+            customClassWithoutProtocolSerialization.toJson(),
+      'customClassWithProtocolSerialization':
+          // ignore: unnecessary_type_check
+          customClassWithProtocolSerialization is _i1.ProtocolSerialization
+          ? (customClassWithProtocolSerialization as _i1.ProtocolSerialization)
+                .toJsonForProtocol()
+          :
+            // ignore: dead_code
+            customClassWithProtocolSerialization.toJson(),
+      'customClassWithProtocolSerializationMethod':
+          // ignore: unnecessary_type_check
+          customClassWithProtocolSerializationMethod
+              is _i1.ProtocolSerialization
+          ? (customClassWithProtocolSerializationMethod
+                    as _i1.ProtocolSerialization)
+                .toJsonForProtocol()
+          :
+            // ignore: dead_code
+            customClassWithProtocolSerializationMethod.toJson(),
     };
   }
 
@@ -84,19 +124,19 @@ abstract class ObjectWithCustomClass implements _i1.SerializableModel {
 class _ObjectWithCustomClassImpl extends ObjectWithCustomClass {
   _ObjectWithCustomClassImpl({
     required _i2.CustomClassWithoutProtocolSerialization
-        customClassWithoutProtocolSerialization,
+    customClassWithoutProtocolSerialization,
     required _i2.CustomClassWithProtocolSerialization
-        customClassWithProtocolSerialization,
+    customClassWithProtocolSerialization,
     required _i2.CustomClassWithProtocolSerializationMethod
-        customClassWithProtocolSerializationMethod,
+    customClassWithProtocolSerializationMethod,
   }) : super._(
-          customClassWithoutProtocolSerialization:
-              customClassWithoutProtocolSerialization,
-          customClassWithProtocolSerialization:
-              customClassWithProtocolSerialization,
-          customClassWithProtocolSerializationMethod:
-              customClassWithProtocolSerializationMethod,
-        );
+         customClassWithoutProtocolSerialization:
+             customClassWithoutProtocolSerialization,
+         customClassWithProtocolSerialization:
+             customClassWithProtocolSerialization,
+         customClassWithProtocolSerializationMethod:
+             customClassWithProtocolSerializationMethod,
+       );
 
   /// Returns a shallow copy of this [ObjectWithCustomClass]
   /// with some or all fields replaced by the given arguments.
@@ -104,22 +144,22 @@ class _ObjectWithCustomClassImpl extends ObjectWithCustomClass {
   @override
   ObjectWithCustomClass copyWith({
     _i2.CustomClassWithoutProtocolSerialization?
-        customClassWithoutProtocolSerialization,
+    customClassWithoutProtocolSerialization,
     _i2.CustomClassWithProtocolSerialization?
-        customClassWithProtocolSerialization,
+    customClassWithProtocolSerialization,
     _i2.CustomClassWithProtocolSerializationMethod?
-        customClassWithProtocolSerializationMethod,
+    customClassWithProtocolSerializationMethod,
   }) {
     return ObjectWithCustomClass(
       customClassWithoutProtocolSerialization:
           customClassWithoutProtocolSerialization ??
-              this.customClassWithoutProtocolSerialization.copyWith(),
+          this.customClassWithoutProtocolSerialization.copyWith(),
       customClassWithProtocolSerialization:
           customClassWithProtocolSerialization ??
-              this.customClassWithProtocolSerialization.copyWith(),
+          this.customClassWithProtocolSerialization.copyWith(),
       customClassWithProtocolSerializationMethod:
           customClassWithProtocolSerializationMethod ??
-              this.customClassWithProtocolSerializationMethod.copyWith(),
+          this.customClassWithProtocolSerializationMethod.copyWith(),
     );
   }
 }

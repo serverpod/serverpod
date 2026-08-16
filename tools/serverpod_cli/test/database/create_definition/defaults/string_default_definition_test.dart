@@ -51,7 +51,7 @@ void main() {
         var column = table.columns.last;
         expect(
           column.columnDefault,
-          '\$\$This is a default value\$\$::text',
+          "'This is a default value'",
         );
       });
     });
@@ -154,7 +154,7 @@ void main() {
         var column = table.columns.last;
         expect(
           column.columnDefault,
-          '\$\$This is a default value\$\$::text',
+          "'This is a default value'",
         );
       });
 

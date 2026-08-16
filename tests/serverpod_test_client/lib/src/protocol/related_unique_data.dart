@@ -12,8 +12,10 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'unique_data.dart' as _i2;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
-abstract class RelatedUniqueData implements _i1.SerializableModel {
+abstract class RelatedUniqueData
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   RelatedUniqueData._({
     this.id,
     required this.uniqueDataId,
@@ -34,8 +36,9 @@ abstract class RelatedUniqueData implements _i1.SerializableModel {
       uniqueDataId: jsonSerialization['uniqueDataId'] as int,
       uniqueData: jsonSerialization['uniqueData'] == null
           ? null
-          : _i2.UniqueData.fromJson(
-              (jsonSerialization['uniqueData'] as Map<String, dynamic>)),
+          : _i3.Protocol().deserialize<_i2.UniqueData>(
+              jsonSerialization['uniqueData'],
+            ),
       number: jsonSerialization['number'] as int,
     );
   }
@@ -63,9 +66,21 @@ abstract class RelatedUniqueData implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'RelatedUniqueData',
       if (id != null) 'id': id,
       'uniqueDataId': uniqueDataId,
       if (uniqueData != null) 'uniqueData': uniqueData?.toJson(),
+      'number': number,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'RelatedUniqueData',
+      if (id != null) 'id': id,
+      'uniqueDataId': uniqueDataId,
+      if (uniqueData != null) 'uniqueData': uniqueData?.toJsonForProtocol(),
       'number': number,
     };
   }
@@ -85,11 +100,11 @@ class _RelatedUniqueDataImpl extends RelatedUniqueData {
     _i2.UniqueData? uniqueData,
     required int number,
   }) : super._(
-          id: id,
-          uniqueDataId: uniqueDataId,
-          uniqueData: uniqueData,
-          number: number,
-        );
+         id: id,
+         uniqueDataId: uniqueDataId,
+         uniqueData: uniqueData,
+         number: number,
+       );
 
   /// Returns a shallow copy of this [RelatedUniqueData]
   /// with some or all fields replaced by the given arguments.

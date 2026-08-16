@@ -1,0 +1,139 @@
+#!/bin/bash
+
+# Runs a server package's integration tests against an embedded PG
+#
+# Usage:
+#   util/run_tests_integration_embedded <server-directory> [test targets] [extra dart test args]
+#
+# By default, integration-tagged files under test/ are selected. Existing file
+# or directory arguments select a narrower set; all other arguments are
+# forwarded to `dart test`. Set SERVERPOD_TEST_TAG to an empty string to run the
+# selected files without a tag filter.
+
+if [ ! -f util/.serverpod_util_root ]; then
+    echo "Run this script from the root of the Serverpod repository"
+    echo "I.e. util/run_tests_integration_embedded <server-directory>"
+    exit 1
+fi
+
+SERVER_DIR="$1"
+if [ -z "$SERVER_DIR" ]; then
+    echo "Usage: util/run_tests_integration_embedded <server-directory>"
+    exit 1
+fi
+if [ ! -d "$SERVER_DIR" ]; then
+    echo "No such server directory: $SERVER_DIR"
+    exit 1
+fi
+
+set -e
+export SERVERPOD_SILENCE_LIFECYCLE_MESSAGES="1"
+export SERVERPOD_DATABASE_DATA_PATH="${SERVERPOD_DATABASE_DATA_PATH:-.serverpod/test/pgdata}"
+
+REPO_ROOT="$(pwd)"
+
+cd "$SERVER_DIR"
+
+# Optional whole-file sharding for a large suite fanned across parallel CI jobs
+# via SHARD_INDEX/TOTAL_SHARDS (see the auth_idp entries in
+# embedded_integration_tests). We assign whole files to a shard rather than Dart
+# test's --total-shards, which case-splits coupled tests and compiles every file
+# in every shard. Default TOTAL_SHARDS=1 runs every selected file.
+#
+# Non-target arguments are forwarded to `dart test`, e.g. `-x email` to exclude
+# the live-service email test from a DB-focused suite.
+shard_index="${SHARD_INDEX:-0}"
+total_shards="${TOTAL_SHARDS:-1}"
+test_tag="${SERVERPOD_TEST_TAG-integration}"
+
+test_targets=()
+dart_test_args=()
+for arg in "${@:2}"; do
+    if [ -d "$arg" ] || [ -f "$arg" ]; then
+        test_targets+=("$arg")
+    else
+        dart_test_args+=("$arg")
+    fi
+done
+if [ ${#test_targets[@]} -eq 0 ]; then
+    test_targets=(test)
+fi
+
+shard_test_files=()
+file_i=0
+while IFS= read -r test_file; do
+    if [ $(( file_i % total_shards )) -eq "$shard_index" ]; then
+        shard_test_files+=("$test_file")
+    fi
+    file_i=$(( file_i + 1 ))
+done < <(
+    for test_target in "${test_targets[@]}"; do
+        if [ -d "$test_target" ]; then
+            find "$test_target" -name '*_test.dart'
+        else
+            printf '%s\n' "$test_target"
+        fi
+    done | sort -u
+)
+
+if [ ${#shard_test_files[@]} -eq 0 ]; then
+    echo "### No test files assigned to shard $shard_index/$total_shards"
+    cd "$REPO_ROOT"
+    exit 0
+fi
+
+tag_args=()
+if [ -n "$test_tag" ]; then
+    tag_args=(-t "$test_tag")
+fi
+
+echo "### Running ${#shard_test_files[@]} files (shard $shard_index/$total_shards)"
+dart test "${shard_test_files[@]}" "${tag_args[@]}" "${dart_test_args[@]}" --reporter=failures-only
+
+# Verify that the database data path exists
+if [ ! -d "$SERVERPOD_DATABASE_DATA_PATH" ]; then
+    echo "Test did not create the database data path: $SERVERPOD_DATABASE_DATA_PATH"
+    cd "$REPO_ROOT"
+    exit 1
+fi
+
+# The shared postmaster intentionally outlives the test isolates. Stop it
+# through PostgreSQL before deleting its data directory; otherwise it can race
+# cleanup by recreating files on POSIX, while Windows keeps files open until all
+# backend processes exit.
+if [ -f "$SERVERPOD_DATABASE_DATA_PATH/postmaster.pid" ]; then
+    pg_cache="${SERVERPOD_PG_CACHE_DIR:?}"
+    case "${OSTYPE:-}" in
+        msys*|cygwin*) pg_cache="$(cygpath -u "$pg_cache")" ;;
+    esac
+
+    pg_ctl=""
+    while IFS= read -r candidate; do
+        pg_ctl="$candidate"
+        break
+    done < <(find "$pg_cache" -type f \( -name pg_ctl -o -name pg_ctl.exe \) -print)
+    if [ -z "$pg_ctl" ]; then
+        echo "Could not find pg_ctl under $SERVERPOD_PG_CACHE_DIR"
+        cd "$REPO_ROOT"
+        exit 1
+    fi
+    "$pg_ctl" stop \
+        -D "$SERVERPOD_DATABASE_DATA_PATH" \
+        -m fast \
+        -w \
+        -t 30 || true
+fi
+
+# Allow PostgreSQL's child processes a bounded grace period to release handles
+# or finish exiting, while retaining a hard assertion that cleanup succeeded.
+for _ in {1..50}; do
+    rm -rf "$SERVERPOD_DATABASE_DATA_PATH" 2> /dev/null && break
+    sleep 0.1
+done
+if [ -d "$SERVERPOD_DATABASE_DATA_PATH" ]; then
+    echo "Could not remove the embedded PostgreSQL test data directory"
+    cd "$REPO_ROOT"
+    exit 1
+fi
+
+cd "$REPO_ROOT"

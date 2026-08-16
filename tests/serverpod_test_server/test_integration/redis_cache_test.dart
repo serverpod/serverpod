@@ -1,16 +1,21 @@
+@Tags(['redis'])
+library;
+
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cache/redis_cache.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
+import 'package:serverpod_test_shared/serverpod_test_shared.dart' hide Protocol;
 import 'package:test/test.dart';
 
-void main() async {
-  var session = await IntegrationTestServer().session();
-
+void main() {
+  late Session session;
   late RedisCache cache;
   setUpAll(() async {
+    session = await IntegrationTestServer(withRedis: true).session();
     var redisController = session.serverpod.redisController;
     await redisController?.start();
     cache = RedisCache(Protocol(), redisController);
@@ -18,8 +23,7 @@ void main() async {
 
   tearDown(() async => await cache.clear());
 
-  test(
-      'Given an object is stored in the cache '
+  test('Given an object is stored in the cache '
       'when it is retrieved '
       'then the correct object is returned', () async {
     var entry = SimpleData(num: 0);
@@ -36,13 +40,143 @@ void main() async {
   });
 
   test(
-      'Given an object is stored in the cache with a lifetime '
+    'Given a primitive int entry was `put` to the cache, when it is accessed, then it can be read',
+    () async {
+      const key = 'entry';
+      var entry = 0;
+
+      await cache.put(key, entry);
+
+      var retrieved = await cache.get<int>(key);
+      expect(retrieved, equals(0));
+    },
+  );
+
+  test(
+    'Given a primitive DateTime entry was `put` to the cache, when it is accessed, then it can be read',
+    () async {
+      const key = 'entry';
+      var entry = DateTime.now().toUtc();
+
+      await cache.put(key, entry);
+
+      var retrieved = await cache.get<DateTime>(key);
+      expect(retrieved, equals(entry));
+    },
+  );
+
+  test(
+    'Given a primitive Duration entry was `put` to the cache, when it is accessed, then it can be read',
+    () async {
+      const key = 'entry';
+      var entry = Duration(seconds: 1);
+
+      await cache.put(key, entry);
+
+      var retrieved = await cache.get<Duration>(key);
+      expect(retrieved, equals(entry));
+    },
+  );
+
+  test(
+    'Given a primitive ByteData entry was `put` to the cache, when it is accessed, then it can be read',
+    () async {
+      const key = 'entry';
+      var entry = ByteData.view(Uint8List.fromList([1, 2, 3]).buffer);
+
+      await cache.put(key, entry);
+
+      var retrieved = await cache.get<ByteData>(key);
+      expect(
+        retrieved?.buffer.asUint8List(),
+        equals(entry.buffer.asUint8List()),
+      );
+    },
+  );
+
+  test(
+    'Given a primitive UuidValue entry was `put` to the cache, when it is accessed, then it can be read',
+    () async {
+      const key = 'entry';
+      var entry = const Uuid().v4obj();
+
+      await cache.put(key, entry);
+
+      var retrieved = await cache.get<UuidValue>(key);
+      expect(retrieved, equals(entry));
+    },
+  );
+
+  test(
+    'Given a primitive String entry was `put` to the cache, when it is accessed, then it can be read',
+    () async {
+      const key = 'entry';
+      var entry = 'test';
+
+      await cache.put(key, entry);
+
+      var retrieved = await cache.get<String>(key);
+      expect(retrieved, equals(entry));
+    },
+  );
+
+  test(
+    'Given a list of serializable objects was `put` to the cache, when it is accessed, then it can be read',
+    () async {
+      const key = 'entry';
+      var entry = [SimpleData(num: 0), SimpleData(num: 1)];
+
+      await cache.put(key, entry);
+
+      var retrieved = await cache.get<List<SimpleData>>(key);
+      expect(retrieved?.length, equals(2));
+      expect(retrieved?[0].num, equals(0));
+      expect(retrieved?[1].num, equals(1));
+    },
+  );
+
+  test(
+    'Given a custom class with toJson/fromJson methods was `put` to the cache, when it is accessed, then it can be read',
+    () async {
+      var entry = CustomClass2('test');
+
+      await cache.put('entry', entry);
+
+      var retrieved = await cache.get<CustomClass2>('entry');
+      expect(retrieved?.value, equals('test'));
+    },
+  );
+
+  test(
+    'Given a non-serializable object when trying to put it to the cache, then it will throw an Error',
+    () async {
+      var entry = Object();
+
+      await expectLater(
+        cache.put('entry', entry),
+        throwsA(
+          isA<Error>().having(
+            (e) => e.toString(),
+            'toString',
+            contains(
+              "Converting object to an encodable object failed: Instance of 'Object'",
+            ),
+          ),
+        ),
+      );
+    },
+  );
+
+  test('Given an object is stored in the cache with a lifetime '
       'when the lifetime expires '
       'then the object is no longer retrievable', () async {
     var entry = SimpleData(num: 0);
 
-    await cache.put('entry', entry,
-        lifetime: const Duration(milliseconds: 100));
+    await cache.put(
+      'entry',
+      entry,
+      lifetime: const Duration(milliseconds: 100),
+    );
     var retrieved = await cache.get<SimpleData>('entry');
     expect(retrieved!.num, equals(0));
 
@@ -51,8 +185,7 @@ void main() async {
     expect(retrieved, isNull);
   });
 
-  test(
-      'Given multiple objects are stored with the same key '
+  test('Given multiple objects are stored with the same key '
       'when a new object is added '
       'then the last object overwrites the previous one', () async {
     var entryA = SimpleData(num: 0);
@@ -65,8 +198,7 @@ void main() async {
     expect(retrieved!.num, equals(1));
   });
 
-  test(
-      'Given a key is invalidated '
+  test('Given a key is invalidated '
       'when the key is retrieved '
       'then the object is no longer retrievable', () async {
     await cache.put('entry:1337', SimpleData(num: 1337));
@@ -76,16 +208,14 @@ void main() async {
     expect(retrieved, isNull);
   });
 
-  test(
-      'Given an object is not in the cache '
+  test('Given an object is not in the cache '
       'when it is retrieved '
       'then null is returned', () async {
     var retrieved = await cache.get<SimpleData>('invalidEntry');
     expect(retrieved, isNull);
   });
 
-  group(
-      'Given an object is not in the cache and a cache miss handler '
+  group('Given an object is not in the cache and a cache miss handler '
       'is specified to return an object', () {
     const cacheKey = 'testKey';
     SimpleData? retrieved;
@@ -96,23 +226,79 @@ void main() async {
       );
     });
 
-    test(
-        'when the object is retrieved '
+    test('when the object is retrieved '
         'then the cache miss handler returns the correct object', () {
       expect(retrieved?.num, equals(1337));
     });
 
     test(
-        'when the object is retrieved again '
-        'then the cache miss handler value is retrievable from the cache',
-        () async {
-      var value = await cache.get<SimpleData>(cacheKey);
-      expect(value?.num, equals(1337));
+      'when the object is retrieved again '
+      'then the cache miss handler value is retrievable from the cache',
+      () async {
+        var value = await cache.get<SimpleData>(cacheKey);
+        expect(value?.num, equals(1337));
+      },
+    );
+  });
+
+  group('Given a primitive object is not in the cache and a cache miss handler '
+      'is specified to return an object', () {
+    const cacheKey = 'testKey';
+    int? retrieved;
+    setUp(() async {
+      retrieved = await cache.get(
+        cacheKey,
+        CacheMissHandler(() async => 1337),
+      );
     });
+
+    test('when the object is retrieved '
+        'then the cache miss handler returns the correct object', () {
+      expect(retrieved, equals(1337));
+    });
+
+    test(
+      'when the object is retrieved again '
+      'then the cache miss handler value is retrievable from the cache',
+      () async {
+        var value = await cache.get<int>(cacheKey);
+        expect(value, equals(1337));
+      },
+    );
   });
 
   group(
-      'Given an object is not in the cache and '
+    'Given a list of serializable objects is not in the cache and a cache miss handler '
+    'is specified to return an object',
+    () {
+      const cacheKey = 'testKey';
+      List<SimpleData>? retrieved;
+      setUp(() async {
+        retrieved = await cache.get(
+          cacheKey,
+          CacheMissHandler(() async => [SimpleData(num: 1337)]),
+        );
+      });
+
+      test('when the object is retrieved '
+          'then the cache miss handler returns the correct object', () {
+        expect(retrieved?.length, equals(1));
+        expect(retrieved?[0].num, equals(1337));
+      });
+
+      test(
+        'when the object is retrieved again '
+        'then the cache miss handler value is retrievable from the cache',
+        () async {
+          var value = await cache.get<List<SimpleData>>(cacheKey);
+          expect(value?.length, equals(1));
+          expect(value?[0].num, equals(1337));
+        },
+      );
+    },
+  );
+
+  group('Given an object is not in the cache and '
       'the cache miss handler returns null', () {
     const cacheKey = 'testKey';
     SimpleData? retrieved;
@@ -123,22 +309,19 @@ void main() async {
       );
     });
 
-    test(
-        'when the object is retrieved '
+    test('when the object is retrieved '
         'then null is returned', () {
       expect(retrieved, isNull);
     });
 
-    test(
-        'when the object is retrieved again '
+    test('when the object is retrieved again '
         'then no value is set in the cache', () async {
       var value = await cache.get<SimpleData>(cacheKey);
       expect(value, isNull);
     });
   });
 
-  group(
-      'Given an object is already in the cache '
+  group('Given an object is already in the cache '
       'and a cache miss handler is specified', () {
     const cacheKey = 'testKey';
     SimpleData? retrieved;
@@ -150,14 +333,12 @@ void main() async {
       );
     });
 
-    test(
-        'when the object is retrieved '
+    test('when the object is retrieved '
         'then the object already in the cache is returned', () {
       expect(retrieved?.num, equals(1));
     });
 
-    test(
-        'when the object is retrieved again '
+    test('when the object is retrieved again '
         'then the object in the cache is still retrievable', () async {
       var value = await cache.get<SimpleData>(cacheKey);
       expect(value?.num, equals(1));
@@ -183,25 +364,23 @@ void main() async {
       session.messages.removeListener(channelName, listener);
     });
 
-    test(
-        'when a global message is published to the channel '
+    test('when a global message is published to the channel '
         'then postMessage returns true', () async {
       final result = await session.messages.postMessage(
         channelName,
         messageSent,
-        global: true,
+        scope: MessageScope.global,
       );
 
       expect(result, isTrue);
     });
 
-    test(
-        'when a global message is published to the channel '
+    test('when a global message is published to the channel '
         'then the message is received', () async {
       await session.messages.postMessage(
         channelName,
         messageSent,
-        global: true,
+        scope: MessageScope.global,
       );
 
       var messageReceived = await messageCompleter.future.timeout(
@@ -213,13 +392,12 @@ void main() async {
       expect(messageReceived?.num, messageSent.num);
     });
 
-    test(
-        'when a global message is published to the channel '
+    test('when a global message is published to the channel '
         'then confirmation is received', () async {
       var published = await session.messages.postMessage(
         channelName,
         messageSent,
-        global: true,
+        scope: MessageScope.global,
       );
 
       expect(published, true);
@@ -240,22 +418,25 @@ void main() async {
       });
 
       tearDown(() async {
-        session.messages
-            .removeListener(uniqueChannelName, uniqueChannelListener);
+        session.messages.removeListener(
+          uniqueChannelName,
+          uniqueChannelListener,
+        );
       });
 
       test('then no message is received', () async {
         await session.messages.postMessage(
           uniqueChannelName,
           messageSent,
-          global: true,
+          scope: MessageScope.global,
         );
 
-        var uniqueChannelMessageReceived =
-            await uniqueChannelMessageCompleter.future.timeout(
-          Duration(seconds: 10),
-          onTimeout: () => null,
-        );
+        var uniqueChannelMessageReceived = await uniqueChannelMessageCompleter
+            .future
+            .timeout(
+              Duration(seconds: 10),
+              onTimeout: () => null,
+            );
         expect(uniqueChannelMessageReceived, isNotNull);
 
         expectLater(
@@ -267,14 +448,29 @@ void main() async {
       });
     });
 
-    test(
-        'when a global message is published to a channel with no listeners '
+    test('when a message is published with the default auto scope '
+        'then the message is received', () async {
+      await session.messages.postMessage(
+        channelName,
+        messageSent,
+      );
+
+      var messageReceived = await messageCompleter.future.timeout(
+        Duration(seconds: 10),
+        onTimeout: () => null,
+      );
+
+      expect(messageReceived, isNotNull);
+      expect(messageReceived?.num, messageSent.num);
+    });
+
+    test('when a global message is published to a channel with no listeners '
         'then the publish is still successful', () async {
       var uniqueChannelName = Uuid().v4();
       var published = await session.messages.postMessage(
         uniqueChannelName,
         messageSent,
-        global: true,
+        scope: MessageScope.global,
       );
 
       expect(published, true);
@@ -302,7 +498,19 @@ void main() async {
       var published = await session.messages.postMessage(
         'testChannel',
         SimpleData(num: 1337),
-        global: true,
+        scope: MessageScope.global,
+      );
+
+      expect(published, false);
+    });
+
+    // Auto scope only falls back to local delivery when Redis is not
+    // enabled, not when the connection is down.
+    test('when publishing a message with auto scope '
+        'then the publish fails', () async {
+      var published = await session.messages.postMessage(
+        'testChannel',
+        SimpleData(num: 1337),
       );
 
       expect(published, false);
@@ -310,7 +518,12 @@ void main() async {
   });
 
   group('Given a null Redis controller', () {
-    final tempController = session.serverpod.redisController;
+    late RedisController? tempController;
+
+    setUpAll(() {
+      tempController = session.serverpod.redisController;
+    });
+
     setUp(() async {
       assert(
         session.serverpod.redisController != null,
@@ -327,22 +540,49 @@ void main() async {
       session.serverpod.redisController = tempController;
     });
 
-    test('when publishing a global message then a state error is thrown',
-        () async {
-      expectLater(
-        () async => await session.messages.postMessage(
+    test(
+      'when publishing a global message then a state error is thrown',
+      () async {
+        expectLater(
+          () async => await session.messages.postMessage(
+            'testChannel',
+            SimpleData(num: 1337),
+            scope: MessageScope.global,
+          ),
+          throwsA(
+            isA<StateError>().having(
+              (e) => e.message,
+              'message',
+              'Redis needs to be enabled to use this method',
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'when publishing a message with auto scope '
+      'then the message is delivered locally',
+      () async {
+        var messageCompleter = Completer<SimpleData>();
+        MessageCentralListenerCallback listener = (message) {
+          messageCompleter.complete(message as SimpleData);
+        };
+        session.messages.addListener('testChannel', listener);
+        addTearDown(
+          () => session.messages.removeListener('testChannel', listener),
+        );
+
+        var published = await session.messages.postMessage(
           'testChannel',
           SimpleData(num: 1337),
-          global: true,
-        ),
-        throwsA(
-          isA<StateError>().having(
-            (e) => e.message,
-            'message',
-            'Redis needs to be enabled to use this method',
-          ),
-        ),
-      );
-    });
+        );
+
+        expect(published, isTrue);
+        await expectLater(messageCompleter.future, completes);
+        var messageReceived = await messageCompleter.future;
+        expect(messageReceived.num, 1337);
+      },
+    );
   });
 }

@@ -8,12 +8,12 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/many_to_many/enrollment.dart' as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class Course implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Course._({
@@ -32,9 +32,11 @@ abstract class Course implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     return Course(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      enrollments: (jsonSerialization['enrollments'] as List?)
-          ?.map((e) => _i2.Enrollment.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      enrollments: jsonSerialization['enrollments'] == null
+          ? null
+          : _i3.Protocol().deserialize<List<_i2.Enrollment>>(
+              jsonSerialization['enrollments'],
+            ),
     );
   }
 
@@ -63,6 +65,7 @@ abstract class Course implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Course',
       if (id != null) 'id': id,
       'name': name,
       if (enrollments != null)
@@ -73,11 +76,13 @@ abstract class Course implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'Course',
       if (id != null) 'id': id,
       'name': name,
       if (enrollments != null)
-        'enrollments':
-            enrollments?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+        'enrollments': enrollments?.toJson(
+          valueToJson: (v) => v.toJsonForProtocol(),
+        ),
     };
   }
 
@@ -90,7 +95,6 @@ abstract class Course implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CourseTable>? orderBy,
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CourseTable>? orderByList,
     CourseInclude? include,
   }) {
@@ -99,7 +103,6 @@ abstract class Course implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Course.t),
-      orderDescending: orderDescending,
       orderByList: orderByList?.call(Course.t),
       include: include,
     );
@@ -119,10 +122,10 @@ class _CourseImpl extends Course {
     required String name,
     List<_i2.Enrollment>? enrollments,
   }) : super._(
-          id: id,
-          name: name,
-          enrollments: enrollments,
-        );
+         id: id,
+         name: name,
+         enrollments: enrollments,
+       );
 
   /// Returns a shallow copy of this [Course]
   /// with some or all fields replaced by the given arguments.
@@ -147,9 +150,9 @@ class CourseUpdateTable extends _i1.UpdateTable<CourseTable> {
   CourseUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 }
 
 class CourseTable extends _i1.Table<int?> {
@@ -195,16 +198,17 @@ class CourseTable extends _i1.Table<int?> {
     _enrollments = _i1.ManyRelation<_i2.EnrollmentTable>(
       tableWithRelations: relationTable,
       table: _i2.EnrollmentTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _enrollments!;
   }
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-      ];
+    id,
+    name,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -235,7 +239,6 @@ class CourseIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -255,10 +258,6 @@ class CourseRepository {
   final attach = const CourseAttachRepository._();
 
   final attachRow = const CourseAttachRowRepository._();
-
-  final detach = const CourseDetachRepository._();
-
-  final detachRow = const CourseDetachRowRepository._();
 
   /// Returns a list of [Course]s matching the given query parameters.
   ///
@@ -283,25 +282,27 @@ class CourseRepository {
   /// );
   /// ```
   Future<List<Course>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<CourseTable>? where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CourseTable>? orderBy,
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CourseTable>? orderByList,
     _i1.Transaction? transaction,
     CourseInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Course>(
       where: where?.call(Course.t),
       orderBy: orderBy?.call(Course.t),
       orderByList: orderByList?.call(Course.t),
-      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -323,37 +324,43 @@ class CourseRepository {
   /// );
   /// ```
   Future<Course?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<CourseTable>? where,
     int? offset,
     _i1.OrderByBuilder<CourseTable>? orderBy,
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CourseTable>? orderByList,
     _i1.Transaction? transaction,
     CourseInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Course>(
       where: where?.call(Course.t),
       orderBy: orderBy?.call(Course.t),
       orderByList: orderByList?.call(Course.t),
-      orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
   /// Finds a single [Course] by its [id] or null if no such row exists.
   Future<Course?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     CourseInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<Course>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -363,14 +370,26 @@ class CourseRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Course>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Course> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<Course>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -378,7 +397,7 @@ class CourseRepository {
   ///
   /// The returned [Course] will have its `id` field set.
   Future<Course> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Course row, {
     _i1.Transaction? transaction,
   }) async {
@@ -388,21 +407,96 @@ class CourseRepository {
     );
   }
 
+  /// Upserts all [Course]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [Course]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<Course>> upsert(
+    _i1.DatabaseSession session,
+    List<Course> rows, {
+    required _i1.ColumnSelections<CourseTable> conflictColumns,
+    _i1.ColumnSelections<CourseTable>? updateColumns,
+    _i1.WhereExpressionBuilder<CourseTable>? updateWhere,
+    _i1.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<Course>(
+      rows,
+      conflictColumns: conflictColumns(Course.t),
+      updateColumns: updateColumns?.call(Course.t),
+      updateWhere: updateWhere?.call(Course.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [Course] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [Course] will have its `id` field set.
+  Future<Course?> upsertRow(
+    _i1.DatabaseSession session,
+    Course row, {
+    required _i1.ColumnSelections<CourseTable> conflictColumns,
+    _i1.ColumnSelections<CourseTable>? updateColumns,
+    _i1.WhereExpressionBuilder<CourseTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<Course>(
+      row,
+      conflictColumns: conflictColumns(Course.t),
+      updateColumns: updateColumns?.call(Course.t),
+      updateWhere: updateWhere?.call(Course.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [Course]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Course>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Course> rows, {
     _i1.ColumnSelections<CourseTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<Course>(
       rows,
       columns: columns?.call(Course.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -410,7 +504,7 @@ class CourseRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<Course> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Course row, {
     _i1.ColumnSelections<CourseTable>? columns,
     _i1.Transaction? transaction,
@@ -425,7 +519,7 @@ class CourseRepository {
   /// Updates a single [Course] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Course?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<CourseUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -439,16 +533,20 @@ class CourseRepository {
 
   /// Updates all [Course]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Course>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<CourseUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<CourseTable> where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CourseTable>? orderBy,
     _i1.OrderByListBuilder<CourseTable>? orderByList,
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<Course>(
       columnValues: columnValues(Course.t.updateTable),
@@ -457,28 +555,42 @@ class CourseRepository {
       offset: offset,
       orderBy: orderBy?.call(Course.t),
       orderByList: orderByList?.call(Course.t),
-      orderDescending: orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes all [Course]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Course>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Course> rows, {
+    _i1.OrderByBuilder<CourseTable>? orderBy,
+    _i1.OrderByListBuilder<CourseTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<Course>(
       rows,
+      orderBy: orderBy?.call(Course.t),
+      orderByList: orderByList?.call(Course.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes a single [Course].
   Future<Course> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Course row, {
     _i1.Transaction? transaction,
   }) async {
@@ -489,21 +601,34 @@ class CourseRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Course>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CourseTable> where,
+    _i1.OrderByBuilder<CourseTable>? orderBy,
+    _i1.OrderByListBuilder<CourseTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Course>(
       where: where(Course.t),
+      orderBy: orderBy?.call(Course.t),
+      orderByList: orderByList?.call(Course.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<CourseTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -511,6 +636,22 @@ class CourseRepository {
     return session.db.count<Course>(
       where: where?.call(Course.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [Course] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.DatabaseSession session, {
+    required _i1.WhereExpressionBuilder<CourseTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<Course>(
+      where: where(Course.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }
@@ -522,7 +663,7 @@ class CourseAttachRepository {
   /// Creates a relation between this [Course] and the given [Enrollment]s
   /// by setting each [Enrollment]'s foreign key `courseId` to refer to this [Course].
   Future<void> enrollments(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Course course,
     List<_i2.Enrollment> enrollment, {
     _i1.Transaction? transaction,
@@ -534,8 +675,9 @@ class CourseAttachRepository {
       throw ArgumentError.notNull('course.id');
     }
 
-    var $enrollment =
-        enrollment.map((e) => e.copyWith(courseId: course.id)).toList();
+    var $enrollment = enrollment
+        .map((e) => e.copyWith(courseId: course.id))
+        .toList();
     await session.db.update<_i2.Enrollment>(
       $enrollment,
       columns: [_i2.Enrollment.t.courseId],
@@ -550,7 +692,7 @@ class CourseAttachRowRepository {
   /// Creates a relation between this [Course] and the given [Enrollment]
   /// by setting the [Enrollment]'s foreign key `courseId` to refer to this [Course].
   Future<void> enrollments(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Course course,
     _i2.Enrollment enrollment, {
     _i1.Transaction? transaction,
@@ -563,59 +705,6 @@ class CourseAttachRowRepository {
     }
 
     var $enrollment = enrollment.copyWith(courseId: course.id);
-    await session.db.updateRow<_i2.Enrollment>(
-      $enrollment,
-      columns: [_i2.Enrollment.t.courseId],
-      transaction: transaction,
-    );
-  }
-}
-
-class CourseDetachRepository {
-  const CourseDetachRepository._();
-
-  /// Detaches the relation between this [Course] and the given [Enrollment]
-  /// by setting the [Enrollment]'s foreign key `courseId` to `null`.
-  ///
-  /// This removes the association between the two models without deleting
-  /// the related record.
-  Future<void> enrollments(
-    _i1.Session session,
-    List<_i2.Enrollment> enrollment, {
-    _i1.Transaction? transaction,
-  }) async {
-    if (enrollment.any((e) => e.id == null)) {
-      throw ArgumentError.notNull('enrollment.id');
-    }
-
-    var $enrollment =
-        enrollment.map((e) => e.copyWith(courseId: null)).toList();
-    await session.db.update<_i2.Enrollment>(
-      $enrollment,
-      columns: [_i2.Enrollment.t.courseId],
-      transaction: transaction,
-    );
-  }
-}
-
-class CourseDetachRowRepository {
-  const CourseDetachRowRepository._();
-
-  /// Detaches the relation between this [Course] and the given [Enrollment]
-  /// by setting the [Enrollment]'s foreign key `courseId` to `null`.
-  ///
-  /// This removes the association between the two models without deleting
-  /// the related record.
-  Future<void> enrollments(
-    _i1.Session session,
-    _i2.Enrollment enrollment, {
-    _i1.Transaction? transaction,
-  }) async {
-    if (enrollment.id == null) {
-      throw ArgumentError.notNull('enrollment.id');
-    }
-
-    var $enrollment = enrollment.copyWith(courseId: null);
     await session.db.updateRow<_i2.Enrollment>(
       $enrollment,
       columns: [_i2.Enrollment.t.courseId],

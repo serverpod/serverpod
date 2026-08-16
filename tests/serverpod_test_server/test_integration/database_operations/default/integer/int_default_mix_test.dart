@@ -7,10 +7,12 @@ void main() async {
   var session = await IntegrationTestServer().session();
 
   group('Given a class with mixed default fields,', () {
-    tearDownAll(() async => IntDefaultMix.db.deleteWhere(
-          session,
-          where: (_) => Constant.bool(true),
-        ));
+    tearDownAll(
+      () async => IntDefaultMix.db.deleteWhere(
+        session,
+        where: (_) => Constant.bool(true),
+      ),
+    );
 
     test(
       'when creating a record in the database with an unsafe query, then the "intDefaultAndDefaultModel" field value should match the default value',

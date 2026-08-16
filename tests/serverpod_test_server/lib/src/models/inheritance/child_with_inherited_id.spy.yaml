@@ -1,0 +1,8 @@
+class: ChildWithInheritedId
+serverOnly: true
+extends: ParentWithChangedId
+table: child_with_inherited_id
+fields:
+  name: String
+  parent: ChildWithInheritedId?, relation(field=parentId)
+  parentId: UuidValue?

@@ -5,9 +5,11 @@ import 'type_definition_builder.dart';
 
 class ParameterDefinitionBuilder {
   String _name = 'example';
-  TypeDefinition _type =
-      TypeDefinitionBuilder().withClassName('String').build();
+  TypeDefinition _type = TypeDefinitionBuilder()
+      .withClassName('String')
+      .build();
   bool _required = false;
+  List<AnnotationDefinition> _annotations = const [];
 
   ParameterDefinitionBuilder withName(String name) {
     _name = name;
@@ -24,11 +26,19 @@ class ParameterDefinitionBuilder {
     return this;
   }
 
+  ParameterDefinitionBuilder withAnnotations(
+    List<AnnotationDefinition> annotations,
+  ) {
+    _annotations = annotations;
+    return this;
+  }
+
   ParameterDefinition build() {
     return ParameterDefinition(
       name: _name,
       type: _type,
       required: _required,
+      annotations: _annotations,
     );
   }
 }

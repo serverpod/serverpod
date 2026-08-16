@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Connects a table for handling uploading of files.
-abstract class CloudStorageDirectUploadEntry implements _i1.SerializableModel {
+abstract class CloudStorageDirectUploadEntry
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   CloudStorageDirectUploadEntry._({
     this.id,
     required this.storageId,
@@ -31,13 +32,15 @@ abstract class CloudStorageDirectUploadEntry implements _i1.SerializableModel {
   }) = _CloudStorageDirectUploadEntryImpl;
 
   factory CloudStorageDirectUploadEntry.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return CloudStorageDirectUploadEntry(
       id: jsonSerialization['id'] as int?,
       storageId: jsonSerialization['storageId'] as String,
       path: jsonSerialization['path'] as String,
-      expiration:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['expiration']),
+      expiration: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['expiration'],
+      ),
       authKey: jsonSerialization['authKey'] as String,
     );
   }
@@ -72,6 +75,19 @@ abstract class CloudStorageDirectUploadEntry implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.CloudStorageDirectUploadEntry',
+      if (id != null) 'id': id,
+      'storageId': storageId,
+      'path': path,
+      'expiration': expiration.toJson(),
+      'authKey': authKey,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod.CloudStorageDirectUploadEntry',
       if (id != null) 'id': id,
       'storageId': storageId,
       'path': path,
@@ -96,12 +112,12 @@ class _CloudStorageDirectUploadEntryImpl extends CloudStorageDirectUploadEntry {
     required DateTime expiration,
     required String authKey,
   }) : super._(
-          id: id,
-          storageId: storageId,
-          path: path,
-          expiration: expiration,
-          authKey: authKey,
-        );
+         id: id,
+         storageId: storageId,
+         path: path,
+         expiration: expiration,
+         authKey: authKey,
+       );
 
   /// Returns a shallow copy of this [CloudStorageDirectUploadEntry]
   /// with some or all fields replaced by the given arguments.

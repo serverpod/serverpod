@@ -1,0 +1,1385 @@
+import 'dart:io';
+import 'package:path/path.dart' as path;
+import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'package:test/test.dart';
+
+import '../../../../test_util/builders/generator_config_builder.dart';
+import '../../../../test_util/builders/model_source_builder.dart';
+import '../../../../test_util/endpoint_validation_helpers.dart';
+
+final config = GeneratorConfigBuilder().build();
+late Directory testProjectDirectory;
+
+void main() {
+  setUpAll(() async {
+    testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
+    await createTestEnvironment(testProjectDirectory);
+  });
+
+  tearDownAll(() {
+    if (testProjectDirectory.existsSync()) {
+      testProjectDirectory.deleteSync(recursive: true);
+    }
+  });
+
+  group('Given a valid future call with a method when analyzed', () {
+    var collector = CodeGenerationCollector();
+    late Directory testDirectory;
+
+    late List<FutureCallDefinition> futureCallDefinitions;
+    late FutureCallsAnalyzer analyzer;
+    setUpAll(() async {
+      testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
+      var futureCallFile = File(
+        path.join(testDirectory.path, 'future_call.dart'),
+      );
+      futureCallFile.createSync(recursive: true);
+      futureCallFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleFutureCall extends FutureCall {
+  Future<void> hello(Session session, String name) async {
+    session.log('Hello \$name');
+  }
+}
+''');
+
+      analyzer = FutureCallsAnalyzer(directory: testDirectory);
+      futureCallDefinitions = await analyzer.analyze(
+        collector: collector,
+        analyzedModels: StatefulAnalyzer(config, []).validateAll(),
+      );
+    });
+
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then future call definition is created.', () {
+      expect(futureCallDefinitions, hasLength(1));
+    });
+
+    group('then future call method definition', () {
+      test('has expected name.', () {
+        var name = futureCallDefinitions.firstOrNull?.methods.firstOrNull?.name;
+        expect(name, 'hello');
+      });
+
+      test('has no documentation.', () {
+        var documentation = futureCallDefinitions
+            .firstOrNull
+            ?.methods
+            .firstOrNull
+            ?.documentationComment;
+        expect(documentation, isNull);
+      });
+
+      test('has expected return type.', () {
+        var returnType =
+            futureCallDefinitions.firstOrNull?.methods.firstOrNull?.returnType;
+        expect(returnType?.className, 'Future');
+        expect(returnType?.generics, hasLength(1));
+        expect(returnType?.generics.firstOrNull?.className, 'void');
+      });
+    });
+  });
+
+  group(
+    'Given a valid future call method with a first positional nullable `Session` parameter when analyzed',
+    () {
+      var collector = CodeGenerationCollector();
+      late Directory testDirectory;
+      late List<FutureCallDefinition> futureCallDefinitions;
+      late FutureCallsAnalyzer analyzer;
+
+      setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
+        var futureCallFile = File(
+          path.join(testDirectory.path, 'future_call.dart'),
+        );
+        futureCallFile.createSync(recursive: true);
+        futureCallFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleFutureCall extends FutureCall {
+  Future<void> hello(Session? session, String name) async {
+    session?.log('Hello \$name');
+  }
+}
+''');
+
+        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        futureCallDefinitions = await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
+        );
+      });
+      test('then a hint message is reported.', () {
+        expect(collector.errors, hasLength(1));
+        expect(
+          collector.errors.first.message,
+          'The "Session" argument in a future call method does not have to be nullable, consider making it non-nullable.',
+        );
+      });
+
+      test('then future call definition is created.', () {
+        expect(futureCallDefinitions, hasLength(1));
+      });
+
+      test('then an future call method definition is created.', () {
+        var methods = futureCallDefinitions.firstOrNull?.methods;
+        expect(methods, hasLength(1));
+      });
+
+      group('then future call method definition', () {
+        test('has expected name.', () {
+          var name =
+              futureCallDefinitions.firstOrNull?.methods.firstOrNull?.name;
+          expect(name, 'hello');
+        });
+
+        test('has no documentation.', () {
+          var documentation = futureCallDefinitions
+              .firstOrNull
+              ?.methods
+              .firstOrNull
+              ?.documentationComment;
+          expect(documentation, isNull);
+        });
+
+        test('has expected return type.', () {
+          var returnType = futureCallDefinitions
+              .firstOrNull
+              ?.methods
+              .firstOrNull
+              ?.returnType;
+          expect(returnType?.className, 'Future');
+          expect(returnType?.generics, hasLength(1));
+          expect(returnType?.generics.firstOrNull?.className, 'void');
+        });
+      });
+    },
+  );
+
+  group(
+    'Given a future call with a method that has a second positional parameter'
+    'of type `Session` when analyzed',
+    () {
+      var collector = CodeGenerationCollector();
+      late Directory testDirectory;
+      late List<FutureCallDefinition> futureCallDefinitions;
+      late FutureCallsAnalyzer analyzer;
+
+      setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
+        var futureCallFile = File(
+          path.join(testDirectory.path, 'future_call.dart'),
+        );
+        futureCallFile.createSync(recursive: true);
+        futureCallFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleFutureCall extends FutureCall {
+  Future<void> hello(String name, Session session) async {
+    session.log('Hello \$name');
+  }
+}
+''');
+
+        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        futureCallDefinitions = await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
+        );
+      });
+
+      test('then no future call definition methods are created.', () {
+        expect(futureCallDefinitions, hasLength(1));
+        expect(futureCallDefinitions.single.methods, isEmpty);
+      });
+    },
+  );
+
+  group(
+    'Given a future call with a method that has a `Session` as required named parameter when analyzed',
+    () {
+      var collector = CodeGenerationCollector();
+      late Directory testDirectory;
+      late List<FutureCallDefinition> futureCallDefinitions;
+      late FutureCallsAnalyzer analyzer;
+
+      setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
+        var futureCallFile = File(
+          path.join(testDirectory.path, 'future_call.dart'),
+        );
+        futureCallFile.createSync(recursive: true);
+        futureCallFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleFutureCall extends FutureCall {
+  Future<void> hello({
+  required Session session,
+}) async {
+    session.log('Hello \$name');
+  }
+}
+''');
+
+        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        futureCallDefinitions = await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
+        );
+      });
+
+      test('then no future call definition methods are created.', () {
+        expect(futureCallDefinitions, hasLength(1));
+        expect(futureCallDefinitions.single.methods, isEmpty);
+      });
+    },
+  );
+
+  group(
+    'Given a future call method without a first positional `Session` parameter',
+    () {
+      var collector = CodeGenerationCollector();
+      late Directory testDirectory;
+      late List<FutureCallDefinition> futureCallDefinitions;
+      late FutureCallsAnalyzer analyzer;
+
+      setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
+        var futureCallFile = File(
+          path.join(testDirectory.path, 'future_call.dart'),
+        );
+        futureCallFile.createSync(recursive: true);
+        futureCallFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleFutureCall extends FutureCall {
+  Future<void> hello(String name, int num) async {
+    print('Hello \$name');
+  }
+}
+''');
+
+        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        futureCallDefinitions = await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
+        );
+      });
+      test('then validation error is reported.', () {
+        expect(collector.errors, hasLength(1));
+        expect(
+          collector.errors.first.message,
+          'The first parameter of a future call method must be a required positional parameter of type "Session".',
+        );
+      });
+
+      test('then future call definition is created.', () {
+        expect(futureCallDefinitions, hasLength(1));
+      });
+
+      test('then no future call method definition is created.', () {
+        var methods = futureCallDefinitions.firstOrNull?.methods;
+        expect(methods, isEmpty);
+      });
+    },
+  );
+
+  group(
+    'Given a future call method without a first positional `Session` parameter'
+    'and the first parameter instead contains a named `Session` parameter when analyzed',
+    () {
+      var collector = CodeGenerationCollector();
+      late Directory testDirectory;
+      late List<FutureCallDefinition> futureCallDefinitions;
+      late FutureCallsAnalyzer analyzer;
+
+      setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
+        var futureCallFile = File(
+          path.join(testDirectory.path, 'future_call.dart'),
+        );
+        futureCallFile.createSync(recursive: true);
+        futureCallFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleFutureCall extends FutureCall {
+  Future<void> hello({required Session session, required String name}) async {
+    session.log('Hello \$name');
+  }
+}
+''');
+
+        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        futureCallDefinitions = await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
+        );
+      });
+      test('then a validation error is reported.', () {
+        expect(collector.errors, hasLength(1));
+        expect(
+          collector.errors.first.message,
+          'The first parameter of a future call method must be a required positional parameter of type "Session".',
+        );
+      });
+
+      test('then future call definition is created.', () {
+        expect(futureCallDefinitions, hasLength(1));
+      });
+
+      test('then no future call method definition is created.', () {
+        var methods = futureCallDefinitions.firstOrNull?.methods;
+        expect(methods, isEmpty);
+      });
+    },
+  );
+
+  group(
+    'Given a future call method without a first positional `Session` parameter'
+    'and the first parameter instead contains an optional `Session` parameter when analyzed',
+    () {
+      var collector = CodeGenerationCollector();
+      late Directory testDirectory;
+      late List<FutureCallDefinition> futureCallDefinitions;
+      late FutureCallsAnalyzer analyzer;
+
+      setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
+        var futureCallFile = File(
+          path.join(testDirectory.path, 'future_call.dart'),
+        );
+        futureCallFile.createSync(recursive: true);
+        futureCallFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleFutureCall extends FutureCall {
+  Future<void> hello([Session? session, String name = "name"]) async {
+    session?.log('Hello \$name');
+  }
+}
+''');
+
+        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        futureCallDefinitions = await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
+        );
+      });
+      test('then validation error is reported.', () {
+        expect(collector.errors, hasLength(1));
+        expect(
+          collector.errors.first.message,
+          'The first parameter of a future call method must be a required positional parameter of type "Session".',
+        );
+      });
+
+      test('then future call definition is created.', () {
+        expect(futureCallDefinitions, hasLength(1));
+      });
+
+      test('then no future call method definition is created.', () {
+        var methods = futureCallDefinitions.firstOrNull?.methods;
+        expect(methods, isEmpty);
+      });
+    },
+  );
+
+  group(
+    'Given a future call method that without a Future<void> return type when analyzed',
+    () {
+      var collector = CodeGenerationCollector();
+      late Directory testDirectory;
+      late List<FutureCallDefinition> futureCallDefinitions;
+      late FutureCallsAnalyzer analyzer;
+      setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
+        var futureCallFile = File(
+          path.join(testDirectory.path, 'future_call.dart'),
+        );
+        futureCallFile.createSync(recursive: true);
+        futureCallFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleFutureCall extends FutureCall {
+  Future hello(Session session, String name) async {
+    session.log('Hello \$name');
+  }
+}
+''');
+
+        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        futureCallDefinitions = await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
+        );
+      });
+
+      test('then a validation error is reported.', () {
+        expect(collector.errors, hasLength(1));
+      });
+
+      test(
+        'then validation error informs that return type must be Future<void>',
+        () {
+          expect(
+            collector.errors.firstOrNull?.message,
+            'Return type must be a Future<void>.',
+          );
+        },
+      );
+
+      test('then future call definition is created.', () {
+        expect(futureCallDefinitions, hasLength(1));
+      });
+
+      test('then no future call method definition is created.', () {
+        var methods = futureCallDefinitions.firstOrNull?.methods;
+        expect(methods, isEmpty);
+      });
+    },
+  );
+
+  group(
+    'Given a future call method that returns a Future with non void type when analyzed',
+    () {
+      var collector = CodeGenerationCollector();
+      late Directory testDirectory;
+      late List<FutureCallDefinition> futureCallDefinitions;
+      late FutureCallsAnalyzer analyzer;
+      setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
+        var futureCallFile = File(
+          path.join(testDirectory.path, 'future_call.dart'),
+        );
+        futureCallFile.createSync(recursive: true);
+        futureCallFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleFutureCall extends FutureCall {
+  Future<dynamic> hello(Session session, String name) async {
+    session.log('Hello \$name');
+  }
+}
+''');
+
+        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        futureCallDefinitions = await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
+        );
+      });
+
+      test('then a validation error is reported.', () {
+        expect(collector.errors, hasLength(1));
+      });
+
+      test(
+        'then validation error informs that return type must be Future<void>',
+        () {
+          expect(
+            collector.errors.firstOrNull?.message,
+            'Return type must be a Future<void>.',
+          );
+        },
+      );
+
+      test('then future call definition is created.', () {
+        expect(futureCallDefinitions, hasLength(1));
+      });
+
+      test('then no future call method definition is created.', () {
+        var methods = futureCallDefinitions.firstOrNull?.methods;
+        expect(methods, isEmpty);
+      });
+    },
+  );
+
+  group('Given a valid future call with private method when analyzed', () {
+    var collector = CodeGenerationCollector();
+    late Directory testDirectory;
+
+    late List<FutureCallDefinition> futureCallDefinitions;
+    late FutureCallsAnalyzer analyzer;
+    setUpAll(() async {
+      testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
+      var futureCallFile = File(
+        path.join(testDirectory.path, 'future_call.dart'),
+      );
+      futureCallFile.createSync(recursive: true);
+      futureCallFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleFutureCall extends FutureCall {
+  Future<void> _hello(Session session, String name) async {
+    session.log('Hello \$name');
+  }
+}
+''');
+
+      analyzer = FutureCallsAnalyzer(directory: testDirectory);
+      futureCallDefinitions = await analyzer.analyze(
+        collector: collector,
+        analyzedModels: StatefulAnalyzer(config, []).validateAll(),
+      );
+    });
+
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then future call definition is created.', () {
+      expect(futureCallDefinitions, hasLength(1));
+    });
+
+    test('then future call definition does not have method defined.', () {
+      var methods = futureCallDefinitions.firstOrNull?.methods;
+      expect(methods, isEmpty);
+    });
+  });
+
+  group(
+    'Given a valid future call with multiple methods defined when analyzed',
+    () {
+      var collector = CodeGenerationCollector();
+      late Directory testDirectory;
+      late List<FutureCallDefinition> futureCallDefinitions;
+      late FutureCallsAnalyzer analyzer;
+      setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
+        var futureCallFile = File(
+          path.join(testDirectory.path, 'future_call.dart'),
+        );
+        futureCallFile.createSync(recursive: true);
+        futureCallFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleFutureCall extends FutureCall {
+  Future<void> hello(Session session, String name) async {
+    session.log('Hello \$name');
+  }
+
+  Future<void> world(Session session, String name) async {
+    session.log('Hello \$name');
+  }
+}
+''');
+
+        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        futureCallDefinitions = await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
+        );
+      });
+
+      test('then no validation errors are reported.', () {
+        expect(collector.errors, isEmpty);
+      });
+
+      test('then future call definition is created.', () {
+        expect(futureCallDefinitions, hasLength(1));
+      });
+
+      test('then future call definition has two methods defined.', () {
+        var methods = futureCallDefinitions.firstOrNull?.methods;
+        expect(methods, hasLength(2));
+      });
+
+      test('then future call definition has expected method names.', () {
+        var methods = futureCallDefinitions.firstOrNull?.methods;
+        expect(methods?.firstOrNull?.name, 'hello');
+        expect(methods?.lastOrNull?.name, 'world');
+      });
+    },
+  );
+
+  group(
+    'Given a valid future call method with documentation when analyzed',
+    () {
+      var collector = CodeGenerationCollector();
+      late Directory testDirectory;
+      late List<FutureCallDefinition> futureCallDefinitions;
+      late FutureCallsAnalyzer analyzer;
+      setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
+        var futureCallFile = File(
+          path.join(testDirectory.path, 'future_call.dart'),
+        );
+        futureCallFile.createSync(recursive: true);
+        futureCallFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleFutureCall extends FutureCall {
+  /// This is a method comment.
+  Future<void> hello(Session session, String name) async {
+    session.log('Hello \$name');
+  }
+}
+''');
+
+        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        futureCallDefinitions = await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
+        );
+      });
+
+      test('then no validation errors are reported.', () {
+        expect(collector.errors, isEmpty);
+      });
+
+      test('then future call definition is created.', () {
+        expect(futureCallDefinitions, hasLength(1));
+      });
+
+      test(
+        'then future call definition method has expected documentation.',
+        () {
+          var documentation = futureCallDefinitions
+              .firstOrNull
+              ?.methods
+              .firstOrNull
+              ?.documentationComment;
+          expect(documentation, '/// This is a method comment.');
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a valid future call method with "@Deprecated(<string literal>)" annotation',
+    () {
+      var collector = CodeGenerationCollector();
+      late Directory testDirectory;
+      late List<FutureCallDefinition> futureCallDefinitions;
+      late FutureCallsAnalyzer analyzer;
+      setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
+        var futureCallFile = File(
+          path.join(testDirectory.path, 'future_call.dart'),
+        );
+        futureCallFile.createSync(recursive: true);
+        futureCallFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleFutureCall extends FutureCall {
+  @Deprecated('This method is deprecated.')
+  Future<void> hello(Session session, String name) async {
+    session.log('Hello \$name');
+  }
+}
+''');
+
+        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        futureCallDefinitions = await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
+        );
+      });
+
+      test('then no validation errors are reported.', () {
+        expect(collector.errors, isEmpty);
+      });
+
+      test('then future call definition is created.', () {
+        expect(futureCallDefinitions, hasLength(1));
+      });
+
+      test('then future call definition method has expected annotations.', () {
+        var annotations =
+            futureCallDefinitions.firstOrNull?.methods.firstOrNull?.annotations;
+        expect(annotations?.length, 1);
+        expect(annotations![0].name, 'Deprecated');
+        expect(annotations[0].arguments, ["'This method is deprecated.'"]);
+        expect(
+          annotations[0].methodCallAnalyzerIgnoreRule,
+          'deprecated_member_use_from_same_package',
+        );
+      });
+    },
+  );
+
+  group(
+    'Given a valid future call method with "@Deprecated(<string const expr>)" annotation',
+    () {
+      var collector = CodeGenerationCollector();
+      late Directory testDirectory;
+      late List<FutureCallDefinition> futureCallDefinitions;
+      late FutureCallsAnalyzer analyzer;
+      setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
+        var futureCallFile = File(
+          path.join(testDirectory.path, 'future_call.dart'),
+        );
+        futureCallFile.createSync(recursive: true);
+        futureCallFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+const deprecatedMessage = 'is deprecated';
+
+class ExampleFutureCall extends FutureCall {
+  @Deprecated('This method \${deprecatedMessage}.')
+  Future<void> hello(Session session, String name) async {
+    session.log('Hello \$name');
+  }
+}
+''');
+
+        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        futureCallDefinitions = await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
+        );
+      });
+
+      test('then no validation errors are reported.', () {
+        expect(collector.errors, isEmpty);
+      });
+
+      test('then future call definition is created.', () {
+        expect(futureCallDefinitions, hasLength(1));
+      });
+
+      test('then future call definition method has expected annotations.', () {
+        var annotations =
+            futureCallDefinitions.firstOrNull?.methods.firstOrNull?.annotations;
+        expect(annotations?.length, 1);
+        expect(annotations![0].name, 'Deprecated');
+        expect(annotations[0].arguments, ["'This method is deprecated.'"]);
+        expect(
+          annotations[0].methodCallAnalyzerIgnoreRule,
+          'deprecated_member_use_from_same_package',
+        );
+      });
+    },
+  );
+
+  group('Given a valid future call method with "@deprecated" annotation', () {
+    var collector = CodeGenerationCollector();
+    late Directory testDirectory;
+
+    late List<FutureCallDefinition> futureCallDefinitions;
+    late FutureCallsAnalyzer analyzer;
+    setUpAll(() async {
+      testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
+      var futureCallFile = File(
+        path.join(testDirectory.path, 'future_call.dart'),
+      );
+      futureCallFile.createSync(recursive: true);
+      futureCallFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleFutureCall extends FutureCall {
+  @deprecated
+  Future<void> hello(Session session, String name) async {
+    session.log('Hello \$name');
+  }
+}
+''');
+
+      analyzer = FutureCallsAnalyzer(directory: testDirectory);
+      futureCallDefinitions = await analyzer.analyze(
+        collector: collector,
+        analyzedModels: StatefulAnalyzer(config, []).validateAll(),
+      );
+    });
+
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then future call definition is created.', () {
+      expect(futureCallDefinitions, hasLength(1));
+    });
+
+    test('then future call definition method has expected annotations.', () {
+      var annotations =
+          futureCallDefinitions.firstOrNull?.methods.firstOrNull?.annotations;
+      expect(annotations?.length, 1);
+      expect(annotations![0].name, 'deprecated');
+      expect(annotations[0].arguments, null);
+      expect(
+        annotations[0].methodCallAnalyzerIgnoreRule,
+        'deprecated_member_use_from_same_package',
+      );
+    });
+  });
+
+  group(
+    'Given a valid future call with a method that has serializable parameters after the first positional Session parameter',
+    () {
+      var collector = CodeGenerationCollector();
+      late Directory testDirectory;
+      late List<FutureCallDefinition> futureCallDefinitions;
+      late FutureCallsAnalyzer analyzer;
+      setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
+        var futureCallFile = File(
+          path.join(testDirectory.path, 'future_call.dart'),
+        );
+        futureCallFile.createSync(recursive: true);
+        futureCallFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleFutureCall extends FutureCall {
+  Future<void> hello(Session session, String name, int age) async {
+    session.log('Hello \$name');
+  }
+}
+''');
+
+        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        futureCallDefinitions = await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
+        );
+      });
+
+      test('then no validation errors are reported.', () {
+        expect(collector.errors, isEmpty);
+      });
+
+      test('then future call definition is created.', () {
+        expect(futureCallDefinitions, hasLength(1));
+      });
+
+      test('then future call definition has method defined.', () {
+        var methods = futureCallDefinitions.firstOrNull?.methods;
+        expect(methods, hasLength(1));
+        expect(methods?.firstOrNull?.name, 'hello');
+      });
+
+      test(
+        'then future call definition has a method parameter created for serialization.',
+        () {
+          var futureCallMethodParameter = futureCallDefinitions
+              .firstOrNull
+              ?.methods
+              .firstOrNull
+              ?.futureCallMethodParameter;
+          expect(futureCallMethodParameter, isNotNull);
+          expect(futureCallMethodParameter?.name, 'object');
+          expect(
+            futureCallMethodParameter?.type.className,
+            'ExampleFutureCallHelloModel',
+          );
+          expect(
+            futureCallMethodParameter?.allParameters.first.name,
+            'name',
+          );
+          expect(
+            futureCallMethodParameter?.allParameters.first.type.className,
+            'String',
+          );
+          expect(
+            futureCallMethodParameter?.allParameters.last.name,
+            'age',
+          );
+          expect(
+            futureCallMethodParameter?.allParameters.last.type.className,
+            'int',
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a valid future call with a method that has a SerializableModel parameter after the Session parameter',
+    () {
+      var collector = CodeGenerationCollector();
+      late Directory testDirectory;
+      late List<FutureCallDefinition> futureCallDefinitions;
+      late FutureCallsAnalyzer analyzer;
+      setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
+        var futureCallFile = File(
+          path.join(testDirectory.path, 'future_call.dart'),
+        );
+        futureCallFile.createSync(recursive: true);
+        futureCallFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleFutureCall extends FutureCall {
+  Future<void> hello(Session session, SerializableModel? object) async {
+    session.log('Hello \$object');
+  }
+}
+''');
+
+        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        futureCallDefinitions = await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
+        );
+      });
+
+      test('then no validation errors are reported.', () {
+        expect(collector.errors, isEmpty);
+      });
+
+      test('then future call definition is created.', () {
+        expect(futureCallDefinitions, hasLength(1));
+      });
+
+      test('then future call definition has method defined.', () {
+        var methods = futureCallDefinitions.firstOrNull?.methods;
+        expect(methods, hasLength(1));
+        expect(methods?.firstOrNull?.name, 'hello');
+      });
+
+      test(
+        'then no method parameter created for serialization in the future call definition method.',
+        () {
+          var futureCallMethodParameter = futureCallDefinitions
+              .firstOrNull
+              ?.methods
+              .firstOrNull
+              ?.futureCallMethodParameter;
+          expect(futureCallMethodParameter, isNull);
+        },
+      );
+    },
+  );
+
+  final exampleModelSource = ModelSourceBuilder().withYaml('''
+class: Example
+fields:
+  name: String
+''').build();
+
+  group(
+    'Given a future call method with a direct registered custom model parameter, '
+    'when analyzing,',
+    () {
+      var collector = CodeGenerationCollector();
+      late Directory testDirectory;
+      late List<FutureCallDefinition> futureCallDefinitions;
+      late FutureCallsAnalyzer analyzer;
+      setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
+        var futureCallFile = File(
+          path.join(testDirectory.path, 'future_call.dart'),
+        );
+        futureCallFile.createSync(recursive: true);
+        futureCallFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class Example {}
+
+class ExampleFutureCall extends FutureCall {
+  Future<void> hello(Session session, Example data) async {
+    session.log('Hello');
+  }
+}
+''');
+
+        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        futureCallDefinitions = await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, [
+            exampleModelSource,
+          ]).validateAll(),
+        );
+      });
+
+      test('then no validation errors are reported.', () {
+        expect(collector.errors, isEmpty);
+      });
+
+      test('then future call definition is created.', () {
+        expect(futureCallDefinitions, hasLength(1));
+      });
+
+      test('then future call method definition is created.', () {
+        expect(futureCallDefinitions.firstOrNull?.methods, hasLength(1));
+      });
+
+      group('then future call method definition', () {
+        test('has expected parameter type.', () {
+          var parameterType = futureCallDefinitions
+              .firstOrNull
+              ?.methods
+              .firstOrNull
+              ?.parameters
+              .firstOrNull
+              ?.type;
+          expect(parameterType?.className, 'Example');
+        });
+
+        test(
+          'has no method parameter created for serialization.',
+          () {
+            var futureCallMethodParameter = futureCallDefinitions
+                .firstOrNull
+                ?.methods
+                .firstOrNull
+                ?.futureCallMethodParameter;
+            expect(futureCallMethodParameter, isNull);
+          },
+        );
+      });
+    },
+  );
+
+  group(
+    'Given a future call method with a parameter whose generic type argument is a registered custom model, '
+    'when analyzing,',
+    () {
+      var collector = CodeGenerationCollector();
+      late Directory testDirectory;
+      late List<FutureCallDefinition> futureCallDefinitions;
+      late FutureCallsAnalyzer analyzer;
+      setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
+        var futureCallFile = File(
+          path.join(testDirectory.path, 'future_call.dart'),
+        );
+        futureCallFile.createSync(recursive: true);
+        futureCallFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class Example {}
+
+class ExampleFutureCall extends FutureCall {
+  Future<void> hello(Session session, List<Example> data) async {
+    session.log('Hello');
+  }
+}
+''');
+
+        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        futureCallDefinitions = await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, [
+            exampleModelSource,
+          ]).validateAll(),
+        );
+      });
+
+      test('then no validation errors are reported.', () {
+        expect(collector.errors, isEmpty);
+      });
+
+      test('then future call definition is created.', () {
+        expect(futureCallDefinitions, hasLength(1));
+      });
+
+      test('then future call method definition is created.', () {
+        expect(futureCallDefinitions.firstOrNull?.methods, hasLength(1));
+      });
+
+      group('then future call method definition', () {
+        test('has expected parameter type.', () {
+          var parameterType = futureCallDefinitions
+              .firstOrNull
+              ?.methods
+              .firstOrNull
+              ?.parameters
+              .firstOrNull
+              ?.type;
+          expect(parameterType?.className, 'List');
+          expect(parameterType?.generics, hasLength(1));
+          expect(parameterType?.generics.firstOrNull?.className, 'Example');
+        });
+
+        test(
+          'has a method parameter created for serialization.',
+          () {
+            var futureCallMethodParameter = futureCallDefinitions
+                .firstOrNull
+                ?.methods
+                .firstOrNull
+                ?.futureCallMethodParameter;
+            expect(futureCallMethodParameter, isNotNull);
+            expect(
+              futureCallMethodParameter?.type.className,
+              'ExampleFutureCallHelloModel',
+            );
+            expect(
+              futureCallMethodParameter?.allParameters.firstOrNull?.name,
+              'data',
+            );
+            expect(
+              futureCallMethodParameter
+                  ?.allParameters
+                  .firstOrNull
+                  ?.type
+                  .className,
+              'List',
+            );
+            expect(
+              futureCallMethodParameter
+                  ?.allParameters
+                  .firstOrNull
+                  ?.type
+                  .generics
+                  .firstOrNull
+                  ?.className,
+              'Example',
+            );
+          },
+        );
+      });
+    },
+  );
+
+  group(
+    'Given a future call method with a map parameter whose value type is a registered custom model, '
+    'when analyzing,',
+    () {
+      var collector = CodeGenerationCollector();
+      late Directory testDirectory;
+      late List<FutureCallDefinition> futureCallDefinitions;
+      late FutureCallsAnalyzer analyzer;
+      setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
+        var futureCallFile = File(
+          path.join(testDirectory.path, 'future_call.dart'),
+        );
+        futureCallFile.createSync(recursive: true);
+        futureCallFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class Example {}
+
+class ExampleFutureCall extends FutureCall {
+  Future<void> hello(Session session, Map<String, Example> data) async {
+    session.log('Hello');
+  }
+}
+''');
+
+        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        futureCallDefinitions = await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, [
+            exampleModelSource,
+          ]).validateAll(),
+        );
+      });
+
+      test('then no validation errors are reported.', () {
+        expect(collector.errors, isEmpty);
+      });
+
+      test('then future call definition is created.', () {
+        expect(futureCallDefinitions, hasLength(1));
+      });
+
+      test('then future call method definition is created.', () {
+        expect(futureCallDefinitions.firstOrNull?.methods, hasLength(1));
+      });
+
+      group('then future call method definition', () {
+        test('has expected parameter type.', () {
+          var parameterType = futureCallDefinitions
+              .firstOrNull
+              ?.methods
+              .firstOrNull
+              ?.parameters
+              .firstOrNull
+              ?.type;
+          expect(parameterType?.className, 'Map');
+          expect(parameterType?.generics, hasLength(2));
+          expect(parameterType?.generics.firstOrNull?.className, 'String');
+          expect(parameterType?.generics.lastOrNull?.className, 'Example');
+        });
+
+        test(
+          'has a method parameter created for serialization.',
+          () {
+            var futureCallMethodParameter = futureCallDefinitions
+                .firstOrNull
+                ?.methods
+                .firstOrNull
+                ?.futureCallMethodParameter;
+            expect(futureCallMethodParameter, isNotNull);
+            expect(
+              futureCallMethodParameter?.type.className,
+              'ExampleFutureCallHelloModel',
+            );
+            expect(
+              futureCallMethodParameter?.allParameters.firstOrNull?.name,
+              'data',
+            );
+            expect(
+              futureCallMethodParameter
+                  ?.allParameters
+                  .firstOrNull
+                  ?.type
+                  .className,
+              'Map',
+            );
+            expect(
+              futureCallMethodParameter
+                  ?.allParameters
+                  .firstOrNull
+                  ?.type
+                  .generics
+                  .firstOrNull
+                  ?.className,
+              'String',
+            );
+            expect(
+              futureCallMethodParameter
+                  ?.allParameters
+                  .firstOrNull
+                  ?.type
+                  .generics
+                  .lastOrNull
+                  ?.className,
+              'Example',
+            );
+          },
+        );
+      });
+    },
+  );
+
+  group(
+    'Given a valid future call with a method that has non serializable parameters after the first positional Session parameter',
+    () {
+      var collector = CodeGenerationCollector();
+      late Directory testDirectory;
+      late List<FutureCallDefinition> futureCallDefinitions;
+      late FutureCallsAnalyzer analyzer;
+      setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
+        var futureCallFile = File(
+          path.join(testDirectory.path, 'future_call.dart'),
+        );
+        futureCallFile.createSync(recursive: true);
+        futureCallFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleFutureCall extends FutureCall {
+  Future<void> hello(Session session, Object data) async {
+    session.log('Hello \$data');
+  }
+}
+''');
+
+        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        futureCallDefinitions = await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
+        );
+      });
+
+      test('then validation errors is reported.', () {
+        expect(collector.errors, hasLength(1));
+      });
+
+      test(
+        'then validation error informs that the non serializable parameter type is not supported',
+        () {
+          expect(
+            collector.errors.firstOrNull?.message,
+            'The type "Object" is not a supported future call parameter type.',
+          );
+        },
+      );
+
+      test('then future call definition is created.', () {
+        expect(futureCallDefinitions, hasLength(1));
+      });
+
+      test('then no future call method definition is created.', () {
+        var methods = futureCallDefinitions.firstOrNull?.methods;
+        expect(methods, isEmpty);
+      });
+    },
+  );
+
+  group(
+    'Given a future call with a method that has a positional `Session` parameter only',
+    () {
+      var collector = CodeGenerationCollector();
+      late Directory testDirectory;
+      late List<FutureCallDefinition> futureCallDefinitions;
+      late FutureCallsAnalyzer analyzer;
+
+      setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
+        var futureCallFile = File(
+          path.join(testDirectory.path, 'future_call.dart'),
+        );
+        futureCallFile.createSync(recursive: true);
+        futureCallFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleFutureCall extends FutureCall {
+  Future<void> hello(Session session) async {
+    session.log('Hello \$name');
+  }
+}
+''');
+
+        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        futureCallDefinitions = await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
+        );
+      });
+
+      test('then future call definition has method defined.', () {
+        var methods = futureCallDefinitions.firstOrNull?.methods;
+        expect(methods, hasLength(1));
+        expect(methods?.firstOrNull?.name, 'hello');
+      });
+    },
+  );
+}

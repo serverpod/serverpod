@@ -106,178 +106,183 @@ void main() {
   group('Classes with table', () {
     for (var keyword in restrictedFieldNames) {
       test(
-          'Given a class with the restricted field name "$keyword" then collect an error',
-          () {
-        var collector = CodeGenerationCollector();
+        'Given a class with the restricted field name "$keyword" then collect an error',
+        () {
+          var collector = CodeGenerationCollector();
 
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          var models = [
+            ModelSourceBuilder().withYaml(
+              '''
             class: Example
             table: example
             fields:
               $keyword: String
             ''',
-          ).build()
-        ];
+            ).build(),
+          ];
 
-        StatefulAnalyzer analyzer = StatefulAnalyzer(
-          config,
-          models,
-          onErrorsCollector(collector),
-        );
-        analyzer.validateAll();
+          StatefulAnalyzer analyzer = StatefulAnalyzer(
+            config,
+            models,
+            onErrorsCollector(collector),
+          );
+          analyzer.validateAll();
 
-        expect(collector.errors, isNotEmpty);
+          expect(collector.errors, isNotEmpty);
 
-        var error = collector.errors.first;
+          var error = collector.errors.first;
 
-        expect(
-          error.message,
-          'The field name "$keyword" is reserved and cannot be used.',
-        );
-      });
+          expect(
+            error.message,
+            'The field name "$keyword" is reserved and cannot be used.',
+          );
+        },
+      );
     }
 
     for (var keyword in restrictedDatabaseClassFieldNames) {
       test(
-          'Given a class with the restricted field name "$keyword" then collect an error',
-          () {
-        var collector = CodeGenerationCollector();
+        'Given a class with the restricted field name "$keyword" then collect an error',
+        () {
+          var collector = CodeGenerationCollector();
 
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          var models = [
+            ModelSourceBuilder().withYaml(
+              '''
             class: Example
             table: example
             fields:
               $keyword: String
             ''',
-          ).build()
-        ];
+            ).build(),
+          ];
 
-        StatefulAnalyzer analyzer = StatefulAnalyzer(
-          config,
-          models,
-          onErrorsCollector(collector),
-        );
-        analyzer.validateAll();
+          StatefulAnalyzer analyzer = StatefulAnalyzer(
+            config,
+            models,
+            onErrorsCollector(collector),
+          );
+          analyzer.validateAll();
 
-        expect(collector.errors, isNotEmpty);
+          expect(collector.errors, isNotEmpty);
 
-        var error = collector.errors.first;
+          var error = collector.errors.first;
 
-        expect(
-          error.message,
-          'The field name "$keyword" is reserved and cannot be used.',
-        );
-      });
+          expect(
+            error.message,
+            'The field name "$keyword" is reserved and cannot be used.',
+          );
+        },
+      );
     }
   });
 
   group('Classes without table', () {
     for (var keyword in restrictedFieldNames) {
       test(
-          'Given a class with the restricted field name "$keyword" then collect an error',
-          () {
-        var collector = CodeGenerationCollector();
+        'Given a class with the restricted field name "$keyword" then collect an error',
+        () {
+          var collector = CodeGenerationCollector();
 
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          var models = [
+            ModelSourceBuilder().withYaml(
+              '''
             class: Example
             fields:
               $keyword: String
             ''',
-          ).build()
-        ];
+            ).build(),
+          ];
 
-        StatefulAnalyzer analyzer = StatefulAnalyzer(
-          config,
-          models,
-          onErrorsCollector(collector),
-        );
-        analyzer.validateAll();
+          StatefulAnalyzer analyzer = StatefulAnalyzer(
+            config,
+            models,
+            onErrorsCollector(collector),
+          );
+          analyzer.validateAll();
 
-        expect(collector.errors, isNotEmpty);
+          expect(collector.errors, isNotEmpty);
 
-        var error = collector.errors.first;
+          var error = collector.errors.first;
 
-        expect(
-          error.message,
-          'The field name "$keyword" is reserved and cannot be used.',
-        );
-      });
+          expect(
+            error.message,
+            'The field name "$keyword" is reserved and cannot be used.',
+          );
+        },
+      );
     }
   });
   group('Exceptions', () {
     for (var keyword in restrictedFieldNames) {
       test(
-          'Given a class with the restricted field name "$keyword" then collect an error',
-          () {
-        var collector = CodeGenerationCollector();
+        'Given a class with the restricted field name "$keyword" then collect an error',
+        () {
+          var collector = CodeGenerationCollector();
 
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          var models = [
+            ModelSourceBuilder().withYaml(
+              '''
             exception: Example
             fields:
               $keyword: String
             ''',
-          ).build()
-        ];
+            ).build(),
+          ];
 
-        StatefulAnalyzer analyzer = StatefulAnalyzer(
-          config,
-          models,
-          onErrorsCollector(collector),
-        );
-        analyzer.validateAll();
+          StatefulAnalyzer analyzer = StatefulAnalyzer(
+            config,
+            models,
+            onErrorsCollector(collector),
+          );
+          analyzer.validateAll();
 
-        expect(collector.errors, isNotEmpty);
+          expect(collector.errors, isNotEmpty);
 
-        var error = collector.errors.first;
+          var error = collector.errors.first;
 
-        expect(
-          error.message,
-          'The field name "$keyword" is reserved and cannot be used.',
-        );
-      });
+          expect(
+            error.message,
+            'The field name "$keyword" is reserved and cannot be used.',
+          );
+        },
+      );
     }
   });
   group('Enums', () {
     for (var keyword in restrictedFieldNames) {
       test(
-          'Given a class with the restricted field name "$keyword" then collect an error',
-          () {
-        var collector = CodeGenerationCollector();
+        'Given a class with the restricted field name "$keyword" then collect an error',
+        () {
+          var collector = CodeGenerationCollector();
 
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          var models = [
+            ModelSourceBuilder().withYaml(
+              '''
             enum: Example
             values:
               - $keyword
             ''',
-          ).build()
-        ];
+            ).build(),
+          ];
 
-        StatefulAnalyzer analyzer = StatefulAnalyzer(
-          config,
-          models,
-          onErrorsCollector(collector),
-        );
-        analyzer.validateAll();
+          StatefulAnalyzer analyzer = StatefulAnalyzer(
+            config,
+            models,
+            onErrorsCollector(collector),
+          );
+          analyzer.validateAll();
 
-        expect(collector.errors, isNotEmpty);
+          expect(collector.errors, isNotEmpty);
 
-        var error = collector.errors.first;
+          var error = collector.errors.first;
 
-        expect(
-          error.message,
-          'The enum value "$keyword" is reserved and cannot be used.',
-        );
-      });
+          expect(
+            error.message,
+            'The enum value "$keyword" is reserved and cannot be used.',
+          );
+        },
+      );
     }
   });
 }

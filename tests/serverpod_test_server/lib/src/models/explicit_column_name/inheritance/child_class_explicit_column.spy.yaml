@@ -1,0 +1,5 @@
+class: ChildClassExplicitColumn
+table: child_table_explicit_column
+extends: NonTableParentClass
+fields:
+  childField: String, column=child_field

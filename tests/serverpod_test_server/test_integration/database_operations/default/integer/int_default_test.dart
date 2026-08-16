@@ -7,10 +7,12 @@ void main() async {
   var session = await IntegrationTestServer().session();
 
   group('Given a class with "default" fields,', () {
-    tearDownAll(() async => IntDefault.db.deleteWhere(
-          session,
-          where: (_) => Constant.bool(true),
-        ));
+    tearDownAll(
+      () async => IntDefault.db.deleteWhere(
+        session,
+        where: (_) => Constant.bool(true),
+      ),
+    );
 
     test(
       'when creating a record in the database, then the "default=10" field value should be 10',

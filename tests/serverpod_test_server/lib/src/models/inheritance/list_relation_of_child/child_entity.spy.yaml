@@ -1,0 +1,5 @@
+class: ChildEntity
+extends: BaseEntity
+table: child_entity
+fields:
+  localField: String

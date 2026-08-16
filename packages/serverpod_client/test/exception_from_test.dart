@@ -55,132 +55,145 @@ void main() {
   });
 
   group(
-      'Given malformed data with an unknown status code when parsing the exception',
-      () {
-    var exception = getExceptionFrom(
-      data: 'malformed data',
-      serializationManager: TestSerialization(),
-      statusCode: 499,
-    );
+    'Given malformed data with an unknown status code when parsing the exception',
+    () {
+      var exception = getExceptionFrom(
+        data: 'malformed data',
+        serializationManager: TestSerialization(),
+        statusCode: 499,
+      );
 
-    test('then a base ServerpodClientException is created', () {
-      expect(exception, isA<ServerpodClientException>());
-      expect((exception as ServerpodClientException).statusCode, 499);
-    });
+      test('then a base ServerpodClientException is created', () {
+        expect(exception, isA<ServerpodClientException>());
+        expect((exception as ServerpodClientException).statusCode, 499);
+      });
 
-    test('then the message is an unknown error', () {
-      expect((exception as ServerpodClientException).message,
-          'Unknown error, data: malformed data');
-    });
-  });
-
-  group(
-      'Given malformed data with a bad request status code when parsing the exception',
-      () {
-    var exception = getExceptionFrom(
-      data: 'malformed data',
-      serializationManager: TestSerialization(),
-      statusCode: 400,
-    );
-
-    test('then a bad request exception is created', () {
-      expect(exception, isA<ServerpodClientBadRequest>());
-    });
-
-    test('then the message is a bad request', () {
-      expect((exception as ServerpodClientException).message,
-          'Bad request: malformed data');
-    });
-  });
+      test('then the message is an unknown error', () {
+        expect(
+          (exception as ServerpodClientException).message,
+          'Unknown error, data: malformed data',
+        );
+      });
+    },
+  );
 
   group(
-      'Given empty data with a bad request status code when parsing the exception',
-      () {
-    var exception = getExceptionFrom(
-      data: '',
-      serializationManager: TestSerialization(),
-      statusCode: 400,
-    );
+    'Given malformed data with a bad request status code when parsing the exception',
+    () {
+      var exception = getExceptionFrom(
+        data: 'malformed data',
+        serializationManager: TestSerialization(),
+        statusCode: 400,
+      );
 
-    test('then a bad request exception is created', () {
-      expect(exception, isA<ServerpodClientBadRequest>());
-    });
+      test('then a bad request exception is created', () {
+        expect(exception, isA<ServerpodClientBadRequest>());
+      });
 
-    test('then the message is a bad request', () {
-      expect((exception as ServerpodClientException).message, 'Bad request');
-    });
-  });
-
-  group(
-      'Given empty data with a unauthorized status code when parsing the exception',
-      () {
-    var exception = getExceptionFrom(
-      data: '',
-      serializationManager: TestSerialization(),
-      statusCode: 401,
-    );
-
-    test('then a unauthorized exception is created', () {
-      expect(exception, isA<ServerpodClientUnauthorized>());
-    });
-
-    test('then the message is a unauthorized', () {
-      expect((exception as ServerpodClientException).message, 'Unauthorized');
-    });
-  });
+      test('then the message is a bad request', () {
+        expect(
+          (exception as ServerpodClientException).message,
+          'Bad request: malformed data',
+        );
+      });
+    },
+  );
 
   group(
-      'Given empty data with a forbidden status code when parsing the exception',
-      () {
-    var exception = getExceptionFrom(
-      data: '',
-      serializationManager: TestSerialization(),
-      statusCode: 403,
-    );
+    'Given empty data with a bad request status code when parsing the exception',
+    () {
+      var exception = getExceptionFrom(
+        data: '',
+        serializationManager: TestSerialization(),
+        statusCode: 400,
+      );
 
-    test('then a forbidden exception is created', () {
-      expect(exception, isA<ServerpodClientForbidden>());
-    });
+      test('then a bad request exception is created', () {
+        expect(exception, isA<ServerpodClientBadRequest>());
+      });
 
-    test('then the message is a forbidden', () {
-      expect((exception as ServerpodClientException).message, 'Forbidden');
-    });
-  });
-
-  group(
-      'Given empty data with a not found status code when parsing the exception',
-      () {
-    var exception = getExceptionFrom(
-      data: '',
-      serializationManager: TestSerialization(),
-      statusCode: 404,
-    );
-
-    test('then a not found exception is created', () {
-      expect(exception, isA<ServerpodClientNotFound>());
-    });
-
-    test('then the message is a not found', () {
-      expect((exception as ServerpodClientException).message, 'Not found');
-    });
-  });
+      test('then the message is a bad request', () {
+        expect((exception as ServerpodClientException).message, 'Bad request');
+      });
+    },
+  );
 
   group(
-      'Given empty data with a internal server error status code when parsing the exception',
-      () {
-    var exception = getExceptionFrom(
-      data: '',
-      serializationManager: TestSerialization(),
-      statusCode: 500,
-    );
+    'Given empty data with a unauthorized status code when parsing the exception',
+    () {
+      var exception = getExceptionFrom(
+        data: '',
+        serializationManager: TestSerialization(),
+        statusCode: 401,
+      );
 
-    test('then a internal server error exception is created', () {
-      expect(exception, isA<ServerpodClientInternalServerError>());
-    });
+      test('then a unauthorized exception is created', () {
+        expect(exception, isA<ServerpodClientUnauthorized>());
+      });
 
-    test('then the message is a internal server error', () {
-      expect((exception as ServerpodClientException).message,
-          'Internal server error');
-    });
-  });
+      test('then the message is a unauthorized', () {
+        expect((exception as ServerpodClientException).message, 'Unauthorized');
+      });
+    },
+  );
+
+  group(
+    'Given empty data with a forbidden status code when parsing the exception',
+    () {
+      var exception = getExceptionFrom(
+        data: '',
+        serializationManager: TestSerialization(),
+        statusCode: 403,
+      );
+
+      test('then a forbidden exception is created', () {
+        expect(exception, isA<ServerpodClientForbidden>());
+      });
+
+      test('then the message is a forbidden', () {
+        expect((exception as ServerpodClientException).message, 'Forbidden');
+      });
+    },
+  );
+
+  group(
+    'Given empty data with a not found status code when parsing the exception',
+    () {
+      var exception = getExceptionFrom(
+        data: '',
+        serializationManager: TestSerialization(),
+        statusCode: 404,
+      );
+
+      test('then a not found exception is created', () {
+        expect(exception, isA<ServerpodClientNotFound>());
+      });
+
+      test('then the message is a not found', () {
+        expect((exception as ServerpodClientException).message, 'Not found');
+      });
+    },
+  );
+
+  group(
+    'Given empty data with a internal server error status code when parsing the exception',
+    () {
+      var exception = getExceptionFrom(
+        data: '',
+        serializationManager: TestSerialization(),
+        statusCode: 500,
+      );
+
+      test('then a internal server error exception is created', () {
+        expect(exception, isA<ServerpodClientInternalServerError>());
+      });
+
+      test('then the message is a internal server error', () {
+        expect(
+          (exception as ServerpodClientException).message,
+          'Internal server error',
+        );
+      });
+    },
+  );
 }

@@ -35,8 +35,8 @@ Directory? findServerDirectory(Directory root) {
   if (isServerDirectory(root)) return root;
 
   var childDirs = root.listSync().where(
-        (dir) => isServerDirectory(Directory.fromUri(dir.uri)),
-      );
+    (dir) => isServerDirectory(Directory.fromUri(dir.uri)),
+  );
 
   if (childDirs.isNotEmpty) {
     return Directory.fromUri(childDirs.first.uri);

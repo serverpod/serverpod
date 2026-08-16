@@ -21,12 +21,15 @@ void main() {
           fields:
             byteDataType: ByteData, defaultModel=test
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -49,12 +52,15 @@ void main() {
           fields:
             mapType: Map<String, int>, defaultModel=test
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -77,12 +83,15 @@ void main() {
           fields:
             listType: List<int>, defaultModel=test
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -105,12 +114,15 @@ void main() {
           fields:
             classType: Example, defaultModel=test
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 

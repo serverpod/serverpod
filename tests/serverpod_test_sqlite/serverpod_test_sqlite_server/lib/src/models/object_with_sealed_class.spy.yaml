@@ -1,0 +1,5 @@
+class: ObjectWithSealedClass
+fields:
+  sealedField: SealedParent
+  nullableSealedField: SealedParent?
+  sealedList: List<SealedParent>

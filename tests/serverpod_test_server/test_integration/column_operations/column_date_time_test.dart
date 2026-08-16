@@ -36,147 +36,172 @@ void main() async {
       expect(result.length, 4);
     });
 
-    test('when filtering using equals then matching row is returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aDateTime.equals(firstDate),
-      );
+    test(
+      'when filtering using equals then matching row is returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aDateTime.equals(firstDate),
+        );
 
-      expect(result.first.aDateTime, firstDate);
-    });
-
-    test('when filtering using equals with null then matching row is returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aDateTime.equals(null),
-      );
-
-      expect(result.first.aDateTime, isNull);
-    });
-
-    test('when filtering using notEquals then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aDateTime.notEquals(firstDate),
-      );
-
-      expect(result.length, 3);
-    });
+        expect(result.first.aDateTime, firstDate);
+      },
+    );
 
     test(
-        'when filtering using notEquals with null then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aDateTime.notEquals(null),
-      );
+      'when filtering using equals with null then matching row is returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aDateTime.equals(null),
+        );
 
-      expect(result.length, 3);
-    });
-
-    test('when filtering using inSet then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aDateTime.inSet({firstDate, secondDate}),
-      );
-
-      expect(result.length, 2);
-    });
-
-    test('when filtering using empty inSet then no rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aDateTime.inSet({}),
-      );
-
-      expect(result, isEmpty);
-    });
-
-    test('when filtering using notInSet then matching row is returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aDateTime.notInSet({firstDate}),
-      );
-
-      expect(result.length, 3);
-    });
-
-    test('when filtering using empty notInSet then all rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aDateTime.notInSet({}),
-      );
-
-      expect(result.length, 4);
-    });
-
-    test('when filtering using greater than then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aDateTime > firstDate,
-      );
-
-      expect(result.length, 2);
-    });
+        expect(result.first.aDateTime, isNull);
+      },
+    );
 
     test(
-        'when filtering using greater or equal than then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aDateTime >= firstDate,
-      );
+      'when filtering using notEquals then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aDateTime.notEquals(firstDate),
+        );
 
-      expect(result.length, 3);
-    });
-
-    test('when filtering using less than then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aDateTime < thirdDate,
-      );
-
-      expect(result.length, 2);
-    });
+        expect(result.length, 3);
+      },
+    );
 
     test(
-        'when filtering using less or equal than then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aDateTime <= thirdDate,
-      );
+      'when filtering using notEquals with null then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aDateTime.notEquals(null),
+        );
 
-      expect(result.length, 3);
-    });
+        expect(result.length, 3);
+      },
+    );
 
-    test('when filtering using between then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aDateTime.between(firstDate, secondDate),
-      );
+    test(
+      'when filtering using inSet then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aDateTime.inSet({firstDate, secondDate}),
+        );
 
-      expect(result.length, 2);
-    });
+        expect(result.length, 2);
+      },
+    );
 
-    test('when filtering using not between then matching row is returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aDateTime.notBetween(firstDate, secondDate),
-      );
+    test(
+      'when filtering using empty inSet then no rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aDateTime.inSet({}),
+        );
 
-      expect(result.first.aDateTime, thirdDate);
-    });
+        expect(result, isEmpty);
+      },
+    );
+
+    test(
+      'when filtering using notInSet then matching row is returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aDateTime.notInSet({firstDate}),
+        );
+
+        expect(result.length, 3);
+      },
+    );
+
+    test(
+      'when filtering using empty notInSet then all rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aDateTime.notInSet({}),
+        );
+
+        expect(result.length, 4);
+      },
+    );
+
+    test(
+      'when filtering using greater than then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aDateTime > firstDate,
+        );
+
+        expect(result.length, 2);
+      },
+    );
+
+    test(
+      'when filtering using greater or equal than then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aDateTime >= firstDate,
+        );
+
+        expect(result.length, 3);
+      },
+    );
+
+    test(
+      'when filtering using less than then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aDateTime < thirdDate,
+        );
+
+        expect(result.length, 2);
+      },
+    );
+
+    test(
+      'when filtering using less or equal than then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aDateTime <= thirdDate,
+        );
+
+        expect(result.length, 3);
+      },
+    );
+
+    test(
+      'when filtering using between then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aDateTime.between(firstDate, secondDate),
+        );
+
+        expect(result.length, 2);
+      },
+    );
+
+    test(
+      'when filtering using not between then matching row is returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aDateTime.notBetween(firstDate, secondDate),
+        );
+
+        expect(result.first.aDateTime, thirdDate);
+      },
+    );
   });
 }

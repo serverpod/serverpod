@@ -1,0 +1,6 @@
+class: UpsertTestModel
+table: upsert_test_model
+fields:
+  code: String, unique
+  category: String
+  value: int, unique(per=category)

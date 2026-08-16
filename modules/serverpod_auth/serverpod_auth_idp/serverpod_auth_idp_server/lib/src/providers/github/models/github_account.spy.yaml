@@ -1,0 +1,30 @@
+### A fully configured GitHub account to be used for logins.
+class: GitHubAccount
+serverOnly: true
+table: serverpod_auth_idp_github_account
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+
+  ### The [AuthUser] this profile belongs to
+  authUser: module:auth:AuthUser?, relation(onDelete=Cascade)
+
+  ### The user identifier given by GitHub for this account.
+  userIdentifier: String
+
+  ### The verified email of the user, as received from GitHub.
+  ###
+  ### Logins all work through the [userIdentifier], but the email is retained
+  ### for consolidation look-ups.
+  ###
+  ### Stored in lower-case.
+  ###
+  ### This may be null if the user's email is not public or verified.
+  email: String?
+
+  ### The time when this authentication was created.
+  created: DateTime, defaultModel=now
+
+indexes:
+  serverpod_auth_github_account_user_identifier:
+    fields: userIdentifier
+    unique: true

@@ -22,7 +22,7 @@ class ParentWithDefault
   factory ParentWithDefault.fromJson(Map<String, dynamic> jsonSerialization) {
     return ParentWithDefault(
       name: jsonSerialization['name'] as String,
-      parentDefault: jsonSerialization['parentDefault'] as int,
+      parentDefault: jsonSerialization['parentDefault'] as int?,
     );
   }
 
@@ -46,6 +46,7 @@ class ParentWithDefault
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ParentWithDefault',
       'name': name,
       'parentDefault': parentDefault,
     };
@@ -54,6 +55,7 @@ class ParentWithDefault
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'ParentWithDefault',
       'name': name,
       'parentDefault': parentDefault,
     };

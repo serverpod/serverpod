@@ -1,0 +1,32 @@
+class: ObjectWithBit
+table: object_with_bit
+fields:
+  bit: Bit(512)
+  bitNullable: Bit(512)?
+  bitIndexedHnsw: Bit(512)
+  bitIndexedHnswWithParams: Bit(512)
+  bitIndexedIvfflat: Bit(512)
+  bitIndexedIvfflatWithParams: Bit(512)
+
+indexes:
+  bit_index_default:
+    fields: bit
+  bit_index_hnsw:
+    fields: bitIndexedHnsw
+    type: hnsw
+  bit_index_hnsw_with_params:
+    fields: bitIndexedHnswWithParams
+    type: hnsw
+    distanceFunction: jaccard
+    parameters:
+      m: 64
+      ef_construction: 200
+  bit_index_ivfflat:
+    fields: bitIndexedIvfflat
+    type: ivfflat
+  bit_index_ivfflat_with_params:
+    fields: bitIndexedIvfflatWithParams
+    type: ivfflat
+    distanceFunction: hamming
+    parameters:
+      lists: 300

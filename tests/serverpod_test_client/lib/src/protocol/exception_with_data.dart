@@ -11,9 +11,13 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i2;
 
 abstract class ExceptionWithData
-    implements _i1.SerializableException, _i1.SerializableModel {
+    implements
+        _i1.SerializableException,
+        _i1.SerializableModel,
+        _i1.ProtocolSerialization {
   ExceptionWithData._({
     required this.message,
     required this.creationDate,
@@ -31,11 +35,12 @@ abstract class ExceptionWithData
   factory ExceptionWithData.fromJson(Map<String, dynamic> jsonSerialization) {
     return ExceptionWithData(
       message: jsonSerialization['message'] as String,
-      creationDate:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['creationDate']),
-      errorFields: (jsonSerialization['errorFields'] as List)
-          .map((e) => e as String)
-          .toList(),
+      creationDate: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['creationDate'],
+      ),
+      errorFields: _i2.Protocol().deserialize<List<String>>(
+        jsonSerialization['errorFields'],
+      ),
       someNullableField: jsonSerialization['someNullableField'] as int?,
     );
   }
@@ -60,6 +65,18 @@ abstract class ExceptionWithData
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ExceptionWithData',
+      'message': message,
+      'creationDate': creationDate.toJson(),
+      'errorFields': errorFields.toJson(),
+      if (someNullableField != null) 'someNullableField': someNullableField,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'ExceptionWithData',
       'message': message,
       'creationDate': creationDate.toJson(),
       'errorFields': errorFields.toJson(),
@@ -69,7 +86,7 @@ abstract class ExceptionWithData
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return 'ExceptionWithData(message: $message, creationDate: $creationDate, errorFields: $errorFields, someNullableField: $someNullableField)';
   }
 }
 
@@ -82,11 +99,11 @@ class _ExceptionWithDataImpl extends ExceptionWithData {
     required List<String> errorFields,
     int? someNullableField,
   }) : super._(
-          message: message,
-          creationDate: creationDate,
-          errorFields: errorFields,
-          someNullableField: someNullableField,
-        );
+         message: message,
+         creationDate: creationDate,
+         errorFields: errorFields,
+         someNullableField: someNullableField,
+       );
 
   /// Returns a shallow copy of this [ExceptionWithData]
   /// with some or all fields replaced by the given arguments.

@@ -16,7 +16,7 @@ void main() {
       ModelClassDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
-          .build()
+          .build(),
     ];
 
     var codeMap = generator.generateSerializableModelsCode(
@@ -27,14 +27,16 @@ void main() {
     test('then the client-side file is created', () {
       expect(
         codeMap.keys,
-        contains(path.join(
-          '..',
-          'example_project_client',
-          'lib',
-          'src',
-          'protocol',
-          'example.dart',
-        )),
+        contains(
+          path.join(
+            '..',
+            'example_project_client',
+            'lib',
+            'src',
+            'protocol',
+            'example.dart',
+          ),
+        ),
         reason: 'Expected client-side file to be present, found none.',
       );
     });
@@ -45,7 +47,7 @@ void main() {
       EnumDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
-          .build()
+          .build(),
     ];
 
     var codeMap = generator.generateSerializableModelsCode(
@@ -56,14 +58,16 @@ void main() {
     test('then the client-side file is created', () {
       expect(
         codeMap.keys,
-        contains(path.join(
-          '..',
-          'example_project_client',
-          'lib',
-          'src',
-          'protocol',
-          'example.dart',
-        )),
+        contains(
+          path.join(
+            '..',
+            'example_project_client',
+            'lib',
+            'src',
+            'protocol',
+            'example.dart',
+          ),
+        ),
         reason: 'Expected client-side file to be present, found none.',
       );
     });
@@ -97,119 +101,133 @@ void main() {
     test('then the client-side files are created', () {
       expect(
         codeMap.keys,
-        contains(path.join(
-          '..',
-          'example_project_client',
-          'lib',
-          'src',
-          'protocol',
-          'example.dart',
-        )),
+        contains(
+          path.join(
+            '..',
+            'example_project_client',
+            'lib',
+            'src',
+            'protocol',
+            'example.dart',
+          ),
+        ),
         reason: 'Expected client-side file to be present, found none.',
       );
 
       expect(
         codeMap.keys,
-        contains(path.join(
-          '..',
-          'example_project_client',
-          'lib',
-          'src',
-          'protocol',
-          'user.dart',
-        )),
+        contains(
+          path.join(
+            '..',
+            'example_project_client',
+            'lib',
+            'src',
+            'protocol',
+            'user.dart',
+          ),
+        ),
         reason: 'Expected client-side file to be present, found none.',
       );
 
       expect(
         codeMap.keys,
-        contains(path.join(
-          '..',
-          'example_project_client',
-          'lib',
-          'src',
-          'protocol',
-          'animal.dart',
-        )),
+        contains(
+          path.join(
+            '..',
+            'example_project_client',
+            'lib',
+            'src',
+            'protocol',
+            'animal.dart',
+          ),
+        ),
         reason: 'Expected client-side file to be present, found none.',
       );
 
       expect(
         codeMap.keys,
-        contains(path.join(
-          '..',
-          'example_project_client',
-          'lib',
-          'src',
-          'protocol',
-          'color.dart',
-        )),
+        contains(
+          path.join(
+            '..',
+            'example_project_client',
+            'lib',
+            'src',
+            'protocol',
+            'color.dart',
+          ),
+        ),
         reason: 'Expected client-side file to be present, found none.',
       );
     });
   });
 
   test(
-      'Given a server-side only class when generating the code then the client-side file is NOT created',
-      () {
-    var models = [
-      ModelClassDefinitionBuilder()
-          .withClassName('Example')
-          .withFileName('example')
-          .withServerOnly(true)
-          .build()
-    ];
+    'Given a server-side only class when generating the code then the client-side file is NOT created',
+    () {
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName('Example')
+            .withFileName('example')
+            .withServerOnly(true)
+            .build(),
+      ];
 
-    var codeMap = generator.generateSerializableModelsCode(
-      models: models,
-      config: config,
-    );
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
 
-    expect(
-      codeMap.keys,
-      isNot(
-        contains(path.join(
-          '..',
-          'example_project_client',
-          'lib',
-          'src',
-          'protocol',
-          'example.dart',
-        )),
-      ),
-      reason: 'Expected client-side file to NOT be present, found one.',
-    );
-  });
+      expect(
+        codeMap.keys,
+        isNot(
+          contains(
+            path.join(
+              '..',
+              'example_project_client',
+              'lib',
+              'src',
+              'protocol',
+              'example.dart',
+            ),
+          ),
+        ),
+        reason: 'Expected client-side file to NOT be present, found one.',
+      );
+    },
+  );
 
   test(
-      'Given a server-side only enum when generating the code then the client-side file is NOT created',
-      () {
-    var models = [
-      EnumDefinitionBuilder()
-          .withClassName('Example')
-          .withFileName('example')
-          .withServerOnly(true)
-          .build()
-    ];
+    'Given a server-side only enum when generating the code then the client-side file is NOT created',
+    () {
+      var models = [
+        EnumDefinitionBuilder()
+            .withClassName('Example')
+            .withFileName('example')
+            .withServerOnly(true)
+            .build(),
+      ];
 
-    var codeMap = generator.generateSerializableModelsCode(
-      models: models,
-      config: config,
-    );
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
 
-    expect(
-      codeMap.keys,
-      isNot(
-        contains(path.join(
-          '..',
-          'example_project_client',
-          'lib',
-          'src',
-          'protocol',
-          'example.dart',
-        )),
-      ),
-      reason: 'Expected client-side file to NOT be present, found one.',
-    );
-  });
+      expect(
+        codeMap.keys,
+        isNot(
+          contains(
+            path.join(
+              '..',
+              'example_project_client',
+              'lib',
+              'src',
+              'protocol',
+              'example.dart',
+            ),
+          ),
+        ),
+        reason: 'Expected client-side file to NOT be present, found one.',
+      );
+    },
+  );
 }

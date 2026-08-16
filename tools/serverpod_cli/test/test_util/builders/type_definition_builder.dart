@@ -11,16 +11,18 @@ class TypeDefinitionBuilder {
   EnumDefinition? _enumDefinition;
   SerializableModelDefinition? _modelDefinition;
   int? _vectorDimension;
+  String? _recordFieldName;
 
   TypeDefinitionBuilder()
-      : _className = 'DefaultClassName',
-        _generics = [],
-        _nullable = false,
-        _url = null,
-        _dartType = null,
-        _customClass = false,
-        _modelDefinition = null,
-        _vectorDimension = null;
+    : _className = 'DefaultClassName',
+      _generics = [],
+      _nullable = false,
+      _url = null,
+      _dartType = null,
+      _customClass = false,
+      _modelDefinition = null,
+      _vectorDimension = null,
+      _recordFieldName = null;
 
   TypeDefinitionBuilder withClassName(String className) {
     _className = className;
@@ -37,10 +39,12 @@ class TypeDefinitionBuilder {
     bool nullable = false,
   ]) {
     _className = 'Future';
-    _generics.add(TypeDefinitionBuilder()
-        .withClassName(className)
-        .withNullable(nullable)
-        .build());
+    _generics.add(
+      TypeDefinitionBuilder()
+          .withClassName(className)
+          .withNullable(nullable)
+          .build(),
+    );
     return this;
   }
 
@@ -57,6 +61,11 @@ class TypeDefinitionBuilder {
   ) {
     _className = '_Record';
     _generics.addAll(fields);
+    return this;
+  }
+
+  TypeDefinitionBuilder withRecordFieldName(String fieldName) {
+    _recordFieldName = fieldName;
     return this;
   }
 
@@ -87,10 +96,12 @@ class TypeDefinitionBuilder {
   ]) {
     _className = 'Map';
     _generics.add(TypeDefinitionBuilder().withClassName(keyClassName).build());
-    _generics.add(TypeDefinitionBuilder()
-        .withClassName(valueClassName)
-        .withNullable(nullable)
-        .build());
+    _generics.add(
+      TypeDefinitionBuilder()
+          .withClassName(valueClassName)
+          .withNullable(nullable)
+          .build(),
+    );
     return this;
   }
 
@@ -142,6 +153,7 @@ class TypeDefinitionBuilder {
       enumDefinition: _enumDefinition,
       projectModelDefinition: _modelDefinition,
       vectorDimension: _vectorDimension,
+      recordFieldName: _recordFieldName,
     );
   }
 }

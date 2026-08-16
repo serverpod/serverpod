@@ -11,13 +11,14 @@ void main() {
     );
 
     test(
-        'when negate matching with non-existent method of the class then test passes',
-        () {
-      expect(
-        compilationUnit,
-        isNot(containsClass('User').withMethod('nonExistentMethod')),
-      );
-    });
+      'when negate matching with non-existent method of the class then test passes',
+      () {
+        expect(
+          compilationUnit,
+          isNot(containsClass('User').withMethod('nonExistentMethod')),
+        );
+      },
+    );
   });
 
   group('Given compilation unit with class with void method', () {
@@ -51,13 +52,14 @@ void main() {
     });
 
     test(
-        'when negate matching with non-existent class and method then test passes',
-        () {
-      expect(
-        compilationUnit,
-        isNot(containsClass('NonExistentClass').withMethod('methodName')),
-      );
-    });
+      'when negate matching with non-existent class and method then test passes',
+      () {
+        expect(
+          compilationUnit,
+          isNot(containsClass('NonExistentClass').withMethod('methodName')),
+        );
+      },
+    );
 
     test('when negate matching class and override method then test passes', () {
       expect(
@@ -66,23 +68,29 @@ void main() {
       );
     });
 
-    test('when negate matching class and non-existent method then test passes',
-        () {
-      expect(
-        compilationUnit,
-        isNot(containsClass('User').withMethod('nonExistentMethod')),
-      );
-    });
+    test(
+      'when negate matching class and non-existent method then test passes',
+      () {
+        expect(
+          compilationUnit,
+          isNot(containsClass('User').withMethod('nonExistentMethod')),
+        );
+      },
+    );
 
-    test('when negate matching class and String return method then test passes',
-        () {
-      expect(
-        compilationUnit,
-        isNot(
-          containsClass('User').withMethod('methodName', returnType: 'String'),
-        ),
-      );
-    });
+    test(
+      'when negate matching class and String return method then test passes',
+      () {
+        expect(
+          compilationUnit,
+          isNot(
+            containsClass(
+              'User',
+            ).withMethod('methodName', returnType: 'String'),
+          ),
+        );
+      },
+    );
   });
 
   group('Given compilation unit with class with override method', () {
@@ -109,13 +117,16 @@ void main() {
       );
     });
 
-    test('when negate matching class and non-override method then test passes',
-        () {
-      expect(
-        compilationUnit,
-        isNot(
-            containsClass('User').withMethod('methodName', isOverride: false)),
-      );
-    });
+    test(
+      'when negate matching class and non-override method then test passes',
+      () {
+        expect(
+          compilationUnit,
+          isNot(
+            containsClass('User').withMethod('methodName', isOverride: false),
+          ),
+        );
+      },
+    );
   });
 }

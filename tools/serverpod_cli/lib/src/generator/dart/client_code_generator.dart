@@ -5,11 +5,15 @@ import 'package:serverpod_cli/src/generator/code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/library_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/model_library_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/model_generators_util.dart';
+import 'package:serverpod_cli/src/generator/dart_formatters.dart';
+import 'package:serverpod_cli/src/migrations/client_side/client_migration_dart_emitter.dart';
 
 /// A [CodeGenerator] that generates the client side dart code of a
 /// serverpod project.
 class DartClientCodeGenerator extends CodeGenerator {
   const DartClientCodeGenerator();
+
+  static const _migrationDartEmitter = ClientMigrationDartEmitter();
 
   @override
   Map<String, String> generateSerializableModelsCode({
@@ -21,18 +25,27 @@ class DartClientCodeGenerator extends CodeGenerator {
       config: config,
     );
 
-    var clientClasses = models.where((element) => !element.serverOnly).toList();
+    var clientClasses = models
+        .where((element) => !element.serverOnly && !element.isSharedModel)
+        .toList();
 
-    var modelAllocatorContext =
-        ModelAllocatorContext.build(clientClasses, config);
+    var modelAllocatorContext = ModelAllocatorContext.build(
+      clientClasses,
+      config,
+    );
 
-    return {
-      for (var entry in modelAllocatorContext.entries)
-        entry.model.getFullFilePath(config, serverCode: false):
-            clientSideGenerator
-                .generateModelLibrary(entry.model)
-                .generateCode(allocator: entry.allocator),
-    };
+    var codeMap = <String, String>{};
+    for (var entry in modelAllocatorContext.entries) {
+      var path = entry.model.getFullFilePath(config, serverCode: false);
+      codeMap[path] = clientSideGenerator
+          .generateModelLibrary(entry.model)
+          .generateCode(
+            allocator: entry.allocator,
+            formatter: GeneratedDartFormatters.of(path),
+          );
+    }
+
+    return codeMap;
   }
 
   @override
@@ -42,14 +55,46 @@ class DartClientCodeGenerator extends CodeGenerator {
   }) {
     var clientClassGenerator = LibraryGenerator(
       serverCode: false,
+      sharedPackage: false,
       protocolDefinition: protocolDefinition,
       config: config,
     );
-    return {
-      p.joinAll([...config.generatedDartClientModelPathParts, 'protocol.dart']):
-          clientClassGenerator.generateProtocol().generateCode(),
-      p.joinAll([...config.generatedDartClientModelPathParts, 'client.dart']):
-          clientClassGenerator.generateClientEndpointCalls().generateCode(),
+
+    var protocolPath = p.joinAll([
+      ...config.generatedDartClientModelPathParts,
+      'protocol.dart',
+    ]);
+    var clientPath = p.joinAll([
+      ...config.generatedDartClientModelPathParts,
+      'client.dart',
+    ]);
+
+    var files = {
+      protocolPath: clientClassGenerator.generateProtocol().generateCode(
+        formatter: GeneratedDartFormatters.of(protocolPath),
+      ),
+      clientPath: clientClassGenerator
+          .generateClientEndpointCalls()
+          .generateCode(formatter: GeneratedDartFormatters.of(clientPath)),
     };
+    if (protocolDefinition.models.hasHostClientDatabaseTables &&
+        config.type != PackageType.module) {
+      files[p.joinAll([
+        ...config.clientPackagePathParts,
+        'lib',
+        'migrations',
+        'migration_registry.dart',
+      ])] = _migrationDartEmitter.emitPlaceholderRegistry(
+        formatter: GeneratedDartFormatters.of(
+          p.joinAll([
+            ...config.clientPackagePathParts,
+            'lib',
+            'migrations',
+            'migration_registry.dart',
+          ]),
+        ),
+      );
+    }
+    return files;
   }
 }

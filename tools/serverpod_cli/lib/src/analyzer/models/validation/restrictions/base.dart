@@ -41,7 +41,7 @@ class EnumValueRestriction<T extends Enum> extends ValueRestriction {
       SourceSpanSeverityException(
         '"$value" is not a valid property. Valid properties are $options.',
         span,
-      )
+      ),
     ];
 
     if (value is! String) return errors;
@@ -73,7 +73,7 @@ class BooleanValueRestriction extends ValueRestriction {
       SourceSpanSeverityException(
         'The value must be a boolean.',
         span,
-      )
+      ),
     ];
 
     if (value is! String) return errors;
@@ -99,7 +99,7 @@ class StringValueRestriction extends ValueRestriction {
         SourceSpanSeverityException(
           'The property must be a String.',
           span,
-        )
+        ),
       ];
     }
 

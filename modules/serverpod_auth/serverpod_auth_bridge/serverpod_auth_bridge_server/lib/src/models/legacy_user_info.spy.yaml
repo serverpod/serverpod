@@ -1,0 +1,21 @@
+### Legacy-compatible user profile returned to older clients.
+class: LegacyUserInfo
+fields:
+  ### Legacy integer user id.
+  id: int?
+  ### Unique identifier of the auth user.
+  userIdentifier: String
+  ### Public user name.
+  userName: String?
+  ### Display full name.
+  fullName: String?
+  ### Email address.
+  email: String?
+  ### Timestamp when the account was created.
+  created: DateTime
+  ### URL of the profile image.
+  imageUrl: String?
+  ### List of granted scope names.
+  scopeNames: List<String>
+  ### True if the account is currently blocked.
+  blocked: bool

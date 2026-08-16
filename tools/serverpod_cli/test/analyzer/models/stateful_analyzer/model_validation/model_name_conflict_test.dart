@@ -11,8 +11,7 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   group('Given an enum with the same name defined in', () {
-    test(
-        'a module and then the project (order matters) '
+    test('a module and then the project (order matters) '
         'when the project enum is referenced '
         'then the type is resolved to the project enum', () {
       var commonEnumName = 'CommonEnum';
@@ -55,9 +54,11 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var models =
-          StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
-              .validateAll();
+      var models = StatefulAnalyzer(
+        config,
+        modelSources,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       var model = models.last as ClassDefinition;
       var enumField = model.fields.first;
@@ -65,11 +66,12 @@ void main() {
       expect(enumField.type.enumDefinition, isA<EnumDefinition>());
 
       expect(
-          enumField.type.enumDefinition?.type.moduleAlias, defaultModuleAlias);
+        enumField.type.enumDefinition?.type.moduleAlias,
+        defaultModuleAlias,
+      );
     });
 
-    test(
-        'different modules (order matters)'
+    test('different modules (order matters)'
         'when the second module enum is referenced '
         'then the type is resolved to the second module enum', () {
       var commonEnumName = 'CommonEnum';
@@ -110,9 +112,11 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var models =
-          StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
-              .validateAll();
+      var models = StatefulAnalyzer(
+        config,
+        modelSources,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       var model = models.last as ClassDefinition;
       var enumField = model.fields.first;
@@ -120,13 +124,14 @@ void main() {
       expect(enumField.type.enumDefinition, isA<EnumDefinition>());
 
       expect(
-          enumField.type.enumDefinition?.type.moduleAlias, secondModuleAlias);
+        enumField.type.enumDefinition?.type.moduleAlias,
+        secondModuleAlias,
+      );
     });
   });
 
   group('Given a class with the same name defined in', () {
-    test(
-        'a module and then the project (order matters) '
+    test('a module and then the project (order matters) '
         'when the project class is referenced in a relation '
         'then the relation is resolved to the project class', () {
       var commonClassName = 'CommonClass';
@@ -170,17 +175,18 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var models =
-          StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
-              .validateAll();
+      var models = StatefulAnalyzer(
+        config,
+        modelSources,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       var model = models.last as ClassDefinition;
       var fieldType = model.fields.last.relation as ObjectRelationDefinition;
       expect(fieldType.parentTable, 'common_class_$defaultModuleAlias');
     });
 
-    test(
-        'different modules (order matters)'
+    test('different modules (order matters)'
         'when the second module class is referenced in a relation '
         'then the relation is resolved to the second module class', () {
       var commonClassName = 'CommonClass';
@@ -222,9 +228,11 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var models =
-          StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
-              .validateAll();
+      var models = StatefulAnalyzer(
+        config,
+        modelSources,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       var model = models.last as ClassDefinition;
       var fieldType = model.fields.last.relation as ObjectRelationDefinition;

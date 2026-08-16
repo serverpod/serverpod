@@ -13,7 +13,8 @@ class ForeignRelationDefinitionBuilder {
   }
 
   ForeignRelationDefinitionBuilder withReferenceFieldName(
-      String referenceFieldName) {
+    String referenceFieldName,
+  ) {
     this.referenceFieldName = referenceFieldName;
     return this;
   }

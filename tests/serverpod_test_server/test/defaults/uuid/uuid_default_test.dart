@@ -57,8 +57,9 @@ void main() async {
         () {
           var object = UuidDefault();
           expect(
-            RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
-                .hasMatch(object.uuidDefaultRandom.toString()),
+            RegExp(
+              r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+            ).hasMatch(object.uuidDefaultRandom.toString()),
             isTrue,
           );
         },
@@ -69,8 +70,9 @@ void main() async {
         () {
           var object = UuidDefault();
           expect(
-            RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
-                .hasMatch(object.uuidDefaultRandomV7.toString()),
+            RegExp(
+              r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+            ).hasMatch(object.uuidDefaultRandomV7.toString()),
             isTrue,
           );
         },
@@ -81,8 +83,9 @@ void main() async {
         () {
           var object = UuidDefault();
           expect(
-            RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
-                .hasMatch(object.uuidDefaultRandomNull.toString()),
+            RegExp(
+              r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+            ).hasMatch(object.uuidDefaultRandomNull.toString()),
             isTrue,
           );
         },
@@ -91,8 +94,9 @@ void main() async {
       test(
         'when an object of the class is created with a value for "uuidDefaultRandom", then the field value should match the provided value',
         () {
-          var uuid =
-              UuidValue.fromString('3f2504e0-4f89-11d3-9a0c-0305e82c3301');
+          var uuid = UuidValue.fromString(
+            '3f2504e0-4f89-11d3-9a0c-0305e82c3301',
+          );
           var object = UuidDefault(
             uuidDefaultRandom: uuid,
           );
@@ -106,8 +110,9 @@ void main() async {
       test(
         'when an object of the class is created with a value for "uuidDefaultRandomV7", then the field value should match the provided value',
         () {
-          var uuid =
-              UuidValue.fromString('3f2504e0-4f89-11d3-9a0c-0305e82c3301');
+          var uuid = UuidValue.fromString(
+            '3f2504e0-4f89-11d3-9a0c-0305e82c3301',
+          );
           var object = UuidDefault(
             uuidDefaultRandomV7: uuid,
           );
@@ -121,8 +126,9 @@ void main() async {
       test(
         'when an object of the class is created with a value for "uuidDefaultRandomNull", then the field value should match the provided value',
         () {
-          var uuid =
-              UuidValue.fromString('3f2504e0-4f89-11d3-9a0c-0305e82c3301');
+          var uuid = UuidValue.fromString(
+            '3f2504e0-4f89-11d3-9a0c-0305e82c3301',
+          );
           var object = UuidDefault(
             uuidDefaultRandomNull: uuid,
           );
@@ -136,8 +142,9 @@ void main() async {
       test(
         'when an object of the class is created with a value for "uuidDefaultStr", then the field value should match the provided value',
         () {
-          var uuid =
-              UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000');
+          var uuid = UuidValue.fromString(
+            '550e8400-e29b-41d4-a716-446655440000',
+          );
           var object = UuidDefault(
             uuidDefaultStr: uuid,
           );
@@ -151,8 +158,9 @@ void main() async {
       test(
         'when an object of the class is created with a value for "uuidDefaultStrNull", then the field value should match the provided value',
         () {
-          var uuid =
-              UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000');
+          var uuid = UuidValue.fromString(
+            '550e8400-e29b-41d4-a716-446655440000',
+          );
           var object = UuidDefault(
             uuidDefaultStrNull: uuid,
           );

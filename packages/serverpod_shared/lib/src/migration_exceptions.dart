@@ -15,6 +15,13 @@ class MigrationVersionLoadException implements Exception {
     required this.moduleName,
     required this.exception,
   });
+
+  @override
+  String toString() =>
+      'Unable to determine latest database definition due to a corrupted '
+      'migration. Please re-create or remove the migration version and try '
+      'again. Migration version: "$versionName" for module "$moduleName".\n'
+      '$exception';
 }
 
 /// Exception thrown when trying to load the live database definition.
@@ -26,6 +33,11 @@ class MigrationLiveDatabaseDefinitionException implements Exception {
   MigrationLiveDatabaseDefinitionException({
     required this.exception,
   });
+
+  @override
+  String toString() =>
+      'Unable to fetch live database schema from server. Make sure the '
+      'server is running and is connected to the database.\n$exception';
 }
 
 /// Exception thrown when writing a migration fails.
@@ -37,6 +49,9 @@ class MigrationRepairWriteException implements Exception {
   MigrationRepairWriteException({
     required this.exception,
   });
+
+  @override
+  String toString() => 'Unable to write repair migration.\n$exception';
 }
 
 /// Exception thrown when a migration target is not found.
@@ -52,11 +67,20 @@ class MigrationRepairTargetNotFoundException implements Exception {
     required this.versionsFound,
     required this.targetName,
   });
+
+  @override
+  String toString() => versionsFound.isEmpty
+      ? 'Unable to find any migration versions.'
+      : 'Unable to find the specified target migration "$targetName". '
+            'Available versions: $versionsFound.';
 }
 
 /// Exception thrown when the migration failed to create a database definition
 /// from the projects model files.
-class GenerateMigrationDatabaseDefinitionException implements Exception {}
+class GenerateMigrationDatabaseDefinitionException implements Exception {
+  @override
+  String toString() => 'Unable to generate database definition for project.';
+}
 
 /// Exception thrown when the migration directory already exists.
 class MigrationVersionAlreadyExistsException implements Exception {
@@ -67,4 +91,44 @@ class MigrationVersionAlreadyExistsException implements Exception {
   MigrationVersionAlreadyExistsException({
     required this.directoryPath,
   });
+
+  @override
+  String toString() =>
+      'Unable to create migration. A directory with the same name already '
+      'exists: "$directoryPath".';
+}
+
+/// Exception thrown when a migration is aborted.
+class MigrationAbortedException implements Exception {
+  /// Creates a new [MigrationAbortedException].
+  const MigrationAbortedException();
+
+  @override
+  String toString() => 'Migration aborted due to warnings.';
+}
+
+/// Exception thrown when the target database dialect cannot express part of
+/// the database definition.
+///
+/// Unlike [MigrationAbortedException] this is not a warning that `--force` can
+/// override: the migration is rejected because generating it would silently
+/// change the meaning of the schema.
+class MigrationUnsupportedByDialectException implements Exception {
+  /// The name of the dialect that cannot express the definition.
+  final String dialect;
+
+  /// A user-facing description of the unsupported part of the definition.
+  final String reason;
+
+  /// Creates a new [MigrationUnsupportedByDialectException].
+  MigrationUnsupportedByDialectException({
+    required this.dialect,
+    required this.reason,
+  });
+
+  @override
+  String toString() =>
+      'Unable to create migration for the "$dialect" database. The following '
+      'is not supported by this database:\n'
+      '  • $reason';
 }

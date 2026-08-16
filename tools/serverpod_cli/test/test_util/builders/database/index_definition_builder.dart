@@ -5,22 +5,26 @@ class IndexDefinitionBuilder {
   List<IndexElementDefinition> _elements;
   String _type;
   bool _isUnique;
+  bool? _nullsDistinct;
   bool _isPrimary;
   String? _predicate;
+  GinOperatorClass? _ginOperatorClass;
   VectorDistanceFunction? _vectorDistanceFunction;
   ColumnType? _vectorColumnType;
   Map<String, String>? _parameters;
 
   IndexDefinitionBuilder()
-      : _indexName = 'example_index',
-        _elements = [],
-        _type = 'btree',
-        _isUnique = false,
-        _isPrimary = false,
-        _predicate = null,
-        _vectorDistanceFunction = null,
-        _vectorColumnType = null,
-        _parameters = null;
+    : _indexName = 'example_index',
+      _elements = [],
+      _type = 'btree',
+      _isUnique = false,
+      _nullsDistinct = null,
+      _isPrimary = false,
+      _predicate = null,
+      _ginOperatorClass = null,
+      _vectorDistanceFunction = null,
+      _vectorColumnType = null,
+      _parameters = null;
 
   IndexDefinition build() {
     return IndexDefinition(
@@ -28,8 +32,10 @@ class IndexDefinitionBuilder {
       elements: _elements,
       type: _type,
       isUnique: _isUnique,
+      nullsDistinct: _nullsDistinct,
       isPrimary: _isPrimary,
       predicate: _predicate,
+      ginOperatorClass: _ginOperatorClass,
       vectorDistanceFunction: _vectorDistanceFunction,
       vectorColumnType: _vectorColumnType,
       parameters: _parameters,
@@ -40,7 +46,9 @@ class IndexDefinitionBuilder {
     _indexName = '${tableName}_pkey';
     _elements = [
       IndexElementDefinition(
-          definition: 'id', type: IndexElementDefinitionType.column)
+        definition: 'id',
+        type: IndexElementDefinitionType.column,
+      ),
     ];
     _type = 'btree';
     _isUnique = true;
@@ -72,6 +80,11 @@ class IndexDefinitionBuilder {
     return this;
   }
 
+  IndexDefinitionBuilder withNullsDistinct(bool? nullsDistinct) {
+    _nullsDistinct = nullsDistinct;
+    return this;
+  }
+
   IndexDefinitionBuilder withIsPrimary(bool isPrimary) {
     _isPrimary = isPrimary;
     return this;
@@ -79,6 +92,13 @@ class IndexDefinitionBuilder {
 
   IndexDefinitionBuilder withPredicate(String? predicate) {
     _predicate = predicate;
+    return this;
+  }
+
+  IndexDefinitionBuilder withGinOperatorClass(
+    GinOperatorClass? ginOperatorClass,
+  ) {
+    _ginOperatorClass = ginOperatorClass;
     return this;
   }
 

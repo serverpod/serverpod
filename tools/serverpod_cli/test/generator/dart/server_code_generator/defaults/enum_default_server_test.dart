@@ -20,9 +20,10 @@ void main() {
       .withClassName('ByNameEnum')
       .withFileName('by_name_enum')
       .withValues([
-    ProtocolEnumValueDefinition('byName1'),
-    ProtocolEnumValueDefinition('byName2'),
-  ]).build();
+        ProtocolEnumValueDefinition('byName1'),
+        ProtocolEnumValueDefinition('byName2'),
+      ])
+      .build();
 
   group(
     'Given a class named EnumDefault with enum fields having defaultModelValue when generating code',
@@ -33,8 +34,12 @@ void main() {
       setUpAll(() {
         var testClassName = 'EnumDefault';
         var testClassFileName = 'enum_default';
-        var expectedFilePath =
-            path.join('lib', 'src', 'generated', '$testClassFileName.dart');
+        var expectedFilePath = path.join(
+          'lib',
+          'src',
+          'generated',
+          '$testClassFileName.dart',
+        );
 
         var fields = [
           FieldDefinitionBuilder()
@@ -64,8 +69,9 @@ void main() {
           config: config,
         );
 
-        var compilationUnit =
-            parseString(content: codeMap[expectedFilePath]!).unit;
+        var compilationUnit = parseString(
+          content: codeMap[expectedFilePath]!,
+        ).unit;
 
         baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
           compilationUnit,
@@ -74,9 +80,9 @@ void main() {
 
         privateConstructor =
             CompilationUnitHelpers.tryFindConstructorDeclaration(
-          baseClass!,
-          name: '_',
-        );
+              baseClass!,
+              name: '_',
+            );
       });
 
       group('then the EnumDefault has a private constructor', () {
@@ -132,8 +138,12 @@ void main() {
       setUpAll(() {
         var testClassName = 'EnumDefaultPersist';
         var testClassFileName = 'enum_default_persist';
-        var expectedFilePath =
-            path.join('lib', 'src', 'generated', '$testClassFileName.dart');
+        var expectedFilePath = path.join(
+          'lib',
+          'src',
+          'generated',
+          '$testClassFileName.dart',
+        );
 
         var fields = [
           FieldDefinitionBuilder()
@@ -159,8 +169,9 @@ void main() {
           config: config,
         );
 
-        var compilationUnit =
-            parseString(content: codeMap[expectedFilePath]!).unit;
+        var compilationUnit = parseString(
+          content: codeMap[expectedFilePath]!,
+        ).unit;
         baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
           compilationUnit,
           name: testClassName,
@@ -168,9 +179,9 @@ void main() {
 
         privateConstructor =
             CompilationUnitHelpers.tryFindConstructorDeclaration(
-          baseClass!,
-          name: '_',
-        );
+              baseClass!,
+              name: '_',
+            );
       });
 
       group('then the EnumDefaultPersist has a private constructor', () {

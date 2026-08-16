@@ -32,8 +32,9 @@ void main() async {
       test(
         'when an object of the class is created with a specific value for "uuidDefaultPersistRandom", then the field value should match the provided value',
         () {
-          var uuid =
-              UuidValue.fromString('3f2504e0-4f89-11d3-9a0c-0305e82c3301');
+          var uuid = UuidValue.fromString(
+            '3f2504e0-4f89-11d3-9a0c-0305e82c3301',
+          );
           var object = UuidDefaultPersist(
             uuidDefaultPersistRandom: uuid,
           );
@@ -47,8 +48,9 @@ void main() async {
       test(
         'when an object of the class is created with a specific value for "uuidDefaultPersistRandomV7", then the field value should match the provided value',
         () {
-          var uuid =
-              UuidValue.fromString('3f2504e0-4f89-11d3-9a0c-0305e82c3301');
+          var uuid = UuidValue.fromString(
+            '3f2504e0-4f89-11d3-9a0c-0305e82c3301',
+          );
           var object = UuidDefaultPersist(
             uuidDefaultPersistRandomV7: uuid,
           );
@@ -62,8 +64,9 @@ void main() async {
       test(
         'when an object of the class is created with a specific value for "uuidDefaultPersistStr", then the field value should match the provided value',
         () {
-          var uuid =
-              UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000');
+          var uuid = UuidValue.fromString(
+            '550e8400-e29b-41d4-a716-446655440000',
+          );
           var object = UuidDefaultPersist(
             uuidDefaultPersistStr: uuid,
           );

@@ -122,8 +122,10 @@ void main() {
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ClassDefinition;
 
-      expect(definition.fields.first.documentation,
-          ['/// This is a multiline', '/// field comment.']);
+      expect(definition.fields.first.documentation, [
+        '/// This is a multiline',
+        '/// field comment.',
+      ]);
     },
   );
 

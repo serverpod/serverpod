@@ -53,7 +53,7 @@ void main() {
         var column = table.columns.last;
         expect(
           column.columnDefault,
-          '\$\$https://serverpod.dev/defaultPersistValue\$\$::text',
+          "'https://serverpod.dev/defaultPersistValue'",
         );
       });
     });
@@ -110,7 +110,7 @@ void main() {
         var column = table.columns.last;
         expect(
           column.columnDefault,
-          '\$\$https://serverpod.dev/defaultPersistValue\$\$::text',
+          "'https://serverpod.dev/defaultPersistValue'",
         );
       });
 

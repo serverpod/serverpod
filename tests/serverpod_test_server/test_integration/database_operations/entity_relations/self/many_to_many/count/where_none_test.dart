@@ -36,8 +36,10 @@ void main() async {
           Blocking(blockedById: member[2].id!, blockedId: member[0].id!),
         ]);
 
-        var count =
-            await Member.db.count(session, where: (t) => t.blocking.none());
+        var count = await Member.db.count(
+          session,
+          where: (t) => t.blocking.none(),
+        );
 
         expect(count, 1);
       },

@@ -1,0 +1,20 @@
+### An enhanced enum with custom properties, serialized by name (default).
+enum: TestEnumEnhancedByName
+serialized: byName
+properties:
+  shortName: String
+  description: String
+  priority: int, default=0
+values:
+  ### The first value of [TestEnumEnhancedByName].
+  - one:
+      shortName: '1'
+      description: 'The first value'
+      priority: 10
+  ### Second Value
+  - two:
+      shortName: '2'
+      description: 'The second value'
+  - three:
+      shortName: '3'
+      description: 'The third value'

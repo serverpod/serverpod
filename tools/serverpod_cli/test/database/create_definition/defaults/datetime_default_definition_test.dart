@@ -51,7 +51,7 @@ void main() {
         var column = table.columns.last;
         expect(
           column.columnDefault,
-          '\'2024-01-01 01:01:01\'::timestamp without time zone',
+          '2024-01-01T01:01:01.000Z',
         );
       });
     });
@@ -154,7 +154,7 @@ void main() {
         var column = table.columns.last;
         expect(
           column.columnDefault,
-          '\'2024-01-01 01:01:01\'::timestamp without time zone',
+          '2024-01-01T01:01:01.000Z',
         );
       });
 
@@ -272,7 +272,7 @@ void main() {
         var column = table.columns.last;
         expect(
           column.columnDefault,
-          'CURRENT_TIMESTAMP',
+          'now',
         );
       });
     });

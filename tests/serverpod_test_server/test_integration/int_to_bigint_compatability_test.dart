@@ -39,7 +39,7 @@ UPDATE "$tableName" SET anInt = $newValue WHERE id = $id::bigint RETURNING *;
         [
           id,
           newValue,
-        ]
+        ],
       ]);
     });
 
@@ -54,7 +54,7 @@ INSERT INTO "$tableName" (anInt) VALUES ($newValue::bigint) RETURNING *;
         [
           expectedId,
           newValue,
-        ]
+        ],
       ]);
     });
 
@@ -67,7 +67,7 @@ SELECT * FROM "$tableName" WHERE anInt = $initialValue::bigint;
         [
           1,
           initialValue,
-        ]
+        ],
       ]);
     });
   });

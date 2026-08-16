@@ -11,10 +11,12 @@ DatabaseMigration generateDatabaseMigration({
   var warnings = <DatabaseMigrationWarning>[];
   var actions = <DatabaseMigrationAction>[];
 
-  var sourceTables =
-      databaseSource.tables.where((table) => table.isManaged).toList();
-  var targetTables =
-      databaseTarget.tables.where((table) => table.isManaged).toList();
+  var sourceTables = databaseSource.tables
+      .where((table) => table.isManaged)
+      .toList();
+  var targetTables = databaseTarget.tables
+      .where((table) => table.isManaged)
+      .toList();
   var deleteTables = <String>{};
 
   // Mark tables which do not exist in the target schema anymore for deletion
@@ -23,8 +25,11 @@ DatabaseMigration generateDatabaseMigration({
       deleteTables.addAll([
         srcTable.name,
         // For any table we delete, we also need to delete any other existing table that has and retains a foreign key pointing into this table
-        ..._findDependentTables(srcTable.name,
-            sourceTables: sourceTables, targetTables: targetTables),
+        ..._findDependentTables(
+          srcTable.name,
+          sourceTables: sourceTables,
+          targetTables: targetTables,
+        ),
       ]);
     }
   }
@@ -41,7 +46,7 @@ DatabaseMigration generateDatabaseMigration({
         type: DatabaseMigrationWarningType.tableDropped,
         message: 'Table "$tableName" will be dropped.',
         table: tableName,
-        destrucive: true,
+        destructive: true,
         columns: [],
       ),
     );
@@ -50,8 +55,9 @@ DatabaseMigration generateDatabaseMigration({
   // Find added or modified tables
   for (var dstTable in targetTables) {
     var srcTable = databaseSource.tables.cast<TableDefinition?>().firstWhere(
-        (table) => table?.name == dstTable.name,
-        orElse: () => null);
+      (table) => table?.name == dstTable.name,
+      orElse: () => null,
+    );
 
     if (srcTable == null ||
         srcTable.managed == false ||
@@ -67,7 +73,11 @@ DatabaseMigration generateDatabaseMigration({
       );
     } else {
       // Table exists in src and dst
-      var diff = generateTableMigration(srcTable, dstTable, warnings);
+      var diff = generateTableMigration(
+        srcTable,
+        dstTable,
+        warnings,
+      );
       if (diff == null) {
         // Table was modified, but cannot be migrated. Recreate the table.
         actions.add(
@@ -83,13 +93,14 @@ DatabaseMigration generateDatabaseMigration({
           ),
         );
       } else if (!diff.isEmpty) {
-        // Table was modified
-        // TODO: Check if table can be modified
-
         actions.add(
           DatabaseMigrationAction(
             type: DatabaseMigrationActionType.alterTable,
-            alterTable: diff,
+            alterTable: diff.copyWith(
+              warnings: warnings
+                  .where((warning) => warning.table == dstTable.name)
+                  .toList(),
+            ),
           ),
         );
       }
@@ -114,14 +125,30 @@ Set<String> _findDependentTables(
 
   /// Returns whether the [sourceTable] has a current and future relation to [tableName]
   bool hasCurrentAndFutureRelationToTable(TableDefinition sourceTable) {
-    return sourceTable.foreignKeys.any((foreignKey) =>
-        foreignKey.referenceTable == tableName &&
-        // Check whether the reference will also be upheld in the target table.
-        // otherwise the target table will already be modified and does not need to have be fully dropped
-        targetTables.any((targetTable) =>
-            targetTable.name == sourceTable.name &&
-            targetTable.foreignKeys.any((targetForeignKey) =>
-                targetForeignKey.constraintName == foreignKey.constraintName)));
+    return sourceTable.foreignKeys.any(
+      (foreignKey) =>
+          foreignKey.referenceTable == tableName &&
+          // Check whether the reference will also be upheld in the target table.
+          // otherwise the target table will already be modified and does not need to have be fully dropped
+          targetTables.any(
+            (targetTable) =>
+                targetTable.name == sourceTable.name &&
+                targetTable.foreignKeys.any(
+                  (targetForeignKey) =>
+                      targetForeignKey.constraintName ==
+                          foreignKey.constraintName &&
+                      // Check if it's the same FK (by comparing columns).
+                      // This handles two scenarios:
+                      // 1. FK still references the deleted table (original case)
+                      // 2. FK references a different table but uses same columns (rename case)
+                      // If columns are different, it's a different FK reusing the name (renumbering case)
+                      _sameColumns(
+                        targetForeignKey.columns,
+                        foreignKey.columns,
+                      ),
+                ),
+          ),
+    );
   }
 
   for (var sourceTable in sourceTables) {
@@ -144,15 +171,41 @@ Set<String> _findDependentTables(
   return dependentTables;
 }
 
+/// Compares two lists of column names for equality.
+bool _sameColumns(List<String> columns1, List<String> columns2) {
+  if (columns1.length != columns2.length) return false;
+  for (var i = 0; i < columns1.length; i++) {
+    if (columns1[i] != columns2[i]) return false;
+  }
+  return true;
+}
+
 TableMigration? generateTableMigration(
   TableDefinition srcTable,
   TableDefinition dstTable,
   List<DatabaseMigrationWarning> warnings,
 ) {
+  var dstByFieldId = <String, ColumnDefinition>{
+    for (var c in dstTable.columns) c.effectiveFieldName: c,
+  };
+
+  var renameColumns = <String, String>{};
+  for (var srcColumn in srcTable.columns) {
+    var dstColumn = dstByFieldId[srcColumn.effectiveFieldName];
+    if (dstColumn == null) continue;
+    if (srcColumn.name == dstColumn.name) continue;
+    if (!srcColumn.canMigrateTo(dstColumn)) continue;
+    renameColumns[srcColumn.name] = dstColumn.name;
+  }
+
+  var renameSources = renameColumns.keys.toSet();
+  var renameTargets = renameColumns.values.toSet();
+
   // Find added columns
   var addColumns = <ColumnDefinition>[];
   for (var dstColumn in dstTable.columns) {
     if (!srcTable.containsColumnNamed(dstColumn.name)) {
+      if (renameTargets.contains(dstColumn.name)) continue;
       addColumns.add(dstColumn);
     }
   }
@@ -161,15 +214,17 @@ TableMigration? generateTableMigration(
   var deleteColumns = <String>[];
   for (var srcColumn in srcTable.columns) {
     if (!dstTable.containsColumnNamed(srcColumn.name)) {
+      if (renameSources.contains(srcColumn.name)) continue;
       deleteColumns.add(srcColumn.name);
       warnings.add(
         DatabaseMigrationWarning(
           type: DatabaseMigrationWarningType.columnDropped,
           table: srcTable.name,
           columns: [srcColumn.name],
-          message: 'Column "${srcColumn.name}" of table "${srcTable.name}" '
+          message:
+              'Column "${srcColumn.name}" of table "${srcTable.name}" '
               'will be dropped.',
-          destrucive: true,
+          destructive: true,
         ),
       );
     }
@@ -179,16 +234,22 @@ TableMigration? generateTableMigration(
 
   // Find modified columns
   for (var srcColumn in srcTable.columns) {
-    var dstColumn = dstTable.findColumnNamed(srcColumn.name);
+    var dstColumn = renameColumns.containsKey(srcColumn.name)
+        ? dstTable.findColumnNamed(renameColumns[srcColumn.name]!)
+        : dstTable.findColumnNamed(srcColumn.name);
     if (dstColumn == null) {
       continue;
     }
+    // The column name must be the same for the like comparison.
     if (!srcColumn.like(dstColumn)) {
       if (srcColumn.canMigrateTo(dstColumn)) {
         // Column can be modified
         var addNullable = !srcColumn.isNullable && dstColumn.isNullable;
         var removeNullable = srcColumn.isNullable && !dstColumn.isNullable;
         var changeDefault = srcColumn.columnDefault != dstColumn.columnDefault;
+        var newType = srcColumn.columnType != dstColumn.columnType
+            ? dstColumn.columnType
+            : null;
 
         // Id column can have its model type changed between non-nullable and
         // nullable, but the database type will remain the same. In this case,
@@ -196,17 +257,22 @@ TableMigration? generateTableMigration(
         if (srcColumn.name == defaultPrimaryKeyName &&
             !addNullable &&
             !removeNullable &&
-            !changeDefault) {
+            !changeDefault &&
+            newType == null) {
           continue;
         }
 
         modifyColumns.add(
           ColumnMigration(
             columnName: srcColumn.name,
+            newColumnName: srcColumn.name != dstColumn.name
+                ? dstColumn.name
+                : null,
             addNullable: addNullable,
             removeNullable: removeNullable,
             changeDefault: changeDefault,
             newDefault: dstColumn.columnDefault,
+            newType: newType,
           ),
         );
 
@@ -215,11 +281,12 @@ TableMigration? generateTableMigration(
             DatabaseMigrationWarning(
               type: DatabaseMigrationWarningType.notNullAdded,
               table: srcTable.name,
-              columns: [srcColumn.name],
-              message: 'Column ${srcColumn.name} of table ${srcTable.name} is '
+              columns: [dstColumn.name],
+              message:
+                  'Column "${dstColumn.name}" of table "${srcTable.name}" is '
                   'modified to be not null. If there are existing rows with '
                   'null values, this migration will fail.',
-              destrucive: false,
+              destructive: false,
             ),
           );
         }
@@ -232,9 +299,10 @@ TableMigration? generateTableMigration(
             type: DatabaseMigrationWarningType.columnDropped,
             table: srcTable.name,
             columns: [srcColumn.name],
-            message: 'Column ${srcColumn.name} of table ${srcTable.name} is '
+            message:
+                'Column "${srcColumn.name}" of table "${srcTable.name}" is '
                 'modified in a way that it must be deleted and recreated.',
-            destrucive: true,
+            destructive: true,
           ),
         );
       }
@@ -276,10 +344,11 @@ TableMigration? generateTableMigration(
           type: DatabaseMigrationWarningType.uniqueIndexCreated,
           table: srcTable.name,
           columns: index.elements.map((e) => e.definition).toList(),
-          message: 'Unique index "${index.indexName}" is added to table '
+          message:
+              'Unique index "${index.indexName}" is added to table '
               '"${srcTable.name}". If there are existing rows with duplicate '
               'values, this migration will fail.',
-          destrucive: false,
+          destructive: false,
         ),
       );
     }
@@ -326,7 +395,7 @@ TableMigration? generateTableMigration(
               'One or more columns are added to table "${srcTable.name}" which '
               'cannot be added in a table migration. The complete table will '
               'be deleted and recreated.',
-          destrucive: true,
+          destructive: true,
         ),
       );
       return null;
@@ -345,4 +414,16 @@ TableMigration? generateTableMigration(
     addForeignKeys: addForeignKeys,
     warnings: warnings,
   );
+}
+
+extension on ColumnDefinition {
+  /// The field name will not be set for [ColumnDefinition] generated before
+  /// the column rename feature was implemented. For those, the physical column
+  /// name match the model field name.
+  ///
+  /// The only exception are projects that opted-in to use the experimental
+  /// `column` override field in the `.spy.yaml` file to explicitly set
+  /// the column name. Since the feature is experimental, there is no need
+  /// to support this edge case.
+  String get effectiveFieldName => fieldName ?? name;
 }

@@ -1,0 +1,11 @@
+### Child model used to reproduce the include column-alias collision in
+### https://github.com/serverpod/serverpod/issues/5287
+###
+### It has an `int` primary key (`id`) and a `String` column (`bleedingText`).
+### When two long-named relations point at this table, the truncated column
+### alias of one relation's `id` collides with the other relation's
+### `bleedingText`, bleeding the string into the int field on deserialization.
+class: BleedChild
+table: bleed_child
+fields:
+  bleedingText: String?

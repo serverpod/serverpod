@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Information about a server method.
-abstract class MethodInfo implements _i1.SerializableModel {
+abstract class MethodInfo
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   MethodInfo._({
     this.id,
     required this.endpoint,
@@ -56,6 +57,17 @@ abstract class MethodInfo implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.MethodInfo',
+      if (id != null) 'id': id,
+      'endpoint': endpoint,
+      'method': method,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod.MethodInfo',
       if (id != null) 'id': id,
       'endpoint': endpoint,
       'method': method,
@@ -76,10 +88,10 @@ class _MethodInfoImpl extends MethodInfo {
     required String endpoint,
     required String method,
   }) : super._(
-          id: id,
-          endpoint: endpoint,
-          method: method,
-        );
+         id: id,
+         endpoint: endpoint,
+         method: method,
+       );
 
   /// Returns a shallow copy of this [MethodInfo]
   /// with some or all fields replaced by the given arguments.

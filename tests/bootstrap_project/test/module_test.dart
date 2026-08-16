@@ -1,5 +1,4 @@
 @Timeout(Duration(minutes: 12))
-
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
@@ -8,34 +7,17 @@ import 'package:test/test.dart';
 import '../lib/src/util.dart';
 import '../../serverpod_test_server/lib/test_util/custom_matcher.dart';
 
-const tempDirName = 'temp';
-
 void main() {
   final rootPath = path.join(Directory.current.path, '..', '..');
-  final cliPath = path.join(rootPath, 'tools', 'serverpod_cli');
-  final tempPath = path.join(rootPath, tempDirName);
+  final cliProjectPath = getServerpodCliProjectPath(rootPath: rootPath);
+  final tempPath = Directory.systemTemp.createTempSync('spb_').path;
 
   setUpAll(() async {
-    await runProcess(
-      'dart',
-      ['pub', 'global', 'activate', '-s', 'path', '.'],
-      workingDirectory: cliPath,
-    );
-
-    // Run command and activate again to force cache pub dependencies.
-    await runProcess(
-      'serverpod',
-      ['version'],
-      workingDirectory: cliPath,
-    );
-
-    await runProcess(
-      'dart',
-      ['pub', 'global', 'activate', '-s', 'path', '.'],
-      workingDirectory: cliPath,
-    );
-
-    await Directory(tempPath).create();
+    final pubGetProcess = await startProcess('dart', [
+      'pub',
+      'get',
+    ], workingDirectory: cliProjectPath);
+    assert(await pubGetProcess.exitCode == 0);
   });
 
   tearDownAll(() async {
@@ -46,21 +28,23 @@ void main() {
 
   group('Given a clean state', () {
     var (commandRoot: _, :projectName) = createRandomProjectName(tempPath);
-    final (:serverDir, flutterDir: _, :clientDir) =
-        createProjectFolderPaths(projectName);
+    final (:serverDir, flutterDir: _, :clientDir) = createProjectFolderPaths(
+      projectName,
+    );
 
     group('when creating a new project', () {
       setUpAll(() async {
-        var process = await startProcess(
-          'serverpod',
+        var process = await startServerpodCli(
           [
             'create',
             '--template',
             'module',
             projectName,
             '-v',
-            '--no-analytics'
+            '--no-analytics',
+            '--no-interactive',
           ],
+          rootPath: rootPath,
           workingDirectory: tempPath,
           environment: {
             'SERVERPOD_HOME': rootPath,
@@ -108,14 +92,16 @@ void main() {
 
       test('then the server project has an module_endpoint file', () {
         expect(
-          File(path.join(
-            tempPath,
-            serverDir,
-            'lib',
-            'src',
-            'endpoints',
-            'module_endpoint.dart',
-          )).existsSync(),
+          File(
+            path.join(
+              tempPath,
+              serverDir,
+              'lib',
+              'src',
+              'endpoints',
+              'module_endpoint.dart',
+            ),
+          ).existsSync(),
           isTrue,
           reason: 'Server module_endpoint file does not exist.',
         );
@@ -123,14 +109,16 @@ void main() {
 
       test('then the server project has a generated endpoints file', () {
         expect(
-          File(path.join(
-            tempPath,
-            serverDir,
-            'lib',
-            'src',
-            'generated',
-            'endpoints.dart',
-          )).existsSync(),
+          File(
+            path.join(
+              tempPath,
+              serverDir,
+              'lib',
+              'src',
+              'generated',
+              'endpoints.dart',
+            ),
+          ).existsSync(),
           isTrue,
           reason: 'Server generated endpoints file does not exist.',
         );
@@ -138,14 +126,16 @@ void main() {
 
       test('then the server project has a generated module_class file', () {
         expect(
-          File(path.join(
-            tempPath,
-            serverDir,
-            'lib',
-            'src',
-            'generated',
-            'module_class.dart',
-          )).existsSync(),
+          File(
+            path.join(
+              tempPath,
+              serverDir,
+              'lib',
+              'src',
+              'generated',
+              'module_class.dart',
+            ),
+          ).existsSync(),
           isTrue,
           reason: 'Server generated module_class file does not exist.',
         );
@@ -153,14 +143,16 @@ void main() {
 
       test('then the server project has a generated test tools file', () {
         expect(
-          File(path.join(
-            tempPath,
-            serverDir,
-            'test',
-            'integration',
-            'test_tools',
-            'serverpod_test_tools.dart',
-          )).existsSync(),
+          File(
+            path.join(
+              tempPath,
+              serverDir,
+              'test',
+              'integration',
+              'test_tools',
+              'serverpod_test_tools.dart',
+            ),
+          ).existsSync(),
           isTrue,
           reason: 'Server generated example file does not exist.',
         );
@@ -182,64 +174,70 @@ void main() {
 
       test('then the server project has project migration registry', () {
         expect(
-          File(path.join(
-            tempPath,
-            serverDir,
-            'migrations',
-            'migration_registry.txt',
-          )).existsSync(),
+          File(
+            path.join(
+              tempPath,
+              serverDir,
+              'migrations',
+              'migration_registry.txt',
+            ),
+          ).existsSync(),
           isTrue,
           reason: 'Server migration registry does not exist.',
         );
       });
 
       test(
-          'then the server projects has docker compose file with project name replaced',
-          () {
-        final dockerComposeFile = File(
-          path.join(tempPath, serverDir, 'docker-compose.yaml'),
-        );
-        expect(
-          dockerComposeFile.existsSync(),
-          isTrue,
-          reason: 'Server docker compose file does not exist.',
-        );
-        expect(
-          dockerComposeFile.readAsStringSync(),
-          containsCount('${projectName}_test', 3),
-          reason: 'Server docker compose data volume name does not match.',
-        );
-      });
+        'then the server projects has docker compose file with project name replaced',
+        () {
+          final dockerComposeFile = File(
+            path.join(tempPath, serverDir, 'docker-compose.yaml'),
+          );
+          expect(
+            dockerComposeFile.existsSync(),
+            isTrue,
+            reason: 'Server docker compose file does not exist.',
+          );
+          expect(
+            dockerComposeFile.readAsStringSync(),
+            containsCount('${projectName}_test', 3),
+            reason: 'Server docker compose data volume name does not match.',
+          );
+        },
+      );
 
       test(
-          'then the server project has test configuration with project name replaced',
-          () {
-        final testConfigFile = File(
-          path.join(tempPath, serverDir, 'config', 'test.yaml'),
-        );
+        'then the server project has test configuration with project name replaced',
+        () {
+          final testConfigFile = File(
+            path.join(tempPath, serverDir, 'config', 'test.yaml'),
+          );
 
-        expect(
-          testConfigFile.existsSync(),
-          isTrue,
-          reason: 'Server test configuration file does not exist.',
-        );
-        expect(
-          testConfigFile.readAsStringSync(),
-          contains('name: ${projectName}_test'),
-          reason: 'Server test configuration database name does not match.',
-        );
-      });
+          expect(
+            testConfigFile.existsSync(),
+            isTrue,
+            reason: 'Server test configuration file does not exist.',
+          );
+          expect(
+            testConfigFile.readAsStringSync(),
+            contains('name: ${projectName}_test'),
+            reason: 'Server test configuration database name does not match.',
+          );
+        },
+      );
 
       test('then the server project has a generated protocol file', () {
         expect(
-          File(path.join(
-            tempPath,
-            serverDir,
-            'lib',
-            'src',
-            'generated',
-            'protocol.yaml',
-          )).existsSync(),
+          File(
+            path.join(
+              tempPath,
+              serverDir,
+              'lib',
+              'src',
+              'generated',
+              'protocol.yaml',
+            ),
+          ).existsSync(),
           isTrue,
           reason: 'Server generated protocol file does not exist.',
         );
@@ -275,67 +273,256 @@ void main() {
         expect(
           File(
             path.join(
-                tempPath, clientDir, 'lib', 'src', 'protocol', 'client.dart'),
+              tempPath,
+              clientDir,
+              'lib',
+              'src',
+              'protocol',
+              'client.dart',
+            ),
           ).existsSync(),
           isTrue,
           reason: 'Client protocol client file does not exist.',
         );
       });
+
+      group('then the workspace', () {
+        test('has a root pubspec.yaml file', () {
+          expect(
+            File(path.join(tempPath, projectName, 'pubspec.yaml')).existsSync(),
+            isTrue,
+            reason: 'Root workspace pubspec file does not exist.',
+          );
+        });
+
+        test('root pubspec.yaml has name: _', () {
+          final content = File(
+            path.join(tempPath, projectName, 'pubspec.yaml'),
+          ).readAsStringSync();
+          expect(content, contains('name: _'));
+        });
+
+        test(
+          'root pubspec.yaml has workspace section with server and client',
+          () {
+            final content = File(
+              path.join(tempPath, projectName, 'pubspec.yaml'),
+            ).readAsStringSync();
+            expect(content, contains('workspace:'));
+            expect(content, contains('${projectName}_client'));
+            expect(content, contains('${projectName}_server'));
+          },
+        );
+
+        test('has a root .gitignore that ignores workspace .dart_tool', () {
+          final rootGitignore = File(
+            path.join(tempPath, projectName, '.gitignore'),
+          );
+          expect(rootGitignore.existsSync(), isTrue);
+          expect(rootGitignore.readAsStringSync(), contains('.dart_tool/'));
+        });
+
+        test('server pubspec.yaml has resolution: workspace', () {
+          final content = File(
+            path.join(tempPath, serverDir, 'pubspec.yaml'),
+          ).readAsStringSync();
+          expect(content, contains('resolution: workspace'));
+        });
+
+        test('client pubspec.yaml has resolution: workspace', () {
+          final content = File(
+            path.join(tempPath, clientDir, 'pubspec.yaml'),
+          ).readAsStringSync();
+          expect(content, contains('resolution: workspace'));
+        });
+
+        test('root has pubspec.lock file', () {
+          expect(
+            File(path.join(tempPath, projectName, 'pubspec.lock')).existsSync(),
+            isTrue,
+            reason: 'Root pubspec.lock file does not exist.',
+          );
+        });
+
+        test('does not copy template pubspec lock files into packages', () {
+          final packageDirs = [serverDir, clientDir];
+
+          for (final packageDir in packageDirs) {
+            expect(
+              File(
+                path.join(tempPath, packageDir, 'pubspec.lock'),
+              ).existsSync(),
+              isFalse,
+              reason: 'Template pubspec.lock was copied into $packageDir.',
+            );
+          }
+        });
+
+        test('does not copy template pubspec override files', () {
+          final packageDirs = [projectName, serverDir, clientDir];
+
+          for (final packageDir in packageDirs) {
+            expect(
+              File(
+                path.join(tempPath, packageDir, 'pubspec_overrides.yaml'),
+              ).existsSync(),
+              isFalse,
+              reason:
+                  'Template pubspec_overrides.yaml was copied into $packageDir.',
+            );
+          }
+        });
+
+        test('does not copy template melos project files', () {
+          final packageDirs = [projectName, serverDir, clientDir];
+
+          for (final packageDir in packageDirs) {
+            final directory = Directory(path.join(tempPath, packageDir));
+            final melosProjectFiles = directory
+                .listSync()
+                .whereType<File>()
+                .where((file) {
+                  final fileName = path.basename(file.path);
+                  return fileName.startsWith('melos_') &&
+                      fileName.endsWith('.iml');
+                });
+
+            expect(
+              melosProjectFiles,
+              isEmpty,
+              reason:
+                  'Template melos project file was copied into $packageDir.',
+            );
+          }
+        });
+
+        test('has no AGENTS.md', () {
+          final agentsMd = File(path.join(tempPath, projectName, 'AGENTS.md'));
+          expect(agentsMd.existsSync(), isFalse);
+        });
+
+        test('has no CLAUDE.md', () {
+          final claudeMd = File(path.join(tempPath, projectName, 'CLAUDE.md'));
+          expect(claudeMd.existsSync(), isFalse);
+        });
+
+        test('has agent skills installed', () {
+          expect(
+            Directory(
+              path.join(tempPath, projectName, '.agents', 'skills'),
+            ).existsSync(),
+            isTrue,
+          );
+          expect(
+            Directory(
+              path.join(tempPath, projectName, '.claude', 'skills'),
+            ).existsSync(),
+            isTrue,
+          );
+          expect(
+            Directory(
+              path.join(tempPath, projectName, '.cursor', 'skills'),
+            ).existsSync(),
+            isTrue,
+          );
+        });
+
+        group('has Serverpod and Dart MCP servers configured', () {
+          final serverDirRelative = '${projectName}_server';
+          final genericConfig =
+              '''
+{
+  "mcpServers": {
+    "serverpod": {
+      "command": "serverpod",
+      "args": ["mcp-server", "--server-dir", "$serverDirRelative"]
+    },
+    "dart": {
+      "command": "dart",
+      "args": ["mcp-server"]
+    }
+  }
+}
+''';
+
+          test('for Claude', () {
+            final claude = File(
+              path.join(tempPath, projectName, '.mcp.json'),
+            );
+            expect(claude.existsSync(), isTrue);
+            expect(claude.readAsStringSync(), genericConfig);
+          });
+
+          test('for Cursor', () {
+            final cursor = File(
+              path.join(tempPath, projectName, '.cursor/mcp.json'),
+            );
+            expect(cursor.existsSync(), isTrue);
+            expect(cursor.readAsStringSync(), genericConfig);
+          });
+
+          test('for VS Code', () {
+            final vscode = File(
+              path.join(tempPath, projectName, '.vscode/mcp.json'),
+            );
+            expect(vscode.existsSync(), isTrue);
+            expect(
+              vscode.readAsStringSync(),
+              genericConfig.replaceAll('mcpServers', 'servers'),
+            );
+          });
+        });
+      });
     });
   });
 
-  group('Given a created module project and a running docker environment', () {
-    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+  group(
+    'Given a created module project',
+    () {
+      final (:projectName, commandRoot: _) = createRandomProjectName(tempPath);
 
-    late Process createProcess;
+      late Process createProcess;
 
-    setUp(() async {
-      createProcess = await startProcess(
-        'serverpod',
-        ['create', '--template', 'module', projectName, '-v', '--no-analytics'],
-        workingDirectory: tempPath,
-        environment: {
-          'SERVERPOD_HOME': rootPath,
+      setUp(() async {
+        createProcess = await startServerpodCli(
+          [
+            'create',
+            '--template',
+            'module',
+            projectName,
+            '-v',
+            '--no-analytics',
+            '--no-interactive',
+          ],
+          rootPath: rootPath,
+          workingDirectory: tempPath,
+          environment: {
+            'SERVERPOD_HOME': rootPath,
+          },
+        );
+        assert((await createProcess.exitCode) == 0);
+      });
+
+      tearDown(() {
+        createProcess.kill();
+      });
+
+      test(
+        'when running tests then example unit and integration tests passes',
+        () async {
+          var testProcess = await startProcess(
+            'dart',
+            ['test'],
+            workingDirectory: path.join(
+              tempPath,
+              projectName,
+              "${projectName}_server",
+            ),
+          );
+
+          await expectLater(testProcess.exitCode, completion(0));
         },
       );
-      assert((await createProcess.exitCode) == 0);
-
-      final docker = await startProcess(
-        'docker',
-        ['compose', 'up', '--build', '--detach'],
-        workingDirectory: commandRoot,
-        ignorePlatform: true,
-      );
-
-      assert((await docker.exitCode) == 0);
-    });
-
-    tearDown(() async {
-      createProcess.kill();
-
-      await runProcess(
-        'docker',
-        ['compose', 'down', '-v'],
-        workingDirectory: commandRoot,
-        skipBatExtentionOnWindows: true,
-      );
-
-      while (!await isNetworkPortAvailable(8090));
-    });
-
-    test('when running tests then example unit and integration tests passes',
-        () async {
-      var testProcess = await startProcess(
-        'dart',
-        ['test'],
-        workingDirectory:
-            path.join(tempPath, projectName, "${projectName}_server"),
-      );
-
-      await expectLater(testProcess.exitCode, completion(0));
-    });
-  },
-      skip: Platform.isWindows
-          ? 'Windows does not support postgres docker image in github actions'
-          : null);
+    },
+  );
 }

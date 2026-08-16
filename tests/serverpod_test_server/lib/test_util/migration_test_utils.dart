@@ -2,11 +2,18 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
-import 'package:serverpod_cli/src/migrations/migration_registry.dart';
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod/protocol.dart' as serverProtocol;
+import 'package:serverpod_cli/src/config/config.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
+import 'package:serverpod_cli/src/migrations/create_migration_action.dart';
+
+import 'serverpod_cli_runner.dart';
 
 var _moduleName = 'serverpod_test';
+
+var _databaseDialect = DatabaseDialect.postgres;
 
 abstract class MigrationTestUtils {
   static Future<void> createInitialState({
@@ -14,8 +21,10 @@ abstract class MigrationTestUtils {
     String tag = 'test',
   }) async {
     for (var protocols in migrationProtocols) {
-      var exitCode =
-          await createMigrationFromProtocols(protocols: protocols, tag: tag);
+      var exitCode = await createMigrationFromProtocols(
+        protocols: protocols,
+        tag: tag,
+      );
 
       assert(
         exitCode == 0,
@@ -34,30 +43,17 @@ abstract class MigrationTestUtils {
     String tag = 'test',
     bool force = false,
   }) async {
-    _removeMigrationTestProtocolFolder();
-    _migrationProtocolTestDirectory().createSync(recursive: true);
+    _writeMigrationProtocols(protocols);
 
-    protocols.forEach((fileName, contents) {
-      var protocolFile = File(path.join(
-        _migrationProtocolTestDirectory().path,
-        '$fileName.yaml',
-      ));
-
-      protocolFile.writeAsStringSync(contents);
-    });
-
-    var exitCode = await _runProcess(
-      'serverpod',
-      arguments: [
-        'create-migration',
-        '--tag',
-        tag,
-        if (force) '--force',
-        '--verbose',
-        '--no-analytics',
-        '--experimental-features=all',
-      ],
-    );
+    var exitCode = await runServerpodCli([
+      'create-migration',
+      '--tag',
+      tag,
+      if (force) '--force',
+      // '--verbose',
+      '--no-analytics',
+      '--experimental-features=all',
+    ]);
 
     // Ensures that another migration is never created with the same millisecond.
     await Future.delayed(Duration(milliseconds: 2));
@@ -65,39 +61,92 @@ abstract class MigrationTestUtils {
     return exitCode;
   }
 
+  /// Creates migration artifacts through the production action without
+  /// exercising the CLI process wrapper.
+  static Future<bool> createMigrationFromProtocolsInProcess({
+    required Map<String, String> protocols,
+    String tag = 'test',
+    bool force = false,
+  }) async {
+    _writeMigrationProtocols(protocols);
+
+    CommandLineExperimentalFeatures.initialize([ExperimentalFeature.all]);
+    final config = await GeneratorConfig.load(interactive: false);
+    final outcome = await createMigrationAction(
+      config: config,
+      tag: tag,
+      force: force,
+    );
+
+    // Ensures that another migration is never created with the same millisecond.
+    await Future.delayed(Duration(milliseconds: 2));
+
+    return outcome.success;
+  }
+
+  static void _writeMigrationProtocols(Map<String, String> protocols) {
+    _removeMigrationTestProtocolFolder();
+    _migrationProtocolTestDirectory().createSync(recursive: true);
+
+    protocols.forEach((fileName, contents) {
+      var protocolFile = File(
+        path.join(
+          _migrationProtocolTestDirectory().path,
+          '$fileName.yaml',
+        ),
+      );
+
+      protocolFile.writeAsStringSync(contents);
+    });
+  }
+
   static String readMigrationRegistryFile() {
-    var migrationRegistryFile = File(path.join(
-      _migrationsProjectDirectory().path,
-      'migration_registry.txt',
-    ));
+    var migrationRegistryFile = File(
+      path.join(
+        _migrationsProjectDirectory().path,
+        'migration_registry.txt',
+      ),
+    );
 
     return migrationRegistryFile.readAsStringSync();
   }
 
-  static MigrationRegistry loadMigrationRegistry() {
-    return MigrationRegistry.load(
-      _migrationsProjectDirectory(),
+  static Future<List<String>> loadMigrationRegistry() async {
+    var artifactStore = FileSystemMigrationArtifactStore(
+      projectDirectory: Directory.current,
     );
+    return artifactStore.listVersions();
   }
 
   static Future<void> migrationTestCleanup({
     String? resetSql,
     required Client serviceClient,
   }) async {
-    removeAllTaggedMigrations();
-    removeRepairMigration();
-    _removeMigrationTestProtocolFolder();
-    _recreateMigrationRegistryFile();
+    await migrationArtifactsCleanup();
     if (resetSql != null) {
       await _resetDatabase(resetSql: resetSql, serviceClient: serviceClient);
     }
     await _setDatabaseMigrationToLatestInRegistry(serviceClient: serviceClient);
   }
 
-  static void _recreateMigrationRegistryFile() {
-    var migrationRegistry =
-        MigrationRegistry.load(_migrationsProjectDirectory());
-    migrationRegistry.write();
+  /// Removes tagged migrations, repair migration, protocol test files, and
+  /// rewrites the migration registry from disk, without contacting the server.
+  ///
+  /// For tests that only run `create-migration` (no apply) and must not require
+  /// a running database.
+  static Future<void> migrationArtifactsCleanup() async {
+    removeAllTaggedMigrations();
+    removeRepairMigration();
+    _removeMigrationTestProtocolFolder();
+    await _recreateMigrationRegistryFile();
+  }
+
+  static Future<void> _recreateMigrationRegistryFile() async {
+    var artifactStore = FileSystemMigrationArtifactStore(
+      projectDirectory: Directory.current,
+    );
+    var versions = await artifactStore.listVersions();
+    await artifactStore.writeVersionRegistry(versions);
   }
 
   static void removeRepairMigration() {
@@ -128,8 +177,8 @@ abstract class MigrationTestUtils {
         'maintenance',
         '--mode',
         'production',
-        '--logging',
-        'verbose',
+        // '--logging',
+        // 'verbose',
       ],
     );
   }
@@ -145,8 +194,8 @@ abstract class MigrationTestUtils {
         'maintenance',
         '--mode',
         'production',
-        '--logging',
-        'verbose',
+        // '--logging',
+        // 'verbose',
       ],
     );
   }
@@ -163,8 +212,8 @@ abstract class MigrationTestUtils {
         'maintenance',
         '--mode',
         'production',
-        '--logging',
-        'verbose',
+        // '--logging',
+        // 'verbose',
       ],
     );
   }
@@ -174,20 +223,17 @@ abstract class MigrationTestUtils {
     bool force = false,
     String? targetVersion,
   }) async {
-    return await _runProcess(
-      'serverpod',
-      arguments: [
-        'create-repair-migration',
-        '--tag',
-        tag,
-        '--mode',
-        'production',
-        if (targetVersion != null) ...['--version', targetVersion],
-        if (force) '--force',
-        '--verbose',
-        '--no-analytics',
-      ],
-    );
+    return await runServerpodCli([
+      'create-repair-migration',
+      '--tag',
+      tag,
+      '--mode',
+      'production',
+      if (targetVersion != null) ...['--version', targetVersion],
+      if (force) '--force',
+      // '--verbose',
+      '--no-analytics',
+    ]);
   }
 
   static File? tryLoadRepairMigrationFile() {
@@ -208,23 +254,33 @@ abstract class MigrationTestUtils {
     _moduleName = moduleName;
   }
 
-  static Directory _migrationProtocolTestDirectory() => Directory(path.join(
-        Directory.current.path,
-        'lib',
-        'src',
-        'protocol',
-        'migration_test_protocol_files',
-      ));
+  static void setDatabaseDialect(DatabaseDialect dialect) {
+    _databaseDialect = dialect;
+  }
 
-  static Directory _repairMigrationDirectory() => Directory(path.join(
-        Directory.current.path,
-        'repair-migration',
-      ));
+  static Directory _migrationProtocolTestDirectory() => Directory(
+    path.join(
+      Directory.current.path,
+      'lib',
+      'src',
+      'protocol',
+      'migration_test_protocol_files',
+    ),
+  );
 
-  static Directory _migrationsProjectDirectory() => Directory(path.join(
-        Directory.current.path,
-        'migrations',
-      ));
+  static Directory _repairMigrationDirectory() => Directory(
+    path.join(
+      Directory.current.path,
+      'repair-migration',
+    ),
+  );
+
+  static Directory _migrationsProjectDirectory() => Directory(
+    path.join(
+      Directory.current.path,
+      'migrations',
+    ),
+  );
 
   static void _removeMigrationTestProtocolFolder() {
     var protocolDirectory = _migrationProtocolTestDirectory();
@@ -243,14 +299,18 @@ abstract class MigrationTestUtils {
   static Future<void> _setDatabaseMigrationToLatestInRegistry({
     required Client serviceClient,
   }) async {
-    var migrationRegistry = loadMigrationRegistry();
+    var versions = await loadMigrationRegistry();
+    var latestMigration = versions.lastOrNull;
 
-    var latestMigration = migrationRegistry.getLatest();
+    var timestampSql = switch (_databaseDialect) {
+      DatabaseDialect.sqlite => "(unixepoch('subsecond') * 1000)",
+      DatabaseDialect.postgres => 'now()',
+    };
 
     await serviceClient.insights.executeSql('''
 INSERT INTO "${serverProtocol.DatabaseMigrationVersion.t.tableName}"
     ("module", "version", "timestamp")
-    VALUES ('$_moduleName', '$latestMigration', now())
+    VALUES ('$_moduleName', '$latestMigration', $timestampSql)
     ON CONFLICT ("module")
     DO UPDATE SET "version" = '$latestMigration';
 ''');
@@ -265,6 +325,9 @@ INSERT INTO "${serverProtocol.DatabaseMigrationVersion.t.tableName}"
       command,
       arguments ?? [],
       workingDirectory: workingDirectory?.path ?? Directory.current.path,
+      environment: {
+        'SERVERPOD_HOME': serverpodHome,
+      },
     );
 
     process.stderr.transform(utf8.decoder).listen(print);

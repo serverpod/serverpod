@@ -5,17 +5,19 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
-import 'package:serverpod_cli/src/generator/dart/temp_protocol_generator.dart';
+import 'package:serverpod_cli/src/generator/dart/shared_code_generator.dart';
 import 'package:serverpod_cli/src/generator/yaml/endpoint_description_generator.dart';
+import 'package:serverpod_cli/src/generator/yaml/serverpod_manifest_generator.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 abstract class ServerpodCodeGenerator {
   static final List<CodeGenerator> _generators = [
-    const DartTemporaryProtocolGenerator(),
     const DartServerCodeGenerator(),
     const DartClientCodeGenerator(),
+    const DartSharedCodeGenerator(),
     const EndpointDescriptionGenerator(),
+    const ServerpodManifestGenerator(),
   ];
 
   /// Generate from [CodeGenerator.generateSerializableModelsCode] for all
@@ -31,19 +33,9 @@ abstract class ServerpodCodeGenerator {
         ...generator.generateSerializableModelsCode(
           models: models,
           config: config,
-        )
+        ),
     };
-    for (var file in allFiles.entries) {
-      try {
-        log.debug('Generating ${file.key}.');
-        var out = File(file.key);
-        await out.create(recursive: true);
-        await out.writeAsString(file.value, flush: true);
-      } catch (e, stackTrace) {
-        log.error('Failed to generate ${file.key}!');
-        printInternalError(e, stackTrace);
-      }
-    }
+    await _writeFiles(allFiles);
 
     return allFiles.keys.toList();
   }
@@ -61,26 +53,51 @@ abstract class ServerpodCodeGenerator {
         ...generator.generateProtocolCode(
           protocolDefinition: protocolDefinition,
           config: config,
-        )
+        ),
     };
-    for (var file in allFiles.entries) {
-      try {
-        log.debug('Generating ${file.key}.');
-        var out = File(file.key);
-        await out.create(recursive: true);
-        await out.writeAsString(file.value, flush: true);
-      } catch (e, stackTrace) {
-        log.error('Failed to generate ${file.key}');
-        printInternalError(e, stackTrace);
-      }
-    }
+    await _writeFiles(allFiles);
 
     return allFiles.keys.toList();
   }
 
+  /// Writes generated files to disk, skipping files whose content is
+  /// unchanged to avoid unnecessary file-system modification timestamps.
+  static Future<void> _writeFiles(Map<String, String> files) async {
+    for (var file in files.entries) {
+      try {
+        log.debug('Generating ${file.key}.');
+        var out = File(file.key);
+
+        // The protocol generator's migration_registry.dart has no `part` directives.
+        // `create-migration` adds `part` lines so each migration can ship generated
+        // code; if the file on disk already has `part` declarations, skip the write
+        // so we do not erase that registry.
+        if (p
+                .normalize(file.key)
+                .endsWith(p.join('migrations', 'migration_registry.dart')) &&
+            out.existsSync() &&
+            (await out.readAsString()).contains("part '")) {
+          continue;
+        }
+
+        // Skip the write if the file already has the same content.
+        if (out.existsSync()) {
+          final existing = await out.readAsString();
+          if (existing == file.value) continue;
+        }
+
+        await out.create(recursive: true);
+        await out.writeAsString(file.value, flush: true);
+      } catch (e, stackTrace) {
+        log.error('Failed to generate ${file.key}.');
+        printInternalError(e, stackTrace);
+      }
+    }
+  }
+
   /// Removes files from previous generation runs.
   /// By removing old files that are not part of the [generatedFiles].
-  static Future<void> cleanPreviouslyGeneratedDartFiles({
+  static Future<void> cleanPreviouslyGeneratedFiles({
     required Set<String> generatedFiles,
     required ProtocolDefinition protocolDefinition,
     required GeneratorConfig config,
@@ -98,6 +115,17 @@ abstract class ServerpodCodeGenerator {
         ['.dart'],
       );
     }
+
+    var manifestPath = p.joinAll(
+      config.generatedServerpodManifestFilePathParts,
+    );
+    if (!generatedFiles.contains(manifestPath)) {
+      var manifestFile = File(manifestPath);
+      if (await manifestFile.exists()) {
+        log.debug('Remove: $manifestFile');
+        await manifestFile.delete();
+      }
+    }
   }
 }
 
@@ -112,6 +140,7 @@ List<String> _getDirectoriesRequiringCleaning({
   return [
     p.joinAll(config.generatedServeModelPathParts),
     p.joinAll(config.generatedDartClientModelPathParts),
+    ...config.generatedSharedModelsPaths,
   ];
 }
 

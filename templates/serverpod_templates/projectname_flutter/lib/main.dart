@@ -13,20 +13,34 @@ late final Client client;
 
 late String serverUrl;
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   // When you are running the app on a physical device, you need to set the
   // server URL to the IP address of your computer. You can find the IP
   // address by running `ipconfig` on Windows or `ifconfig` on Mac/Linux.
+  //
   // You can set the variable when running or building your app like this:
-  // E.g. `flutter run --dart-define=SERVER_URL=https://api.example.com/`
-  const serverUrlFromEnv = String.fromEnvironment('SERVER_URL');
-  final serverUrl =
-      serverUrlFromEnv.isEmpty ? 'http://$localhost:8080/' : serverUrlFromEnv;
+  // E.g. `flutter run --dart-define=SERVER_URL=https://api.example.com/`.
+  //
+  // Otherwise, the server URL is fetched from the `assets/config.json` file or
+  // defaults to http://$localhost:8080/ if not found.
+  final serverUrl = await getServerUrl();
 
   client = Client(serverUrl)
     ..connectivityMonitor = FlutterConnectivityMonitor();
 
   runApp(const MyApp());
+}
+
+/// Builds a theme for the given [brightness].
+ThemeData _buildTheme(Brightness brightness) {
+  return ThemeData(
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: Colors.blue,
+      brightness: brightness,
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -36,7 +50,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Serverpod Demo',
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: _buildTheme(Brightness.light),
+      darkTheme: _buildTheme(Brightness.dark),
+      themeMode: ThemeMode.system,
       home: const MyHomePage(title: 'Serverpod Example'),
     );
   }
@@ -86,20 +102,19 @@ class MyHomePageState extends State<MyHomePage> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: TextField(
-                controller: _textEditingController,
-                decoration: const InputDecoration(hintText: 'Enter your name'),
+            TextField(
+              controller: _textEditingController,
+              onSubmitted: (_) => _callHello(),
+              decoration: InputDecoration(
+                hintText: 'Enter your name',
+                border: const OutlineInputBorder(),
+                suffixIcon: IconButton(
+                  onPressed: _callHello,
+                  icon: const Icon(Icons.send),
+                ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: ElevatedButton(
-                onPressed: _callHello,
-                child: const Text('Send to Server'),
-              ),
-            ),
+            const SizedBox(height: 16),
             ResultDisplay(
               resultMessage: _resultMessage,
               errorMessage: _errorMessage,
@@ -121,24 +136,38 @@ class ResultDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
     String text;
     Color backgroundColor;
+    Color foregroundColor;
     if (errorMessage != null) {
-      backgroundColor = Colors.red[300]!;
+      backgroundColor = colors.errorContainer;
+      foregroundColor = colors.onErrorContainer;
       text = errorMessage!;
     } else if (resultMessage != null) {
-      backgroundColor = Colors.green[300]!;
+      backgroundColor = colors.primaryContainer;
+      foregroundColor = colors.onPrimaryContainer;
       text = resultMessage!;
     } else {
-      backgroundColor = Colors.grey[300]!;
+      backgroundColor = colors.surfaceContainerHighest;
+      foregroundColor = colors.onSurfaceVariant;
       text = 'No server response yet.';
     }
 
-    return ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: 50),
-      child: Container(
+    return Container(
+      constraints: const BoxConstraints(minHeight: 60),
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      // Reuses the text field's border so the shape and width always match.
+      decoration: ShapeDecoration(
         color: backgroundColor,
-        child: Center(child: Text(text)),
+        shape: OutlineInputBorder(
+          borderSide: BorderSide(color: foregroundColor),
+        ),
+      ),
+      child: Center(
+        child: Text(text, style: TextStyle(color: foregroundColor)),
       ),
     );
   }

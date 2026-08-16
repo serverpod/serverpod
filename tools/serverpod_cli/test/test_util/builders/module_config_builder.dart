@@ -6,13 +6,15 @@ class ModuleConfigBuilder {
   String _nickname;
   List<String> _migrationVersions;
   List<String> _serverPackageDirectoryPathParts;
+  Map<String, List<String>> _sharedPackageRootPathParts;
 
   ModuleConfigBuilder(String name, [String? nickname])
-      : _name = name,
-        _nickname = nickname ?? name,
-        _migrationVersions = [],
-        _type = PackageType.module,
-        _serverPackageDirectoryPathParts = [];
+    : _name = name,
+      _nickname = nickname ?? name,
+      _migrationVersions = [],
+      _type = PackageType.module,
+      _serverPackageDirectoryPathParts = [],
+      _sharedPackageRootPathParts = {};
 
   ModuleConfigBuilder withType(PackageType type) {
     _type = type;
@@ -35,8 +37,16 @@ class ModuleConfigBuilder {
   }
 
   ModuleConfigBuilder withServerPackageDirectoryPathParts(
-      List<String> serverPackageDirectoryPathParts) {
+    List<String> serverPackageDirectoryPathParts,
+  ) {
     _serverPackageDirectoryPathParts = serverPackageDirectoryPathParts;
+    return this;
+  }
+
+  ModuleConfigBuilder withSharedPackageRootPathParts(
+    Map<String, List<String>> sharedPackageRootPathParts,
+  ) {
+    _sharedPackageRootPathParts = sharedPackageRootPathParts;
     return this;
   }
 
@@ -47,6 +57,7 @@ class ModuleConfigBuilder {
       nickname: _nickname,
       migrationVersions: _migrationVersions,
       serverPackageDirectoryPathParts: _serverPackageDirectoryPathParts,
+      sharedPackageRootPathParts: _sharedPackageRootPathParts,
     );
   }
 }

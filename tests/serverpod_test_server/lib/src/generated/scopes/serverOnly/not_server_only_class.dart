@@ -30,12 +30,18 @@ abstract class NotServerOnlyClass
   NotServerOnlyClass copyWith({String? foo});
   @override
   Map<String, dynamic> toJson() {
-    return {'foo': foo};
+    return {
+      '__className__': 'NotServerOnlyClass',
+      'foo': foo,
+    };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {'foo': foo};
+    return {
+      '__className__': 'NotServerOnlyClass',
+      'foo': foo,
+    };
   }
 
   @override

@@ -15,14 +15,18 @@ class LocalCache extends Cache {
 
   /// New cache values currently being computed by a [CacheMissHandler]
   // The future values in here must not be resolved (at which state the value should just be in the cache), but just pending
-  final _inProgressCacheValues = <String, Future<SerializableModel?>>{};
+  final _inProgressCacheValues = <String, Future<Object?>>{};
 
   /// Creates a new [LocalCache].
   LocalCache(super.maxEntries, super.serializationManager);
 
   @override
-  Future<void> put(String key, SerializableModel object,
-      {Duration? lifetime, String? group}) async {
+  Future<void> put<T extends Object>(
+    String key,
+    T object, {
+    Duration? lifetime,
+    String? group,
+  }) async {
     if (_keyList.length >= maxLocalEntries) {
       _removeOldestEntry();
     }
@@ -51,8 +55,10 @@ class LocalCache extends Cache {
       }
     }
 
-    assert(_entries.length == _keyList.length,
-        'Entry length and key list length mismatch ${_entries.length} / ${_keyList.length}');
+    assert(
+      _entries.length == _keyList.length,
+      'Entry length and key list length mismatch ${_entries.length} / ${_keyList.length}',
+    );
   }
 
   void _removeOldestEntry() {
@@ -85,8 +91,9 @@ class LocalCache extends Cache {
   }
 
   @override
-  Future<T?> get<T extends SerializableModel>(
+  Future<T?> get<T extends Object>(
     String key, [
+
     /// Handler to generate a new value in case there is no active value in the cache
     ///
     /// In case a value computation from a previous [get] call is already running, the caller will receive the value from
@@ -152,10 +159,13 @@ class LocalCache extends Cache {
   }
 
   void _removeKeyFromKeyList(String key, DateTime time) {
-    var idx = binarySearch<_KeyListKey>(_keyList, _KeyListKey(key, time),
-        compare: (_KeyListKey a, _KeyListKey b) {
-      return b.creationTime.compareTo(a.creationTime);
-    });
+    var idx = binarySearch<_KeyListKey>(
+      _keyList,
+      _KeyListKey(key, time),
+      compare: (_KeyListKey a, _KeyListKey b) {
+        return b.creationTime.compareTo(a.creationTime);
+      },
+    );
 
     if (idx == -1) return;
 
@@ -196,8 +206,10 @@ class LocalCache extends Cache {
 
   @override
   int get localSize {
-    assert(_entries.length == _keyList.length,
-        'Entry length and key list length mismatch ${_entries.length} / ${_keyList.length}');
+    assert(
+      _entries.length == _keyList.length,
+      'Entry length and key list length mismatch ${_entries.length} / ${_keyList.length}',
+    );
     assert(_groups.length <= _entries.length);
     return _entries.length;
   }

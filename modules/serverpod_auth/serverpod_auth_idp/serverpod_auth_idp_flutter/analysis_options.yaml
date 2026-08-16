@@ -1,0 +1,11 @@
+include: package:serverpod_lints/public_flutter.yaml
+
+linter:
+  rules:
+    prefer_const_constructors: true
+    public_member_api_docs: true
+    unawaited_futures: true
+    discarded_futures: true
+
+formatter:
+  trailing_commas: preserve

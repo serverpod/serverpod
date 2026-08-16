@@ -23,6 +23,8 @@ abstract class SessionLogFilter
     required this.error,
     required this.open,
     this.lastSessionLogId,
+    this.startTime,
+    this.endTime,
   });
 
   factory SessionLogFilter({
@@ -33,6 +35,8 @@ abstract class SessionLogFilter
     required bool error,
     required bool open,
     int? lastSessionLogId,
+    DateTime? startTime,
+    DateTime? endTime,
   }) = _SessionLogFilterImpl;
 
   factory SessionLogFilter.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -40,10 +44,16 @@ abstract class SessionLogFilter
       endpoint: jsonSerialization['endpoint'] as String?,
       method: jsonSerialization['method'] as String?,
       futureCall: jsonSerialization['futureCall'] as String?,
-      slow: jsonSerialization['slow'] as bool,
-      error: jsonSerialization['error'] as bool,
-      open: jsonSerialization['open'] as bool,
+      slow: _i1.BoolJsonExtension.fromJson(jsonSerialization['slow']),
+      error: _i1.BoolJsonExtension.fromJson(jsonSerialization['error']),
+      open: _i1.BoolJsonExtension.fromJson(jsonSerialization['open']),
       lastSessionLogId: jsonSerialization['lastSessionLogId'] as int?,
+      startTime: jsonSerialization['startTime'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['startTime']),
+      endTime: jsonSerialization['endTime'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['endTime']),
     );
   }
 
@@ -68,6 +78,12 @@ abstract class SessionLogFilter
   /// Last session id to start the list of logs from. Used for pagination.
   int? lastSessionLogId;
 
+  /// Inclusive lower bound on session start time. Null means no lower bound.
+  DateTime? startTime;
+
+  /// Inclusive upper bound on session start time. Null means no upper bound.
+  DateTime? endTime;
+
   /// Returns a shallow copy of this [SessionLogFilter]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -79,10 +95,13 @@ abstract class SessionLogFilter
     bool? error,
     bool? open,
     int? lastSessionLogId,
+    DateTime? startTime,
+    DateTime? endTime,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.SessionLogFilter',
       if (endpoint != null) 'endpoint': endpoint,
       if (method != null) 'method': method,
       if (futureCall != null) 'futureCall': futureCall,
@@ -90,12 +109,15 @@ abstract class SessionLogFilter
       'error': error,
       'open': open,
       if (lastSessionLogId != null) 'lastSessionLogId': lastSessionLogId,
+      if (startTime != null) 'startTime': startTime?.toJson(),
+      if (endTime != null) 'endTime': endTime?.toJson(),
     };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.SessionLogFilter',
       if (endpoint != null) 'endpoint': endpoint,
       if (method != null) 'method': method,
       if (futureCall != null) 'futureCall': futureCall,
@@ -103,6 +125,8 @@ abstract class SessionLogFilter
       'error': error,
       'open': open,
       if (lastSessionLogId != null) 'lastSessionLogId': lastSessionLogId,
+      if (startTime != null) 'startTime': startTime?.toJson(),
+      if (endTime != null) 'endTime': endTime?.toJson(),
     };
   }
 
@@ -123,15 +147,19 @@ class _SessionLogFilterImpl extends SessionLogFilter {
     required bool error,
     required bool open,
     int? lastSessionLogId,
+    DateTime? startTime,
+    DateTime? endTime,
   }) : super._(
-          endpoint: endpoint,
-          method: method,
-          futureCall: futureCall,
-          slow: slow,
-          error: error,
-          open: open,
-          lastSessionLogId: lastSessionLogId,
-        );
+         endpoint: endpoint,
+         method: method,
+         futureCall: futureCall,
+         slow: slow,
+         error: error,
+         open: open,
+         lastSessionLogId: lastSessionLogId,
+         startTime: startTime,
+         endTime: endTime,
+       );
 
   /// Returns a shallow copy of this [SessionLogFilter]
   /// with some or all fields replaced by the given arguments.
@@ -145,6 +173,8 @@ class _SessionLogFilterImpl extends SessionLogFilter {
     bool? error,
     bool? open,
     Object? lastSessionLogId = _Undefined,
+    Object? startTime = _Undefined,
+    Object? endTime = _Undefined,
   }) {
     return SessionLogFilter(
       endpoint: endpoint is String? ? endpoint : this.endpoint,
@@ -153,8 +183,11 @@ class _SessionLogFilterImpl extends SessionLogFilter {
       slow: slow ?? this.slow,
       error: error ?? this.error,
       open: open ?? this.open,
-      lastSessionLogId:
-          lastSessionLogId is int? ? lastSessionLogId : this.lastSessionLogId,
+      lastSessionLogId: lastSessionLogId is int?
+          ? lastSessionLogId
+          : this.lastSessionLogId,
+      startTime: startTime is DateTime? ? startTime : this.startTime,
+      endTime: endTime is DateTime? ? endTime : this.endTime,
     );
   }
 }

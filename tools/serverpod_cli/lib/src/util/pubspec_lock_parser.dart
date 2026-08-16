@@ -16,7 +16,8 @@ enum DependencyType {
   transitive('transitive'),
 
   /// Direct overridden dependency
-  directOverridden('direct overridden');
+  directOverridden('direct overridden'),
+  ;
 
   final String value;
   const DependencyType(this.value);
@@ -41,7 +42,8 @@ enum PackageSource {
   git('git'),
 
   /// SDK dependency (dart, flutter)
-  sdk('sdk');
+  sdk('sdk'),
+  ;
 
   final String value;
   const PackageSource(this.value);
@@ -136,8 +138,9 @@ class PubspecLockParser {
       }
       final flutterConstraint = sdksYaml['flutter'];
       if (flutterConstraint != null) {
-        flutterSdkConstraint =
-            VersionConstraint.parse(flutterConstraint as String);
+        flutterSdkConstraint = VersionConstraint.parse(
+          flutterConstraint as String,
+        );
       }
     }
 
@@ -178,8 +181,9 @@ class PubspecLockParser {
 
           dependency = HostedDependency(
             version: VersionConstraint.compatibleWith(version),
-            hosted:
-                url != null ? HostedDetails(hostedName, Uri.parse(url)) : null,
+            hosted: url != null
+                ? HostedDetails(hostedName, Uri.parse(url))
+                : null,
           );
         } else {
           throw const FormatException('Invalid hosted dependency description');
@@ -194,7 +198,8 @@ class PubspecLockParser {
       case PackageSource.git:
         if (descriptionYaml is! YamlMap) {
           throw const FormatException(
-              'Git dependency must have a map description');
+            'Git dependency must have a map description',
+          );
         }
         final url = descriptionYaml['url'] as String;
         final ref = descriptionYaml['ref'] as String?;

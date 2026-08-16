@@ -1,0 +1,5 @@
+class: StringDefaultModel
+table: string_default_model
+fields:
+  stringDefaultModel: String, defaultModel='This is a default model value'
+  stringDefaultModelNull: String, defaultModel='This is a default model null value'

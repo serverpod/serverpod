@@ -30,7 +30,10 @@ abstract class ServerOnlyClass
   ServerOnlyClass copyWith({String? foo});
   @override
   Map<String, dynamic> toJson() {
-    return {'foo': foo};
+    return {
+      '__className__': 'ServerOnlyClass',
+      'foo': foo,
+    };
   }
 
   @override

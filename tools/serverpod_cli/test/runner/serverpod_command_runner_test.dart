@@ -70,14 +70,28 @@ class MockAnalytics implements Analytics {
   int numberOfCleanups = 0;
 
   @override
-  void track({required String event}) {
+  void track({
+    required String event,
+    Map<String, dynamic> properties = const {},
+  }) {
     trackedEvents.add(event);
   }
+
+  void identify({String? email, Map<String, dynamic>? properties}) {}
 
   @override
   void cleanUp() {
     numberOfCleanups++;
   }
+
+  @override
+  Future<void> flush() async {}
+
+  @override
+  Future<void> sendEvent({
+    required String event,
+    Map<String, dynamic> properties = const {},
+  }) async {}
 }
 
 class MockCommand extends Command {
@@ -164,7 +178,13 @@ TestFixture createTestFixture(MockLogger testLogger, Version version) {
 void main() {
   final version = Version(1, 1, 0);
   var testLogger = MockLogger();
-  initializeLoggerWith(testLogger);
+  setUpAll(() {
+    initializeLoggerWith(testLogger);
+  });
+
+  tearDownAll(() async {
+    await closeLogger();
+  });
 
   late TestFixture fixture;
   setUp(() {
@@ -179,48 +199,55 @@ void main() {
       expect(log.logLevel, equals(LogLevel.info));
     });
 
-    test('when only --${BetterCommandRunnerFlags.verbose} flag is provided',
-        () async {
-      List<String> args = [
-        '--${BetterCommandRunnerFlags.verbose}',
-      ];
+    test(
+      'when only --${BetterCommandRunnerFlags.verbose} flag is provided',
+      () async {
+        List<String> args = [
+          '--${BetterCommandRunnerFlags.verbose}',
+        ];
 
-      await fixture.runner.run(args);
+        await fixture.runner.run(args);
 
-      expect(log.logLevel, equals(LogLevel.debug));
-    });
-    test('when only --${BetterCommandRunnerFlags.quiet} flag is provided',
-        () async {
-      List<String> args = [
-        '--${BetterCommandRunnerFlags.quiet}',
-      ];
+        expect(log.logLevel, equals(LogLevel.debug));
+      },
+    );
+    test(
+      'when only --${BetterCommandRunnerFlags.quiet} flag is provided',
+      () async {
+        List<String> args = [
+          '--${BetterCommandRunnerFlags.quiet}',
+        ];
 
-      await fixture.runner.run(args);
+        await fixture.runner.run(args);
 
-      expect(log.logLevel, equals(LogLevel.nothing));
-    });
+        expect(log.logLevel, equals(LogLevel.nothing));
+      },
+    );
 
     test(
-        'when --${BetterCommandRunnerFlags.verbose} and --${BetterCommandRunnerFlags.quiet} flags are provided',
-        () async {
-      List<String> args = [
-        '--${BetterCommandRunnerFlags.verbose}',
-        '--${BetterCommandRunnerFlags.quiet}',
-      ];
+      'when --${BetterCommandRunnerFlags.verbose} and --${BetterCommandRunnerFlags.quiet} flags are provided',
+      () async {
+        List<String> args = [
+          '--${BetterCommandRunnerFlags.verbose}',
+          '--${BetterCommandRunnerFlags.quiet}',
+        ];
 
-      await fixture.runner.run(args);
+        await fixture.runner.run(args);
 
-      expect(log.logLevel, equals(LogLevel.debug));
-    });
+        expect(log.logLevel, equals(LogLevel.debug));
+      },
+    );
 
-    test('when ${LanguageServerCommand.commandName} command is provided',
-        () async {
-      List<String> args = [LanguageServerCommand.commandName];
+    test(
+      'when ${LanguageServerCommand.commandName} command is provided',
+      () async {
+        List<String> args = [LanguageServerCommand.commandName];
 
-      await fixture.runner.run(args);
+        await fixture.runner.run(args);
 
-      expect(log.logLevel, equals(LogLevel.nothing));
-    });
+        expect(log.logLevel, equals(LogLevel.nothing));
+      },
+    );
   });
 
   test('Given version subcommand when run then prints only version', () async {
@@ -231,12 +258,71 @@ void main() {
     expect(logOutput.messages.first, equals('Serverpod version: 1.1.0'));
   });
 
-  test('Given --version flag when run then should exit early and not show help',
-      () async {
-    await fixture.runner.run(['--version']);
+  test(
+    'Given --version flag when run then should exit early and not show help',
+    () async {
+      await fixture.runner.run(['--version']);
 
-    var logOutput = fixture.logOutput;
-    expect(logOutput.messages, hasLength(1));
-    expect(logOutput.messages.first, equals('Serverpod version: 1.1.0'));
+      var logOutput = fixture.logOutput;
+      expect(logOutput.messages, hasLength(1));
+      expect(logOutput.messages.first, equals('Serverpod version: 1.1.0'));
+    },
+  );
+
+  test(
+    'Given command runner then completion command is registered',
+    () {
+      expect(fixture.runner.commands.containsKey('completion'), isTrue);
+    },
+  );
+
+  group('Interactive flag - ', () {
+    test(
+      'when no interactive flag is provided then value should be null',
+      () async {
+        List<String> args = [MockCommand.commandName];
+
+        await fixture.runner.run(args);
+
+        var interactiveValue = fixture.runner.globalConfiguration.optionalValue(
+          GlobalOption.interactive,
+        );
+        expect(interactiveValue, isNull);
+      },
+    );
+
+    test(
+      'when --interactive flag is provided then value should be true',
+      () async {
+        List<String> args = [
+          '--interactive',
+          MockCommand.commandName,
+        ];
+
+        await fixture.runner.run(args);
+
+        var interactiveValue = fixture.runner.globalConfiguration.optionalValue(
+          GlobalOption.interactive,
+        );
+        expect(interactiveValue, isTrue);
+      },
+    );
+
+    test(
+      'when --no-interactive flag is provided then value should be false',
+      () async {
+        List<String> args = [
+          '--no-interactive',
+          MockCommand.commandName,
+        ];
+
+        await fixture.runner.run(args);
+
+        var interactiveValue = fixture.runner.globalConfiguration.optionalValue(
+          GlobalOption.interactive,
+        );
+        expect(interactiveValue, isFalse);
+      },
+    );
   });
 }

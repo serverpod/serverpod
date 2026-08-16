@@ -28,7 +28,7 @@ ClientCallOpContext contextFromRequest(
     sessionId: null,
     userAuthInfo: null,
     remoteInfo: request.remoteInfo,
-    uri: request.requestedUri,
+    uri: request.url,
   );
 }
 
@@ -40,101 +40,76 @@ OperationEventContext contextFromSession(
 }) {
   return switch (session) {
     FutureCallSession futureCall => _fromFutureCall(
-        futureCall,
-      ),
+      futureCall,
+    ),
     WebCallSession webCall => _fromWebCall(webCall, request),
     MethodCallSession methodCall => _fromMethodCall(
-        methodCall,
-      ),
+      methodCall,
+    ),
     MethodStreamSession methodStream => _fromMethodStream(
-        methodStream,
-        request: request,
-      ),
-    StreamingSession streaming => _fromStreaming(
-        streaming,
-      ),
+      methodStream,
+    ),
     // likely InternalSession or InternalServerpodSession
     _ => OperationEventContext(
-        serverName: session.server.name,
-        serverId: session.server.serverId,
-        serverRunMode: session.server.runMode,
-        operationType: OperationType.internal,
-        userAuthInfo: session.authInfoOrNull,
-        sessionId: session.sessionId,
-      ),
+      serverName: session.server.name,
+      serverId: session.server.serverId,
+      serverRunMode: session.server.runMode,
+      operationType: OperationType.internal,
+      userAuthInfo: session.authInfoOrNull,
+      sessionId: session.sessionId,
+    ),
   };
 }
 
 FutureCallOpContext _fromFutureCall(
   FutureCallSession session,
-) =>
-    FutureCallOpContext(
-      serverName: session.server.name,
-      serverId: session.server.serverId,
-      serverRunMode: session.server.runMode,
-      userAuthInfo: session.authInfoOrNull,
-      sessionId: session.sessionId,
-      futureCallName: session.futureCallName,
-    );
+) => FutureCallOpContext(
+  serverName: session.server.name,
+  serverId: session.server.serverId,
+  serverRunMode: session.server.runMode,
+  userAuthInfo: session.authInfoOrNull,
+  sessionId: session.sessionId,
+  futureCallName: session.futureCallName,
+);
 
 WebCallOpContext _fromWebCall(
   WebCallSession session,
   Request? request,
-) =>
-    WebCallOpContext(
-      serverName: session.server.name,
-      serverId: session.server.serverId,
-      serverRunMode: session.server.runMode,
-      userAuthInfo: session.authInfoOrNull,
-      sessionId: session.sessionId,
-      remoteInfo: request?.remoteInfo,
-      uri: request?.requestedUri ?? Uri.http('', session.endpoint),
-    );
+) => WebCallOpContext(
+  serverName: session.server.name,
+  serverId: session.server.serverId,
+  serverRunMode: session.server.runMode,
+  userAuthInfo: session.authInfoOrNull,
+  sessionId: session.sessionId,
+  remoteInfo: request?.remoteInfo,
+  uri: request?.url ?? Uri.http('', session.endpoint),
+);
 
 MethodCallOpContext _fromMethodCall(
   MethodCallSession session,
-) =>
-    MethodCallOpContext(
-      serverName: session.server.name,
-      serverId: session.server.serverId,
-      serverRunMode: session.server.runMode,
-      userAuthInfo: session.authInfoOrNull,
-      sessionId: session.sessionId,
-      remoteInfo: session.remoteInfo,
-      uri: session.uri,
-      endpoint: session.endpoint,
-      methodName: session.method,
-    );
+) => MethodCallOpContext(
+  serverName: session.server.name,
+  serverId: session.server.serverId,
+  serverRunMode: session.server.runMode,
+  userAuthInfo: session.authInfoOrNull,
+  sessionId: session.sessionId,
+  remoteInfo: session.request.remoteInfo,
+  uri: session.uri,
+  endpoint: session.endpoint,
+  methodName: session.method,
+);
 
 StreamOpContext _fromMethodStream(
-  MethodStreamSession session, {
-  Request? request,
-}) =>
-    StreamOpContext(
-      serverName: session.server.name,
-      serverId: session.server.serverId,
-      serverRunMode: session.server.runMode,
-      userAuthInfo: session.authInfoOrNull,
-      sessionId: session.sessionId,
-      remoteInfo: request?.remoteInfo,
-      uri: request?.requestedUri ?? Uri.http('localhost'),
-      endpoint: session.endpoint,
-      methodName: session.method,
-      streamConnectionId: session.connectionId,
-    );
-
-StreamOpContext _fromStreaming(
-  StreamingSession session,
-) =>
-    StreamOpContext(
-      serverName: session.server.name,
-      serverId: session.server.serverId,
-      serverRunMode: session.server.runMode,
-      userAuthInfo: session.authInfoOrNull,
-      sessionId: session.sessionId,
-      remoteInfo: session.remoteInfo,
-      uri: session.request.requestedUri,
-      endpoint: session.endpoint,
-      methodName: '-',
-      streamConnectionId: null,
-    );
+  MethodStreamSession session,
+) => StreamOpContext(
+  serverName: session.server.name,
+  serverId: session.server.serverId,
+  serverRunMode: session.server.runMode,
+  userAuthInfo: session.authInfoOrNull,
+  sessionId: session.sessionId,
+  remoteInfo: session.request.remoteInfo,
+  uri: session.request.url,
+  endpoint: session.endpoint,
+  methodName: session.method,
+  streamConnectionId: session.connectionId,
+);

@@ -58,7 +58,7 @@ class TaskManagerImpl extends TaskManager {
   /// an exception.
   Future<void> executeTasks({
     required void Function(Object error, StackTrace stack, Object id)
-        onTaskError,
+    onTaskError,
   }) async {
     final futures = <Future<void>>[];
 
@@ -66,9 +66,11 @@ class TaskManagerImpl extends TaskManager {
       final Object id = entry.key;
       final _Task task = entry.value;
 
-      futures.add(task.callback().onError((Object e, s) {
-        onTaskError(e, s, id);
-      }));
+      futures.add(
+        task.callback().onError((Object e, s) {
+          onTaskError(e, s, id);
+        }),
+      );
     }
 
     await futures.wait;

@@ -25,7 +25,7 @@ void main() {
           ),
         ),
       );
-      await server.start();
+      await server.startWithDatabase();
 
       session = await server.createSession(enableLogging: false);
     });
@@ -38,7 +38,7 @@ void main() {
       late http.Response response;
 
       setUp(() async {
-        var uri = Uri.parse('http://localhost:8080/test');
+        var uri = Uri.parse('${server.apiUrl}test');
         var body = {};
         for (var i = 0; i < 10; i++) {
           body[i.toString()] = 'Hello, Serverpod!';
@@ -55,8 +55,7 @@ void main() {
         expect(response.statusCode, equals(HttpStatus.requestEntityTooLarge));
       });
 
-      test(
-          'then response contains an error message indicating the request size '
+      test('then response contains an error message indicating the request size '
           'exceeded the maximum allowed size', () {
         var expectedMessage =
             'Request size exceeds the maximum allowed size of $maxRequestSize bytes.';

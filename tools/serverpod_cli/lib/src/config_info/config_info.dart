@@ -4,17 +4,21 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 class ConfigInfo {
   String? serverId;
   late ServerpodConfig config;
-  ConfigInfo(String runMode, {this.serverId}) {
-    var passwords = PasswordManager(runMode: runMode).loadPasswords();
+
+  ConfigInfo(String runMode, {required String serverDir, this.serverId}) {
+    var passwords = PasswordManager(runMode: runMode).loadPasswords(
+      serverDir: serverDir,
+    );
     config = ServerpodConfig.load(
       runMode,
       serverId,
       passwords,
+      serverDir: serverDir,
     );
   }
 
   Client createServiceClient() {
-    var keyManager = ServiceKeyManager('CLI', config);
+    var keyManager = ServiceAuthKeyProvider('CLI', config);
 
     var insightsServer = config.insightsServer;
     if (insightsServer == null) {
@@ -24,7 +28,6 @@ class ConfigInfo {
     return Client(
       '${insightsServer.publicScheme}://'
       '${insightsServer.publicHost}:${insightsServer.port}/',
-      authenticationKeyManager: keyManager,
-    );
+    )..authKeyProvider = keyManager;
   }
 }

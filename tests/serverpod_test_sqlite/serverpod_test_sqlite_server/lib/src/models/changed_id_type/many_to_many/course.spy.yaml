@@ -1,0 +1,6 @@
+class: CourseUuid
+table: course_uuid
+fields:
+  id: UuidValue?, defaultModel=random_v7
+  name: String
+  enrollments: List<EnrollmentInt>?, relation(name=course_enrollments)

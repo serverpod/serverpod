@@ -1,0 +1,7 @@
+### Trigger type for future call execution.
+enum: MyTriggerType
+serialized: byName
+values:
+  - manual
+  - schedule
+  - event

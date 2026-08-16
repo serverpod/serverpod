@@ -1,0 +1,3 @@
+class: ProjectStreamingClass
+fields:
+  name: String

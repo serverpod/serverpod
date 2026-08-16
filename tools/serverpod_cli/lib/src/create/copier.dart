@@ -5,6 +5,8 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 class Copier {
+  static const _uncommentMarker = '#--UNCOMMENT_LINE--#';
+
   Directory srcDir;
   Directory dstDir;
 
@@ -13,7 +15,11 @@ class Copier {
 
   List<String> removePatterns;
 
-  List<String> ignoreFileNames;
+  Set<String> ignoreFileNames;
+
+  bool processUncommentMarker;
+
+  final List<String> _writtenPaths = [];
 
   Copier({
     required this.srcDir,
@@ -21,11 +27,18 @@ class Copier {
     required this.replacements,
     required this.fileNameReplacements,
     this.removePatterns = const <String>[],
-    this.ignoreFileNames = const <String>[],
-  });
+    List<String> ignoreFileNames = const <String>[],
+    this.processUncommentMarker = true,
+  }) : ignoreFileNames = ignoreFileNames.toSet()
+         // Automatically ignore files that might exist in the local clone of
+         // the Serverpod repository when using a local built CLI.
+         ..addAll(['pubspec.lock', 'pubspec_overrides.yaml']);
 
-  void copyFiles() {
+  /// Copies the template tree into [dstDir] and returns the absolute
+  /// paths of every file written.
+  List<String> copyFiles() {
     _copyDirectory(srcDir, '');
+    return _writtenPaths;
   }
 
   void _copyDirectory(Directory dir, String relativePath) {
@@ -48,8 +61,13 @@ class Copier {
     var fileName = p.basename(srcFile.path);
     if (fileName.startsWith('.')) return;
 
-    var dstFileName =
-        _replace(p.join(relativePath, fileName), fileNameReplacements);
+    // Ignore melos project files.
+    if (fileName.startsWith('melos_') && fileName.endsWith('.iml')) return;
+
+    var dstFileName = _replace(
+      p.join(relativePath, fileName),
+      fileNameReplacements,
+    );
     log.debug(
       p.join(dstDir.path, relativePath, fileName),
       type: TextLogType.bullet,
@@ -59,8 +77,12 @@ class Copier {
     var contents = srcFile.readAsStringSync();
     contents = _replace(contents, replacements);
     contents = _filterLines(contents, removePatterns);
+    if (processUncommentMarker) {
+      contents = _uncommentLines(contents);
+    }
     dstFile.createSync(recursive: true);
     dstFile.writeAsStringSync(contents);
+    _writtenPaths.add(dstFile.path);
   }
 
   String _replace(String str, List<Replacement> replacements) {
@@ -81,13 +103,35 @@ class Copier {
 
     return processedLines.join('\n');
   }
+
+  String _uncommentLines(String str) {
+    var lines = str.split('\n');
+    var processedLines = <String>[];
+
+    for (var line in lines) {
+      var processedLine = line;
+      if (line.contains(_uncommentMarker)) {
+        processedLine = processedLine
+            .replaceAll(_uncommentMarker, '')
+            .trimRight();
+        // Remove leading #(s) while preserving indentation
+        final match = RegExp(r'^(\s*)#+(.*)$').firstMatch(processedLine);
+        if (match != null) {
+          processedLine = '${match.group(1)}${match.group(2)}';
+        }
+      }
+      processedLines.add(processedLine);
+    }
+
+    return processedLines.join('\n');
+  }
 }
 
 class Replacement {
-  String slotName;
-  String replacement;
+  final String slotName;
+  final String replacement;
 
-  Replacement({
+  const Replacement({
     required this.slotName,
     required this.replacement,
   });

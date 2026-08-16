@@ -24,21 +24,27 @@ void main() {
           fields:
             stringType: String, default='This is a default value'
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+        var definitions = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isEmpty);
 
         var definition = definitions.first as ClassDefinition;
-        expect(definition.fields.last.defaultModelValue,
-            'This is a default value');
-        expect(definition.fields.last.defaultPersistValue,
-            'This is a default value');
+        expect(
+          definition.fields.last.defaultModelValue,
+          'This is a default value',
+        );
+        expect(
+          definition.fields.last.defaultPersistValue,
+          'This is a default value',
+        );
       },
     );
 
@@ -53,22 +59,28 @@ void main() {
           fields:
             stringType: String?, default='This is a default null value'
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+        var definitions = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isEmpty);
 
         var definition = definitions.first as ClassDefinition;
 
-        expect(definition.fields.last.defaultModelValue,
-            'This is a default null value');
-        expect(definition.fields.last.defaultPersistValue,
-            'This is a default null value');
+        expect(
+          definition.fields.last.defaultModelValue,
+          'This is a default null value',
+        );
+        expect(
+          definition.fields.last.defaultPersistValue,
+          'This is a default null value',
+        );
       },
     );
 
@@ -83,21 +95,27 @@ void main() {
           fields:
             stringType: String, default='This \\'is\\' a default value'
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+        var definitions = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isEmpty);
 
         var definition = definitions.first as ClassDefinition;
-        expect(definition.fields.last.defaultModelValue,
-            'This \\\'is\\\' a default value');
-        expect(definition.fields.last.defaultPersistValue,
-            'This \\\'is\\\' a default value');
+        expect(
+          definition.fields.last.defaultModelValue,
+          'This \\\'is\\\' a default value',
+        );
+        expect(
+          definition.fields.last.defaultPersistValue,
+          'This \\\'is\\\' a default value',
+        );
       },
     );
 
@@ -112,13 +130,15 @@ void main() {
           fields:
             stringType: String, default='This \\"is\\" a default value'
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+        var definitions = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -145,13 +165,15 @@ void main() {
           fields:
             stringType: String, default='This, is a default value'
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+        var definitions = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -178,13 +200,15 @@ void main() {
           fields:
             stringType: String, default='This \\"is\\", a default value'
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+        var definitions = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -211,13 +235,15 @@ void main() {
           fields:
             stringType: String, default='This \\'is\\' a default value'
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+        var definitions = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -244,13 +270,15 @@ void main() {
           fields:
             stringType: String, default='This "is" a default value'
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+        var definitions = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -277,12 +305,15 @@ void main() {
           fields:
             stringType: String, default=
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -305,12 +336,15 @@ void main() {
         fields:
           stringInvalid: String?, default=10
         ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -333,12 +367,15 @@ void main() {
         fields:
           stringInvalid: String?, default='This 'is' a test'
         ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -361,12 +398,15 @@ void main() {
         fields:
           stringInvalid: String?, default="This "is" a test"
         ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 

@@ -1,12 +1,34 @@
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
 import 'package:source_span/source_span.dart';
-import 'package:super_string/super_string.dart';
 // ignore: implementation_imports
 import 'package:yaml/src/equality.dart';
 import 'package:yaml/yaml.dart';
 
 List<String> convertIndexList(String stringifiedFields) {
   return stringifiedFields.split(',').map((field) => field.trim()).toList();
+}
+
+/// Parses the value of a `unique` field's `per` property into the ordered list
+/// of field names that prefix the composite unique index.
+///
+/// Accepts a real YAML list (`per: [a, b]`), a scalar field name (`per: a`), or
+/// the inline bracketed form (`per=[a, b]`, which arrives as the string
+/// `"[a, b]"`). Returns `null` when the value is not one of these supported
+/// shapes, so validation can report a type error.
+List<String>? parseUniquePerFields(dynamic perValue) {
+  switch (perValue) {
+    case YamlList list:
+      if (list.any((element) => element is! String)) return null;
+      return list.cast<String>();
+    case String value:
+      var trimmed = value.trim();
+      if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+        trimmed = trimmed.substring(1, trimmed.length - 1);
+      }
+      return convertIndexList(trimmed);
+    default:
+      return null;
+  }
 }
 
 T convertToEnum<T extends Enum>({
@@ -35,8 +57,8 @@ T unsafeConvertToEnum<T extends Enum>({
   );
 }
 
-typedef DeepNestedNodeHandler = YamlMap Function(
-    String? content, SourceSpan span);
+typedef DeepNestedNodeHandler =
+    YamlMap Function(String? content, SourceSpan span);
 
 YamlMap convertStringifiedNestedNodesToYamlMap(
   String? content,
@@ -140,19 +162,22 @@ Iterable<Map<YamlScalar, YamlNode>> _extractKeyValuePairs(
     var keyValueSpan = _extractSubSpan(content, span, stringifiedKeyValuePair);
 
     if (_hasNestedStringifiedValues(stringifiedKeyValuePair)) {
-      var nestedComponents =
-          stringifiedKeyValuePair.replaceAll(')', '').split('(');
+      var nestedComponents = stringifiedKeyValuePair
+          .replaceAll(')', '')
+          .split('(');
 
       var key = nestedComponents.first;
       var stringifiedContent = nestedComponents.last;
 
       if (stringifiedContent == '') {
-        fieldPairs.add(_createdYamlScalarNode(
-          key,
-          null,
-          keyValueSpan,
-          onUnescapedStringValue,
-        ));
+        fieldPairs.add(
+          _createdYamlScalarNode(
+            key,
+            null,
+            keyValueSpan,
+            onUnescapedStringValue,
+          ),
+        );
         continue;
       } else {
         var nestedSpan = _extractSubSpan(content, span, stringifiedContent);
@@ -184,12 +209,14 @@ Iterable<Map<YamlScalar, YamlNode>> _extractKeyValuePairs(
       }
     }
 
-    fieldPairs.add(_createdYamlScalarNode(
-      key,
-      value,
-      keyValueSpan,
-      onUnescapedStringValue,
-    ));
+    fieldPairs.add(
+      _createdYamlScalarNode(
+        key,
+        value,
+        keyValueSpan,
+        onUnescapedStringValue,
+      ),
+    );
     continue;
   }
 
@@ -266,7 +293,7 @@ dynamic _parseTypedValue(
   if (value.startsWith('"') && value.endsWith('"')) {
     final content = value.substring(1, value.length - 1);
 
-    if (content.count('"') != content.count('\\"')) {
+    if (_countOccurrences(content, '"') != _countOccurrences(content, r'\"')) {
       onUnescapedStringValue?.call(value, span);
     }
     return content;
@@ -275,7 +302,7 @@ dynamic _parseTypedValue(
   if (value.startsWith("'") && value.endsWith("'")) {
     final content = value.substring(1, value.length - 1);
 
-    if (content.count("'") != content.count("\\'")) {
+    if (_countOccurrences(content, "'") != _countOccurrences(content, r"\'")) {
       onUnescapedStringValue?.call(value, span);
     }
     return content;
@@ -285,6 +312,10 @@ dynamic _parseTypedValue(
       int.tryParse(value) ??
       double.tryParse(value) ??
       value;
+}
+
+int _countOccurrences(String value, String pattern) {
+  return pattern.allMatches(value).length;
 }
 
 Map<YamlScalar, YamlMap> _createYamlMapNode(

@@ -1,0 +1,324 @@
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
+import 'package:serverpod/serverpod.dart';
+
+import '../../../../../core.dart';
+import '../../../common/id_token_verifier/id_token_verifier.dart';
+import 'google_id_token_config.dart';
+import 'google_idp_config.dart';
+
+/// Details of the Google Account.
+///
+/// All nullable fields are not guaranteed to be available from Google OpenID
+/// docs, since the user may have not granted the app access to their profile or
+/// if the user is part of an organization that has restricted access to profile
+/// information.
+typedef GoogleAccountDetails = ({
+  /// Google's user identifier for this account.
+  String userIdentifier,
+
+  /// The verified email received from Google.
+  String email,
+
+  /// The user's given name.
+  String? name,
+
+  /// The user's full name.
+  String? fullName,
+
+  /// The user's profile image URL.
+  Uri? image,
+
+  /// Whether the email is verified.
+  bool? verifiedEmail,
+});
+
+/// Result of a successful authentication using Google as identity provider.
+typedef GoogleAuthSuccess = ({
+  /// The ID of the `GoogleAccount` database entity.
+  UuidValue googleAccountId,
+
+  /// The ID of the associated `AuthUser`.
+  UuidValue authUserId,
+
+  /// Details of the Google account.
+  GoogleAccountDetails details,
+
+  /// Whether the associated `AuthUser` was newly created during the
+  bool newAccount,
+
+  /// The scopes granted to the associated `AuthUser`.
+  Set<Scope> scopes,
+});
+
+/// Utility functions for the Google identity provider.
+///
+/// These functions can be used to compose custom authentication and
+/// administration flows if needed.
+///
+/// But for most cases, the methods exposed by [GoogleIdp] and
+/// [GoogleIdpAdmin] should be sufficient.
+class GoogleIdpUtils {
+  /// Configuration for the Google identity provider.
+  final GoogleIdpConfig config;
+
+  final AuthUsers _authUsers;
+
+  /// Creates a new instance of [GoogleIdpUtils].
+  GoogleIdpUtils({
+    required this.config,
+    required final AuthUsers authUsers,
+  }) : _authUsers = authUsers;
+
+  /// Exchanges a Google authorization code for access and ID tokens.
+  ///
+  /// Used by the web OAuth2 PKCE flow initiated by `GoogleWebSignInService`.
+  /// The [codeVerifier] is the PKCE verifier, and [redirectUri] must exactly
+  /// match the URI used in the original authorization request.
+  ///
+  /// Throws [GoogleIdTokenVerificationException] if the token exchange fails
+  /// or if the response is missing the `id_token`.
+  Future<({String accessToken, String idToken})> exchangeCodeForToken(
+    final Session session, {
+    required final String code,
+    required final String codeVerifier,
+    required final String redirectUri,
+  }) async {
+    try {
+      final tokenResponse =
+          await OAuth2PkceUtil(
+            config: config.oauth2PkceServerConfig,
+          ).exchangeCodeForToken(
+            code: code,
+            codeVerifier: codeVerifier,
+            redirectUri: redirectUri,
+          );
+
+      final idToken = tokenResponse.raw['id_token'] as String?;
+      if (idToken == null) {
+        session.logAndThrow('Missing id_token in Google token response');
+      }
+
+      return (accessToken: tokenResponse.accessToken, idToken: idToken);
+    } on OAuth2Exception catch (e) {
+      session.log(e.toString(), level: LogLevel.debug);
+      throw GoogleIdTokenVerificationException();
+    }
+  }
+
+  /// Authenticates a user using an access token.
+  ///
+  /// If the external user ID is not yet known in the system, a new `AuthUser`
+  /// is created for it.
+  Future<GoogleAuthSuccess> authenticate(
+    final Session session, {
+    required final String idToken,
+    required final String? accessToken,
+    required final Transaction? transaction,
+  }) async {
+    final accountDetails = await fetchAccountDetails(
+      session,
+      idToken: idToken,
+      accessToken: accessToken,
+    );
+
+    var googleAccount = await GoogleAccount.db.findFirstRow(
+      session,
+      where: (final t) => t.userIdentifier.equals(
+        accountDetails.userIdentifier,
+      ),
+      transaction: transaction,
+    );
+
+    final createNewUser = googleAccount == null;
+
+    final AuthUserModel authUser = switch (createNewUser) {
+      true => await _authUsers.create(
+        session,
+        transaction: transaction,
+      ),
+      false => await _authUsers.get(
+        session,
+        authUserId: googleAccount!.authUserId,
+        transaction: transaction,
+      ),
+    };
+
+    if (createNewUser) {
+      googleAccount = await linkGoogleAuthentication(
+        session,
+        authUserId: authUser.id,
+        accountDetails: accountDetails,
+        transaction: transaction,
+      );
+
+      await config.onAfterGoogleAccountCreated?.call(
+        session,
+        authUser,
+        googleAccount,
+        transaction: transaction,
+      );
+    }
+
+    return (
+      googleAccountId: googleAccount.id!,
+      authUserId: googleAccount.authUserId,
+      details: accountDetails,
+      newAccount: createNewUser,
+      scopes: authUser.scopes,
+    );
+  }
+
+  /// Returns the account details named by the verified [idToken].
+  ///
+  /// When an [accessToken] is supplied, Google's userinfo endpoint is consulted
+  /// as well, but only to fill in profile fields the ID token does not carry.
+  /// The identity always comes from the ID token.
+  Future<GoogleAccountDetails> fetchAccountDetails(
+    final Session session, {
+    required final String idToken,
+    required final String? accessToken,
+  }) async {
+    final String clientId = config.clientSecret.clientId;
+
+    Map<String, dynamic> data;
+    try {
+      data = await IdTokenVerifier.verifyOAuth2Token(
+        idToken,
+        config: GoogleIdTokenConfig(
+          clockSkewTolerance: config.clockSkewTolerance,
+        ),
+        audience: clientId,
+      );
+    } catch (e) {
+      session.logAndThrow('Failed to verify ID token from Google');
+    }
+
+    if (accessToken != null) {
+      final response = await http.get(
+        Uri.https('www.googleapis.com', '/oauth2/v3/userinfo'),
+        headers: {'Authorization': 'Bearer $accessToken'},
+      );
+
+      if (response.statusCode != 200) {
+        session.logAndThrow('Failed to get user info from Google');
+      }
+
+      final userInfo = jsonDecode(response.body);
+      if (userInfo is! Map<String, dynamic>) {
+        session.logAndThrow('Unexpected user info response from Google');
+      }
+
+      // Google's userinfo endpoint honours an access token minted by any OAuth
+      // client, so - unlike the ID token, whose `aud` is pinned to this
+      // application above - an access token proves nothing about who the caller
+      // is. Require it to describe the same account the ID token names, and let
+      // the verified claims win wherever the two disagree, so userinfo can only
+      // contribute profile fields the ID token did not carry.
+      if (userInfo['sub'] != data['sub']) {
+        session.logAndThrow(
+          'Google user info does not match the verified ID token',
+        );
+      }
+
+      data = {...userInfo, ...data};
+    }
+
+    GoogleAccountDetails details;
+    try {
+      details = _parseAccountDetails(data);
+    } catch (e) {
+      session.logAndThrow('Invalid user info from Google: $e');
+    }
+
+    try {
+      final getExtraInfoCallback = config.getExtraGoogleInfoCallback;
+      if (accessToken != null && getExtraInfoCallback != null) {
+        await getExtraInfoCallback(
+          session,
+          accountDetails: details,
+          accessToken: accessToken,
+          transaction: null,
+        );
+      }
+    } catch (e) {
+      session.logAndThrow('Failed to get extra Google account info: $e');
+    }
+
+    return details;
+  }
+
+  GoogleAccountDetails _parseAccountDetails(final Map<String, dynamic> data) {
+    final userId = data['sub'] as String?;
+    final email = data['email'] as String?;
+    final name = data['given_name'] as String?;
+    final fullName = data['name'] as String?;
+    final image = data['picture'] as String?;
+    final verifiedEmail = data['email_verified'] as bool?;
+
+    if (userId == null || email == null) {
+      throw GoogleUserInfoMissingDataException();
+    }
+
+    final details = (
+      userIdentifier: userId,
+      email: email,
+      name: name,
+      fullName: fullName,
+      image: image != null ? Uri.tryParse(image) : null,
+      verifiedEmail: verifiedEmail,
+    );
+
+    try {
+      config.googleAccountDetailsValidation(details);
+    } catch (e) {
+      throw GoogleUserInfoMissingDataException();
+    }
+
+    return details;
+  }
+
+  /// Adds a Google authentication to the given [authUserId].
+  ///
+  /// Returns the newly created Google account.
+  Future<GoogleAccount> linkGoogleAuthentication(
+    final Session session, {
+    required final UuidValue authUserId,
+    required final GoogleAccountDetails accountDetails,
+    final Transaction? transaction,
+  }) async {
+    return await GoogleAccount.db.insertRow(
+      session,
+      GoogleAccount(
+        userIdentifier: accountDetails.userIdentifier,
+        email: accountDetails.email.toLowerCase(),
+        authUserId: authUserId,
+      ),
+      transaction: transaction,
+    );
+  }
+
+  /// Returns the possible [GoogleAccount] associated with a session.
+  Future<GoogleAccount?> getAccount(final Session session) {
+    return switch (session.authenticated) {
+      null => Future.value(null),
+      _ => GoogleAccount.db.findFirstRow(
+        session,
+        where: (final t) => t.authUserId.equals(
+          session.authenticated!.authUserId,
+        ),
+      ),
+    };
+  }
+}
+
+extension on Session {
+  Never logAndThrow(final String message) {
+    log(message, level: LogLevel.debug);
+    throw GoogleIdTokenVerificationException();
+  }
+}
+
+/// Exception thrown when the user info from Google is missing required data.
+class GoogleUserInfoMissingDataException implements Exception {}

@@ -1,0 +1,5 @@
+class: BigIntDefault
+table: bigint_default
+fields:
+  bigintDefaultStr: BigInt, default=-1234567890123456789099999999
+  bigintDefaultStrNull: BigInt?, default=1234567890123456789099999999

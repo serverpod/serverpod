@@ -23,6 +23,16 @@ class TestDatabaseProxy implements Database {
   );
 
   @override
+  DatabaseAnalyzer get analyzer => _db.analyzer;
+
+  @override
+  DatabaseDialect get dialect => _db.dialect;
+
+  @override
+  DatabaseSerializationManager get serializationManager =>
+      _db.serializationManager;
+
+  @override
   Future<int> count<T extends TableRow>({
     Expression? where,
     int? limit,
@@ -43,12 +53,18 @@ class TestDatabaseProxy implements Database {
   @override
   Future<List<T>> delete<T extends TableRow>(
     List<T> rows, {
+    Column? orderBy,
+    List<Column>? orderByList,
     Transaction? transaction,
+    bool noReturn = false,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
       () => _db.delete<T>(
         rows,
+        orderBy: orderBy,
+        orderByList: orderByList,
         transaction: transaction,
+        noReturn: noReturn,
       ),
       isPartOfUserTransaction: transaction != null,
     );
@@ -71,12 +87,18 @@ class TestDatabaseProxy implements Database {
   @override
   Future<List<T>> deleteWhere<T extends TableRow>({
     required Expression where,
+    Column? orderBy,
+    List<Column>? orderByList,
     Transaction? transaction,
+    bool noReturn = false,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
       () => _db.deleteWhere<T>(
         where: where,
+        orderBy: orderBy,
+        orderByList: orderByList,
         transaction: transaction,
+        noReturn: noReturn,
       ),
       isPartOfUserTransaction: transaction != null,
     );
@@ -88,10 +110,11 @@ class TestDatabaseProxy implements Database {
     int? limit,
     int? offset,
     Column? orderBy,
-    List<Order>? orderByList,
-    bool orderDescending = false,
+    List<Column>? orderByList,
     Transaction? transaction,
     Include? include,
+    LockMode? lockMode,
+    LockBehavior? lockBehavior,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
       () => _db.find<T>(
@@ -100,9 +123,10 @@ class TestDatabaseProxy implements Database {
         offset: offset,
         orderBy: orderBy,
         orderByList: orderByList,
-        orderDescending: orderDescending,
         transaction: transaction,
         include: include,
+        lockMode: lockMode,
+        lockBehavior: lockBehavior,
       ),
       isPartOfUserTransaction: transaction != null,
     );
@@ -113,9 +137,17 @@ class TestDatabaseProxy implements Database {
     Object id, {
     Transaction? transaction,
     Include? include,
+    LockMode? lockMode,
+    LockBehavior? lockBehavior,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
-      () => _db.findById<T>(id, transaction: transaction, include: include),
+      () => _db.findById<T>(
+        id,
+        transaction: transaction,
+        include: include,
+        lockMode: lockMode,
+        lockBehavior: lockBehavior,
+      ),
       isPartOfUserTransaction: transaction != null,
     );
   }
@@ -125,10 +157,11 @@ class TestDatabaseProxy implements Database {
     Expression? where,
     int? offset,
     Column? orderBy,
-    List<Order>? orderByList,
-    bool orderDescending = false,
+    List<Column>? orderByList,
     Transaction? transaction,
     Include? include,
+    LockMode? lockMode,
+    LockBehavior? lockBehavior,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
       () => _db.findFirstRow<T>(
@@ -136,11 +169,30 @@ class TestDatabaseProxy implements Database {
         offset: offset,
         orderBy: orderBy,
         orderByList: orderByList,
-        orderDescending: orderDescending,
         transaction: transaction,
         include: include,
+        lockMode: lockMode,
+        lockBehavior: lockBehavior,
       ),
       isPartOfUserTransaction: transaction != null,
+    );
+  }
+
+  @override
+  Future<void> lockRows<T extends TableRow>({
+    required Expression where,
+    required LockMode lockMode,
+    LockBehavior lockBehavior = LockBehavior.wait,
+    required Transaction transaction,
+  }) {
+    return _rollbackSingleOperationIfDatabaseException(
+      () => _db.lockRows<T>(
+        where: where,
+        lockMode: lockMode,
+        lockBehavior: lockBehavior,
+        transaction: transaction,
+      ),
+      isPartOfUserTransaction: true,
     );
   }
 
@@ -148,11 +200,15 @@ class TestDatabaseProxy implements Database {
   Future<List<T>> insert<T extends TableRow>(
     List<T> rows, {
     Transaction? transaction,
+    bool ignoreConflicts = false,
+    bool noReturn = false,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
       () => _db.insert<T>(
         rows,
         transaction: transaction,
+        ignoreConflicts: ignoreConflicts,
+        noReturn: noReturn,
       ),
       isPartOfUserTransaction: transaction != null,
     );
@@ -166,6 +222,48 @@ class TestDatabaseProxy implements Database {
     return _rollbackSingleOperationIfDatabaseException(
       () => _db.insertRow<T>(
         row,
+        transaction: transaction,
+      ),
+      isPartOfUserTransaction: transaction != null,
+    );
+  }
+
+  @override
+  Future<List<T>> upsert<T extends TableRow>(
+    List<T> rows, {
+    required List<Column> conflictColumns,
+    List<Column>? updateColumns,
+    Expression? updateWhere,
+    Transaction? transaction,
+    bool noReturn = false,
+  }) {
+    return _rollbackSingleOperationIfDatabaseException(
+      () => _db.upsert<T>(
+        rows,
+        conflictColumns: conflictColumns,
+        updateColumns: updateColumns,
+        updateWhere: updateWhere,
+        transaction: transaction,
+        noReturn: noReturn,
+      ),
+      isPartOfUserTransaction: transaction != null,
+    );
+  }
+
+  @override
+  Future<T?> upsertRow<T extends TableRow>(
+    T row, {
+    required List<Column> conflictColumns,
+    List<Column>? updateColumns,
+    Expression? updateWhere,
+    Transaction? transaction,
+  }) {
+    return _rollbackSingleOperationIfDatabaseException(
+      () => _db.upsertRow<T>(
+        row,
+        conflictColumns: conflictColumns,
+        updateColumns: updateColumns,
+        updateWhere: updateWhere,
         transaction: transaction,
       ),
       isPartOfUserTransaction: transaction != null,
@@ -301,12 +399,14 @@ class TestDatabaseProxy implements Database {
     List<T> rows, {
     List<Column>? columns,
     Transaction? transaction,
+    bool noReturn = false,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
       () => _db.update<T>(
         rows,
         columns: columns,
         transaction: transaction,
+        noReturn: noReturn,
       ),
       isPartOfUserTransaction: transaction != null,
     );
@@ -353,9 +453,9 @@ class TestDatabaseProxy implements Database {
     int? limit,
     int? offset,
     Column? orderBy,
-    List<Order>? orderByList,
-    bool orderDescending = false,
+    List<Column>? orderByList,
     Transaction? transaction,
+    bool noReturn = false,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
       () => _db.updateWhere<T>(
@@ -365,8 +465,8 @@ class TestDatabaseProxy implements Database {
         offset: offset,
         orderBy: orderBy,
         orderByList: orderByList,
-        orderDescending: orderDescending,
         transaction: transaction,
+        noReturn: noReturn,
       ),
       isPartOfUserTransaction: transaction != null,
     );

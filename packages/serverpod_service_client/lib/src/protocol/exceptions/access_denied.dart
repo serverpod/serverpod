@@ -13,16 +13,21 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 abstract class AccessDeniedException
-    implements _i1.SerializableException, _i1.SerializableModel {
+    implements
+        _i1.SerializableException,
+        _i1.SerializableModel,
+        _i1.ProtocolSerialization {
   AccessDeniedException._({required this.message});
 
   factory AccessDeniedException({required String message}) =
       _AccessDeniedExceptionImpl;
 
   factory AccessDeniedException.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return AccessDeniedException(
-        message: jsonSerialization['message'] as String);
+      message: jsonSerialization['message'] as String,
+    );
   }
 
   String message;
@@ -33,18 +38,29 @@ abstract class AccessDeniedException
   AccessDeniedException copyWith({String? message});
   @override
   Map<String, dynamic> toJson() {
-    return {'message': message};
+    return {
+      '__className__': 'serverpod.AccessDeniedException',
+      'message': message,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod.AccessDeniedException',
+      'message': message,
+    };
   }
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return 'AccessDeniedException(message: $message)';
   }
 }
 
 class _AccessDeniedExceptionImpl extends AccessDeniedException {
   _AccessDeniedExceptionImpl({required String message})
-      : super._(message: message);
+    : super._(message: message);
 
   /// Returns a shallow copy of this [AccessDeniedException]
   /// with some or all fields replaced by the given arguments.

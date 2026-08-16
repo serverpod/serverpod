@@ -69,6 +69,21 @@ enum ServerpodEnv {
   /// Toggle to use a Unix socket for the database.
   databaseIsUnixSocket,
 
+  /// The maximum number of connections in the database pool.
+  databaseMaxConnectionCount,
+
+  /// The dialect of the database.
+  databaseDialect,
+
+  /// The file path to the SQLite database.
+  databaseFilePath,
+
+  /// PostgreSQL cluster directory for embedded Postgres (`serverpod_embedded_postgres`).
+  ///
+  /// When set (non-empty after trim), the database pool boots a managed
+  /// postmaster before connecting. Postgres-only; ignored for SQLite.
+  databaseDataPath,
+
   /// The address to the redis broker.
   redisHost,
 
@@ -132,8 +147,23 @@ enum ServerpodEnv {
   /// Toggle to disable future call execution.
   futureCallExecutionEnabled,
 
+  /// If true, the server will check for broken future calls on startup.
+  futureCallCheckBrokenCalls,
+
+  /// If true, the server will delete broken future calls on startup.
+  futureCallDeleteBrokenCalls,
+
   /// True if session persistent logging is enabled.
   sessionPersistentLogEnabled,
+
+  /// The retention period for log data. Accepts a duration string.
+  sessionLogRetentionPeriod,
+
+  /// The maximum number of log entries to keep.
+  sessionLogRetentionCount,
+
+  /// The interval between log cleanup operations. Accepts a duration string.
+  sessionLogCleanupInterval,
 
   /// True if session console logging is enabled.
   sessionConsoleLogEnabled,
@@ -157,7 +187,17 @@ enum ServerpodEnv {
   applyMigrations,
 
   /// If true, the server will apply database repair migration on startup.
-  applyRepairMigration;
+  applyRepairMigration,
+
+  /// Whether to validate HTTP headers using typed APIs.
+  ///
+  /// When false, uses non-typed header API, allowing headers without
+  /// required formatting (e.g., unwrapped tokens in Authorization header).
+  validateHeaders,
+
+  /// The interval in seconds between websocket ping messages.
+  websocketPingInterval,
+  ;
 
   /// The key used in the environment configuration file.
   String get configKey {
@@ -169,6 +209,10 @@ enum ServerpodEnv {
       (ServerpodEnv.databaseSearchPaths) => 'searchPaths',
       (ServerpodEnv.databaseRequireSsl) => 'requireSsl',
       (ServerpodEnv.databaseIsUnixSocket) => 'isUnixSocket',
+      (ServerpodEnv.databaseMaxConnectionCount) => 'maxConnectionCount',
+      (ServerpodEnv.databaseDialect) => 'dialect',
+      (ServerpodEnv.databaseFilePath) => 'filePath',
+      (ServerpodEnv.databaseDataPath) => 'dataPath',
       (ServerpodEnv.redisHost) => 'host',
       (ServerpodEnv.redisPort) => 'port',
       (ServerpodEnv.redisUser) => 'user',
@@ -193,7 +237,12 @@ enum ServerpodEnv {
       (ServerpodEnv.futureCallScanInterval) =>
         ServerpodFutureCallConfigMap.scanInterval,
       (ServerpodEnv.futureCallExecutionEnabled) => 'futureCallExecutionEnabled',
+      (ServerpodEnv.futureCallCheckBrokenCalls) => 'checkBrokenCalls',
+      (ServerpodEnv.futureCallDeleteBrokenCalls) => 'deleteBrokenCalls',
       (ServerpodEnv.sessionPersistentLogEnabled) => 'persistentEnabled',
+      (ServerpodEnv.sessionLogCleanupInterval) => 'cleanupInterval',
+      (ServerpodEnv.sessionLogRetentionPeriod) => 'retentionPeriod',
+      (ServerpodEnv.sessionLogRetentionCount) => 'retentionCount',
       (ServerpodEnv.sessionConsoleLogEnabled) => 'consoleEnabled',
       (ServerpodEnv.sessionConsoleLogFormat) => 'consoleLogFormat',
       (ServerpodEnv.runMode) => 'mode',
@@ -202,6 +251,8 @@ enum ServerpodEnv {
       (ServerpodEnv.serverId) => 'serverId',
       (ServerpodEnv.applyMigrations) => 'applyMigrations',
       (ServerpodEnv.applyRepairMigration) => 'applyRepairMigration',
+      (ServerpodEnv.validateHeaders) => 'validateHeaders',
+      (ServerpodEnv.websocketPingInterval) => 'websocketPingInterval',
     };
   }
 
@@ -216,6 +267,11 @@ enum ServerpodEnv {
       (ServerpodEnv.databaseRequireSsl) => 'SERVERPOD_DATABASE_REQUIRE_SSL',
       (ServerpodEnv.databaseIsUnixSocket) =>
         'SERVERPOD_DATABASE_IS_UNIX_SOCKET',
+      (ServerpodEnv.databaseMaxConnectionCount) =>
+        'SERVERPOD_DATABASE_MAX_CONNECTION_COUNT',
+      (ServerpodEnv.databaseDialect) => 'SERVERPOD_DATABASE_DIALECT',
+      (ServerpodEnv.databaseFilePath) => 'SERVERPOD_DATABASE_FILE_PATH',
+      (ServerpodEnv.databaseDataPath) => 'SERVERPOD_DATABASE_DATA_PATH',
       (ServerpodEnv.redisHost) => 'SERVERPOD_REDIS_HOST',
       (ServerpodEnv.redisPort) => 'SERVERPOD_REDIS_PORT',
       (ServerpodEnv.redisUser) => 'SERVERPOD_REDIS_USER',
@@ -243,8 +299,18 @@ enum ServerpodEnv {
         'SERVERPOD_FUTURE_CALL_SCAN_INTERVAL',
       (ServerpodEnv.futureCallExecutionEnabled) =>
         'SERVERPOD_FUTURE_CALL_EXECUTION_ENABLED',
+      (ServerpodEnv.futureCallCheckBrokenCalls) =>
+        'SERVERPOD_FUTURE_CALL_CHECK_BROKEN_CALLS',
+      (ServerpodEnv.futureCallDeleteBrokenCalls) =>
+        'SERVERPOD_FUTURE_CALL_DELETE_BROKEN_CALLS',
       (ServerpodEnv.sessionPersistentLogEnabled) =>
         'SERVERPOD_SESSION_PERSISTENT_LOG_ENABLED',
+      (ServerpodEnv.sessionLogCleanupInterval) =>
+        'SERVERPOD_SESSION_LOG_CLEANUP_INTERVAL',
+      (ServerpodEnv.sessionLogRetentionPeriod) =>
+        'SERVERPOD_SESSION_LOG_RETENTION_PERIOD',
+      (ServerpodEnv.sessionLogRetentionCount) =>
+        'SERVERPOD_SESSION_LOG_RETENTION_COUNT',
       (ServerpodEnv.sessionConsoleLogEnabled) =>
         'SERVERPOD_SESSION_CONSOLE_LOG_ENABLED',
       (ServerpodEnv.sessionConsoleLogFormat) =>
@@ -255,6 +321,9 @@ enum ServerpodEnv {
       (ServerpodEnv.serverId) => 'SERVERPOD_SERVER_ID',
       (ServerpodEnv.applyMigrations) => 'SERVERPOD_APPLY_MIGRATIONS',
       (ServerpodEnv.applyRepairMigration) => 'SERVERPOD_APPLY_REPAIR_MIGRATION',
+      (ServerpodEnv.validateHeaders) => 'SERVERPOD_VALIDATE_HEADERS',
+      (ServerpodEnv.websocketPingInterval) =>
+        'SERVERPOD_WEBSOCKET_PING_INTERVAL',
     };
   }
 }
@@ -268,7 +337,8 @@ enum ServerpodPassword {
   serviceSecret,
 
   /// The password for the redis broker.
-  redisPassword;
+  redisPassword,
+  ;
 
   /// The key used in the password configuration file.
   String get configKey {

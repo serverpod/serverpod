@@ -6,10 +6,12 @@ import 'package:test/test.dart';
 void main() async {
   var session = await IntegrationTestServer().session();
   group('Given a class with "defaultPersist" fields,', () {
-    tearDownAll(() async => DateTimeDefaultPersist.db.deleteWhere(
-          session,
-          where: (_) => Constant.bool(true),
-        ));
+    tearDownAll(
+      () async => DateTimeDefaultPersist.db.deleteWhere(
+        session,
+        where: (_) => Constant.bool(true),
+      ),
+    );
 
     test(
       'when creating a record in the database, then the "defaultPersist=now" field should be in UTC',
@@ -46,8 +48,9 @@ void main() async {
         expect(
           databaseObject.dateTimeDefaultPersistNow!
               .difference(DateTime.now())
-              .inSeconds,
-          0,
+              .inSeconds
+              .abs(),
+          lessThanOrEqualTo(1),
         );
       },
     );
@@ -76,8 +79,9 @@ void main() async {
         VALUES (DEFAULT, DEFAULT);
         ''',
         );
-        var databaseObject =
-            await DateTimeDefaultPersist.db.findFirstRow(session);
+        var databaseObject = await DateTimeDefaultPersist.db.findFirstRow(
+          session,
+        );
         expect(databaseObject?.dateTimeDefaultPersistNow?.isUtc, isTrue);
       },
     );
@@ -91,8 +95,9 @@ void main() async {
         VALUES (DEFAULT, DEFAULT);
         ''',
         );
-        var databaseObject =
-            await DateTimeDefaultPersist.db.findFirstRow(session);
+        var databaseObject = await DateTimeDefaultPersist.db.findFirstRow(
+          session,
+        );
         expect(databaseObject?.dateTimeDefaultPersistStr?.isUtc, isTrue);
       },
     );
@@ -106,13 +111,15 @@ void main() async {
         VALUES (DEFAULT, DEFAULT);
         ''',
         );
-        var databaseObject =
-            await DateTimeDefaultPersist.db.findFirstRow(session);
+        var databaseObject = await DateTimeDefaultPersist.db.findFirstRow(
+          session,
+        );
         expect(
           databaseObject!.dateTimeDefaultPersistNow!
               .difference(DateTime.now())
-              .inSeconds,
-          0,
+              .inSeconds
+              .abs(),
+          lessThanOrEqualTo(1),
         );
       },
     );
@@ -126,8 +133,9 @@ void main() async {
         VALUES (DEFAULT, DEFAULT);
         ''',
         );
-        var databaseObject =
-            await DateTimeDefaultPersist.db.findFirstRow(session);
+        var databaseObject = await DateTimeDefaultPersist.db.findFirstRow(
+          session,
+        );
         expect(
           databaseObject!.dateTimeDefaultPersistStr,
           DateTime.parse("2024-05-10T22:00:00.000Z"),

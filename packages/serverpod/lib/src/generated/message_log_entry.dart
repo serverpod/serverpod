@@ -54,7 +54,7 @@ abstract class MessageLogEntry
       duration: (jsonSerialization['duration'] as num).toDouble(),
       error: jsonSerialization['error'] as String?,
       stackTrace: jsonSerialization['stackTrace'] as String?,
-      slow: jsonSerialization['slow'] as bool,
+      slow: _i1.BoolJsonExtension.fromJson(jsonSerialization['slow']),
       order: jsonSerialization['order'] as int,
     );
   }
@@ -120,6 +120,7 @@ abstract class MessageLogEntry
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.MessageLogEntry',
       if (id != null) 'id': id,
       'sessionLogId': sessionLogId,
       'serverId': serverId,
@@ -137,6 +138,7 @@ abstract class MessageLogEntry
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.MessageLogEntry',
       if (id != null) 'id': id,
       'sessionLogId': sessionLogId,
       'serverId': serverId,
@@ -160,7 +162,6 @@ abstract class MessageLogEntry
     int? limit,
     int? offset,
     _i1.OrderByBuilder<MessageLogEntryTable>? orderBy,
-    bool orderDescending = false,
     _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
     MessageLogEntryInclude? include,
   }) {
@@ -169,7 +170,6 @@ abstract class MessageLogEntry
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(MessageLogEntry.t),
-      orderDescending: orderDescending,
       orderByList: orderByList?.call(MessageLogEntry.t),
       include: include,
     );
@@ -197,18 +197,18 @@ class _MessageLogEntryImpl extends MessageLogEntry {
     required bool slow,
     required int order,
   }) : super._(
-          id: id,
-          sessionLogId: sessionLogId,
-          serverId: serverId,
-          messageId: messageId,
-          endpoint: endpoint,
-          messageName: messageName,
-          duration: duration,
-          error: error,
-          stackTrace: stackTrace,
-          slow: slow,
-          order: order,
-        );
+         id: id,
+         sessionLogId: sessionLogId,
+         serverId: serverId,
+         messageId: messageId,
+         endpoint: endpoint,
+         messageName: messageName,
+         duration: duration,
+         error: error,
+         stackTrace: stackTrace,
+         slow: slow,
+         order: order,
+       );
 
   /// Returns a shallow copy of this [MessageLogEntry]
   /// with some or all fields replaced by the given arguments.
@@ -247,59 +247,59 @@ class MessageLogEntryUpdateTable extends _i1.UpdateTable<MessageLogEntryTable> {
   MessageLogEntryUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> sessionLogId(int value) => _i1.ColumnValue(
-        table.sessionLogId,
-        value,
-      );
+    table.sessionLogId,
+    value,
+  );
 
   _i1.ColumnValue<String, String> serverId(String value) => _i1.ColumnValue(
-        table.serverId,
-        value,
-      );
+    table.serverId,
+    value,
+  );
 
   _i1.ColumnValue<int, int> messageId(int value) => _i1.ColumnValue(
-        table.messageId,
-        value,
-      );
+    table.messageId,
+    value,
+  );
 
   _i1.ColumnValue<String, String> endpoint(String value) => _i1.ColumnValue(
-        table.endpoint,
-        value,
-      );
+    table.endpoint,
+    value,
+  );
 
   _i1.ColumnValue<String, String> messageName(String value) => _i1.ColumnValue(
-        table.messageName,
-        value,
-      );
+    table.messageName,
+    value,
+  );
 
   _i1.ColumnValue<double, double> duration(double value) => _i1.ColumnValue(
-        table.duration,
-        value,
-      );
+    table.duration,
+    value,
+  );
 
   _i1.ColumnValue<String, String> error(String? value) => _i1.ColumnValue(
-        table.error,
-        value,
-      );
+    table.error,
+    value,
+  );
 
   _i1.ColumnValue<String, String> stackTrace(String? value) => _i1.ColumnValue(
-        table.stackTrace,
-        value,
-      );
+    table.stackTrace,
+    value,
+  );
 
   _i1.ColumnValue<bool, bool> slow(bool value) => _i1.ColumnValue(
-        table.slow,
-        value,
-      );
+    table.slow,
+    value,
+  );
 
   _i1.ColumnValue<int, int> order(int value) => _i1.ColumnValue(
-        table.order,
-        value,
-      );
+    table.order,
+    value,
+  );
 }
 
 class MessageLogEntryTable extends _i1.Table<int?> {
   MessageLogEntryTable({super.tableRelation})
-      : super(tableName: 'serverpod_message_log') {
+    : super(tableName: 'serverpod_message_log') {
     updateTable = MessageLogEntryUpdateTable(this);
     sessionLogId = _i1.ColumnInt(
       'sessionLogId',
@@ -379,18 +379,18 @@ class MessageLogEntryTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        sessionLogId,
-        serverId,
-        messageId,
-        endpoint,
-        messageName,
-        duration,
-        error,
-        stackTrace,
-        slow,
-        order,
-      ];
+    id,
+    sessionLogId,
+    serverId,
+    messageId,
+    endpoint,
+    messageName,
+    duration,
+    error,
+    stackTrace,
+    slow,
+    order,
+  ];
 }
 
 class MessageLogEntryInclude extends _i1.IncludeObject {
@@ -409,7 +409,6 @@ class MessageLogEntryIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -449,23 +448,25 @@ class MessageLogEntryRepository {
   /// );
   /// ```
   Future<List<MessageLogEntry>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<MessageLogEntryTable>? orderBy,
-    bool orderDescending = false,
     _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<MessageLogEntry>(
       where: where?.call(MessageLogEntry.t),
       orderBy: orderBy?.call(MessageLogEntry.t),
       orderByList: orderByList?.call(MessageLogEntry.t),
-      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -487,33 +488,39 @@ class MessageLogEntryRepository {
   /// );
   /// ```
   Future<MessageLogEntry?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
     int? offset,
     _i1.OrderByBuilder<MessageLogEntryTable>? orderBy,
-    bool orderDescending = false,
     _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<MessageLogEntry>(
       where: where?.call(MessageLogEntry.t),
       orderBy: orderBy?.call(MessageLogEntry.t),
       orderByList: orderByList?.call(MessageLogEntry.t),
-      orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
   /// Finds a single [MessageLogEntry] by its [id] or null if no such row exists.
   Future<MessageLogEntry?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<MessageLogEntry>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -523,14 +530,26 @@ class MessageLogEntryRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<MessageLogEntry>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<MessageLogEntry> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<MessageLogEntry>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -538,7 +557,7 @@ class MessageLogEntryRepository {
   ///
   /// The returned [MessageLogEntry] will have its `id` field set.
   Future<MessageLogEntry> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     MessageLogEntry row, {
     _i1.Transaction? transaction,
   }) async {
@@ -548,21 +567,96 @@ class MessageLogEntryRepository {
     );
   }
 
+  /// Upserts all [MessageLogEntry]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [MessageLogEntry]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<MessageLogEntry>> upsert(
+    _i1.DatabaseSession session,
+    List<MessageLogEntry> rows, {
+    required _i1.ColumnSelections<MessageLogEntryTable> conflictColumns,
+    _i1.ColumnSelections<MessageLogEntryTable>? updateColumns,
+    _i1.WhereExpressionBuilder<MessageLogEntryTable>? updateWhere,
+    _i1.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<MessageLogEntry>(
+      rows,
+      conflictColumns: conflictColumns(MessageLogEntry.t),
+      updateColumns: updateColumns?.call(MessageLogEntry.t),
+      updateWhere: updateWhere?.call(MessageLogEntry.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [MessageLogEntry] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [MessageLogEntry] will have its `id` field set.
+  Future<MessageLogEntry?> upsertRow(
+    _i1.DatabaseSession session,
+    MessageLogEntry row, {
+    required _i1.ColumnSelections<MessageLogEntryTable> conflictColumns,
+    _i1.ColumnSelections<MessageLogEntryTable>? updateColumns,
+    _i1.WhereExpressionBuilder<MessageLogEntryTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<MessageLogEntry>(
+      row,
+      conflictColumns: conflictColumns(MessageLogEntry.t),
+      updateColumns: updateColumns?.call(MessageLogEntry.t),
+      updateWhere: updateWhere?.call(MessageLogEntry.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [MessageLogEntry]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<MessageLogEntry>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<MessageLogEntry> rows, {
     _i1.ColumnSelections<MessageLogEntryTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<MessageLogEntry>(
       rows,
       columns: columns?.call(MessageLogEntry.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -570,7 +664,7 @@ class MessageLogEntryRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<MessageLogEntry> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     MessageLogEntry row, {
     _i1.ColumnSelections<MessageLogEntryTable>? columns,
     _i1.Transaction? transaction,
@@ -585,10 +679,10 @@ class MessageLogEntryRepository {
   /// Updates a single [MessageLogEntry] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<MessageLogEntry?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<MessageLogEntryUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<MessageLogEntry>(
@@ -600,17 +694,21 @@ class MessageLogEntryRepository {
 
   /// Updates all [MessageLogEntry]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<MessageLogEntry>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<MessageLogEntryUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<MessageLogEntryTable> where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<MessageLogEntryTable>? orderBy,
     _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<MessageLogEntry>(
       columnValues: columnValues(MessageLogEntry.t.updateTable),
@@ -619,28 +717,42 @@ class MessageLogEntryRepository {
       offset: offset,
       orderBy: orderBy?.call(MessageLogEntry.t),
       orderByList: orderByList?.call(MessageLogEntry.t),
-      orderDescending: orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes all [MessageLogEntry]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<MessageLogEntry>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<MessageLogEntry> rows, {
+    _i1.OrderByBuilder<MessageLogEntryTable>? orderBy,
+    _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<MessageLogEntry>(
       rows,
+      orderBy: orderBy?.call(MessageLogEntry.t),
+      orderByList: orderByList?.call(MessageLogEntry.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes a single [MessageLogEntry].
   Future<MessageLogEntry> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     MessageLogEntry row, {
     _i1.Transaction? transaction,
   }) async {
@@ -651,21 +763,34 @@ class MessageLogEntryRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<MessageLogEntry>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<MessageLogEntryTable> where,
+    _i1.OrderByBuilder<MessageLogEntryTable>? orderBy,
+    _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<MessageLogEntry>(
       where: where(MessageLogEntry.t),
+      orderBy: orderBy?.call(MessageLogEntry.t),
+      orderByList: orderByList?.call(MessageLogEntry.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -673,6 +798,22 @@ class MessageLogEntryRepository {
     return session.db.count<MessageLogEntry>(
       where: where?.call(MessageLogEntry.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [MessageLogEntry] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.DatabaseSession session, {
+    required _i1.WhereExpressionBuilder<MessageLogEntryTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<MessageLogEntry>(
+      where: where(MessageLogEntry.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

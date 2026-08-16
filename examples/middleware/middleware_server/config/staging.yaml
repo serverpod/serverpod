@@ -1,0 +1,66 @@
+# This is the configuration file for your staging environment. The staging
+# environment is meant to resemble the production environment as much as
+# possible and may connect to production databases services and data. You use it
+# for final testing before deploying the production server.
+#
+# Typically, you will want to route the traffic through a load balancer
+# which adds SSL security through https. If you use Serverpod's standard
+# Terraform scripts to deploy your server, all you need to change in
+# this file is the examplepod.com domain name.
+
+# Configuration for the main API server.
+apiServer:
+  port: 8080
+  publicHost: api-staging.examplepod.com
+  publicPort: 443
+  publicScheme: https
+
+# Configuration for the Insights server.
+insightsServer:
+  port: 8081
+  publicHost: insights-staging.examplepod.com
+  publicPort: 443
+  publicScheme: https
+
+# Configuration for the web server.
+webServer:
+  port: 8082
+  publicHost: app-staging.examplepod.com
+  publicPort: 443
+  publicScheme: https
+
+# This is the database setup for your servers. The default for the Google Cloud
+# Engine Terraform configuration is to connect on a private IP address.
+# If you are connecting on a public IP (e.g. on AWS or Google Cloud Run), you
+# connect on the public IP of the database e.g. database-staging.examplepod.com.
+database:
+  host: database.private-staging.examplepod.com
+  port: 5432
+  name: serverpod
+  user: postgres
+  requireSsl: true
+  #isUnixSocket: true # defaults to false
+
+# This is the setup for Redis. The default for the Google Cloud Engine Terraform
+# configuration is to connect on a private IP address.
+# If you are connecting on a public IP (e.g. on AWS or Google Cloud Run), you
+# connect on the public IP of the database e.g. redis-staging.examplepod.com.
+redis:
+  enabled: false
+  host: redis.private-staging.examplepod.com
+  port: 6379
+  #user: # defaults to empty
+  #requireSsl: true # defaults to false
+
+maxRequestSize: 524288 # The maximum size of requests allowed in bytes
+
+sessionLogs:
+# persistentEnabled: true
+# consoleEnabled: true
+# consoleLogFormat: json # Defaults to "json", options are "text" or "json"
+
+# futureCallExecutionEnabled: true # Defaults to true
+
+#futureCall:
+#  concurrencyLimit: 1 # Defaults to 1, a negative or null value removes the limit
+#  scanInterval: 5000 # Unit in milliseconds, defaults to 5000

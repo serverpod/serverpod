@@ -12,7 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class UniqueData implements _i1.SerializableModel {
+abstract class UniqueData
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   UniqueData._({
     this.id,
     required this.number,
@@ -53,6 +54,17 @@ abstract class UniqueData implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'UniqueData',
+      if (id != null) 'id': id,
+      'number': number,
+      'email': email,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'UniqueData',
       if (id != null) 'id': id,
       'number': number,
       'email': email,
@@ -73,10 +85,10 @@ class _UniqueDataImpl extends UniqueData {
     required int number,
     required String email,
   }) : super._(
-          id: id,
-          number: number,
-          email: email,
-        );
+         id: id,
+         number: number,
+         email: email,
+       );
 
   /// Returns a shallow copy of this [UniqueData]
   /// with some or all fields replaced by the given arguments.

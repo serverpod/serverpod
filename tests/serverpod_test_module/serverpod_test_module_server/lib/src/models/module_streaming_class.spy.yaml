@@ -1,0 +1,3 @@
+class: ModuleStreamingClass
+fields:
+  name: String

@@ -27,8 +27,9 @@ const _httpHeaderValueRegExpStr = r'[\t\x20-\x7E\x80-\xFF]*';
 
 /// The regular expression for the format of the HTTP "authorization" header value,
 /// including starting with an authentication scheme name.
-final _authValueRegExp =
-    RegExp('^$_authSchemeRegExpStr $_httpHeaderValueRegExpStr\$');
+final _authValueRegExp = RegExp(
+  '^$_authSchemeRegExpStr $_httpHeaderValueRegExpStr\$',
+);
 
 /// Returns true if the provided value is a valid HTTP "authorization" header value
 /// (which includes starting with an authentication scheme name).
@@ -46,7 +47,8 @@ bool isWrappedBasicAuthHeaderValue(String value) {
     return true;
   } else {
     throw AuthHeaderEncodingException(
-        'Invalid "basic" auth scheme value "$value"');
+      'Invalid "basic" auth scheme value "$value"',
+    );
   }
 }
 
@@ -61,7 +63,8 @@ bool isWrappedBearerAuthHeaderValue(String value) {
     return true;
   } else {
     throw AuthHeaderEncodingException(
-        'Invalid "bearer" auth scheme value "$value"');
+      'Invalid "bearer" auth scheme value "$value"',
+    );
   }
 }
 

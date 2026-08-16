@@ -1,0 +1,214 @@
+import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_idp_server/providers/email.dart';
+import 'package:test/test.dart';
+
+import '../../test_tools/serverpod_test_tools.dart';
+import '../test_utils/email_idp_test_fixture.dart';
+
+void main() {
+  withServerpod(
+    'Given an existing email account',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIdpTestFixture fixture;
+      const email = 'test@serverpod.dev';
+      const password = 'Password123!';
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIdpTestFixture();
+
+        final authUser = await fixture.authUsers.create(session);
+
+        await fixture.createEmailAccount(
+          session,
+          authUserId: authUser.id,
+          email: email,
+          password: EmailAccountPassword.fromString(password),
+        );
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      group('when start registration is called for the same email address', () {
+        late Future<UuidValue> accountRequestIdFuture;
+
+        setUp(() async {
+          accountRequestIdFuture = fixture.emailIdp.startRegistration(
+            session,
+            email: email,
+          );
+        });
+
+        test(
+          'then it returns dummy uuid with the same version as the real request to prevent leaking the fact that the email is not registered',
+          () async {
+            const nonRegisteredEmail = 'non-registered-$email';
+            final capturedAccountRequestId = await fixture.emailIdp
+                .startRegistration(
+                  session,
+                  email: nonRegisteredEmail,
+                );
+
+            await expectLater(
+              accountRequestIdFuture,
+              completion(
+                isA<UuidValue>().having(
+                  (final uuid) => uuid.version,
+                  'version',
+                  equals(capturedAccountRequestId.version),
+                ),
+              ),
+            );
+          },
+        );
+      });
+
+      group(
+        'when start registration is called for the same email address in uppercase',
+        () {
+          late Future<UuidValue> accountRequestIdFuture;
+
+          setUp(() async {
+            accountRequestIdFuture = fixture.emailIdp.startRegistration(
+              session,
+              email: email.toUpperCase(),
+            );
+          });
+
+          test(
+            'then it returns dummy uuid with the same version as the real request to prevent leaking the fact that the email is not registered',
+            () async {
+              const nonRegisteredEmail = 'non-registered-$email';
+              final capturedAccountRequestId = await fixture.emailIdp
+                  .startRegistration(
+                    session,
+                    email: nonRegisteredEmail,
+                  );
+
+              await expectLater(
+                accountRequestIdFuture,
+                completion(
+                  isA<UuidValue>().having(
+                    (final uuid) => uuid.version,
+                    'version',
+                    equals(capturedAccountRequestId.version),
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given no email account',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIdpTestFixture fixture;
+      const email = 'newuser@serverpod.dev';
+      late String verificationCode;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        verificationCode = const Uuid().v4().toString();
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
+            secretHashPepper: 'pepper',
+            registrationVerificationCodeGenerator: () => verificationCode,
+          ),
+        );
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      group('when startRegistration is called', () {
+        late Future<UuidValue> accountRequestIdFuture;
+        setUp(() async {
+          accountRequestIdFuture = fixture.emailIdp.startRegistration(
+            session,
+            email: email,
+          );
+        });
+
+        test('then it returns account registration request id', () async {
+          await expectLater(
+            accountRequestIdFuture,
+            completion(isA<UuidValue>()),
+          );
+        });
+      });
+    },
+  );
+
+  withServerpod(
+    'Given pending email account request that was not verified',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIdpTestFixture fixture;
+      const email = 'newuser@serverpod.dev';
+      late UuidValue accountRequestId;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIdpTestFixture();
+
+        accountRequestId = await fixture.emailIdp.startRegistration(
+          session,
+          email: email,
+        );
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      group('when startRegistration is called again with the same email', () {
+        late UuidValue newAccountRequestId;
+        setUp(() async {
+          newAccountRequestId = await fixture.emailIdp.startRegistration(
+            session,
+            email: email,
+          );
+        });
+
+        test('then it returns a new request id', () async {
+          expect(newAccountRequestId, isNot(equals(accountRequestId)));
+        });
+
+        test('then it deletes the existing request', () async {
+          final oldRequest = await EmailAccountRequest.db.findById(
+            session,
+            accountRequestId,
+          );
+          expect(oldRequest, isNull);
+        });
+
+        test(
+          'then the new request exists on the database',
+          () async {
+            final newRequest = await EmailAccountRequest.db.findById(
+              session,
+              newAccountRequestId,
+            );
+            expect(newRequest, isNotNull);
+            expect(newRequest!.id, equals(newAccountRequestId));
+            expect(newRequest.email, equals(email));
+            expect(newRequest.challengeId, isNotNull);
+            expect(newRequest.createdAt, isNotNull);
+          },
+        );
+      });
+    },
+  );
+}

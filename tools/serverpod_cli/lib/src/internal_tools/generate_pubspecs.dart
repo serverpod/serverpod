@@ -54,16 +54,17 @@ void performGeneratePubspecs({
       dstDir: dirRoot,
       replacements: [
         ...sharedReplacements,
-        Replacement(
+        const Replacement(
           slotName: 'PRODUCTION_MODE',
           replacement: 'false',
         ),
-        Replacement(
+        const Replacement(
           slotName: '#--CONDITIONALLY_REMOVE_LINE--#',
           replacement: '',
-        )
+        ),
       ],
       fileNameReplacements: [],
+      processUncommentMarker: false,
     );
     copier.copyFiles();
   } else {
@@ -73,7 +74,7 @@ void performGeneratePubspecs({
       dstDir: dirRoot,
       replacements: [
         ...sharedReplacements,
-        Replacement(
+        const Replacement(
           slotName: 'PRODUCTION_MODE',
           replacement: 'true',
         ),
@@ -82,6 +83,7 @@ void performGeneratePubspecs({
         '#--CONDITIONALLY_REMOVE_LINE--#',
       ],
       fileNameReplacements: [],
+      processUncommentMarker: false,
     );
     copier.copyFiles();
   }

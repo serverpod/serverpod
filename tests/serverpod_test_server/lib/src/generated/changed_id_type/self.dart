@@ -8,12 +8,12 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../changed_id_type/self.dart' as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class ChangedIdTypeSelf
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
@@ -26,7 +26,7 @@ abstract class ChangedIdTypeSelf
     this.parentId,
     this.parent,
     this.children,
-  }) : id = id ?? _i1.Uuid().v4obj();
+  }) : id = id ?? const _i1.Uuid().v4obj();
 
   factory ChangedIdTypeSelf({
     _i1.UuidValue? id,
@@ -47,26 +47,30 @@ abstract class ChangedIdTypeSelf
       name: jsonSerialization['name'] as String,
       previous: jsonSerialization['previous'] == null
           ? null
-          : _i2.ChangedIdTypeSelf.fromJson(
-              (jsonSerialization['previous'] as Map<String, dynamic>)),
+          : _i3.Protocol().deserialize<_i2.ChangedIdTypeSelf>(
+              jsonSerialization['previous'],
+            ),
       nextId: jsonSerialization['nextId'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['nextId']),
       next: jsonSerialization['next'] == null
           ? null
-          : _i2.ChangedIdTypeSelf.fromJson(
-              (jsonSerialization['next'] as Map<String, dynamic>)),
+          : _i3.Protocol().deserialize<_i2.ChangedIdTypeSelf>(
+              jsonSerialization['next'],
+            ),
       parentId: jsonSerialization['parentId'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['parentId']),
       parent: jsonSerialization['parent'] == null
           ? null
-          : _i2.ChangedIdTypeSelf.fromJson(
-              (jsonSerialization['parent'] as Map<String, dynamic>)),
-      children: (jsonSerialization['children'] as List?)
-          ?.map((e) =>
-              _i2.ChangedIdTypeSelf.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+          : _i3.Protocol().deserialize<_i2.ChangedIdTypeSelf>(
+              jsonSerialization['parent'],
+            ),
+      children: jsonSerialization['children'] == null
+          ? null
+          : _i3.Protocol().deserialize<List<_i2.ChangedIdTypeSelf>>(
+              jsonSerialization['children'],
+            ),
     );
   }
 
@@ -110,6 +114,7 @@ abstract class ChangedIdTypeSelf
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ChangedIdTypeSelf',
       if (id != null) 'id': id?.toJson(),
       'name': name,
       if (previous != null) 'previous': previous?.toJson(),
@@ -125,6 +130,7 @@ abstract class ChangedIdTypeSelf
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'ChangedIdTypeSelf',
       if (id != null) 'id': id?.toJson(),
       'name': name,
       if (previous != null) 'previous': previous?.toJsonForProtocol(),
@@ -156,7 +162,6 @@ abstract class ChangedIdTypeSelf
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
     ChangedIdTypeSelfInclude? include,
   }) {
@@ -165,7 +170,6 @@ abstract class ChangedIdTypeSelf
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ChangedIdTypeSelf.t),
-      orderDescending: orderDescending,
       orderByList: orderByList?.call(ChangedIdTypeSelf.t),
       include: include,
     );
@@ -190,15 +194,15 @@ class _ChangedIdTypeSelfImpl extends ChangedIdTypeSelf {
     _i2.ChangedIdTypeSelf? parent,
     List<_i2.ChangedIdTypeSelf>? children,
   }) : super._(
-          id: id,
-          name: name,
-          previous: previous,
-          nextId: nextId,
-          next: next,
-          parentId: parentId,
-          parent: parent,
-          children: children,
-        );
+         id: id,
+         name: name,
+         previous: previous,
+         nextId: nextId,
+         next: next,
+         parentId: parentId,
+         parent: parent,
+         children: children,
+       );
 
   /// Returns a shallow copy of this [ChangedIdTypeSelf]
   /// with some or all fields replaced by the given arguments.
@@ -223,8 +227,9 @@ class _ChangedIdTypeSelfImpl extends ChangedIdTypeSelf {
       nextId: nextId is _i1.UuidValue? ? nextId : this.nextId,
       next: next is _i2.ChangedIdTypeSelf? ? next : this.next?.copyWith(),
       parentId: parentId is _i1.UuidValue? ? parentId : this.parentId,
-      parent:
-          parent is _i2.ChangedIdTypeSelf? ? parent : this.parent?.copyWith(),
+      parent: parent is _i2.ChangedIdTypeSelf?
+          ? parent
+          : this.parent?.copyWith(),
       children: children is List<_i2.ChangedIdTypeSelf>?
           ? children
           : this.children?.map((e0) => e0.copyWith()).toList(),
@@ -237,9 +242,9 @@ class ChangedIdTypeSelfUpdateTable
   ChangedIdTypeSelfUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> nextId(_i1.UuidValue? value) =>
       _i1.ColumnValue(
@@ -248,16 +253,16 @@ class ChangedIdTypeSelfUpdateTable
       );
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> parentId(
-          _i1.UuidValue? value) =>
-      _i1.ColumnValue(
-        table.parentId,
-        value,
-      );
+    _i1.UuidValue? value,
+  ) => _i1.ColumnValue(
+    table.parentId,
+    value,
+  );
 }
 
 class ChangedIdTypeSelfTable extends _i1.Table<_i1.UuidValue?> {
   ChangedIdTypeSelfTable({super.tableRelation})
-      : super(tableName: 'changed_id_type_self') {
+    : super(tableName: 'changed_id_type_self') {
     updateTable = ChangedIdTypeSelfUpdateTable(this);
     name = _i1.ColumnString(
       'name',
@@ -356,18 +361,19 @@ class ChangedIdTypeSelfTable extends _i1.Table<_i1.UuidValue?> {
     _children = _i1.ManyRelation<_i2.ChangedIdTypeSelfTable>(
       tableWithRelations: relationTable,
       table: _i2.ChangedIdTypeSelfTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _children!;
   }
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        nextId,
-        parentId,
-      ];
+    id,
+    name,
+    nextId,
+    parentId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -410,11 +416,11 @@ class ChangedIdTypeSelfInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'previous': _previous,
-        'next': _next,
-        'parent': _parent,
-        'children': _children,
-      };
+    'previous': _previous,
+    'next': _next,
+    'parent': _parent,
+    'children': _children,
+  };
 
   @override
   _i1.Table<_i1.UuidValue?> get table => ChangedIdTypeSelf.t;
@@ -426,7 +432,6 @@ class ChangedIdTypeSelfIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -474,25 +479,27 @@ class ChangedIdTypeSelfRepository {
   /// );
   /// ```
   Future<List<ChangedIdTypeSelf>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable>? where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
     _i1.Transaction? transaction,
     ChangedIdTypeSelfInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ChangedIdTypeSelf>(
       where: where?.call(ChangedIdTypeSelf.t),
       orderBy: orderBy?.call(ChangedIdTypeSelf.t),
       orderByList: orderByList?.call(ChangedIdTypeSelf.t),
-      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -514,37 +521,43 @@ class ChangedIdTypeSelfRepository {
   /// );
   /// ```
   Future<ChangedIdTypeSelf?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable>? where,
     int? offset,
     _i1.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
     _i1.Transaction? transaction,
     ChangedIdTypeSelfInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ChangedIdTypeSelf>(
       where: where?.call(ChangedIdTypeSelf.t),
       orderBy: orderBy?.call(ChangedIdTypeSelf.t),
       orderByList: orderByList?.call(ChangedIdTypeSelf.t),
-      orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
   /// Finds a single [ChangedIdTypeSelf] by its [id] or null if no such row exists.
   Future<ChangedIdTypeSelf?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     ChangedIdTypeSelfInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ChangedIdTypeSelf>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -554,14 +567,26 @@ class ChangedIdTypeSelfRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChangedIdTypeSelf>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ChangedIdTypeSelf> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<ChangedIdTypeSelf>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -569,7 +594,7 @@ class ChangedIdTypeSelfRepository {
   ///
   /// The returned [ChangedIdTypeSelf] will have its `id` field set.
   Future<ChangedIdTypeSelf> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ChangedIdTypeSelf row, {
     _i1.Transaction? transaction,
   }) async {
@@ -579,21 +604,96 @@ class ChangedIdTypeSelfRepository {
     );
   }
 
+  /// Upserts all [ChangedIdTypeSelf]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [ChangedIdTypeSelf]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<ChangedIdTypeSelf>> upsert(
+    _i1.DatabaseSession session,
+    List<ChangedIdTypeSelf> rows, {
+    required _i1.ColumnSelections<ChangedIdTypeSelfTable> conflictColumns,
+    _i1.ColumnSelections<ChangedIdTypeSelfTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable>? updateWhere,
+    _i1.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<ChangedIdTypeSelf>(
+      rows,
+      conflictColumns: conflictColumns(ChangedIdTypeSelf.t),
+      updateColumns: updateColumns?.call(ChangedIdTypeSelf.t),
+      updateWhere: updateWhere?.call(ChangedIdTypeSelf.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [ChangedIdTypeSelf] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [ChangedIdTypeSelf] will have its `id` field set.
+  Future<ChangedIdTypeSelf?> upsertRow(
+    _i1.DatabaseSession session,
+    ChangedIdTypeSelf row, {
+    required _i1.ColumnSelections<ChangedIdTypeSelfTable> conflictColumns,
+    _i1.ColumnSelections<ChangedIdTypeSelfTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<ChangedIdTypeSelf>(
+      row,
+      conflictColumns: conflictColumns(ChangedIdTypeSelf.t),
+      updateColumns: updateColumns?.call(ChangedIdTypeSelf.t),
+      updateWhere: updateWhere?.call(ChangedIdTypeSelf.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [ChangedIdTypeSelf]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChangedIdTypeSelf>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ChangedIdTypeSelf> rows, {
     _i1.ColumnSelections<ChangedIdTypeSelfTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<ChangedIdTypeSelf>(
       rows,
       columns: columns?.call(ChangedIdTypeSelf.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -601,7 +701,7 @@ class ChangedIdTypeSelfRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ChangedIdTypeSelf> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ChangedIdTypeSelf row, {
     _i1.ColumnSelections<ChangedIdTypeSelfTable>? columns,
     _i1.Transaction? transaction,
@@ -616,10 +716,10 @@ class ChangedIdTypeSelfRepository {
   /// Updates a single [ChangedIdTypeSelf] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ChangedIdTypeSelf?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<ChangedIdTypeSelfUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ChangedIdTypeSelf>(
@@ -631,17 +731,21 @@ class ChangedIdTypeSelfRepository {
 
   /// Updates all [ChangedIdTypeSelf]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChangedIdTypeSelf>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<ChangedIdTypeSelfUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable> where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
     _i1.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<ChangedIdTypeSelf>(
       columnValues: columnValues(ChangedIdTypeSelf.t.updateTable),
@@ -650,28 +754,42 @@ class ChangedIdTypeSelfRepository {
       offset: offset,
       orderBy: orderBy?.call(ChangedIdTypeSelf.t),
       orderByList: orderByList?.call(ChangedIdTypeSelf.t),
-      orderDescending: orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes all [ChangedIdTypeSelf]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChangedIdTypeSelf>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ChangedIdTypeSelf> rows, {
+    _i1.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
+    _i1.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<ChangedIdTypeSelf>(
       rows,
+      orderBy: orderBy?.call(ChangedIdTypeSelf.t),
+      orderByList: orderByList?.call(ChangedIdTypeSelf.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes a single [ChangedIdTypeSelf].
   Future<ChangedIdTypeSelf> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ChangedIdTypeSelf row, {
     _i1.Transaction? transaction,
   }) async {
@@ -682,21 +800,34 @@ class ChangedIdTypeSelfRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChangedIdTypeSelf>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable> where,
+    _i1.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
+    _i1.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ChangedIdTypeSelf>(
       where: where(ChangedIdTypeSelf.t),
+      orderBy: orderBy?.call(ChangedIdTypeSelf.t),
+      orderByList: orderByList?.call(ChangedIdTypeSelf.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -704,6 +835,22 @@ class ChangedIdTypeSelfRepository {
     return session.db.count<ChangedIdTypeSelf>(
       where: where?.call(ChangedIdTypeSelf.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [ChangedIdTypeSelf] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.DatabaseSession session, {
+    required _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<ChangedIdTypeSelf>(
+      where: where(ChangedIdTypeSelf.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }
@@ -715,7 +862,7 @@ class ChangedIdTypeSelfAttachRepository {
   /// Creates a relation between this [ChangedIdTypeSelf] and the given [ChangedIdTypeSelf]s
   /// by setting each [ChangedIdTypeSelf]'s foreign key `parentId` to refer to this [ChangedIdTypeSelf].
   Future<void> children(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ChangedIdTypeSelf changedIdTypeSelf,
     List<_i2.ChangedIdTypeSelf> nestedChangedIdTypeSelf, {
     _i1.Transaction? transaction,
@@ -744,7 +891,7 @@ class ChangedIdTypeSelfAttachRowRepository {
   /// Creates a relation between the given [ChangedIdTypeSelf] and [ChangedIdTypeSelf]
   /// by setting the [ChangedIdTypeSelf]'s foreign key `id` to refer to the [ChangedIdTypeSelf].
   Future<void> previous(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ChangedIdTypeSelf changedIdTypeSelf,
     _i2.ChangedIdTypeSelf previous, {
     _i1.Transaction? transaction,
@@ -767,7 +914,7 @@ class ChangedIdTypeSelfAttachRowRepository {
   /// Creates a relation between the given [ChangedIdTypeSelf] and [ChangedIdTypeSelf]
   /// by setting the [ChangedIdTypeSelf]'s foreign key `nextId` to refer to the [ChangedIdTypeSelf].
   Future<void> next(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ChangedIdTypeSelf changedIdTypeSelf,
     _i2.ChangedIdTypeSelf next, {
     _i1.Transaction? transaction,
@@ -790,7 +937,7 @@ class ChangedIdTypeSelfAttachRowRepository {
   /// Creates a relation between the given [ChangedIdTypeSelf] and [ChangedIdTypeSelf]
   /// by setting the [ChangedIdTypeSelf]'s foreign key `parentId` to refer to the [ChangedIdTypeSelf].
   Future<void> parent(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ChangedIdTypeSelf changedIdTypeSelf,
     _i2.ChangedIdTypeSelf parent, {
     _i1.Transaction? transaction,
@@ -813,7 +960,7 @@ class ChangedIdTypeSelfAttachRowRepository {
   /// Creates a relation between this [ChangedIdTypeSelf] and the given [ChangedIdTypeSelf]
   /// by setting the [ChangedIdTypeSelf]'s foreign key `parentId` to refer to this [ChangedIdTypeSelf].
   Future<void> children(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ChangedIdTypeSelf changedIdTypeSelf,
     _i2.ChangedIdTypeSelf nestedChangedIdTypeSelf, {
     _i1.Transaction? transaction,
@@ -825,8 +972,9 @@ class ChangedIdTypeSelfAttachRowRepository {
       throw ArgumentError.notNull('changedIdTypeSelf.id');
     }
 
-    var $nestedChangedIdTypeSelf =
-        nestedChangedIdTypeSelf.copyWith(parentId: changedIdTypeSelf.id);
+    var $nestedChangedIdTypeSelf = nestedChangedIdTypeSelf.copyWith(
+      parentId: changedIdTypeSelf.id,
+    );
     await session.db.updateRow<_i2.ChangedIdTypeSelf>(
       $nestedChangedIdTypeSelf,
       columns: [_i2.ChangedIdTypeSelf.t.parentId],
@@ -844,7 +992,7 @@ class ChangedIdTypeSelfDetachRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> children(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<_i2.ChangedIdTypeSelf> changedIdTypeSelf, {
     _i1.Transaction? transaction,
   }) async {
@@ -852,8 +1000,9 @@ class ChangedIdTypeSelfDetachRepository {
       throw ArgumentError.notNull('changedIdTypeSelf.id');
     }
 
-    var $changedIdTypeSelf =
-        changedIdTypeSelf.map((e) => e.copyWith(parentId: null)).toList();
+    var $changedIdTypeSelf = changedIdTypeSelf
+        .map((e) => e.copyWith(parentId: null))
+        .toList();
     await session.db.update<_i2.ChangedIdTypeSelf>(
       $changedIdTypeSelf,
       columns: [_i2.ChangedIdTypeSelf.t.parentId],
@@ -871,20 +1020,20 @@ class ChangedIdTypeSelfDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> previous(
-    _i1.Session session,
-    ChangedIdTypeSelf changedidtypeself, {
+    _i1.DatabaseSession session,
+    ChangedIdTypeSelf changedIdTypeSelf, {
     _i1.Transaction? transaction,
   }) async {
-    var $previous = changedidtypeself.previous;
+    var $previous = changedIdTypeSelf.previous;
 
     if ($previous == null) {
-      throw ArgumentError.notNull('changedidtypeself.previous');
+      throw ArgumentError.notNull('changedIdTypeSelf.previous');
     }
     if ($previous.id == null) {
-      throw ArgumentError.notNull('changedidtypeself.previous.id');
+      throw ArgumentError.notNull('changedIdTypeSelf.previous.id');
     }
-    if (changedidtypeself.id == null) {
-      throw ArgumentError.notNull('changedidtypeself.id');
+    if (changedIdTypeSelf.id == null) {
+      throw ArgumentError.notNull('changedIdTypeSelf.id');
     }
 
     var $$previous = $previous.copyWith(nextId: null);
@@ -901,17 +1050,17 @@ class ChangedIdTypeSelfDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> next(
-    _i1.Session session,
-    ChangedIdTypeSelf changedidtypeself, {
+    _i1.DatabaseSession session,
+    ChangedIdTypeSelf changedIdTypeSelf, {
     _i1.Transaction? transaction,
   }) async {
-    if (changedidtypeself.id == null) {
-      throw ArgumentError.notNull('changedidtypeself.id');
+    if (changedIdTypeSelf.id == null) {
+      throw ArgumentError.notNull('changedIdTypeSelf.id');
     }
 
-    var $changedidtypeself = changedidtypeself.copyWith(nextId: null);
+    var $changedIdTypeSelf = changedIdTypeSelf.copyWith(nextId: null);
     await session.db.updateRow<ChangedIdTypeSelf>(
-      $changedidtypeself,
+      $changedIdTypeSelf,
       columns: [ChangedIdTypeSelf.t.nextId],
       transaction: transaction,
     );
@@ -923,17 +1072,17 @@ class ChangedIdTypeSelfDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> parent(
-    _i1.Session session,
-    ChangedIdTypeSelf changedidtypeself, {
+    _i1.DatabaseSession session,
+    ChangedIdTypeSelf changedIdTypeSelf, {
     _i1.Transaction? transaction,
   }) async {
-    if (changedidtypeself.id == null) {
-      throw ArgumentError.notNull('changedidtypeself.id');
+    if (changedIdTypeSelf.id == null) {
+      throw ArgumentError.notNull('changedIdTypeSelf.id');
     }
 
-    var $changedidtypeself = changedidtypeself.copyWith(parentId: null);
+    var $changedIdTypeSelf = changedIdTypeSelf.copyWith(parentId: null);
     await session.db.updateRow<ChangedIdTypeSelf>(
-      $changedidtypeself,
+      $changedIdTypeSelf,
       columns: [ChangedIdTypeSelf.t.parentId],
       transaction: transaction,
     );
@@ -945,7 +1094,7 @@ class ChangedIdTypeSelfDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> children(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i2.ChangedIdTypeSelf changedIdTypeSelf, {
     _i1.Transaction? transaction,
   }) async {

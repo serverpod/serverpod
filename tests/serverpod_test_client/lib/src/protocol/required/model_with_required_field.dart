@@ -12,7 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class ModelWithRequiredField implements _i1.SerializableModel {
+abstract class ModelWithRequiredField
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ModelWithRequiredField._({
     this.id,
     required this.name,
@@ -28,7 +29,8 @@ abstract class ModelWithRequiredField implements _i1.SerializableModel {
   }) = _ModelWithRequiredFieldImpl;
 
   factory ModelWithRequiredField.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ModelWithRequiredField(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
@@ -60,6 +62,18 @@ abstract class ModelWithRequiredField implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ModelWithRequiredField',
+      if (id != null) 'id': id,
+      'name': name,
+      if (email != null) 'email': email,
+      if (phone != null) 'phone': phone,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'ModelWithRequiredField',
       if (id != null) 'id': id,
       'name': name,
       if (email != null) 'email': email,
@@ -82,11 +96,11 @@ class _ModelWithRequiredFieldImpl extends ModelWithRequiredField {
     required String? email,
     String? phone,
   }) : super._(
-          id: id,
-          name: name,
-          email: email,
-          phone: phone,
-        );
+         id: id,
+         name: name,
+         email: email,
+         phone: phone,
+       );
 
   /// Returns a shallow copy of this [ModelWithRequiredField]
   /// with some or all fields replaced by the given arguments.

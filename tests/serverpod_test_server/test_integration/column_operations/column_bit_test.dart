@@ -38,65 +38,70 @@ void main() async {
     });
 
     test(
-        'when ordering by Hamming distance then closest rows are returned first.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        orderBy: (t) => t.aBit.distanceHamming(queryBit),
-      );
+      'when ordering by Hamming distance then closest rows are returned first.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          orderBy: (t) => t.aBit.distanceHamming(queryBit),
+        );
 
-      expect(result.length, 3);
-      // The null value should be last when ordering by distance
-      expect(result.last.aBit, isNull);
-    });
-
-    test(
-        'when filtering using closer than with Hamming distance then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aBit.distanceHamming(queryBit) < 3.0,
-      );
-
-      expect(result.isNotEmpty, true);
-    });
+        expect(result.length, 3);
+        // The null value should be last when ordering by distance
+        expect(result.last.aBit, isNull);
+      },
+    );
 
     test(
-        'when ordering by Jaccard distance then closest rows are returned first.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        orderBy: (t) => t.aBit.distanceJaccard(queryBit),
-      );
+      'when filtering using closer than with Hamming distance then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aBit.distanceHamming(queryBit) < 3.0,
+        );
 
-      expect(result.length, 3);
-      // The null value should be last when ordering by distance
-      expect(result.last.aBit, isNull);
-    });
-
-    test(
-        'when filtering using closer than with Jaccard distance then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aBit.distanceJaccard(queryBit) < 1.0,
-      );
-
-      expect(result.isNotEmpty, true);
-    });
+        expect(result.isNotEmpty, true);
+      },
+    );
 
     test(
-        'when inserting and retrieving a bit vector then the same values are returned.',
-        () async {
-      await Types.db.insert(session, [Types(aBit: thirdBit)]);
+      'when ordering by Jaccard distance then closest rows are returned first.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          orderBy: (t) => t.aBit.distanceJaccard(queryBit),
+        );
 
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aBit.distanceHamming(thirdBit) < 1.0,
-      );
+        expect(result.length, 3);
+        // The null value should be last when ordering by distance
+        expect(result.last.aBit, isNull);
+      },
+    );
 
-      expect(result.length, 1);
-      expect(result.first.aBit!.toList(), equals(thirdBit.toList()));
-    });
+    test(
+      'when filtering using closer than with Jaccard distance then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aBit.distanceJaccard(queryBit) < 1.0,
+        );
+
+        expect(result.isNotEmpty, true);
+      },
+    );
+
+    test(
+      'when inserting and retrieving a bit vector then the same values are returned.',
+      () async {
+        await Types.db.insert(session, [Types(aBit: thirdBit)]);
+
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aBit.distanceHamming(thirdBit) < 1.0,
+        );
+
+        expect(result.length, 1);
+        expect(result.first.aBit!.toList(), equals(thirdBit.toList()));
+      },
+    );
   });
 }

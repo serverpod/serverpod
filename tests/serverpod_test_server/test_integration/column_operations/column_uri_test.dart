@@ -34,85 +34,100 @@ void main() async {
       expect(result.length, 3);
     });
 
-    test('when filtering using equals then matching row is returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aUri.equals(_firstUri),
-      );
+    test(
+      'when filtering using equals then matching row is returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aUri.equals(_firstUri),
+        );
 
-      expect(result.first.aUri, _firstUri);
-    });
-
-    test('when filtering using equals with null then matching row is returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aUri.equals(null),
-      );
-
-      expect(result.first.aUri, isNull);
-    });
-
-    test('when filtering using notEquals then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aUri.notEquals(_firstUri),
-      );
-
-      expect(result.length, 2);
-    });
+        expect(result.first.aUri, _firstUri);
+      },
+    );
 
     test(
-        'when filtering using notEquals with null then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aUri.notEquals(null),
-      );
+      'when filtering using equals with null then matching row is returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aUri.equals(null),
+        );
 
-      expect(result.length, 2);
-    });
+        expect(result.first.aUri, isNull);
+      },
+    );
 
-    test('when filtering using inSet then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aUri.inSet({_firstUri, _secondUri}),
-      );
+    test(
+      'when filtering using notEquals then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aUri.notEquals(_firstUri),
+        );
 
-      expect(result.length, 2);
-    });
+        expect(result.length, 2);
+      },
+    );
 
-    test('when filtering using empty inSet then no rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aUri.inSet({}),
-      );
+    test(
+      'when filtering using notEquals with null then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aUri.notEquals(null),
+        );
 
-      expect(result, isEmpty);
-    });
+        expect(result.length, 2);
+      },
+    );
 
-    test('when filtering using notInSet then matching row is returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aUri.notInSet({_firstUri}),
-      );
+    test(
+      'when filtering using inSet then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aUri.inSet({_firstUri, _secondUri}),
+        );
 
-      expect(result.length, 2);
-    });
+        expect(result.length, 2);
+      },
+    );
 
-    test('when filtering using empty notInSet then no rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aUri.notInSet({}),
-      );
+    test(
+      'when filtering using empty inSet then no rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aUri.inSet({}),
+        );
 
-      expect(result.length, 3);
-    });
+        expect(result, isEmpty);
+      },
+    );
+
+    test(
+      'when filtering using notInSet then matching row is returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aUri.notInSet({_firstUri}),
+        );
+
+        expect(result.length, 2);
+      },
+    );
+
+    test(
+      'when filtering using empty notInSet then no rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aUri.notInSet({}),
+        );
+
+        expect(result.length, 3);
+      },
+    );
   });
 }

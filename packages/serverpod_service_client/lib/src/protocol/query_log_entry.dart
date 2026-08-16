@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// A log entry for a database query.
-abstract class QueryLogEntry implements _i1.SerializableModel {
+abstract class QueryLogEntry
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   QueryLogEntry._({
     this.id,
     required this.serverId,
@@ -53,7 +54,7 @@ abstract class QueryLogEntry implements _i1.SerializableModel {
       numRows: jsonSerialization['numRows'] as int?,
       error: jsonSerialization['error'] as String?,
       stackTrace: jsonSerialization['stackTrace'] as String?,
-      slow: jsonSerialization['slow'] as bool,
+      slow: _i1.BoolJsonExtension.fromJson(jsonSerialization['slow']),
       order: jsonSerialization['order'] as int,
     );
   }
@@ -114,6 +115,25 @@ abstract class QueryLogEntry implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.QueryLogEntry',
+      if (id != null) 'id': id,
+      'serverId': serverId,
+      'sessionLogId': sessionLogId,
+      if (messageId != null) 'messageId': messageId,
+      'query': query,
+      'duration': duration,
+      if (numRows != null) 'numRows': numRows,
+      if (error != null) 'error': error,
+      if (stackTrace != null) 'stackTrace': stackTrace,
+      'slow': slow,
+      'order': order,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod.QueryLogEntry',
       if (id != null) 'id': id,
       'serverId': serverId,
       'sessionLogId': sessionLogId,
@@ -150,18 +170,18 @@ class _QueryLogEntryImpl extends QueryLogEntry {
     required bool slow,
     required int order,
   }) : super._(
-          id: id,
-          serverId: serverId,
-          sessionLogId: sessionLogId,
-          messageId: messageId,
-          query: query,
-          duration: duration,
-          numRows: numRows,
-          error: error,
-          stackTrace: stackTrace,
-          slow: slow,
-          order: order,
-        );
+         id: id,
+         serverId: serverId,
+         sessionLogId: sessionLogId,
+         messageId: messageId,
+         query: query,
+         duration: duration,
+         numRows: numRows,
+         error: error,
+         stackTrace: stackTrace,
+         slow: slow,
+         order: order,
+       );
 
   /// Returns a shallow copy of this [QueryLogEntry]
   /// with some or all fields replaced by the given arguments.

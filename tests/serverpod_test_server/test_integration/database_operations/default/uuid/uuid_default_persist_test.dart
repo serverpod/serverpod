@@ -7,10 +7,12 @@ void main() async {
   var session = await IntegrationTestServer().session();
 
   group('Given a class with "defaultPersist" UUID fields,', () {
-    tearDownAll(() async => UuidDefaultPersist.db.deleteWhere(
-          session,
-          where: (_) => Constant.bool(true),
-        ));
+    tearDownAll(
+      () async => UuidDefaultPersist.db.deleteWhere(
+        session,
+        where: (_) => Constant.bool(true),
+      ),
+    );
 
     test(
       'when creating a record in the database, then the "defaultPersist=random" UUID field should not be null and should generate a valid UUID',
@@ -22,8 +24,9 @@ void main() async {
         );
         expect(databaseObject.uuidDefaultPersistRandom, isNotNull);
         expect(
-          RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
-              .hasMatch(databaseObject.uuidDefaultPersistRandom.toString()),
+          RegExp(
+            r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+          ).hasMatch(databaseObject.uuidDefaultPersistRandom.toString()),
           isTrue,
         );
       },
@@ -39,8 +42,9 @@ void main() async {
         );
         expect(databaseObject.uuidDefaultPersistRandomV7, isNotNull);
         expect(
-          RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
-              .hasMatch(databaseObject.uuidDefaultPersistRandomV7.toString()),
+          RegExp(
+            r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+          ).hasMatch(databaseObject.uuidDefaultPersistRandomV7.toString()),
           isTrue,
         );
       },
@@ -73,8 +77,9 @@ void main() async {
         var databaseObject = await UuidDefaultPersist.db.findFirstRow(session);
         expect(databaseObject?.uuidDefaultPersistRandom, isNotNull);
         expect(
-          RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
-              .hasMatch(databaseObject!.uuidDefaultPersistRandom.toString()),
+          RegExp(
+            r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+          ).hasMatch(databaseObject!.uuidDefaultPersistRandom.toString()),
           isTrue,
         );
       },
@@ -92,8 +97,9 @@ void main() async {
         var databaseObject = await UuidDefaultPersist.db.findFirstRow(session);
         expect(databaseObject?.uuidDefaultPersistRandomV7, isNotNull);
         expect(
-          RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
-              .hasMatch(databaseObject!.uuidDefaultPersistRandomV7.toString()),
+          RegExp(
+            r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+          ).hasMatch(databaseObject!.uuidDefaultPersistRandomV7.toString()),
           isTrue,
         );
       },

@@ -12,8 +12,14 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-sealed class SealedNoChild implements _i1.SerializableModel {
+sealed class SealedNoChild
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   SealedNoChild({required this.name});
 
   String name;
+
+  /// Returns a shallow copy of this [SealedNoChild]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
+  SealedNoChild copyWith({String? name});
 }

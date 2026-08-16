@@ -1,0 +1,5 @@
+class: ServerOnlyChangedIdFieldClass
+serverOnly: true
+table: server_only_changed_id_field_class
+fields:
+  id: UuidValue?, defaultPersist=random

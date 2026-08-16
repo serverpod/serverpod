@@ -13,40 +13,44 @@ void main() async {
 
   group('Given an empty database', () {
     test(
-        'when trying to delete a row that doesn\'t exist then an error is thrown.',
-        () {
-      expect(
-        SimpleData.db.deleteRow(
-          session,
-          SimpleData(id: 1, num: 1),
-        ),
-        throwsA(isA<DatabaseDeleteRowException>()),
-      );
-    });
+      'when trying to delete a row that doesn\'t exist then an error is thrown.',
+      () {
+        expect(
+          SimpleData.db.deleteRow(
+            session,
+            SimpleData(id: 1, num: 1),
+          ),
+          throwsA(isA<DatabaseDeleteRowException>()),
+        );
+      },
+    );
 
     test(
-        'when trying to batch delete a row that doesn\'t exist then an error is thrown.',
-        () {
-      expect(
-        SimpleData.db.delete(
+      'when trying to batch delete a row that doesn\'t exist then an error is thrown.',
+      () {
+        expect(
+          SimpleData.db.delete(
+            session,
+            [SimpleData(id: 1, num: 1)],
+          ),
+          throwsA(isA<DatabaseException>()),
+        );
+      },
+      skip:
+          'This call is not atomic but should be, reenable this test when bug is fixed.',
+    );
+
+    test(
+      'when trying to delete where (all) then an empty list is returned.',
+      () async {
+        var result = await SimpleData.db.deleteWhere(
           session,
-          [SimpleData(id: 1, num: 1)],
-        ),
-        throwsA(isA<DatabaseException>()),
-      );
-    },
-        skip:
-            'This call is not atomic but should be, reenable this test when bug is fixed.');
+          where: (t) => Constant.bool(true),
+        );
 
-    test('when trying to delete where (all) then an empty list is returned.',
-        () async {
-      var result = await SimpleData.db.deleteWhere(
-        session,
-        where: (t) => Constant.bool(true),
-      );
-
-      expect(result, []);
-    });
+        expect(result, []);
+      },
+    );
   });
 
   group('Given a list of entries', () {
@@ -123,6 +127,60 @@ void main() async {
         expect(numbers, [data[0].num, data[2].num]);
       });
     });
+
+    group('when deleting based on filter with orderBy', () {
+      late List<SimpleData> deleteResult;
+
+      setUp(() async {
+        deleteResult = await SimpleData.db.deleteWhere(
+          session,
+          where: (t) => t.num.inSet({data[0].num, data[1].num, data[2].num}),
+          orderBy: (t) => t.num,
+        );
+      });
+
+      test('then removed rows are returned in ascending order', () async {
+        expect(deleteResult, hasLength(3));
+        var numbers = deleteResult.map((e) => e.num).toList();
+        expect(numbers, [1, 2, 3]);
+      });
+    });
+
+    group('when deleting based on filter with descending orderBy', () {
+      late List<SimpleData> deleteResult;
+
+      setUp(() async {
+        deleteResult = await SimpleData.db.deleteWhere(
+          session,
+          where: (t) => t.num.inSet({data[0].num, data[1].num, data[2].num}),
+          orderBy: (t) => t.num.desc(),
+        );
+      });
+
+      test('then removed rows are returned in descending order', () async {
+        expect(deleteResult, hasLength(3));
+        var numbers = deleteResult.map((e) => e.num).toList();
+        expect(numbers, [3, 2, 1]);
+      });
+    });
+
+    group('when deleting based on filter with orderByList', () {
+      late List<SimpleData> deleteResult;
+
+      setUp(() async {
+        deleteResult = await SimpleData.db.deleteWhere(
+          session,
+          where: (t) => t.num.inSet({data[0].num, data[1].num, data[2].num}),
+          orderByList: (t) => [t.num.asc()],
+        );
+      });
+
+      test('then removed rows are returned in ascending order', () async {
+        expect(deleteResult, hasLength(3));
+        var numbers = deleteResult.map((e) => e.num).toList();
+        expect(numbers, [1, 2, 3]);
+      });
+    });
   });
 
   group(' ', () {
@@ -142,149 +200,270 @@ void main() async {
     });
 
     test(
-        'Given an inserted object when deleting that row then the id of the row is returned.',
-        () async {
-      var simpleData = SimpleData(num: 1);
-      var inserted = await SimpleData.db.insertRow(session, simpleData);
+      'Given an inserted object when deleting that row then the id of the row is returned.',
+      () async {
+        var simpleData = SimpleData(num: 1);
+        var inserted = await SimpleData.db.insertRow(session, simpleData);
 
-      var deleted = await await SimpleData.db.deleteRow(
-        session,
-        inserted,
-      );
-      expect(deleted.id!, inserted.id);
-    });
-
-    test(
-        'Given an inserted object when deleting that row then it cannot be retrieved from the db.',
-        () async {
-      var simpleData = SimpleData(num: 1);
-      var inserted = await SimpleData.db.insertRow(session, simpleData);
-      var deleted = await SimpleData.db.deleteRow(session, inserted);
-
-      var retrieved = await SimpleData.db.findById(session, deleted.id!);
-
-      expect(retrieved, isNull);
-    });
+        var deleted = await SimpleData.db.deleteRow(
+          session,
+          inserted,
+        );
+        expect(deleted.id!, inserted.id);
+      },
+    );
 
     test(
-        'Given two inserted objects when deleting all then the ids of the rows are returned.',
-        () async {
-      var simpleData1 = SimpleData(num: 1);
-      var simpleData2 = SimpleData(num: 2);
-      var inserted1 = await SimpleData.db.insertRow(session, simpleData1);
-      var inserted2 = await SimpleData.db.insertRow(session, simpleData2);
+      'Given an inserted object when deleting that row then it cannot be retrieved from the db.',
+      () async {
+        var simpleData = SimpleData(num: 1);
+        var inserted = await SimpleData.db.insertRow(session, simpleData);
+        var deleted = await SimpleData.db.deleteRow(session, inserted);
 
-      var deleted = await SimpleData.db.deleteWhere(
-        where: (t) => Constant.bool(true),
-        session,
-      );
+        var retrieved = await SimpleData.db.findById(session, deleted.id!);
 
-      var deletedIds = deleted.map((e) => e.id);
-
-      expect(deletedIds, hasLength(2));
-      expect(deletedIds, contains(inserted1.id));
-      expect(deletedIds, contains(inserted2.id));
-    });
+        expect(retrieved, isNull);
+      },
+    );
 
     test(
-        'Given two entries in the database when batch deleting the rows then the deleted ids are returned.',
-        () async {
-      var data = <UniqueData>[
-        UniqueData(number: 1, email: 'info@serverpod.dev'),
-        UniqueData(number: 2, email: 'dev@serverpod.dev'),
-      ];
+      'Given two inserted objects when deleting all then the ids of the rows are returned.',
+      () async {
+        var simpleData1 = SimpleData(num: 1);
+        var simpleData2 = SimpleData(num: 2);
+        var inserted1 = await SimpleData.db.insertRow(session, simpleData1);
+        var inserted2 = await SimpleData.db.insertRow(session, simpleData2);
 
-      var inserted = await UniqueData.db.insert(session, data);
+        var deleted = await SimpleData.db.deleteWhere(
+          where: (t) => Constant.bool(true),
+          session,
+        );
 
-      var deletedIds = await UniqueData.db.delete(session, inserted);
+        var deletedIds = deleted.map((e) => e.id);
 
-      expect(deletedIds.first.id!, inserted.first.id);
-      expect(deletedIds.last.id!, inserted.last.id);
-    });
-
-    test(
-        'Given two entries in the database when batch deleting the rows then the rows are deleted from the database.',
-        () async {
-      var data = <UniqueData>[
-        UniqueData(number: 1, email: 'info@serverpod.dev'),
-        UniqueData(number: 2, email: 'dev@serverpod.dev'),
-      ];
-
-      var inserted = await UniqueData.db.insert(session, data);
-
-      await UniqueData.db.delete(session, inserted);
-
-      var first = await UniqueData.db.findById(session, inserted.first.id!);
-      var last = await UniqueData.db.findById(session, inserted.last.id!);
-
-      expect(first, isNull);
-      expect(last, isNull);
-    });
+        expect(deletedIds, hasLength(2));
+        expect(deletedIds, contains(inserted1.id));
+        expect(deletedIds, contains(inserted2.id));
+      },
+    );
 
     test(
-        'Given two entries in the database when batch deleting fails no rows are deleted from the database.',
-        () async {
-      var data = <UniqueData>[
-        UniqueData(number: 1, email: 'info@serverpod.dev'),
-        UniqueData(number: 2, email: 'dev@serverpod.dev'),
-      ];
+      'Given two entries in the database when batch deleting the rows then the deleted ids are returned.',
+      () async {
+        var data = <UniqueData>[
+          UniqueData(number: 1, email: 'info@serverpod.dev'),
+          UniqueData(number: 2, email: 'dev@serverpod.dev'),
+        ];
 
-      var inserted = await UniqueData.db.insert(session, data);
+        var inserted = await UniqueData.db.insert(session, data);
 
-      var relationalData = RelatedUniqueData(
-        number: 1,
-        uniqueDataId: inserted.last.id!,
-      );
+        var deletedIds = await UniqueData.db.delete(session, inserted);
 
-      // This restricts the delete of the second entry
-      await RelatedUniqueData.db.insertRow(session, relationalData);
-
-      expect(
-        () async => await UniqueData.db.delete(session, inserted),
-        throwsA(isA<DatabaseQueryException>()
-            .having((e) => e.code, 'code', PgErrorCode.foreignKeyViolation)),
-      );
-
-      var first = await UniqueData.db.findById(session, inserted.first.id!);
-      var last = await UniqueData.db.findById(session, inserted.last.id!);
-
-      expect(first, isNotNull);
-      expect(last, isNotNull);
-    });
+        expect(deletedIds.first.id!, inserted.first.id);
+        expect(deletedIds.last.id!, inserted.last.id);
+      },
+    );
 
     test(
-        'Given two entries in the database when batch deleting one the other entry is still in the database.',
-        () async {
-      var data = <UniqueData>[
-        UniqueData(number: 1, email: 'info@serverpod.dev'),
-        UniqueData(number: 2, email: 'dev@serverpod.dev'),
-      ];
+      'Given two entries in the database when batch deleting with orderBy then deleted rows are returned in ascending order.',
+      () async {
+        var data = <UniqueData>[
+          UniqueData(number: 2, email: 'dev@serverpod.dev'),
+          UniqueData(number: 1, email: 'info@serverpod.dev'),
+        ];
 
-      var inserted = await UniqueData.db.insert(session, data);
+        var inserted = await UniqueData.db.insert(session, data);
 
-      await UniqueData.db.delete(session, [inserted.first]);
+        var deleted = await UniqueData.db.delete(
+          session,
+          inserted,
+          orderBy: (t) => t.number,
+        );
 
-      var first = await UniqueData.db.findById(session, inserted.first.id!);
-      var last = await UniqueData.db.findById(session, inserted.last.id!);
-
-      expect(first, isNull);
-      expect(last, isNotNull);
-    });
+        expect(deleted, hasLength(2));
+        expect(deleted.map((e) => e.number).toList(), [1, 2]);
+      },
+    );
 
     test(
-        'Given two entries in the database when batch deleting one only that id is returned.',
-        () async {
-      var data = <UniqueData>[
-        UniqueData(number: 1, email: 'info@serverpod.dev'),
-        UniqueData(number: 2, email: 'dev@serverpod.dev'),
-      ];
+      'Given two entries in the database when batch deleting with descending orderBy then deleted rows are returned in descending order.',
+      () async {
+        var data = <UniqueData>[
+          UniqueData(number: 1, email: 'info@serverpod.dev'),
+          UniqueData(number: 2, email: 'dev@serverpod.dev'),
+        ];
 
-      var inserted = await UniqueData.db.insert(session, data);
+        var inserted = await UniqueData.db.insert(session, data);
 
-      var deleted = await UniqueData.db.delete(session, [inserted.first]);
+        var deleted = await UniqueData.db.delete(
+          session,
+          inserted,
+          orderBy: (t) => t.number.desc(),
+        );
 
-      expect(deleted, hasLength(1));
-      expect(deleted.first.id!, inserted.first.id);
-    });
+        expect(deleted, hasLength(2));
+        expect(deleted.map((e) => e.number).toList(), [2, 1]);
+      },
+    );
+
+    test(
+      'Given two entries in the database with the same number when batch deleting with orderByList then deleted rows are returned in ascending order of email.',
+      () async {
+        var data = <UniqueData>[
+          UniqueData(number: 1, email: 'info@serverpod.dev'),
+          UniqueData(number: 1, email: 'dev@serverpod.dev'),
+        ];
+
+        var inserted = await UniqueData.db.insert(session, data);
+
+        var deleted = await UniqueData.db.delete(
+          session,
+          inserted,
+          orderByList: (t) => [t.number.asc(), t.email.asc()],
+        );
+
+        expect(deleted, hasLength(2));
+        expect(deleted.map((e) => e.number).toList(), [1, 1]);
+        expect(deleted.map((e) => e.email).toList(), [
+          'dev@serverpod.dev',
+          'info@serverpod.dev',
+        ]);
+      },
+    );
+
+    test(
+      'Given two entries in the database when batch deleting the rows then the rows are deleted from the database.',
+      () async {
+        var data = <UniqueData>[
+          UniqueData(number: 1, email: 'info@serverpod.dev'),
+          UniqueData(number: 2, email: 'dev@serverpod.dev'),
+        ];
+
+        var inserted = await UniqueData.db.insert(session, data);
+
+        await UniqueData.db.delete(session, inserted);
+
+        var first = await UniqueData.db.findById(session, inserted.first.id!);
+        var last = await UniqueData.db.findById(session, inserted.last.id!);
+
+        expect(first, isNull);
+        expect(last, isNull);
+      },
+    );
+
+    test(
+      'Given two entries in the database when batch deleting fails no rows are deleted from the database.',
+      () async {
+        var data = <UniqueData>[
+          UniqueData(number: 1, email: 'info@serverpod.dev'),
+          UniqueData(number: 2, email: 'dev@serverpod.dev'),
+        ];
+
+        var inserted = await UniqueData.db.insert(session, data);
+
+        var relationalData = RelatedUniqueData(
+          number: 1,
+          uniqueDataId: inserted.last.id!,
+        );
+
+        // This restricts the delete of the second entry
+        await RelatedUniqueData.db.insertRow(session, relationalData);
+
+        expect(
+          () async => await UniqueData.db.delete(session, inserted),
+          throwsA(
+            isA<DatabaseQueryException>().having(
+              (e) => e.code,
+              'code',
+              PgErrorCode.foreignKeyViolation,
+            ),
+          ),
+        );
+
+        var first = await UniqueData.db.findById(session, inserted.first.id!);
+        var last = await UniqueData.db.findById(session, inserted.last.id!);
+
+        expect(first, isNotNull);
+        expect(last, isNotNull);
+      },
+    );
+
+    test(
+      'Given two entries in the database when batch deleting one the other entry is still in the database.',
+      () async {
+        var data = <UniqueData>[
+          UniqueData(number: 1, email: 'info@serverpod.dev'),
+          UniqueData(number: 2, email: 'dev@serverpod.dev'),
+        ];
+
+        var inserted = await UniqueData.db.insert(session, data);
+
+        await UniqueData.db.delete(session, [inserted.first]);
+
+        var first = await UniqueData.db.findById(session, inserted.first.id!);
+        var last = await UniqueData.db.findById(session, inserted.last.id!);
+
+        expect(first, isNull);
+        expect(last, isNotNull);
+      },
+    );
+
+    test(
+      'Given two entries in the database when batch deleting one only that id is returned.',
+      () async {
+        var data = <UniqueData>[
+          UniqueData(number: 1, email: 'info@serverpod.dev'),
+          UniqueData(number: 2, email: 'dev@serverpod.dev'),
+        ];
+
+        var inserted = await UniqueData.db.insert(session, data);
+
+        var deleted = await UniqueData.db.delete(session, [inserted.first]);
+
+        expect(deleted, hasLength(1));
+        expect(deleted.first.id!, inserted.first.id);
+      },
+    );
+
+    test(
+      'Given an inserted entry '
+      'when batch deleting with noReturn set to true '
+      'then an empty list is returned but the rows are removed.',
+      () async {
+        var inserted = (await UniqueData.db.insert(session, [
+          UniqueData(number: 1, email: 'a@serverpod.dev'),
+        ])).first;
+
+        var result = await UniqueData.db.delete(
+          session,
+          [inserted],
+          noReturn: true,
+        );
+
+        expect(result, isEmpty);
+        expect(await UniqueData.db.find(session), isEmpty);
+      },
+    );
+
+    test(
+      'Given two inserted entries '
+      'when deleting rows matching a where expression with noReturn set to true '
+      'then an empty list is returned but the matching rows are removed.',
+      () async {
+        await UniqueData.db.insert(session, [
+          UniqueData(number: 1, email: 'a@serverpod.dev'),
+          UniqueData(number: 2, email: 'b@serverpod.dev'),
+        ]);
+
+        var result = await UniqueData.db.deleteWhere(
+          session,
+          where: (t) => Constant.bool(true),
+          noReturn: true,
+        );
+
+        expect(result, isEmpty);
+        expect(await UniqueData.db.find(session), isEmpty);
+      },
+    );
   });
 }

@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'simple_data.dart' as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class SimpleDataMap
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -22,10 +23,10 @@ abstract class SimpleDataMap
 
   factory SimpleDataMap.fromJson(Map<String, dynamic> jsonSerialization) {
     return SimpleDataMap(
-        data: (jsonSerialization['data'] as Map).map((k, v) => MapEntry(
-              k as String,
-              _i2.SimpleData.fromJson((v as Map<String, dynamic>)),
-            )));
+      data: _i3.Protocol().deserialize<Map<String, _i2.SimpleData>>(
+        jsonSerialization['data'],
+      ),
+    );
   }
 
   Map<String, _i2.SimpleData> data;
@@ -36,12 +37,18 @@ abstract class SimpleDataMap
   SimpleDataMap copyWith({Map<String, _i2.SimpleData>? data});
   @override
   Map<String, dynamic> toJson() {
-    return {'data': data.toJson(valueToJson: (v) => v.toJson())};
+    return {
+      '__className__': 'SimpleDataMap',
+      'data': data.toJson(valueToJson: (v) => v.toJson()),
+    };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {'data': data.toJson(valueToJson: (v) => v.toJsonForProtocol())};
+    return {
+      '__className__': 'SimpleDataMap',
+      'data': data.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+    };
   }
 
   @override
@@ -52,7 +59,7 @@ abstract class SimpleDataMap
 
 class _SimpleDataMapImpl extends SimpleDataMap {
   _SimpleDataMapImpl({required Map<String, _i2.SimpleData> data})
-      : super._(data: data);
+    : super._(data: data);
 
   /// Returns a shallow copy of this [SimpleDataMap]
   /// with some or all fields replaced by the given arguments.
@@ -60,14 +67,17 @@ class _SimpleDataMapImpl extends SimpleDataMap {
   @override
   SimpleDataMap copyWith({Map<String, _i2.SimpleData>? data}) {
     return SimpleDataMap(
-        data: data ??
-            this.data.map((
-                  key0,
-                  value0,
-                ) =>
-                    MapEntry(
-                      key0,
-                      value0.copyWith(),
-                    )));
+      data:
+          data ??
+          this.data.map(
+            (
+              key0,
+              value0,
+            ) => MapEntry(
+              key0,
+              value0.copyWith(),
+            ),
+          ),
+    );
   }
 }

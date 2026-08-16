@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 import 'package:web_socket/web_socket.dart';
@@ -16,9 +15,9 @@ void main() {
 
     setUp(() async {
       server = IntegrationTestServer.create();
-      await server.start();
+      await server.startWithDatabase();
       webSocket = await WebSocket.connect(
-        Uri.parse(serverMethodWebsocketUrl),
+        Uri.parse(server.methodWebSocketUrl),
       );
     });
 
@@ -27,31 +26,39 @@ void main() {
       await webSocket.tryClose();
     });
 
-    test('when an unrecognized message is sent then connection is closed.',
-        () async {
-      var webSocketCompleter = Completer<void>();
-      webSocket.textEvents.listen((event) {}, onDone: () {
-        webSocketCompleter.complete();
-      });
+    test(
+      'when an unrecognized message is sent then connection is closed.',
+      () async {
+        var webSocketCompleter = Completer<void>();
+        webSocket.textEvents.listen(
+          (event) {},
+          onDone: () {
+            webSocketCompleter.complete();
+          },
+        );
 
-      webSocket.sendText(unrecognizedCommandMessage);
+        webSocket.sendText(unrecognizedCommandMessage);
 
-      expectLater(
-        webSocketCompleter.future.timeout(Duration(seconds: 10)),
-        completes,
-      );
-    });
+        expectLater(
+          webSocketCompleter.future.timeout(Duration(seconds: 10)),
+          completes,
+        );
+      },
+    );
 
     test(
-        'when an unrecognized message is sent then BadRequestMessage response is received.',
-        () async {
-      var response = webSocket.textEvents.first.timeout(Duration(seconds: 10));
-      webSocket.sendText(unrecognizedCommandMessage);
+      'when an unrecognized message is sent then BadRequestMessage response is received.',
+      () async {
+        var response = webSocket.textEvents.first.timeout(
+          Duration(seconds: 10),
+        );
+        webSocket.sendText(unrecognizedCommandMessage);
 
-      expect(
-        await response,
-        BadRequestMessage.buildMessage(unrecognizedCommandMessage),
-      );
-    });
+        expect(
+          await response,
+          BadRequestMessage.buildMessage(unrecognizedCommandMessage),
+        );
+      },
+    );
   });
 }

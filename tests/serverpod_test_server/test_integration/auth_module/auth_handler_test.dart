@@ -24,18 +24,20 @@ void main() async {
       );
     });
 
-    test('when authentication succeeds then authId is set to authKey id',
-        () async {
-      var result = await authenticationHandler(
-        session,
-        '${authKey.id}:${authKey.key}',
-      );
+    test(
+      'when authentication succeeds then authId is set to authKey id',
+      () async {
+        var result = await authenticationHandler(
+          session,
+          '${authKey.id}:${authKey.key}',
+        );
 
-      expect(
-        result?.authId,
-        equals('${authKey.id}'),
-      );
-    });
+        expect(
+          result?.authId,
+          equals('${authKey.id}'),
+        );
+      },
+    );
 
     test('when authentication fails then authId is null', () async {
       var result = await authenticationHandler(

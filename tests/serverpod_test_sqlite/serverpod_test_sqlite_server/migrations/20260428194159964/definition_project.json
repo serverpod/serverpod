@@ -1,0 +1,6443 @@
+{
+  "__className__": "serverpod.DatabaseDefinition",
+  "schemaVersion": 2,
+  "moduleName": "serverpod_test_sqlite",
+  "tables": [
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "address",
+      "dartName": "Address",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "street",
+          "fieldName": "street",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "inhabitantId",
+          "fieldName": "inhabitantId",
+          "columnType": 6,
+          "isNullable": true,
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "address_fk_0",
+          "columns": [
+            "inhabitantId"
+          ],
+          "referenceTable": "citizen",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 4
+        }
+      ],
+      "indexes": [
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "inhabitant_index_idx",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "inhabitantId"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": false
+        }
+      ],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "address_uuid",
+      "dartName": "AddressUuid",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 7,
+          "isNullable": false,
+          "columnDefault": "random",
+          "dartType": "UuidValue"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "street",
+          "fieldName": "street",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "inhabitantId",
+          "fieldName": "inhabitantId",
+          "columnType": 6,
+          "isNullable": true,
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "address_uuid_fk_0",
+          "columns": [
+            "inhabitantId"
+          ],
+          "referenceTable": "citizen_int",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 4
+        }
+      ],
+      "indexes": [
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "inhabitant_uuid_index_idx",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "inhabitantId"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": false
+        }
+      ],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "arena",
+      "dartName": "Arena",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "arena_uuid",
+      "dartName": "ArenaUuid",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 7,
+          "isNullable": false,
+          "columnDefault": "random_v7",
+          "dartType": "UuidValue"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "bigint_default",
+      "dartName": "BigIntDefault",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "bigintDefaultStr",
+          "fieldName": "bigintDefaultStr",
+          "columnType": 0,
+          "isNullable": false,
+          "columnDefault": "'-1234567890123456789099999999'",
+          "dartType": "BigInt"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "bigintDefaultStrNull",
+          "fieldName": "bigintDefaultStrNull",
+          "columnType": 0,
+          "isNullable": true,
+          "columnDefault": "'1234567890123456789099999999'",
+          "dartType": "BigInt?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "bigint_default_mix",
+      "dartName": "BigIntDefaultMix",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "bigIntDefaultAndDefaultModel",
+          "fieldName": "bigIntDefaultAndDefaultModel",
+          "columnType": 0,
+          "isNullable": false,
+          "columnDefault": "'1'",
+          "dartType": "BigInt"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "bigIntDefaultAndDefaultPersist",
+          "fieldName": "bigIntDefaultAndDefaultPersist",
+          "columnType": 0,
+          "isNullable": false,
+          "columnDefault": "'12345678901234567890'",
+          "dartType": "BigInt"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "bigIntDefaultModelAndDefaultPersist",
+          "fieldName": "bigIntDefaultModelAndDefaultPersist",
+          "columnType": 0,
+          "isNullable": false,
+          "columnDefault": "'-1234567890123456789099999999'",
+          "dartType": "BigInt"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "bigint_default_model",
+      "dartName": "BigIntDefaultModel",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "bigIntDefaultModelStr",
+          "fieldName": "bigIntDefaultModelStr",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "BigInt"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "bigIntDefaultModelStrNull",
+          "fieldName": "bigIntDefaultModelStrNull",
+          "columnType": 0,
+          "isNullable": true,
+          "dartType": "BigInt?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "bigint_default_persist",
+      "dartName": "BigIntDefaultPersist",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "bigIntDefaultPersistStr",
+          "fieldName": "bigIntDefaultPersistStr",
+          "columnType": 0,
+          "isNullable": true,
+          "columnDefault": "'1234567890123456789099999999'",
+          "dartType": "BigInt?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "blocking",
+      "dartName": "Blocking",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "blockedId",
+          "fieldName": "blockedId",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "int"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "blockedById",
+          "fieldName": "blockedById",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "int"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "blocking_fk_0",
+          "columns": [
+            "blockedId"
+          ],
+          "referenceTable": "member",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 4
+        },
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "blocking_fk_1",
+          "columns": [
+            "blockedById"
+          ],
+          "referenceTable": "member",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 4
+        }
+      ],
+      "indexes": [
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "blocking_blocked_unique_idx",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "blockedId"
+            },
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "blockedById"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": false
+        }
+      ],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "book",
+      "dartName": "Book",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "title",
+          "fieldName": "title",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "bool_default",
+      "dartName": "BoolDefault",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "boolDefaultTrue",
+          "fieldName": "boolDefaultTrue",
+          "columnType": 1,
+          "isNullable": false,
+          "columnDefault": "true",
+          "dartType": "bool"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "boolDefaultFalse",
+          "fieldName": "boolDefaultFalse",
+          "columnType": 1,
+          "isNullable": false,
+          "columnDefault": "false",
+          "dartType": "bool"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "boolDefaultNullFalse",
+          "fieldName": "boolDefaultNullFalse",
+          "columnType": 1,
+          "isNullable": true,
+          "columnDefault": "false",
+          "dartType": "bool?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "bool_default_mix",
+      "dartName": "BoolDefaultMix",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "boolDefaultAndDefaultModel",
+          "fieldName": "boolDefaultAndDefaultModel",
+          "columnType": 1,
+          "isNullable": false,
+          "columnDefault": "true",
+          "dartType": "bool"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "boolDefaultAndDefaultPersist",
+          "fieldName": "boolDefaultAndDefaultPersist",
+          "columnType": 1,
+          "isNullable": false,
+          "columnDefault": "false",
+          "dartType": "bool"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "boolDefaultModelAndDefaultPersist",
+          "fieldName": "boolDefaultModelAndDefaultPersist",
+          "columnType": 1,
+          "isNullable": false,
+          "columnDefault": "false",
+          "dartType": "bool"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "bool_default_model",
+      "dartName": "BoolDefaultModel",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "boolDefaultModelTrue",
+          "fieldName": "boolDefaultModelTrue",
+          "columnType": 1,
+          "isNullable": false,
+          "dartType": "bool"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "boolDefaultModelFalse",
+          "fieldName": "boolDefaultModelFalse",
+          "columnType": 1,
+          "isNullable": false,
+          "dartType": "bool"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "boolDefaultModelNullFalse",
+          "fieldName": "boolDefaultModelNullFalse",
+          "columnType": 1,
+          "isNullable": false,
+          "dartType": "bool"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "bool_default_persist",
+      "dartName": "BoolDefaultPersist",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "boolDefaultPersistTrue",
+          "fieldName": "boolDefaultPersistTrue",
+          "columnType": 1,
+          "isNullable": true,
+          "columnDefault": "true",
+          "dartType": "bool?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "boolDefaultPersistFalse",
+          "fieldName": "boolDefaultPersistFalse",
+          "columnType": 1,
+          "isNullable": true,
+          "columnDefault": "false",
+          "dartType": "bool?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "cat",
+      "dartName": "Cat",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "motherId",
+          "fieldName": "motherId",
+          "columnType": 6,
+          "isNullable": true,
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "cat_fk_0",
+          "columns": [
+            "motherId"
+          ],
+          "referenceTable": "cat",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 0
+        }
+      ],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "changed_id_type_self",
+      "dartName": "ChangedIdTypeSelf",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 7,
+          "isNullable": false,
+          "columnDefault": "random",
+          "dartType": "UuidValue?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "nextId",
+          "fieldName": "nextId",
+          "columnType": 7,
+          "isNullable": true,
+          "dartType": "UuidValue?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "parentId",
+          "fieldName": "parentId",
+          "columnType": 7,
+          "isNullable": true,
+          "dartType": "UuidValue?"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "changed_id_type_self_fk_0",
+          "columns": [
+            "nextId"
+          ],
+          "referenceTable": "changed_id_type_self",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3
+        },
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "changed_id_type_self_fk_1",
+          "columns": [
+            "parentId"
+          ],
+          "referenceTable": "changed_id_type_self",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3
+        }
+      ],
+      "indexes": [
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "changed_id_type_self_next_unique_idx",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "nextId"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": false
+        }
+      ],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "chapter",
+      "dartName": "Chapter",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "title",
+          "fieldName": "title",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "_bookChaptersBookId",
+          "fieldName": "_bookChaptersBookId",
+          "columnType": 6,
+          "isNullable": true,
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "chapter_fk_0",
+          "columns": [
+            "_bookChaptersBookId"
+          ],
+          "referenceTable": "book",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3
+        }
+      ],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "child_table_explicit_column",
+      "dartName": "ChildClassExplicitColumn",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "non_table_parent_field",
+          "fieldName": "nonTableParentField",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "child_field",
+          "fieldName": "childField",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "citizen",
+      "dartName": "Citizen",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "companyId",
+          "fieldName": "companyId",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "int"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "oldCompanyId",
+          "fieldName": "oldCompanyId",
+          "columnType": 6,
+          "isNullable": true,
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "citizen_fk_0",
+          "columns": [
+            "companyId"
+          ],
+          "referenceTable": "company",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3
+        },
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "citizen_fk_1",
+          "columns": [
+            "oldCompanyId"
+          ],
+          "referenceTable": "company",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3
+        }
+      ],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "citizen_int",
+      "dartName": "CitizenInt",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "companyId",
+          "fieldName": "companyId",
+          "columnType": 7,
+          "isNullable": false,
+          "dartType": "UuidValue"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "oldCompanyId",
+          "fieldName": "oldCompanyId",
+          "columnType": 7,
+          "isNullable": true,
+          "dartType": "UuidValue?"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "citizen_int_fk_0",
+          "columns": [
+            "companyId"
+          ],
+          "referenceTable": "company_uuid",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3
+        },
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "citizen_int_fk_1",
+          "columns": [
+            "oldCompanyId"
+          ],
+          "referenceTable": "company_uuid",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3
+        }
+      ],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "city",
+      "dartName": "City",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "city_with_long_table_name_that_is_still_valid",
+      "dartName": "CityWithLongTableName",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "comment",
+      "dartName": "Comment",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "description",
+          "fieldName": "description",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "orderId",
+          "fieldName": "orderId",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "int"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "comment_fk_0",
+          "columns": [
+            "orderId"
+          ],
+          "referenceTable": "order",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 4
+        }
+      ],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "comment_int",
+      "dartName": "CommentInt",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "description",
+          "fieldName": "description",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "orderId",
+          "fieldName": "orderId",
+          "columnType": 7,
+          "isNullable": false,
+          "dartType": "UuidValue"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "comment_int_fk_0",
+          "columns": [
+            "orderId"
+          ],
+          "referenceTable": "order_uuid",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 4
+        }
+      ],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "company",
+      "dartName": "Company",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "townId",
+          "fieldName": "townId",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "int"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "company_fk_0",
+          "columns": [
+            "townId"
+          ],
+          "referenceTable": "town",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3
+        }
+      ],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "company_uuid",
+      "dartName": "CompanyUuid",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 7,
+          "isNullable": false,
+          "columnDefault": "random_v7",
+          "dartType": "UuidValue?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "townId",
+          "fieldName": "townId",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "int"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "company_uuid_fk_0",
+          "columns": [
+            "townId"
+          ],
+          "referenceTable": "town_int",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3
+        }
+      ],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "contractor",
+      "dartName": "Contractor",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "fk_contractor_service_id",
+          "fieldName": "serviceIdField",
+          "columnType": 6,
+          "isNullable": true,
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "contractor_fk_0",
+          "columns": [
+            "fk_contractor_service_id"
+          ],
+          "referenceTable": "service",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3
+        }
+      ],
+      "indexes": [
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "contractor_service_unique_idx",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "fk_contractor_service_id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": false
+        }
+      ],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "course",
+      "dartName": "Course",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "course_uuid",
+      "dartName": "CourseUuid",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 7,
+          "isNullable": false,
+          "columnDefault": "random_v7",
+          "dartType": "UuidValue?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "customer",
+      "dartName": "Customer",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "customer_int",
+      "dartName": "CustomerInt",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "datetime_default",
+      "dartName": "DateTimeDefault",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "dateTimeDefaultNow",
+          "fieldName": "dateTimeDefaultNow",
+          "columnType": 4,
+          "isNullable": false,
+          "columnDefault": "now",
+          "dartType": "DateTime"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "dateTimeDefaultStr",
+          "fieldName": "dateTimeDefaultStr",
+          "columnType": 4,
+          "isNullable": false,
+          "columnDefault": "2024-05-24T22:00:00.000Z",
+          "dartType": "DateTime"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "dateTimeDefaultStrNull",
+          "fieldName": "dateTimeDefaultStrNull",
+          "columnType": 4,
+          "isNullable": true,
+          "columnDefault": "2024-05-24T22:00:00.000Z",
+          "dartType": "DateTime?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "datetime_default_mix",
+      "dartName": "DateTimeDefaultMix",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "dateTimeDefaultAndDefaultModel",
+          "fieldName": "dateTimeDefaultAndDefaultModel",
+          "columnType": 4,
+          "isNullable": false,
+          "columnDefault": "2024-05-01T22:00:00.000Z",
+          "dartType": "DateTime"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "dateTimeDefaultAndDefaultPersist",
+          "fieldName": "dateTimeDefaultAndDefaultPersist",
+          "columnType": 4,
+          "isNullable": false,
+          "columnDefault": "2024-05-10T22:00:00.000Z",
+          "dartType": "DateTime"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "dateTimeDefaultModelAndDefaultPersist",
+          "fieldName": "dateTimeDefaultModelAndDefaultPersist",
+          "columnType": 4,
+          "isNullable": false,
+          "columnDefault": "2024-05-10T22:00:00.000Z",
+          "dartType": "DateTime"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "datetime_default_model",
+      "dartName": "DateTimeDefaultModel",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "dateTimeDefaultModelNow",
+          "fieldName": "dateTimeDefaultModelNow",
+          "columnType": 4,
+          "isNullable": false,
+          "dartType": "DateTime"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "dateTimeDefaultModelStr",
+          "fieldName": "dateTimeDefaultModelStr",
+          "columnType": 4,
+          "isNullable": false,
+          "dartType": "DateTime"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "dateTimeDefaultModelStrNull",
+          "fieldName": "dateTimeDefaultModelStrNull",
+          "columnType": 4,
+          "isNullable": true,
+          "dartType": "DateTime?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "datetime_default_persist",
+      "dartName": "DateTimeDefaultPersist",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "dateTimeDefaultPersistNow",
+          "fieldName": "dateTimeDefaultPersistNow",
+          "columnType": 4,
+          "isNullable": true,
+          "columnDefault": "now",
+          "dartType": "DateTime?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "dateTimeDefaultPersistStr",
+          "fieldName": "dateTimeDefaultPersistStr",
+          "columnType": 4,
+          "isNullable": true,
+          "columnDefault": "2024-05-10T22:00:00.000Z",
+          "dartType": "DateTime?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "department",
+      "dartName": "Department",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "double_default",
+      "dartName": "DoubleDefault",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "doubleDefault",
+          "fieldName": "doubleDefault",
+          "columnType": 3,
+          "isNullable": false,
+          "columnDefault": "10.5",
+          "dartType": "double"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "doubleDefaultNull",
+          "fieldName": "doubleDefaultNull",
+          "columnType": 3,
+          "isNullable": true,
+          "columnDefault": "20.5",
+          "dartType": "double?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "double_default_mix",
+      "dartName": "DoubleDefaultMix",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "doubleDefaultAndDefaultModel",
+          "fieldName": "doubleDefaultAndDefaultModel",
+          "columnType": 3,
+          "isNullable": false,
+          "columnDefault": "10.5",
+          "dartType": "double"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "doubleDefaultAndDefaultPersist",
+          "fieldName": "doubleDefaultAndDefaultPersist",
+          "columnType": 3,
+          "isNullable": false,
+          "columnDefault": "20.5",
+          "dartType": "double"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "doubleDefaultModelAndDefaultPersist",
+          "fieldName": "doubleDefaultModelAndDefaultPersist",
+          "columnType": 3,
+          "isNullable": false,
+          "columnDefault": "20.5",
+          "dartType": "double"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "double_default_model",
+      "dartName": "DoubleDefaultModel",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "doubleDefaultModel",
+          "fieldName": "doubleDefaultModel",
+          "columnType": 3,
+          "isNullable": false,
+          "dartType": "double"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "doubleDefaultModelNull",
+          "fieldName": "doubleDefaultModelNull",
+          "columnType": 3,
+          "isNullable": false,
+          "dartType": "double"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "double_default_persist",
+      "dartName": "DoubleDefaultPersist",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "doubleDefaultPersist",
+          "fieldName": "doubleDefaultPersist",
+          "columnType": 3,
+          "isNullable": true,
+          "columnDefault": "10.5",
+          "dartType": "double?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "duration_default",
+      "dartName": "DurationDefault",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "durationDefault",
+          "fieldName": "durationDefault",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "94230100",
+          "dartType": "Duration"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "durationDefaultNull",
+          "fieldName": "durationDefaultNull",
+          "columnType": 6,
+          "isNullable": true,
+          "columnDefault": "177640100",
+          "dartType": "Duration?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "duration_default_mix",
+      "dartName": "DurationDefaultMix",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "durationDefaultAndDefaultModel",
+          "fieldName": "durationDefaultAndDefaultModel",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "94230100",
+          "dartType": "Duration"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "durationDefaultAndDefaultPersist",
+          "fieldName": "durationDefaultAndDefaultPersist",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "177640100",
+          "dartType": "Duration"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "durationDefaultModelAndDefaultPersist",
+          "fieldName": "durationDefaultModelAndDefaultPersist",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "177640100",
+          "dartType": "Duration"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "duration_default_model",
+      "dartName": "DurationDefaultModel",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "durationDefaultModel",
+          "fieldName": "durationDefaultModel",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "Duration"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "durationDefaultModelNull",
+          "fieldName": "durationDefaultModelNull",
+          "columnType": 6,
+          "isNullable": true,
+          "dartType": "Duration?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "duration_default_persist",
+      "dartName": "DurationDefaultPersist",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "durationDefaultPersist",
+          "fieldName": "durationDefaultPersist",
+          "columnType": 6,
+          "isNullable": true,
+          "columnDefault": "94230100",
+          "dartType": "Duration?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "employee",
+      "dartName": "Employee",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "fk_employee_department_id",
+          "fieldName": "departmentId",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "int"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "employee_fk_0",
+          "columns": [
+            "fk_employee_department_id"
+          ],
+          "referenceTable": "department",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3
+        }
+      ],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "empty_model_relation_item",
+      "dartName": "EmptyModelRelationItem",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "_relationEmptyModelItemsRelationEmptyModelId",
+          "fieldName": "_relationEmptyModelItemsRelationEmptyModelId",
+          "columnType": 6,
+          "isNullable": true,
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "empty_model_relation_item_fk_0",
+          "columns": [
+            "_relationEmptyModelItemsRelationEmptyModelId"
+          ],
+          "referenceTable": "relation_empty_model",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3
+        }
+      ],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "empty_model_with_table",
+      "dartName": "EmptyModelWithTable",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "enrollment",
+      "dartName": "Enrollment",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "studentId",
+          "fieldName": "studentId",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "int"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "courseId",
+          "fieldName": "courseId",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "int"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "enrollment_fk_0",
+          "columns": [
+            "studentId"
+          ],
+          "referenceTable": "student",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 4
+        },
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "enrollment_fk_1",
+          "columns": [
+            "courseId"
+          ],
+          "referenceTable": "course",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 4
+        }
+      ],
+      "indexes": [
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "enrollment_index_idx",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "studentId"
+            },
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "courseId"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": false
+        }
+      ],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "enrollment_int",
+      "dartName": "EnrollmentInt",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "studentId",
+          "fieldName": "studentId",
+          "columnType": 7,
+          "isNullable": false,
+          "dartType": "UuidValue"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "courseId",
+          "fieldName": "courseId",
+          "columnType": 7,
+          "isNullable": false,
+          "dartType": "UuidValue"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "enrollment_int_fk_0",
+          "columns": [
+            "studentId"
+          ],
+          "referenceTable": "student_uuid",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 4
+        },
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "enrollment_int_fk_1",
+          "columns": [
+            "courseId"
+          ],
+          "referenceTable": "course_uuid",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 4
+        }
+      ],
+      "indexes": [
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "enrollment_int_index_idx",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "studentId"
+            },
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "courseId"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": false
+        }
+      ],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "enum_default",
+      "dartName": "EnumDefault",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "byNameEnumDefault",
+          "fieldName": "byNameEnumDefault",
+          "columnType": 0,
+          "isNullable": false,
+          "columnDefault": "'byName1'",
+          "dartType": "protocol:ByNameEnum"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "byNameEnumDefaultNull",
+          "fieldName": "byNameEnumDefaultNull",
+          "columnType": 0,
+          "isNullable": true,
+          "columnDefault": "'byName2'",
+          "dartType": "protocol:ByNameEnum?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "byIndexEnumDefault",
+          "fieldName": "byIndexEnumDefault",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "0",
+          "dartType": "protocol:ByIndexEnum"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "byIndexEnumDefaultNull",
+          "fieldName": "byIndexEnumDefaultNull",
+          "columnType": 6,
+          "isNullable": true,
+          "columnDefault": "1",
+          "dartType": "protocol:ByIndexEnum?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "enum_default_mix",
+      "dartName": "EnumDefaultMix",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "byNameEnumDefaultAndDefaultModel",
+          "fieldName": "byNameEnumDefaultAndDefaultModel",
+          "columnType": 0,
+          "isNullable": false,
+          "columnDefault": "'byName1'",
+          "dartType": "protocol:ByNameEnum"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "byNameEnumDefaultAndDefaultPersist",
+          "fieldName": "byNameEnumDefaultAndDefaultPersist",
+          "columnType": 0,
+          "isNullable": false,
+          "columnDefault": "'byName2'",
+          "dartType": "protocol:ByNameEnum"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "byNameEnumDefaultModelAndDefaultPersist",
+          "fieldName": "byNameEnumDefaultModelAndDefaultPersist",
+          "columnType": 0,
+          "isNullable": false,
+          "columnDefault": "'byName2'",
+          "dartType": "protocol:ByNameEnum"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "enum_default_model",
+      "dartName": "EnumDefaultModel",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "byNameEnumDefaultModel",
+          "fieldName": "byNameEnumDefaultModel",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "protocol:ByNameEnum"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "byNameEnumDefaultModelNull",
+          "fieldName": "byNameEnumDefaultModelNull",
+          "columnType": 0,
+          "isNullable": true,
+          "dartType": "protocol:ByNameEnum?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "byIndexEnumDefaultModel",
+          "fieldName": "byIndexEnumDefaultModel",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "protocol:ByIndexEnum"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "byIndexEnumDefaultModelNull",
+          "fieldName": "byIndexEnumDefaultModelNull",
+          "columnType": 6,
+          "isNullable": true,
+          "dartType": "protocol:ByIndexEnum?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "enum_default_persist",
+      "dartName": "EnumDefaultPersist",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "byNameEnumDefaultPersist",
+          "fieldName": "byNameEnumDefaultPersist",
+          "columnType": 0,
+          "isNullable": true,
+          "columnDefault": "'byName1'",
+          "dartType": "protocol:ByNameEnum?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "byIndexEnumDefaultPersist",
+          "fieldName": "byIndexEnumDefaultPersist",
+          "columnType": 6,
+          "isNullable": true,
+          "columnDefault": "0",
+          "dartType": "protocol:ByIndexEnum?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "int_default",
+      "dartName": "IntDefault",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "intDefault",
+          "fieldName": "intDefault",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "10",
+          "dartType": "int"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "intDefaultNull",
+          "fieldName": "intDefaultNull",
+          "columnType": 6,
+          "isNullable": true,
+          "columnDefault": "20",
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "int_default_mix",
+      "dartName": "IntDefaultMix",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "intDefaultAndDefaultModel",
+          "fieldName": "intDefaultAndDefaultModel",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "10",
+          "dartType": "int"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "intDefaultAndDefaultPersist",
+          "fieldName": "intDefaultAndDefaultPersist",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "20",
+          "dartType": "int"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "intDefaultModelAndDefaultPersist",
+          "fieldName": "intDefaultModelAndDefaultPersist",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "20",
+          "dartType": "int"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "int_default_model",
+      "dartName": "IntDefaultModel",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "intDefaultModel",
+          "fieldName": "intDefaultModel",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "int"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "intDefaultModelNull",
+          "fieldName": "intDefaultModelNull",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "int"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "int_default_persist",
+      "dartName": "IntDefaultPersist",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "intDefaultPersist",
+          "fieldName": "intDefaultPersist",
+          "columnType": 6,
+          "isNullable": true,
+          "columnDefault": "10",
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "long_implicit_id_field",
+      "dartName": "LongImplicitIdField",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id",
+          "fieldName": "_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id",
+          "columnType": 6,
+          "isNullable": true,
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "long_implicit_id_field_fk_0",
+          "columns": [
+            "_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id"
+          ],
+          "referenceTable": "long_implicit_id_field_collection",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3
+        }
+      ],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "long_implicit_id_field_collection",
+      "dartName": "LongImplicitIdFieldCollection",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "max_field_name",
+      "dartName": "MaxFieldName",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo",
+          "fieldName": "thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "member",
+      "dartName": "Member",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "model_with_required_field",
+      "dartName": "ModelWithRequiredField",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "email",
+          "fieldName": "email",
+          "columnType": 0,
+          "isNullable": true,
+          "dartType": "String?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "phone",
+          "fieldName": "phone",
+          "columnType": 0,
+          "isNullable": true,
+          "dartType": "String?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "modified_column_name",
+      "dartName": "ModifiedColumnName",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "originalColumn",
+          "fieldName": "originalColumn",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "modified_column",
+          "fieldName": "modifiedColumn",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "multiple_max_field_name",
+      "dartName": "MultipleMaxFieldName",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1",
+          "fieldName": "thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2",
+          "fieldName": "thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId",
+          "fieldName": "_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId",
+          "columnType": 6,
+          "isNullable": true,
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "multiple_max_field_name_fk_0",
+          "columns": [
+            "_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId"
+          ],
+          "referenceTable": "relation_to_multiple_max_field_name",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3
+        }
+      ],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "object_field_persist",
+      "dartName": "ObjectFieldPersist",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "normal",
+          "fieldName": "normal",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "object_field_scopes",
+      "dartName": "ObjectFieldScopes",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "normal",
+          "fieldName": "normal",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "database",
+          "fieldName": "database",
+          "columnType": 0,
+          "isNullable": true,
+          "dartType": "String?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "object_with_bit",
+      "dartName": "ObjectWithBit",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "bit",
+          "fieldName": "bit",
+          "columnType": 13,
+          "isNullable": false,
+          "dartType": "Bit(512)",
+          "vectorDimension": 512
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "bitNullable",
+          "fieldName": "bitNullable",
+          "columnType": 13,
+          "isNullable": true,
+          "dartType": "Bit(512)?",
+          "vectorDimension": 512
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "bitIndexedHnsw",
+          "fieldName": "bitIndexedHnsw",
+          "columnType": 13,
+          "isNullable": false,
+          "dartType": "Bit(512)",
+          "vectorDimension": 512
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "bitIndexedHnswWithParams",
+          "fieldName": "bitIndexedHnswWithParams",
+          "columnType": 13,
+          "isNullable": false,
+          "dartType": "Bit(512)",
+          "vectorDimension": 512
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "bitIndexedIvfflat",
+          "fieldName": "bitIndexedIvfflat",
+          "columnType": 13,
+          "isNullable": false,
+          "dartType": "Bit(512)",
+          "vectorDimension": 512
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "bitIndexedIvfflatWithParams",
+          "fieldName": "bitIndexedIvfflatWithParams",
+          "columnType": 13,
+          "isNullable": false,
+          "dartType": "Bit(512)",
+          "vectorDimension": 512
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "bit_index_default",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "bit"
+            }
+          ],
+          "type": "hnsw",
+          "isUnique": false,
+          "isPrimary": false,
+          "vectorDistanceFunction": "hamming",
+          "vectorColumnType": 13
+        },
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "bit_index_hnsw",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "bitIndexedHnsw"
+            }
+          ],
+          "type": "hnsw",
+          "isUnique": false,
+          "isPrimary": false,
+          "vectorDistanceFunction": "hamming",
+          "vectorColumnType": 13
+        },
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "bit_index_hnsw_with_params",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "bitIndexedHnswWithParams"
+            }
+          ],
+          "type": "hnsw",
+          "isUnique": false,
+          "isPrimary": false,
+          "vectorDistanceFunction": "jaccard",
+          "vectorColumnType": 13,
+          "parameters": {
+            "m": "64",
+            "ef_construction": "200"
+          }
+        },
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "bit_index_ivfflat",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "bitIndexedIvfflat"
+            }
+          ],
+          "type": "ivfflat",
+          "isUnique": false,
+          "isPrimary": false,
+          "vectorDistanceFunction": "hamming",
+          "vectorColumnType": 13
+        },
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "bit_index_ivfflat_with_params",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "bitIndexedIvfflatWithParams"
+            }
+          ],
+          "type": "ivfflat",
+          "isUnique": false,
+          "isPrimary": false,
+          "vectorDistanceFunction": "hamming",
+          "vectorColumnType": 13,
+          "parameters": {
+            "lists": "300"
+          }
+        }
+      ],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "object_with_bytedata",
+      "dartName": "ObjectWithByteData",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "byteData",
+          "fieldName": "byteData",
+          "columnType": 5,
+          "isNullable": false,
+          "dartType": "dart:typed_data:ByteData"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "object_with_duration",
+      "dartName": "ObjectWithDuration",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "duration",
+          "fieldName": "duration",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "Duration"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "object_with_dynamic",
+      "dartName": "ObjectWithDynamic",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "payload",
+          "fieldName": "payload",
+          "columnType": 8,
+          "isNullable": false,
+          "dartType": "dynamic"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "jsonbPayload",
+          "fieldName": "jsonbPayload",
+          "columnType": 14,
+          "isNullable": false,
+          "dartType": "dynamic"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "payloadList",
+          "fieldName": "payloadList",
+          "columnType": 8,
+          "isNullable": false,
+          "dartType": "List<dynamic>"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "payloadMap",
+          "fieldName": "payloadMap",
+          "columnType": 8,
+          "isNullable": false,
+          "dartType": "Map<String,dynamic>"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "payloadSet",
+          "fieldName": "payloadSet",
+          "columnType": 8,
+          "isNullable": false,
+          "dartType": "Set<dynamic>"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "payloadMapWithDynamicKeys",
+          "fieldName": "payloadMapWithDynamicKeys",
+          "columnType": 14,
+          "isNullable": false,
+          "dartType": "Map<dynamic,dynamic>"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "object_with_enum",
+      "dartName": "ObjectWithEnum",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "testEnum",
+          "fieldName": "testEnum",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "protocol:TestEnum"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "nullableEnum",
+          "fieldName": "nullableEnum",
+          "columnType": 6,
+          "isNullable": true,
+          "dartType": "protocol:TestEnum?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "enumList",
+          "fieldName": "enumList",
+          "columnType": 8,
+          "isNullable": false,
+          "dartType": "List<protocol:TestEnum>"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "nullableEnumList",
+          "fieldName": "nullableEnumList",
+          "columnType": 8,
+          "isNullable": false,
+          "dartType": "List<protocol:TestEnum?>"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "enumListList",
+          "fieldName": "enumListList",
+          "columnType": 8,
+          "isNullable": false,
+          "dartType": "List<List<protocol:TestEnum>>"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "object_with_enum_enhanced",
+      "dartName": "ObjectWithEnumEnhanced",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "byIndex",
+          "fieldName": "byIndex",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "protocol:TestEnumEnhanced"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "nullableByIndex",
+          "fieldName": "nullableByIndex",
+          "columnType": 6,
+          "isNullable": true,
+          "dartType": "protocol:TestEnumEnhanced?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "byIndexList",
+          "fieldName": "byIndexList",
+          "columnType": 8,
+          "isNullable": false,
+          "dartType": "List<protocol:TestEnumEnhanced>"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "byName",
+          "fieldName": "byName",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "protocol:TestEnumEnhancedByName"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "nullableByName",
+          "fieldName": "nullableByName",
+          "columnType": 0,
+          "isNullable": true,
+          "dartType": "protocol:TestEnumEnhancedByName?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "byNameList",
+          "fieldName": "byNameList",
+          "columnType": 8,
+          "isNullable": false,
+          "dartType": "List<protocol:TestEnumEnhancedByName>"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "object_with_half_vector",
+      "dartName": "ObjectWithHalfVector",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "halfVector",
+          "fieldName": "halfVector",
+          "columnType": 11,
+          "isNullable": false,
+          "dartType": "HalfVector(512)",
+          "vectorDimension": 512
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "halfVectorNullable",
+          "fieldName": "halfVectorNullable",
+          "columnType": 11,
+          "isNullable": true,
+          "dartType": "HalfVector(512)?",
+          "vectorDimension": 512
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "halfVectorIndexedHnsw",
+          "fieldName": "halfVectorIndexedHnsw",
+          "columnType": 11,
+          "isNullable": false,
+          "dartType": "HalfVector(512)",
+          "vectorDimension": 512
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "halfVectorIndexedHnswWithParams",
+          "fieldName": "halfVectorIndexedHnswWithParams",
+          "columnType": 11,
+          "isNullable": false,
+          "dartType": "HalfVector(512)",
+          "vectorDimension": 512
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "halfVectorIndexedIvfflat",
+          "fieldName": "halfVectorIndexedIvfflat",
+          "columnType": 11,
+          "isNullable": false,
+          "dartType": "HalfVector(512)",
+          "vectorDimension": 512
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "halfVectorIndexedIvfflatWithParams",
+          "fieldName": "halfVectorIndexedIvfflatWithParams",
+          "columnType": 11,
+          "isNullable": false,
+          "dartType": "HalfVector(512)",
+          "vectorDimension": 512
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "half_vector_index_default",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "halfVector"
+            }
+          ],
+          "type": "hnsw",
+          "isUnique": false,
+          "isPrimary": false,
+          "vectorDistanceFunction": "l2",
+          "vectorColumnType": 11
+        },
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "half_vector_index_hnsw",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "halfVectorIndexedHnsw"
+            }
+          ],
+          "type": "hnsw",
+          "isUnique": false,
+          "isPrimary": false,
+          "vectorDistanceFunction": "l2",
+          "vectorColumnType": 11
+        },
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "half_vector_index_hnsw_with_params",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "halfVectorIndexedHnswWithParams"
+            }
+          ],
+          "type": "hnsw",
+          "isUnique": false,
+          "isPrimary": false,
+          "vectorDistanceFunction": "l2",
+          "vectorColumnType": 11,
+          "parameters": {
+            "m": "64",
+            "ef_construction": "200"
+          }
+        },
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "half_vector_index_ivfflat",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "halfVectorIndexedIvfflat"
+            }
+          ],
+          "type": "ivfflat",
+          "isUnique": false,
+          "isPrimary": false,
+          "vectorDistanceFunction": "l2",
+          "vectorColumnType": 11
+        },
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "half_vector_index_ivfflat_with_params",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "halfVectorIndexedIvfflatWithParams"
+            }
+          ],
+          "type": "ivfflat",
+          "isUnique": false,
+          "isPrimary": false,
+          "vectorDistanceFunction": "cosine",
+          "vectorColumnType": 11,
+          "parameters": {
+            "lists": "300"
+          }
+        }
+      ],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "object_with_index",
+      "dartName": "ObjectWithIndex",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "indexed",
+          "fieldName": "indexed",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "int"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "indexed2",
+          "fieldName": "indexed2",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "int"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "object_with_index_test_index",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "indexed"
+            },
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "indexed2"
+            }
+          ],
+          "type": "brin",
+          "isUnique": false,
+          "isPrimary": false
+        }
+      ],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "object_with_jsonb",
+      "dartName": "ObjectWithJsonb",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "notJsonb",
+          "fieldName": "notJsonb",
+          "columnType": 8,
+          "isNullable": false,
+          "dartType": "List<String>"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "jsonb",
+          "fieldName": "jsonb",
+          "columnType": 14,
+          "isNullable": false,
+          "dartType": "List<String>"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "jsonbMap",
+          "fieldName": "jsonbMap",
+          "columnType": 14,
+          "isNullable": false,
+          "dartType": "Map<String,String>"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "jsonbObject",
+          "fieldName": "jsonbObject",
+          "columnType": 14,
+          "isNullable": false,
+          "dartType": "protocol:SimpleData"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "jsonbIndexed",
+          "fieldName": "jsonbIndexed",
+          "columnType": 14,
+          "isNullable": false,
+          "dartType": "List<String>"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "jsonbIndexedGin",
+          "fieldName": "jsonbIndexedGin",
+          "columnType": 14,
+          "isNullable": false,
+          "dartType": "List<String>"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "jsonbIndexedGinJsonbPath",
+          "fieldName": "jsonbIndexedGinJsonbPath",
+          "columnType": 14,
+          "isNullable": false,
+          "dartType": "List<String>"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "jsonbIndexedImplicitGin",
+          "fieldName": "jsonbIndexedImplicitGin",
+          "columnType": 14,
+          "isNullable": false,
+          "dartType": "List<String>"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "nullableJsonb",
+          "fieldName": "nullableJsonb",
+          "columnType": 14,
+          "isNullable": true,
+          "dartType": "List<String>?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "jsonb_index_gin",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "jsonbIndexedGin"
+            }
+          ],
+          "type": "gin",
+          "isUnique": false,
+          "isPrimary": false,
+          "ginOperatorClass": "jsonbOps"
+        },
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "jsonb_index_gin_with_operator_class",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "jsonbIndexedGinJsonbPath"
+            }
+          ],
+          "type": "gin",
+          "isUnique": false,
+          "isPrimary": false,
+          "ginOperatorClass": "jsonbPathOps"
+        },
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "jsonb_index_implicit_gin",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "jsonbIndexedImplicitGin"
+            }
+          ],
+          "type": "gin",
+          "isUnique": false,
+          "isPrimary": false,
+          "ginOperatorClass": "jsonbOps"
+        }
+      ],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "object_with_jsonb_class_level",
+      "dartName": "ObjectWithJsonbClassLevel",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "implicitJsonb",
+          "fieldName": "implicitJsonb",
+          "columnType": 14,
+          "isNullable": false,
+          "dartType": "List<String>"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "explicitJsonb",
+          "fieldName": "explicitJsonb",
+          "columnType": 14,
+          "isNullable": false,
+          "dartType": "List<String>"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "json",
+          "fieldName": "json",
+          "columnType": 8,
+          "isNullable": false,
+          "dartType": "List<String>"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "object_with_object",
+      "dartName": "ObjectWithObject",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "data",
+          "fieldName": "data",
+          "columnType": 8,
+          "isNullable": false,
+          "dartType": "protocol:SimpleData"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "nullableData",
+          "fieldName": "nullableData",
+          "columnType": 8,
+          "isNullable": true,
+          "dartType": "protocol:SimpleData?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "dataList",
+          "fieldName": "dataList",
+          "columnType": 8,
+          "isNullable": false,
+          "dartType": "List<protocol:SimpleData>"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "nullableDataList",
+          "fieldName": "nullableDataList",
+          "columnType": 8,
+          "isNullable": true,
+          "dartType": "List<protocol:SimpleData>?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "listWithNullableData",
+          "fieldName": "listWithNullableData",
+          "columnType": 8,
+          "isNullable": false,
+          "dartType": "List<protocol:SimpleData?>"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "nullableListWithNullableData",
+          "fieldName": "nullableListWithNullableData",
+          "columnType": 8,
+          "isNullable": true,
+          "dartType": "List<protocol:SimpleData?>?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "nestedDataList",
+          "fieldName": "nestedDataList",
+          "columnType": 8,
+          "isNullable": true,
+          "dartType": "List<List<protocol:SimpleData>>?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "nestedDataListInMap",
+          "fieldName": "nestedDataListInMap",
+          "columnType": 8,
+          "isNullable": true,
+          "dartType": "Map<String,List<List<Map<int,protocol:SimpleData>>?>>?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "nestedDataMap",
+          "fieldName": "nestedDataMap",
+          "columnType": 8,
+          "isNullable": true,
+          "dartType": "Map<String,Map<int,protocol:SimpleData>>?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "object_with_parent",
+      "dartName": "ObjectWithParent",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "other",
+          "fieldName": "other",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "int"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "object_with_parent_fk_0",
+          "columns": [
+            "other"
+          ],
+          "referenceTable": "object_field_scopes",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3
+        }
+      ],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "object_with_self_parent",
+      "dartName": "ObjectWithSelfParent",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "other",
+          "fieldName": "other",
+          "columnType": 6,
+          "isNullable": true,
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "object_with_self_parent_fk_0",
+          "columns": [
+            "other"
+          ],
+          "referenceTable": "object_with_self_parent",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3
+        }
+      ],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "object_with_sparse_vector",
+      "dartName": "ObjectWithSparseVector",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "sparseVector",
+          "fieldName": "sparseVector",
+          "columnType": 12,
+          "isNullable": false,
+          "dartType": "SparseVector(512)",
+          "vectorDimension": 512
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "sparseVectorNullable",
+          "fieldName": "sparseVectorNullable",
+          "columnType": 12,
+          "isNullable": true,
+          "dartType": "SparseVector(512)?",
+          "vectorDimension": 512
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "sparseVectorIndexedHnsw",
+          "fieldName": "sparseVectorIndexedHnsw",
+          "columnType": 12,
+          "isNullable": false,
+          "dartType": "SparseVector(512)",
+          "vectorDimension": 512
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "sparseVectorIndexedHnswWithParams",
+          "fieldName": "sparseVectorIndexedHnswWithParams",
+          "columnType": 12,
+          "isNullable": false,
+          "dartType": "SparseVector(512)",
+          "vectorDimension": 512
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "sparse_vector_index_default",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "sparseVector"
+            }
+          ],
+          "type": "hnsw",
+          "isUnique": false,
+          "isPrimary": false,
+          "vectorDistanceFunction": "l2",
+          "vectorColumnType": 12
+        },
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "sparse_vector_index_hnsw",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "sparseVectorIndexedHnsw"
+            }
+          ],
+          "type": "hnsw",
+          "isUnique": false,
+          "isPrimary": false,
+          "vectorDistanceFunction": "l2",
+          "vectorColumnType": 12
+        },
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "sparse_vector_index_hnsw_with_params",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "sparseVectorIndexedHnswWithParams"
+            }
+          ],
+          "type": "hnsw",
+          "isUnique": false,
+          "isPrimary": false,
+          "vectorDistanceFunction": "l1",
+          "vectorColumnType": 12,
+          "parameters": {
+            "m": "64",
+            "ef_construction": "200"
+          }
+        }
+      ],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "object_with_uuid",
+      "dartName": "ObjectWithUuid",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "uuid",
+          "fieldName": "uuid",
+          "columnType": 7,
+          "isNullable": false,
+          "dartType": "UuidValue"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "uuidNullable",
+          "fieldName": "uuidNullable",
+          "columnType": 7,
+          "isNullable": true,
+          "dartType": "UuidValue?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "object_with_vector",
+      "dartName": "ObjectWithVector",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "vector",
+          "fieldName": "vector",
+          "columnType": 10,
+          "isNullable": false,
+          "dartType": "Vector(512)",
+          "vectorDimension": 512
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "vectorNullable",
+          "fieldName": "vectorNullable",
+          "columnType": 10,
+          "isNullable": true,
+          "dartType": "Vector(512)?",
+          "vectorDimension": 512
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "vectorIndexedHnsw",
+          "fieldName": "vectorIndexedHnsw",
+          "columnType": 10,
+          "isNullable": false,
+          "dartType": "Vector(512)",
+          "vectorDimension": 512
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "vectorIndexedHnswWithParams",
+          "fieldName": "vectorIndexedHnswWithParams",
+          "columnType": 10,
+          "isNullable": false,
+          "dartType": "Vector(512)",
+          "vectorDimension": 512
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "vectorIndexedIvfflat",
+          "fieldName": "vectorIndexedIvfflat",
+          "columnType": 10,
+          "isNullable": false,
+          "dartType": "Vector(512)",
+          "vectorDimension": 512
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "vectorIndexedIvfflatWithParams",
+          "fieldName": "vectorIndexedIvfflatWithParams",
+          "columnType": 10,
+          "isNullable": false,
+          "dartType": "Vector(512)",
+          "vectorDimension": 512
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "vector_index_default",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "vector"
+            }
+          ],
+          "type": "hnsw",
+          "isUnique": false,
+          "isPrimary": false,
+          "vectorDistanceFunction": "l2",
+          "vectorColumnType": 10
+        },
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "vector_index_hnsw",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "vectorIndexedHnsw"
+            }
+          ],
+          "type": "hnsw",
+          "isUnique": false,
+          "isPrimary": false,
+          "vectorDistanceFunction": "l2",
+          "vectorColumnType": 10
+        },
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "vector_index_hnsw_with_params",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "vectorIndexedHnswWithParams"
+            }
+          ],
+          "type": "hnsw",
+          "isUnique": false,
+          "isPrimary": false,
+          "vectorDistanceFunction": "cosine",
+          "vectorColumnType": 10,
+          "parameters": {
+            "m": "64",
+            "ef_construction": "200"
+          }
+        },
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "vector_index_ivfflat",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "vectorIndexedIvfflat"
+            }
+          ],
+          "type": "ivfflat",
+          "isUnique": false,
+          "isPrimary": false,
+          "vectorDistanceFunction": "l2",
+          "vectorColumnType": 10
+        },
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "vector_index_ivfflat_with_params",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "vectorIndexedIvfflatWithParams"
+            }
+          ],
+          "type": "ivfflat",
+          "isUnique": false,
+          "isPrimary": false,
+          "vectorDistanceFunction": "innerProduct",
+          "vectorColumnType": 10,
+          "parameters": {
+            "lists": "300"
+          }
+        }
+      ],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "order",
+      "dartName": "Order",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "description",
+          "fieldName": "description",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "customerId",
+          "fieldName": "customerId",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "int"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "order_fk_0",
+          "columns": [
+            "customerId"
+          ],
+          "referenceTable": "customer",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 4
+        }
+      ],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "order_uuid",
+      "dartName": "OrderUuid",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 7,
+          "isNullable": false,
+          "columnDefault": "random_v7",
+          "dartType": "UuidValue"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "description",
+          "fieldName": "description",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "customerId",
+          "fieldName": "customerId",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "int"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "order_uuid_fk_0",
+          "columns": [
+            "customerId"
+          ],
+          "referenceTable": "customer_int",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 4
+        }
+      ],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "organization",
+      "dartName": "Organization",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "cityId",
+          "fieldName": "cityId",
+          "columnType": 6,
+          "isNullable": true,
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "organization_fk_0",
+          "columns": [
+            "cityId"
+          ],
+          "referenceTable": "city",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3
+        }
+      ],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "organization_with_long_table_name_that_is_still_valid",
+      "dartName": "OrganizationWithLongTableName",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "cityId",
+          "fieldName": "cityId",
+          "columnType": 6,
+          "isNullable": true,
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "organization_with_long_table_name_that_is_still_valid_fk_0",
+          "columns": [
+            "cityId"
+          ],
+          "referenceTable": "city_with_long_table_name_that_is_still_valid",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3
+        }
+      ],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "person",
+      "dartName": "Person",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "organizationId",
+          "fieldName": "organizationId",
+          "columnType": 6,
+          "isNullable": true,
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "_cityCitizensCityId",
+          "fieldName": "_cityCitizensCityId",
+          "columnType": 6,
+          "isNullable": true,
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "person_fk_0",
+          "columns": [
+            "organizationId"
+          ],
+          "referenceTable": "organization",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3
+        },
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "person_fk_1",
+          "columns": [
+            "_cityCitizensCityId"
+          ],
+          "referenceTable": "city",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3
+        }
+      ],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "person_with_long_table_name_that_is_still_valid",
+      "dartName": "PersonWithLongTableName",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "organizationId",
+          "fieldName": "organizationId",
+          "columnType": 6,
+          "isNullable": true,
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id",
+          "fieldName": "_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id",
+          "columnType": 6,
+          "isNullable": true,
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "person_with_long_table_name_that_is_still_valid_fk_0",
+          "columns": [
+            "organizationId"
+          ],
+          "referenceTable": "organization_with_long_table_name_that_is_still_valid",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3
+        },
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "person_with_long_table_name_that_is_still_valid_fk_1",
+          "columns": [
+            "_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id"
+          ],
+          "referenceTable": "city_with_long_table_name_that_is_still_valid",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3
+        }
+      ],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "player",
+      "dartName": "Player",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "teamId",
+          "fieldName": "teamId",
+          "columnType": 6,
+          "isNullable": true,
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "player_fk_0",
+          "columns": [
+            "teamId"
+          ],
+          "referenceTable": "team",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 0
+        }
+      ],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "player_uuid",
+      "dartName": "PlayerUuid",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 7,
+          "isNullable": false,
+          "columnDefault": "random",
+          "dartType": "UuidValue?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "teamId",
+          "fieldName": "teamId",
+          "columnType": 6,
+          "isNullable": true,
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "player_uuid_fk_0",
+          "columns": [
+            "teamId"
+          ],
+          "referenceTable": "team_int",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 0
+        }
+      ],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "post",
+      "dartName": "Post",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "content",
+          "fieldName": "content",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "nextId",
+          "fieldName": "nextId",
+          "columnType": 6,
+          "isNullable": true,
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "post_fk_0",
+          "columns": [
+            "nextId"
+          ],
+          "referenceTable": "post",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 0
+        }
+      ],
+      "indexes": [
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "next_unique_idx",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "nextId"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": false
+        }
+      ],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "related_unique_data",
+      "dartName": "RelatedUniqueData",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "uniqueDataId",
+          "fieldName": "uniqueDataId",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "int"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "number",
+          "fieldName": "number",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "int"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "related_unique_data_fk_0",
+          "columns": [
+            "uniqueDataId"
+          ],
+          "referenceTable": "unique_data",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 2
+        }
+      ],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "relation_empty_model",
+      "dartName": "RelationEmptyModel",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "relation_to_multiple_max_field_name",
+      "dartName": "RelationToMultipleMaxFieldName",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "server_only_changed_id_field_class",
+      "dartName": "ServerOnlyChangedIdFieldClass",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 7,
+          "isNullable": false,
+          "columnDefault": "random",
+          "dartType": "UuidValue?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "service",
+      "dartName": "Service",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "description",
+          "fieldName": "description",
+          "columnType": 0,
+          "isNullable": true,
+          "dartType": "String?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "simple_data",
+      "dartName": "SimpleData",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "num",
+          "fieldName": "num",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "int"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "simple_date_time",
+      "dartName": "SimpleDateTime",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "dateTime",
+          "fieldName": "dateTime",
+          "columnType": 4,
+          "isNullable": false,
+          "dartType": "DateTime"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "string_default",
+      "dartName": "StringDefault",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "stringDefault",
+          "fieldName": "stringDefault",
+          "columnType": 0,
+          "isNullable": false,
+          "columnDefault": "'This is a default value'",
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "stringDefaultNull",
+          "fieldName": "stringDefaultNull",
+          "columnType": 0,
+          "isNullable": true,
+          "columnDefault": "'This is a default null value'",
+          "dartType": "String?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "string_default_mix",
+      "dartName": "StringDefaultMix",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "stringDefaultAndDefaultModel",
+          "fieldName": "stringDefaultAndDefaultModel",
+          "columnType": 0,
+          "isNullable": false,
+          "columnDefault": "'This is a default value'",
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "stringDefaultAndDefaultPersist",
+          "fieldName": "stringDefaultAndDefaultPersist",
+          "columnType": 0,
+          "isNullable": false,
+          "columnDefault": "'This is a default persist value'",
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "stringDefaultModelAndDefaultPersist",
+          "fieldName": "stringDefaultModelAndDefaultPersist",
+          "columnType": 0,
+          "isNullable": false,
+          "columnDefault": "'This is a default persist value'",
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "string_default_model",
+      "dartName": "StringDefaultModel",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "stringDefaultModel",
+          "fieldName": "stringDefaultModel",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "stringDefaultModelNull",
+          "fieldName": "stringDefaultModelNull",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "string_default_persist",
+      "dartName": "StringDefaultPersist",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "stringDefaultPersist",
+          "fieldName": "stringDefaultPersist",
+          "columnType": 0,
+          "isNullable": true,
+          "columnDefault": "'This is a default persist value'",
+          "dartType": "String?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote",
+          "fieldName": "stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote",
+          "columnType": 0,
+          "isNullable": true,
+          "columnDefault": "'This is a ''default persist value'",
+          "dartType": "String?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote",
+          "fieldName": "stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote",
+          "columnType": 0,
+          "isNullable": true,
+          "columnDefault": "'This is a ''default'' persist value'",
+          "dartType": "String?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote",
+          "fieldName": "stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote",
+          "columnType": 0,
+          "isNullable": true,
+          "columnDefault": "'This is a \"default persist value'",
+          "dartType": "String?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote",
+          "fieldName": "stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote",
+          "columnType": 0,
+          "isNullable": true,
+          "columnDefault": "'This is a \"default\" persist value'",
+          "dartType": "String?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "stringDefaultPersistSingleQuoteWithOneDoubleQuote",
+          "fieldName": "stringDefaultPersistSingleQuoteWithOneDoubleQuote",
+          "columnType": 0,
+          "isNullable": true,
+          "columnDefault": "'This is a \"default persist value'",
+          "dartType": "String?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "stringDefaultPersistSingleQuoteWithTwoDoubleQuote",
+          "fieldName": "stringDefaultPersistSingleQuoteWithTwoDoubleQuote",
+          "columnType": 0,
+          "isNullable": true,
+          "columnDefault": "'This is a \"default\" persist value'",
+          "dartType": "String?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "stringDefaultPersistDoubleQuoteWithOneSingleQuote",
+          "fieldName": "stringDefaultPersistDoubleQuoteWithOneSingleQuote",
+          "columnType": 0,
+          "isNullable": true,
+          "columnDefault": "'This is a ''default persist value'",
+          "dartType": "String?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "stringDefaultPersistDoubleQuoteWithTwoSingleQuote",
+          "fieldName": "stringDefaultPersistDoubleQuoteWithTwoSingleQuote",
+          "columnType": 0,
+          "isNullable": true,
+          "columnDefault": "'This is a ''default'' persist value'",
+          "dartType": "String?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "student",
+      "dartName": "Student",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "student_uuid",
+      "dartName": "StudentUuid",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 7,
+          "isNullable": false,
+          "columnDefault": "random",
+          "dartType": "UuidValue?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "table_with_explicit_column_names",
+      "dartName": "TableWithExplicitColumnName",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "user_name",
+          "fieldName": "userName",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "user_description",
+          "fieldName": "description",
+          "columnType": 0,
+          "isNullable": true,
+          "columnDefault": "'Just some information'",
+          "dartType": "String?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "team",
+      "dartName": "Team",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "arenaId",
+          "fieldName": "arenaId",
+          "columnType": 6,
+          "isNullable": true,
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "team_fk_0",
+          "columns": [
+            "arenaId"
+          ],
+          "referenceTable": "arena",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 0
+        }
+      ],
+      "indexes": [
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "arena_index_idx",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "arenaId"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": false
+        }
+      ],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "team_int",
+      "dartName": "TeamInt",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "arenaId",
+          "fieldName": "arenaId",
+          "columnType": 7,
+          "isNullable": true,
+          "dartType": "UuidValue?"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "team_int_fk_0",
+          "columns": [
+            "arenaId"
+          ],
+          "referenceTable": "arena_uuid",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 0
+        }
+      ],
+      "indexes": [
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "arena_uuid_index_idx",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "arenaId"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": false
+        }
+      ],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "town",
+      "dartName": "Town",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "mayorId",
+          "fieldName": "mayorId",
+          "columnType": 6,
+          "isNullable": true,
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "town_fk_0",
+          "columns": [
+            "mayorId"
+          ],
+          "referenceTable": "citizen",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3
+        }
+      ],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "town_int",
+      "dartName": "TownInt",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "mayorId",
+          "fieldName": "mayorId",
+          "columnType": 6,
+          "isNullable": true,
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "town_int_fk_0",
+          "columns": [
+            "mayorId"
+          ],
+          "referenceTable": "citizen_int",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3
+        }
+      ],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "types",
+      "dartName": "Types",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "anInt",
+          "fieldName": "anInt",
+          "columnType": 6,
+          "isNullable": true,
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "aBool",
+          "fieldName": "aBool",
+          "columnType": 1,
+          "isNullable": true,
+          "dartType": "bool?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "aDouble",
+          "fieldName": "aDouble",
+          "columnType": 3,
+          "isNullable": true,
+          "dartType": "double?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "aDateTime",
+          "fieldName": "aDateTime",
+          "columnType": 4,
+          "isNullable": true,
+          "dartType": "DateTime?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "aString",
+          "fieldName": "aString",
+          "columnType": 0,
+          "isNullable": true,
+          "dartType": "String?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "aByteData",
+          "fieldName": "aByteData",
+          "columnType": 5,
+          "isNullable": true,
+          "dartType": "dart:typed_data:ByteData?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "aDuration",
+          "fieldName": "aDuration",
+          "columnType": 6,
+          "isNullable": true,
+          "dartType": "Duration?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "aUuid",
+          "fieldName": "aUuid",
+          "columnType": 7,
+          "isNullable": true,
+          "dartType": "UuidValue?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "aUri",
+          "fieldName": "aUri",
+          "columnType": 0,
+          "isNullable": true,
+          "dartType": "Uri?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "aBigInt",
+          "fieldName": "aBigInt",
+          "columnType": 0,
+          "isNullable": true,
+          "dartType": "BigInt?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "aVector",
+          "fieldName": "aVector",
+          "columnType": 10,
+          "isNullable": true,
+          "dartType": "Vector(3)?",
+          "vectorDimension": 3
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "aHalfVector",
+          "fieldName": "aHalfVector",
+          "columnType": 11,
+          "isNullable": true,
+          "dartType": "HalfVector(3)?",
+          "vectorDimension": 3
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "aSparseVector",
+          "fieldName": "aSparseVector",
+          "columnType": 12,
+          "isNullable": true,
+          "dartType": "SparseVector(3)?",
+          "vectorDimension": 3
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "aBit",
+          "fieldName": "aBit",
+          "columnType": 13,
+          "isNullable": true,
+          "dartType": "Bit(3)?",
+          "vectorDimension": 3
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "anEnum",
+          "fieldName": "anEnum",
+          "columnType": 6,
+          "isNullable": true,
+          "dartType": "protocol:TestEnum?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "aStringifiedEnum",
+          "fieldName": "aStringifiedEnum",
+          "columnType": 0,
+          "isNullable": true,
+          "dartType": "protocol:TestEnumStringified?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "aList",
+          "fieldName": "aList",
+          "columnType": 8,
+          "isNullable": true,
+          "dartType": "List<int>?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "aMap",
+          "fieldName": "aMap",
+          "columnType": 8,
+          "isNullable": true,
+          "dartType": "Map<int,int>?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "aSet",
+          "fieldName": "aSet",
+          "columnType": 8,
+          "isNullable": true,
+          "dartType": "Set<int>?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "aRecord",
+          "fieldName": "aRecord",
+          "columnType": 8,
+          "isNullable": true,
+          "dartType": "(String, {Uri? optionalUri})?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "unique_data",
+      "dartName": "UniqueData",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "number",
+          "fieldName": "number",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "int"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "email",
+          "fieldName": "email",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "email_index_idx",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "email"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": false
+        }
+      ],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "unique_data_with_non_persist",
+      "dartName": "UniqueDataWithNonPersist",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "number",
+          "fieldName": "number",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "int"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "email",
+          "fieldName": "email",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "unique_email_idx",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "email"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": false
+        }
+      ],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "uri_default",
+      "dartName": "UriDefault",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "uriDefault",
+          "fieldName": "uriDefault",
+          "columnType": 0,
+          "isNullable": false,
+          "columnDefault": "'https://serverpod.dev/default'",
+          "dartType": "Uri"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "uriDefaultNull",
+          "fieldName": "uriDefaultNull",
+          "columnType": 0,
+          "isNullable": true,
+          "columnDefault": "'https://serverpod.dev/default'",
+          "dartType": "Uri?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "uri_default_mix",
+      "dartName": "UriDefaultMix",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "uriDefaultAndDefaultModel",
+          "fieldName": "uriDefaultAndDefaultModel",
+          "columnType": 0,
+          "isNullable": false,
+          "columnDefault": "'https://serverpod.dev/default'",
+          "dartType": "Uri"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "uriDefaultAndDefaultPersist",
+          "fieldName": "uriDefaultAndDefaultPersist",
+          "columnType": 0,
+          "isNullable": false,
+          "columnDefault": "'https://serverpod.dev/defaultPersist'",
+          "dartType": "Uri"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "uriDefaultModelAndDefaultPersist",
+          "fieldName": "uriDefaultModelAndDefaultPersist",
+          "columnType": 0,
+          "isNullable": false,
+          "columnDefault": "'https://serverpod.dev/defaultPersist'",
+          "dartType": "Uri"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "uri_default_model",
+      "dartName": "UriDefaultModel",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "uriDefaultModel",
+          "fieldName": "uriDefaultModel",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "Uri"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "uriDefaultModelNull",
+          "fieldName": "uriDefaultModelNull",
+          "columnType": 0,
+          "isNullable": true,
+          "dartType": "Uri?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "uri_default_persist",
+      "dartName": "UriDefaultPersist",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "uriDefaultPersist",
+          "fieldName": "uriDefaultPersist",
+          "columnType": 0,
+          "isNullable": true,
+          "columnDefault": "'https://serverpod.dev/'",
+          "dartType": "Uri?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "user_note",
+      "dartName": "UserNote",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId",
+          "fieldName": "_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId",
+          "columnType": 6,
+          "isNullable": true,
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "user_note_fk_0",
+          "columns": [
+            "_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId"
+          ],
+          "referenceTable": "user_note_collections",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3
+        }
+      ],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "user_note_collection_with_a_long_name",
+      "dartName": "UserNoteCollectionWithALongName",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "user_note_collections",
+      "dartName": "UserNoteCollection",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "user_note_with_a_long_name",
+      "dartName": "UserNoteWithALongName",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId",
+          "fieldName": "_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId",
+          "columnType": 6,
+          "isNullable": true,
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "user_note_with_a_long_name_fk_0",
+          "columns": [
+            "_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId"
+          ],
+          "referenceTable": "user_note_collection_with_a_long_name",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3
+        }
+      ],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "uuid_default",
+      "dartName": "UuidDefault",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "uuidDefaultRandom",
+          "fieldName": "uuidDefaultRandom",
+          "columnType": 7,
+          "isNullable": false,
+          "columnDefault": "random",
+          "dartType": "UuidValue"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "uuidDefaultRandomV7",
+          "fieldName": "uuidDefaultRandomV7",
+          "columnType": 7,
+          "isNullable": false,
+          "columnDefault": "random_v7",
+          "dartType": "UuidValue"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "uuidDefaultRandomNull",
+          "fieldName": "uuidDefaultRandomNull",
+          "columnType": 7,
+          "isNullable": true,
+          "columnDefault": "random",
+          "dartType": "UuidValue?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "uuidDefaultStr",
+          "fieldName": "uuidDefaultStr",
+          "columnType": 7,
+          "isNullable": false,
+          "columnDefault": "'550e8400-e29b-41d4-a716-446655440000'",
+          "dartType": "UuidValue"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "uuidDefaultStrNull",
+          "fieldName": "uuidDefaultStrNull",
+          "columnType": 7,
+          "isNullable": true,
+          "columnDefault": "'3f2504e0-4f89-11d3-9a0c-0305e82c3301'",
+          "dartType": "UuidValue?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "uuid_default_mix",
+      "dartName": "UuidDefaultMix",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "uuidDefaultAndDefaultModel",
+          "fieldName": "uuidDefaultAndDefaultModel",
+          "columnType": 7,
+          "isNullable": false,
+          "columnDefault": "'3f2504e0-4f89-11d3-9a0c-0305e82c3301'",
+          "dartType": "UuidValue"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "uuidDefaultAndDefaultPersist",
+          "fieldName": "uuidDefaultAndDefaultPersist",
+          "columnType": 7,
+          "isNullable": false,
+          "columnDefault": "'9e107d9d-372b-4d97-9b27-2f0907d0b1d4'",
+          "dartType": "UuidValue"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "uuidDefaultModelAndDefaultPersist",
+          "fieldName": "uuidDefaultModelAndDefaultPersist",
+          "columnType": 7,
+          "isNullable": false,
+          "columnDefault": "'f47ac10b-58cc-4372-a567-0e02b2c3d479'",
+          "dartType": "UuidValue"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "uuid_default_model",
+      "dartName": "UuidDefaultModel",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "uuidDefaultModelRandom",
+          "fieldName": "uuidDefaultModelRandom",
+          "columnType": 7,
+          "isNullable": false,
+          "dartType": "UuidValue"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "uuidDefaultModelRandomV7",
+          "fieldName": "uuidDefaultModelRandomV7",
+          "columnType": 7,
+          "isNullable": false,
+          "dartType": "UuidValue"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "uuidDefaultModelRandomNull",
+          "fieldName": "uuidDefaultModelRandomNull",
+          "columnType": 7,
+          "isNullable": true,
+          "dartType": "UuidValue?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "uuidDefaultModelStr",
+          "fieldName": "uuidDefaultModelStr",
+          "columnType": 7,
+          "isNullable": false,
+          "dartType": "UuidValue"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "uuidDefaultModelStrNull",
+          "fieldName": "uuidDefaultModelStrNull",
+          "columnType": 7,
+          "isNullable": true,
+          "dartType": "UuidValue?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "uuid_default_persist",
+      "dartName": "UuidDefaultPersist",
+      "module": "serverpod_test_sqlite",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "uuidDefaultPersistRandom",
+          "fieldName": "uuidDefaultPersistRandom",
+          "columnType": 7,
+          "isNullable": true,
+          "columnDefault": "random",
+          "dartType": "UuidValue?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "uuidDefaultPersistRandomV7",
+          "fieldName": "uuidDefaultPersistRandomV7",
+          "columnType": 7,
+          "isNullable": true,
+          "columnDefault": "random_v7",
+          "dartType": "UuidValue?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "uuidDefaultPersistStr",
+          "fieldName": "uuidDefaultPersistStr",
+          "columnType": 7,
+          "isNullable": true,
+          "columnDefault": "'550e8400-e29b-41d4-a716-446655440000'",
+          "dartType": "UuidValue?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    }
+  ],
+  "installedModules": [
+    {
+      "__className__": "serverpod.DatabaseMigrationVersion",
+      "module": "serverpod",
+      "version": "20260416151914983-insights-perf"
+    }
+  ],
+  "migrationApiVersion": 1
+}

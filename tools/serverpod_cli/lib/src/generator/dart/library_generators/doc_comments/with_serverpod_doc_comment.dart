@@ -28,16 +28,49 @@ enum RollbackDatabase {
       'The logging mode used when creating Serverpod. Defaults to `ServerpodLoggingMode.normal`',
   'serverpodStartTimeout':
       'The timeout to use when starting Serverpod, which connects to the database among other things. Defaults to `Duration(seconds: 30)`.',
+  'testServerOutputMode': '''
+Options for controlling test server output during test execution. Defaults to `TestServerOutputMode.normal`.
+```dart
+/// Options for controlling test server output during test execution.
+enum TestServerOutputMode {
+  /// Default mode - only stderr is printed (stdout suppressed).
+  /// This hides normal startup/shutdown logs while preserving error messages.
+  normal,
+
+  /// All logging - both stdout and stderr are printed.
+  /// Useful for debugging when you need to see all server output.
+  verbose,
+
+  /// No logging - both stdout and stderr are suppressed.
+  /// Completely silent mode, useful when you don't want any server output.
+  silent,
+}
+```''',
+  'configOverride': '''
+A function to override the server configuration. This function is called with
+the default server configuration after it is loaded from the config/ directory
+and before it is used to start the server. Use this to override particular
+settings in the server configuration.''',
+  'databaseInterceptor': '''
+Optional interceptor that replaces the default database for each session.
+See [Serverpod.databaseInterceptor] for more information.''',
   'testGroupTagsOverride': '''
-By default Serverpod test tools tags the `withServerpod` test group with `"integration"`. 
-This is to provide a simple way to only run unit or integration tests. 
+By default Serverpod test tools tags the `withServerpod` test group with `"integration"`.
+This is to provide a simple way to only run unit or integration tests.
 This property allows this tag to be overridden to something else. Defaults to `['integration']`.''',
   'experimentalFeatures':
       'Optionally specify experimental features. See [Serverpod] for more information.',
+  'serverDirectory': '''
+The server package directory `config/<runMode>.yaml`, `config/passwords.yaml`,
+and `migrations/<module>/...` are resolved against. Defaults to
+[Directory.current] at the time the test boots. Pass this when the test
+isolate's cwd is not the server package root (e.g. running tests from a
+workspace parent directory) so config and migrations are still loaded
+from the right place.''',
 };
 
 var _methodDescription = '''
-Creates a new test group that takes a callback that can be used to write tests. 
+Creates a new test group that takes a callback that can be used to write tests.
 The callback has two parameters: `sessionBuilder` and `endpoints`.
 `sessionBuilder` is used to build a `Session` object that represents the server state during an endpoint call and is used to set up scenarios.
 `endpoints` contains all your Serverpod endpoints and lets you call them:

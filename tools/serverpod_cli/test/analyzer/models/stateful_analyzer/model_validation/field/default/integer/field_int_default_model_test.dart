@@ -22,13 +22,15 @@ void main() {
           fields:
             intType: int, defaultModel=10
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+        var definitions = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -48,13 +50,15 @@ void main() {
           fields:
             intType: int, defaultModel=20
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+        var definitions = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -75,12 +79,15 @@ void main() {
           fields:
             intType: int, defaultModel=
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -88,6 +95,39 @@ void main() {
         expect(
           firstError.message,
           'The "defaultModel" value must be a valid integer (e.g., "defaultModel"=10).',
+        );
+      },
+    );
+
+    test(
+      'when the field is of type int and the defaultModel is set to "serial", '
+      'then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            intType: int?, defaultModel=serial
+          ''',
+          ).build(),
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
+          'The default value "serial" can not be set using the "defaultModel" '
+          'keyword. Use the "defaultPersist" keyword instead.',
         );
       },
     );
@@ -103,12 +143,15 @@ void main() {
         fields:
           intInvalid: int?, defaultModel=TEN
         ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -131,12 +174,15 @@ void main() {
         fields:
           intInvalid: int?, defaultModel=10.5
         ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -159,12 +205,15 @@ void main() {
           fields:
             intInvalid: int?, defaultModel=test
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -188,12 +237,15 @@ void main() {
           fields:
             id: int?, defaultModel=serial
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors.first.message,

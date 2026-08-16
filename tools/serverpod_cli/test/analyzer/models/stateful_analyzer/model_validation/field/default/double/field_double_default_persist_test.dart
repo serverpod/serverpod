@@ -22,13 +22,15 @@ void main() {
           fields:
             doubleType: double?, defaultPersist=10.5
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+        var definitions = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -48,13 +50,15 @@ void main() {
           fields:
             doubleType: double?, defaultPersist=20.5
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+        var definitions = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -78,13 +82,15 @@ void main() {
           fields:
             doubleType: double?, defaultPersist=10
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+        var definitions = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -104,12 +110,15 @@ void main() {
           fields:
             doubleType: double?, defaultPersist=
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -132,12 +141,15 @@ void main() {
         fields:
           doubleInvalid: double?, defaultPersist=TEN.POINT_FIVE
         ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -160,12 +172,15 @@ void main() {
         fields:
           doubleInvalid: double?, defaultPersist=10.5a
         ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -188,12 +203,15 @@ void main() {
           fields:
             doubleInvalid: double?, defaultPersist=test
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -216,12 +234,15 @@ void main() {
           fields:
             doubleType: double, defaultPersist=10.5
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -244,12 +265,15 @@ void main() {
           fields:
             doubleType: double?, defaultPersist=10.5, !persist
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 

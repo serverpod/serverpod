@@ -13,9 +13,9 @@ environment:
 
 dependencies:
   connectivity_plus: '>=6.0.3 <8.0.0'
-  serverpod_client: SERVERPOD_VERSION
   flutter:
     sdk: flutter
+  serverpod_client: SERVERPOD_VERSION
 
 dev_dependencies:
   flutter_test:

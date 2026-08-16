@@ -36,85 +36,100 @@ void main() async {
       expect(result.length, 4);
     });
 
-    test('when filtering using equals then matching row is returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aBigInt.equals(_firstBigInt),
-      );
+    test(
+      'when filtering using equals then matching row is returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aBigInt.equals(_firstBigInt),
+        );
 
-      expect(result.first.aBigInt, _firstBigInt);
-    });
-
-    test('when filtering using equals with null then matching row is returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aBigInt.equals(null),
-      );
-
-      expect(result.first.aBigInt, isNull);
-    });
-
-    test('when filtering using notEquals then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aBigInt.notEquals(_firstBigInt),
-      );
-
-      expect(result.length, 3);
-    });
+        expect(result.first.aBigInt, _firstBigInt);
+      },
+    );
 
     test(
-        'when filtering using notEquals with null then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aBigInt.notEquals(null),
-      );
+      'when filtering using equals with null then matching row is returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aBigInt.equals(null),
+        );
 
-      expect(result.length, 3);
-    });
+        expect(result.first.aBigInt, isNull);
+      },
+    );
 
-    test('when filtering using inSet then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aBigInt.inSet({_firstBigInt, _secondBigInt}),
-      );
+    test(
+      'when filtering using notEquals then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aBigInt.notEquals(_firstBigInt),
+        );
 
-      expect(result.length, 2);
-    });
+        expect(result.length, 3);
+      },
+    );
 
-    test('when filtering using empty inSet then no rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aBigInt.inSet({}),
-      );
+    test(
+      'when filtering using notEquals with null then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aBigInt.notEquals(null),
+        );
 
-      expect(result, isEmpty);
-    });
+        expect(result.length, 3);
+      },
+    );
 
-    test('when filtering using notInSet then matching row is returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aBigInt.notInSet({_firstBigInt}),
-      );
+    test(
+      'when filtering using inSet then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aBigInt.inSet({_firstBigInt, _secondBigInt}),
+        );
 
-      expect(result.length, 3);
-    });
+        expect(result.length, 2);
+      },
+    );
 
-    test('when filtering using empty notInSet then all rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aBigInt.notInSet({}),
-      );
+    test(
+      'when filtering using empty inSet then no rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aBigInt.inSet({}),
+        );
 
-      expect(result.length, 4);
-    });
+        expect(result, isEmpty);
+      },
+    );
+
+    test(
+      'when filtering using notInSet then matching row is returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aBigInt.notInSet({_firstBigInt}),
+        );
+
+        expect(result.length, 3);
+      },
+    );
+
+    test(
+      'when filtering using empty notInSet then all rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aBigInt.notInSet({}),
+        );
+
+        expect(result.length, 4);
+      },
+    );
   });
 }

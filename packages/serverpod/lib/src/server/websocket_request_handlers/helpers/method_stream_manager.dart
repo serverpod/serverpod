@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:meta/meta.dart';
-import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/serverpod.dart';
@@ -14,8 +13,8 @@ class _RevokedAuthenticationHandler {
   _RevokedAuthenticationHandler._(
     AuthenticationInfo authenticationInfo,
     void Function(dynamic event) revokedAuthenticationCallback,
-  )   : _authenticationInfo = authenticationInfo,
-        _revokedAuthenticationCallback = revokedAuthenticationCallback;
+  ) : _authenticationInfo = authenticationInfo,
+      _revokedAuthenticationCallback = revokedAuthenticationCallback;
 
   /// Call when the stream call is cancelled to do proper cleanup.
   Future<void> destroy(Session session) async {
@@ -34,7 +33,7 @@ class _RevokedAuthenticationHandler {
   }
 
   static Future<_RevokedAuthenticationHandler?>
-      createIfAuthenticationIsRequired(
+  createIfAuthenticationIsRequired(
     Endpoint endpoint,
     Session session, {
     required void Function() onRevokedAuthentication,
@@ -45,7 +44,7 @@ class _RevokedAuthenticationHandler {
       return null;
     }
 
-    var authenticationInfo = await session.authenticated;
+    var authenticationInfo = session.authenticated;
     if (authenticationInfo == null) {
       throw StateError(
         'Authentication was required but no authentication info could be retrieved.',
@@ -60,9 +59,10 @@ class _RevokedAuthenticationHandler {
           revokedAuthId.authId == authenticationInfo.authId
               ? AuthenticationFailureReason.unauthenticated
               : null,
-        RevokedAuthenticationScope revokedScopes => revokedScopes.scopes.any(
-            (s) => endpoint.requiredScopes.map((s) => s.name).contains(s),
-          )
+        RevokedAuthenticationScope revokedScopes =>
+          revokedScopes.scopes.any(
+                (s) => endpoint.requiredScopes.map((s) => s.name).contains(s),
+              )
               ? AuthenticationFailureReason.insufficientAccess
               : null,
         _ => null,
@@ -109,28 +109,32 @@ abstract interface class _StreamContext {
   StreamController get controller;
 }
 
-typedef _OnOutputStreamValue = void Function(
-  UuidValue methodStreamId,
-  Object? value,
-  MethodStreamCallContext methodStreamCallContext,
-);
-typedef _OnOutputStreamError = void Function(
-  UuidValue methodStreamId,
-  Object error,
-  StackTrace stackTrace,
-  MethodStreamCallContext methodStreamCallContext,
-);
-typedef _OnOutputStreamClosed = void Function(
-  UuidValue methodStreamId,
-  CloseReason? closeReason,
-  MethodStreamCallContext callContext,
-);
-typedef _OnInputStreamClosed = void Function(
-  UuidValue methodStreamId,
-  String parameterName,
-  CloseReason? closeReason,
-  MethodStreamCallContext callContext,
-);
+typedef _OnOutputStreamValue =
+    void Function(
+      UuidValue methodStreamId,
+      Object? value,
+      MethodStreamCallContext methodStreamCallContext,
+    );
+typedef _OnOutputStreamError =
+    void Function(
+      UuidValue methodStreamId,
+      Object error,
+      StackTrace stackTrace,
+      MethodStreamCallContext methodStreamCallContext,
+    );
+typedef _OnOutputStreamClosed =
+    void Function(
+      UuidValue methodStreamId,
+      CloseReason? closeReason,
+      MethodStreamCallContext callContext,
+    );
+typedef _OnInputStreamClosed =
+    void Function(
+      UuidValue methodStreamId,
+      String parameterName,
+      CloseReason? closeReason,
+      MethodStreamCallContext callContext,
+    );
 
 /// Manages the streams for an endpoint method call.
 /// Should only be used by Serverpod packages.
@@ -155,18 +159,19 @@ class MethodStreamManager {
     _OnOutputStreamClosed? onOutputStreamClosed,
     _OnOutputStreamError? onOutputStreamError,
     _OnOutputStreamValue? onOutputStreamValue,
-  })  : _onInputStreamClosed = onInputStreamClosed,
-        _onOutputStreamClosed = onOutputStreamClosed,
-        _onOutputStreamError = onOutputStreamError,
-        _onOutputStreamValue = onOutputStreamValue;
+  }) : _onInputStreamClosed = onInputStreamClosed,
+       _onOutputStreamClosed = onOutputStreamClosed,
+       _onOutputStreamError = onOutputStreamError,
+       _onOutputStreamValue = onOutputStreamValue;
 
   int get openInputStreamCount => _inputStreamContexts.length;
 
   int get openOutputStreamCount => _outputStreamContexts.length;
 
   Future<void> closeAllStreams() async {
-    var inputControllers =
-        _inputStreamContexts.values.map((c) => c.controller).toList();
+    var inputControllers = _inputStreamContexts.values
+        .map((c) => c.controller)
+        .toList();
     _inputStreamContexts.clear();
 
     var outboundStreamContexts = _outputStreamContexts.values.toList();
@@ -174,14 +179,16 @@ class MethodStreamManager {
 
     var closeSubscriptionFutures = outboundStreamContexts.map(
       (c) => c.subscription.cancel().timeout(
-            _closeTimeout,
-            onTimeout: () async {
-              await c.controller.onCancel?.call();
-              return null;
-              // This type case is needed to avoid a runtime exception
-              // Filed as bug on dart-lang/sdk: https://github.com/dart-lang/sdk/issues/56846
-            } as Future<Null> Function()?,
-          ),
+        _closeTimeout,
+        onTimeout:
+            () async {
+                  await c.controller.onCancel?.call();
+                  return null;
+                  // This type case is needed to avoid a runtime exception
+                  // Filed as bug on dart-lang/sdk: https://github.com/dart-lang/sdk/issues/56846
+                }
+                as Future<Null> Function()?,
+      ),
     );
 
     await Future.wait([
@@ -283,12 +290,13 @@ class MethodStreamManager {
     String? parameter,
     required Object? value,
   }) {
-    var streamContext = _inputStreamContexts[_buildStreamKey(
-      endpoint: endpoint,
-      method: method,
-      parameter: parameter,
-      methodStreamId: methodStreamId,
-    )];
+    var streamContext =
+        _inputStreamContexts[_buildStreamKey(
+          endpoint: endpoint,
+          method: method,
+          parameter: parameter,
+          methodStreamId: methodStreamId,
+        )];
 
     if (streamContext == null) {
       return false;
@@ -306,12 +314,13 @@ class MethodStreamManager {
     String? parameter,
     required Object error,
   }) {
-    var streamContext = _inputStreamContexts[_buildStreamKey(
-      endpoint: endpoint,
-      method: method,
-      parameter: parameter,
-      methodStreamId: methodStreamId,
-    )];
+    var streamContext =
+        _inputStreamContexts[_buildStreamKey(
+          endpoint: endpoint,
+          method: method,
+          parameter: parameter,
+          methodStreamId: methodStreamId,
+        )];
 
     if (streamContext == null) {
       return false;
@@ -329,30 +338,33 @@ class MethodStreamManager {
     bool isCancelled = false;
     var revokedAuthenticationHandler =
         await _RevokedAuthenticationHandler.createIfAuthenticationIsRequired(
-      methodStreamCallContext.endpoint,
-      session,
-      onRevokedAuthentication: () => closeStream(
-        endpoint: methodStreamCallContext.fullEndpointPath,
-        method: methodStreamCallContext.method.name,
-        methodStreamId: methodStreamId,
-        reason: CloseReason.error,
-      ),
-    );
+          methodStreamCallContext.endpoint,
+          session,
+          onRevokedAuthentication: () => closeStream(
+            endpoint: methodStreamCallContext.fullEndpointPath,
+            method: methodStreamCallContext.method.name,
+            methodStreamId: methodStreamId,
+            reason: CloseReason.error,
+          ),
+        );
 
-    var outputController = StreamController(onCancel: () async {
-      /// Guard against multiple calls to onCancel
-      /// This is required because we invoke the onCancel
-      /// method manually if the stream is closed by a timeout
-      /// or a request from the client.
-      if (isCancelled) return;
-      isCancelled = true;
-      session.serverpod.logVerbose(
+    var outputController = StreamController(
+      onCancel: () async {
+        /// Guard against multiple calls to onCancel
+        /// This is required because we invoke the onCancel
+        /// method manually if the stream is closed by a timeout
+        /// or a request from the client.
+        if (isCancelled) return;
+        isCancelled = true;
+        session.serverpod.logVerbose(
           'Cancelling method output stream for ${methodStreamCallContext.fullEndpointPath}.'
-          '${methodStreamCallContext.method.name}, id $methodStreamId');
-      await revokedAuthenticationHandler?.destroy(session);
-      await _closeOutboundStream(methodStreamCallContext, methodStreamId);
-      await session.close();
-    });
+          '${methodStreamCallContext.method.name}, id $methodStreamId',
+        );
+        await revokedAuthenticationHandler?.destroy(session);
+        await _closeOutboundStream(methodStreamCallContext, methodStreamId);
+        await session.close();
+      },
+    );
 
     var streamKey = _buildStreamKey(
       endpoint: methodStreamCallContext.fullEndpointPath,
@@ -364,7 +376,10 @@ class MethodStreamManager {
     subscription = outputController.stream.listen(
       (value) async {
         _onOutputStreamValue?.call(
-            methodStreamId, value, methodStreamCallContext);
+          methodStreamId,
+          value,
+          methodStreamCallContext,
+        );
       },
       onError: (e, s) {
         // All method calls that return futures are unawaited to ensure that
@@ -378,7 +393,11 @@ class MethodStreamManager {
         }
 
         _onOutputStreamError?.call(
-            methodStreamId, e, s, methodStreamCallContext);
+          methodStreamId,
+          e,
+          s,
+          methodStreamCallContext,
+        );
 
         _updateCloseReason(streamKey, CloseReason.error);
 
@@ -394,13 +413,16 @@ class MethodStreamManager {
       },
     );
 
-    var outputStreamContext =
-        _OutputStreamContext(outputController, subscription);
+    var outputStreamContext = _OutputStreamContext(
+      outputController,
+      subscription,
+    );
     _outputStreamContexts[_buildStreamKey(
-      endpoint: methodStreamCallContext.fullEndpointPath,
-      method: methodStreamCallContext.method.name,
-      methodStreamId: methodStreamId,
-    )] = outputStreamContext;
+          endpoint: methodStreamCallContext.fullEndpointPath,
+          method: methodStreamCallContext.method.name,
+          methodStreamId: methodStreamId,
+        )] =
+        outputStreamContext;
 
     return outputStreamContext;
   }
@@ -430,17 +452,20 @@ class MethodStreamManager {
     // Close all controllers that have listeners.
     // If close is called on a controller that has no listeners, it will
     // return a future that never completes.
-    var controllersToClose =
-        controllers.where((c) => c.hasListener && !c.isClosed);
+    var controllersToClose = controllers.where(
+      (c) => c.hasListener && !c.isClosed,
+    );
 
     for (var controller in controllersToClose) {
       // Paused streams will never process the close event and
       // will never complete. Therefore we need add a timeout to complete the
       // future.
-      futures.add(controller.close().timeout(
-            _closeTimeout,
-            onTimeout: () async => await controller.onCancel?.call(),
-          ));
+      futures.add(
+        controller.close().timeout(
+          _closeTimeout,
+          onTimeout: () async => await controller.onCancel?.call(),
+        ),
+      );
     }
 
     await Future.wait(futures);
@@ -455,28 +480,33 @@ class MethodStreamManager {
 
     for (var streamParam in callContext.inputStreams) {
       var parameterName = streamParam.name;
-      var controller = StreamController(onCancel: () async {
-        session.serverpod.logVerbose(
+      var controller = StreamController(
+        onCancel: () async {
+          session.serverpod.logVerbose(
             'Cancelling method input stream for ${callContext.fullEndpointPath}.'
-            '${callContext.method.name}.$parameterName, id $methodStreamId');
-        var context = _inputStreamContexts.remove(_buildStreamKey(
-          endpoint: callContext.fullEndpointPath,
-          method: callContext.method.name,
-          parameter: parameterName,
-          methodStreamId: methodStreamId,
-        ));
+            '${callContext.method.name}.$parameterName, id $methodStreamId',
+          );
+          var context = _inputStreamContexts.remove(
+            _buildStreamKey(
+              endpoint: callContext.fullEndpointPath,
+              method: callContext.method.name,
+              parameter: parameterName,
+              methodStreamId: methodStreamId,
+            ),
+          );
 
-        if (context == null) {
-          return;
-        }
+          if (context == null) {
+            return;
+          }
 
-        _onInputStreamClosed?.call(
-          methodStreamId,
-          parameterName,
-          CloseReason.done,
-          callContext,
-        );
-      });
+          _onInputStreamClosed?.call(
+            methodStreamId,
+            parameterName,
+            CloseReason.done,
+            callContext,
+          );
+        },
+      );
 
       inputStreams[parameterName] = controller;
       _inputStreamContexts[_buildStreamKey(
@@ -484,7 +514,9 @@ class MethodStreamManager {
         method: callContext.method.name,
         parameter: parameterName,
         methodStreamId: methodStreamId,
-      )] = _InputStreamContext(controller);
+      )] = _InputStreamContext(
+        controller,
+      );
     }
 
     return inputStreams;
@@ -503,8 +535,11 @@ class MethodStreamManager {
       methodStreamId: methodStreamId,
     );
     try {
-      var result = await methodStreamCallContext.method
-          .call(session, methodStreamCallContext.arguments, streamParams);
+      var result = await methodStreamCallContext.method.call(
+        session,
+        methodStreamCallContext.arguments,
+        streamParams,
+      );
 
       _updateCloseReason(streamKey, CloseReason.done);
       if (methodStreamCallContext.method.returnType !=
@@ -529,7 +564,9 @@ class MethodStreamManager {
   }
 
   Future<void> _closeOutboundStream(
-      MethodStreamCallContext callContext, UuidValue methodStreamId) async {
+    MethodStreamCallContext callContext,
+    UuidValue methodStreamId,
+  ) async {
     var context = _outputStreamContexts.remove(
       _buildStreamKey(
         endpoint: callContext.fullEndpointPath,
@@ -541,16 +578,21 @@ class MethodStreamManager {
     if (context == null) return;
 
     _onOutputStreamClosed?.call(
-        methodStreamId, context.closeReason, callContext);
+      methodStreamId,
+      context.closeReason,
+      callContext,
+    );
 
     var inputStreamControllers = <StreamController>[];
     for (var streamParam in callContext.inputStreams) {
-      var paramStreamContext = _inputStreamContexts.remove(_buildStreamKey(
-        endpoint: callContext.fullEndpointPath,
-        method: callContext.method.name,
-        parameter: streamParam.name,
-        methodStreamId: methodStreamId,
-      ));
+      var paramStreamContext = _inputStreamContexts.remove(
+        _buildStreamKey(
+          endpoint: callContext.fullEndpointPath,
+          method: callContext.method.name,
+          parameter: streamParam.name,
+          methodStreamId: methodStreamId,
+        ),
+      );
 
       if (paramStreamContext == null) {
         continue;
@@ -598,7 +640,9 @@ class MethodStreamManager {
       return;
     }
 
-    outputController.addStream(methodStream).whenComplete(
+    outputController
+        .addStream(methodStream)
+        .whenComplete(
           // The stream complete message is sent as an error to circumvent
           // branching when passing along stream events to the handler.
           () => outputController.addError(_StreamComplete()),

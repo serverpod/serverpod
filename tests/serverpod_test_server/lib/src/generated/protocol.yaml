@@ -83,6 +83,8 @@ basicDatabase:
   - getTypesRawQuery:
   - storeObjectWithEnum:
   - getObjectWithEnum:
+  - storeObjectWithEnumEnhanced:
+  - getObjectWithEnumEnhanced:
   - storeObjectWithObject:
   - getObjectWithObject:
   - deleteAll:
@@ -93,6 +95,11 @@ transactionsDatabase:
 deprecation:
   - setGlobalDouble:
   - getGlobalDouble:
+  - methodWithDeprecatedParam:
+  - methodWithDeprecatedParamMessage:
+  - methodWithMixedParams:
+  - methodWithOptionalDeprecatedParam:
+  - methodWithNamedDeprecatedParam:
 diagnosticEventTest:
   - submitExceptionEvent:
 echoRequest:
@@ -106,6 +113,30 @@ emailAuthTestMethods:
   - findResetCode:
   - tearDown:
   - createUser:
+concreteBase:
+  - virtualMethod:
+  - concreteMethod:
+  - abstractBaseMethod:
+  - abstractBaseStreamMethod:
+concreteSubClass:
+  - subClassVirtualMethod:
+  - virtualMethod:
+  - concreteMethod:
+  - abstractBaseMethod:
+  - abstractBaseStreamMethod:
+independent:
+  - subClassVirtualMethod:
+  - virtualMethod:
+  - concreteMethod:
+  - abstractBaseMethod:
+  - abstractBaseStreamMethod:
+concreteFromModuleAbstractBase:
+  - virtualMethod:
+  - abstractBaseMethod:
+concreteModuleBase:
+  - virtualMethod:
+  - concreteMethod:
+  - abstractBaseMethod:
 loggedIn:
 myLoggedIn:
   - echo:
@@ -127,7 +158,7 @@ failedCalls:
 fieldScopes:
   - storeObject:
   - retrieveObject:
-futureCalls:
+testFutureCalls:
   - makeFutureCall:
   - makeFutureCallThatThrows:
 listParameters:
@@ -169,8 +200,6 @@ logging:
   - streamLogging:
   - streamQueryLogging:
   - streamException:
-streamLogging:
-streamQueryLogging:
 loggingDisabled:
   - logInfo:
 mapParameters:
@@ -201,6 +230,10 @@ mapParameters:
   - returnDurationMapNullableDurations:
   - returnNestedNonStringKeyedMapInsideRecordInsideMap:
   - returnDeeplyNestedNonStringKeyedMapInsideRecordInsideMap:
+  - returnDateTimeBoolMap:
+  - returnDateTimeBoolMapNullable:
+  - returnIntStringMap:
+  - returnIntStringMapNullable:
 methodSignaturePermutations:
   - echoPositionalArg:
   - echoNamedArg:
@@ -291,12 +324,18 @@ moduleEndpointExtension:
 moduleSerialization:
   - serializeModuleObject:
   - modifyModuleObject:
+  - modifySharedModuleTable:
   - serializeNestedModuleObject:
 namedParameters:
   - namedParametersMethod:
   - namedParametersMethodEqualInts:
 optionalParameters:
   - returnOptionalInt:
+inheritancePolymorphismTest:
+  - polymorphicRoundtrip:
+  - polymorphicStreamingRoundtrip:
+  - polymorphicContainerRoundtrip:
+  - polymorphicModuleContainerRoundtrip:
 recordParameters:
   - returnRecordOfInt:
   - returnNullableRecordOfInt:
@@ -340,6 +379,7 @@ recordParameters:
   - streamOfModelClassWithRecordField:
   - streamOfNullableModelClassWithRecordField:
   - streamOfNullableModelClassWithRecordFieldFromExternalModule:
+  - streamOfNullableIntAndModuleClass:
   - recordParametersWithCustomNames:
 redis:
   - setSimpleData:
@@ -354,6 +394,14 @@ serverOnlyScopedFieldModel:
   - getScopeServerOnlyField:
 serverOnlyScopedFieldChildModel:
   - getProtocolField:
+sessionAuthentication:
+  - getAuthenticatedUserId:
+  - getAuthenticatedScopes:
+  - getAuthenticatedAuthId:
+  - getAuthenticationInfo:
+  - isAuthenticated:
+  - streamAuthenticatedUserId:
+  - streamIsAuthenticated:
 setParameters:
   - returnIntSet:
   - returnIntSetSet:
@@ -386,8 +434,6 @@ simple:
   - addToGlobalInt:
   - getGlobalInt:
   - hello:
-streaming:
-streamingLogging:
 subSubDirTest:
   - testMethod:
 subDirTest:
@@ -411,8 +457,10 @@ testTools:
   - createSimpleDatasInsideTransactions:
   - createSimpleDataAndThrowInsideTransaction:
   - createSimpleDatasInParallelTransactionCalls:
+  - echoDynamic:
   - echoSimpleData:
   - echoSimpleDatas:
+  - echoObjectWithDynamic:
   - echoTypes:
   - echoTypesList:
   - echoModuleDatatype:
@@ -421,6 +469,7 @@ testTools:
   - streamModuleClass:
   - echoRecord:
   - echoRecords:
+  - returnRecordWithSerializableObject:
   - recordEchoStream:
   - listOfRecordEchoStream:
   - nullableRecordEchoStream:

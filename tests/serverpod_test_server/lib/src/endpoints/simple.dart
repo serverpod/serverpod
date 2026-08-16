@@ -6,8 +6,11 @@ int globalInt = 0;
 /// testing and the documentation has multiple lines.
 class SimpleEndpoint extends Endpoint {
   /// Sets a global integer.
-  Future<void> setGlobalInt(Session session, int? value,
-      [int? secondValue]) async {
+  Future<void> setGlobalInt(
+    Session session,
+    int? value, [
+    int? secondValue,
+  ]) async {
     globalInt = value!;
   }
 

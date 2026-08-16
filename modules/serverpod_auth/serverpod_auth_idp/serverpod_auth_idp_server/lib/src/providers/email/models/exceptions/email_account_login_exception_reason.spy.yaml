@@ -1,0 +1,11 @@
+### The reason for why the authentication via email credentials was rejected.
+enum: EmailAccountLoginExceptionReason
+serialized: byName
+default: unknown
+values:
+  ### The credentials are either wrong or the email address is not known.
+  - invalidCredentials
+  ### Too many attempts made to login with the same email address.
+  - tooManyAttempts
+  ### Unknown error occurred.
+  - unknown

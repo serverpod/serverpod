@@ -1,6 +1,10 @@
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/analyzer/models/serialization_data_type.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
-import 'package:serverpod_service_client/serverpod_service_client.dart';
+import 'package:serverpod_database/serverpod_database.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
+
+export 'package:serverpod_database/src/definition/default_keywords.dart';
 
 /// An abstract representation of a yaml file in the
 /// protocol directory.
@@ -11,6 +15,7 @@ sealed class SerializableModelDefinition {
   final List<String> subDirParts;
   final bool serverOnly;
   final TypeDefinition type;
+  final String? sharedPackageName;
 
   SerializableModelDefinition({
     required this.fileName,
@@ -19,14 +24,21 @@ sealed class SerializableModelDefinition {
     required this.serverOnly,
     required this.type,
     this.subDirParts = const [],
+    this.sharedPackageName,
   });
 
   /// Generate the file reference [String] to this file.
   String fileRef() {
-    return p.posix
-        // ignore: prefer_interpolation_to_compose_strings
-        .joinAll([...subDirParts, '$fileName.dart']);
+    var path = p.posix.joinAll([...subDirParts, '$fileName.dart']);
+
+    // If on Windows, paths could appear with backslashes in the import clause.
+    // Normalize to forward slashes.
+    return p.split(path).join('/');
   }
+
+  /// Whether this model is declared in a shared package. Such models are not
+  /// generated on the server or client side, but on its own shared package.
+  bool get isSharedModel => sharedPackageName != null;
 }
 
 /// A representation of a yaml file in the protocol directory defining a class
@@ -41,6 +53,17 @@ sealed class ClassDefinition extends SerializableModelDefinition {
   /// The documentation of this class, line by line.
   final List<String>? documentation;
 
+  /// If set to true the class is sealed.
+  final bool isSealed;
+
+  /// If set to [InheritanceDefinition] the class extends another class and
+  /// stores the [ClassDefinition] of its parent.
+  InheritanceDefinition? extendsClass;
+
+  /// If set to a List of [InheritanceDefinition] the class is a parent class
+  /// that stores the child classes.
+  List<InheritanceDefinition> childClasses;
+
   /// Create a new [ClassDefinition].
   ClassDefinition({
     required super.fileName,
@@ -49,98 +72,54 @@ sealed class ClassDefinition extends SerializableModelDefinition {
     required this.fields,
     required super.serverOnly,
     required super.type,
+    required this.isSealed,
+    List<InheritanceDefinition>? childClasses,
+    this.extendsClass,
     super.subDirParts,
+    super.sharedPackageName,
     this.documentation,
-  });
+  }) : childClasses = childClasses ?? <InheritanceDefinition>[];
 
   SerializableModelFieldDefinition? findField(String name) {
     return fields.where((element) => element.name == name).firstOrNull;
   }
-}
 
-/// A [ClassDefinition] specialization that represents a model class.
-final class ModelClassDefinition extends ClassDefinition {
-  /// If set, the name of the table, this class should be stored in, in the
-  /// database.
-  final String? tableName;
-
-  /// The indexes that should be created for the table [tableName] representing
-  /// this class.
-  ///
-  /// The index over the primary key `id` is not part of this list.
-  final List<SerializableModelIndexDefinition> indexes;
-
-  final bool manageMigration;
-
-  /// If set to true the class is sealed.
-  final bool isSealed;
-
-  /// If set to a List of [InheritanceDefinitions] the class is a parent class and stores the child classes.
-  List<InheritanceDefinition> childClasses;
-
-  /// If set to [InheritanceDefinitions] the class extends another class and stores the [ClassDefinition] of it's parent.
-  InheritanceDefinition? extendsClass;
-
-  List<ModelClassDefinition>? _descendantClasses;
-
-  /// Create a new [ModelClassDefinition].
-  ModelClassDefinition({
-    required super.fileName,
-    required super.sourceFileName,
-    required super.className,
-    required super.fields,
-    required super.serverOnly,
-    required this.manageMigration,
-    required super.type,
-    required this.isSealed,
-    List<InheritanceDefinition>? childClasses,
-    this.extendsClass,
-    this.tableName,
-    this.indexes = const [],
-    super.subDirParts,
-    super.documentation,
-  }) : childClasses = childClasses ?? <InheritanceDefinition>[];
-
-  /// Returns the `SerializableModelFieldDefinition` of the 'id' field.
-  /// If the field is not present, an error is thrown.
-  SerializableModelFieldDefinition get idField =>
-      findField(defaultPrimaryKeyName)!;
-
-  /// Returns the `ModelClassDefinition` of the parent class.
+  /// Returns the `ClassDefinition` of the parent class.
   /// If there is no parent class, `null` is returned.
-  ModelClassDefinition? get parentClass {
+  ClassDefinition? get parentClass {
     var extendsClass = this.extendsClass;
     if (extendsClass is! ResolvedInheritanceDefinition) return null;
 
-    return extendsClass.classDefinition;
+    var classDefinition = extendsClass.classDefinition;
+    if (classDefinition.runtimeType != runtimeType) return null;
+    return classDefinition;
   }
 
   /// Returns a list of all fields in the parent class.
   /// If there is no parent class, an empty list is returned.
   List<SerializableModelFieldDefinition> get inheritedFields =>
-      parentClass?.fieldsIncludingInherited ?? [];
+      parentClass?.fieldsIncludingInherited.toList() ?? [];
 
   /// Returns a list of all fields in this class, including inherited fields.
-  /// It ensures that the 'id' field, if present, is always included at the beginning of the list.
+  /// Non-tail fields are ordered top-down through the inheritance chain. Tail
+  /// fields are ordered bottom-up so that root parent tail fields appear last.
   List<SerializableModelFieldDefinition> get fieldsIncludingInherited {
-    bool hasIdField = fields.any((element) => element.name == 'id');
-
-    return [
-      if (hasIdField) fields.firstWhere((element) => element.name == 'id'),
-      ...inheritedFields,
-      ...fields.where((element) => element.name != 'id'),
-    ];
+    return _fieldsWithTailFieldsLast(
+      inheritedFields: inheritedFields,
+      fields: fields,
+    );
   }
 
   /// Returns `true` if this class is a parent class or sealed.
   bool get isParentClass => childClasses.isNotEmpty || isSealed;
 
-  /// Returns the top node of the sealed hierarchy. If the class is the top node it returns itself.
-  /// If the class is not part of a sealed hierarchy, `null` is returned.
+  /// Returns the top node of the sealed hierarchy. If the class is the top node
+  /// it returns itself. If the class is not part of a sealed hierarchy, `null`
+  /// is returned.
   ClassDefinition? get sealedTopNode {
-    var parent = parentClass;
+    final parent = parentClass;
     if (parent != null) {
-      var parentsSealedTopNode = parent.sealedTopNode;
+      final parentsSealedTopNode = parent.sealedTopNode;
       if (parentsSealedTopNode != null) return parentsSealedTopNode;
     }
 
@@ -150,7 +129,7 @@ final class ModelClassDefinition extends ClassDefinition {
   }
 
   /// Returns `true` if this class is the top node of a sealed hierarchy.
-  bool get isSealedTopNode => sealedTopNode == this;
+  bool get isSealedTopNode => identical(sealedTopNode, this);
 
   /// Returns `true` if all parent classes are sealed.
   /// Returns `true` if the class does not have a parent class.
@@ -168,22 +147,151 @@ final class ModelClassDefinition extends ClassDefinition {
   /// Returns a list of all descendant classes.
   /// This includes all child classes and their descendants.
   /// If the class has no child classes, an empty list is returned.
-  List<ModelClassDefinition> get descendantClasses {
-    return _descendantClasses ??= _computeDescendantClasses();
-  }
+  List<ClassDefinition> get descendantClasses {
+    List<ClassDefinition> descendants = [];
 
-  List<ModelClassDefinition> _computeDescendantClasses() {
-    List<ModelClassDefinition> descendants = [];
+    for (var child in childClasses) {
+      if (child is! ResolvedInheritanceDefinition) continue;
+      var classDefinition = child.classDefinition;
+      if (classDefinition.runtimeType != runtimeType) continue;
 
-    var resolvedChildClasses =
-        childClasses.whereType<ResolvedInheritanceDefinition>();
-
-    for (var child in resolvedChildClasses) {
-      descendants.add(child.classDefinition);
-      descendants.addAll(child.classDefinition.descendantClasses);
+      descendants.add(classDefinition);
+      descendants.addAll(classDefinition.descendantClasses);
     }
 
     return descendants;
+  }
+
+  /// Returns the type name used in validation messages.
+  String get typeName => switch (this) {
+    ModelClassDefinition() => 'model',
+    ExceptionClassDefinition() => 'exception',
+  };
+}
+
+/// A [ClassDefinition] specialization that represents a model class.
+final class ModelClassDefinition extends ClassDefinition {
+  /// If set, the name of the table, this class should be stored in, in the
+  /// database.
+  final String? tableName;
+
+  /// Determines where table-backed database code should be generated.
+  final ModelDatabaseDefinition database;
+
+  /// The indexes that should be created for the table [tableName] representing
+  /// this class.
+  ///
+  /// The index over the primary key `id` is not part of this list.
+  final List<SerializableModelIndexDefinition> indexes;
+
+  final bool manageMigration;
+
+  /// If set to true the class is immutable.
+  final bool isImmutable;
+
+  /// If set, the default data type used for serialization of the JSON columns in this class.
+  /// It can be overridden for each field.
+  final SerializationDataType? serializationDataType;
+
+  /// Create a new [ModelClassDefinition].
+  ModelClassDefinition({
+    required super.fileName,
+    required super.sourceFileName,
+    required super.className,
+    required super.fields,
+    required super.serverOnly,
+    required this.manageMigration,
+    required super.type,
+    required super.isSealed,
+    required this.isImmutable,
+    super.childClasses,
+    super.extendsClass,
+    this.database = ModelDatabaseDefinition.server,
+    this.tableName,
+    this.serializationDataType,
+    this.indexes = const [],
+    super.subDirParts,
+    super.documentation,
+    super.sharedPackageName,
+  });
+
+  @override
+  ModelClassDefinition? get parentClass =>
+      super.parentClass as ModelClassDefinition?;
+
+  @override
+  ModelClassDefinition? get sealedTopNode =>
+      super.sealedTopNode as ModelClassDefinition?;
+
+  @override
+  List<ModelClassDefinition> get descendantClasses =>
+      super.descendantClasses.cast<ModelClassDefinition>().toList();
+
+  /// Returns the `SerializableModelFieldDefinition` of the 'id' field.
+  /// If the field is not present, an error is thrown.
+  SerializableModelFieldDefinition get idField =>
+      findField(defaultPrimaryKeyName)!;
+
+  /// Returns true if database code should be generated for the specified side.
+  bool shouldGenerateTableCode(bool serverCode) {
+    if (tableName == null) return false;
+
+    return switch (database) {
+      ModelDatabaseDefinition.server => serverCode,
+      ModelDatabaseDefinition.client => !serverCode,
+      ModelDatabaseDefinition.all => true,
+    };
+  }
+
+  /// Returns a list of all fields in the parent class.
+  /// If there is no parent class, an empty list is returned.
+  /// Excludes the id field, as it is re-declared on child classes.
+  @override
+  List<SerializableModelFieldDefinition> get inheritedFields => super
+      .inheritedFields
+      .where((element) => tableName == null || element.name != 'id')
+      .toList();
+
+  /// Returns `true` if the 'id' field is inherited from a parent class.
+  bool get isIdInherited =>
+      parentClass?.fieldsIncludingInherited.any((f) => f.name == 'id') ?? false;
+
+  /// Returns a list of all fields in this class, including inherited fields.
+  /// It ensures that the 'id' field, if present on this class, is always
+  /// included at the beginning of the list. Non-tail fields are ordered
+  /// top-down through the inheritance chain. Tail fields are ordered bottom-up
+  /// so that root parent tail fields appear last.
+  @override
+  List<SerializableModelFieldDefinition> get fieldsIncludingInherited {
+    final idField = fields
+        .where((element) => element.name == defaultPrimaryKeyName)
+        .firstOrNull;
+
+    return _fieldsWithTailFieldsLast(
+      firstField: idField,
+      inheritedFields: inheritedFields,
+      fields: fields.where((element) => element.name != defaultPrimaryKeyName),
+    );
+  }
+
+  /// Returns a list of all indexes declared in the parent class.
+  /// If there is no parent class, an empty list is returned.
+  /// Inherited indexes act as index generators for child classes.
+  /// They are created with the table name as prefix to the original name.
+  List<SerializableModelIndexDefinition> get inheritedIndexes {
+    var inherited = parentClass?.indexesIncludingInherited ?? [];
+    if (tableName == null) return inherited;
+    return [
+      for (var index in inherited) index.copyWithPrefix(tableName!),
+    ];
+  }
+
+  /// Returns a list of all indexes in this class, including inherited indexes.
+  List<SerializableModelIndexDefinition> get indexesIncludingInherited {
+    return [
+      ...inheritedIndexes,
+      ...indexes,
+    ];
   }
 }
 
@@ -197,9 +305,25 @@ final class ExceptionClassDefinition extends ClassDefinition {
     required super.serverOnly,
     required super.sourceFileName,
     required super.type,
+    required super.isSealed,
+    super.childClasses,
+    super.extendsClass,
     super.documentation,
     super.subDirParts,
+    super.sharedPackageName,
   });
+
+  @override
+  ExceptionClassDefinition? get parentClass =>
+      super.parentClass as ExceptionClassDefinition?;
+
+  @override
+  ExceptionClassDefinition? get sealedTopNode =>
+      super.sealedTopNode as ExceptionClassDefinition?;
+
+  @override
+  List<ExceptionClassDefinition> get descendantClasses =>
+      super.descendantClasses.cast<ExceptionClassDefinition>().toList();
 }
 
 /// Describes a single field of a [ClassDefinition].
@@ -253,8 +377,40 @@ class SerializableModelFieldDefinition {
   /// When true, nullable fields will be marked as required named parameters.
   final bool isRequired;
 
+  /// When true, this field is placed at the end of the combined field list
+  /// when inherited. Tail fields from child classes appear before tail fields
+  /// from parent classes.
+  final bool isTail;
+
+  /// Name of the column in the database
+  final String? _columnNameOverride;
+
+  /// Name of the column to be used when referencing the database.
+  ///
+  /// This will be the [_columnNameOverride] if set, with fallback to the [name]
+  String get columnName => _columnNameOverride ?? name;
+
+  /// Whether this field has a column name override.
+  bool get hasColumnNameOverride => _columnNameOverride != null;
+
+  final String? _jsonKeyOverride;
+
+  /// Key to use for JSON serialization/deserialization.
+  ///
+  /// This will be the [_jsonKeyOverride] if set, with fallback to the [name]
+  String get jsonKey => _jsonKeyOverride ?? name;
+
+  bool get hasJsonKeyOverride => _jsonKeyOverride != null;
+
   /// Indexes that this field is part of.
   List<SerializableModelIndexDefinition> indexes = [];
+
+  /// Prefix field names for a composite unique index, or an empty list for a
+  /// single-column unique index. `null` means this field is not unique.
+  final List<String>? uniquePerFieldNames;
+
+  /// Whether this field should have a unique index auto-generated for it.
+  bool get shouldCreateUniqueIndex => uniquePerFieldNames != null;
 
   /// Create a new [SerializableModelFieldDefinition].
   SerializableModelFieldDefinition({
@@ -267,14 +423,18 @@ class SerializableModelFieldDefinition {
     this.relation,
     this.documentation,
     this.isRequired = false,
-  });
+    this.isTail = false,
+    String? columnNameOverride,
+    String? jsonKeyOverride,
+    this.uniquePerFieldNames,
+  }) : _columnNameOverride = columnNameOverride,
+       _jsonKeyOverride = jsonKeyOverride;
 
   /// Returns true, if classes should include this field.
   /// [serverCode] specifies if it's a code on the server or client side.
   ///
   /// See also:
   /// - [shouldSerializeField]
-  /// - [shouldSerializeFieldForDatabase]
   bool shouldIncludeField(bool serverCode) {
     return scope == ModelFieldScopeDefinition.all ||
         (serverCode && scope == ModelFieldScopeDefinition.serverOnly);
@@ -285,29 +445,107 @@ class SerializableModelFieldDefinition {
   ///
   /// See also:
   /// - [shouldIncludeField]
-  /// - [shouldSerializeFieldForDatabase]
   bool shouldSerializeField(bool serverCode) {
     return scope == ModelFieldScopeDefinition.all;
   }
 
-  /// Returns true, if this field should be added to the serialization for the
-  /// database.
-  /// [serverCode] specifies if it's code on the server or client side.
-  /// This method should only be called for server side code.
+  /// Whether this field is persisted in the database but hidden from the
+  /// protocol (`toJsonForProtocol`) output.
   ///
-  /// See also:
-  /// - [shouldIncludeField]
-  /// - [shouldSerializeField]
-  bool shouldSerializeFieldForDatabase(bool serverCode) {
-    return shouldPersist;
+  /// This is only about persisted [ModelFieldScopeDefinition.none] fields, such
+  /// as the implicit relation FKs generated for object relations. Those are
+  /// stored in the database and kept in [SerializableModel.toJson], but must be
+  /// omitted from protocol serialization.
+  ///
+  /// Note this is unrelated to `!persist` (`shouldPersist == false`): a
+  /// `!persist` field with `scope: all` is *not* stored in the database but
+  /// *is* sent over the wire. On the client, only implicit one-to-many child
+  /// keys qualify as hidden.
+  bool hiddenSerializableField(bool serverCode) {
+    if (serverCode) {
+      return shouldPersist && scope == ModelFieldScopeDefinition.none;
+    }
+    if (!shouldPersist || scope != ModelFieldScopeDefinition.none) {
+      return false;
+    }
+    final relation = this.relation;
+    return relation is ForeignRelationDefinition &&
+        relation.containerField == null;
   }
 
-  /// Returns true, if this is serialized field that should be hidden.
-  /// [serverCode] specifies if it's code on the server or client side.
-  bool hiddenSerializableField(bool serverCode) {
-    return serverCode &&
-        shouldPersist &&
-        scope == ModelFieldScopeDefinition.none;
+  /// Whether code generation should emit this field on the in-memory model
+  /// and *Implicit* copy/fromJson helpers.
+  ///
+  /// On the client, [modelHasTable] must be [true] when the model class is
+  /// table-backed for this code side (e.g. [ModelClassDefinition.shouldGenerateTableCode]).
+  bool shouldIncludeHiddenFieldInModelClass(
+    bool serverCode, {
+    bool modelHasTable = true,
+  }) {
+    if (!hiddenSerializableField(serverCode)) {
+      return false;
+    }
+    if (serverCode) {
+      return true;
+    }
+    return modelHasTable;
+  }
+
+  /// When [shouldCreateUniqueIndex] is true, the btree unique index that is
+  /// auto-created for this field on [tableName]; otherwise `null`.
+  SerializableModelIndexDefinition? autoGeneratedUniqueIndexDefinition(
+    String tableName,
+    List<SerializableModelFieldDefinition> allFields,
+  ) {
+    if (!shouldCreateUniqueIndex) return null;
+
+    var indexColumnNames = [
+      for (var perFieldName in uniquePerFieldNames!)
+        _resolveUniqueIndexColumnName(perFieldName, allFields),
+      columnName,
+    ];
+
+    return SerializableModelIndexDefinition(
+      name: buildAutoGeneratedUniqueIndexName(tableName, indexColumnNames),
+      type: 'btree',
+      unique: true,
+      fields: indexColumnNames,
+    );
+  }
+
+  /// Resolves a `per` field name to its database column name. Falls back to the
+  /// name itself when no matching field exists; that case is an authoring error
+  /// reported separately by validation, so the generated name is never used.
+  static String _resolveUniqueIndexColumnName(
+    String fieldName,
+    List<SerializableModelFieldDefinition> allFields,
+  ) {
+    for (var field in allFields) {
+      if (field.name == fieldName) return field.columnName;
+    }
+    return fieldName;
+  }
+
+  /// Builds the auto-generated unique index name, keeping it within the
+  /// PostgreSQL identifier limit.
+  ///
+  /// Composite indexes can easily exceed the limit, so when the full
+  /// `<table>__<col>__…__unique_idx` name is too long the middle is replaced
+  /// with a deterministic digest while the readable head and the
+  /// `__unique_idx` suffix are preserved.
+  static String buildAutoGeneratedUniqueIndexName(
+    String tableName,
+    List<String> indexColumnNames,
+  ) {
+    const suffix = '__unique_idx';
+    var baseName = '${tableName}__${indexColumnNames.join('__')}';
+
+    return truncateIdentifier(
+          baseName,
+          DatabaseConstants.pgsqlMaxNameLimitation - suffix.length,
+          hashLength: 10,
+        ) +
+        suffix;
   }
 }
 
@@ -316,6 +554,13 @@ enum ModelFieldScopeDefinition {
   all,
   serverOnly,
   none,
+}
+
+/// The side that should generate table-backed database code for a model.
+enum ModelDatabaseDefinition {
+  server,
+  client,
+  all,
 }
 
 /// The definition of an index for a file, that is also stored in the database.
@@ -334,6 +579,14 @@ class SerializableModelIndexDefinition {
   /// Whether the [fields] of this index should be unique.
   final bool unique;
 
+  /// Whether null values should be considered distinct in this unique index.
+  ///
+  /// A null value uses the database default behavior.
+  final bool? nullsDistinct;
+
+  /// The gin index operator class, if it is a gin index.
+  final GinOperatorClass? ginOperatorClass;
+
   /// The vector index distance function, if it is a vector index.
   final VectorDistanceFunction? vectorDistanceFunction;
 
@@ -346,12 +599,57 @@ class SerializableModelIndexDefinition {
     required this.type,
     required this.unique,
     required this.fields,
+    this.nullsDistinct,
+    this.ginOperatorClass,
     this.vectorDistanceFunction,
     this.parameters,
   });
 
+  /// Whether the index is of GIN type.
+  bool get isGinIndex => type == 'gin';
+
   /// Whether the index is of vector type.
   bool get isVectorIndex => VectorIndexType.values.any((e) => e.name == type);
+
+  /// Copy the index with a new name that is prefixed with [prefix].
+  SerializableModelIndexDefinition copyWithPrefix(String prefix) {
+    return SerializableModelIndexDefinition(
+      name: '${prefix}_$name',
+      type: type,
+      unique: unique,
+      nullsDistinct: nullsDistinct,
+      fields: fields,
+      ginOperatorClass: ginOperatorClass,
+      vectorDistanceFunction: vectorDistanceFunction,
+      parameters: parameters,
+    );
+  }
+}
+
+/// Represents a single property on an enhanced enum.
+class EnumPropertyDefinition {
+  /// The name of the property.
+  final String name;
+
+  /// The type of the property (e.g., 'int', 'String', 'bool').
+  final String type;
+
+  /// Whether this property is required (no default value).
+  final bool isRequired;
+
+  /// Default value if property is optional.
+  final dynamic defaultValue;
+
+  /// Documentation for this property.
+  final List<String>? documentation;
+
+  EnumPropertyDefinition({
+    required this.name,
+    required this.type,
+    this.isRequired = true,
+    this.defaultValue,
+    this.documentation,
+  });
 }
 
 /// A representation of a yaml file in the protocol directory defining an enum.
@@ -369,6 +667,9 @@ class EnumDefinition extends SerializableModelDefinition {
   /// The documentation for this enum, line by line.
   final List<String>? documentation;
 
+  /// Properties for enhanced enums with custom fields.
+  final List<EnumPropertyDefinition> properties;
+
   /// Create a new [EnumDefinition].
   EnumDefinition({
     required super.fileName,
@@ -381,7 +682,12 @@ class EnumDefinition extends SerializableModelDefinition {
     required super.type,
     super.subDirParts,
     this.documentation,
+    this.properties = const [],
+    super.sharedPackageName,
   });
+
+  /// Whether this is an enhanced enum with properties.
+  bool get isEnhanced => properties.isNotEmpty;
 }
 
 /// A representation of a single value of a [EnumDefinition].
@@ -392,8 +698,15 @@ class ProtocolEnumValueDefinition {
   /// The documentation for this value, line by line.
   final List<String>? documentation;
 
+  /// Property values for enhanced enums.
+  final Map<String, dynamic> propertyValues;
+
   /// Create a new [ProtocolEnumValueDefinition].
-  ProtocolEnumValueDefinition(this.name, [this.documentation]);
+  ProtocolEnumValueDefinition(
+    this.name, [
+    this.documentation,
+    this.propertyValues = const {},
+  ]);
 }
 
 abstract class InheritanceDefinition {}
@@ -404,8 +717,9 @@ class UnresolvedInheritanceDefinition extends InheritanceDefinition {
   UnresolvedInheritanceDefinition(this.className);
 }
 
-class ResolvedInheritanceDefinition extends InheritanceDefinition {
-  final ModelClassDefinition classDefinition;
+class ResolvedInheritanceDefinition<T extends ClassDefinition>
+    extends InheritanceDefinition {
+  final T classDefinition;
 
   ResolvedInheritanceDefinition(this.classDefinition);
 }
@@ -515,9 +829,9 @@ class UnresolvableObjectRelationDefinition extends RelationDefinition {
     this.objectRelationDefinition,
     this.reason,
   ) : super(
-          objectRelationDefinition.name,
-          objectRelationDefinition.isForeignKeyOrigin,
-        );
+        objectRelationDefinition.name,
+        objectRelationDefinition.isForeignKeyOrigin,
+      );
 }
 
 class UnresolvedObjectRelationDefinition extends RelationDefinition {
@@ -606,20 +920,14 @@ const ForeignKeyAction onDeleteDefaultOld = ForeignKeyAction.cascade;
 
 const ForeignKeyAction onUpdateDefault = ForeignKeyAction.noAction;
 
-const String defaultPrimaryKeyName = 'id';
-
-/// Int for the default primary key type.
-const String defaultIntSerial = 'serial';
-
-/// DateTime
-const String defaultDateTimeValueNow = 'now';
-
-/// UuidValue
-const String defaultUuidValueRandom = 'random';
-const String defaultUuidValueRandomV7 = 'random_v7';
-
-/// Allowed types for vector indexes.
-enum VectorIndexType {
-  hnsw,
-  ivfflat,
-}
+List<SerializableModelFieldDefinition> _fieldsWithTailFieldsLast({
+  SerializableModelFieldDefinition? firstField,
+  required Iterable<SerializableModelFieldDefinition> inheritedFields,
+  required Iterable<SerializableModelFieldDefinition> fields,
+}) => [
+  ?firstField,
+  ...inheritedFields.where((field) => !field.isTail),
+  ...fields.where((field) => !field.isTail),
+  ...fields.where((field) => field.isTail),
+  ...inheritedFields.where((field) => field.isTail),
+];

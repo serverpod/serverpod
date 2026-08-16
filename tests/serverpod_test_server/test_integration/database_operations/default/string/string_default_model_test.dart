@@ -7,10 +7,12 @@ void main() async {
   var session = await IntegrationTestServer().session();
 
   group('Given a class with "defaultModel" fields,', () {
-    tearDownAll(() async => StringDefaultModel.db.deleteWhere(
-          session,
-          where: (_) => Constant.bool(true),
-        ));
+    tearDownAll(
+      () async => StringDefaultModel.db.deleteWhere(
+        session,
+        where: (_) => Constant.bool(true),
+      ),
+    );
 
     test(
       'when creating a record in the database, then the "defaultModel=\'This is a default model value\'" field value should match the default value',
@@ -21,7 +23,9 @@ void main() async {
           object,
         );
         expect(
-            databaseObject.stringDefaultModel, 'This is a default model value');
+          databaseObject.stringDefaultModel,
+          'This is a default model value',
+        );
       },
     );
 
@@ -33,8 +37,10 @@ void main() async {
           session,
           object,
         );
-        expect(databaseObject.stringDefaultModelNull,
-            'This is a default model null value');
+        expect(
+          databaseObject.stringDefaultModelNull,
+          'This is a default model null value',
+        );
       },
     );
 
@@ -48,8 +54,10 @@ void main() async {
           session,
           specificObject,
         );
-        expect(specificDatabaseObject.stringDefaultModel,
-            'A specific model value');
+        expect(
+          specificDatabaseObject.stringDefaultModel,
+          'A specific model value',
+        );
       },
     );
 
@@ -63,8 +71,10 @@ void main() async {
           session,
           specificObject,
         );
-        expect(specificDatabaseObject.stringDefaultModelNull,
-            'A specific model null value');
+        expect(
+          specificDatabaseObject.stringDefaultModelNull,
+          'A specific model null value',
+        );
       },
     );
   });

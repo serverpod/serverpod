@@ -1,0 +1,19 @@
+#!/bin/bash
+
+sort_pubspec() {
+    local pubspec_path="$1"
+
+    if dart run sort_pubspec_dependencies --pubspec-path="$pubspec_path" > /dev/null; then
+        echo "✓ Sorted: $pubspec_path"
+    else
+        echo -e "✗ Failed to sort: $pubspec_path. Contents:\n\n$(cat "$pubspec_path")\n\n"
+    fi
+}
+
+export -f sort_pubspec
+
+echo "Sort all pubspecs dependencies"
+
+# Exclude the top level pubspec.yaml to avoid breaking the `dart run` for other processes.
+pubspecs=$(find . -name "pubspec.yaml" -type f ! -path "./pubspec.yaml")
+echo "$pubspecs" | xargs -P $(util/get_max_cores) -I {} bash -c 'sort_pubspec "{}"'

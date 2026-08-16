@@ -5,20 +5,21 @@ import 'package:test/scaffolding.dart';
 
 void main() {
   group(
-      'Given a Serverpod server when calling an endpoint with a malformed json body',
-      () {
-    late http.Response response;
+    'Given a Serverpod server when calling an endpoint with a malformed json body',
+    () {
+      late http.Response response;
 
-    setUpAll(() async {
-      var anyServerEndpoint = Uri.parse("${serverUrl}exceptionTest");
-      response = await http.post(
-        anyServerEndpoint,
-        body: 'malformed json body',
-      );
-    });
+      setUpAll(() async {
+        var anyServerEndpoint = Uri.parse("${serverUrl}exceptionTest");
+        response = await http.post(
+          anyServerEndpoint,
+          body: 'malformed json body',
+        );
+      });
 
-    test('then it should return status code 400', () {
-      expect(response.statusCode, 400);
-    });
-  });
+      test('then it should return status code 400', () {
+        expect(response.statusCode, 400);
+      });
+    },
+  );
 }

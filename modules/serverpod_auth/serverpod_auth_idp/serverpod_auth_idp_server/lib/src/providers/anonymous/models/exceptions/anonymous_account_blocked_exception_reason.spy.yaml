@@ -1,0 +1,11 @@
+### The reason an anonymous account creation was blocked.
+enum: AnonymousAccountBlockedExceptionReason
+serialized: byName
+values:
+  ### Exception to be thrown when the [beforeAnonymousAccountCreation]
+  ### callback returns false.
+  - denied
+
+  ### Exception to be thrown when the anonymous account creation request
+  ### exceeds the configured throttling limits.
+  - tooManyAttempts

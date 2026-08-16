@@ -10,16 +10,19 @@ import 'package:serverpod/src/generated/cloud_storage_direct_upload.dart';
 /// binary files. It's the default [CloudStorage] interface of Serverpod, but
 /// you may want to replace it with a more robust service depending on your
 /// needs, especially in your production environment.
-class DatabaseCloudStorage extends CloudStorage {
+class DatabaseCloudStorage extends CloudStorage with CloudStorageWithOptions {
   /// Creates a new [DatabaseCloudStorage].
   DatabaseCloudStorage(super.storageId);
 
   @override
-  Future<void> deleteFile(
-      {required Session session, required String path}) async {
+  Future<void> deleteFile({
+    required Session session,
+    required String path,
+  }) async {
     try {
       await session.db.deleteWhere<CloudStorageEntry>(
-        where: CloudStorageEntry.t.storageId.equals(storageId) &
+        where:
+            CloudStorageEntry.t.storageId.equals(storageId) &
             CloudStorageEntry.t.path.equals(path),
       );
     } catch (e) {
@@ -28,11 +31,14 @@ class DatabaseCloudStorage extends CloudStorage {
   }
 
   @override
-  Future<bool> fileExists(
-      {required Session session, required String path}) async {
+  Future<bool> fileExists({
+    required Session session,
+    required String path,
+  }) async {
     try {
       var numRows = await session.db.count<CloudStorageEntry>(
-        where: CloudStorageEntry.t.storageId.equals(storageId) &
+        where:
+            CloudStorageEntry.t.storageId.equals(storageId) &
             CloudStorageEntry.t.path.equals(path),
       );
       return (numRows > 0);
@@ -42,8 +48,10 @@ class DatabaseCloudStorage extends CloudStorage {
   }
 
   @override
-  Future<Uri?> getPublicUrl(
-      {required Session session, required String path}) async {
+  Future<Uri?> getPublicUrl({
+    required Session session,
+    required String path,
+  }) async {
     if (storageId != 'public') return null;
 
     var exists = await fileExists(session: session, path: path);
@@ -120,8 +128,9 @@ class DatabaseCloudStorage extends CloudStorage {
       expiration: expiration,
       authKey: _generateAuthKey(),
     );
-    var inserted =
-        await session.db.insertRow<CloudStorageDirectUploadEntry>(uploadEntry);
+    var inserted = await session.db.insertRow<CloudStorageDirectUploadEntry>(
+      uploadEntry,
+    );
 
     var uri = Uri(
       scheme: config.apiServer.publicScheme,
@@ -142,6 +151,54 @@ class DatabaseCloudStorage extends CloudStorage {
     };
 
     return SerializationManager.encode(uploadDescriptionData);
+  }
+
+  @override
+  Future<void> storeFileWithOptions({
+    required Session session,
+    required String path,
+    required ByteData byteData,
+    DateTime? expiration,
+    bool verified = true,
+    required CloudStorageOptions options,
+  }) async {
+    if (options.preventOverwrite) {
+      final exists = await fileExists(session: session, path: path);
+      if (exists) {
+        throw CloudStorageException(
+          'File already exists at path "$path" and preventOverwrite is enabled.',
+        );
+      }
+    }
+
+    await storeFile(
+      session: session,
+      path: path,
+      byteData: byteData,
+      expiration: expiration,
+      verified: verified,
+    );
+  }
+
+  @override
+  Future<String?> createDirectFileUploadDescriptionWithOptions({
+    required Session session,
+    required String path,
+    Duration expirationDuration = const Duration(minutes: 10),
+    int maxFileSize = 10 * 1024 * 1024,
+    required CloudStorageOptions options,
+  }) async {
+    if (options.contentLength != null && options.contentLength! > maxFileSize) {
+      throw CloudStorageException(
+        'Content length (${options.contentLength} bytes) exceeds maximum file size ($maxFileSize bytes).',
+      );
+    }
+    return createDirectFileUploadDescription(
+      session: session,
+      path: path,
+      expirationDuration: expirationDuration,
+      maxFileSize: maxFileSize,
+    );
   }
 
   /// Returns true if the specified file has been successfully uploaded to the
@@ -170,7 +227,11 @@ class DatabaseCloudStorage extends CloudStorage {
     const chars =
         'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
     var rnd = Random();
-    return String.fromCharCodes(Iterable.generate(
-        len, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))));
+    return String.fromCharCodes(
+      Iterable.generate(
+        len,
+        (_) => chars.codeUnitAt(rnd.nextInt(chars.length)),
+      ),
+    );
   }
 }

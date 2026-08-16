@@ -1,0 +1,57 @@
+{
+  "__className__": "serverpod.DatabaseMigration",
+  "actions": [
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "alterTable",
+      "alterTable": {
+        "__className__": "serverpod.TableMigration",
+        "name": "types",
+        "schema": "public",
+        "addColumns": [
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "aGeographyPoint",
+            "fieldName": "aGeographyPoint",
+            "columnType": 15,
+            "isNullable": true,
+            "dartType": "GeographyPoint?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "aGeographyLineString",
+            "fieldName": "aGeographyLineString",
+            "columnType": 16,
+            "isNullable": true,
+            "dartType": "GeographyLineString?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "aGeographyPolygon",
+            "fieldName": "aGeographyPolygon",
+            "columnType": 17,
+            "isNullable": true,
+            "dartType": "GeographyPolygon?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "aGeographyGeometryCollection",
+            "fieldName": "aGeographyGeometryCollection",
+            "columnType": 18,
+            "isNullable": true,
+            "dartType": "GeographyGeometryCollection?"
+          }
+        ],
+        "deleteColumns": [],
+        "modifyColumns": [],
+        "addIndexes": [],
+        "deleteIndexes": [],
+        "addForeignKeys": [],
+        "deleteForeignKeys": [],
+        "warnings": []
+      }
+    }
+  ],
+  "warnings": [],
+  "migrationApiVersion": 1
+}

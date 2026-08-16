@@ -9,11 +9,11 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   test(
-      'Given a class with an implicit many to many relation then an error is collected that it is not supported.',
-      () {
-    var models = [
-      ModelSourceBuilder().withFileName('member').withYaml(
-        '''
+    'Given a class with an implicit many to many relation then an error is collected that it is not supported.',
+    () {
+      var models = [
+        ModelSourceBuilder().withFileName('member').withYaml(
+          '''
         class: Member
         table: member
         fields:
@@ -21,22 +21,23 @@ void main() {
           blocked: List<Member>?, relation(name=blocking)
           blockedBy: List<Member>?, relation(name=blocking)
         ''',
-      ).build(),
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    analyzer.validateAll();
-    var errors = collector.errors;
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+      var errors = collector.errors;
 
-    expect(errors, isNotEmpty);
-    expect(
-      errors.first.message,
-      contains('A named relation to another list field is not supported.'),
-    );
-  });
+      expect(errors, isNotEmpty);
+      expect(
+        errors.first.message,
+        contains('A named relation to another list field is not supported.'),
+      );
+    },
+  );
 }

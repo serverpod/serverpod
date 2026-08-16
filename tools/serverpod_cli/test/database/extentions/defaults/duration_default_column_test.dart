@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/database/extensions.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
@@ -13,13 +14,24 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should not have the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"durationDefault" bigint NOT NULL',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should not have the default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"durationDefault" bigint NOT NULL',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should not have the default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"durationDefault" INTEGER NOT NULL',
+          );
+        },
+      );
     });
 
     group('with 94230100ms as default value', () {
@@ -33,13 +45,24 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should have the default value in milliseconds',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"durationDefault" bigint NOT NULL DEFAULT 94230100',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should have the default value in milliseconds',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"durationDefault" bigint NOT NULL DEFAULT 94230100',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should have the default value in milliseconds',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"durationDefault" INTEGER NOT NULL DEFAULT (94230100)',
+          );
+        },
+      );
     });
 
     group('with 177640100ms as default value', () {
@@ -53,13 +76,24 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should have the default value in milliseconds',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"durationDefault" bigint NOT NULL DEFAULT 177640100',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should have the default value in milliseconds',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"durationDefault" bigint NOT NULL DEFAULT 177640100',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should have the default value in milliseconds',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"durationDefault" INTEGER NOT NULL DEFAULT (177640100)',
+          );
+        },
+      );
     });
 
     group('with nullable column and no default value', () {
@@ -71,13 +105,24 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should be nullable with no default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"durationDefault" bigint',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should be nullable with no default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"durationDefault" bigint',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should be nullable with no default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"durationDefault" INTEGER',
+          );
+        },
+      );
     });
 
     group('with nullable column and 94230100ms as default value', () {
@@ -90,13 +135,24 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should be nullable with the default value in milliseconds',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"durationDefault" bigint DEFAULT 94230100',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should be nullable with the default value in milliseconds',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"durationDefault" bigint DEFAULT 94230100',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should be nullable with the default value in milliseconds',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"durationDefault" INTEGER DEFAULT (94230100)',
+          );
+        },
+      );
     });
 
     group('with nullable column and 177640100ms as default value', () {
@@ -109,13 +165,24 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should be nullable with the default value in milliseconds',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"durationDefault" bigint DEFAULT 177640100',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should be nullable with the default value in milliseconds',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"durationDefault" bigint DEFAULT 177640100',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should be nullable with the default value in milliseconds',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"durationDefault" INTEGER DEFAULT (177640100)',
+          );
+        },
+      );
     });
   });
 }

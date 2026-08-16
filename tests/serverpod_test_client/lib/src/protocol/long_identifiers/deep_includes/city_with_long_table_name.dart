@@ -15,8 +15,10 @@ import '../../long_identifiers/deep_includes/person_with_long_table_name.dart'
     as _i2;
 import '../../long_identifiers/deep_includes/organization_with_long_table_name.dart'
     as _i3;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i4;
 
-abstract class CityWithLongTableName implements _i1.SerializableModel {
+abstract class CityWithLongTableName
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   CityWithLongTableName._({
     this.id,
     required this.name,
@@ -32,18 +34,21 @@ abstract class CityWithLongTableName implements _i1.SerializableModel {
   }) = _CityWithLongTableNameImpl;
 
   factory CityWithLongTableName.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return CityWithLongTableName(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      citizens: (jsonSerialization['citizens'] as List?)
-          ?.map((e) =>
-              _i2.PersonWithLongTableName.fromJson((e as Map<String, dynamic>)))
-          .toList(),
-      organizations: (jsonSerialization['organizations'] as List?)
-          ?.map((e) => _i3.OrganizationWithLongTableName.fromJson(
-              (e as Map<String, dynamic>)))
-          .toList(),
+      citizens: jsonSerialization['citizens'] == null
+          ? null
+          : _i4.Protocol().deserialize<List<_i2.PersonWithLongTableName>>(
+              jsonSerialization['citizens'],
+            ),
+      organizations: jsonSerialization['organizations'] == null
+          ? null
+          : _i4.Protocol().deserialize<List<_i3.OrganizationWithLongTableName>>(
+              jsonSerialization['organizations'],
+            ),
     );
   }
 
@@ -70,12 +75,28 @@ abstract class CityWithLongTableName implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'CityWithLongTableName',
       if (id != null) 'id': id,
       'name': name,
       if (citizens != null)
         'citizens': citizens?.toJson(valueToJson: (v) => v.toJson()),
       if (organizations != null)
         'organizations': organizations?.toJson(valueToJson: (v) => v.toJson()),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'CityWithLongTableName',
+      if (id != null) 'id': id,
+      'name': name,
+      if (citizens != null)
+        'citizens': citizens?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      if (organizations != null)
+        'organizations': organizations?.toJson(
+          valueToJson: (v) => v.toJsonForProtocol(),
+        ),
     };
   }
 
@@ -94,11 +115,11 @@ class _CityWithLongTableNameImpl extends CityWithLongTableName {
     List<_i2.PersonWithLongTableName>? citizens,
     List<_i3.OrganizationWithLongTableName>? organizations,
   }) : super._(
-          id: id,
-          name: name,
-          citizens: citizens,
-          organizations: organizations,
-        );
+         id: id,
+         name: name,
+         citizens: citizens,
+         organizations: organizations,
+       );
 
   /// Returns a shallow copy of this [CityWithLongTableName]
   /// with some or all fields replaced by the given arguments.

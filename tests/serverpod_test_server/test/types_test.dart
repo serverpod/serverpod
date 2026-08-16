@@ -26,7 +26,9 @@ void main() {
     test('then half vector fields are generated correctly.', () {
       expect(ObjectWithHalfVector.t.halfVector, isA<ColumnHalfVector>());
       expect(
-          ObjectWithHalfVector.t.halfVectorNullable, isA<ColumnHalfVector>());
+        ObjectWithHalfVector.t.halfVectorNullable,
+        isA<ColumnHalfVector>(),
+      );
     });
 
     test('then half vector fields have correct dimension.', () {
@@ -38,8 +40,10 @@ void main() {
   group('Given declared ObjectWithSparseVector class', () {
     test('then sparse vector fields are generated correctly.', () {
       expect(ObjectWithSparseVector.t.sparseVector, isA<ColumnSparseVector>());
-      expect(ObjectWithSparseVector.t.sparseVectorNullable,
-          isA<ColumnSparseVector>());
+      expect(
+        ObjectWithSparseVector.t.sparseVectorNullable,
+        isA<ColumnSparseVector>(),
+      );
     });
 
     test('then sparse vector fields have correct dimension.', () {
@@ -88,23 +92,25 @@ void main() {
       );
     });
 
-    test('then nested container fields are generated as ColumnSerializable.',
-        () {
-      expect(
-        ObjectWithObject.t.nestedDataList,
-        isA<ColumnSerializable<List<List<SimpleData>>>>(),
-      );
-      expect(
-        ObjectWithObject.t.nestedDataListInMap,
-        isA<
-            ColumnSerializable<
-                Map<String, List<List<Map<int, SimpleData>>?>>>>(),
-      );
-      expect(
-        ObjectWithObject.t.nestedDataMap,
-        isA<ColumnSerializable<Map<String, Map<int, SimpleData>>>>(),
-      );
-    });
+    test(
+      'then nested container fields are generated as ColumnSerializable.',
+      () {
+        expect(
+          ObjectWithObject.t.nestedDataList,
+          isA<ColumnSerializable<List<List<SimpleData>>>>(),
+        );
+        expect(
+          ObjectWithObject.t.nestedDataListInMap,
+          isA<
+            ColumnSerializable<Map<String, List<List<Map<int, SimpleData>>?>>>
+          >(),
+        );
+        expect(
+          ObjectWithObject.t.nestedDataMap,
+          isA<ColumnSerializable<Map<String, Map<int, SimpleData>>>>(),
+        );
+      },
+    );
   });
 
   group('Given declared Types class', () {

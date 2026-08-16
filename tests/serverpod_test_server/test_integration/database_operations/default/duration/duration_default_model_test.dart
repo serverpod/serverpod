@@ -7,10 +7,12 @@ void main() async {
   var session = await IntegrationTestServer().session();
 
   group('Given a class with "defaultModel" Duration fields,', () {
-    tearDownAll(() async => DurationDefaultModel.db.deleteWhere(
-          session,
-          where: (_) => Constant.bool(true),
-        ));
+    tearDownAll(
+      () async => DurationDefaultModel.db.deleteWhere(
+        session,
+        where: (_) => Constant.bool(true),
+      ),
+    );
 
     test(
       'when creating a record in the database, then the "defaultModel=1d 2h 10min 30s 100ms" field value should be the expected duration',

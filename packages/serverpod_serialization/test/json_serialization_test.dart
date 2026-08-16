@@ -88,7 +88,7 @@ void main() {
       'when a map containing a list of user objects is encoded using encodeForProtocol method, then passwords are excluded from the output',
       () {
         var userMap = {
-          'users': [user]
+          'users': [user],
         };
         var stringifiedJson = SerializationManager.encodeForProtocol(userMap);
         expect(stringifiedJson, isNot(contains('password')));
@@ -102,8 +102,9 @@ void main() {
     test(
       'when encoded using encodeForProtocol method, then output matches the input list',
       () {
-        var stringifiedJson =
-            SerializationManager.encodeForProtocol(primitiveList);
+        var stringifiedJson = SerializationManager.encodeForProtocol(
+          primitiveList,
+        );
         expect(stringifiedJson, '[1,2.5,"hello",true]');
       },
     );
@@ -115,54 +116,57 @@ void main() {
     test(
       'when encoded using encodeForProtocol method, then output matches the input map',
       () {
-        var stringifiedJson =
-            SerializationManager.encodeForProtocol(primitiveMap);
+        var stringifiedJson = SerializationManager.encodeForProtocol(
+          primitiveMap,
+        );
         expect(stringifiedJson, '{"a":1,"b":2.5,"c":"hello","d":true}');
       },
     );
   });
 
   group(
-      'Given a map with complex nested structure containing object with server only password field,',
-      () {
-    _User user = _User(name: 'John', password: '123');
+    'Given a map with complex nested structure containing object with server only password field,',
+    () {
+      _User user = _User(name: 'John', password: '123');
 
-    test(
-      'when encoded using encodeForProtocol method, then passwords are excluded from the output',
-      () {
-        var map = {
-          'list': [user],
-          'nestedMap': {
-            'innerUser': user,
-            'innerList': [user]
-          },
-        };
-        var stringifiedJson = SerializationManager.encodeForProtocol(map);
-        expect(stringifiedJson, isNot(contains('password')));
-      },
-    );
-  });
-
-  group(
-      'Given a list with complex nested structure containing object with server only password field,',
-      () {
-    _User user = _User(name: 'John', password: '123');
-
-    test(
-      'when encoded using encodeForProtocol method, then passwords are excluded from the output',
-      () {
-        var list = [
-          {'user': user},
-          {
+      test(
+        'when encoded using encodeForProtocol method, then passwords are excluded from the output',
+        () {
+          var map = {
+            'list': [user],
             'nestedMap': {
               'innerUser': user,
-              'innerList': [user]
-            }
-          }
-        ];
-        var stringifiedJson = SerializationManager.encodeForProtocol(list);
-        expect(stringifiedJson, isNot(contains('password')));
-      },
-    );
-  });
+              'innerList': [user],
+            },
+          };
+          var stringifiedJson = SerializationManager.encodeForProtocol(map);
+          expect(stringifiedJson, isNot(contains('password')));
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a list with complex nested structure containing object with server only password field,',
+    () {
+      _User user = _User(name: 'John', password: '123');
+
+      test(
+        'when encoded using encodeForProtocol method, then passwords are excluded from the output',
+        () {
+          var list = [
+            {'user': user},
+            {
+              'nestedMap': {
+                'innerUser': user,
+                'innerList': [user],
+              },
+            },
+          ];
+          var stringifiedJson = SerializationManager.encodeForProtocol(list);
+          expect(stringifiedJson, isNot(contains('password')));
+        },
+      );
+    },
+  );
 }

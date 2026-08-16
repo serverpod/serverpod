@@ -12,7 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class ScopeNoneFields implements _i1.SerializableModel {
+abstract class ScopeNoneFields
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ScopeNoneFields._({this.id});
 
   factory ScopeNoneFields({int? id}) = _ScopeNoneFieldsImpl;
@@ -32,7 +33,18 @@ abstract class ScopeNoneFields implements _i1.SerializableModel {
   ScopeNoneFields copyWith({int? id});
   @override
   Map<String, dynamic> toJson() {
-    return {if (id != null) 'id': id};
+    return {
+      '__className__': 'ScopeNoneFields',
+      if (id != null) 'id': id,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'ScopeNoneFields',
+      if (id != null) 'id': id,
+    };
   }
 
   @override

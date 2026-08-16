@@ -13,6 +13,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'log_settings.dart' as _i2;
 import 'log_settings_override.dart' as _i3;
+import 'package:serverpod/src/generated/protocol.dart' as _i4;
 
 /// Runtime settings of the server.
 abstract class RuntimeSettings
@@ -36,14 +37,19 @@ abstract class RuntimeSettings
   factory RuntimeSettings.fromJson(Map<String, dynamic> jsonSerialization) {
     return RuntimeSettings(
       id: jsonSerialization['id'] as int?,
-      logSettings: _i2.LogSettings.fromJson(
-          (jsonSerialization['logSettings'] as Map<String, dynamic>)),
-      logSettingsOverrides: (jsonSerialization['logSettingsOverrides'] as List)
-          .map((e) =>
-              _i3.LogSettingsOverride.fromJson((e as Map<String, dynamic>)))
-          .toList(),
-      logServiceCalls: jsonSerialization['logServiceCalls'] as bool,
-      logMalformedCalls: jsonSerialization['logMalformedCalls'] as bool,
+      logSettings: _i4.Protocol().deserialize<_i2.LogSettings>(
+        jsonSerialization['logSettings'],
+      ),
+      logSettingsOverrides: _i4.Protocol()
+          .deserialize<List<_i3.LogSettingsOverride>>(
+            jsonSerialization['logSettingsOverrides'],
+          ),
+      logServiceCalls: _i1.BoolJsonExtension.fromJson(
+        jsonSerialization['logServiceCalls'],
+      ),
+      logMalformedCalls: _i1.BoolJsonExtension.fromJson(
+        jsonSerialization['logMalformedCalls'],
+      ),
     );
   }
 
@@ -82,10 +88,12 @@ abstract class RuntimeSettings
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.RuntimeSettings',
       if (id != null) 'id': id,
       'logSettings': logSettings.toJson(),
-      'logSettingsOverrides':
-          logSettingsOverrides.toJson(valueToJson: (v) => v.toJson()),
+      'logSettingsOverrides': logSettingsOverrides.toJson(
+        valueToJson: (v) => v.toJson(),
+      ),
       'logServiceCalls': logServiceCalls,
       'logMalformedCalls': logMalformedCalls,
     };
@@ -94,10 +102,12 @@ abstract class RuntimeSettings
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.RuntimeSettings',
       if (id != null) 'id': id,
       'logSettings': logSettings.toJsonForProtocol(),
       'logSettingsOverrides': logSettingsOverrides.toJson(
-          valueToJson: (v) => v.toJsonForProtocol()),
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
       'logServiceCalls': logServiceCalls,
       'logMalformedCalls': logMalformedCalls,
     };
@@ -112,7 +122,6 @@ abstract class RuntimeSettings
     int? limit,
     int? offset,
     _i1.OrderByBuilder<RuntimeSettingsTable>? orderBy,
-    bool orderDescending = false,
     _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
     RuntimeSettingsInclude? include,
   }) {
@@ -121,7 +130,6 @@ abstract class RuntimeSettings
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(RuntimeSettings.t),
-      orderDescending: orderDescending,
       orderByList: orderByList?.call(RuntimeSettings.t),
       include: include,
     );
@@ -143,12 +151,12 @@ class _RuntimeSettingsImpl extends RuntimeSettings {
     required bool logServiceCalls,
     required bool logMalformedCalls,
   }) : super._(
-          id: id,
-          logSettings: logSettings,
-          logSettingsOverrides: logSettingsOverrides,
-          logServiceCalls: logServiceCalls,
-          logMalformedCalls: logMalformedCalls,
-        );
+         id: id,
+         logSettings: logSettings,
+         logSettingsOverrides: logSettingsOverrides,
+         logServiceCalls: logServiceCalls,
+         logMalformedCalls: logMalformedCalls,
+       );
 
   /// Returns a shallow copy of this [RuntimeSettings]
   /// with some or all fields replaced by the given arguments.
@@ -164,7 +172,8 @@ class _RuntimeSettingsImpl extends RuntimeSettings {
     return RuntimeSettings(
       id: id is int? ? id : this.id,
       logSettings: logSettings ?? this.logSettings.copyWith(),
-      logSettingsOverrides: logSettingsOverrides ??
+      logSettingsOverrides:
+          logSettingsOverrides ??
           this.logSettingsOverrides.map((e0) => e0.copyWith()).toList(),
       logServiceCalls: logServiceCalls ?? this.logServiceCalls,
       logMalformedCalls: logMalformedCalls ?? this.logMalformedCalls,
@@ -176,33 +185,32 @@ class RuntimeSettingsUpdateTable extends _i1.UpdateTable<RuntimeSettingsTable> {
   RuntimeSettingsUpdateTable(super.table);
 
   _i1.ColumnValue<_i2.LogSettings, _i2.LogSettings> logSettings(
-          _i2.LogSettings value) =>
-      _i1.ColumnValue(
-        table.logSettings,
-        value,
-      );
+    _i2.LogSettings value,
+  ) => _i1.ColumnValue(
+    table.logSettings,
+    value,
+  );
 
   _i1.ColumnValue<List<_i3.LogSettingsOverride>, List<_i3.LogSettingsOverride>>
-      logSettingsOverrides(List<_i3.LogSettingsOverride> value) =>
-          _i1.ColumnValue(
-            table.logSettingsOverrides,
-            value,
-          );
+  logSettingsOverrides(List<_i3.LogSettingsOverride> value) => _i1.ColumnValue(
+    table.logSettingsOverrides,
+    value,
+  );
 
   _i1.ColumnValue<bool, bool> logServiceCalls(bool value) => _i1.ColumnValue(
-        table.logServiceCalls,
-        value,
-      );
+    table.logServiceCalls,
+    value,
+  );
 
   _i1.ColumnValue<bool, bool> logMalformedCalls(bool value) => _i1.ColumnValue(
-        table.logMalformedCalls,
-        value,
-      );
+    table.logMalformedCalls,
+    value,
+  );
 }
 
 class RuntimeSettingsTable extends _i1.Table<int?> {
   RuntimeSettingsTable({super.tableRelation})
-      : super(tableName: 'serverpod_runtime_settings') {
+    : super(tableName: 'serverpod_runtime_settings') {
     updateTable = RuntimeSettingsUpdateTable(this);
     logSettings = _i1.ColumnSerializable<_i2.LogSettings>(
       'logSettings',
@@ -210,9 +218,9 @@ class RuntimeSettingsTable extends _i1.Table<int?> {
     );
     logSettingsOverrides =
         _i1.ColumnSerializable<List<_i3.LogSettingsOverride>>(
-      'logSettingsOverrides',
-      this,
-    );
+          'logSettingsOverrides',
+          this,
+        );
     logServiceCalls = _i1.ColumnBool(
       'logServiceCalls',
       this,
@@ -230,7 +238,7 @@ class RuntimeSettingsTable extends _i1.Table<int?> {
 
   /// List of log setting overrides.
   late final _i1.ColumnSerializable<List<_i3.LogSettingsOverride>>
-      logSettingsOverrides;
+  logSettingsOverrides;
 
   /// True if service calls to Serverpod Insights should be logged.
   late final _i1.ColumnBool logServiceCalls;
@@ -240,12 +248,12 @@ class RuntimeSettingsTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        logSettings,
-        logSettingsOverrides,
-        logServiceCalls,
-        logMalformedCalls,
-      ];
+    id,
+    logSettings,
+    logSettingsOverrides,
+    logServiceCalls,
+    logMalformedCalls,
+  ];
 }
 
 class RuntimeSettingsInclude extends _i1.IncludeObject {
@@ -264,7 +272,6 @@ class RuntimeSettingsIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -304,23 +311,25 @@ class RuntimeSettingsRepository {
   /// );
   /// ```
   Future<List<RuntimeSettings>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<RuntimeSettingsTable>? orderBy,
-    bool orderDescending = false,
     _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<RuntimeSettings>(
       where: where?.call(RuntimeSettings.t),
       orderBy: orderBy?.call(RuntimeSettings.t),
       orderByList: orderByList?.call(RuntimeSettings.t),
-      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -342,33 +351,39 @@ class RuntimeSettingsRepository {
   /// );
   /// ```
   Future<RuntimeSettings?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
     int? offset,
     _i1.OrderByBuilder<RuntimeSettingsTable>? orderBy,
-    bool orderDescending = false,
     _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<RuntimeSettings>(
       where: where?.call(RuntimeSettings.t),
       orderBy: orderBy?.call(RuntimeSettings.t),
       orderByList: orderByList?.call(RuntimeSettings.t),
-      orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
   /// Finds a single [RuntimeSettings] by its [id] or null if no such row exists.
   Future<RuntimeSettings?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<RuntimeSettings>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -378,14 +393,26 @@ class RuntimeSettingsRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<RuntimeSettings>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<RuntimeSettings> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<RuntimeSettings>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -393,7 +420,7 @@ class RuntimeSettingsRepository {
   ///
   /// The returned [RuntimeSettings] will have its `id` field set.
   Future<RuntimeSettings> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     RuntimeSettings row, {
     _i1.Transaction? transaction,
   }) async {
@@ -403,21 +430,96 @@ class RuntimeSettingsRepository {
     );
   }
 
+  /// Upserts all [RuntimeSettings]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [RuntimeSettings]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<RuntimeSettings>> upsert(
+    _i1.DatabaseSession session,
+    List<RuntimeSettings> rows, {
+    required _i1.ColumnSelections<RuntimeSettingsTable> conflictColumns,
+    _i1.ColumnSelections<RuntimeSettingsTable>? updateColumns,
+    _i1.WhereExpressionBuilder<RuntimeSettingsTable>? updateWhere,
+    _i1.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<RuntimeSettings>(
+      rows,
+      conflictColumns: conflictColumns(RuntimeSettings.t),
+      updateColumns: updateColumns?.call(RuntimeSettings.t),
+      updateWhere: updateWhere?.call(RuntimeSettings.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [RuntimeSettings] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [RuntimeSettings] will have its `id` field set.
+  Future<RuntimeSettings?> upsertRow(
+    _i1.DatabaseSession session,
+    RuntimeSettings row, {
+    required _i1.ColumnSelections<RuntimeSettingsTable> conflictColumns,
+    _i1.ColumnSelections<RuntimeSettingsTable>? updateColumns,
+    _i1.WhereExpressionBuilder<RuntimeSettingsTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<RuntimeSettings>(
+      row,
+      conflictColumns: conflictColumns(RuntimeSettings.t),
+      updateColumns: updateColumns?.call(RuntimeSettings.t),
+      updateWhere: updateWhere?.call(RuntimeSettings.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [RuntimeSettings]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<RuntimeSettings>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<RuntimeSettings> rows, {
     _i1.ColumnSelections<RuntimeSettingsTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<RuntimeSettings>(
       rows,
       columns: columns?.call(RuntimeSettings.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -425,7 +527,7 @@ class RuntimeSettingsRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<RuntimeSettings> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     RuntimeSettings row, {
     _i1.ColumnSelections<RuntimeSettingsTable>? columns,
     _i1.Transaction? transaction,
@@ -440,10 +542,10 @@ class RuntimeSettingsRepository {
   /// Updates a single [RuntimeSettings] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<RuntimeSettings?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<RuntimeSettingsUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<RuntimeSettings>(
@@ -455,17 +557,21 @@ class RuntimeSettingsRepository {
 
   /// Updates all [RuntimeSettings]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<RuntimeSettings>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<RuntimeSettingsUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<RuntimeSettingsTable> where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<RuntimeSettingsTable>? orderBy,
     _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<RuntimeSettings>(
       columnValues: columnValues(RuntimeSettings.t.updateTable),
@@ -474,28 +580,42 @@ class RuntimeSettingsRepository {
       offset: offset,
       orderBy: orderBy?.call(RuntimeSettings.t),
       orderByList: orderByList?.call(RuntimeSettings.t),
-      orderDescending: orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes all [RuntimeSettings]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<RuntimeSettings>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<RuntimeSettings> rows, {
+    _i1.OrderByBuilder<RuntimeSettingsTable>? orderBy,
+    _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<RuntimeSettings>(
       rows,
+      orderBy: orderBy?.call(RuntimeSettings.t),
+      orderByList: orderByList?.call(RuntimeSettings.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes a single [RuntimeSettings].
   Future<RuntimeSettings> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     RuntimeSettings row, {
     _i1.Transaction? transaction,
   }) async {
@@ -506,21 +626,34 @@ class RuntimeSettingsRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<RuntimeSettings>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<RuntimeSettingsTable> where,
+    _i1.OrderByBuilder<RuntimeSettingsTable>? orderBy,
+    _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<RuntimeSettings>(
       where: where(RuntimeSettings.t),
+      orderBy: orderBy?.call(RuntimeSettings.t),
+      orderByList: orderByList?.call(RuntimeSettings.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -528,6 +661,22 @@ class RuntimeSettingsRepository {
     return session.db.count<RuntimeSettings>(
       where: where?.call(RuntimeSettings.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [RuntimeSettings] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.DatabaseSession session, {
+    required _i1.WhereExpressionBuilder<RuntimeSettingsTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<RuntimeSettings>(
+      where: where(RuntimeSettings.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

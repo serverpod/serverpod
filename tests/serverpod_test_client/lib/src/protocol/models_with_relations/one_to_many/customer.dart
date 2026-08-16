@@ -12,8 +12,10 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../models_with_relations/one_to_many/order.dart' as _i2;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
-abstract class Customer implements _i1.SerializableModel {
+abstract class Customer
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   Customer._({
     this.id,
     required this.name,
@@ -30,9 +32,11 @@ abstract class Customer implements _i1.SerializableModel {
     return Customer(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      orders: (jsonSerialization['orders'] as List?)
-          ?.map((e) => _i2.Order.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      orders: jsonSerialization['orders'] == null
+          ? null
+          : _i3.Protocol().deserialize<List<_i2.Order>>(
+              jsonSerialization['orders'],
+            ),
     );
   }
 
@@ -56,10 +60,22 @@ abstract class Customer implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Customer',
       if (id != null) 'id': id,
       'name': name,
       if (orders != null)
         'orders': orders?.toJson(valueToJson: (v) => v.toJson()),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Customer',
+      if (id != null) 'id': id,
+      'name': name,
+      if (orders != null)
+        'orders': orders?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
   }
 
@@ -77,10 +93,10 @@ class _CustomerImpl extends Customer {
     required String name,
     List<_i2.Order>? orders,
   }) : super._(
-          id: id,
-          name: name,
-          orders: orders,
-        );
+         id: id,
+         name: name,
+         orders: orders,
+       );
 
   /// Returns a shallow copy of this [Customer]
   /// with some or all fields replaced by the given arguments.

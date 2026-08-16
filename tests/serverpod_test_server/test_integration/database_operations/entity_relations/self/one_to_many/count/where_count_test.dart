@@ -12,68 +12,71 @@ void main() async {
     });
 
     test(
-        'when counting models filtered on many relation count then result is as expected.',
-        () async {
-      var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
-      var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));
+      'when counting models filtered on many relation count then result is as expected.',
+      () async {
+        var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
+        var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));
 
-      await Cat.db.insert(session, [
-        Cat(name: 'Kitten1', motherId: zelda.id),
-        Cat(name: 'Kitten2', motherId: zelda.id),
-        Cat(name: 'Kitten3', motherId: zelda.id),
-        Cat(name: 'Kitten4', motherId: smulan.id),
-      ]);
+        await Cat.db.insert(session, [
+          Cat(name: 'Kitten1', motherId: zelda.id),
+          Cat(name: 'Kitten2', motherId: zelda.id),
+          Cat(name: 'Kitten3', motherId: zelda.id),
+          Cat(name: 'Kitten4', motherId: smulan.id),
+        ]);
 
-      var catCount = await Cat.db.count(
-        session,
-        where: (t) => t.kittens.count() > 1,
-      );
+        var catCount = await Cat.db.count(
+          session,
+          where: (t) => t.kittens.count() > 1,
+        );
 
-      expect(catCount, 1);
-    });
-
-    test(
-        'when counting models filtered on filtered many relation count then result is as expected',
-        () async {
-      var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
-      var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));
-
-      await Cat.db.insert(session, [
-        Cat(name: 'Kitten1', motherId: zelda.id),
-        Cat(name: 'Kitten2', motherId: zelda.id),
-        Cat(name: 'Kitten3', motherId: zelda.id),
-        Cat(name: 'Smulan II', motherId: smulan.id),
-      ]);
-
-      var catCount = await Cat.db.count(
-        session,
-        where: (t) => t.kittens.count((t) => t.name.ilike('kitt%')) > 1,
-      );
-
-      expect(catCount, 1);
-    });
+        expect(catCount, 1);
+      },
+    );
 
     test(
-        'when counting models filtered on multiple many relation count then result is as expected.',
-        () async {
-      var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
-      var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));
+      'when counting models filtered on filtered many relation count then result is as expected',
+      () async {
+        var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
+        var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));
 
-      await Cat.db.insert(session, [
-        Cat(name: 'Kitten1', motherId: zelda.id),
-        Cat(name: 'Kitten2', motherId: zelda.id),
-        Cat(name: 'Kitten3', motherId: zelda.id),
-        Cat(name: 'Smulan II', motherId: smulan.id),
-        Cat(name: 'Kitten4', motherId: smulan.id),
-      ]);
+        await Cat.db.insert(session, [
+          Cat(name: 'Kitten1', motherId: zelda.id),
+          Cat(name: 'Kitten2', motherId: zelda.id),
+          Cat(name: 'Kitten3', motherId: zelda.id),
+          Cat(name: 'Smulan II', motherId: smulan.id),
+        ]);
 
-      var catCount = await Cat.db.count(
-        session,
-        where: (t) => (t.kittens.count() > 1) & (t.kittens.count() < 3),
-      );
+        var catCount = await Cat.db.count(
+          session,
+          where: (t) => t.kittens.count((t) => t.name.ilike('kitt%')) > 1,
+        );
 
-      expect(catCount, 1);
-    });
+        expect(catCount, 1);
+      },
+    );
+
+    test(
+      'when counting models filtered on multiple many relation count then result is as expected.',
+      () async {
+        var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
+        var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));
+
+        await Cat.db.insert(session, [
+          Cat(name: 'Kitten1', motherId: zelda.id),
+          Cat(name: 'Kitten2', motherId: zelda.id),
+          Cat(name: 'Kitten3', motherId: zelda.id),
+          Cat(name: 'Smulan II', motherId: smulan.id),
+          Cat(name: 'Kitten4', motherId: smulan.id),
+        ]);
+
+        var catCount = await Cat.db.count(
+          session,
+          where: (t) => (t.kittens.count() > 1) & (t.kittens.count() < 3),
+        );
+
+        expect(catCount, 1);
+      },
+    );
   });
 
   group('Given models with nested one to many relation', () {
@@ -148,9 +151,12 @@ void main() async {
 
         var catCount = await Cat.db.count(
           session,
-          where: (t) => t.kittens.count(
-              // All cats with more than 1 kitten with more than 1 kittens named Zelda
-              (o) => o.kittens.count((c) => c.name.ilike('zelda%')) > 1) > 1,
+          where: (t) =>
+              t.kittens.count(
+                // All cats with more than 1 kitten with more than 1 kittens named Zelda
+                (o) => o.kittens.count((c) => c.name.ilike('zelda%')) > 1,
+              ) >
+              1,
         );
 
         expect(catCount, 1);

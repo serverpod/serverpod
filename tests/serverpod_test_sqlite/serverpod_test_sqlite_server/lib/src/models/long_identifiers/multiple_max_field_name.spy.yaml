@@ -1,0 +1,8 @@
+class: MultipleMaxFieldName
+table: multiple_max_field_name
+fields:
+  # It is important that the field names only differ on the last char
+  # These are used for test that ensure that the field names uniquely truncated
+  # in queries if required
+  thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1: String
+  thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2: String

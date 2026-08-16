@@ -11,7 +11,7 @@ sealed class WebSocketMessage {
   ]) {
     return SerializationManager.encodeForProtocol({
       WebSocketMessageKey.type: messageType,
-      if (data != null) WebSocketMessageKey.data: data,
+      WebSocketMessageKey.data: ?data,
     });
   }
 
@@ -94,7 +94,8 @@ enum OpenMethodStreamResponseType {
   authorizationDeclined,
 
   /// The arguments were invalid.
-  invalidArguments;
+  invalidArguments,
+  ;
 
   /// Try to parse a [OpenMethodStreamResponseType] from a string.
   /// Throws an exception if the string is not recognized.
@@ -129,13 +130,14 @@ class OpenMethodStreamResponse extends WebSocketMessage
 
   /// Creates a new [OpenMethodStreamResponse].
   OpenMethodStreamResponse(Map data)
-      : connectionId = UuidValueJsonExtension.fromJson(
-            data[WebSocketMessageDataKey.connectionId]),
-        endpoint = data[WebSocketMessageDataKey.endpoint],
-        method = data[WebSocketMessageDataKey.method],
-        responseType = OpenMethodStreamResponseType.tryParse(
-          data[WebSocketMessageDataKey.responseType],
-        );
+    : connectionId = UuidValueJsonExtension.fromJson(
+        data[WebSocketMessageDataKey.connectionId],
+      ),
+      endpoint = data[WebSocketMessageDataKey.endpoint],
+      method = data[WebSocketMessageDataKey.method],
+      responseType = OpenMethodStreamResponseType.tryParse(
+        data[WebSocketMessageDataKey.responseType],
+      );
 
   /// Builds a new [OpenMethodStreamResponse] message.
   static String buildMessage({
@@ -157,11 +159,11 @@ class OpenMethodStreamResponse extends WebSocketMessage
 
   @override
   String toString() => buildMessage(
-        connectionId: connectionId,
-        responseType: responseType,
-        endpoint: endpoint,
-        method: method,
-      );
+    connectionId: connectionId,
+    responseType: responseType,
+    endpoint: endpoint,
+    method: method,
+  );
 }
 
 /// A message sent over a websocket connection to open a websocket stream of
@@ -196,14 +198,16 @@ class OpenMethodStreamCommand extends WebSocketMessage
 
   /// Creates a new [OpenMethodStreamCommand] message.
   OpenMethodStreamCommand(Map data)
-      : endpoint = data[WebSocketMessageDataKey.endpoint],
-        method = data[WebSocketMessageDataKey.method],
-        encodedArgs = data[WebSocketMessageDataKey.args],
-        connectionId = UuidValueJsonExtension.fromJson(
-            data[WebSocketMessageDataKey.connectionId]),
-        authentication = data[WebSocketMessageDataKey.authentication],
-        inputStreams =
-            List<String>.from(data[WebSocketMessageDataKey.inputStreams]);
+    : endpoint = data[WebSocketMessageDataKey.endpoint],
+      method = data[WebSocketMessageDataKey.method],
+      encodedArgs = data[WebSocketMessageDataKey.args],
+      connectionId = UuidValueJsonExtension.fromJson(
+        data[WebSocketMessageDataKey.connectionId],
+      ),
+      authentication = data[WebSocketMessageDataKey.authentication],
+      inputStreams = List<String>.from(
+        data[WebSocketMessageDataKey.inputStreams],
+      );
 
   /// Creates a new [OpenMethodStreamCommand].
   static String buildMessage({
@@ -218,25 +222,25 @@ class OpenMethodStreamCommand extends WebSocketMessage
       WebSocketMessageDataKey.endpoint: endpoint,
       WebSocketMessageDataKey.method: method,
       WebSocketMessageDataKey.connectionId: connectionId,
-      WebSocketMessageDataKey.args:
-          SerializationManager.encodeForProtocol(args),
+      WebSocketMessageDataKey.args: SerializationManager.encodeForProtocol(
+        args,
+      ),
       WebSocketMessageDataKey.inputStreams: inputStreams,
-      if (authentication != null)
-        WebSocketMessageDataKey.authentication: authentication,
+      WebSocketMessageDataKey.authentication: ?authentication,
     });
   }
 
   @override
   String toString() => WebSocketMessage._buildMessage(_messageType, {
-        WebSocketMessageDataKey.endpoint: endpoint,
-        WebSocketMessageDataKey.method: method,
-        WebSocketMessageDataKey.connectionId:
-            SerializationManager.encodeForProtocol(connectionId),
-        WebSocketMessageDataKey.args: encodedArgs,
-        WebSocketMessageDataKey.inputStreams: inputStreams,
-        if (authentication != null)
-          WebSocketMessageDataKey.authentication: authentication,
-      }).toString();
+    WebSocketMessageDataKey.endpoint: endpoint,
+    WebSocketMessageDataKey.method: method,
+    WebSocketMessageDataKey.connectionId:
+        SerializationManager.encodeForProtocol(connectionId),
+    WebSocketMessageDataKey.args: encodedArgs,
+    WebSocketMessageDataKey.inputStreams: inputStreams,
+    if (authentication != null)
+      WebSocketMessageDataKey.authentication: authentication,
+  }).toString();
 }
 
 /// The reason a stream was closed.
@@ -245,7 +249,8 @@ enum CloseReason {
   done,
 
   /// The stream was closed because an error occurred.
-  error;
+  error,
+  ;
 
   /// Try to parse a [CloseReason] from a string.
   /// Throws an exception if the string is not recognized.
@@ -284,13 +289,13 @@ class CloseMethodStreamCommand extends WebSocketMessage
 
   /// Creates a new [CloseMethodStreamCommand].
   CloseMethodStreamCommand(Map data)
-      : endpoint = data[WebSocketMessageDataKey.endpoint],
-        method = data[WebSocketMessageDataKey.method],
-        connectionId = UuidValueJsonExtension.fromJson(
-            data[WebSocketMessageDataKey.connectionId]),
-        parameter = data[WebSocketMessageDataKey.parameter],
-        reason =
-            CloseReason.tryParse(data[WebSocketMessageDataKey.closeReason]);
+    : endpoint = data[WebSocketMessageDataKey.endpoint],
+      method = data[WebSocketMessageDataKey.method],
+      connectionId = UuidValueJsonExtension.fromJson(
+        data[WebSocketMessageDataKey.connectionId],
+      ),
+      parameter = data[WebSocketMessageDataKey.parameter],
+      reason = CloseReason.tryParse(data[WebSocketMessageDataKey.closeReason]);
 
   /// Creates a new [CloseMethodStreamCommand] message.
   static String buildMessage({
@@ -304,19 +309,19 @@ class CloseMethodStreamCommand extends WebSocketMessage
       WebSocketMessageDataKey.endpoint: endpoint,
       WebSocketMessageDataKey.method: method,
       WebSocketMessageDataKey.connectionId: connectionId,
-      if (parameter != null) WebSocketMessageDataKey.parameter: parameter,
+      WebSocketMessageDataKey.parameter: ?parameter,
       WebSocketMessageDataKey.closeReason: reason.name,
     });
   }
 
   @override
   String toString() => buildMessage(
-        endpoint: endpoint,
-        connectionId: connectionId,
-        parameter: parameter,
-        method: method,
-        reason: reason,
-      );
+    endpoint: endpoint,
+    connectionId: connectionId,
+    parameter: parameter,
+    method: method,
+    reason: reason,
+  );
 }
 
 /// A message sent over a websocket connection to check if the connection is
@@ -377,13 +382,15 @@ class MethodStreamSerializableException extends WebSocketMessage
   MethodStreamSerializableException(
     Map data,
     SerializationManager serializationManager,
-  )   : endpoint = data[WebSocketMessageDataKey.endpoint],
-        method = data[WebSocketMessageDataKey.method],
-        connectionId = UuidValueJsonExtension.fromJson(
-            data[WebSocketMessageDataKey.connectionId]),
-        parameter = data[WebSocketMessageDataKey.parameter],
-        exception = serializationManager
-            .deserializeByClassName(data[WebSocketMessageDataKey.exception]);
+  ) : endpoint = data[WebSocketMessageDataKey.endpoint],
+      method = data[WebSocketMessageDataKey.method],
+      connectionId = UuidValueJsonExtension.fromJson(
+        data[WebSocketMessageDataKey.connectionId],
+      ),
+      parameter = data[WebSocketMessageDataKey.parameter],
+      exception = serializationManager.deserializeByClassName(
+        data[WebSocketMessageDataKey.exception],
+      );
 
   /// Builds a [MethodStreamSerializableException] message.
   /// The [exception] must be a serializable exception processed by the
@@ -402,24 +409,24 @@ class MethodStreamSerializableException extends WebSocketMessage
         WebSocketMessageDataKey.endpoint: endpoint,
         WebSocketMessageDataKey.method: method,
         WebSocketMessageDataKey.connectionId: connectionId,
-        if (parameter != null) WebSocketMessageDataKey.parameter: parameter,
-        WebSocketMessageDataKey.exception:
-            serializationManager.wrapWithClassName(object),
+        WebSocketMessageDataKey.parameter: ?parameter,
+        WebSocketMessageDataKey.exception: serializationManager
+            .wrapWithClassName(object),
       },
     );
   }
 
   @override
   String toString() => WebSocketMessage._buildMessage(
-        _messageType,
-        {
-          WebSocketMessageDataKey.endpoint: endpoint,
-          WebSocketMessageDataKey.method: method,
-          WebSocketMessageDataKey.connectionId: connectionId,
-          if (parameter != null) WebSocketMessageDataKey.parameter: parameter,
-          WebSocketMessageDataKey.exception: exception,
-        },
-      ).toString();
+    _messageType,
+    {
+      WebSocketMessageDataKey.endpoint: endpoint,
+      WebSocketMessageDataKey.method: method,
+      WebSocketMessageDataKey.connectionId: connectionId,
+      if (parameter != null) WebSocketMessageDataKey.parameter: parameter,
+      WebSocketMessageDataKey.exception: exception,
+    },
+  ).toString();
 }
 
 /// A message sent to a method stream.
@@ -453,13 +460,15 @@ class MethodStreamMessage extends WebSocketMessage
   /// The [object] must be an object processed by the
   /// [SerializationManager.wrapWithClassName] method.
   MethodStreamMessage(Map data, this._serializationManager)
-      : endpoint = data[WebSocketMessageDataKey.endpoint],
-        method = data[WebSocketMessageDataKey.method],
-        connectionId = UuidValueJsonExtension.fromJson(
-            data[WebSocketMessageDataKey.connectionId]),
-        parameter = data[WebSocketMessageDataKey.parameter],
-        object = _serializationManager
-            .deserializeByClassName(data[WebSocketMessageDataKey.object]);
+    : endpoint = data[WebSocketMessageDataKey.endpoint],
+      method = data[WebSocketMessageDataKey.method],
+      connectionId = UuidValueJsonExtension.fromJson(
+        data[WebSocketMessageDataKey.connectionId],
+      ),
+      parameter = data[WebSocketMessageDataKey.parameter],
+      object = _serializationManager.deserializeByClassName(
+        data[WebSocketMessageDataKey.object],
+      );
 
   /// Builds a [MethodStreamMessage] message.
   static String buildMessage({
@@ -474,21 +483,22 @@ class MethodStreamMessage extends WebSocketMessage
       WebSocketMessageDataKey.endpoint: endpoint,
       WebSocketMessageDataKey.method: method,
       WebSocketMessageDataKey.connectionId: connectionId,
-      if (parameter != null) WebSocketMessageDataKey.parameter: parameter,
-      WebSocketMessageDataKey.object:
-          serializationManager.wrapWithClassName(object),
+      WebSocketMessageDataKey.parameter: ?parameter,
+      WebSocketMessageDataKey.object: serializationManager.wrapWithClassName(
+        object,
+      ),
     });
   }
 
   @override
   String toString() => buildMessage(
-        endpoint: endpoint,
-        method: method,
-        connectionId: connectionId,
-        parameter: parameter,
-        object: object,
-        serializationManager: _serializationManager,
-      );
+    endpoint: endpoint,
+    method: method,
+    connectionId: connectionId,
+    parameter: parameter,
+    object: object,
+    serializationManager: _serializationManager,
+  );
 }
 
 /// A message sent when a bad request is received.

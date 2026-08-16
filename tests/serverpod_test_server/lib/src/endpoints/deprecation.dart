@@ -15,4 +15,46 @@ class DeprecationEndpoint extends Endpoint {
   Future<double> getGlobalDouble(Session session) async {
     return globalDouble;
   }
+
+  /// A method with a deprecated parameter using "@deprecated" annotation.
+  Future<String> methodWithDeprecatedParam(
+    Session session,
+    @deprecated String deprecatedParam,
+  ) async {
+    return deprecatedParam;
+  }
+
+  /// A method with a deprecated parameter using "@Deprecated(..)" annotation.
+  Future<String> methodWithDeprecatedParamMessage(
+    Session session,
+    @Deprecated('This parameter is deprecated') String deprecatedParam,
+  ) async {
+    return deprecatedParam;
+  }
+
+  /// A method with both deprecated and non-deprecated parameters.
+  Future<String> methodWithMixedParams(
+    Session session,
+    String normalParam,
+    @deprecated String deprecatedParam,
+  ) async {
+    return normalParam + deprecatedParam;
+  }
+
+  /// A method with deprecated optional positional parameter.
+  Future<String> methodWithOptionalDeprecatedParam(
+    Session session, [
+    @deprecated String? deprecatedParam,
+  ]) async {
+    return deprecatedParam ?? 'default';
+  }
+
+  /// A method with deprecated named parameter.
+  Future<String> methodWithNamedDeprecatedParam(
+    Session session, {
+    required String normalParam,
+    @deprecated String? deprecatedParam,
+  }) async {
+    return normalParam + (deprecatedParam ?? '');
+  }
 }

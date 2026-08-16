@@ -1,6 +1,5 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
-import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/test_key_manager.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
@@ -8,17 +7,15 @@ import 'package:test/test.dart';
 void main() {
   late Serverpod server;
   late Client client;
+  // ignore: deprecated_member_use
   late AuthenticationKeyManager authKeyManager;
 
   setUpAll(() async {
     server = IntegrationTestServer.create();
-    await server.start();
+    await server.startWithDatabase();
 
     authKeyManager = TestAuthKeyManager();
-    client = Client(
-      serverUrl,
-      authenticationKeyManager: authKeyManager,
-    );
+    client = Client(server.apiUrl)..authKeyProvider = authKeyManager;
 
     await client.authentication.removeAllUsers();
 
@@ -44,101 +41,117 @@ void main() {
 
   group('Given a signed in user ', () {
     test(
-        'when calling a method endpoint from a class annotated with @unauthenticatedClientCall'
-        'then it correctly returns that the call was not authenticated.',
-        () async {
-      final authenticated =
-          await client.unauthenticated.unauthenticatedMethod();
+      'when calling a method endpoint from a class annotated with @unauthenticatedClientCall'
+      'then it correctly returns that the call was not authenticated.',
+      () async {
+        final authenticated = await client.unauthenticated
+            .unauthenticatedMethod();
 
-      expect(authenticated, isFalse);
-    });
-
-    test(
-        'when calling a streaming endpoint annotated with @unauthenticatedClientCall '
-        'then it correctly returns that the call was not authenticated.',
-        () async {
-      final authenticated =
-          await client.unauthenticated.unauthenticatedStream().first;
-
-      expect(authenticated, isFalse);
-    });
+        expect(authenticated, isFalse);
+      },
+    );
 
     test(
-        'when calling a method endpoint annotated with @unauthenticatedClientCall'
-        'then it correctly returns that the call was not authenticated.',
-        () async {
-      final authenticated =
-          await client.partiallyUnauthenticated.unauthenticatedMethod();
+      'when calling a streaming endpoint annotated with @unauthenticatedClientCall '
+      'then it correctly returns that the call was not authenticated.',
+      () async {
+        final authenticated = await client.unauthenticated
+            .unauthenticatedStream()
+            .first;
 
-      expect(authenticated, isFalse);
-    });
-
-    test(
-        'when calling a streaming endpoint annotated with @unauthenticatedClientCall '
-        'then it correctly returns that the call was not authenticated.',
-        () async {
-      final authenticated =
-          await client.partiallyUnauthenticated.unauthenticatedStream().first;
-
-      expect(authenticated, isFalse);
-    });
+        expect(authenticated, isFalse);
+      },
+    );
 
     test(
-        'when calling a method endpoint not annotated with @unauthenticatedClientCall '
-        'then it correctly returns that the call was authenticated.', () async {
-      final authenticated =
-          await client.partiallyUnauthenticated.authenticatedMethod();
+      'when calling a method endpoint annotated with @unauthenticatedClientCall'
+      'then it correctly returns that the call was not authenticated.',
+      () async {
+        final authenticated = await client.partiallyUnauthenticated
+            .unauthenticatedMethod();
 
-      expect(authenticated, isTrue);
-    });
-
-    test(
-        'when calling a streaming endpoint not annotated with @unauthenticatedClientCall '
-        'then it correctly returns that the call was authenticated.', () async {
-      final authenticated =
-          await client.partiallyUnauthenticated.authenticatedStream().first;
-
-      expect(authenticated, isTrue);
-    });
+        expect(authenticated, isFalse);
+      },
+    );
 
     test(
-        'when calling an endpoint from a class annotated with @unauthenticatedClientCall that also require login '
-        'then it throws unauthorized due to client not passing auth header.',
-        () async {
-      await expectLater(
-        () => client.unauthenticatedRequireLogin.unauthenticatedMethod(),
-        throwsA(isA<ServerpodClientUnauthorized>()),
-      );
-    });
+      'when calling a streaming endpoint annotated with @unauthenticatedClientCall '
+      'then it correctly returns that the call was not authenticated.',
+      () async {
+        final authenticated = await client.partiallyUnauthenticated
+            .unauthenticatedStream()
+            .first;
+
+        expect(authenticated, isFalse);
+      },
+    );
 
     test(
-        'when calling a streaming endpoint from a class annotated with @unauthenticatedClientCall that also require login '
-        'then it throws unauthorized due to client not passing auth header.',
-        () async {
-      await expectLater(
-        () => client.unauthenticatedRequireLogin.unauthenticatedStream().first,
-        throwsA(isA<ServerpodClientUnauthorized>()),
-      );
-    });
+      'when calling a method endpoint not annotated with @unauthenticatedClientCall '
+      'then it correctly returns that the call was authenticated.',
+      () async {
+        final authenticated = await client.partiallyUnauthenticated
+            .authenticatedMethod();
+
+        expect(authenticated, isTrue);
+      },
+    );
 
     test(
-        'when calling a method endpoint annotated with @unauthenticatedClientCall from a class that requires login '
-        'then it throws unauthorized due to client not passing auth header.',
-        () async {
-      await expectLater(
-        () => client.requireLogin.unauthenticatedMethod(),
-        throwsA(isA<ServerpodClientUnauthorized>()),
-      );
-    });
+      'when calling a streaming endpoint not annotated with @unauthenticatedClientCall '
+      'then it correctly returns that the call was authenticated.',
+      () async {
+        final authenticated = await client.partiallyUnauthenticated
+            .authenticatedStream()
+            .first;
+
+        expect(authenticated, isTrue);
+      },
+    );
 
     test(
-        'when calling a streaming endpoint annotated with @unauthenticatedClientCall from a class that requires login '
-        'then it throws unauthorized due to client not passing auth header.',
-        () async {
-      await expectLater(
-        () => client.requireLogin.unauthenticatedStream().first,
-        throwsA(isA<ServerpodClientUnauthorized>()),
-      );
-    });
+      'when calling an endpoint from a class annotated with @unauthenticatedClientCall that also require login '
+      'then it throws unauthorized due to client not passing auth header.',
+      () async {
+        await expectLater(
+          () => client.unauthenticatedRequireLogin.unauthenticatedMethod(),
+          throwsA(isA<ServerpodClientUnauthorized>()),
+        );
+      },
+    );
+
+    test(
+      'when calling a streaming endpoint from a class annotated with @unauthenticatedClientCall that also require login '
+      'then it throws unauthorized due to client not passing auth header.',
+      () async {
+        await expectLater(
+          () =>
+              client.unauthenticatedRequireLogin.unauthenticatedStream().first,
+          throwsA(isA<ServerpodClientUnauthorized>()),
+        );
+      },
+    );
+
+    test(
+      'when calling a method endpoint annotated with @unauthenticatedClientCall from a class that requires login '
+      'then it throws unauthorized due to client not passing auth header.',
+      () async {
+        await expectLater(
+          () => client.requireLogin.unauthenticatedMethod(),
+          throwsA(isA<ServerpodClientUnauthorized>()),
+        );
+      },
+    );
+
+    test(
+      'when calling a streaming endpoint annotated with @unauthenticatedClientCall from a class that requires login '
+      'then it throws unauthorized due to client not passing auth header.',
+      () async {
+        await expectLater(
+          () => client.requireLogin.unauthenticatedStream().first,
+          throwsA(isA<ServerpodClientUnauthorized>()),
+        );
+      },
+    );
   });
 }

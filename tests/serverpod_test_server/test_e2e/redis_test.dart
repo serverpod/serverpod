@@ -1,3 +1,6 @@
+@Tags(['redis'])
+library;
+
 import 'dart:async';
 
 import 'package:serverpod_test_client/serverpod_test_client.dart';
@@ -53,9 +56,11 @@ void main() {
       var data = SimpleData(num: 42);
 
       SimpleData? retrieved;
-      unawaited(client.redis.listenToChannel('test').then((value) {
-        retrieved = value;
-      }));
+      unawaited(
+        client.redis.listenToChannel('test').then((value) {
+          retrieved = value;
+        }),
+      );
       await Future.delayed(const Duration(seconds: 1));
       await client.redis.postToChannel('test', data);
       var channelCount = await client.redis.countSubscribedChannels();

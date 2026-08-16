@@ -24,7 +24,8 @@ Map<String, dynamic> parseParameters(
       );
     } else if (!description.nullable) {
       throw InvalidParametersException(
-          'Missing required query parameter: $name');
+        'Missing required query parameter: $name',
+      );
     }
   }
 

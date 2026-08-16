@@ -2,10 +2,17 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:redis/redis.dart';
+import 'package:serverpod_shared/log.dart';
 
 /// Callback when messages are received on a specific channel from Redis.
-typedef RedisSubscriptionCallback = void Function(
-    String channel, String message);
+typedef RedisSubscriptionCallback =
+    void Function(String channel, String message);
+
+/// A type alias for the [Command] class from the `redis` package.
+///
+/// Use this to call custom Redis commands via [RedisCommand.send_object] or
+/// other methods from the `redis` package.
+typedef RedisCommand = Command;
 
 /// The [RedisController] maintains an active connection to the Redis server. It
 /// handles caching, publishing, and subscriptions of strings. If the connection
@@ -28,6 +35,13 @@ class RedisController {
   /// require ssl
   final bool requireSsl;
 
+  /// Maximum time to wait while opening the TCP/TLS connection to Redis.
+  ///
+  /// After this duration, the attempt fails with [TimeoutException] instead of
+  /// relying on OS-level connect timeouts (which can be very long when traffic
+  /// is dropped).
+  final Duration connectTimeout;
+
   final Map<String, RedisSubscriptionCallback> _subscriptions = {};
 
   Command? _command;
@@ -46,13 +60,23 @@ class RedisController {
     required this.requireSsl,
     this.user,
     this.password,
+    this.connectTimeout = const Duration(seconds: 10),
   });
 
   /// Starts the controller and connects to Redis. Maintains an open connection
   /// until [stop] is called.
-  Future<void> start() async {
-    await _connect();
-    await _connectPubSub();
+  ///
+  /// If [connectTimeout] is set, it overrides [RedisController.connectTimeout]
+  /// for the TCP/TLS connections opened during this [start] call only.
+  Future<void> start({
+    bool Function(Exception e)? handleError,
+    Duration? connectTimeout,
+  }) async {
+    final connected = await _connect(handleError, connectTimeout);
+    if (!connected && handleError != null) {
+      return;
+    }
+    await _connectPubSub(connectTimeout);
 
     unawaited(_keepAlive());
   }
@@ -64,14 +88,26 @@ class RedisController {
     await _pubSubCommand?.get_connection().close();
   }
 
+  Future<Socket> _openRedisSocket([Duration? connectTimeoutOverride]) async {
+    final timeout = connectTimeoutOverride ?? connectTimeout;
+    if (requireSsl) {
+      return SecureSocket.connect(host, port, timeout: timeout);
+    }
+    return Socket.connect(host, port, timeout: timeout);
+  }
+
+  /// Whether the last connect attempt failed and has been logged.
+  bool _connectFailureLogged = false;
+
   /// Shared helper to create and authenticate a Redis Command connection.
-  Future<Command?> _createAndAuthCommand() async {
+  Future<Command?> _createAndAuthCommand({
+    bool Function(Exception e)? handleError,
+    Duration? connectTimeoutOverride,
+  }) async {
     try {
+      final socket = await _openRedisSocket(connectTimeoutOverride);
       var connection = RedisConnection();
-      Command command = switch (requireSsl) {
-        true => await connection.connectSecure(host, port),
-        false => await connection.connect(host, port),
-      };
+      var command = await connection.connectWithSocket(socket);
 
       if (password != null) {
         dynamic result = switch (user) {
@@ -81,17 +117,24 @@ class RedisController {
 
         if (result != 'OK') return null;
       }
+      _connectFailureLogged = false;
       return command;
-    } catch (e, stackTrace) {
-      stderr.writeln(
-          '${DateTime.now().toUtc()} Internal server error. Failed to connect to Redis.');
-      stderr.writeln('$e');
-      stderr.writeln('$stackTrace');
+    } catch (e) {
+      if (handleError != null && e is Exception && handleError(e)) {
+        return null;
+      }
+      if (!_connectFailureLogged) {
+        _connectFailureLogged = true;
+        log.warning('Failed to connect to Redis at $host:$port ($e).');
+      }
       return null;
     }
   }
 
-  Future<bool> _connect() async {
+  Future<bool> _connect([
+    bool Function(Exception e)? handleError,
+    Duration? connectTimeoutOverride,
+  ]) async {
     if (_command != null) {
       return true;
     }
@@ -100,7 +143,10 @@ class RedisController {
     }
     _connecting = true;
 
-    _command = await _createAndAuthCommand();
+    _command = await _createAndAuthCommand(
+      handleError: handleError,
+      connectTimeoutOverride: connectTimeoutOverride,
+    );
     _connecting = false;
     return _command != null;
   }
@@ -114,7 +160,7 @@ class RedisController {
     }
   }
 
-  Future<bool> _connectPubSub() async {
+  Future<bool> _connectPubSub([Duration? connectTimeoutOverride]) async {
     if (_pubSub != null) {
       return true;
     }
@@ -123,24 +169,28 @@ class RedisController {
     }
     _connectingPubSub = true;
 
-    _pubSubCommand = await _createAndAuthCommand();
+    _pubSubCommand = await _createAndAuthCommand(
+      connectTimeoutOverride: connectTimeoutOverride,
+    );
     if (_pubSubCommand == null) {
       _connectingPubSub = false;
       return false;
     }
 
-    runZonedGuarded(() {
-      _pubSub = PubSub(_pubSubCommand!);
-    }, (e, stackTrace) {
-      _invalidatePubSub();
+    runZonedGuarded(
+      () {
+        _pubSub = PubSub(_pubSubCommand!);
+      },
+      (e, stackTrace) {
+        _invalidatePubSub();
 
-      stderr.writeln(
-          '${DateTime.now().toUtc()} Internal server error. Failed to connect to Redis when creating PubSub.');
-      stderr.writeln('$e');
-      stderr.writeln('$stackTrace');
-      stderr.writeln('Local stacktrace:');
-      stderr.writeln('${StackTrace.current}');
-    });
+        log.error(
+          'Internal server error. Failed to connect to Redis when creating PubSub.',
+          error: e,
+          stackTrace: stackTrace,
+        );
+      },
+    );
 
     var stream = _pubSub!.getStream();
     unawaited(_listenToSubscriptions(stream));
@@ -307,6 +357,37 @@ class RedisController {
     }
   }
 
-  /// Returns a list of
+  /// Returns the underlying Redis [Command] connection.
+  ///
+  /// Ensures a connection is established before returning. Returns null if the
+  /// connection could not be established.
+  ///
+  /// Use this to call custom Redis commands via [RedisCommand.send_object] or
+  /// other methods from the `redis` package.
+  Future<RedisCommand?> getConnection() async {
+    if (!await _connect()) {
+      return null;
+    }
+    return _command;
+  }
+
+  /// Tests Redis connectivity with a PING command.
+  ///
+  /// Returns true if Redis responds with PONG, false otherwise.
+  /// This is used by health checks to verify Redis availability.
+  Future<bool> ping() async {
+    if (!await _connect()) {
+      return false;
+    }
+    try {
+      var result = await _command?.send_object(['PING']);
+      return result == 'PONG';
+    } catch (e) {
+      _invalidateCommand();
+      return false;
+    }
+  }
+
+  /// Returns a list of subscribed channels.
   List<String> get subscribedChannels => _subscriptions.keys.toList();
 }

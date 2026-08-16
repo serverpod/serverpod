@@ -1,0 +1,6 @@
+### A grandchild class.
+class: ModulePolymorphicGrandChild
+extends: ModulePolymorphicChild
+fields:
+  ### The grandchild field.
+  grandchild: String

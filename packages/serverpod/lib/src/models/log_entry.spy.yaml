@@ -3,7 +3,7 @@ class: LogEntry
 table: serverpod_log
 fields:
   ### The id of the session this log entry is associated with.
-  sessionLogId: int, relation(parent=serverpod_session_log, onDelete=Cascade)
+  sessionLogId: int, relation(name=session_log_logs, parent=serverpod_session_log, onDelete=Cascade)
 
   ### The message id this entry is associated with, if in a streaming session.
   messageId: int?
@@ -31,6 +31,7 @@ fields:
 
   ### The order of this log entry, used for sorting.
   order: int
+
 indexes:
   serverpod_log_sessionLogId_idx:
-    fields: sessionLogId
+    fields: sessionLogId, order

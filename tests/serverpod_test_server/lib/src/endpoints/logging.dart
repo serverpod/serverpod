@@ -35,7 +35,7 @@ class LoggingEndpoint extends Endpoint {
   }
 
   Future<void> log(Session session, String message, List<int> logLevels) async {
-    var levels = logLevels.map((level) => LogLevel.fromJson(level));
+    var levels = logLevels.map((level) => LogLevel.values[level]);
 
     for (var logLevel in levels) {
       session.log(message, level: logLevel);
@@ -47,7 +47,11 @@ class LoggingEndpoint extends Endpoint {
   }
 
   Future<void> logDebugAndInfoAndError(
-      Session session, String debug, String info, String error) async {
+    Session session,
+    String debug,
+    String info,
+    String error,
+  ) async {
     session.log(debug, level: LogLevel.debug);
     session.log(info);
     session.log(error, level: LogLevel.error);
@@ -82,33 +86,5 @@ class LoggingEndpoint extends Endpoint {
 
   Stream<int> streamException(Session session) async* {
     throw Exception('This is an exception');
-  }
-
-  @override
-  Future<void> handleStreamMessage(
-    StreamingSession session,
-    SerializableModel message,
-  ) async {
-    // do nothing
-  }
-}
-
-class StreamLogging extends Endpoint {
-  @override
-  Future<void> handleStreamMessage(
-    StreamingSession session,
-    SerializableModel message,
-  ) async {
-    session.log('This is a message', level: LogLevel.debug);
-  }
-}
-
-class StreamQueryLogging extends Endpoint {
-  @override
-  Future<void> handleStreamMessage(
-    StreamingSession session,
-    SerializableModel message,
-  ) async {
-    await SimpleData.db.findFirstRow(session);
   }
 }

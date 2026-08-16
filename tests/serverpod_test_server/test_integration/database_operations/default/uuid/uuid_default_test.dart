@@ -7,10 +7,12 @@ void main() async {
   var session = await IntegrationTestServer().session();
 
   group('Given a class with "default" UUID fields,', () {
-    tearDownAll(() async => UuidDefault.db.deleteWhere(
-          session,
-          where: (_) => Constant.bool(true),
-        ));
+    tearDownAll(
+      () async => UuidDefault.db.deleteWhere(
+        session,
+        where: (_) => Constant.bool(true),
+      ),
+    );
 
     test(
       'when creating a record in the database, then the "default=random" UUID field should not be null and should generate a valid UUID',
@@ -22,8 +24,9 @@ void main() async {
         );
         expect(databaseObject.uuidDefaultRandom, isNotNull);
         expect(
-          RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
-              .hasMatch(databaseObject.uuidDefaultRandom.toString()),
+          RegExp(
+            r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+          ).hasMatch(databaseObject.uuidDefaultRandom.toString()),
           isTrue,
         );
       },
@@ -39,8 +42,9 @@ void main() async {
         );
         expect(databaseObject.uuidDefaultRandomV7, isNotNull);
         expect(
-          RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
-              .hasMatch(databaseObject.uuidDefaultRandomV7.toString()),
+          RegExp(
+            r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+          ).hasMatch(databaseObject.uuidDefaultRandomV7.toString()),
           isTrue,
         );
       },

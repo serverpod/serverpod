@@ -72,8 +72,7 @@ class BasicDatabase extends Endpoint {
       where: (t) => t.num < num,
       offset: offset,
       limit: limit,
-      orderBy: (t) => t.num,
-      orderDescending: descending,
+      orderBy: (t) => descending ? t.num.desc() : t.num.asc(),
     );
 
     return SimpleDataList(
@@ -82,7 +81,9 @@ class BasicDatabase extends Endpoint {
   }
 
   Future<SimpleData> insertRowSimpleData(
-      Session session, SimpleData simpleData) {
+    Session session,
+    SimpleData simpleData,
+  ) async {
     return SimpleData.db.insertRow(
       session,
       simpleData,
@@ -90,7 +91,9 @@ class BasicDatabase extends Endpoint {
   }
 
   Future<SimpleData> updateRowSimpleData(
-      Session session, SimpleData simpleData) {
+    Session session,
+    SimpleData simpleData,
+  ) {
     return SimpleData.db.updateRow(
       session,
       simpleData,
@@ -146,8 +149,10 @@ class BasicDatabase extends Endpoint {
   }
 
   Future<List<int>> deleteAllInTypes(Session session) async {
-    var result =
-        await Types.db.deleteWhere(session, where: (t) => Constant.bool(true));
+    var result = await Types.db.deleteWhere(
+      session,
+      where: (t) => Constant.bool(true),
+    );
 
     return result.map((e) => e.id!).toList();
   }
@@ -173,16 +178,32 @@ class BasicDatabase extends Endpoint {
     Session session,
     ObjectWithEnum object,
   ) async {
-    return await ObjectWithEnum.db.insertRow(session, object);
+    return ObjectWithEnum.db.insertRow(session, object);
   }
 
   Future<ObjectWithEnum?> getObjectWithEnum(Session session, int id) async {
     return await ObjectWithEnum.db.findById(session, id);
   }
 
+  Future<ObjectWithEnumEnhanced> storeObjectWithEnumEnhanced(
+    Session session,
+    ObjectWithEnumEnhanced object,
+  ) async {
+    return ObjectWithEnumEnhanced.db.insertRow(session, object);
+  }
+
+  Future<ObjectWithEnumEnhanced?> getObjectWithEnumEnhanced(
+    Session session,
+    int id,
+  ) async {
+    return await ObjectWithEnumEnhanced.db.findById(session, id);
+  }
+
   Future<ObjectWithObject> storeObjectWithObject(
-      Session session, ObjectWithObject object) async {
-    return await ObjectWithObject.db.insertRow(session, object);
+    Session session,
+    ObjectWithObject object,
+  ) async {
+    return ObjectWithObject.db.insertRow(session, object);
   }
 
   Future<ObjectWithObject?> getObjectWithObject(Session session, int id) async {

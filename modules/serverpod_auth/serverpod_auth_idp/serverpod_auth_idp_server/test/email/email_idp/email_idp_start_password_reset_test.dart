@@ -1,0 +1,332 @@
+import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_idp_server/providers/email.dart';
+import 'package:test/test.dart';
+
+import '../../test_tools/serverpod_test_tools.dart';
+import '../test_utils/email_idp_test_fixture.dart';
+
+void main() {
+  withServerpod(
+    'Given an existing email account',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIdpTestFixture fixture;
+      const email = 'test@serverpod.dev';
+      const password = 'Password123!';
+      late String verificationCode;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        verificationCode = const Uuid().v4().toString();
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
+            secretHashPepper: 'pepper',
+            passwordResetVerificationCodeGenerator: () => verificationCode,
+          ),
+        );
+
+        final authUser = await fixture.authUsers.create(session);
+
+        await fixture.createEmailAccount(
+          session,
+          authUserId: authUser.id,
+          email: email,
+          password: EmailAccountPassword.fromString(password),
+        );
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      group('when startPasswordReset is called', () {
+        late Future<UuidValue> passwordResetRequestIdFuture;
+        setUp(() async {
+          passwordResetRequestIdFuture = fixture.emailIdp.startPasswordReset(
+            session,
+            email: email,
+          );
+        });
+
+        test('then it returns password reset request id', () async {
+          await expectLater(
+            passwordResetRequestIdFuture,
+            completion(isA<UuidValue>()),
+          );
+        });
+
+        test(
+          'then password reset request can be used to verify password reset',
+          () async {
+            final passwordResetRequestId = await passwordResetRequestIdFuture;
+
+            final passwordResetResult = fixture.emailIdp
+                .verifyPasswordResetCode(
+                  session,
+                  passwordResetRequestId: passwordResetRequestId,
+                  verificationCode: verificationCode,
+                );
+
+            await expectLater(passwordResetResult, completion(isA<String>()));
+          },
+        );
+      });
+    },
+  );
+
+  withServerpod(
+    'Given existing email account with maximum allowed password reset requests',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIdpTestFixture fixture;
+      const email = 'test@serverpod.dev';
+      const password = 'Password123!';
+      const maxPasswordResetAttempts = RateLimit(
+        maxAttempts: 1,
+        timeframe: Duration(hours: 1),
+      );
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
+            secretHashPepper: 'pepper',
+            maxPasswordResetAttempts: maxPasswordResetAttempts,
+          ),
+        );
+
+        final authUser = await fixture.authUsers.create(session);
+        await fixture.createEmailAccount(
+          session,
+          authUserId: authUser.id,
+          email: email,
+          password: EmailAccountPassword.fromString(password),
+        );
+
+        // Make initial request to hit the rate limit
+        await fixture.emailIdp.startPasswordReset(
+          session,
+          email: email,
+        );
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
+        'when requesting password reset with same email then it throws EmailAccountPasswordResetException with reason "tooManyAttempts"',
+        () async {
+          final result = fixture.emailIdp.startPasswordReset(
+            session,
+            email: email,
+          );
+
+          await expectLater(
+            result,
+            throwsA(
+              isA<EmailAccountPasswordResetException>().having(
+                (final e) => e.reason,
+                'reason',
+                EmailAccountPasswordResetExceptionReason.tooManyAttempts,
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given no email account',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIdpTestFixture fixture;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIdpTestFixture();
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      group('when startPasswordReset is called', () {
+        late Future<UuidValue> passwordResetRequestIdFuture;
+
+        setUp(() async {
+          // Use setup to ensure the request is made when no email account exists.
+          passwordResetRequestIdFuture = fixture.emailIdp.startPasswordReset(
+            session,
+            email: 'nonexistent@serverpod.dev',
+          );
+        });
+
+        test(
+          'then it returns dummy uuid with the same version as the real request to prevent leaking the fact that the email is not registered',
+          () async {
+            const existingUserEmail = 'existinguser@serverpod.dev';
+            final authUser = await fixture.authUsers.create(session);
+            await fixture.createEmailAccount(
+              session,
+              authUserId: authUser.id,
+              email: existingUserEmail,
+            );
+
+            final capturedPasswordResetRequestId = await fixture.emailIdp
+                .startPasswordReset(
+                  session,
+                  email: existingUserEmail,
+                );
+
+            await expectLater(
+              passwordResetRequestIdFuture,
+              completion(
+                isA<UuidValue>().having(
+                  (final uuid) => uuid.version,
+                  'version',
+                  equals(capturedPasswordResetRequestId.version),
+                ),
+              ),
+            );
+          },
+        );
+      });
+    },
+  );
+
+  withServerpod(
+    'Given pending password reset request that was not verified',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIdpTestFixture fixture;
+      const email = 'test@serverpod.dev';
+      const password = 'Password123!';
+      late UuidValue passwordResetRequestId;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIdpTestFixture();
+
+        final authUser = await fixture.authUsers.create(session);
+        await fixture.createEmailAccount(
+          session,
+          authUserId: authUser.id,
+          email: email,
+          password: EmailAccountPassword.fromString(password),
+        );
+
+        passwordResetRequestId = await fixture.emailIdp.startPasswordReset(
+          session,
+          email: email,
+        );
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      group('when startPasswordReset is called again with the same email', () {
+        late UuidValue newPasswordResetRequestId;
+        setUp(() async {
+          newPasswordResetRequestId = await fixture.emailIdp.startPasswordReset(
+            session,
+            email: email,
+          );
+        });
+
+        test('then it returns a new request id', () async {
+          expect(
+            newPasswordResetRequestId,
+            isNot(equals(passwordResetRequestId)),
+          );
+        });
+
+        test('then it deletes the existing request', () async {
+          final oldRequest = await EmailAccountPasswordResetRequest.db.findById(
+            session,
+            passwordResetRequestId,
+          );
+          expect(oldRequest, isNull);
+        });
+
+        test('then the new request exists on the database', () async {
+          final newRequest = await EmailAccountPasswordResetRequest.db.findById(
+            session,
+            newPasswordResetRequestId,
+            include: EmailAccountPasswordResetRequest.include(
+              emailAccount: EmailAccount.include(),
+            ),
+          );
+          expect(newRequest, isNotNull);
+          expect(newRequest!.challengeId, isNotNull);
+          final emailAccount = newRequest.emailAccount;
+          expect(emailAccount, isNotNull);
+          expect(emailAccount!.email, equals(email));
+          expect(emailAccount.createdAt, isNotNull);
+        });
+      });
+    },
+  );
+
+  withServerpod(
+    'Given maximum allowed password reset requests for non-existing email account',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIdpTestFixture fixture;
+      const email = 'test@serverpod.dev';
+      const maxPasswordResetAttempts = RateLimit(
+        maxAttempts: 1,
+        timeframe: Duration(hours: 1),
+      );
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
+            secretHashPepper: 'pepper',
+            maxPasswordResetAttempts: maxPasswordResetAttempts,
+          ),
+        );
+
+        // Make initial request to hit the rate limit
+        await fixture.emailIdp.startPasswordReset(
+          session,
+          email: email,
+        );
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
+        'when requesting password reset with same email then it throws EmailAccountPasswordResetException with reason "tooManyAttempts"',
+        () async {
+          final result = fixture.emailIdp.startPasswordReset(
+            session,
+            email: email,
+          );
+
+          await expectLater(
+            result,
+            throwsA(
+              isA<EmailAccountPasswordResetException>().having(
+                (final e) => e.reason,
+                'reason',
+                EmailAccountPasswordResetExceptionReason.tooManyAttempts,
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+}

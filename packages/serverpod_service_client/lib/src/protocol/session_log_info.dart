@@ -15,9 +15,11 @@ import 'session_log_entry.dart' as _i2;
 import 'query_log_entry.dart' as _i3;
 import 'log_entry.dart' as _i4;
 import 'message_log_entry.dart' as _i5;
+import 'package:serverpod_service_client/src/protocol/protocol.dart' as _i6;
 
 /// Compounded information about a session log.
-abstract class SessionLogInfo implements _i1.SerializableModel {
+abstract class SessionLogInfo
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   SessionLogInfo._({
     required this.sessionLogEntry,
     required this.queries,
@@ -34,17 +36,18 @@ abstract class SessionLogInfo implements _i1.SerializableModel {
 
   factory SessionLogInfo.fromJson(Map<String, dynamic> jsonSerialization) {
     return SessionLogInfo(
-      sessionLogEntry: _i2.SessionLogEntry.fromJson(
-          (jsonSerialization['sessionLogEntry'] as Map<String, dynamic>)),
-      queries: (jsonSerialization['queries'] as List)
-          .map((e) => _i3.QueryLogEntry.fromJson((e as Map<String, dynamic>)))
-          .toList(),
-      logs: (jsonSerialization['logs'] as List)
-          .map((e) => _i4.LogEntry.fromJson((e as Map<String, dynamic>)))
-          .toList(),
-      messages: (jsonSerialization['messages'] as List)
-          .map((e) => _i5.MessageLogEntry.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      sessionLogEntry: _i6.Protocol().deserialize<_i2.SessionLogEntry>(
+        jsonSerialization['sessionLogEntry'],
+      ),
+      queries: _i6.Protocol().deserialize<List<_i3.QueryLogEntry>>(
+        jsonSerialization['queries'],
+      ),
+      logs: _i6.Protocol().deserialize<List<_i4.LogEntry>>(
+        jsonSerialization['logs'],
+      ),
+      messages: _i6.Protocol().deserialize<List<_i5.MessageLogEntry>>(
+        jsonSerialization['messages'],
+      ),
     );
   }
 
@@ -72,10 +75,22 @@ abstract class SessionLogInfo implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.SessionLogInfo',
       'sessionLogEntry': sessionLogEntry.toJson(),
       'queries': queries.toJson(valueToJson: (v) => v.toJson()),
       'logs': logs.toJson(valueToJson: (v) => v.toJson()),
       'messages': messages.toJson(valueToJson: (v) => v.toJson()),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod.SessionLogInfo',
+      'sessionLogEntry': sessionLogEntry.toJsonForProtocol(),
+      'queries': queries.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'logs': logs.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'messages': messages.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
   }
 
@@ -92,11 +107,11 @@ class _SessionLogInfoImpl extends SessionLogInfo {
     required List<_i4.LogEntry> logs,
     required List<_i5.MessageLogEntry> messages,
   }) : super._(
-          sessionLogEntry: sessionLogEntry,
-          queries: queries,
-          logs: logs,
-          messages: messages,
-        );
+         sessionLogEntry: sessionLogEntry,
+         queries: queries,
+         logs: logs,
+         messages: messages,
+       );
 
   /// Returns a shallow copy of this [SessionLogInfo]
   /// with some or all fields replaced by the given arguments.

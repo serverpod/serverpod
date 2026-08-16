@@ -8,15 +8,17 @@ class ModelSourceBuilder {
   List<String> yamlSourcePathParts;
   Uri? yamlSourceUri;
   List<String> subDirPathParts;
+  bool isSharedModel;
   String fileExtension;
 
   ModelSourceBuilder()
-      : fileExtension = '.yaml',
-        subDirPathParts = [],
-        fileName = 'example',
-        yamlSourcePathParts = ['lib', 'src', 'model'],
-        moduleAlias = defaultModuleAlias,
-        yaml = '''
+    : fileExtension = '.yaml',
+      subDirPathParts = [],
+      fileName = 'example',
+      yamlSourcePathParts = ['lib', 'src', 'model'],
+      moduleAlias = defaultModuleAlias,
+      isSharedModel = false,
+      yaml = '''
     class: Example
     fields:
       name: String
@@ -57,6 +59,11 @@ class ModelSourceBuilder {
     return this;
   }
 
+  ModelSourceBuilder withIsSharedModel(bool isSharedModel) {
+    this.isSharedModel = isSharedModel;
+    return this;
+  }
+
   ModelSource build() {
     var yamlSourceUri = Uri(
       path: joinAll(
@@ -64,7 +71,7 @@ class ModelSourceBuilder {
           'module',
           moduleAlias,
           ...yamlSourcePathParts,
-          '$fileName$fileExtension'
+          '$fileName$fileExtension',
         ],
       ),
     );
@@ -73,6 +80,7 @@ class ModelSourceBuilder {
       yaml,
       this.yamlSourceUri ?? yamlSourceUri,
       subDirPathParts,
+      isSharedModel,
     );
   }
 }

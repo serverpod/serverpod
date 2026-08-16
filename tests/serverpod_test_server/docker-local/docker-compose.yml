@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: pgvector/pgvector:pg16
+    image: ghcr.io/serverpod/postgres:16
     ports:
       - '8090:5432'
       - '5432:5432'

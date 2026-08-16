@@ -20,33 +20,39 @@ environment:
 
 dependencies:
   args: ^2.7.0
+  clock: ^1.1.1
   collection: ^1.18.0
   crypto: ^3.0.2
   http: '>=1.1.0 <2.0.0'
   meta: ^1.15.0
-  mustache_template: ^2.0.0
   path: ^1.8.3
   postgres: ^3.4.0
   redis: ^4.0.0
-  relic: ^0.4.1
-  retry: ^3.1.1
-  synchronized: ^3.1.0
-  system_resources: ^1.6.0
-  vm_service: '>=13.0.0 <16.0.0'
-  yaml: ^3.1.2
-  serverpod_shared: SERVERPOD_VERSION
+  relic: ^1.2.0
+  serverpod_database: SERVERPOD_VERSION
   serverpod_serialization: SERVERPOD_VERSION
-  uuid: ^4.1.0
+  serverpod_shared: SERVERPOD_VERSION
+  synchronized: ^3.1.0
+  system_resources_2: ^2.2.2
+  uuid: ^4.5.3
+  vm_service: '>=13.0.0 <16.0.0'
   web_socket: ^1.0.1
+  whiskers: ^0.1.1
+  yaml: ^3.1.2
 
 dev_dependencies:
-  test: ^1.25.5
   serverpod_lints: SERVERPOD_VERSION
+  test: ^1.25.5
+  test_descriptor: ^2.0.2
 
 dependency_overrides:
-  serverpod_shared:
-    path: ../serverpod_shared
-  serverpod_serialization:
-    path: ../serverpod_serialization
+  serverpod_database:
+    path: ../serverpod_database
+  serverpod_embedded_postgres:
+    path: ../serverpod_embedded_postgres
   serverpod_lints:
     path: ../serverpod_lints
+  serverpod_serialization:
+    path: ../serverpod_serialization
+  serverpod_shared:
+    path: ../serverpod_shared

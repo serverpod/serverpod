@@ -50,8 +50,10 @@ abstract class Lock {
   /// If [timeout] is specified, it will try to grab the lock and will not
   /// call the computation callback and throw a [TimeoutExpection] if the lock
   /// cannot be grabbed in the given duration.
-  Future<T> synchronized<T>(FutureOr<T> Function() computation,
-      {Duration? timeout});
+  Future<T> synchronized<T>(
+    FutureOr<T> Function() computation, {
+    Duration? timeout,
+  });
 
   /// returns true if the lock is currently locked.
   bool get locked;
@@ -70,8 +72,10 @@ class BasicLock implements Lock {
   bool get locked => last != null;
 
   @override
-  Future<T> synchronized<T>(FutureOr<T> Function() func,
-      {Duration? timeout}) async {
+  Future<T> synchronized<T>(
+    FutureOr<T> Function() func, {
+    Duration? timeout,
+  }) async {
     var prev = last;
     var completer = Completer<void>.sync();
     last = completer.future;

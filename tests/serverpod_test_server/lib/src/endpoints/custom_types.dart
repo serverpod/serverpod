@@ -59,7 +59,7 @@ class CustomTypesEndpoint extends Endpoint {
   }
 
   Future<CustomClassWithoutProtocolSerialization>
-      returnCustomClassWithoutProtocolSerialization(
+  returnCustomClassWithoutProtocolSerialization(
     Session session,
     CustomClassWithoutProtocolSerialization data,
   ) async {
@@ -67,7 +67,7 @@ class CustomTypesEndpoint extends Endpoint {
   }
 
   Future<CustomClassWithProtocolSerialization>
-      returnCustomClassWithProtocolSerialization(
+  returnCustomClassWithProtocolSerialization(
     Session session,
     CustomClassWithProtocolSerialization data,
   ) async {
@@ -75,21 +75,10 @@ class CustomTypesEndpoint extends Endpoint {
   }
 
   Future<CustomClassWithProtocolSerializationMethod>
-      returnCustomClassWithProtocolSerializationMethod(
+  returnCustomClassWithProtocolSerializationMethod(
     Session session,
     CustomClassWithProtocolSerializationMethod data,
   ) async {
     return data;
-  }
-
-  @override
-  Future<void> handleStreamMessage(
-    StreamingSession session,
-    SerializableModel message,
-  ) async {
-    if (message is CustomClass) {
-      await sendStreamMessage(
-          session, CustomClass('${message.value}${message.value}'));
-    }
   }
 }

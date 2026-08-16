@@ -19,12 +19,15 @@ void main() {
           fields:
             name: String
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       var definitions = analyzer.validateAll();
 
       expect(
@@ -50,12 +53,15 @@ void main() {
           fields:
             name: String
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       var definitions = analyzer.validateAll();
 
       expect(
@@ -81,12 +87,15 @@ void main() {
           fields:
             name: String
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       var definitions = analyzer.validateAll();
 
       expect(
@@ -112,12 +121,15 @@ void main() {
           fields:
             name: String
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(

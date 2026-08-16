@@ -179,8 +179,9 @@ class FormattedCompilationUnit {
 
   @override
   String toString() {
-    return DartFormatter(languageVersion: Version(3, 6, 0))
-        .format(compilationUnit.toSource());
+    return DartFormatter(
+      languageVersion: Version(3, 6, 0),
+    ).format(compilationUnit.toSource());
   }
 }
 
@@ -193,7 +194,8 @@ enum Initializer {
   this_,
 
   /// The parameter is initialized with `super`.
-  super_;
+  super_,
+  ;
 
   /// Returns the token representation of the initializer.
   String toToken() {

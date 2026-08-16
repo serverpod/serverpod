@@ -77,3 +77,18 @@ String convertToSingleQuotedString(String value) {
     },
   );
 }
+
+/// Converts a raw Dart string into a single quoted SQL string literal.
+///
+/// Single quotes within the value are doubled, which is how SQL escapes them
+/// inside a string literal. Double quotes carry no meaning inside a SQL string
+/// literal and are left untouched.
+///
+/// ### Examples:
+/// ```dart
+/// escapeSqlString("This is a 'default persist value") // Returns "'This is a ''default persist value'"
+/// escapeSqlString('This is a "default" persist value') // Returns "'This is a \"default\" persist value'"
+/// ```
+String escapeSqlString(String value) {
+  return "'${value.replaceAll("'", "''")}'";
+}

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 import 'package:web_socket/web_socket.dart';
@@ -14,9 +13,9 @@ void main() {
 
     setUp(() async {
       server = IntegrationTestServer.create();
-      await server.start();
+      await server.startWithDatabase();
       webSocket = await WebSocket.connect(
-        Uri.parse(serverMethodWebsocketUrl),
+        Uri.parse(server.methodWebSocketUrl),
       );
     });
 
@@ -27,9 +26,12 @@ void main() {
 
     test('when bad request is sent then connection is closed.', () async {
       var webSocketCompleter = Completer<void>();
-      webSocket.textEvents.listen((event) {}, onDone: () {
-        webSocketCompleter.complete();
-      });
+      webSocket.textEvents.listen(
+        (event) {},
+        onDone: () {
+          webSocketCompleter.complete();
+        },
+      );
 
       webSocket.sendText(BadRequestMessage.buildMessage('request'));
 

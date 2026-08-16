@@ -74,11 +74,25 @@ TypeReference typeOrderByListBuilder(
   );
 }
 
+TypeReference typeColumnValueListBuilder(
+  String className,
+  bool serverCode, {
+  nullable = false,
+}) {
+  return _typeWithTableCallback(
+    '${className}Update',
+    'ColumnValueListBuilder',
+    serverCode,
+    nullable: nullable,
+  );
+}
+
 Expression buildFromJsonForField(
   SerializableModelFieldDefinition field,
   bool serverCode,
   GeneratorConfig config,
   List<String> subDirParts,
+  String? currentSharedPackageName,
 ) {
   Reference jsonReference = refer('jsonSerialization');
   return _buildFromJson(
@@ -86,8 +100,10 @@ Expression buildFromJsonForField(
     field.type,
     serverCode,
     config,
-    fieldName: field.name,
+    fieldName: field.jsonKey,
     subDirParts: subDirParts,
+    field: field,
+    currentSharedPackageName: currentSharedPackageName,
   );
 }
 
@@ -103,7 +119,7 @@ TypeReference _typeWithTableCallback(
       ..types.addAll([
         refer('${className}Table'),
       ])
-      ..url = serverpodUrl(serverCode)
+      ..url = serverpodDatabaseRuntimeUrl(serverCode)
       ..isNullable = nullable,
   );
 }
@@ -116,6 +132,8 @@ Expression _buildFromJson(
   String? fieldName,
   Expression? mapExpression,
   required List<String> subDirParts,
+  SerializableModelFieldDefinition? field,
+  String? currentSharedPackageName,
 }) {
   Expression valueExpression =
       mapExpression ?? jsonReference.index(literalString(fieldName!));
@@ -123,17 +141,19 @@ Expression _buildFromJson(
   ValueType valueType = type.valueType;
   switch (valueType) {
     case ValueType.string:
-    case ValueType.bool:
     case ValueType.int:
       return _buildPrimitiveTypeFromJson(
         type,
         valueExpression,
+        field,
       );
     case ValueType.double:
       return _buildDoubleTypeFromJson(
         type,
         valueExpression,
+        field,
       );
+    case ValueType.bool:
     case ValueType.dateTime:
     case ValueType.duration:
     case ValueType.byteData:
@@ -143,16 +163,35 @@ Expression _buildFromJson(
     case ValueType.halfVector:
     case ValueType.sparseVector:
     case ValueType.bit:
+    case ValueType.geographyPoint:
+    case ValueType.geographyLineString:
+    case ValueType.geographyPolygon:
+    case ValueType.geographyGeometryCollection:
       return _buildComplexTypeFromJson(
         type,
         valueExpression,
         serverCode,
+        field,
       );
     case ValueType.bigInt:
       return _buildComplexTypeFromJson(
         type,
         valueExpression,
         serverCode,
+        field,
+      );
+    case ValueType.dynamicType:
+      return CodeExpression(
+        getProtocolReference(
+              serverCode,
+              config,
+              currentSharedPackageName: currentSharedPackageName,
+            )
+            .call([])
+            .property('deserializeDynamicFieldValue')
+            .call([valueExpression])
+            .checkIfNull(type, valueExpression: valueExpression)
+            .code,
       );
     case ValueType.isEnum:
       EnumSerialization? enumSerialization = type.enumDefinition?.serialized;
@@ -166,26 +205,18 @@ Expression _buildFromJson(
         serverCode,
         config,
         subDirParts,
+        field,
       );
     case ValueType.list:
     case ValueType.set:
-      return _buildListOrSetTypeFromJson(
-        jsonReference,
-        type,
-        valueExpression,
-        serverCode,
-        config,
-        valueType == ValueType.list,
-        subDirParts,
-      );
     case ValueType.map:
-      return _buildMapTypeFromJson(
-        jsonReference,
+      return _buildProtocolDeserialize(
         type,
         valueExpression,
         serverCode,
         config,
         subDirParts,
+        currentSharedPackageName: currentSharedPackageName,
       );
     case ValueType.classType:
       return _buildClassTypeFromJson(
@@ -194,6 +225,8 @@ Expression _buildFromJson(
         serverCode,
         config,
         subDirParts,
+        field,
+        currentSharedPackageName: currentSharedPackageName,
       );
     case ValueType.record:
       return _buildRecordTypeFromJson(
@@ -202,6 +235,7 @@ Expression _buildFromJson(
         serverCode,
         config,
         subDirParts,
+        currentSharedPackageName: currentSharedPackageName,
       );
   }
 }
@@ -209,12 +243,16 @@ Expression _buildFromJson(
 Expression _buildPrimitiveTypeFromJson(
   TypeDefinition type,
   Expression valueExpression,
+  SerializableModelFieldDefinition? field,
 ) {
+  final asNullable =
+      type.nullable || _shouldHandleMissingKeyForDefault(type, field);
+
   return CodeExpression(
     Block.of([
       valueExpression.code,
       Code('as ${type.className}'),
-      if (type.nullable) const Code('?'),
+      if (asNullable) const Code('?'),
     ]),
   );
 }
@@ -222,11 +260,15 @@ Expression _buildPrimitiveTypeFromJson(
 Expression _buildDoubleTypeFromJson(
   TypeDefinition type,
   Expression valueExpression,
+  SerializableModelFieldDefinition? field,
 ) {
+  final asNullable =
+      type.nullable || _shouldHandleMissingKeyForDefault(type, field);
+
   return CodeExpression(
     Block.of([
-      valueExpression.asA(refer('num${type.nullable ? '?' : ''}')).code,
-      Code('${type.nullable ? '?.' : '.'}toDouble()'),
+      valueExpression.asA(refer('num${asNullable ? '?' : ''}')).code,
+      Code('${asNullable ? '?.' : '.'}toDouble()'),
     ]),
   );
 }
@@ -235,9 +277,24 @@ Expression _buildComplexTypeFromJson(
   TypeDefinition type,
   Expression valueExpression,
   bool serverCode,
+  SerializableModelFieldDefinition? field,
 ) {
+  var className = type.className;
+  var extensionName =
+      '${className[0].toUpperCase()}${className.substring(1)}JsonExtension';
+
+  if (_shouldHandleMissingKeyForDefault(type, field)) {
+    return _wrapWithNullCheckForDefault(
+      valueExpression,
+      refer(
+        extensionName,
+        serverpodUrl(serverCode),
+      ).property('fromJson').call([valueExpression]),
+    );
+  }
+
   return CodeExpression(
-    refer('${type.className}JsonExtension', serverpodUrl(serverCode))
+    refer(extensionName, serverpodUrl(serverCode))
         .property('fromJson')
         .call([valueExpression])
         .checkIfNull(type, valueExpression: valueExpression)
@@ -252,6 +309,7 @@ Expression _buildEnumTypeFromJson(
   bool serverCode,
   GeneratorConfig config,
   List<String> subDirParts,
+  SerializableModelFieldDefinition? field,
 ) {
   Reference typeRef = type.asNonNullable.reference(
     serverCode,
@@ -269,6 +327,15 @@ Expression _buildEnumTypeFromJson(
       break;
   }
 
+  if (_shouldHandleMissingKeyForDefault(type, field)) {
+    return _wrapWithNullCheckForDefault(
+      valueExpression,
+      typeRef.property('fromJson').call([
+        valueExpression.asA(asReference),
+      ]),
+    );
+  }
+
   return CodeExpression(
     typeRef
         .property('fromJson')
@@ -278,144 +345,35 @@ Expression _buildEnumTypeFromJson(
   );
 }
 
-Expression _buildListOrSetTypeFromJson(
-  Reference jsonReference,
+Expression _buildProtocolDeserialize(
   TypeDefinition type,
   Expression valueExpression,
   bool serverCode,
   GeneratorConfig config,
-  bool isList,
-  List<String> subDirParts,
-) {
-  if (type.isSetType) {
-    return CodeExpression(Block.of([
-      if (type.nullable) ...[
-        valueExpression.code,
-        const Code(' == null ? null :'),
-      ],
-      refer('${type.className}JsonExtension', serverpodUrl(serverCode)).code,
-      const Code('.fromJson('),
-      valueExpression
-          .asA(const CodeExpression(
-            // in both the `Set` and `List` cases, the data is persisted as a `List<T>`
-            Code('List'),
-          ))
-          .code,
-      const Code(', itemFromJson: (e) =>'),
-      _buildFromJson(
-        jsonReference,
-        type.generics.first,
-        serverCode,
-        config,
-        mapExpression: refer('e'),
-        subDirParts: subDirParts,
-      ).code,
-      const Code(')'),
-      if (type.isSetType && !type.nullable) const Code('!'),
-    ]));
-  }
-
+  List<String> subDirParts, {
+  String? currentSharedPackageName,
+}) {
   return CodeExpression(
-    Block.of([
-      valueExpression
-          .asA(CodeExpression(
-            Code('List${type.nullable ? '?' : ''}'),
-          ))
-          .code,
-      Code('${type.nullable ? '?' : ''}.map((e) => '),
-      _buildFromJson(
-        jsonReference,
-        type.generics.first,
-        serverCode,
-        config,
-        mapExpression: refer('e'),
-        subDirParts: subDirParts,
-      ).code,
-      const Code(').toList()'),
-    ]),
-  );
-}
-
-Expression _buildMapTypeFromJson(
-  Reference jsonReference,
-  TypeDefinition type,
-  Expression valueExpression,
-  bool serverCode,
-  GeneratorConfig config,
-  List<String> subDirParts,
-) {
-  if (type.generics.first.valueType == ValueType.string) {
-    return CodeExpression(
-      Block.of([
-        const Code('('),
-        valueExpression.code,
-        Code(
-          'as Map${type.nullable ? '?)?' : ')'}.map((k, v) =>',
-        ),
-        refer('MapEntry').call([
-          _buildFromJson(
-            jsonReference,
-            type.generics.first,
-            serverCode,
-            config,
-            mapExpression: refer('k'),
-            subDirParts: subDirParts,
-          ),
-          _buildFromJson(
-            jsonReference,
-            type.generics.last,
-            serverCode,
-            config,
-            mapExpression: refer('v'),
-            subDirParts: subDirParts,
-          ),
-        ]).code,
-        const Code(')'),
-      ]),
-    );
-  }
-
-  return CodeExpression(
-    Block.of([
-      valueExpression
-          .asA(CodeExpression(Code('List${type.nullable ? '?' : ''}')))
-          .code,
-      Code('${type.nullable ? '?' : ''}.fold<Map<'),
-      type.generics.first
-          .reference(
-            serverCode,
-            subDirParts: subDirParts,
-            config: config,
-          )
-          .code,
-      const Code(','),
-      type.generics.last
-          .reference(
-            serverCode,
-            subDirParts: subDirParts,
-            config: config,
-          )
-          .code,
-      const Code('>>({}, (t, e) => {...t, '),
-      _buildFromJson(
-        jsonReference,
-        type.generics.first,
-        serverCode,
-        config,
-        mapExpression: refer('e').index(literalString('k')),
-        subDirParts: subDirParts,
-      ).code,
-      const Code(':'),
-      _buildFromJson(
-        jsonReference,
-        type.generics.last,
-        serverCode,
-        config,
-        mapExpression: refer('e').index(literalString('v')),
-        subDirParts: subDirParts,
-      ).code,
-      const Code('})'),
-    ]),
+    getProtocolReference(
+          serverCode,
+          config,
+          currentSharedPackageName: currentSharedPackageName,
+        )
+        .call([])
+        .property('deserialize')
+        .call(
+          [valueExpression],
+          {},
+          [
+            type.asNonNullable.reference(
+              serverCode,
+              subDirParts: subDirParts,
+              config: config,
+            ),
+          ],
+        )
+        .checkIfNull(type, valueExpression: valueExpression)
+        .code,
   );
 }
 
@@ -425,7 +383,40 @@ Expression _buildClassTypeFromJson(
   bool serverCode,
   GeneratorConfig config,
   List<String> subDirParts,
-) {
+  SerializableModelFieldDefinition? field, {
+  String? currentSharedPackageName,
+}) {
+  if (!type.customClass) {
+    return _buildProtocolDeserialize(
+      type,
+      valueExpression,
+      serverCode,
+      config,
+      subDirParts,
+      currentSharedPackageName: currentSharedPackageName,
+    );
+  }
+
+  if (_shouldHandleMissingKeyForDefault(type, field)) {
+    return _wrapWithNullCheckForDefault(
+      valueExpression,
+      type.asNonNullable
+          .reference(
+            serverCode,
+            subDirParts: subDirParts,
+            config: config,
+          )
+          .property('fromJson')
+          .call([
+            if (type.customClass)
+              valueExpression
+            else
+              valueExpression.asA(refer('Map<String, dynamic>')),
+          ]),
+    );
+  }
+
+  // For custom classes, use the original fromJson approach
   return CodeExpression(
     type.asNonNullable
         .reference(
@@ -450,32 +441,61 @@ Expression _buildRecordTypeFromJson(
   Expression valueExpression,
   bool serverCode,
   GeneratorConfig config,
-  List<String> subDirParts,
-) {
-  var protocolRef = refer(
-    'Protocol',
-    serverCode
-        ? 'package:${config.serverPackage}/src/generated/protocol.dart'
-        : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
+  List<String> subDirParts, {
+  String? currentSharedPackageName,
+}) {
+  return CodeExpression(
+    Block.of([
+      if (type.nullable) ...[
+        valueExpression.code,
+        const Code('== null ? null : '),
+      ],
+      getProtocolReference(
+            serverCode,
+            config,
+            currentSharedPackageName: currentSharedPackageName,
+          )
+          .newInstance([])
+          .property('deserialize')
+          .call(
+            [valueExpression.asA(refer('Map<String, dynamic>'))],
+            {},
+            [
+              type.reference(
+                serverCode,
+                config: config,
+                subDirParts: subDirParts,
+              ),
+            ],
+          )
+          .code,
+    ]),
   );
+}
 
-  return CodeExpression(Block.of([
-    if (type.nullable) ...[
+/// Helper to check if we need to handle missing keys for fields with defaults.
+///
+/// If the field has a default value and is non-nullable, we need to pass null
+/// if the key is missing for the field to use the default value.
+bool _shouldHandleMissingKeyForDefault(
+  TypeDefinition type,
+  SerializableModelFieldDefinition? field,
+) {
+  return field?.defaultModelValue != null && !type.nullable;
+}
+
+/// Helper to wrap an expression with null check for default value handling.
+Expression _wrapWithNullCheckForDefault(
+  Expression valueExpression,
+  Expression wrappedExpression,
+) {
+  return CodeExpression(
+    Block.of([
       valueExpression.code,
-      const Code('== null ? null : '),
-    ],
-    protocolRef
-        .newInstance([])
-        .property('deserialize')
-        .call(
-          [valueExpression.asA(refer('Map<String, dynamic>'))],
-          {},
-          [
-            type.reference(serverCode, config: config, subDirParts: subDirParts)
-          ],
-        )
-        .code,
-  ]));
+      const Code(' == null ? null : '),
+      wrappedExpression.code,
+    ]),
+  );
 }
 
 extension ExpressionExtension on Expression {
@@ -484,14 +504,21 @@ extension ExpressionExtension on Expression {
     required Expression valueExpression,
   }) {
     if (!type.nullable) return this;
-    return CodeExpression(
-      Block.of(
-        [
-          valueExpression.code,
-          const Code('== null ? null : '),
-          code,
-        ],
-      ),
-    );
+    return _wrapWithNullCheckForDefault(valueExpression, this);
   }
+}
+
+Reference getProtocolReference(
+  bool serverCode,
+  GeneratorConfig config, {
+  String? currentSharedPackageName,
+}) {
+  return refer(
+    'Protocol',
+    serverCode
+        ? 'package:${config.serverPackage}/src/generated/protocol.dart'
+        : currentSharedPackageName != null
+        ? 'package:$currentSharedPackageName/$currentSharedPackageName.dart'
+        : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
+  );
 }

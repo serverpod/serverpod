@@ -100,6 +100,68 @@ void main() async {
           );
         },
       );
+
+      test(
+        'when an object is created from JSON with missing "byNameEnumDefault" key, then the field should have the default value.',
+        () {
+          var object = EnumDefault.fromJson({});
+          expect(
+            object.byNameEnumDefault,
+            equals(ByNameEnum.byName1),
+          );
+        },
+      );
+
+      test(
+        'when an object is created from JSON with missing "byIndexEnumDefault" key, then the field should have the default value.',
+        () {
+          var object = EnumDefault.fromJson({});
+          expect(
+            object.byIndexEnumDefault,
+            equals(ByIndexEnum.byIndex1),
+          );
+        },
+      );
+
+      test(
+        'when an object is created from JSON with missing "byNameEnumDefaultNull" key, then the field should have the default value.',
+        () {
+          var object = EnumDefault.fromJson({});
+          expect(
+            object.byNameEnumDefaultNull,
+            equals(ByNameEnum.byName2),
+          );
+        },
+      );
+
+      test(
+        'when an object is created from JSON with missing "byIndexEnumDefaultNull" key, then the field should have the default value.',
+        () {
+          var object = EnumDefault.fromJson({});
+          expect(
+            object.byIndexEnumDefaultNull,
+            equals(ByIndexEnum.byIndex2),
+          );
+        },
+      );
+
+      test(
+        'when an object is created from JSON with explicit values, then the fields should match the provided values.',
+        () {
+          var object = EnumDefault.fromJson({
+            'byNameEnumDefault': 'byName2',
+            'byIndexEnumDefault': 1,
+          });
+          expect(
+            object.byNameEnumDefault,
+            equals(ByNameEnum.byName2),
+          );
+          expect(
+            object.byIndexEnumDefault,
+            equals(ByIndexEnum.byIndex2),
+          );
+        },
+      );
     },
   );
 }

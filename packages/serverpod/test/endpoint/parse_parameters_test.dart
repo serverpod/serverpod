@@ -5,13 +5,14 @@ import 'package:test/test.dart';
 
 void main() {
   test(
-      'Given no parameter descriptions when parsing null parameter string then empty map is returned.',
-      () {
-    expect(
-      parseParameters({}, {}, Protocol()),
-      {},
-    );
-  });
+    'Given no parameter descriptions when parsing null parameter string then empty map is returned.',
+    () {
+      expect(
+        parseParameters({}, {}, Protocol()),
+        {},
+      );
+    },
+  );
 
   group('Given single non nullable parameter description', () {
     var parameterDescriptions = {
@@ -34,30 +35,32 @@ void main() {
     });
 
     test(
-        'when parsing param with different argument name then an exception is thrown.',
-        () {
-      expect(
-        () => parseParameters(
-          {'arg2': 42},
-          parameterDescriptions,
-          Protocol(),
-        ),
-        throwsA(isA<Exception>()),
-      );
-    });
+      'when parsing param with different argument name then an exception is thrown.',
+      () {
+        expect(
+          () => parseParameters(
+            {'arg2': 42},
+            parameterDescriptions,
+            Protocol(),
+          ),
+          throwsA(isA<Exception>()),
+        );
+      },
+    );
 
     test(
-        'when parsing parameter string with additional parameter then additional parameter is ignored',
-        () {
-      expect(
-        parseParameters(
-          {'arg1': 42, 'arg2': 'ignored'},
-          parameterDescriptions,
-          Protocol(),
-        ),
-        {'arg1': 42},
-      );
-    });
+      'when parsing parameter string with additional parameter then additional parameter is ignored',
+      () {
+        expect(
+          parseParameters(
+            {'arg1': 42, 'arg2': 'ignored'},
+            parameterDescriptions,
+            Protocol(),
+          ),
+          {'arg1': 42},
+        );
+      },
+    );
   });
 
   group('Given single nullable parameter description', () {
@@ -80,17 +83,19 @@ void main() {
       );
     });
 
-    test('when parsing empty parameter input then an empty map is returned.',
-        () {
-      expect(
-        parseParameters(
+    test(
+      'when parsing empty parameter input then an empty map is returned.',
+      () {
+        expect(
+          parseParameters(
+            {},
+            parameterDescriptions,
+            Protocol(),
+          ),
           {},
-          parameterDescriptions,
-          Protocol(),
-        ),
-        {},
-      );
-    });
+        );
+      },
+    );
   });
 
   group('Given multiple non nullable parameter descriptions', () {
@@ -119,16 +124,17 @@ void main() {
     });
 
     test(
-        'when parsing parameter input is only containing one of the required parameters then an exception is thrown.',
-        () {
-      expect(
-        () => parseParameters(
-          {'arg1': 42},
-          parameterDescriptions,
-          Protocol(),
-        ),
-        throwsA(isA<Exception>()),
-      );
-    });
+      'when parsing parameter input is only containing one of the required parameters then an exception is thrown.',
+      () {
+        expect(
+          () => parseParameters(
+            {'arg1': 42},
+            parameterDescriptions,
+            Protocol(),
+          ),
+          throwsA(isA<Exception>()),
+        );
+      },
+    );
   });
 }

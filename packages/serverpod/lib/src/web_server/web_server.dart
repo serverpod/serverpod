@@ -2,10 +2,14 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
-import 'package:relic/io_adapter.dart';
+import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_shared/log.dart';
+import 'package:serverpod/src/server/dev_auto_refresh_script.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
+import 'package:serverpod/src/server/health/health_routes.dart';
 import 'package:serverpod/src/server/serverpod.dart';
+import 'package:serverpod/src/server/session.dart';
 
 /// The Serverpod webserver.
 class WebServer {
@@ -23,10 +27,16 @@ class WebServer {
 
   int? _actualPort;
 
-  /// Router for handling incoming requests.
-  final router = ServerpodRouter();
+  RelicApp? _appOrNull;
 
-  RelicServer? _server;
+  RelicApp get _app => _appOrNull ??= RelicApp(useHostWhenRouting: true)
+    // Returns the static change counter in dev mode
+    ..get('*/__dev/version', _devStaticChangeCount)
+    // Mirrors the probes [Server] exposes on the API/insights ports
+    ..injectAt('*/', HealthRoutes(serverpod))
+    ..use('*/', _devHtmlInjection)
+    ..inject(_ReportExceptionMiddleware(this))
+    ..inject(_SessionMiddleware(serverpod.server));
 
   /// Security context if the web server is running over https.
   final SecurityContext? _securityContext;
@@ -35,8 +45,8 @@ class WebServer {
   WebServer({
     required this.serverpod,
     SecurityContext? securityContext,
-  })  : serverId = serverpod.serverId,
-        _securityContext = securityContext {
+  }) : serverId = serverpod.serverId,
+       _securityContext = securityContext {
     var config = serverpod.config.webServer;
 
     if (config == null) {
@@ -49,16 +59,82 @@ class WebServer {
   }
 
   bool _running = false;
+  bool? _devModeOverride;
+  int _lastStaticChangeCount = 0;
 
   /// Returns true if the webserver is currently running.
   bool get running => _running;
 
-  /// Adds a [Route] to the server, together with a path that defines how
-  /// calls are routed.
-  void addRoute(Route route, String matchPath) {
-    route._matchPath = matchPath;
-    router.add(route);
+  bool get _isDevMode =>
+      _devModeOverride ?? (_appOrNull?.developerTools.isDevMode ?? false);
+
+  /// Adds [route] to the server at [path].
+  ///
+  /// The [path] supports:
+  /// - Literal segments: `/admin/profile/edit`
+  /// - Parameters: `/users/:id/posts`
+  /// - Wildcards: `/api/*/list` (single segment)
+  /// - Tails: `/files/**` (tail match)
+  ///
+  /// The full route path combines [path] with [Route.path]. For example,
+  /// a route with `path: '/edit'` added via `addRoute(route, '/users')`
+  /// handles requests to `/users/edit`.
+  ///
+  /// ## Virtual Host Routing
+  ///
+  /// Routes can optionally specify a [Route.host] to restrict them to specific
+  /// virtual hosts. When [Route.host] is `null` (the default), the route
+  /// matches any host. When set, the route only matches requests with that
+  /// specific `Host` header value.
+  ///
+  /// ## Tail paths
+  ///
+  /// A tail path (`/**`) matches all remaining segments and must be terminal.
+  /// Routes can only be added at a tail path if their [Route.injectIn]
+  /// registers a single route at `/`. This prevents nested tails
+  /// (e.g., `/a/**/b/**`), which are invalid.
+  ///
+  /// The default [Route.injectIn] satisfies this requirement.
+  void addRoute(Route route, [String path = '/']) {
+    final hostPrefix = route.host ?? '*';
+    final fullPath = '$hostPrefix/$path'; // normalized by relic
+    _app.injectAt(fullPath, route);
   }
+
+  /// Adds a [Middleware] to the server for all routes below [path].
+  ///
+  /// The [host] parameter can be used to restrict the middleware to a specific
+  /// virtual host. When `null` (the default), the middleware applies to all
+  /// hosts.
+  void addMiddleware(Middleware middleware, String path, {String? host}) {
+    final hostPrefix = host ?? '*';
+    final fullPath = '$hostPrefix/$path'; // normalized by relic
+    _app.use(fullPath, middleware);
+  }
+
+  /// Sets a fallback [route] to use if no other registered [Route] matches a
+  /// request.
+  ///
+  /// If not set, default behavior is to return "404 Not Found".
+  ///
+  /// Note that if a [Route] **is** matched, but the handler returns 404, then
+  /// the fallback [route] is **not** called. To rewrite 404s you should use
+  /// middleware.
+  set fallbackRoute(Route route) =>
+      _app.fallback = _ReportExceptionMiddleware(this)(
+        _SessionMiddleware(
+          serverpod.server,
+        )(route.asHandler),
+      );
+
+  /// Get access to the full [RelicRouter] for advanced use-cases.
+  RelicRouter get router => _appOrNull!;
+
+  /// Whether the [RelicApp] has been created.
+  ///
+  /// The app is created lazily on first route or middleware registration.
+  /// When `true`, [start] will serve the app and [stop] will close it.
+  bool get hasApp => _appOrNull != null;
 
   /// Starts the webserver.
   /// Returns true if the webserver was started successfully.
@@ -67,105 +143,31 @@ class WebServer {
     await templates.loadAll(templatesDirectory);
     if (templates.isEmpty) {
       logDebug(
-          'No webserver relic templates found, template directory path: "${templatesDirectory.path}".');
+        'No webserver relic templates found, template directory path: "${templatesDirectory.path}".',
+      );
     }
 
     try {
-      var context = _securityContext;
-      final server = await serve(
-        _handleRequest,
-        InternetAddress.anyIPv6,
-        _config.port,
-        context: context,
+      final server = await _app.serve(
+        address: InternetAddress.anyIPv6,
+        port: _config.port,
+        securityContext: _securityContext,
       );
-      _server = server;
-      _actualPort = (server.adapter as IOAdapter).port;
+      _actualPort = server.port;
       _running = true;
 
       var scheme = _securityContext != null ? 'https' : 'http';
       var host = _config.publicHost;
-      var port = _actualPort;
-      logInfo('Webserver listening on $scheme://$host:$port');
+      logInfo('Webserver listening on $scheme://$host:$_actualPort');
     } catch (e, stackTrace) {
-      await _reportException(e, stackTrace,
-          message: 'Failed to bind socket, '
-              'port $port may already be in use.');
-    }
-    return _running;
-  }
-
-  FutureOr<HandledContext> _handleRequest(NewContext context) async {
-    final request = context.request;
-
-    var headers = Headers.empty();
-    if (serverpod.runMode == ServerpodRunMode.production) {
-      headers = headers.transform((mh) {
-        mh.strictTransportSecurity = StrictTransportSecurityHeader(
-          maxAge: 63072000,
-          includeSubDomains: true,
-          preload: true,
-        );
-      });
-    }
-
-    Uri uri;
-    try {
-      uri = request.requestedUri;
-    } catch (e) {
-      logDebug('Malformed call, invalid uri. Client IP: ${request.remoteInfo}');
-      return context.withResponse(Response.badRequest());
-    }
-
-    String? authenticationKey;
-    for (var cookie in request.headers.cookie?.cookies ?? const <Cookie>[]) {
-      if (cookie.name == 'auth') {
-        authenticationKey = cookie.value;
-      }
-    }
-
-    var queryParameters = request.url.queryParameters;
-    authenticationKey ??= queryParameters['auth'];
-
-    WebCallSession session = WebCallSession(
-      server: serverpod.server,
-      endpoint: uri.path,
-      authenticationKey: authenticationKey,
-      remoteInfo: request.remoteInfo,
-    );
-
-    final match = router.lookup(
-      request.method.toMethod(),
-      uri.path,
-    );
-    if (match != null) {
-      final route = match.value;
-      return await _handleRouteCall(route, session, context);
-    }
-
-    // No matching patch found
-    return context.withResponse(Response.notFound());
-  }
-
-  Future<HandledContext> _handleRouteCall(
-    Route route,
-    Session session,
-    NewContext context,
-  ) async {
-    // TODO: route.setHeaders(request.response.headers);
-    try {
-      return await route.handleCall(session, context);
-    } catch (e, stackTrace) {
-      final request = context.request;
       await _reportException(
         e,
         stackTrace,
-        space: OriginSpace.application,
-        session: session,
-        request: request,
+        message:
+            'Failed to bind socket, port ${_config.port} may already be in use.',
       );
-
-      return context.withResponse(Response.internalServerError());
     }
+    return _running;
   }
 
   Future<void> _reportException(
@@ -173,7 +175,7 @@ class WebServer {
     StackTrace stackTrace, {
     OriginSpace space = OriginSpace.framework,
     String? message,
-    Session? session,
+    Future<Session>? session,
     Request? request,
   }) async {
     logError(
@@ -182,10 +184,10 @@ class WebServer {
     );
 
     var context = session != null
-        ? contextFromSession(session, request: request)
+        ? contextFromSession(await session, request: request)
         : request != null
-            ? contextFromRequest(serverpod.server, request, OperationType.web)
-            : contextFromServer(serverpod.server);
+        ? contextFromRequest(serverpod.server, request, OperationType.web)
+        : contextFromServer(serverpod.server);
 
     serverpod.internalSubmitEvent(
       ExceptionEvent(e, stackTrace, message: message),
@@ -194,106 +196,289 @@ class WebServer {
     );
   }
 
-  /// Logs an error to stderr.
+  /// Logs an error.
   void logError(Object e, {StackTrace? stackTrace}) {
-    var now = DateTime.now().toUtc();
-    stderr.writeln('$now WebServer ERROR: $e');
-    if (stackTrace != null) {
-      stderr.writeln('$stackTrace');
+    log.error(
+      'WebServer: $e',
+      error: e is Exception ? e : null,
+      stackTrace: stackTrace,
+    );
+  }
+
+  /// Logs an info message.
+  void logInfo(String msg) {
+    log.info('WebServer: $msg');
+  }
+
+  /// Logs a debug message.
+  void logDebug(String msg) {
+    log.debug('WebServer: $msg');
+  }
+
+  FutureOr<Result> _devStaticChangeCount(Request _) {
+    if (!_isDevMode) return Response.notFound();
+    return Response.ok(
+      body: Body.fromString('${_app.developerTools.staticChangeCount}'),
+    );
+  }
+
+  /// Reloads templates from disk if static files have changed.
+  Future<void> _reloadTemplatesIfNeeded() async {
+    final currentChangeCount = _app.developerTools.staticChangeCount;
+    if (currentChangeCount != _lastStaticChangeCount) {
+      _lastStaticChangeCount = currentChangeCount;
+      templates.clear();
+      await templates.loadAll(Directory(path.joinAll(['web', 'templates'])));
     }
   }
 
-  /// Logs an info message to stdout.
-  void logInfo(String msg) {
-    var now = DateTime.now().toUtc();
-    stdout.writeln('$now WebServer  INFO: $msg');
-  }
+  Handler _devHtmlInjection(Handler next) {
+    return (req) async {
+      if (!_isDevMode) return next(req);
 
-  /// Logs a debug message to stdout.
-  void logDebug(String msg) {
-    var now = DateTime.now().toUtc();
-    stdout.writeln('$now WebServer DEBUG: $msg');
+      // Reload templates before serving so changes are picked up immediately.
+      await _reloadTemplatesIfNeeded();
+      final result = await next(req);
+      if (result is! Response || result.statusCode != 200) return result;
+
+      final mimeType = result.body.bodyType?.mimeType;
+      if (mimeType != MimeType.html) return result;
+
+      final html = await result.readAsString();
+      final injected = html.replaceFirst(
+        '</body>',
+        '$devAutoRefreshScript</body>',
+      );
+      return result.copyWith(
+        body: Body.fromString(injected, mimeType: MimeType.html),
+      );
+    };
   }
 
   /// Stops the webserver.
+  ///
+  /// Safe to call even if the server failed to start or was never started.
   Future<void> stop() async {
-    final server = _server;
-    if (server != null) {
-      _server = null;
-      await server.close();
+    if (_running) {
+      await _app.close();
+      _running = false;
     }
-    _running = false;
+  }
+
+  /// Enables or disables dev mode for testing purposes.
+  ///
+  /// When set, overrides the auto-detection of dev mode from the VM service.
+  /// Must be called before [WebServer.start].
+  @visibleForTesting
+  void setDevModeForTesting(bool devMode) {
+    _devModeOverride = devMode;
   }
 }
 
-/// Defines HTTP call methods for routes.
-enum RouteMethod {
-  /// HTTP get.
-  get,
+class _SessionMiddleware extends MiddlewareObject {
+  final Server _server;
 
-  /// HTTP post.
-  post,
+  const _SessionMiddleware(this._server);
+
+  @override
+  Handler call(Handler next) {
+    return (req) async {
+      String? authenticationKey;
+      try {
+        authenticationKey = unwrapAuthHeaderValue(
+          req.getAuthorizationHeaderValue(
+            _server.serverpod.config.validateHeaders,
+          ),
+        );
+      } on HeaderException catch (_) {
+        // If validation is enabled and header is malformed, return 400
+        return Response.badRequest(
+          body: Body.fromString('Request has invalid "authorization" header'),
+        );
+      }
+
+      final deferredSession = _Deferred(
+        () => SessionInternalMethods.createWebCallSession(
+          server: _server,
+          endpoint: req.url.path,
+          authenticationKey: authenticationKey,
+        ),
+      );
+      _sessionProperty[req] = deferredSession;
+      try {
+        return await next(req);
+      } finally {
+        await deferredSession.ifInitiatedRun((s) => s.close());
+      }
+    };
+  }
+}
+
+class _ReportExceptionMiddleware extends MiddlewareObject {
+  final WebServer _webServer;
+
+  const _ReportExceptionMiddleware(this._webServer);
+
+  @override
+  Handler call(Handler next) {
+    return (req) async {
+      try {
+        return await next(req);
+      } catch (e, stackTrace) {
+        await _webServer._reportException(
+          e,
+          stackTrace,
+          space: OriginSpace.application,
+          session: req.sessionOrNull,
+          request: req,
+        );
+        return Response.internalServerError();
+      }
+    };
+  }
+}
+
+class _Deferred<T> {
+  final Future<T> Function() _futureFactory;
+
+  _Deferred(this._futureFactory);
+
+  Future<T>? _cachedFuture;
+  Future<T> get future => _cachedFuture ??= _futureFactory();
+
+  bool get initiated => _cachedFuture != null;
+
+  Future<R?> ifInitiatedRun<R>(FutureOr<R> Function(T) action) async {
+    final future = _cachedFuture;
+    if (future != null) {
+      return action(await future);
+    }
+    return null;
+  }
+}
+
+final _sessionProperty = ContextProperty<_Deferred<Session>>();
+
+/// [Session] related extension methods for [Request].
+extension SessionEx on Request {
+  /// The session associated with this request.
+  ///
+  /// Throws, if no session has been initiated.
+  Future<Session> get session => _sessionProperty.get(this).future;
+
+  /// The session associated with this request, if any.
+  ///
+  /// Safe to use, even before session is initiated.
+  Future<Session>? get sessionOrNull => _sessionProperty[this]?.future;
 }
 
 /// A [Route] defines a destination in Serverpod's web server. It will handle
 /// a call and generate an appropriate response by manipulating the
 /// [Request] object. You override [Route], or more likely it's subclass
 /// [WidgetRoute] to create your own custom routes in your server.
-abstract class Route {
-  /// The method this route will respond to, i.e. HTTP get or post.
-  final RouteMethod method;
-  String? _matchPath;
+abstract class Route extends HandlerObject {
+  /// The methods this route will respond to, i.e. HTTP get or post.
+  final Set<Method> methods;
+
+  /// The suffix path this route will respond to.
+  ///
+  /// The complete path is determined by where the route is added, ie.
+  /// the path given to [WebServer.addRoute].
+  final String path;
+
+  /// The virtual host this route will respond to.
+  ///
+  /// When `null` (the default), the route matches requests to any host.
+  /// When set, the route only matches requests where the `Host` header
+  /// matches this value exactly.
+  ///
+  /// Example:
+  /// ```dart
+  /// // Route that only responds to api.example.com
+  /// class ApiRoute extends Route {
+  ///   ApiRoute() : super(host: 'api.example.com');
+  ///   // ...
+  /// }
+  ///
+  /// // Route that responds to any host (default)
+  /// class PublicRoute extends Route {
+  ///   PublicRoute() : super();  // host defaults to null
+  ///   // ...
+  /// }
+  /// ```
+  final String? host;
 
   /// Creates a new [Route].
-  Route({this.method = RouteMethod.get});
+  Route({this.methods = const {Method.get}, this.path = '/', this.host});
+
+  @override
+  void injectIn(RelicRouter router) => router.anyOf(methods, path, asHandler);
+
+  /// Handles a call to this route, by extracting [Session] from request and
+  /// forwarding to [handleCall].
+  @override
+  Future<Result> call(Request req) async {
+    return handleCall(await req.session, req);
+  }
 
   /// Handles a call to this route.
-  FutureOr<HandledContext> handleCall(Session session, NewContext context);
-
-  // TODO: May want to create another abstraction layer here, to handle other
-  // types of responses too. Or at least clarify the naming of the method.
-
-  /// Returns the body of the request, assuming it is standard URL encoded form
-  /// post request.
-  static Future<Map<String, String>> getBody(Request request) async {
-    var body = await request.readAsString();
-
-    var params = <String, String>{};
-
-    var encodedParams = body.split('&');
-    for (var encodedParam in encodedParams) {
-      var comps = encodedParam.split('=');
-      if (comps.length != 2) {
-        continue;
-      }
-
-      var name = Uri.decodeQueryComponent(comps[0]);
-      var value = Uri.decodeQueryComponent(comps[1]);
-
-      params[name] = value;
-    }
-
-    return params;
-  }
+  FutureOr<Result> handleCall(Session session, Request request);
 }
 
 /// A [WidgetRoute] is the most convenient way to create routes in your server.
 /// Override the [build] method and return an appropriate [WebWidget].
+///
+/// By default, a [WidgetRoute] only responds to GET requests. To support
+/// additional HTTP methods like POST, pass them in the constructor:
+///
+/// ```dart
+/// class FormRoute extends WidgetRoute {
+///   FormRoute() : super(methods: {Method.get, Method.post});
+///
+///   @override
+///   Future<WebWidget> build(Session session, Request request) async {
+///     if (request.method == Method.post) {
+///       // Handle form submission
+///       return SuccessWidget();
+///     }
+///     // Show form
+///     return FormWidget();
+///   }
+/// }
+/// ```
 abstract class WidgetRoute extends Route {
+  /// Creates a new [WidgetRoute].
+  ///
+  /// The [methods] parameter specifies which HTTP methods this route will
+  /// respond to (defaults to GET only). The [path] parameter specifies the
+  /// suffix path (defaults to '/'). The [host] parameter restricts this route
+  /// to a specific virtual host (defaults to `null`, matching any host).
+  WidgetRoute({super.methods, super.path, super.host, this.cacheBustingConfig});
+
+  /// Used to cache-bust paths for `{{{@/path/to/asset}}}` patterns in the template.
+  final CacheBustingConfig? cacheBustingConfig;
+
+  /// Matches `@/path/to/asset` patterns in the template.
+  final _cacheBustingPathRegExp = RegExp(r'@/[^}]+');
+
   /// Override this method to build your web widget from the current [session]
   /// and [request].
-  Future<WebWidget> build(Session session, Request request);
+  Future<WebWidget?> build(Session session, Request request);
 
   @override
-  FutureOr<HandledContext> handleCall(
+  FutureOr<Result> handleCall(
     Session session,
-    NewContext context,
+    Request req,
   ) async {
-    var widget = await build(session, context.request);
+    var widget = await build(session, req);
+
+    if (widget == null) {
+      return Response.notFound(body: Body.fromString('Not found'));
+    }
 
     if (widget is RedirectWidget) {
       var uri = Uri.parse(widget.url);
-      return context.withResponse(Response.seeOther(uri));
+      return Response.seeOther(uri);
     }
 
     final mimeType = widget is JsonWidget ? MimeType.json : MimeType.html;
@@ -305,51 +490,44 @@ abstract class WidgetRoute extends Route {
       ),
     );
 
-    return context.withResponse(Response.ok(
-      body: Body.fromString(widget.toString(), mimeType: mimeType),
+    // Cache-bust paths for {{{@/path/to/asset}}} patterns in the template.
+    // This warms up CacheBustingConfig's cache so that the
+    // cache-busted paths are available synchronously when rendering.
+    if (cacheBustingConfig case final buster?) {
+      final regex = RegExp(r'\{\{\{@(/[^}]+)\}\}\}');
+      final matches = regex
+          .allMatches(
+            widget.render(
+              onMissingVariable: (name) {
+                if (_cacheBustingPathRegExp.hasMatch(name)) {
+                  return '{{{$name}}}';
+                }
+                return '{{$name}}';
+              },
+            ),
+          )
+          .toList();
+      for (final match in matches) {
+        await buster.tryAssetPath(match.group(1)!);
+      }
+    }
+
+    final renderedContent = widget.render(
+      onMissingVariable: (name) {
+        if (cacheBustingConfig case final buster?) {
+          if (_cacheBustingPathRegExp.hasMatch(name)) {
+            // Strip leading '@' from the path
+            // which is used to indicate that the asset should be cache-busted.
+            return buster.tryAssetPathSync(name.substring(1));
+          }
+        }
+        return null;
+      },
+    );
+
+    return Response.ok(
+      body: Body.fromString(renderedContent, mimeType: mimeType),
       headers: headers,
-    ));
+    );
   }
-}
-
-/// A [ServerpodRouter] is a collection of [Route]s that can be used to
-/// handle incoming requests. It uses the [relic] package to match routes.
-extension type ServerpodRouter._(Router<Route> _router) {
-  /// Creates a new [ServerpodRouter].
-  ServerpodRouter() : _router = Router<Route>();
-
-  /// Adds a [Route] to the router.
-  void add(Route route) =>
-      _router.add(route.method.toMethod(), route._matchPath!, route);
-
-  /// Looks up a [Route] in the router based on the HTTP method and path.
-  LookupResult<Route>? lookup(Method method, String path) =>
-      _router.lookup(method, path);
-
-  /// Checks if the router is empty.
-  bool get isEmpty => _router.isEmpty;
-}
-
-// Temporary helper method
-extension on RouteMethod {
-  Method toMethod() => switch (this) {
-        RouteMethod.get => Method.get,
-        RouteMethod.post => Method.post,
-      };
-}
-
-// Temporary helper method
-extension on RequestMethod {
-  Method toMethod() => switch (this) {
-        RequestMethod.get => Method.get,
-        RequestMethod.head => Method.head,
-        RequestMethod.post => Method.post,
-        RequestMethod.put => Method.put,
-        RequestMethod.delete => Method.delete,
-        RequestMethod.patch => Method.patch,
-        RequestMethod.options => Method.options,
-        RequestMethod.trace => Method.trace,
-        RequestMethod.connect => Method.connect,
-        _ => throw UnimplementedError(),
-      };
 }

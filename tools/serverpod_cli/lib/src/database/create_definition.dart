@@ -1,22 +1,23 @@
-import 'package:intl/intl.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
-import 'package:serverpod_cli/src/analyzer/models/utils/duration_utils.dart';
+import 'package:serverpod_cli/src/analyzer/models/utils/quote_utils.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
-/// Create the target [DatabaseDefinition] based on the [serializableModel].
+/// Create the target [DatabaseDefinition] based on the [serializableModels].
 DatabaseDefinition createDatabaseDefinitionFromModels(
   List<SerializableModelDefinition> serializableModels,
   String moduleName,
-  List<ModuleConfig> allModules,
-) {
+  List<ModuleConfig> allModules, {
+  bool serverCode = true,
+}) {
   var tables = <TableDefinition>[
     for (var classDefinition in serializableModels)
       if (classDefinition is ModelClassDefinition &&
-          classDefinition.tableName != null)
+          classDefinition.shouldGenerateTableCode(serverCode))
         TableDefinition(
           module: moduleName,
           name: classDefinition.tableName!,
@@ -24,56 +25,56 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
           schema: 'public',
           columns: [
             for (var column in classDefinition.fieldsIncludingInherited)
-              if (column.shouldSerializeFieldForDatabase(true))
+              if (column.shouldPersist)
                 ColumnDefinition(
-                  name: column.name,
-                  columnType:
-                      ColumnType.values.byName(column.type.databaseTypeEnum),
-                  // The id column is not null, since it is auto generated.
-                  isNullable: column.name != 'id' && column.type.nullable,
-                  dartType: column.type.toString(),
-                  columnDefault: getColumnDefault(
-                    column.type,
-                    column.defaultPersistValue,
-                    classDefinition.tableName!,
+                  name: column.columnName,
+                  fieldName: column.name,
+                  columnType: ColumnType.values.byName(
+                    column.type.databaseTypeEnum,
                   ),
+                  // Serial and id columns are not null, since they are auto generated.
+                  isNullable:
+                      column.defaultPersistValue != defaultIntSerial &&
+                      column.name != 'id' &&
+                      column.type.nullable,
+                  dartType: column.type.toString(),
+                  columnDefault: _parseColumnDefault(column),
                   vectorDimension: column.type.vectorDimension,
-                )
+                ),
           ],
           foreignKeys: _createForeignKeys(classDefinition),
           indexes: [
-            IndexDefinition(
-              indexName: '${classDefinition.tableName!}_pkey',
-              elements: [
-                IndexElementDefinition(
-                    definition: 'id', type: IndexElementDefinitionType.column)
-              ],
-              type: 'btree',
-              isUnique: true,
-              isPrimary: true,
-            ),
-            for (var index in classDefinition.indexes)
+            for (var index in classDefinition.indexesIncludingInherited)
               IndexDefinition(
                 indexName: index.name,
                 elements: [
                   for (var field in index.fields)
                     IndexElementDefinition(
-                        type: IndexElementDefinitionType.column,
-                        definition: field)
+                      type: IndexElementDefinitionType.column,
+                      definition: field,
+                    ),
                 ],
                 type: index.type,
                 isUnique: index.unique,
+                nullsDistinct: index.nullsDistinct,
                 isPrimary: false,
+                ginOperatorClass: index.isGinIndex
+                    ? index.ginOperatorClass
+                    : null,
                 vectorDistanceFunction: index.isVectorIndex
                     ? index.vectorDistanceFunction ?? VectorDistanceFunction.l2
                     : null,
                 vectorColumnType: index.isVectorIndex
-                    ? ColumnType.values.firstWhere((type) =>
-                        type.name ==
-                        classDefinition.fields
-                            .firstWhere((f) => index.fields.contains(f.name))
-                            .type
-                            .databaseTypeEnum)
+                    ? ColumnType.values.firstWhere(
+                        (type) =>
+                            type.name ==
+                            classDefinition.fields
+                                .firstWhere(
+                                  (f) => index.fields.contains(f.name),
+                                )
+                                .type
+                                .databaseTypeEnum,
+                      )
                     : null,
                 parameters: index.parameters,
               ),
@@ -86,23 +87,27 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
   _sortTableDefinitions(tables);
 
   return DatabaseDefinition(
+    schemaVersion: currentSchemaVersion,
     moduleName: moduleName,
     tables: tables,
     migrationApiVersion: DatabaseConstants.migrationApiVersion,
-    installedModules:
-        allModules.where((module) => module.migrationVersions.isNotEmpty).map(
-      (module) {
-        return DatabaseMigrationVersion(
-          module: module.name,
-          version: module.migrationVersions.last,
-        );
-      },
-    ).toList(),
+    installedModules: allModules
+        .where((module) => module.migrationVersions.isNotEmpty)
+        .map(
+          (module) {
+            return DatabaseMigrationVersion(
+              module: module.name,
+              version: module.migrationVersions.last,
+            );
+          },
+        )
+        .toList(),
   );
 }
 
 List<ForeignKeyDefinition> _createForeignKeys(
-    ModelClassDefinition classDefinition) {
+  ModelClassDefinition classDefinition,
+) {
   var fields = classDefinition.fields
       .where((field) => field.relation is ForeignRelationDefinition)
       .toList();
@@ -111,98 +116,75 @@ List<ForeignKeyDefinition> _createForeignKeys(
   for (var i = 0; i < fields.length; i++) {
     var field = fields[i];
     var relation = field.relation as ForeignRelationDefinition;
-    foreignKeys.add(ForeignKeyDefinition(
-      constraintName: '${classDefinition.tableName!}_fk_$i',
-      columns: [field.name],
-      referenceTable: relation.parentTable,
-      referenceTableSchema: 'public',
-      referenceColumns: ['id'],
-      onDelete: relation.onDelete,
-      onUpdate: relation.onUpdate,
-    ));
+    foreignKeys.add(
+      ForeignKeyDefinition(
+        constraintName: '${classDefinition.tableName!}_fk_$i',
+        columns: [field.columnName],
+        referenceTable: relation.parentTable,
+        referenceTableSchema: 'public',
+        referenceColumns: ['id'],
+        onDelete: relation.onDelete,
+        onUpdate: relation.onUpdate,
+      ),
+    );
   }
 
   return foreignKeys;
 }
 
-void _sortTableDefinitions(List<TableDefinition> tables) {
-  // Sort by name to make sure that we get consistent output
-  tables.sort((a, b) => a.name.compareTo(b.name));
-}
-
-String? getColumnDefault(
-  TypeDefinition columnType,
-  dynamic defaultValue,
-  String tableName,
-) {
-  var defaultValueType = columnType.defaultValueType;
-  if ((defaultValue == null) || (defaultValueType == null)) return null;
+/// Parses the default value for a column.
+///
+/// String defaults are stored in SQL-escaped form so they can be used directly
+/// in SQL without further escaping or unescaping during normalization.
+///
+/// If the column is an enum, it returns the value in the expected format for
+/// the enum serialization.
+///
+/// The transformations in this function match the expected type of the column
+/// on all database implementations.
+dynamic _parseColumnDefault(SerializableModelFieldDefinition column) {
+  final defaultPersistValue = column.defaultPersistValue;
+  final defaultValueType = column.type.defaultValueType;
+  if (defaultPersistValue == null || defaultValueType == null) return null;
 
   switch (defaultValueType) {
-    case DefaultValueAllowedType.dateTime:
-      if (defaultValue is! String) {
-        throw StateError('Invalid DateTime default value: $defaultValue');
-      }
-
-      if (defaultValue == defaultDateTimeValueNow) {
-        return 'CURRENT_TIMESTAMP';
-      }
-
-      DateTime? dateTime = DateTime.parse(defaultValue);
-      return '\'${DateFormat('yyyy-MM-dd HH:mm:ss').format(dateTime)}\'::timestamp without time zone';
-    case DefaultValueAllowedType.bool:
-      return '$defaultValue';
-    case DefaultValueAllowedType.int:
-      if (defaultValue == defaultIntSerial) {
-        return "nextval('${tableName}_id_seq'::regclass)";
-      }
-      return '$defaultValue';
-    case DefaultValueAllowedType.double:
-      return '$defaultValue';
     case DefaultValueAllowedType.string:
-      return '${_escapeSqlString(defaultValue)}::text';
-    case DefaultValueAllowedType.uuidValue:
-      if (defaultUuidValueRandom == defaultValue) {
-        return 'gen_random_uuid()';
-      }
-      if (defaultUuidValueRandomV7 == defaultValue) {
-        return 'gen_random_uuid_v7()';
-      }
-      return '${_escapeSqlString(defaultValue)}::uuid';
     case DefaultValueAllowedType.uri:
-      return '${_escapeSqlString(defaultValue)}::text';
+      return escapeSqlString(defaultPersistValue);
+    case DefaultValueAllowedType.uuidValue:
+      // Special values like "random" and "random_v7" are SQL function names,
+      // not string literals - return as-is without escaping.
+      if (defaultPersistValue == defaultUuidValueRandom ||
+          defaultPersistValue == defaultUuidValueRandomV7) {
+        return defaultPersistValue;
+      }
+      return escapeSqlString(defaultPersistValue);
+    case DefaultValueAllowedType.int:
+    case DefaultValueAllowedType.bool:
+    case DefaultValueAllowedType.double:
+    case DefaultValueAllowedType.dateTime:
+      return defaultPersistValue.toString();
     case DefaultValueAllowedType.bigInt:
-      var parsedBigInt = BigInt.parse(defaultValue);
-      return "'${parsedBigInt.toString()}'::text";
+      // BigInt is stored in as text in the database, so keep the abstract
+      // default as a quoted text literal to match database introspection.
+      return escapeSqlString(defaultPersistValue.toString());
     case DefaultValueAllowedType.duration:
-      Duration parsedDuration = parseDuration(defaultValue);
-      return '${parsedDuration.toJson()}';
+      // Duration is stored as bigint milliseconds in the database.
+      return parseDuration(defaultPersistValue).toJson().toString();
     case DefaultValueAllowedType.isEnum:
-      var enumDefinition = columnType.enumDefinition;
+      final enumDefinition = column.type.enumDefinition;
       if (enumDefinition == null) return null;
-      var values = enumDefinition.values;
       return switch (enumDefinition.serialized) {
+        // Matches the expected value format for an integer column.
         EnumSerialization.byIndex =>
-          '${values.indexWhere((e) => e.name == defaultValue)}',
-        EnumSerialization.byName => '\'$defaultValue\'::text',
+          '${enumDefinition.values.indexWhere((e) => e.name == defaultPersistValue)}',
+        // Matches the expected value format for a text column.
+        EnumSerialization.byName => escapeSqlString('$defaultPersistValue'),
       };
   }
 }
 
-/// Converts a Dart string into a SQL-safe string by escaping necessary characters.
-///
-/// This method handles:
-/// - Escaping single quotes (`'`) to prevent SQL injection and syntax errors.
-/// - Handling escaped double quotes (`"`), ensuring they are correctly represented in SQL by doubling them.
-///
-/// The method performs validation to ensure the string contains valid quoting.
-///
-/// ### Examples:
-/// ```dart
-/// _escapeSqlString("This is a \'default persist value")  // Returns "This is a ''default persist value"
-/// _escapeSqlString("This is a \"default\" persist value") // Returns "This is a ""default"" persist value"
-/// ```
-String _escapeSqlString(String value) {
-  return '\$\$$value\$\$';
-  return "${value.replaceAll("\\'", "'").replaceAll("\\\"", '"')}'";
+void _sortTableDefinitions(List<TableDefinition> tables) {
+  // Sort by name to make sure that we get consistent output
+  tables.sort((a, b) => a.name.compareTo(b.name));
 }

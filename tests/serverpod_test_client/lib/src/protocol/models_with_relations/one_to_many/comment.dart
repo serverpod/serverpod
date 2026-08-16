@@ -12,8 +12,10 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../models_with_relations/one_to_many/order.dart' as _i2;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
-abstract class Comment implements _i1.SerializableModel {
+abstract class Comment
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   Comment._({
     this.id,
     required this.description,
@@ -35,8 +37,7 @@ abstract class Comment implements _i1.SerializableModel {
       orderId: jsonSerialization['orderId'] as int,
       order: jsonSerialization['order'] == null
           ? null
-          : _i2.Order.fromJson(
-              (jsonSerialization['order'] as Map<String, dynamic>)),
+          : _i3.Protocol().deserialize<_i2.Order>(jsonSerialization['order']),
     );
   }
 
@@ -63,10 +64,22 @@ abstract class Comment implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Comment',
       if (id != null) 'id': id,
       'description': description,
       'orderId': orderId,
       if (order != null) 'order': order?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Comment',
+      if (id != null) 'id': id,
+      'description': description,
+      'orderId': orderId,
+      if (order != null) 'order': order?.toJsonForProtocol(),
     };
   }
 
@@ -85,11 +98,11 @@ class _CommentImpl extends Comment {
     required int orderId,
     _i2.Order? order,
   }) : super._(
-          id: id,
-          description: description,
-          orderId: orderId,
-          order: order,
-        );
+         id: id,
+         description: description,
+         orderId: orderId,
+         order: order,
+       );
 
   /// Returns a shallow copy of this [Comment]
   /// with some or all fields replaced by the given arguments.

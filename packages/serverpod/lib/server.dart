@@ -1,16 +1,27 @@
 export 'src/authentication/authentication_info.dart';
 export 'src/authentication/scope.dart';
 export 'src/generated/server_health_metric.dart';
-export 'src/serialization/serialization_manager.dart';
+export 'src/server/health/health.dart';
 export 'src/server/endpoint.dart';
 export 'src/server/endpoint_dispatch.dart';
+export 'src/server/future_call_dispatch.dart';
+export 'src/server/future_call_manager/cron.dart';
 export 'src/server/future_call_manager/future_call.dart';
-export 'src/server/message_central.dart';
+export 'src/server/future_call_manager/future_call_manager.dart';
+export 'src/server/message_central.dart' hide MessageCentralInternalMethods;
+export 'src/generated/protocol.dart'
+    show
+        CronFutureCallScheduling,
+        IntervalFutureCallScheduling,
+        RevokedAuthenticationAuthId,
+        RevokedAuthenticationUser,
+        RevokedAuthenticationScope;
 export 'src/server/run_mode.dart';
 export 'src/server/server.dart' hide ServerInternalMethods;
 export 'src/server/serverpod.dart' hide ServerpodInternalMethods;
 export 'src/server/session.dart' hide SessionInternalMethods;
 export 'src/config/security_context_config.dart' show SecurityContextConfig;
+export 'src/redis/controller.dart';
 
 export 'package:serverpod_shared/serverpod_shared.dart'
     show ServerpodLoggingMode;

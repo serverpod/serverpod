@@ -1,0 +1,4 @@
+class: DynamicOnModule
+fields:
+  name: String
+  data: dynamic

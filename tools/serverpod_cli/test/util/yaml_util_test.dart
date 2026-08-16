@@ -7,8 +7,7 @@ import 'package:yaml/yaml.dart';
 void main() {
   ascii = false; // force uni-code glyphs on windows
 
-  test(
-      'Given an empty string '
+  test('Given an empty string '
       'when calling loadYamlMap '
       'then it returns an empty YamlMap', () {
     late YamlMap map;
@@ -16,8 +15,7 @@ void main() {
     expect(map, isEmpty);
   });
 
-  test(
-      'Given a whitespace only string '
+  test('Given a whitespace only string '
       'when calling loadYamlMap '
       'then it returns an empty YamlMap', () {
     late YamlMap map;
@@ -25,8 +23,7 @@ void main() {
     expect(map, isEmpty);
   });
 
-  test(
-      'Given a valid yaml string '
+  test('Given a valid yaml string '
       'when calling loadYamlMap '
       'then it returns a correct YamlMap', () {
     const yamlString = '''
@@ -37,8 +34,7 @@ void main() {
     expect(map, {'key': 'value'});
   });
 
-  test(
-      'Given a yaml string with a scalar '
+  test('Given a yaml string with a scalar '
       'when calling loadYamlMap '
       'then it throws a SourceSpanException'
       ' and it has the correct error message', () {

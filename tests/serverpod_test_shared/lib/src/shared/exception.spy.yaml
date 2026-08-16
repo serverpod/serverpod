@@ -1,0 +1,4 @@
+exception: SharedException
+fields:
+  message: String
+  code: int?

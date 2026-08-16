@@ -1,0 +1,4 @@
+class: DoubleDefaultPersist
+table: double_default_persist
+fields:
+  doubleDefaultPersist: double?, defaultPersist=10.5

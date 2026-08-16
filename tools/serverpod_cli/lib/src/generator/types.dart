@@ -8,6 +8,7 @@ import 'package:code_builder/code_builder.dart' hide RecordType;
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/serialization_data_type.dart';
 import 'package:serverpod_cli/src/generator/keywords.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
@@ -15,7 +16,6 @@ import 'package:serverpod_cli/src/util/string_manipulation.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
-import 'package:super_string/super_string.dart';
 
 import '../config/config.dart';
 
@@ -58,6 +58,9 @@ class TypeDefinition {
   /// Only populated for Vector types.
   final d.int? vectorDimension;
 
+  /// If set, the data type of the database JSON column this type definition should use for serialization.
+  SerializationDataType? serializationDataType;
+
   EnumDefinition? enumDefinition;
 
   /// Creates an [TypeDefinition] from a given [DartType].
@@ -75,8 +78,9 @@ class TypeDefinition {
           .map((f) => TypeDefinition.fromDartType(f.type))
           .toList();
       var namedFields = type.namedFields
-          .map((f) =>
-              TypeDefinition.fromDartType(f.type, recordFieldName: f.name))
+          .map(
+            (f) => TypeDefinition.fromDartType(f.type, recordFieldName: f.name),
+          )
           .toList();
 
       return TypeDefinition(
@@ -116,6 +120,7 @@ class TypeDefinition {
     this.url,
     this.dartType,
     this.customClass = false,
+    this.serializationDataType,
     this.enumDefinition,
     this.projectModelDefinition,
     this.recordFieldName,
@@ -135,10 +140,25 @@ class TypeDefinition {
 
   bool get isMapType => className == MapKeyword.className;
 
-  static List<String> get vectorClassNames =>
-      ['Vector', 'HalfVector', 'SparseVector', 'Bit'];
+  bool get isCollectionType => isListType || isSetType || isMapType;
+
+  static List<String> get vectorClassNames => [
+    'Vector',
+    'HalfVector',
+    'SparseVector',
+    'Bit',
+  ];
 
   bool get isVectorType => vectorClassNames.contains(className);
+
+  static List<String> get geographyClassNames => [
+    'GeographyPoint',
+    'GeographyLineString',
+    'GeographyPolygon',
+    'GeographyGeometryCollection',
+  ];
+
+  bool get isGeographyType => geographyClassNames.contains(className);
 
   bool get isRecordType => className == recordTypeClassName;
 
@@ -159,6 +179,17 @@ class TypeDefinition {
   bool get isEnumType => enumDefinition != null;
 
   bool get isColumnSerializable => columnType == 'ColumnSerializable';
+
+  bool get isColumnStructured => columnType == 'ColumnStructured';
+
+  bool get isJsonbSerialized =>
+      serializationDataType == SerializationDataType.jsonb;
+
+  bool get isSerializableDartType => ![
+    ValueType.record,
+    ValueType.isEnum,
+    ValueType.classType,
+  ].contains(valueType);
 
   String? get moduleAlias {
     if (url == defaultModuleAlias) return url;
@@ -206,59 +237,76 @@ class TypeDefinition {
 
   /// A convenience variable for getting a [TypeDefinition] of a non null
   /// UuidValue quickly.
-  static TypeDefinition uuid =
-      TypeDefinition(className: 'UuidValue', nullable: false);
+  static TypeDefinition uuid = TypeDefinition(
+    className: 'UuidValue',
+    nullable: false,
+  );
 
   /// Get this [TypeDefinition], but nullable.
   TypeDefinition get asNullable => TypeDefinition(
-        className: className,
-        url: url,
-        nullable: true,
-        customClass: customClass,
-        dartType: dartType,
-        generics: generics,
-        enumDefinition: enumDefinition,
-        projectModelDefinition: projectModelDefinition,
-        recordFieldName: recordFieldName,
-        vectorDimension: vectorDimension,
-      );
+    className: className,
+    url: url,
+    nullable: true,
+    customClass: customClass,
+    dartType: dartType,
+    generics: generics,
+    serializationDataType: serializationDataType,
+    enumDefinition: enumDefinition,
+    projectModelDefinition: projectModelDefinition,
+    recordFieldName: recordFieldName,
+    vectorDimension: vectorDimension,
+  );
 
   /// Get this [TypeDefinition], but non nullable.
   TypeDefinition get asNonNullable => TypeDefinition(
-        className: className,
-        url: url,
-        nullable: false,
-        customClass: customClass,
-        dartType: dartType,
-        generics: generics,
-        enumDefinition: enumDefinition,
-        projectModelDefinition: projectModelDefinition,
-        recordFieldName: recordFieldName,
-        vectorDimension: vectorDimension,
-      );
+    className: className,
+    url: url,
+    nullable: false,
+    customClass: customClass,
+    dartType: dartType,
+    generics: generics,
+    serializationDataType: serializationDataType,
+    enumDefinition: enumDefinition,
+    projectModelDefinition: projectModelDefinition,
+    recordFieldName: recordFieldName,
+    vectorDimension: vectorDimension,
+  );
 
   /// Returns this [TypeDefinition] as a named record field
   TypeDefinition asNamedRecordField(String recordFieldName) => TypeDefinition(
-        className: className,
-        url: url,
-        nullable: nullable,
-        customClass: customClass,
-        dartType: dartType,
-        generics: generics,
-        enumDefinition: enumDefinition,
-        projectModelDefinition: projectModelDefinition,
-        recordFieldName: recordFieldName,
-        vectorDimension: vectorDimension,
-      );
+    className: className,
+    url: url,
+    nullable: nullable,
+    customClass: customClass,
+    dartType: dartType,
+    generics: generics,
+    serializationDataType: serializationDataType,
+    enumDefinition: enumDefinition,
+    projectModelDefinition: projectModelDefinition,
+    recordFieldName: recordFieldName,
+    vectorDimension: vectorDimension,
+  );
 
   static String getRef(SerializableModelDefinition model) {
-    if (model is ModelClassDefinition) {
+    if (model is ClassDefinition) {
       var sealedTopNode = model.sealedTopNode;
       if (sealedTopNode != null) {
         return sealedTopNode.fileRef();
       }
     }
     return model.fileRef();
+  }
+
+  /// The name of the shared package in [sharedPackageNames] that declares the
+  /// library [url] points at, or `null` if [url] is not inside any of them.
+  static String? _sharedPackageNameOfUrl(
+    Iterable<String> sharedPackageNames,
+    String? url,
+  ) {
+    if (url == null) return null;
+    return sharedPackageNames
+        .where((packageName) => url.startsWith('package:$packageName/'))
+        .firstOrNull;
   }
 
   /// Generate a [Reference] from this definition.
@@ -299,85 +347,166 @@ class TypeDefinition {
 
     return TypeReference(
       (t) {
-        if (url?.startsWith('${_moduleRef}serverpod') ?? false) {
+        if (isEnumType &&
+            enumDefinition != null &&
+            enumDefinition!.isSharedModel) {
+          // Enum from a shared package: use package import so project models
+          // (client/server) reference the correct package.
+          var pkg = enumDefinition!.sharedPackageName!;
+          t.url = 'package:$pkg/$pkg.dart';
+        } else if (url == '${_moduleRef}serverpod' ||
+            (url?.startsWith('${_moduleRef}serverpod:') ?? false)) {
           // module:serverpod reference
           t.url = serverpodUrl(serverCode);
         } else if (url?.startsWith(_moduleRef) ?? false) {
           // module:nickname: reference
           var moduleName = url?.substring(_moduleRef.length);
           var module = config.modules.cast<ModuleConfig?>().firstWhere(
-                (m) => m?.nickname == moduleName,
-                orElse: () => null,
-              );
+            (m) => m?.nickname == moduleName,
+            orElse: () => null,
+          );
           if (module == null) {
             throw FormatException(
-                'Module with nickname $moduleName not found in config!');
+              'Module with nickname $moduleName not found in config!',
+            );
           }
-          var packageName =
-              serverCode ? module.serverPackage : module.dartClientPackage;
+          var packageName = serverCode
+              ? module.serverPackage
+              : module.dartClientPackage;
           t.url = 'package:$packageName/$packageName.dart';
         } else if (url == 'serverpod' ||
+            (className == 'UuidValue' &&
+                [
+                  'serverpod',
+                  'package:uuid/uuid_value.dart',
+                  'package:uuid/uuid.dart',
+                ].contains(url)) ||
             (url == null &&
-                (['UuidValue', ...vectorClassNames]).contains(className))) {
+                ([
+                  'UuidValue',
+                  ...geographyClassNames,
+                  ...vectorClassNames,
+                ]).contains(className))) {
           // serverpod: reference
           t.url = serverpodUrl(serverCode);
         } else if (url?.startsWith('project:') ?? false) {
           // project:path:reference
           var split = url!.split(':');
-          t.url = 'package:'
+          t.url =
+              'package:'
               '${serverCode ? config.serverPackage : config.dartClientPackage}'
               '/${split[1]}';
-        } else if (url == defaultModuleAlias) {
-          // protocol: reference
+        } else if (url == defaultModuleAlias ||
+            config.sharedModelsSourcePathsParts.containsKey(url) ||
+            (projectModelDefinition?.isSharedModel ?? false)) {
+          // protocol or shared-package reference
           var localProjectModelDefinition = projectModelDefinition;
-          String reference = switch (localProjectModelDefinition) {
-            // Import model directly
-            SerializableModelDefinition modelDefinition =>
-              getRef(modelDefinition),
-            // Import model through generated protocol file
-            null => 'protocol.dart',
-          };
-
-          t.url = p.posix.joinAll([...subDirParts.map((e) => '..'), reference]);
+          if (localProjectModelDefinition?.isSharedModel == true) {
+            // Reference to a model in a shared package: use package import
+            // (works from server/client and from within the same shared package)
+            var pkg = localProjectModelDefinition!.sharedPackageName!;
+            t.url = 'package:$pkg/$pkg.dart';
+          } else if (localProjectModelDefinition == null &&
+              config.sharedModelsSourcePathsParts.containsKey(url)) {
+            // url is a shared package but type was not run through
+            // applyProtocolReferences (e.g. model's own type used as parent class).
+            // Use package import so client/server extend the correct shared package.
+            t.url = 'package:$url/$url.dart';
+          } else {
+            String reference = switch (localProjectModelDefinition) {
+              // Import model directly
+              SerializableModelDefinition modelDefinition => getRef(
+                modelDefinition,
+              ),
+              // Import model through generated protocol file
+              null => 'protocol.dart',
+            };
+            t.url = p.posix.joinAll([
+              ...subDirParts.map((e) => '..'),
+              reference,
+            ]);
+          }
+        } else if (_sharedPackageNameOfUrl(
+              config.sharedModelsSourcePathsParts.keys,
+              url,
+            )
+            case var packageName?) {
+          // endpoint definition references a model from a shared package the
+          // project owns; import it through the package's public library
+          // instead of reaching into its implementation.
+          t.url = 'package:$packageName/$packageName.dart';
         } else if (!serverCode &&
-            (url?.startsWith('package:${config.serverPackage}') ?? false)) {
+            (url?.startsWith('package:${config.serverPackage}/') ?? false)) {
           // import from the server package
           t.url = url
-              ?.replaceFirst('package:${config.serverPackage}',
-                  'package:${config.dartClientPackage}')
+              ?.replaceFirst(
+                'package:${config.serverPackage}/',
+                'package:${config.dartClientPackage}/',
+              )
               .replaceFirst('src/generated/', 'src/protocol/');
         } else if (config.modules.any(
-            (m) => url?.startsWith('package:${m.serverPackage}') ?? false)) {
+          (m) => url?.startsWith('package:${m.serverPackage}/') ?? false,
+        )) {
           // endpoint definition references from an module
           var module = config.modules.firstWhere(
-              (m) => url?.startsWith('package:${m.serverPackage}') ?? false);
-          var packageName =
-              serverCode ? module.serverPackage : module.dartClientPackage;
+            (m) => url?.startsWith('package:${m.serverPackage}/') ?? false,
+          );
+          var packageName = serverCode
+              ? module.serverPackage
+              : module.dartClientPackage;
           t.url = url!.contains('/src/generated/')
               ? 'package:$packageName/$packageName.dart'
               : serverCode
-                  ? url
-                  : url?.replaceFirst('package:${module.serverPackage}',
-                      'package:${module.dartClientPackage}');
+              ? url
+              : url?.replaceFirst(
+                  'package:${module.serverPackage}/',
+                  'package:${module.dartClientPackage}/',
+                );
+        } else if (config.modules
+                .where(
+                  (m) =>
+                      _sharedPackageNameOfUrl(
+                        m.sharedPackageRootPathParts.keys,
+                        url,
+                      ) !=
+                      null,
+                )
+                .firstOrNull
+            case var module?) {
+          // endpoint definition references a model from a module's shared
+          // package; import it through the module package that re-exports it
+          // instead of reaching into the shared package's implementation.
+          var packageName = serverCode
+              ? module.serverPackage
+              : module.dartClientPackage;
+          t.url = 'package:$packageName/$packageName.dart';
+        } else if (className == 'SerializableModel') {
+          t.url = serverpodUrl(serverCode);
+        } else if (config.name != 'serverpod' &&
+            (url?.startsWith('package:serverpod_database/') ?? false)) {
+          t.url = serverpodDatabaseUrl(serverCode);
         } else {
           t.url = url;
         }
-        t.isNullable = nullable ?? this.nullable;
+        // The `dynamic` type is already nullable. Using `dynamic?` is invalid
+        // and triggers analyzer "unnecessary_question_mark".
+        t.isNullable = (nullable ?? this.nullable) && className != 'dynamic';
         t.symbol = typeSuffix != null ? '$className$typeSuffix' : className;
-        t.types.addAll(generics.map(
-          (e) => e.reference(
-            serverCode,
-            subDirParts: subDirParts,
-            config: config,
+        t.types.addAll(
+          generics.map(
+            (e) => e.reference(
+              serverCode,
+              subDirParts: subDirParts,
+              config: config,
+            ),
           ),
-        ));
+        );
       },
     );
   }
 
   /// Get the pgsql type that represents this [TypeDefinition] in the database.
   String get databaseType {
-    // TODO: add all supported types here
     var enumSerialization = enumDefinition?.serialized;
     if (enumSerialization != null && isEnumType) {
       switch (enumSerialization) {
@@ -401,7 +530,13 @@ class TypeDefinition {
     if (className == 'HalfVector') return 'halfvec';
     if (className == 'SparseVector') return 'sparsevec';
     if (className == 'Bit') return 'bit';
-
+    if (className == 'GeographyPoint') return 'geography';
+    if (className == 'GeographyLineString') return 'geography line string';
+    if (className == 'GeographyPolygon') return 'geography polygon';
+    if (className == 'GeographyGeometryCollection') {
+      return 'geography geometry collection';
+    }
+    if (isJsonbSerialized) return 'jsonb';
     return 'json';
   }
 
@@ -428,7 +563,14 @@ class TypeDefinition {
     if (className == 'HalfVector') return 'ColumnHalfVector';
     if (className == 'SparseVector') return 'ColumnSparseVector';
     if (className == 'Bit') return 'ColumnBit';
+    if (className == 'GeographyPoint') return 'ColumnGeographyPoint';
+    if (className == 'GeographyLineString') return 'ColumnGeographyLineString';
+    if (className == 'GeographyPolygon') return 'ColumnGeographyPolygon';
+    if (className == 'GeographyGeometryCollection') {
+      return 'ColumnGeographyGeometryCollection';
+    }
 
+    if (isJsonbSerialized) return 'ColumnStructured';
     return 'ColumnSerializable';
   }
 
@@ -451,8 +593,10 @@ class TypeDefinition {
     if (isRecordType) {
       return [
         MapEntry(
-          refer('getType', serverpodUrl(serverCode))
-              .call([], {}, [reference(serverCode, config: config)]),
+          refer(
+            'getType',
+            serverpodUrl(serverCode),
+          ).call([], {}, [reference(serverCode, config: config)]),
           Block.of(
             [
               if (nullable) const Code(' (data == null) ? null as T : '),
@@ -461,7 +605,8 @@ class TypeDefinition {
                   in positionalRecordFields.indexed) ...[
                 if (positionalField.nullable)
                   Code(
-                      "((data ${i == 0 ? 'as Map' : ''})['p'] as List)[$i] == null ? null : "),
+                    "((data ${i == 0 ? 'as Map' : ''})['p'] as List)[$i] == null ? null : ",
+                  ),
                 const Code('deserialize<'),
                 positionalField
                     .reference(serverCode, config: config, nullable: false)
@@ -480,7 +625,8 @@ class TypeDefinition {
                   const Code(':'),
                   if (namedField.nullable)
                     Code(
-                        "((data ${i == 0 && positionalRecordFields.isEmpty ? 'as Map' : ''})['n'] as Map)['${namedField.recordFieldName!}'] == null ? null : "),
+                      "((data ${i == 0 && positionalRecordFields.isEmpty ? 'as Map' : ''})['n'] as Map)['${namedField.recordFieldName!}'] == null ? null : ",
+                    ),
                   const Code('deserialize<'),
                   namedField
                       .reference(serverCode, config: config, nullable: false)
@@ -490,7 +636,8 @@ class TypeDefinition {
                       positionalRecordFields.isEmpty &&
                       !namedField.nullable)
                     Code(
-                        "((data as Map)['n'] as Map)['${namedField.recordFieldName!}']")
+                      "((data as Map)['n'] as Map)['${namedField.recordFieldName!}']",
+                    )
                   else
                     Code("data['n']['${namedField.recordFieldName!}']"),
                   const Code(')'),
@@ -506,95 +653,137 @@ class TypeDefinition {
             className == SetKeyword.className) &&
         generics.length == 1) {
       return [
+        if (nullable)
+          ...asNonNullable.generateDeserialization(
+            serverCode,
+            config: config,
+          ),
         MapEntry(
           nullable
-              ? refer('getType', serverpodUrl(serverCode))
-                  .call([], {}, [reference(serverCode, config: config)])
+              ? refer(
+                  'getType',
+                  serverpodUrl(serverCode),
+                ).call([], {}, [reference(serverCode, config: config)])
               : reference(serverCode, config: config),
           Block.of([
             nullable
                 ? Block.of([
                     // using Code.scope only sets the generic to List
-                    const Code('(data!=null?'
-                        '(data as List).map((e) =>'
-                        'deserialize<'),
-                    generics.first.reference(serverCode, config: config).code,
-                    Code('>(e))${className == 'Set' ? '.toSet()' : '.toList()'}'
-                        ':null) as T')
-                  ])
-                : Block.of([
-                    const Code('(data as List).map((e) =>'
-                        'deserialize<'),
+                    const Code(
+                      '(data!=null?'
+                      '(data as List).map((e) =>'
+                      'deserialize<',
+                    ),
                     generics.first.reference(serverCode, config: config).code,
                     Code(
-                        '>(e))${className == 'Set' ? '.toSet()' : '.toList()'} as T'),
+                      '>(e))${className == 'Set' ? '.toSet()' : '.toList()'}'
+                      ':null) as T',
+                    ),
                   ])
+                : Block.of([
+                    const Code(
+                      '(data as List).map((e) =>'
+                      'deserialize<',
+                    ),
+                    generics.first.reference(serverCode, config: config).code,
+                    Code(
+                      '>(e))${className == 'Set' ? '.toSet()' : '.toList()'} as T',
+                    ),
+                  ]),
           ]),
         ),
         ...generics.first.generateDeserialization(serverCode, config: config),
       ];
     } else if (className == MapKeyword.className && generics.length == 2) {
       return [
+        if (nullable)
+          ...asNonNullable.generateDeserialization(
+            serverCode,
+            config: config,
+          ),
         MapEntry(
           nullable
-              ? refer('getType', serverpodUrl(serverCode))
-                  .call([], {}, [reference(serverCode, config: config)])
+              ? refer(
+                  'getType',
+                  serverpodUrl(serverCode),
+                ).call([], {}, [reference(serverCode, config: config)])
               : reference(serverCode, config: config),
           Block.of([
             generics.first.className == 'String'
                 ? nullable
-                    ? Block.of([
-                        // using Code.scope only sets the generic to List
-                        const Code('(data!=null?'
+                      ? Block.of([
+                          // using Code.scope only sets the generic to List
+                          const Code(
+                            '(data!=null?'
                             '(data as Map).map((k,v) =>'
-                            'MapEntry(deserialize<'),
-                        generics.first
-                            .reference(serverCode, config: config)
-                            .code,
-                        const Code('>(k),deserialize<'),
-                        generics[1].reference(serverCode, config: config).code,
-                        const Code('>(v)))' ':null) as T')
-                      ])
-                    : Block.of([
-                        // using Code.scope only sets the generic to List
-                        const Code('(data as Map).map((k,v) =>'
-                            'MapEntry(deserialize<'),
-                        generics.first
-                            .reference(serverCode, config: config)
-                            .code,
-                        const Code('>(k),deserialize<'),
-                        generics[1].reference(serverCode, config: config).code,
-                        const Code('>(v))) as T')
-                      ])
+                            'MapEntry(deserialize<',
+                          ),
+                          generics.first
+                              .reference(serverCode, config: config)
+                              .code,
+                          const Code('>(k),deserialize<'),
+                          generics[1]
+                              .reference(serverCode, config: config)
+                              .code,
+                          const Code(
+                            '>(v)))'
+                            ':null) as T',
+                          ),
+                        ])
+                      : Block.of([
+                          // using Code.scope only sets the generic to List
+                          const Code(
+                            '(data as Map).map((k,v) =>'
+                            'MapEntry(deserialize<',
+                          ),
+                          generics.first
+                              .reference(serverCode, config: config)
+                              .code,
+                          const Code('>(k),deserialize<'),
+                          generics[1]
+                              .reference(serverCode, config: config)
+                              .code,
+                          const Code('>(v))) as T'),
+                        ])
                 : // Key is not String -> stored as list of map entries
-                nullable
-                    ? Block.of([
-                        // using Code.scope only sets the generic to List
-                        const Code('(data!=null?'
-                            'Map.fromEntries((data as List).map((e) =>'
-                            'MapEntry(deserialize<'),
-                        generics.first
-                            .reference(serverCode, config: config)
-                            .code,
-                        const Code('>(e[\'k\']),deserialize<'),
-                        generics[1].reference(serverCode, config: config).code,
-                        const Code('>(e[\'v\']))))' ':null) as T')
-                      ])
-                    : Block.of([
-                        // using Code.scope only sets the generic to List
-                        const Code('Map.fromEntries((data as List).map((e) =>'
-                            'MapEntry(deserialize<'),
-                        generics.first
-                            .reference(serverCode, config: config)
-                            .code,
-                        const Code('>(e[\'k\']),deserialize<'),
-                        generics[1].reference(serverCode, config: config).code,
-                        const Code('>(e[\'v\'])))) as T')
-                      ])
+                  nullable
+                ? Block.of([
+                    // using Code.scope only sets the generic to List
+                    const Code(
+                      '(data!=null?'
+                      'Map.fromEntries((data as List).map((e) =>'
+                      'MapEntry(deserialize<',
+                    ),
+                    generics.first.reference(serverCode, config: config).code,
+                    const Code('>(e[\'k\']),deserialize<'),
+                    generics[1].reference(serverCode, config: config).code,
+                    const Code(
+                      '>(e[\'v\']))))'
+                      ':null) as T',
+                    ),
+                  ])
+                : Block.of([
+                    // using Code.scope only sets the generic to List
+                    const Code(
+                      'Map.fromEntries((data as List).map((e) =>'
+                      'MapEntry(deserialize<',
+                    ),
+                    generics.first.reference(serverCode, config: config).code,
+                    const Code('>(e[\'k\']),deserialize<'),
+                    generics[1].reference(serverCode, config: config).code,
+                    const Code('>(e[\'v\'])))) as T'),
+                  ]),
           ]),
         ),
         ...generics.first.generateDeserialization(serverCode, config: config),
         ...generics[1].generateDeserialization(serverCode, config: config),
+      ];
+    } else if (className == 'dynamic') {
+      return [
+        MapEntry(
+          refer('dynamic'),
+          const Code('deserializeDynamicFieldValue(data) as T'),
+        ),
       ];
     } else if (customClass) {
       // This is the only place the customClass bool is used.
@@ -605,16 +794,21 @@ class TypeDefinition {
       // in lists, maps, etc the customClass bool can be removed which will simplify the code.
       return [
         MapEntry(
-            nullable
-                ? refer('getType', serverpodUrl(serverCode))
-                    .call([], {}, [reference(serverCode, config: config)])
-                : reference(serverCode, config: config),
-            Code.scope((a) => nullable
+          nullable
+              ? refer(
+                  'getType',
+                  serverpodUrl(serverCode),
+                ).call([], {}, [reference(serverCode, config: config)])
+              : reference(serverCode, config: config),
+          Code.scope(
+            (a) => nullable
                 ? '(data!=null?'
-                    '${a(reference(serverCode, config: config))}'
-                    '.fromJson(data):null)as T'
+                      '${a(reference(serverCode, config: config))}'
+                      '.fromJson(data):null)as T'
                 : '${a(reference(serverCode, config: config))}'
-                    '.fromJson(data) as T'))
+                      '.fromJson(data) as T',
+          ),
+        ),
       ];
     } else {
       return [];
@@ -632,6 +826,23 @@ class TypeDefinition {
         .where((c) => c.className == className)
         .where((c) => c.type.moduleAlias == defaultModuleAlias)
         .firstOrNull;
+    // Resolve shared-package model when url is that package's module alias
+    var sharedModelDefinition = (url != null && url != defaultModuleAlias)
+        ? classDefinitions
+              .where((c) => c.className == className)
+              .where((c) => c.type.moduleAlias == url)
+              .firstOrNull
+        : null;
+    // Resolve shared-package model/enum when type is protocol-scoped but only
+    // defined in a shared package (e.g. field type SharedModel or SharedEnum)
+    if (modelDefinition == null &&
+        sharedModelDefinition == null &&
+        (url == defaultModuleAlias || url == null)) {
+      sharedModelDefinition = classDefinitions
+          .where((c) => c.className == className)
+          .where((c) => c.isSharedModel)
+          .firstOrNull;
+    }
     bool isProjectModel =
         url == defaultModuleAlias || (url == null && modelDefinition != null);
     return TypeDefinition(
@@ -639,12 +850,17 @@ class TypeDefinition {
       nullable: nullable,
       customClass: customClass,
       dartType: dartType,
-      projectModelDefinition: isProjectModel ? modelDefinition : null,
+      projectModelDefinition: isModuleType
+          ? null
+          : modelDefinition ?? sharedModelDefinition,
       generics: generics
           .map((e) => e.applyProtocolReferences(classDefinitions))
           .toList(),
+      serializationDataType: serializationDataType,
       enumDefinition: enumDefinition,
-      url: isProjectModel ? defaultModuleAlias : url,
+      url: isProjectModel
+          ? defaultModuleAlias
+          : sharedModelDefinition?.type.moduleAlias ?? url,
       recordFieldName: recordFieldName,
       vectorDimension: vectorDimension,
     );
@@ -666,11 +882,20 @@ class TypeDefinition {
     if (className == 'HalfVector') return ValueType.halfVector;
     if (className == 'SparseVector') return ValueType.sparseVector;
     if (className == 'Bit') return ValueType.bit;
+    if (className == 'GeographyPoint') return ValueType.geographyPoint;
+    if (className == 'GeographyLineString') {
+      return ValueType.geographyLineString;
+    }
+    if (className == 'GeographyPolygon') return ValueType.geographyPolygon;
+    if (className == 'GeographyGeometryCollection') {
+      return ValueType.geographyGeometryCollection;
+    }
     if (className == 'List') return ValueType.list;
     if (className == 'Set') return ValueType.set;
     if (className == 'Map') return ValueType.map;
     if (className == '_Record') return ValueType.record;
     if (isEnumType) return ValueType.isEnum;
+    if (className == 'dynamic') return ValueType.dynamicType;
     return ValueType.classType;
   }
 
@@ -757,24 +982,24 @@ class SupportedIdType {
 
   /// Id type that generates sequential integer values.
   static SupportedIdType get int => SupportedIdType(
-        type: TypeDefinition.int,
-        aliases: ['int'],
-        defaultValue: defaultIntSerial,
-      );
+    type: TypeDefinition.int,
+    aliases: ['int'],
+    defaultValue: defaultIntSerial,
+  );
 
   /// Id type that generates UUID v4 values.
   static SupportedIdType get uuidV4 => SupportedIdType(
-        type: TypeDefinition.uuid,
-        aliases: ['uuidV4'],
-        defaultValue: defaultUuidValueRandom,
-      );
+    type: TypeDefinition.uuid,
+    aliases: ['uuidV4'],
+    defaultValue: defaultUuidValueRandom,
+  );
 
   /// Id type that generates UUID v7 values.
   static SupportedIdType get uuidV7 => SupportedIdType(
-        type: TypeDefinition.uuid,
-        aliases: ['uuidV7'],
-        defaultValue: defaultUuidValueRandomV7,
-      );
+    type: TypeDefinition.uuid,
+    aliases: ['uuidV7'],
+    defaultValue: defaultUuidValueRandomV7,
+  );
 
   /// All supported id types.
   static List<SupportedIdType> get all => [int, uuidV4, uuidV7];
@@ -829,15 +1054,18 @@ TypeDefinition parseType(
 
   String className = trimmedInput.substring(0, terminatedAt).trim();
 
-  var vectorDimension = (TypeDefinition.vectorClassNames.contains(className) &&
+  var vectorDimension =
+      (TypeDefinition.vectorClassNames.contains(className) &&
           (trimmedInput.count('(') == 1 && trimmedInput.count(')') == 1))
       ? int.tryParse(
-          trimmedInput.substring(terminatedAt + 1, trimmedInput.indexOf(')')))
+          trimmedInput.substring(terminatedAt + 1, trimmedInput.indexOf(')')),
+        )
       : null;
 
-  var extraClass = extraClasses
-      ?.cast<TypeDefinition?>()
-      .firstWhere((c) => c?.className == className, orElse: () => null);
+  var extraClass = extraClasses?.cast<TypeDefinition?>().firstWhere(
+    (c) => c?.className == className,
+    orElse: () => null,
+  );
 
   if (extraClass != null) {
     return isNullable ? extraClass.asNullable : extraClass;
@@ -887,12 +1115,17 @@ enum ValueType {
   map,
   record,
   isEnum,
+  dynamicType,
   classType,
   vector,
   halfVector,
   sparseVector,
   bit,
-  uri;
+  geographyPoint,
+  geographyLineString,
+  geographyPolygon,
+  geographyGeometryCollection,
+  uri,
 }
 
 enum DefaultValueAllowedType {
@@ -945,7 +1178,8 @@ extension _RecordTypeDefinitionParsing on TypeDefinition {
     List<String> positionalFieldTypes,
     Map<String, String> namedFields,
     bool nullable,
-  })? _tryReadRecord(
+  })?
+  _tryReadRecord(
     String trimmedRecordInput,
   ) {
     if (!trimmedRecordInput.startsWith('(')) {
@@ -984,10 +1218,8 @@ extension _RecordTypeDefinitionParsing on TypeDefinition {
     );
   }
 
-  static ({
-    List<String> positionalFieldStrings,
-    String? namedFieldsString,
-  })? _parseRecordBody(String recordBody) {
+  static ({List<String> positionalFieldStrings, String? namedFieldsString})?
+  _parseRecordBody(String recordBody) {
     var recordParts = splitIgnoringBracketsAndBracesAndQuotes(
       recordBody,
     );
@@ -1015,7 +1247,7 @@ extension _RecordTypeDefinitionParsing on TypeDefinition {
 
     return (
       positionalFieldStrings: positionalFieldStrings,
-      namedFieldsString: namedFieldsString
+      namedFieldsString: namedFieldsString,
     );
   }
 
@@ -1064,8 +1296,9 @@ extension _RecordTypeDefinitionParsing on TypeDefinition {
         return null;
       }
 
-      var typeDescription =
-          namedFieldWithType.substring(0, lastWhitespaceIndex).trim();
+      var typeDescription = namedFieldWithType
+          .substring(0, lastWhitespaceIndex)
+          .trim();
       var name = namedFieldWithType.substring(lastWhitespaceIndex).trim();
 
       namedFields[name] = typeDescription;

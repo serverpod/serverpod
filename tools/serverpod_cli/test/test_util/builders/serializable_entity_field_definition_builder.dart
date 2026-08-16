@@ -13,18 +13,24 @@ class FieldDefinitionBuilder {
   dynamic _defaultModelValue;
   dynamic _defaultPersistValue;
   bool _isRequired;
+  bool _isTail;
+  String? _columnNameOverride;
+  String? _jsonKeyOverride;
 
   FieldDefinitionBuilder()
-      : _name = 'name',
-        _type = TypeDefinition(
-          className: 'String',
-          nullable: true,
-        ),
-        _scope = ModelFieldScopeDefinition.all,
-        _shouldPersist = true,
-        _defaultModelValue = null,
-        _defaultPersistValue = null,
-        _isRequired = false;
+    : _name = 'name',
+      _type = TypeDefinition(
+        className: 'String',
+        nullable: true,
+      ),
+      _scope = ModelFieldScopeDefinition.all,
+      _shouldPersist = true,
+      _defaultModelValue = null,
+      _defaultPersistValue = null,
+      _isRequired = false,
+      _isTail = false,
+      _columnNameOverride = null,
+      _jsonKeyOverride = null;
 
   FieldDefinitionBuilder withName(String name) {
     _name = name;
@@ -109,6 +115,15 @@ class FieldDefinitionBuilder {
     );
     _defaultModelValue = defaultModelValue;
     _defaultPersistValue = defaultPersistValue;
+    return this;
+  }
+
+  FieldDefinitionBuilder withTypeIntSerial({bool nullable = false}) {
+    _type = TypeDefinition(
+      className: 'int',
+      nullable: nullable,
+    );
+    _defaultPersistValue = defaultIntSerial;
     return this;
   }
 
@@ -256,6 +271,21 @@ class FieldDefinitionBuilder {
     return this;
   }
 
+  FieldDefinitionBuilder withIsTail(bool isTail) {
+    _isTail = isTail;
+    return this;
+  }
+
+  FieldDefinitionBuilder withColumnNameOverride(String column) {
+    _columnNameOverride = column;
+    return this;
+  }
+
+  FieldDefinitionBuilder withJsonKeyOverride(String jsonKey) {
+    _jsonKeyOverride = jsonKey;
+    return this;
+  }
+
   SerializableModelFieldDefinition build() {
     return SerializableModelFieldDefinition(
       name: _name,
@@ -267,6 +297,9 @@ class FieldDefinitionBuilder {
       defaultModelValue: _defaultModelValue,
       defaultPersistValue: _defaultPersistValue,
       isRequired: _isRequired,
+      isTail: _isTail,
+      columnNameOverride: _columnNameOverride,
+      jsonKeyOverride: _jsonKeyOverride,
     );
   }
 }

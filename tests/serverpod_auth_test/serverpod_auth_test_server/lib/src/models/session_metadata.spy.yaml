@@ -1,0 +1,23 @@
+class: SessionMetadata
+serverOnly: true
+table: session_metadata
+fields:
+  ### The [ServerSideSession] this metadata belongs to
+  serverSideSession: module:serverpod_auth_core:ServerSideSession?, relation(onDelete=Cascade)
+  
+  ### Device information for the session
+  deviceName: String
+  
+  ### IP address from which the session was created
+  ipAddress: String?
+  
+  ### User agent string
+  userAgent: String?
+  
+  ### Additional metadata stored as JSON
+  metadata: String?
+
+indexes:
+  server_side_session_id_unique_idx:
+    fields: serverSideSessionId
+    unique: true

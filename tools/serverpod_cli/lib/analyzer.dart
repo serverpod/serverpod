@@ -6,6 +6,7 @@ export 'package:source_span/source_span.dart'
 
 export 'src/analyzer/code_analysis_collector.dart' show CodeAnalysisCollector;
 export 'src/analyzer/dart/endpoints_analyzer.dart' show EndpointsAnalyzer;
+export 'src/analyzer/dart/future_calls_analyzer.dart' show FutureCallsAnalyzer;
 export 'src/analyzer/models/definitions.dart'
     show
         SerializableModelDefinition,
@@ -17,6 +18,7 @@ export 'src/analyzer/models/definitions.dart'
         SerializableModelIndexDefinition,
         EnumDefinition;
 export 'src/analyzer/models/model_analyzer.dart' show SerializableModelAnalyzer;
+export 'src/analyzer/models/utils/model_database_utils.dart';
 export 'src/analyzer/protocol_definition.dart' show ProtocolDefinition;
 export 'src/config/config.dart' show GeneratorConfig, PackageType;
 export 'src/database/extensions.dart';

@@ -1,4 +1,4 @@
-import 'package:serverpod/database.dart' as db;
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
@@ -8,7 +8,7 @@ void main() async {
 
   group('Given models with one to many relation ', () {
     tearDown(() async {
-      await Cat.db.deleteWhere(session, where: (_) => db.Constant.bool(true));
+      await Cat.db.deleteWhere(session, where: (_) => Constant.bool(true));
     });
 
     test(
@@ -81,7 +81,7 @@ void main() async {
 
   group('Given models with nested one to many relation', () {
     tearDown(() async {
-      await Cat.db.deleteWhere(session, where: (_) => db.Constant.bool(true));
+      await Cat.db.deleteWhere(session, where: (_) => Constant.bool(true));
     });
 
     test(
@@ -135,7 +135,8 @@ void main() async {
         var catCount = await Cat.db.count(
           session,
           where: (t) => t.kittens.any(
-              (o) => o.kittens.any((o) => o.name.equals('Nested Kitten1'))),
+            (o) => o.kittens.any((o) => o.name.equals('Nested Kitten1')),
+          ),
         );
 
         expect(catCount, 1);

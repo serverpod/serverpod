@@ -8,13 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/one_to_one/address.dart' as _i2;
 import '../../models_with_relations/one_to_one/company.dart' as _i3;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i4;
 
 abstract class Citizen
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -44,18 +44,21 @@ abstract class Citizen
       name: jsonSerialization['name'] as String,
       address: jsonSerialization['address'] == null
           ? null
-          : _i2.Address.fromJson(
-              (jsonSerialization['address'] as Map<String, dynamic>)),
+          : _i4.Protocol().deserialize<_i2.Address>(
+              jsonSerialization['address'],
+            ),
       companyId: jsonSerialization['companyId'] as int,
       company: jsonSerialization['company'] == null
           ? null
-          : _i3.Company.fromJson(
-              (jsonSerialization['company'] as Map<String, dynamic>)),
+          : _i4.Protocol().deserialize<_i3.Company>(
+              jsonSerialization['company'],
+            ),
       oldCompanyId: jsonSerialization['oldCompanyId'] as int?,
       oldCompany: jsonSerialization['oldCompany'] == null
           ? null
-          : _i3.Company.fromJson(
-              (jsonSerialization['oldCompany'] as Map<String, dynamic>)),
+          : _i4.Protocol().deserialize<_i3.Company>(
+              jsonSerialization['oldCompany'],
+            ),
     );
   }
 
@@ -96,6 +99,7 @@ abstract class Citizen
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Citizen',
       if (id != null) 'id': id,
       'name': name,
       if (address != null) 'address': address?.toJson(),
@@ -109,6 +113,7 @@ abstract class Citizen
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'Citizen',
       if (id != null) 'id': id,
       'name': name,
       if (address != null) 'address': address?.toJsonForProtocol(),
@@ -136,7 +141,6 @@ abstract class Citizen
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CitizenTable>? orderBy,
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CitizenTable>? orderByList,
     CitizenInclude? include,
   }) {
@@ -145,7 +149,6 @@ abstract class Citizen
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Citizen.t),
-      orderDescending: orderDescending,
       orderByList: orderByList?.call(Citizen.t),
       include: include,
     );
@@ -169,14 +172,14 @@ class _CitizenImpl extends Citizen {
     int? oldCompanyId,
     _i3.Company? oldCompany,
   }) : super._(
-          id: id,
-          name: name,
-          address: address,
-          companyId: companyId,
-          company: company,
-          oldCompanyId: oldCompanyId,
-          oldCompany: oldCompany,
-        );
+         id: id,
+         name: name,
+         address: address,
+         companyId: companyId,
+         company: company,
+         oldCompanyId: oldCompanyId,
+         oldCompany: oldCompany,
+       );
 
   /// Returns a shallow copy of this [Citizen]
   /// with some or all fields replaced by the given arguments.
@@ -198,8 +201,9 @@ class _CitizenImpl extends Citizen {
       companyId: companyId ?? this.companyId,
       company: company is _i3.Company? ? company : this.company?.copyWith(),
       oldCompanyId: oldCompanyId is int? ? oldCompanyId : this.oldCompanyId,
-      oldCompany:
-          oldCompany is _i3.Company? ? oldCompany : this.oldCompany?.copyWith(),
+      oldCompany: oldCompany is _i3.Company?
+          ? oldCompany
+          : this.oldCompany?.copyWith(),
     );
   }
 }
@@ -208,19 +212,19 @@ class CitizenUpdateTable extends _i1.UpdateTable<CitizenTable> {
   CitizenUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 
   _i1.ColumnValue<int, int> companyId(int value) => _i1.ColumnValue(
-        table.companyId,
-        value,
-      );
+    table.companyId,
+    value,
+  );
 
   _i1.ColumnValue<int, int> oldCompanyId(int? value) => _i1.ColumnValue(
-        table.oldCompanyId,
-        value,
-      );
+    table.oldCompanyId,
+    value,
+  );
 }
 
 class CitizenTable extends _i1.Table<int?> {
@@ -295,11 +299,11 @@ class CitizenTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        companyId,
-        oldCompanyId,
-      ];
+    id,
+    name,
+    companyId,
+    oldCompanyId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -335,10 +339,10 @@ class CitizenInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'address': _address,
-        'company': _company,
-        'oldCompany': _oldCompany,
-      };
+    'address': _address,
+    'company': _company,
+    'oldCompany': _oldCompany,
+  };
 
   @override
   _i1.Table<int?> get table => Citizen.t;
@@ -350,7 +354,6 @@ class CitizenIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -394,25 +397,27 @@ class CitizenRepository {
   /// );
   /// ```
   Future<List<Citizen>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<CitizenTable>? where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CitizenTable>? orderBy,
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CitizenTable>? orderByList,
     _i1.Transaction? transaction,
     CitizenInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Citizen>(
       where: where?.call(Citizen.t),
       orderBy: orderBy?.call(Citizen.t),
       orderByList: orderByList?.call(Citizen.t),
-      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -434,37 +439,43 @@ class CitizenRepository {
   /// );
   /// ```
   Future<Citizen?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<CitizenTable>? where,
     int? offset,
     _i1.OrderByBuilder<CitizenTable>? orderBy,
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CitizenTable>? orderByList,
     _i1.Transaction? transaction,
     CitizenInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Citizen>(
       where: where?.call(Citizen.t),
       orderBy: orderBy?.call(Citizen.t),
       orderByList: orderByList?.call(Citizen.t),
-      orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
   /// Finds a single [Citizen] by its [id] or null if no such row exists.
   Future<Citizen?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     CitizenInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<Citizen>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -474,14 +485,26 @@ class CitizenRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Citizen>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Citizen> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<Citizen>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -489,7 +512,7 @@ class CitizenRepository {
   ///
   /// The returned [Citizen] will have its `id` field set.
   Future<Citizen> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Citizen row, {
     _i1.Transaction? transaction,
   }) async {
@@ -499,21 +522,96 @@ class CitizenRepository {
     );
   }
 
+  /// Upserts all [Citizen]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [Citizen]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<Citizen>> upsert(
+    _i1.DatabaseSession session,
+    List<Citizen> rows, {
+    required _i1.ColumnSelections<CitizenTable> conflictColumns,
+    _i1.ColumnSelections<CitizenTable>? updateColumns,
+    _i1.WhereExpressionBuilder<CitizenTable>? updateWhere,
+    _i1.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<Citizen>(
+      rows,
+      conflictColumns: conflictColumns(Citizen.t),
+      updateColumns: updateColumns?.call(Citizen.t),
+      updateWhere: updateWhere?.call(Citizen.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [Citizen] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [Citizen] will have its `id` field set.
+  Future<Citizen?> upsertRow(
+    _i1.DatabaseSession session,
+    Citizen row, {
+    required _i1.ColumnSelections<CitizenTable> conflictColumns,
+    _i1.ColumnSelections<CitizenTable>? updateColumns,
+    _i1.WhereExpressionBuilder<CitizenTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<Citizen>(
+      row,
+      conflictColumns: conflictColumns(Citizen.t),
+      updateColumns: updateColumns?.call(Citizen.t),
+      updateWhere: updateWhere?.call(Citizen.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [Citizen]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Citizen>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Citizen> rows, {
     _i1.ColumnSelections<CitizenTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<Citizen>(
       rows,
       columns: columns?.call(Citizen.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -521,7 +619,7 @@ class CitizenRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<Citizen> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Citizen row, {
     _i1.ColumnSelections<CitizenTable>? columns,
     _i1.Transaction? transaction,
@@ -536,7 +634,7 @@ class CitizenRepository {
   /// Updates a single [Citizen] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Citizen?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<CitizenUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -550,16 +648,20 @@ class CitizenRepository {
 
   /// Updates all [Citizen]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Citizen>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<CitizenUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<CitizenTable> where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CitizenTable>? orderBy,
     _i1.OrderByListBuilder<CitizenTable>? orderByList,
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<Citizen>(
       columnValues: columnValues(Citizen.t.updateTable),
@@ -568,28 +670,42 @@ class CitizenRepository {
       offset: offset,
       orderBy: orderBy?.call(Citizen.t),
       orderByList: orderByList?.call(Citizen.t),
-      orderDescending: orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes all [Citizen]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Citizen>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Citizen> rows, {
+    _i1.OrderByBuilder<CitizenTable>? orderBy,
+    _i1.OrderByListBuilder<CitizenTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<Citizen>(
       rows,
+      orderBy: orderBy?.call(Citizen.t),
+      orderByList: orderByList?.call(Citizen.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes a single [Citizen].
   Future<Citizen> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Citizen row, {
     _i1.Transaction? transaction,
   }) async {
@@ -600,21 +716,34 @@ class CitizenRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Citizen>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CitizenTable> where,
+    _i1.OrderByBuilder<CitizenTable>? orderBy,
+    _i1.OrderByListBuilder<CitizenTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Citizen>(
       where: where(Citizen.t),
+      orderBy: orderBy?.call(Citizen.t),
+      orderByList: orderByList?.call(Citizen.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<CitizenTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -622,6 +751,22 @@ class CitizenRepository {
     return session.db.count<Citizen>(
       where: where?.call(Citizen.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [Citizen] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.DatabaseSession session, {
+    required _i1.WhereExpressionBuilder<CitizenTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<Citizen>(
+      where: where(Citizen.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }
@@ -633,7 +778,7 @@ class CitizenAttachRowRepository {
   /// Creates a relation between the given [Citizen] and [Address]
   /// by setting the [Citizen]'s foreign key `id` to refer to the [Address].
   Future<void> address(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Citizen citizen,
     _i2.Address address, {
     _i1.Transaction? transaction,
@@ -656,7 +801,7 @@ class CitizenAttachRowRepository {
   /// Creates a relation between the given [Citizen] and [Company]
   /// by setting the [Citizen]'s foreign key `companyId` to refer to the [Company].
   Future<void> company(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Citizen citizen,
     _i3.Company company, {
     _i1.Transaction? transaction,
@@ -679,7 +824,7 @@ class CitizenAttachRowRepository {
   /// Creates a relation between the given [Citizen] and [Company]
   /// by setting the [Citizen]'s foreign key `oldCompanyId` to refer to the [Company].
   Future<void> oldCompany(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Citizen citizen,
     _i3.Company oldCompany, {
     _i1.Transaction? transaction,
@@ -709,7 +854,7 @@ class CitizenDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> address(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Citizen citizen, {
     _i1.Transaction? transaction,
   }) async {
@@ -739,7 +884,7 @@ class CitizenDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> oldCompany(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Citizen citizen, {
     _i1.Transaction? transaction,
   }) async {

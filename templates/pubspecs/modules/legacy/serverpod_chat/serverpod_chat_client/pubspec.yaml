@@ -1,0 +1,18 @@
+# TEMPLATE
+
+# Frozen at Serverpod 4.0.0-beta.0: this module depends on the legacy streaming
+# API, which is removed in later releases. No version slots on purpose, see
+# issue #5443.
+
+name: serverpod_chat_client
+description: Serverpod chat module client.
+version: 4.0.0-beta.0
+repository: https://github.com/serverpod/serverpod
+homepage: https://serverpod.dev
+issue_tracker: https://github.com/serverpod/serverpod/issues
+
+environment:
+  sdk: '^3.10.3'
+dependencies:
+  serverpod_auth_client: 4.0.0-beta.0
+  serverpod_client: 4.0.0-beta.0

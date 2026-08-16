@@ -1,15 +1,19 @@
 import 'dart:io';
 
+import 'package:ci/ci.dart' as ci;
 import 'package:package_config/package_config.dart';
 import 'package:path/path.dart' as p;
 import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
+import 'package:serverpod_cli/src/config/serverpod_manifest.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/locate_modules.dart';
 import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
+import 'package:serverpod_cli/src/util/server_directory_finder.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/yaml_util.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 
@@ -76,16 +80,18 @@ class GeneratorConfig implements ModelLoadConfig {
     required this.dartClientPackage,
     required this.dartClientDependsOnServiceClient,
     required this.serverPackageDirectoryPathParts,
+    required this.sharedModelsSourcePathsParts,
     List<String>? relativeServerTestToolsPathParts,
     required List<String> relativeDartClientPackagePathParts,
     required List<ModuleConfig> modules,
+    this.serializeAsJsonbByDefault = false,
     required this.extraClasses,
     required this.enabledFeatures,
+    required this.databaseDialect,
     this.experimentalFeatures = const [],
-  })  : _relativeDartClientPackagePathParts =
-            relativeDartClientPackagePathParts,
-        _relativeServerTestToolsPathParts = relativeServerTestToolsPathParts,
-        _modules = modules;
+  }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts,
+       _relativeServerTestToolsPathParts = relativeServerTestToolsPathParts,
+       _modules = modules;
 
   /// The name of the serverpod project.
   ///
@@ -114,70 +120,151 @@ class GeneratorConfig implements ModelLoadConfig {
   /// True, if dart client depends on the `package:serverpod_service_client`.
   final bool dartClientDependsOnServiceClient;
 
-  /// The parts of the path where the server package is located at.
-  /// Might be relative.
+  /// The parts of the absolute, normalized path where the server package
+  /// is located. Anchored at [GeneratorConfig.load] time.
   final List<String> serverPackageDirectoryPathParts;
 
+  /// The path parts to packages of shared models.
+  /// The key is the package name, the value is the path parts to the package
+  /// relative to the server package.
+  final Map<String, List<String>> sharedModelsSourcePathsParts;
+
   @override
-  List<String> get libSourcePathParts =>
-      [...serverPackageDirectoryPathParts, 'lib'];
+  List<String> get libSourcePathParts => [
+    ...serverPackageDirectoryPathParts,
+    'lib',
+  ];
 
   @override
   List<String> get srcSourcePathParts => [...libSourcePathParts, 'src'];
 
   @override
-  List<String> get relativeProtocolSourcePathParts =>
-      ['lib', 'src', 'protocol'];
+  List<String> get relativeProtocolSourcePathParts => [
+    'lib',
+    'src',
+    'protocol',
+  ];
 
   @override
-  List<String> get protocolSourcePathParts =>
-      [...serverPackageDirectoryPathParts, ...relativeProtocolSourcePathParts];
+  List<String> get protocolSourcePathParts => [
+    ...serverPackageDirectoryPathParts,
+    ...relativeProtocolSourcePathParts,
+  ];
 
   @override
   List<String> get relativeModelSourcePathParts => ['lib', 'src', 'models'];
 
   @override
-  List<String> get modelSourcePathParts =>
-      [...serverPackageDirectoryPathParts, ...relativeModelSourcePathParts];
+  List<String> get modelSourcePathParts => [
+    ...serverPackageDirectoryPathParts,
+    ...relativeModelSourcePathParts,
+  ];
+
+  /// The paths of the lib directory in shared model packages.
+  List<String> get sharedModelsLibSourcePaths => [
+    for (var pathParts in sharedModelsSourcePathsParts.values)
+      p.joinAll([
+        ...serverPackageDirectoryPathParts,
+        ...pathParts,
+        'lib',
+      ]),
+  ];
 
   /// The internal package path parts of the directory, where the generated code is stored in the
   /// server package.
   List<String> get generatedServeModelPackagePathParts => ['src', 'generated'];
 
   /// The path parts of the generated endpoint file.
-  List<String> get generatedServerEndpointFilePathParts =>
-      [...generatedServeModelPathParts, 'endpoints.dart'];
+  List<String> get generatedServerEndpointFilePathParts => [
+    ...generatedServeModelPathParts,
+    'endpoints.dart',
+  ];
+
+  /// The path parts of the generated future calls class file.
+  List<String> get generatedServerFutureCallFilePathParts => [
+    ...generatedServeModelPathParts,
+    'future_calls.dart',
+  ];
 
   /// The path parts of the generated protocol file.
-  List<String> get generatedServerProtocolFilePathParts =>
-      [...generatedServeModelPathParts, 'protocol.dart'];
+  List<String> get generatedServerProtocolFilePathParts => [
+    ...generatedServeModelPathParts,
+    'protocol.dart',
+  ];
 
   /// The path parts of the generated protocol file.
-  List<String> get generatedServerEndpointDescriptionFilePathParts =>
-      [...generatedServeModelPathParts, 'protocol.yaml'];
+  List<String> get generatedServerEndpointDescriptionFilePathParts => [
+    ...generatedServeModelPathParts,
+    'protocol.yaml',
+  ];
+
+  /// The path of the generated Serverpod package manifest.
+  List<String> get generatedServerpodManifestFilePathParts => [
+    ...generatedServeModelPathParts,
+    ServerpodManifest.fileName,
+  ];
 
   /// The path parts of the directory, where the generated code is stored in the
   /// server package.
   List<String> get generatedServeModelPathParts => [
+    ...serverPackageDirectoryPathParts,
+    'lib',
+    ...generatedServeModelPackagePathParts,
+  ];
+
+  /// The paths of the generated source code in shared model packages.
+  List<String> get generatedSharedModelsPaths => [
+    for (var pathParts in sharedModelsSourcePathsParts.values)
+      p.joinAll([
         ...serverPackageDirectoryPathParts,
+        ...pathParts,
         'lib',
-        ...generatedServeModelPackagePathParts
-      ];
+        ...generatedServeModelPackagePathParts,
+      ]),
+  ];
 
   /// Path parts from the server package to the dart client package.
   final List<String> _relativeDartClientPackagePathParts;
 
   /// Path parts to the client package.
   List<String> get clientPackagePathParts => [
+    ...serverPackageDirectoryPathParts,
+    ..._relativeDartClientPackagePathParts,
+  ];
+
+  /// Paths outside the source tree that may influence generated output
+  List<String> get auxiliaryInputPaths => [
+    p.joinAll([...serverPackageDirectoryPathParts, 'config', 'generator.yaml']),
+    p.joinAll([...serverPackageDirectoryPathParts, 'analysis_options.yaml']),
+    p.joinAll([...serverPackageDirectoryPathParts, 'pubspec.yaml']),
+    p.joinAll([...serverPackageDirectoryPathParts, 'pubspec.lock']),
+    p.joinAll([...clientPackagePathParts, 'analysis_options.yaml']),
+    p.joinAll([...clientPackagePathParts, 'pubspec.yaml']),
+    p.joinAll([...clientPackagePathParts, 'pubspec.lock']),
+    for (final pathParts in sharedModelsSourcePathsParts.values) ...[
+      p.joinAll([
         ...serverPackageDirectoryPathParts,
-        ..._relativeDartClientPackagePathParts
-      ];
+        ...pathParts,
+        'analysis_options.yaml',
+      ]),
+      p.joinAll([
+        ...serverPackageDirectoryPathParts,
+        ...pathParts,
+        'pubspec.yaml',
+      ]),
+      p.joinAll([
+        ...serverPackageDirectoryPathParts,
+        ...pathParts,
+        'pubspec.lock',
+      ]),
+    ],
+  ];
 
   final List<String>? _relativeServerTestToolsPathParts;
   static const _defaultRelativeServerTestToolsPathParts = [
     'test',
     'integration',
-    'test_tools'
+    'test_tools',
   ];
 
   List<String>? get generatedServerTestToolsPathParts {
@@ -186,15 +273,15 @@ class GeneratorConfig implements ModelLoadConfig {
     if (localRelativeServerTestToolsPathParts != null) {
       return [
         ...serverPackageDirectoryPathParts,
-        ...localRelativeServerTestToolsPathParts
+        ...localRelativeServerTestToolsPathParts,
       ];
     }
 
-    var isServerpodMini = !isFeatureEnabled(ServerpodFeature.database);
-    if (isServerpodMini) {
+    var isDatabaseDisabled = !isFeatureEnabled(ServerpodFeature.database);
+    if (isDatabaseDisabled) {
       return [
         ...serverPackageDirectoryPathParts,
-        ..._defaultRelativeServerTestToolsPathParts
+        ..._defaultRelativeServerTestToolsPathParts,
       ];
     }
 
@@ -202,8 +289,12 @@ class GeneratorConfig implements ModelLoadConfig {
   }
 
   /// The path parts to the protocol directory in the dart client package.
-  List<String> get generatedDartClientModelPathParts =>
-      [...clientPackagePathParts, 'lib', 'src', 'protocol'];
+  List<String> get generatedDartClientModelPathParts => [
+    ...clientPackagePathParts,
+    'lib',
+    'src',
+    'protocol',
+  ];
 
   /// All the modules defined in the config.
   final List<ModuleConfig> _modules;
@@ -212,8 +303,15 @@ class GeneratorConfig implements ModelLoadConfig {
   /// Useful for types used in caching and streams.
   final List<TypeDefinition> extraClasses;
 
+  /// Whether serializable fields default to `jsonb` instead of `json` when
+  /// stored in the database.
+  final bool serializeAsJsonbByDefault;
+
   /// All the features that are enabled in the serverpod project.
   final List<ServerpodFeature> enabledFeatures;
+
+  /// The dialect of the database, if enabled. Default is [DatabaseDialect.postgres].
+  final DatabaseDialect databaseDialect;
 
   bool isFeatureEnabled(ServerpodFeature feature) =>
       enabledFeatures.contains(feature);
@@ -238,7 +336,33 @@ class GeneratorConfig implements ModelLoadConfig {
   List<ModuleConfig> get modulesAll => _modules;
 
   /// Create a new [GeneratorConfig] by loading the configuration in the [serverRootDir].
-  static Future<GeneratorConfig> load([String serverRootDir = '']) async {
+  ///
+  /// If [serverRootDir] is empty, the server directory will be automatically
+  /// detected by searching the current directory and nearby locations.
+  ///
+  /// The [interactive] parameter controls whether interactive prompts are enabled.
+  /// Defaults to true unless running in a CI environment (detected via ci package).
+  /// Explicit flag value overrides CI detection.
+  static Future<GeneratorConfig> load({
+    String serverRootDir = '',
+    required bool? interactive,
+  }) async {
+    // Auto-detect server directory if not specified
+    if (serverRootDir.isEmpty) {
+      // Determine if we should use interactive mode
+      // Priority: explicit flag > CI detection > default (true)
+      final isInteractive = interactive ?? !ci.isCI;
+
+      var serverDir = await ServerDirectoryFinder.findOrPrompt(
+        interactive: isInteractive,
+      );
+      serverRootDir = serverDir.path;
+    }
+
+    // Anchor the path once at resolution time,
+    // so a later cwd change doesn't silently retarget config lookups.
+    serverRootDir = p.normalize(p.absolute(serverRootDir));
+
     var serverPackageDirectoryPathParts = p.split(serverRootDir);
 
     Pubspec? pubspec;
@@ -254,8 +378,9 @@ class GeneratorConfig implements ModelLoadConfig {
     }
 
     if (!isServerDirectory(Directory(serverRootDir))) {
-      throw const ServerpodProjectNotFoundException(
-        'Could not find the Serverpod dependency. Are you running serverpod from your '
+      throw ServerpodProjectNotFoundException(
+        'Could not find the Serverpod dependency in the directory '
+        '$serverRootDir. Are you running serverpod from your '
         'projects root directory?',
       );
     }
@@ -272,30 +397,34 @@ class GeneratorConfig implements ModelLoadConfig {
     var relativeDartClientPackagePathParts = ['..', '${name}_client'];
 
     if (generatorConfig['client_package_path'] != null) {
-      relativeDartClientPackagePathParts =
-          p.split(generatorConfig['client_package_path']);
+      relativeDartClientPackagePathParts = p.split(
+        generatorConfig['client_package_path'],
+      );
     }
 
     List<String>? relativeServerTestToolsPathParts;
     if (generatorConfig['server_test_tools_path'] != null) {
-      relativeServerTestToolsPathParts =
-          p.split(generatorConfig['server_test_tools_path']);
+      relativeServerTestToolsPathParts = p.split(
+        generatorConfig['server_test_tools_path'],
+      );
     }
 
     late String dartClientPackage;
     late bool dartClientDependsOnServiceClient;
 
     try {
-      var file = File(p.joinAll([
-        ...serverPackageDirectoryPathParts,
-        ...relativeDartClientPackagePathParts,
-        'pubspec.yaml'
-      ]));
+      var file = File(
+        p.joinAll([
+          ...serverPackageDirectoryPathParts,
+          ...relativeDartClientPackagePathParts,
+          'pubspec.yaml',
+        ]),
+      );
       var yamlStr = file.readAsStringSync();
       Map yaml = loadYaml(yamlStr);
       dartClientPackage = yaml['name'];
-      dartClientDependsOnServiceClient =
-          (yaml['dependencies'] as Map).containsKey('serverpod_service_client');
+      dartClientDependsOnServiceClient = (yaml['dependencies'] as Map)
+          .containsKey('serverpod_service_client');
     } catch (_) {
       throw const ServerpodProjectNotFoundException(
         'Failed to load client pubspec.yaml. If you are using a none default '
@@ -322,11 +451,13 @@ class GeneratorConfig implements ModelLoadConfig {
       );
     }
 
-    var allPackagesAreInstalled = pubspec.dependencies.keys
-        .every((dependencyName) => packageConfig[dependencyName] != null);
+    var allPackagesAreInstalled = pubspec.dependencies.keys.every(
+      (dependencyName) => packageConfig[dependencyName] != null,
+    );
     if (!allPackagesAreInstalled) {
       log.warning(
-          'Not all dependencies are installed, which might cause errors in your Serverpod code. Run `dart pub get`.');
+        'Not all dependencies are installed, which might cause errors in your Serverpod code. Run `dart pub get`.',
+      );
     }
 
     var manualModules = <String, String?>{};
@@ -343,6 +474,11 @@ class GeneratorConfig implements ModelLoadConfig {
       packageConfig: packageConfig,
       projectPubspec: pubspec,
       nickNameOverrides: manualModules,
+    );
+
+    var sharedModelsSourcePathsParts = _extractSharedPackages(
+      serverRootDir,
+      generatorConfig,
     );
 
     // Load extraClasses
@@ -362,8 +498,9 @@ class GeneratorConfig implements ModelLoadConfig {
         rethrow;
       } catch (e) {
         throw SourceSpanFormatException(
-            'Failed to load \'extraClasses\' config',
-            configExtraClasses is YamlNode ? configExtraClasses.span : null);
+          'Failed to load \'extraClasses\' config',
+          configExtraClasses is YamlNode ? configExtraClasses.span : null,
+        );
       }
     }
 
@@ -374,6 +511,13 @@ class GeneratorConfig implements ModelLoadConfig {
       ...CommandLineExperimentalFeatures.instance.features,
     ];
 
+    var databaseDialect = await _inferDatabaseDialectFromConfigs(serverRootDir);
+
+    var serializeAsJsonbByDefault = _loadSerializeAsJsonbByDefault(
+      file,
+      generatorConfig,
+    );
+
     return GeneratorConfig(
       name: name,
       type: type,
@@ -381,30 +525,113 @@ class GeneratorConfig implements ModelLoadConfig {
       dartClientPackage: dartClientPackage,
       dartClientDependsOnServiceClient: dartClientDependsOnServiceClient,
       serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
+      sharedModelsSourcePathsParts: sharedModelsSourcePathsParts,
       relativeServerTestToolsPathParts: relativeServerTestToolsPathParts,
       relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
+      serializeAsJsonbByDefault: serializeAsJsonbByDefault,
       modules: modules,
       extraClasses: extraClasses,
       enabledFeatures: enabledFeatures,
+      databaseDialect: databaseDialect,
       experimentalFeatures: enabledExperimentalFeatures,
     );
   }
 
-  static List<ServerpodFeature> _enabledFeatures(File file, Map config) {
-    var enabledFeatures = <ServerpodFeature>[];
-    if (!file.existsSync()) return enabledFeatures;
+  static bool _loadSerializeAsJsonbByDefault(
+    File file,
+    Map config,
+  ) {
+    if (!file.existsSync()) return false;
+    return config['serialize_as_jsonb_by_default'] ?? false;
+  }
 
-    if (!config.containsKey('features')) {
-      enabledFeatures.add(ServerpodFeature.database);
+  static Future<DatabaseDialect> _inferDatabaseDialectFromConfigs(
+    String serverRootDir,
+  ) async {
+    final configDir = Directory(p.join(serverRootDir, 'config'));
+    if (!await configDir.exists()) {
+      return DatabaseDialect.postgres;
     }
 
-    var features = config['features'];
+    final dialectsByFile = <String, DatabaseDialect>{};
+    await for (final entity in configDir.list(followLinks: false)) {
+      if (entity is! File) continue;
+      final basename = p.basename(entity.path);
+      if (!(basename.endsWith('.yaml') || basename.endsWith('.yml')) ||
+          basename.startsWith('generator.') ||
+          basename.startsWith('passwords.')) {
+        continue;
+      }
 
-    if (features is! Map) return enabledFeatures;
+      final yamlRoot = loadYaml(await entity.readAsString());
+      if (yamlRoot == null || yamlRoot is! Map) continue;
 
-    return ServerpodFeature.values
-        .where((feature) => features[feature.name.toString()] == true)
-        .toList();
+      final dialect = inferDatabaseDialectFromConfigMap(
+        Map<dynamic, dynamic>.from(yamlRoot),
+        environment: Platform.environment,
+      );
+      if (dialect != null) {
+        dialectsByFile[basename] = dialect;
+      }
+    }
+
+    if (dialectsByFile.isEmpty) {
+      return DatabaseDialect.postgres;
+    }
+
+    final dialects = dialectsByFile.values.toSet();
+    if (dialects.length > 1) {
+      final details = dialectsByFile.entries
+          .map((e) => '${e.key} (${e.value.name})')
+          .sorted()
+          .join(', ');
+      throw StateError(
+        'Inconsistent database dialects across run-mode config files: $details. '
+        'A Serverpod project must use a single database dialect in all run modes.',
+      );
+    }
+
+    return dialects.single;
+  }
+
+  static List<ServerpodFeature> _enabledFeatures(File file, YamlMap config) {
+    if (!file.existsSync()) {
+      return ServerpodFeature.values
+          .where((f) => f.missingFileDefault)
+          .toList();
+    }
+
+    var featuresNode = config.nodes['features'];
+    var featuresMap = featuresNode?.value as YamlMap?;
+
+    // If features is not specified or not a Map, use defaults
+    if (featuresMap == null) {
+      return ServerpodFeature.values.where((f) => f.defaultValue).toList();
+    }
+
+    // Return all features based on their explicit value or default
+    return ServerpodFeature.values.where((feature) {
+      var featureName = feature.name;
+      var featureNode = featuresMap.nodes[featureName];
+      // If no value set, use default
+      if (featureNode == null) {
+        return feature.defaultValue;
+      }
+
+      var featureValue = featureNode.value;
+
+      // Valid values are true or false
+      if (featureValue is bool) return featureValue;
+
+      // Invalid value - warn and use default
+      var span = featureNode.span;
+      var message =
+          'Invalid value for feature \'$featureName\': \'${featureValue.toString()}\'. '
+          'Expected \'true\' or \'false\'. '
+          'Using default value: ${feature.defaultValue}.';
+      log.warning(span.message(message));
+      return feature.defaultValue;
+    }).toList();
   }
 
   static List<ExperimentalFeature> _enabledExperimentalFeatures(
@@ -442,7 +669,8 @@ class GeneratorConfig implements ModelLoadConfig {
 
   @override
   String toString() {
-    var str = '''type: $type
+    var str =
+        '''type: $type
 sourceProtocol: ${p.joinAll(protocolSourcePathParts)}
 sourceModel: ${p.joinAll(modelSourcePathParts)}
 generatedClientDart: ${p.joinAll(generatedDartClientModelPathParts)}
@@ -456,6 +684,49 @@ generatedServerModel: ${p.joinAll(generatedServeModelPathParts)}
     }
     return str;
   }
+}
+
+Map<String, List<String>> _extractSharedPackages(
+  String serverRootDir,
+  YamlMap generatorConfig,
+) {
+  var sharedPackages = generatorConfig['shared_packages'];
+  if (sharedPackages == null) {
+    return {};
+  }
+
+  var sharedModelPackagesPathParts = <String, List<String>>{};
+
+  if (sharedPackages is! YamlList) {
+    throw SourceSpanFormatException(
+      'The "shared_packages" property must be a list of package paths.',
+      sharedPackages is YamlNode ? sharedPackages.span : null,
+    );
+  }
+
+  for (var path in sharedPackages) {
+    if (path is! String || p.isAbsolute(path)) {
+      throw SourceSpanFormatException(
+        'The path for the shared package must be a string path relative to the '
+        'server package. Current path: $path',
+        sharedPackages.span,
+      );
+    }
+
+    try {
+      var pubspecFile = File(p.join(serverRootDir, path, 'pubspec.yaml'));
+      var yamlStr = pubspecFile.readAsStringSync();
+      var pubspec = Pubspec.parse(yamlStr);
+      sharedModelPackagesPathParts[pubspec.name] = p.split(path);
+    } catch (_) {
+      throw const ServerpodProjectNotFoundException(
+        'Failed to load shared package pubspec.yaml. Make sure the path is '
+        'correctly specified in the config/generator.yaml file.',
+      );
+    }
+  }
+
+  return sharedModelPackagesPathParts;
 }
 
 /// Describes the configuration of a Serverpod module a package depends on.
@@ -478,27 +749,40 @@ class ModuleConfig implements ModelLoadConfig {
   /// Might be relative.
   final List<String> serverPackageDirectoryPathParts;
 
+  /// The installed shared packages the module owns, mapping each package name
+  /// to the path parts of its package root from the package config.
+  final Map<String, List<String>> sharedPackageRootPathParts;
+
   @override
-  List<String> get libSourcePathParts =>
-      [...serverPackageDirectoryPathParts, 'lib'];
+  List<String> get libSourcePathParts => [
+    ...serverPackageDirectoryPathParts,
+    'lib',
+  ];
 
   @override
   List<String> get srcSourcePathParts => [...libSourcePathParts, 'src'];
 
   @override
-  List<String> get relativeProtocolSourcePathParts =>
-      ['lib', 'src', 'protocol'];
+  List<String> get relativeProtocolSourcePathParts => [
+    'lib',
+    'src',
+    'protocol',
+  ];
 
   @override
-  List<String> get protocolSourcePathParts =>
-      [...serverPackageDirectoryPathParts, ...relativeProtocolSourcePathParts];
+  List<String> get protocolSourcePathParts => [
+    ...serverPackageDirectoryPathParts,
+    ...relativeProtocolSourcePathParts,
+  ];
 
   @override
   List<String> get relativeModelSourcePathParts => ['lib', 'src', 'models'];
 
   @override
-  List<String> get modelSourcePathParts =>
-      [...serverPackageDirectoryPathParts, ...relativeModelSourcePathParts];
+  List<String> get modelSourcePathParts => [
+    ...serverPackageDirectoryPathParts,
+    ...relativeModelSourcePathParts,
+  ];
 
   /// The migration versions of the module.
   List<String> migrationVersions;
@@ -509,8 +793,9 @@ class ModuleConfig implements ModelLoadConfig {
     required this.nickname,
     required this.migrationVersions,
     required this.serverPackageDirectoryPathParts,
-  })  : dartClientPackage = '${name}_client',
-        serverPackage = '${name}_server';
+    this.sharedPackageRootPathParts = const {},
+  }) : dartClientPackage = '${name}_client',
+       serverPackage = '${name}_server';
 
   /// The url when importing this module in dart code.
   String dartImportUrl(bool serverCode) {
@@ -525,7 +810,7 @@ name: $name
 nickname: $nickname
 clientPackage: $dartClientPackage
 serverPackage: $serverPackage
-migrationVersions: $migrationVersions 
+migrationVersions: $migrationVersions
 ''';
   }
 }
@@ -541,4 +826,8 @@ String _stripPackage(String package) {
     return strippedPackage.substring(0, strippedPackage.length - 7);
   }
   return package;
+}
+
+extension on Iterable<String> {
+  List<String> sorted() => toList()..sort();
 }

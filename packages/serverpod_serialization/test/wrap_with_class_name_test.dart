@@ -54,7 +54,7 @@ void main() {
     'Given a map of string keys and list values when calling wrapWithClassName then it throws ArgumentError',
     () {
       var map = {
-        'numbers': [1, 2, 3]
+        'numbers': [1, 2, 3],
       };
       expect(
         () => protocol.wrapWithClassName(map),
@@ -68,7 +68,7 @@ void main() {
     () {
       var list = [
         {'one': 1},
-        {'two': 2}
+        {'two': 2},
       ];
       expect(
         () => protocol.wrapWithClassName(list),

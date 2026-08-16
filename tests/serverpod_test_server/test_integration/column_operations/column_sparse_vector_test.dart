@@ -37,114 +37,131 @@ void main() async {
       expect(result.length, 3);
     });
 
-    test('when ordering by L2 distance then closest rows are returned first.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        orderBy: (t) => t.aSparseVector.distanceL2(querySparseVector),
-      );
+    test(
+      'when ordering by L2 distance then closest rows are returned first.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          orderBy: (t) => t.aSparseVector.distanceL2(querySparseVector),
+        );
 
-      expect(result.length, 3);
-      // The null value should be last when ordering by distance
-      expect(result.last.aSparseVector, isNull);
-    });
+        expect(result.length, 3);
+        // The null value should be last when ordering by distance
+        expect(result.last.aSparseVector, isNull);
+      },
+    );
 
     test(
-        'when filtering using closer than with L2 distance then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aSparseVector.distanceL2(querySparseVector) < 1.0,
-      );
+      'when filtering using closer than with L2 distance then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aSparseVector.distanceL2(querySparseVector) < 1.0,
+        );
 
-      expect(result.isNotEmpty, true);
-    });
-
-    test(
-        'when ordering by cosine distance then closest rows are returned first.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        orderBy: (t) => t.aSparseVector.distanceCosine(querySparseVector),
-      );
-
-      expect(result.length, 3);
-      // The null value should be last when ordering by distance
-      expect(result.last.aSparseVector, isNull);
-    });
+        expect(result.isNotEmpty, true);
+      },
+    );
 
     test(
-        'when filtering using closer than with cosine distance then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aSparseVector.distanceCosine(querySparseVector) < 0.5,
-      );
+      'when ordering by cosine distance then closest rows are returned first.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          orderBy: (t) => t.aSparseVector.distanceCosine(querySparseVector),
+        );
 
-      expect(result.isNotEmpty, true);
-    });
-
-    test(
-        'when ordering by inner product distance then closest rows are returned first.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        orderBy: (t) => t.aSparseVector.distanceInnerProduct(querySparseVector),
-      );
-
-      expect(result.length, 3);
-      // The null value should be last when ordering by distance
-      expect(result.last.aSparseVector, isNull);
-    });
+        expect(result.length, 3);
+        // The null value should be last when ordering by distance
+        expect(result.last.aSparseVector, isNull);
+      },
+    );
 
     test(
-        'when filtering using closer than with inner product distance then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) =>
-            t.aSparseVector.distanceInnerProduct(querySparseVector) < 0.5,
-      );
+      'when filtering using closer than with cosine distance then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aSparseVector.distanceCosine(querySparseVector) < 0.5,
+        );
 
-      expect(result.isNotEmpty, true);
-    });
-
-    test('when ordering by L1 distance then closest rows are returned first.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        orderBy: (t) => t.aSparseVector.distanceL1(querySparseVector),
-      );
-
-      expect(result.length, 3);
-      // The null value should be last when ordering by distance
-      expect(result.last.aSparseVector, isNull);
-    });
+        expect(result.isNotEmpty, true);
+      },
+    );
 
     test(
-        'when filtering using closer than with L1 distance then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aSparseVector.distanceL1(querySparseVector) < 2.0,
-      );
+      'when ordering by inner product distance then closest rows are returned first.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          orderBy: (t) =>
+              t.aSparseVector.distanceInnerProduct(querySparseVector),
+        );
 
-      expect(result.isNotEmpty, true);
-    });
+        expect(result.length, 3);
+        // The null value should be last when ordering by distance
+        expect(result.last.aSparseVector, isNull);
+      },
+    );
 
     test(
-        'when inserting and retrieving a sparse vector then the same values are returned.',
-        () async {
-      await Types.db.insert(session, [Types(aSparseVector: thirdSparseVector)]);
+      'when filtering using closer than with inner product distance then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) =>
+              t.aSparseVector.distanceInnerProduct(querySparseVector) < 0.5,
+        );
 
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aSparseVector.distanceCosine(thirdSparseVector) < 0.01,
-      );
+        expect(result.isNotEmpty, true);
+      },
+    );
 
-      expect(result.length, 1);
-      expect(result.first.aSparseVector!.toList(),
-          equals(thirdSparseVector.toList()));
-    });
+    test(
+      'when ordering by L1 distance then closest rows are returned first.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          orderBy: (t) => t.aSparseVector.distanceL1(querySparseVector),
+        );
+
+        expect(result.length, 3);
+        // The null value should be last when ordering by distance
+        expect(result.last.aSparseVector, isNull);
+      },
+    );
+
+    test(
+      'when filtering using closer than with L1 distance then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aSparseVector.distanceL1(querySparseVector) < 2.0,
+        );
+
+        expect(result.isNotEmpty, true);
+      },
+    );
+
+    test(
+      'when inserting and retrieving a sparse vector then the same values are returned.',
+      () async {
+        await Types.db.insert(session, [
+          Types(aSparseVector: thirdSparseVector),
+        ]);
+
+        var result = await Types.db.find(
+          session,
+          where: (t) =>
+              t.aSparseVector.distanceCosine(thirdSparseVector) < 0.01,
+        );
+
+        expect(result.length, 1);
+        expect(
+          result.first.aSparseVector!.toList(),
+          equals(thirdSparseVector.toList()),
+        );
+      },
+    );
   });
 }

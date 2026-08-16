@@ -12,26 +12,36 @@ environment:
   flutter: FLUTTER_VERSION
 
 dependencies:
+  cupertino_icons: ^1.0.5
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.5
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  test: ^1.25.5
+  serverpod_auth_shared_flutter:
+    path: ../../modules/legacy/serverpod_auth/serverpod_auth_shared_flutter
   serverpod_test_client:
     path: ../serverpod_test_client
-  serverpod_auth_shared_flutter:
-    path: ../../modules/serverpod_auth/serverpod_auth_shared_flutter
+  test: ^1.25.5
 
 dependency_overrides:
   serverpod_auth_client:
-    path: ../../modules/serverpod_auth/serverpod_auth_client
+    path: ../../modules/legacy/serverpod_auth/serverpod_auth_client
   serverpod_client:
     path: ../../packages/serverpod_client
+  serverpod_database:
+    path: ../../packages/serverpod_database
+  serverpod_embedded_postgres:
+    path: ../../packages/serverpod_embedded_postgres
   serverpod_serialization:
     path: ../../packages/serverpod_serialization
+  serverpod_shared:
+    path: ../../packages/serverpod_shared
+  serverpod_test_module_client:
+    path: ../serverpod_test_module/serverpod_test_module_client
+  serverpod_test_shared:
+    path: ../serverpod_test_shared
 
 flutter:
   uses-material-design: true

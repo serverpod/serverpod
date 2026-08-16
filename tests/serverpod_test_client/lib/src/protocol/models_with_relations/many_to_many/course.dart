@@ -12,8 +12,10 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../models_with_relations/many_to_many/enrollment.dart' as _i2;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
-abstract class Course implements _i1.SerializableModel {
+abstract class Course
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   Course._({
     this.id,
     required this.name,
@@ -30,9 +32,11 @@ abstract class Course implements _i1.SerializableModel {
     return Course(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      enrollments: (jsonSerialization['enrollments'] as List?)
-          ?.map((e) => _i2.Enrollment.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      enrollments: jsonSerialization['enrollments'] == null
+          ? null
+          : _i3.Protocol().deserialize<List<_i2.Enrollment>>(
+              jsonSerialization['enrollments'],
+            ),
     );
   }
 
@@ -56,10 +60,24 @@ abstract class Course implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Course',
       if (id != null) 'id': id,
       'name': name,
       if (enrollments != null)
         'enrollments': enrollments?.toJson(valueToJson: (v) => v.toJson()),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Course',
+      if (id != null) 'id': id,
+      'name': name,
+      if (enrollments != null)
+        'enrollments': enrollments?.toJson(
+          valueToJson: (v) => v.toJsonForProtocol(),
+        ),
     };
   }
 
@@ -77,10 +95,10 @@ class _CourseImpl extends Course {
     required String name,
     List<_i2.Enrollment>? enrollments,
   }) : super._(
-          id: id,
-          name: name,
-          enrollments: enrollments,
-        );
+         id: id,
+         name: name,
+         enrollments: enrollments,
+       );
 
   /// Returns a shallow copy of this [Course]
   /// with some or all fields replaced by the given arguments.

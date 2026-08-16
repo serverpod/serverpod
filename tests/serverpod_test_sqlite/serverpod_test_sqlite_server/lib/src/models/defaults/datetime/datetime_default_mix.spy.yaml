@@ -1,0 +1,6 @@
+class: DateTimeDefaultMix
+table: datetime_default_mix
+fields:
+  dateTimeDefaultAndDefaultModel: DateTime, default=2024-05-01T22:00:00.000Z, defaultModel=2024-05-10T22:00:00.000Z
+  dateTimeDefaultAndDefaultPersist: DateTime, default=2024-05-01T22:00:00.000Z, defaultPersist=2024-05-10T22:00:00.000Z
+  dateTimeDefaultModelAndDefaultPersist: DateTime, defaultModel=2024-05-01T22:00:00.000Z, defaultPersist=2024-05-10T22:00:00.000Z

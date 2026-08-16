@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/database/extensions.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
@@ -13,13 +14,24 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should not have the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"uriNoDefault" text NOT NULL',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should not have the default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"uriNoDefault" text NOT NULL',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should not have the default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"uriNoDefault" TEXT NOT NULL',
+          );
+        },
+      );
     });
 
     group('with "This is a default value" as default value', () {
@@ -32,13 +44,24 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should have the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"uriDefault" text NOT NULL DEFAULT \'https://serverpod.dev\'',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should have the default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"uriDefault" text NOT NULL DEFAULT \'https://serverpod.dev\'::text',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should have the default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"uriDefault" TEXT NOT NULL DEFAULT (\'https://serverpod.dev\')',
+          );
+        },
+      );
     });
 
     group('with nullable column and no default value', () {
@@ -50,13 +73,24 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should be nullable with no default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"uriNullableNoDefault" text',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should be nullable with no default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"uriNullableNoDefault" text',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should be nullable with no default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"uriNullableNoDefault" TEXT',
+          );
+        },
+      );
     });
 
     group('with nullable column and a default value', () {
@@ -69,13 +103,24 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should be nullable with the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"uriNullableDefault" text DEFAULT \'https://serverpod.dev\'',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should be nullable with the default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"uriNullableDefault" text DEFAULT \'https://serverpod.dev\'::text',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should be nullable with the default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"uriNullableDefault" TEXT DEFAULT (\'https://serverpod.dev\')',
+          );
+        },
+      );
     });
   });
 }

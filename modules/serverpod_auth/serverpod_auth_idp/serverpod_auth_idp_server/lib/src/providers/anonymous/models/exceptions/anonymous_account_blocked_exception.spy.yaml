@@ -1,0 +1,6 @@
+### Exception to be thrown if anonymous account creation fails.
+###
+### Inspect the [reason] field to understand this exception.
+exception: AnonymousAccountBlockedException
+fields:
+  reason: AnonymousAccountBlockedExceptionReason

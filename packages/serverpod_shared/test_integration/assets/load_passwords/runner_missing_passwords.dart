@@ -1,12 +1,10 @@
 import 'dart:io';
 import 'package:serverpod_shared/serverpod_shared.dart';
-import 'package:uuid/uuid.dart';
 
 void main() {
-  var missingFileName = const Uuid().v4();
-
+  // [missing] is a directory without a config/passwords.yaml file.
   var passwords = PasswordManager(runMode: 'development').loadPasswords(
-    './config/$missingFileName.yaml',
+    serverDir: 'missing',
   );
 
   stdout.write(passwords.toString());

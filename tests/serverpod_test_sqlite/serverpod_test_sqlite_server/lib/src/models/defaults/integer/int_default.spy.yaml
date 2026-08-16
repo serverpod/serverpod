@@ -1,0 +1,5 @@
+class: IntDefault
+table: int_default
+fields:
+  intDefault: int, default=10
+  intDefaultNull: int?, default=20

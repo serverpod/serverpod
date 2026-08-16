@@ -13,7 +13,10 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 abstract class ExceptionWithRequiredField
-    implements _i1.SerializableException, _i1.SerializableModel {
+    implements
+        _i1.SerializableException,
+        _i1.SerializableModel,
+        _i1.ProtocolSerialization {
   ExceptionWithRequiredField._({
     required this.name,
     required this.email,
@@ -27,7 +30,8 @@ abstract class ExceptionWithRequiredField
   }) = _ExceptionWithRequiredFieldImpl;
 
   factory ExceptionWithRequiredField.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ExceptionWithRequiredField(
       name: jsonSerialization['name'] as String,
       email: jsonSerialization['email'] as String?,
@@ -52,6 +56,17 @@ abstract class ExceptionWithRequiredField
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ExceptionWithRequiredField',
+      'name': name,
+      if (email != null) 'email': email,
+      if (phone != null) 'phone': phone,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'ExceptionWithRequiredField',
       'name': name,
       if (email != null) 'email': email,
       if (phone != null) 'phone': phone,
@@ -60,7 +75,7 @@ abstract class ExceptionWithRequiredField
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return 'ExceptionWithRequiredField(name: $name, email: $email, phone: $phone)';
   }
 }
 
@@ -72,10 +87,10 @@ class _ExceptionWithRequiredFieldImpl extends ExceptionWithRequiredField {
     required String? email,
     String? phone,
   }) : super._(
-          name: name,
-          email: email,
-          phone: phone,
-        );
+         name: name,
+         email: email,
+         phone: phone,
+       );
 
   /// Returns a shallow copy of this [ExceptionWithRequiredField]
   /// with some or all fields replaced by the given arguments.

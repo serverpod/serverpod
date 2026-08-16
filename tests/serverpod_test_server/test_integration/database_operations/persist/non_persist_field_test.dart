@@ -7,10 +7,12 @@ void main() async {
   var session = await IntegrationTestServer().session();
 
   group('Given a class with fields that include non-persisted fields,', () {
-    tearDownAll(() async => ObjectFieldPersist.db.deleteWhere(
-          session,
-          where: (_) => Constant.bool(true),
-        ));
+    tearDownAll(
+      () async => ObjectFieldPersist.db.deleteWhere(
+        session,
+        where: (_) => Constant.bool(true),
+      ),
+    );
 
     test(
       'when inserting a single record into the database then non-persisted simple fields should retain their values after insertion, even though they are not stored in the database',

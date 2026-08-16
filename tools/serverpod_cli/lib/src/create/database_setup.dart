@@ -2,19 +2,24 @@ import 'dart:io';
 
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 class DatabaseSetup {
   static Future<bool> createDefaultMigration(
     Directory dir,
-    String name,
-  ) async {
+    String name, {
+    required bool? interactive,
+  }) async {
     log.debug('Creating initial migration.');
 
     GeneratorConfig? config;
 
     try {
-      config = await GeneratorConfig.load(dir.path);
+      config = await GeneratorConfig.load(
+        serverRootDir: dir.path,
+        interactive: interactive,
+      );
     } catch (error) {
       log.error('Could not load config file.');
       return false;
@@ -25,7 +30,7 @@ class DatabaseSetup {
       projectName: name,
     );
 
-    MigrationVersion? migration;
+    MigrationVersionDefinition? migration;
     try {
       migration = await generator.createMigration(
         force: false,

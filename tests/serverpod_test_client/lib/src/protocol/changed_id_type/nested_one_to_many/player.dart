@@ -12,8 +12,10 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../changed_id_type/nested_one_to_many/team.dart' as _i2;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
-abstract class PlayerUuid implements _i1.SerializableModel {
+abstract class PlayerUuid
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   PlayerUuid._({
     this.id,
     required this.name,
@@ -37,8 +39,7 @@ abstract class PlayerUuid implements _i1.SerializableModel {
       teamId: jsonSerialization['teamId'] as int?,
       team: jsonSerialization['team'] == null
           ? null
-          : _i2.TeamInt.fromJson(
-              (jsonSerialization['team'] as Map<String, dynamic>)),
+          : _i3.Protocol().deserialize<_i2.TeamInt>(jsonSerialization['team']),
     );
   }
 
@@ -65,10 +66,22 @@ abstract class PlayerUuid implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'PlayerUuid',
       if (id != null) 'id': id?.toJson(),
       'name': name,
       if (teamId != null) 'teamId': teamId,
       if (team != null) 'team': team?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'PlayerUuid',
+      if (id != null) 'id': id?.toJson(),
+      'name': name,
+      if (teamId != null) 'teamId': teamId,
+      if (team != null) 'team': team?.toJsonForProtocol(),
     };
   }
 
@@ -87,11 +100,11 @@ class _PlayerUuidImpl extends PlayerUuid {
     int? teamId,
     _i2.TeamInt? team,
   }) : super._(
-          id: id,
-          name: name,
-          teamId: teamId,
-          team: team,
-        );
+         id: id,
+         name: name,
+         teamId: teamId,
+         team: team,
+       );
 
   /// Returns a shallow copy of this [PlayerUuid]
   /// with some or all fields replaced by the given arguments.

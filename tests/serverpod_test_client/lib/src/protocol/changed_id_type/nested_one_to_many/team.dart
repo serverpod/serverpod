@@ -13,8 +13,10 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../changed_id_type/nested_one_to_many/arena.dart' as _i2;
 import '../../changed_id_type/nested_one_to_many/player.dart' as _i3;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i4;
 
-abstract class TeamInt implements _i1.SerializableModel {
+abstract class TeamInt
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   TeamInt._({
     this.id,
     required this.name,
@@ -40,11 +42,14 @@ abstract class TeamInt implements _i1.SerializableModel {
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['arenaId']),
       arena: jsonSerialization['arena'] == null
           ? null
-          : _i2.ArenaUuid.fromJson(
-              (jsonSerialization['arena'] as Map<String, dynamic>)),
-      players: (jsonSerialization['players'] as List?)
-          ?.map((e) => _i3.PlayerUuid.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+          : _i4.Protocol().deserialize<_i2.ArenaUuid>(
+              jsonSerialization['arena'],
+            ),
+      players: jsonSerialization['players'] == null
+          ? null
+          : _i4.Protocol().deserialize<List<_i3.PlayerUuid>>(
+              jsonSerialization['players'],
+            ),
     );
   }
 
@@ -74,12 +79,26 @@ abstract class TeamInt implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'TeamInt',
       if (id != null) 'id': id,
       'name': name,
       if (arenaId != null) 'arenaId': arenaId?.toJson(),
       if (arena != null) 'arena': arena?.toJson(),
       if (players != null)
         'players': players?.toJson(valueToJson: (v) => v.toJson()),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'TeamInt',
+      if (id != null) 'id': id,
+      'name': name,
+      if (arenaId != null) 'arenaId': arenaId?.toJson(),
+      if (arena != null) 'arena': arena?.toJsonForProtocol(),
+      if (players != null)
+        'players': players?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
   }
 
@@ -99,12 +118,12 @@ class _TeamIntImpl extends TeamInt {
     _i2.ArenaUuid? arena,
     List<_i3.PlayerUuid>? players,
   }) : super._(
-          id: id,
-          name: name,
-          arenaId: arenaId,
-          arena: arena,
-          players: players,
-        );
+         id: id,
+         name: name,
+         arenaId: arenaId,
+         arena: arena,
+         players: players,
+       );
 
   /// Returns a shallow copy of this [TeamInt]
   /// with some or all fields replaced by the given arguments.

@@ -20,12 +20,15 @@ void main() {
             fields:
               name: String
             ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
 
       var definitions = analyzer.validateAll();
 
@@ -45,11 +48,14 @@ void main() {
             fields:
               name: String, persist
             ''',
-        ).build()
+        ).build(),
       ];
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
 
       var definitions = analyzer.validateAll();
 
@@ -75,12 +81,15 @@ void main() {
           fields:
             name: String, persist=true
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
 
       var definitions = analyzer.validateAll();
 
@@ -103,12 +112,15 @@ void main() {
           fields:
             name: String, persist=false
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
 
       var definitions = analyzer.validateAll();
 
@@ -131,12 +143,15 @@ void main() {
           fields:
             name: String, !persist
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
 
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ClassDefinition;
@@ -165,12 +180,15 @@ void main() {
           fields:
             parent: Example?, !persist, relation
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(collector.errors, isNotEmpty);
 
@@ -194,12 +212,15 @@ void main() {
           fields:
             parent: Example?, persist
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(collector.errors, isNotEmpty);
 
@@ -225,12 +246,15 @@ void main() {
           fields:
             name: String, !persist=true
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(collector.errors, isNotEmpty);
 
@@ -251,12 +275,15 @@ void main() {
           fields:
             parent: Example?, relation(!optional=true)
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(collector.errors, isNotEmpty);
 
@@ -277,12 +304,15 @@ void main() {
           fields:
             parent: Example?, relation(optional=INVALID)
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(collector.errors, isNotEmpty);
 
@@ -302,19 +332,24 @@ void main() {
           fields:
             name: String, persist
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(collector.errors, isNotEmpty);
 
       var error = collector.errors.first;
 
-      expect(error.message,
-          'The "persist" property requires a table to be set on the class.');
+      expect(
+        error.message,
+        'The "persist" property requires a table to be set on the class.',
+      );
     },
   );
 
@@ -329,12 +364,15 @@ void main() {
         fields:
           name: String, persist=INVALID
         ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(collector.errors, isNotEmpty);
 
@@ -355,12 +393,15 @@ void main() {
           fields:
             id: int?, !persist
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors.first.message,

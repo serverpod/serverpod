@@ -1,6 +1,5 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/future_call_manager/future_call_diagnostics_service.dart';
-import 'package:serverpod/src/server/future_call_manager/future_call_manager.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 
 import '../test_tools/serverpod_test_tools.dart';
@@ -11,18 +10,22 @@ class FutureCallManagerBuilder {
   FutureCallSessionBuilder _sessionBuilder;
 
   Session _internalSession;
+  Session _logSession;
 
-  InitializeFutureCall _initializeFutureCall = (
-    FutureCall futureCall,
-    String name,
-  ) {
-    // Skip initialization
-  };
+  InitializeFutureCall _initializeFutureCall =
+      (
+        FutureCall futureCall,
+        String name,
+      ) {
+        // Skip initialization
+      };
 
   FutureCallConfig _config = FutureCallConfig(
     concurrencyLimit: 1,
     scanInterval: const Duration(milliseconds: 10),
   );
+
+  Duration? _heartbeatInterval;
 
   Protocol _protocol = Protocol();
 
@@ -31,8 +34,10 @@ class FutureCallManagerBuilder {
   FutureCallManagerBuilder({
     required FutureCallSessionBuilder sessionProvider,
     required Session internalSession,
-  })  : _sessionBuilder = sessionProvider,
-        _internalSession = internalSession;
+    Session? logSession,
+  }) : _sessionBuilder = sessionProvider,
+       _internalSession = internalSession,
+       _logSession = logSession ?? internalSession;
 
   factory FutureCallManagerBuilder.fromTestSessionBuilder(
     TestSessionBuilder sessionBuilder,
@@ -44,13 +49,15 @@ class FutureCallManagerBuilder {
   }
 
   FutureCallManager build() => FutureCallManager(
-        _config,
-        _protocol,
-        diagnosticsService: _diagnosticsService,
-        internalSession: _internalSession,
-        sessionProvider: _sessionBuilder,
-        initializeFutureCall: _initializeFutureCall,
-      );
+    _config,
+    _protocol,
+    diagnosticsService: _diagnosticsService,
+    internalSession: _internalSession,
+    logSession: _logSession,
+    sessionProvider: _sessionBuilder,
+    initializeFutureCall: _initializeFutureCall,
+    heartbeatInterval: _heartbeatInterval,
+  );
 
   FutureCallManagerBuilder withConfig(FutureCallConfig config) {
     _config = config;
@@ -87,6 +94,11 @@ class FutureCallManagerBuilder {
     FutureCallSessionBuilder sessionProvider,
   ) {
     _sessionBuilder = sessionProvider;
+    return this;
+  }
+
+  FutureCallManagerBuilder withHeartbeatInterval(Duration heartbeatInterval) {
+    _heartbeatInterval = heartbeatInterval;
     return this;
   }
 }

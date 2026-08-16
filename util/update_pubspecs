@@ -22,6 +22,8 @@ cd $CLI_DIR
 dart pub get
 cd $BASE
 
+./util/sort_pubspec_dependencies
+
 echo "Update all pubspecs. Version is $VERSION (Dart version: $DART_VERSION, Flutter version: $FLUTTER_VERSION)."
 
 dart $CLI generate-pubspecs --version "$VERSION" --dart-version "$DART_VERSION" --flutter-version "$FLUTTER_VERSION" --mode development
@@ -32,6 +34,8 @@ cp CHANGELOG.md packages/serverpod_client/CHANGELOG.md
 cp CHANGELOG.md packages/serverpod_serialization/CHANGELOG.md
 cp CHANGELOG.md packages/serverpod_service_client/CHANGELOG.md
 cp CHANGELOG.md packages/serverpod_shared/CHANGELOG.md
+cp CHANGELOG.md packages/serverpod_database/CHANGELOG.md
+cp CHANGELOG.md packages/serverpod_embedded_postgres/CHANGELOG.md
 cp CHANGELOG.md packages/serverpod_flutter/CHANGELOG.md
 cp CHANGELOG.md packages/serverpod_lints/CHANGELOG.md
 cp CHANGELOG.md packages/serverpod_test/CHANGELOG.md
@@ -41,40 +45,45 @@ cp CHANGELOG.md tools/serverpod_cli/CHANGELOG.md
 cp CHANGELOG.md tests/serverpod_test_client/CHANGELOG.md
 cp CHANGELOG.md tests/serverpod_test_server/CHANGELOG.md
 cp CHANGELOG.md tests/serverpod_test_shared/CHANGELOG.md
-cp CHANGELOG.md tests/serverpod_new_auth_test/serverpod_new_auth_test_flutter/CHANGELOG.md
-cp CHANGELOG.md tests/serverpod_new_auth_test/serverpod_new_auth_test_client/CHANGELOG.md
-cp CHANGELOG.md tests/serverpod_new_auth_test/serverpod_new_auth_test_server/CHANGELOG.md
+cp CHANGELOG.md tests/serverpod_test_sqlite/serverpod_test_sqlite_client/CHANGELOG.md
+cp CHANGELOG.md tests/serverpod_test_sqlite/serverpod_test_sqlite_flutter/CHANGELOG.md
+cp CHANGELOG.md tests/serverpod_test_sqlite/serverpod_test_sqlite_server/CHANGELOG.md
+cp CHANGELOG.md tests/serverpod_test_sqlite/serverpod_test_sqlite_shared/CHANGELOG.md
+cp CHANGELOG.md tests/serverpod_auth_test/serverpod_auth_test_flutter/CHANGELOG.md
+cp CHANGELOG.md tests/serverpod_auth_test/serverpod_auth_test_client/CHANGELOG.md
+cp CHANGELOG.md tests/serverpod_auth_test/serverpod_auth_test_server/CHANGELOG.md
 cp CHANGELOG.md tests/serverpod_test_module/serverpod_test_module_client/CHANGELOG.md
 cp CHANGELOG.md tests/serverpod_test_module/serverpod_test_module_server/CHANGELOG.md
 cp CHANGELOG.md tests/serverpod_test_nonvector/serverpod_test_nonvector_client/CHANGELOG.md
 cp CHANGELOG.md tests/serverpod_test_nonvector/serverpod_test_nonvector_server/CHANGELOG.md
 cp CHANGELOG.md tests/serverpod_test_flutter/CHANGELOG.md
 
-cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_server/CHANGELOG.md
-cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_client/CHANGELOG.md
-cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_shared_flutter/CHANGELOG.md
-cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_email_flutter/CHANGELOG.md
-cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_apple_flutter/CHANGELOG.md
-cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_google_flutter/CHANGELOG.md
-cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_firebase_flutter/CHANGELOG.md
+cp CHANGELOG.md modules/legacy/serverpod_auth/serverpod_auth_server/CHANGELOG.md
+cp CHANGELOG.md modules/legacy/serverpod_auth/serverpod_auth_client/CHANGELOG.md
+cp CHANGELOG.md modules/legacy/serverpod_auth/serverpod_auth_shared_flutter/CHANGELOG.md
+cp CHANGELOG.md modules/legacy/serverpod_auth/serverpod_auth_email_flutter/CHANGELOG.md
+cp CHANGELOG.md modules/legacy/serverpod_auth/serverpod_auth_apple_flutter/CHANGELOG.md
+cp CHANGELOG.md modules/legacy/serverpod_auth/serverpod_auth_google_flutter/CHANGELOG.md
+cp CHANGELOG.md modules/legacy/serverpod_auth/serverpod_auth_firebase_flutter/CHANGELOG.md
 
-cp CHANGELOG.md modules/new_serverpod_auth/serverpod_auth_core/serverpod_auth_core_flutter/CHANGELOG.md
-cp CHANGELOG.md modules/new_serverpod_auth/serverpod_auth_core/serverpod_auth_core_client/CHANGELOG.md
-cp CHANGELOG.md modules/new_serverpod_auth/serverpod_auth_core/serverpod_auth_core_server/CHANGELOG.md
-cp CHANGELOG.md modules/new_serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server/CHANGELOG.md
-cp CHANGELOG.md modules/new_serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_client/CHANGELOG.md
-cp CHANGELOG.md modules/new_serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_client/CHANGELOG.md
-cp CHANGELOG.md modules/new_serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_flutter/CHANGELOG.md
-cp CHANGELOG.md modules/new_serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_server/CHANGELOG.md
-cp CHANGELOG.md modules/new_serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_client/CHANGELOG.md
-cp CHANGELOG.md modules/new_serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server/CHANGELOG.md
+cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_flutter/CHANGELOG.md
+cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_client/CHANGELOG.md
+cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_server/CHANGELOG.md
+cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server/CHANGELOG.md
+cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_client/CHANGELOG.md
+cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_flutter/CHANGELOG.md
+cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_flutter_facebook/CHANGELOG.md
+cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_flutter_firebase/CHANGELOG.md
+cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_client/CHANGELOG.md
+cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_flutter/CHANGELOG.md
+cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_server/CHANGELOG.md
+cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_client/CHANGELOG.md
+cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server/CHANGELOG.md
 
-cp CHANGELOG.md modules/serverpod_chat/serverpod_chat_server/CHANGELOG.md
-cp CHANGELOG.md modules/serverpod_chat/serverpod_chat_client/CHANGELOG.md
-cp CHANGELOG.md modules/serverpod_chat/serverpod_chat_flutter/CHANGELOG.md
-
+cp CHANGELOG.md integrations/serverpod_cloud_storage_s3_compat/CHANGELOG.md
 cp CHANGELOG.md integrations/serverpod_cloud_storage_s3/CHANGELOG.md
 cp CHANGELOG.md integrations/serverpod_cloud_storage_gcp/CHANGELOG.md
+cp CHANGELOG.md integrations/serverpod_cloud_storage_r2/CHANGELOG.md
 
 echo "Copying README.md"
 cp README.md packages/serverpod/README.md
@@ -82,6 +91,8 @@ cp README_subpackage.md packages/serverpod_client/README.md
 cp README_subpackage.md packages/serverpod_serialization/README.md
 cp README_subpackage.md packages/serverpod_service_client/README.md
 cp README_subpackage.md packages/serverpod_shared/README.md
+# cp README_subpackage.md packages/serverpod_database/README.md
+# cp README_subpackage.md packages/serverpod_embedded_postgres/README.md
 cp README_subpackage.md packages/serverpod_flutter/README.md
 cp README_subpackage.md packages/serverpod_lints/README.md
 cp README_subpackage.md packages/serverpod_test/README.md
@@ -91,37 +102,42 @@ cp README_subpackage.md tools/serverpod_cli/README.md
 cp README_subpackage.md tests/serverpod_test_client/README.md
 cp README_subpackage.md tests/serverpod_test_server/README.md
 cp README_subpackage.md tests/serverpod_test_shared/README.md
-cp README_subpackage.md tests/serverpod_new_auth_test/serverpod_new_auth_test_flutter/README.md
-cp README_subpackage.md tests/serverpod_new_auth_test/serverpod_new_auth_test_client/README.md
-cp README_subpackage.md tests/serverpod_new_auth_test/serverpod_new_auth_test_server/README.md
+cp README_subpackage.md tests/serverpod_test_sqlite/serverpod_test_sqlite_client/README.md
+cp README_subpackage.md tests/serverpod_test_sqlite/serverpod_test_sqlite_flutter/README.md
+cp README_subpackage.md tests/serverpod_test_sqlite/serverpod_test_sqlite_server/README.md
+cp README_subpackage.md tests/serverpod_test_sqlite/serverpod_test_sqlite_shared/README.md
+cp README_subpackage.md tests/serverpod_auth_test/serverpod_auth_test_flutter/README.md
+cp README_subpackage.md tests/serverpod_auth_test/serverpod_auth_test_client/README.md
+cp README_subpackage.md tests/serverpod_auth_test/serverpod_auth_test_server/README.md
 cp README_subpackage.md tests/serverpod_test_module/serverpod_test_module_client/README.md
 cp README_subpackage.md tests/serverpod_test_module/serverpod_test_module_server/README.md
 cp README_subpackage.md tests/serverpod_test_nonvector/serverpod_test_nonvector_client/README.md
 cp README_subpackage.md tests/serverpod_test_nonvector/serverpod_test_nonvector_server/README.md
 cp README_subpackage.md tests/serverpod_test_flutter/README.md
 
-cp README_subpackage.md modules/serverpod_auth/serverpod_auth_server/README.md
-cp README_subpackage.md modules/serverpod_auth/serverpod_auth_client/README.md
-cp README_subpackage.md modules/serverpod_auth/serverpod_auth_shared_flutter/README.md
-cp README_subpackage.md modules/serverpod_auth/serverpod_auth_email_flutter/README.md
-cp README_subpackage.md modules/serverpod_auth/serverpod_auth_apple_flutter/README.md
-cp README_subpackage.md modules/serverpod_auth/serverpod_auth_google_flutter/README.md
-cp README_subpackage.md modules/serverpod_auth/serverpod_auth_firebase_flutter/README.md
+cp README_subpackage.md modules/legacy/serverpod_auth/serverpod_auth_server/README.md
+cp README_subpackage.md modules/legacy/serverpod_auth/serverpod_auth_client/README.md
+cp README_subpackage.md modules/legacy/serverpod_auth/serverpod_auth_shared_flutter/README.md
+cp README_subpackage.md modules/legacy/serverpod_auth/serverpod_auth_email_flutter/README.md
+cp README_subpackage.md modules/legacy/serverpod_auth/serverpod_auth_apple_flutter/README.md
+cp README_subpackage.md modules/legacy/serverpod_auth/serverpod_auth_google_flutter/README.md
+cp README_subpackage.md modules/legacy/serverpod_auth/serverpod_auth_firebase_flutter/README.md
 
-cp README_subpackage.md modules/new_serverpod_auth/serverpod_auth_core/serverpod_auth_core_flutter/README.md
-cp README_subpackage.md modules/new_serverpod_auth/serverpod_auth_core/serverpod_auth_core_server/README.md
-cp README_subpackage.md modules/new_serverpod_auth/serverpod_auth_core/serverpod_auth_core_client/README.md
-cp README_subpackage.md modules/new_serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server/README.md
-cp README_subpackage.md modules/new_serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_client/README.md
-cp README_subpackage.md modules/new_serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_client/README.md
-cp README_subpackage.md modules/new_serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_flutter/README.md
-cp README_subpackage.md modules/new_serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_server/README.md
-cp README_subpackage.md modules/new_serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server/README.md
-cp README_subpackage.md modules/new_serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_client/README.md
+cp README_subpackage.md modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_flutter/README.md
+cp README_subpackage.md modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_server/README.md
+cp README_subpackage.md modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_client/README.md
+cp README_subpackage.md modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server/README.md
+cp README_subpackage.md modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_client/README.md
+cp README_subpackage.md modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_flutter/README.md
+cp README_subpackage.md modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_flutter_facebook/README.md
+cp README_subpackage.md modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_flutter_firebase/README.md
+# cp README_subpackage.md modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_client/README.md
+# cp README_subpackage.md modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_flutter/README.md
+# cp README_subpackage.md modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_server/README.md
+# cp README_subpackage.md modules/serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server/README.md
+# cp README_subpackage.md modules/serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_client/README.md
 
-cp README_subpackage.md modules/serverpod_chat/serverpod_chat_server/README.md
-cp README_subpackage.md modules/serverpod_chat/serverpod_chat_client/README.md
-cp README_subpackage.md modules/serverpod_chat/serverpod_chat_flutter/README.md
-
+cp README_subpackage.md integrations/serverpod_cloud_storage_s3_compat/README.md
 cp README_subpackage.md integrations/serverpod_cloud_storage_s3/README.md
 cp README_subpackage.md integrations/serverpod_cloud_storage_gcp/README.md
+cp README_subpackage.md integrations/serverpod_cloud_storage_r2/README.md

@@ -1,7 +1,4 @@
-import 'dart:async';
-
 import 'package:http/http.dart' as http;
-
 import 'package:serverpod_client/serverpod_client.dart';
 
 import 'serverpod_client_shared_private.dart';
@@ -24,8 +21,9 @@ class ServerpodClientRequestDelegateImpl
     required this.connectionTimeout,
     required this.serializationManager,
     dynamic securityContext,
+    http.Client? httpClientOverride,
   }) {
-    _httpClient = http.Client();
+    _httpClient = httpClientOverride ?? http.Client();
   }
 
   @override
@@ -35,13 +33,15 @@ class ServerpodClientRequestDelegateImpl
     String? authenticationValue,
   }) async {
     try {
-      var response = await _httpClient.post(
-        url,
-        body: body,
-        headers: {
-          if (authenticationValue != null) 'authorization': authenticationValue,
-        },
-      ).timeout(connectionTimeout);
+      var response = await _httpClient
+          .post(
+            url,
+            body: body,
+            headers: {
+              'authorization': ?authenticationValue,
+            },
+          )
+          .timeout(connectionTimeout);
 
       var data = response.body;
 
@@ -56,7 +56,7 @@ class ServerpodClientRequestDelegateImpl
       return data;
     } on http.ClientException catch (e) {
       var message = 'Unknown server response code. ($e)';
-      throw (ServerpodClientException(message, -1));
+      throw ServerpodClientException(message, -1);
     }
   }
 

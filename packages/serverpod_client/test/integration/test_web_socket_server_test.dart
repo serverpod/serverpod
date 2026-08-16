@@ -78,30 +78,34 @@ void main() async {
 
     tearDown(() => closeServer());
 
-    test('when sending single message then configured response is returned.',
-        () async {
-      var webSocket = await WebSocket.connect(webSocketHost);
-      webSocket.sendText('Hello');
-      var response = await webSocket.textEvents.first;
-      expect(response, sequence.first);
-    });
+    test(
+      'when sending single message then configured response is returned.',
+      () async {
+        var webSocket = await WebSocket.connect(webSocketHost);
+        webSocket.sendText('Hello');
+        var response = await webSocket.textEvents.first;
+        expect(response, sequence.first);
+      },
+    );
 
-    test('when sending multiple messages then a single response is returned.',
-        () async {
-      var webSocket = await WebSocket.connect(webSocketHost);
+    test(
+      'when sending multiple messages then a single response is returned.',
+      () async {
+        var webSocket = await WebSocket.connect(webSocketHost);
 
-      List<String> responses = [];
-      webSocket.textEvents.listen((event) {
-        responses.add(event);
-      });
+        List<String> responses = [];
+        webSocket.textEvents.listen((event) {
+          responses.add(event);
+        });
 
-      webSocket.sendText('First Message');
-      webSocket.sendText('Second Message');
+        webSocket.sendText('First Message');
+        webSocket.sendText('Second Message');
 
-      await Future.delayed(const Duration(milliseconds: 100));
+        await Future.delayed(const Duration(milliseconds: 100));
 
-      expect(responses, hasLength(1));
-      expect(responses.first, sequence.first);
-    });
+        expect(responses, hasLength(1));
+        expect(responses.first, sequence.first);
+      },
+    );
   });
 }

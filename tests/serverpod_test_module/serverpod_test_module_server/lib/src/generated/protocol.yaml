@@ -1,9 +1,13 @@
+concreteBase:
+  - virtualMethod:
+  - concreteMethod:
+  - abstractBaseMethod:
 module:
   - hello:
   - modifyModuleObject:
+recordStreaming:
+  - streamModuleClass:
 streaming:
-  - wasStreamOpenCalled:
-  - wasStreamClosedCalled:
   - intEchoStream:
   - simpleInputReturnStream:
 unauthenticated:

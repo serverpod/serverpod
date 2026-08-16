@@ -6,11 +6,13 @@ void main() {
   var client = Client(serverUrl);
 
   group('Given the database-roundtrip/echo server', () {
-    test('When the byte data store is tested on the server, it succeeds',
-        () async {
-      var result = await client.basicDatabase.testByteDataStore();
+    test(
+      'When the byte data store is tested on the server, it succeeds',
+      () async {
+        var result = await client.basicDatabase.testByteDataStore();
 
-      expect(result, equals(true));
-    });
+        expect(result, equals(true));
+      },
+    );
   });
 }

@@ -1,0 +1,5 @@
+class: BoolDefaultPersist
+table: bool_default_persist
+fields:
+  boolDefaultPersistTrue: bool?, defaultPersist=true
+  boolDefaultPersistFalse: bool?, defaultPersist=false

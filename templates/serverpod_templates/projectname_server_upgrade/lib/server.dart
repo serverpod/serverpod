@@ -1,60 +1,136 @@
-import 'package:projectname_server/src/birthday_reminder.dart';
+// {{#webapp}}
+import 'dart:io';
+// {{/webapp}}
+
 import 'package:serverpod/serverpod.dart';
+// {{#auth}}
+import 'package:serverpod_auth_idp_server/core.dart';
+import 'package:serverpod_auth_idp_server/providers/email.dart';
+// {{/auth}}
 
-import 'package:projectname_server/src/web/routes/root.dart';
-
-import 'src/generated/protocol.dart';
+// {{#webserver}}
+import 'src/cache_busting.dart';
+// {{/webserver}}
 import 'src/generated/endpoints.dart';
+import 'src/generated/protocol.dart';
+// {{#webapp}}
+import 'src/web/routes/app_config_route.dart';
+// {{/webapp}}
+// {{#website}}
+import 'src/web/routes/root.dart';
+// {{/website}}
 
-// This is the starting point of your Serverpod server. In most cases, you will
-// only need to make additions to this file if you add future calls,  are
-// configuring Relic (Serverpod's web-server), or need custom setup work.
-
+/// The starting point of the Serverpod server.
 void run(List<String> args) async {
   // Initialize Serverpod and connect it with your generated code.
   final pod = Serverpod(args, Protocol(), Endpoints());
 
+  // {{#auth}}
+  // Initialize authentication services for the server.
+  // Token managers will be used to validate and issue authentication keys,
+  // and the identity providers will be the authentication options available for users.
+  pod.initializeAuthServices(
+    tokenManagerBuilders: [
+      // Use JWT for authentication keys towards the server.
+      JwtConfigFromPasswords(),
+    ],
+    identityProviderBuilders: [
+      // Configure the email identity provider for email/password authentication.
+      // The default setup works with Serverpod Cloud without configuration. In
+      // development the verification codes are logged to the console, and in
+      // staging and production they are sent through the Serverpod Cloud email
+      // service. If you want to use a custom provider for sending emails, use
+      // `EmailIdpConfigFromPasswords`.
+      ServerpodCloudEmailIdpConfig(
+        appDisplayName: 'projectname',
+      ),
+    ],
+  );
+  // {{/auth}}
+
+  // {{#website}}
   // Setup a default page at the web root.
+  // These are used by the default page.
   pod.webServer.addRoute(RootRoute(), '/');
   pod.webServer.addRoute(RootRoute(), '/index.html');
-  // Serve all files in the /static directory.
+  // {{/website}}
+
+  // {{#webserver}}
+  // Serve all files in the web/static relative directory under /web.
+  // These are used by the default web page.
   pod.webServer.addRoute(
-    RouteStaticDirectory(serverDirectory: 'static', basePath: '/'),
-    '/*',
+    StaticRoute.withCacheBusting(cacheBustingConfig),
+    cacheBustingConfig.mountPrefix,
   );
+  // {{/webserver}}
+
+  // {{#webapp}}
+  // Setup the app config route.
+  // We build this configuration based on the servers api url and serve it to
+  // the flutter app.
+  pod.webServer.addRoute(
+    AppConfigRoute(apiConfig: pod.config.apiServer),
+    // {{#website}}
+    '/app/assets/assets/config.json',
+    // {{/website}}
+    // {{^website}}
+    '/assets/assets/config.json',
+    // {{/website}}
+  );
+
+  // Checks if the flutter web app has been built and serves it if it has.
+  final appDir = Directory(Uri(path: 'web/app').toFilePath());
+  if (appDir.existsSync()) {
+    // {{#website}}
+    // Serve the flutter web app under the /app path.
+    // {{/website}}
+    // {{^website}}
+    // Serve the flutter web app under /.
+    // {{/website}}
+    pod.webServer.addRoute(
+      FlutterRoute(
+        appDir,
+        // If building the Flutter app with WASM, set the below parameter to
+        // true and add the --wasm flag to the flutter build command.
+        enableWasmHeaders: false,
+      ),
+      // {{#website}}
+      '/app',
+      // {{/website}}
+      // {{^website}}
+      '/',
+      // {{/website}}
+    );
+  } else {
+    // If the flutter web app has not been built, serve the build app page.
+    final defaultRoute = StaticRoute.file(
+      File(
+        Uri(path: 'web/pages/build_flutter_app.html').toFilePath(),
+      ),
+    );
+
+    // {{^website}}
+    pod.webServer.addMiddleware(
+      FallbackMiddleware(
+        fallback: defaultRoute,
+        on: (response) => response.statusCode == 404,
+      ).call,
+      '/',
+    );
+    // {{/website}}
+
+    pod.webServer.addRoute(
+      defaultRoute,
+      // {{#website}}
+      '/app/**',
+      // {{/website}}
+      // {{^website}}
+      '/**',
+      // {{/website}}
+    );
+  }
+  // {{/webapp}}
 
   // Start the server.
   await pod.start();
-
-  // After starting the server, you can register future calls. Future calls are
-  // tasks that need to happen in the future, or independently of the request/
-  // response cycle. For example, you can use future calls to send emails, or to
-  // schedule tasks to be executed at a later time. Future calls are executed in
-  // the background. Their schedule is persisted to the database, so you will
-  // not lose them if the server is restarted.
-
-  pod.registerFutureCall(
-    BirthdayReminder(),
-    FutureCallNames.birthdayReminder.name,
-  );
-
-  // You can schedule future calls for a later time during startup. But you can
-  // also schedule them in any endpoint or webroute through the session object.
-  // there is also [futureCallAtTime] if you want to schedule a future call at a
-  // specific time.
-  await pod.futureCallWithDelay(
-    FutureCallNames.birthdayReminder.name,
-    Greeting(
-      message: 'Hello!',
-      author: 'Serverpod Server',
-      timestamp: DateTime.now(),
-    ),
-    Duration(seconds: 5),
-  );
 }
-
-/// Names of all future calls in the server.
-///
-/// This is better than using a string literal, as it will reduce the risk of
-/// typos and make it easier to refactor the code.
-enum FutureCallNames { birthdayReminder }

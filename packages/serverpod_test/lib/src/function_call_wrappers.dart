@@ -81,7 +81,7 @@ class ConnectionClosedException implements Exception {
 dynamic _getException(dynamic e) {
   switch (e) {
     case NotAuthorizedException():
-      return switch (e.authenticationFailedResult.reason) {
+      return switch (e.reason) {
         AuthenticationFailureReason.unauthenticated =>
           ServerpodUnauthenticatedException(),
         AuthenticationFailureReason.insufficientAccess =>

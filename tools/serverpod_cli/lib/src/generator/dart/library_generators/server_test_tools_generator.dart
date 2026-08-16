@@ -1,9 +1,12 @@
 import 'package:code_builder/code_builder.dart';
+import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/doc_comments/with_serverpod_doc_comment.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/library_generator.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/endpoint_generators_util.dart';
+import 'package:serverpod_cli/src/generator/dart/protocol_definition_extension.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
@@ -26,11 +29,19 @@ class ServerTestToolsGenerator {
         _buildWithServerpodFunction(),
         _buildPublicTestEndpointsClass(),
         _buildPrivateTestEndpointsClass(),
+        if (protocolDefinition.shouldGenerateFutureCalls)
+          _buildFutureCallClass(),
       ],
     );
 
     for (var endpoint in protocolDefinition.endpoints) {
+      if (endpoint.isAbstract) continue;
       library.body.add(_buildEndpointClassWithMethodCalls(endpoint));
+    }
+
+    for (var futureCall in protocolDefinition.futureCalls) {
+      if (futureCall.isAbstract || futureCall.methods.isEmpty) continue;
+      library.body.add(_buildFutureCallClassWithMethodCalls(futureCall));
     }
 
     return library.build();
@@ -46,7 +57,7 @@ class ServerTestToolsGenerator {
     var endpointsPath = [
       'package:${config.name}_server',
       ...config.generatedServeModelPackagePathParts,
-      'endpoints.dart'
+      'endpoints.dart',
     ].join('/');
 
     library.directives.addAll([
@@ -56,6 +67,177 @@ class ServerTestToolsGenerator {
     ]);
 
     library.ignoreForFile.add('no_leading_underscores_for_local_identifiers');
+  }
+
+  Class _buildFutureCallClass() {
+    return Class((classBuilder) {
+      classBuilder
+        ..name = '_FutureCalls'
+        ..fields.addAll([
+          for (var futureCall in protocolDefinition.futureCalls)
+            if (!futureCall.isAbstract && futureCall.methods.isNotEmpty)
+              Field(
+                (f) => f
+                  ..late = true
+                  ..name = futureCall.name
+                  ..modifier = FieldModifier.final$
+                  ..assignment = Code(
+                    '_${futureCall.name.pascalCase}FutureCall()',
+                  ),
+              ),
+        ]);
+    });
+  }
+
+  Class _buildFutureCallClassWithMethodCalls(FutureCallDefinition futureCall) {
+    return Class((classBuilder) {
+      classBuilder
+        ..name = '_${futureCall.name.pascalCase}FutureCall'
+        ..methods.addAll([
+          for (final method in futureCall.methods)
+            _buildFutureCallMethod(method, futureCall),
+        ]);
+    });
+  }
+
+  Method _buildFutureCallMethod(
+    FutureCallMethodDefinition method,
+    FutureCallDefinition futureCall,
+  ) {
+    final requiredParameters = method.parameters;
+    final optionalParameters = method.parametersPositional;
+    final namedParameters = method.parametersNamed;
+
+    return Method(
+      (m) => m
+        ..name = method.name
+        ..modifier = MethodModifier.async
+        ..returns = TypeReference(
+          (t) => t
+            ..symbol = 'Future'
+            ..types.add(refer('void')),
+        )
+        ..requiredParameters.addAll([
+          Parameter(
+            (p) => p
+              ..name = 'sessionBuilder'
+              ..type = refer('TestSessionBuilder', serverpodTestUrl),
+          ),
+          for (var param in requiredParameters)
+            Parameter(
+              (p) => p
+                ..name = param.name
+                ..type = param.type.reference(
+                  true,
+                  config: config,
+                ),
+            ),
+        ])
+        ..optionalParameters.addAll([
+          for (var param in optionalParameters)
+            Parameter(
+              (p) => p
+                ..named = false
+                ..name = param.name
+                ..defaultTo = param.defaultValue != null
+                    ? Code(param.defaultValue!)
+                    : null
+                ..type = param.type.reference(
+                  true,
+                  config: config,
+                ),
+            ),
+          for (var param in namedParameters)
+            Parameter(
+              (p) => p
+                ..named = true
+                ..required = param.required
+                ..name = param.name
+                ..defaultTo = param.defaultValue != null
+                    ? Code(param.defaultValue!)
+                    : null
+                ..type = param.type.reference(
+                  true,
+                  config: config,
+                ),
+            ),
+        ])
+        ..body = Block.of([
+          _buildFutureCallMethodSerializableModel(method),
+
+          refer('var _localUniqueSession')
+              .assign(
+                refer('sessionBuilder')
+                    .asA(refer('InternalTestSessionBuilder', serverpodTestUrl))
+                    .property('internalBuild')
+                    .call([]),
+              )
+              .statement,
+          const Code('try {'),
+          refer(
+                _getFutureCallClassName(futureCall.name, method.name),
+                'package:${config.serverPackage}/src/generated/future_calls.dart',
+              )
+              .call([])
+              .property('invoke')
+              .call(
+                [
+                  refer('_localUniqueSession'),
+                  if (method.futureCallMethodParameter != null)
+                    refer('object')
+                  else if (requiredParameters.isNotEmpty)
+                    refer(requiredParameters.first.name)
+                  else
+                    refer('null'),
+                ],
+              )
+              .awaited
+              .statement,
+          const Code('} finally {'),
+          refer(
+            '_localUniqueSession',
+          ).property('close').call([]).awaited.statement,
+          const Code('}'),
+        ]),
+    );
+  }
+
+  Code _buildFutureCallMethodSerializableModel(
+    FutureCallMethodDefinition method,
+  ) {
+    String? filePath;
+    if (method.futureCallMethodParameter != null) {
+      filePath = TypeDefinition.getRef(
+        method.futureCallMethodParameter!.toSerializableModel(),
+      );
+    }
+
+    return Block.of([
+      if (method.futureCallMethodParameter != null)
+        refer('var object')
+            .assign(
+              refer(
+                method.futureCallMethodParameter!.type.className,
+                'package:${config.serverPackage}/src/generated/$filePath',
+              ).call(
+                [],
+                {
+                  for (final param in method.allParameters)
+                    param.name: refer(param.name),
+                },
+              ),
+            )
+            .statement,
+    ]);
+  }
+
+  String _getFutureCallClassName(String futureCallName, [String? methodName]) {
+    final buffer = StringBuffer()
+      ..write(futureCallName.pascalCase)
+      ..write(methodName == null ? '' : methodName.pascalCase)
+      ..write('FutureCall');
+
+    return buffer.toString();
   }
 
   Class _buildEndpointClassWithMethodCalls(EndpointDefinition endpoint) {
@@ -76,7 +258,7 @@ class ServerTestToolsGenerator {
                 ..name = '_serializationManager'
                 ..modifier = FieldModifier.final$
                 ..type = refer('SerializationManager', serverpodUrl(true));
-            })
+            }),
           ]
         : [];
 
@@ -108,19 +290,22 @@ class ServerTestToolsGenerator {
       classBuilder.methods.addAll(
         [
           for (var method in endpoint.methods)
-            _buildEndpointMethod(method, endpoint)
+            _buildEndpointMethod(method, endpoint),
         ],
       );
     });
   }
 
   Method _buildEndpointMethod(
-      MethodDefinition method, EndpointDefinition endpoint) {
+    MethodDefinition method,
+    EndpointDefinition endpoint,
+  ) {
     return Method(
       (methodBuilder) {
         bool returnsStream = method.returnType.isStreamType;
-        bool hasStreamParameter =
-            method.allParameters.any((p) => p.type.isStreamType);
+        bool hasStreamParameter = method.allParameters.any(
+          (p) => p.type.isStreamType,
+        );
 
         methodBuilder
           ..name = method.name
@@ -134,9 +319,14 @@ class ServerTestToolsGenerator {
                   ..type = refer('TestSessionBuilder', serverpodTestUrl),
               ),
               for (var parameter in method.parameters)
-                Parameter((p) => p
-                  ..name = parameter.name
-                  ..type = parameter.type.reference(true, config: config)),
+                Parameter(
+                  (p) => p
+                    ..name = parameter.name
+                    ..type = parameter.type.reference(true, config: config)
+                    ..annotations.addAll(
+                      buildParameterAnnotations(parameter),
+                    ),
+                ),
             ],
           )
           ..optionalParameters.addAll(
@@ -146,7 +336,10 @@ class ServerTestToolsGenerator {
                   (p) => p
                     ..name = parameter.name
                     ..type = parameter.type.reference(true, config: config)
-                    ..named = false,
+                    ..named = false
+                    ..annotations.addAll(
+                      buildParameterAnnotations(parameter),
+                    ),
                 ),
               for (var parameter in method.parametersNamed)
                 Parameter(
@@ -154,15 +347,24 @@ class ServerTestToolsGenerator {
                     ..name = parameter.name
                     ..type = parameter.type.reference(true, config: config)
                     ..named = true
-                    ..required = parameter.required,
+                    ..required = parameter.required
+                    ..annotations.addAll(
+                      buildParameterAnnotations(parameter),
+                    ),
                 ),
             ],
           );
 
+        // Add deprecated annotations if present
+        methodBuilder.annotations.addAll(buildEndpointCallAnnotations(method));
+
         methodBuilder.body = returnsStream || hasStreamParameter
-            ? _buildEndpointStreamMethodCall(endpoint, method,
+            ? _buildEndpointStreamMethodCall(
+                endpoint,
+                method,
                 hasStreamParameter: hasStreamParameter,
-                returnsStream: returnsStream)
+                returnsStream: returnsStream,
+              )
             : _buildEndpointMethodCall(endpoint, method);
       },
     );
@@ -172,18 +374,16 @@ class ServerTestToolsGenerator {
     EndpointDefinition endpoint,
     MethodDefinition method,
   ) {
-    var mapRecordToJsonRef = refer(
-      mapRecordToJsonFuncName,
-      'package:${config.serverPackage}/src/generated/protocol.dart',
-    );
-    var mapRecordContainingContainerToJsonRef = refer(
-      mapContainerToJsonFunctionName,
+    var protocolRef = refer(
+      'Protocol',
       'package:${config.serverPackage}/src/generated/protocol.dart',
     );
 
     Spec handleParameter(ParameterDefinition parameterDef) {
       if (parameterDef.type.isRecordType) {
-        return mapRecordToJsonRef.call([refer(parameterDef.name)]).code;
+        return protocolRef.call([]).property(mapRecordToJsonFuncName).call([
+          refer(parameterDef.name),
+        ]).code;
       }
 
       if (parameterDef.type.returnsRecordInContainer ||
@@ -191,8 +391,9 @@ class ServerTestToolsGenerator {
         return Block.of([
           if (parameterDef.type.nullable)
             Code('${parameterDef.name} == null ? null :'),
-          mapRecordContainingContainerToJsonRef
-              .call([refer(parameterDef.name)]).code,
+          protocolRef.call([]).property(mapContainerToJsonFunctionName).call([
+            refer(parameterDef.name),
+          ]).code,
         ]);
       }
 
@@ -204,35 +405,43 @@ class ServerTestToolsGenerator {
         ..modifier = MethodModifier.async
         ..body = Block.of([
           refer('var _localUniqueSession')
-              .assign(refer('sessionBuilder')
-                  .asA(refer('InternalTestSessionBuilder', serverpodTestUrl))
-                  .property('internalBuild')
-                  .call([], {
-                'endpoint': literalString(endpoint.name),
-                'method': literalString(method.name),
-              }))
+              .assign(
+                refer('sessionBuilder')
+                    .asA(refer('InternalTestSessionBuilder', serverpodTestUrl))
+                    .property('internalBuild')
+                    .call([], {
+                      'endpoint': literalString(endpoint.name),
+                      'method': literalString(method.name),
+                    }),
+              )
               .statement,
           const Code('try {'),
           refer('var _localCallContext')
-              .assign(refer('_endpointDispatch')
-                  .awaited
-                  .property('getMethodCallContext')
-                  .call([], {
-                'createSessionCallback': Method((methodBuilder) => methodBuilder
-                  ..requiredParameters.add(
-                    Parameter((p) => p..name = '_'),
-                  )
-                  ..body = refer('_localUniqueSession').code).closure,
-                'endpointPath': literalString(endpoint.name),
-                'methodName': literalString(method.name),
-                'parameters': refer('testObjectToJson', serverpodTestUrl).call([
-                  literalMap({
-                    for (var parameter in method.allParameters)
-                      literalString(parameter.name): handleParameter(parameter),
-                  })
-                ]),
-                'serializationManager': refer('_serializationManager'),
-              }))
+              .assign(
+                refer(
+                  '_endpointDispatch',
+                ).awaited.property('getMethodCallContext').call([], {
+                  'createSessionCallback': Method(
+                    (methodBuilder) => methodBuilder
+                      ..requiredParameters.add(
+                        Parameter((p) => p..name = '_'),
+                      )
+                      ..body = refer('_localUniqueSession').code,
+                  ).closure,
+                  'endpointPath': literalString(endpoint.name),
+                  'methodName': literalString(method.name),
+                  'parameters': refer('testObjectToJson', serverpodTestUrl)
+                      .call([
+                        literalMap({
+                          for (var parameter in method.allParameters)
+                            literalString(parameter.name): handleParameter(
+                              parameter,
+                            ),
+                        }),
+                      ]),
+                  'serializationManager': refer('_serializationManager'),
+                }),
+              )
               .statement,
           refer('var _localReturnValue')
               .assign(
@@ -249,20 +458,18 @@ class ServerTestToolsGenerator {
               .statement,
           refer('_localReturnValue').returned.statement,
           const Code('} finally {'),
-          refer('_localUniqueSession')
-              .property('close')
-              .call([])
-              .awaited
-              .statement,
+          refer(
+            '_localUniqueSession',
+          ).property('close').call([]).awaited.statement,
           const Code('}'),
         ])
         ..returns,
     ).closure;
 
-    return refer('callAwaitableFunctionAndHandleExceptions', serverpodTestUrl)
-        .call([closure])
-        .returned
-        .statement;
+    return refer(
+      'callAwaitableFunctionAndHandleExceptions',
+      serverpodTestUrl,
+    ).call([closure]).returned.statement;
   }
 
   Code _buildEndpointStreamMethodCall(
@@ -271,45 +478,53 @@ class ServerTestToolsGenerator {
     required bool hasStreamParameter,
     required bool returnsStream,
   }) {
-    var parameters =
-        method.allParameters.where((p) => !p.type.isStreamType).toList();
-    var streamParameters =
-        method.allParameters.where((p) => p.type.isStreamType).toList();
+    var parameters = method.allParameters
+        .where((p) => !p.type.isStreamType)
+        .toList();
+    var streamParameters = method.allParameters
+        .where((p) => p.type.isStreamType)
+        .toList();
 
     var closure = Method(
       (methodBuilder) => methodBuilder
         ..modifier = MethodModifier.async
         ..body = Block.of([
           refer('var _localUniqueSession')
-              .assign(refer('sessionBuilder')
-                  .asA(refer('InternalTestSessionBuilder', serverpodTestUrl))
-                  .property('internalBuild')
-                  .call([], {
-                'endpoint': literalString(endpoint.name),
-                'method': literalString(method.name),
-              }))
+              .assign(
+                refer('sessionBuilder')
+                    .asA(refer('InternalTestSessionBuilder', serverpodTestUrl))
+                    .property('internalBuild')
+                    .call([], {
+                      'endpoint': literalString(endpoint.name),
+                      'method': literalString(method.name),
+                    }),
+              )
               .statement,
           refer('var _localCallContext')
-              .assign(refer('_endpointDispatch')
-                  .awaited
-                  .property('getMethodStreamCallContext')
-                  .call([], {
-                'createSessionCallback': Method((methodBuilder) => methodBuilder
-                  ..requiredParameters.add(
-                    Parameter((p) => p..name = '_'),
-                  )
-                  ..body = refer('_localUniqueSession').code).closure,
-                'endpointPath': literalString(endpoint.name),
-                'methodName': literalString(method.name),
-                'arguments': literalMap({
-                  for (var parameter in parameters)
-                    literalString(parameter.name): parameter
-                        .methodArgumentSerializationCode(config: config),
+              .assign(
+                refer(
+                  '_endpointDispatch',
+                ).awaited.property('getMethodStreamCallContext').call([], {
+                  'createSessionCallback': Method(
+                    (methodBuilder) => methodBuilder
+                      ..requiredParameters.add(
+                        Parameter((p) => p..name = '_'),
+                      )
+                      ..body = refer('_localUniqueSession').code,
+                  ).closure,
+                  'endpointPath': literalString(endpoint.name),
+                  'methodName': literalString(method.name),
+                  'arguments': literalMap({
+                    for (var parameter in parameters)
+                      literalString(parameter.name): parameter
+                          .methodArgumentSerializationCode(config: config),
+                  }),
+                  'requestedInputStreams': literalList(
+                    streamParameters.map((p) => p.name),
+                  ),
+                  'serializationManager': refer('_serializationManager'),
                 }),
-                'requestedInputStreams':
-                    literalList(streamParameters.map((p) => p.name)),
-                'serializationManager': refer('_serializationManager'),
-              }))
+              )
               .statement,
           refer('_localTestStreamManager')
               .property('callStreamMethod')
@@ -344,9 +559,9 @@ class ServerTestToolsGenerator {
 
     var streamManagerInstance = testStreamManagerType.newInstance([]);
 
-    var streamManagerDeclaration = refer('var _localTestStreamManager')
-        .assign(streamManagerInstance)
-        .statement;
+    var streamManagerDeclaration = refer(
+      'var _localTestStreamManager',
+    ).assign(streamManagerInstance).statement;
 
     if (returnsStream) {
       return Block.of([
@@ -378,43 +593,49 @@ class ServerTestToolsGenerator {
         ..name = '_InternalTestEndpoints'
         ..extend = refer('TestEndpoints')
         ..implements.add(refer('InternalTestEndpoints', serverpodTestUrl))
-        ..methods.add(Method(
-          (methodBuilder) {
-            methodBuilder
-              ..name = 'initialize'
-              ..returns = refer('void')
-              ..annotations.add(refer('override'))
-              ..requiredParameters.add(
-                Parameter(
-                  (p) => p
-                    ..name = 'serializationManager'
-                    ..type = refer('SerializationManager', serverpodUrl(true)),
-                ),
-              )
-              ..requiredParameters.add(
-                Parameter(
-                  (p) => p
-                    ..name = 'endpoints'
-                    ..type = refer('EndpointDispatch', serverpodUrl(true)),
-                ),
-              )
-              ..body = Block.of(
-                [
-                  for (var endpoint in protocolDefinition.endpoints)
-                    refer(endpoint.name)
-                        .assign(
-                          refer('_${endpoint.className}').newInstance(
-                            [
-                              refer('endpoints'),
-                              refer('serializationManager'),
-                            ],
-                          ),
-                        )
-                        .statement,
-                ],
-              );
-          },
-        ));
+        ..methods.add(
+          Method(
+            (methodBuilder) {
+              methodBuilder
+                ..name = 'initialize'
+                ..returns = refer('void')
+                ..annotations.add(refer('override'))
+                ..requiredParameters.add(
+                  Parameter(
+                    (p) => p
+                      ..name = 'serializationManager'
+                      ..type = refer(
+                        'SerializationManager',
+                        serverpodUrl(true),
+                      ),
+                  ),
+                )
+                ..requiredParameters.add(
+                  Parameter(
+                    (p) => p
+                      ..name = 'endpoints'
+                      ..type = refer('EndpointDispatch', serverpodUrl(true)),
+                  ),
+                )
+                ..body = Block.of(
+                  [
+                    for (var endpoint in protocolDefinition.endpoints)
+                      if (!endpoint.isAbstract)
+                        refer(endpoint.name)
+                            .assign(
+                              refer('_${endpoint.className}').newInstance(
+                                [
+                                  refer('endpoints'),
+                                  refer('serializationManager'),
+                                ],
+                              ),
+                            )
+                            .statement,
+                  ],
+                );
+            },
+          ),
+        );
     });
   }
 
@@ -422,7 +643,24 @@ class ServerTestToolsGenerator {
     return Class((classBuilder) {
       classBuilder.name = 'TestEndpoints';
 
+      if (protocolDefinition.shouldGenerateFutureCalls) {
+        classBuilder.fields.add(
+          Field(
+            (fieldBuilder) {
+              fieldBuilder
+                ..name = 'futureCalls'
+                ..late = true
+                ..modifier = FieldModifier.final$
+                ..assignment = Block.of([
+                  const Code('_FutureCalls()'),
+                ]);
+            },
+          ),
+        );
+      }
+
       for (var endpoint in protocolDefinition.endpoints) {
+        if (endpoint.isAbstract) continue;
         classBuilder.fields.add(
           Field(
             (fieldBuilder) {
@@ -440,105 +678,190 @@ class ServerTestToolsGenerator {
 
   Method _buildWithServerpodFunction() {
     var optionalParameters = [
-      Parameter((p) => p
-        ..name = 'runMode'
-        ..named = true
-        ..type = refer('String?')),
-      Parameter((p) => p
-        ..name = 'enableSessionLogging'
-        ..named = true
-        ..type = refer('bool?')),
-      Parameter((p) => p
-        ..name = 'serverpodLoggingMode'
-        ..named = true
-        ..type = refer('ServerpodLoggingMode?', serverpodUrl(true))),
-      Parameter((p) => p
-        ..name = 'testGroupTagsOverride'
-        ..named = true
-        ..type = refer('List<String>?')),
-      Parameter((p) => p
-        ..name = 'serverpodStartTimeout'
-        ..named = true
-        ..type = refer('Duration?')),
+      Parameter(
+        (p) => p
+          ..name = 'runMode'
+          ..named = true
+          ..type = refer('String?'),
+      ),
+      Parameter(
+        (p) => p
+          ..name = 'enableSessionLogging'
+          ..named = true
+          ..type = refer('bool?'),
+      ),
+      Parameter(
+        (p) => p
+          ..name = 'serverpodLoggingMode'
+          ..named = true
+          ..type = refer('ServerpodLoggingMode?', serverpodUrl(true)),
+      ),
+      Parameter(
+        (p) => p
+          ..name = 'configOverride'
+          ..named = true
+          ..type = FunctionType(
+            (f) => f
+              ..isNullable = true
+              ..returnType = TypeReference(
+                (t) => t
+                  ..symbol = 'ServerpodConfig'
+                  ..url = serverpodUrl(true)
+                  ..isNullable = false,
+              )
+              ..requiredParameters.add(
+                TypeReference(
+                  (t) => t
+                    ..symbol = 'ServerpodConfig'
+                    ..url = serverpodUrl(true)
+                    ..isNullable = false,
+                ),
+              ),
+          ),
+      ),
+      Parameter(
+        (p) => p
+          ..name = 'testGroupTagsOverride'
+          ..named = true
+          ..type = refer('List<String>?'),
+      ),
+      Parameter(
+        (p) => p
+          ..name = 'serverpodStartTimeout'
+          ..named = true
+          ..type = refer('Duration?'),
+      ),
+      Parameter(
+        (p) => p
+          ..name = 'testServerOutputMode'
+          ..named = true
+          ..type = refer('TestServerOutputMode?', serverpodTestUrl),
+      ),
       Parameter(
         (p) => p
           ..name = 'experimentalFeatures'
           ..named = true
           ..type = refer('ExperimentalFeatures?', serverpodUrl(true)),
       ),
+      Parameter(
+        (p) => p
+          ..name = 'serverDirectory'
+          ..named = true
+          ..type = refer('Directory?', 'dart:io'),
+      ),
       if (config.isFeatureEnabled(ServerpodFeature.database)) ...[
-        Parameter((p) => p
-          ..name = 'rollbackDatabase'
-          ..named = true
-          ..type = refer('RollbackDatabase?', serverpodTestUrl)),
-        Parameter((p) => p
-          ..name = 'applyMigrations'
-          ..named = true
-          ..type = refer('bool?')),
-        Parameter((p) => p
-          ..name = 'runtimeParametersBuilder'
-          ..named = true
-          ..type = refer('RuntimeParametersListBuilder?', serverpodUrl(true))),
+        Parameter(
+          (p) => p
+            ..name = 'rollbackDatabase'
+            ..named = true
+            ..type = refer('RollbackDatabase?', serverpodTestUrl),
+        ),
+        Parameter(
+          (p) => p
+            ..name = 'applyMigrations'
+            ..named = true
+            ..type = refer('bool?'),
+        ),
+        Parameter(
+          (p) => p
+            ..name = 'databaseInterceptor'
+            ..named = true
+            ..type = refer('DatabaseInterceptor?', serverpodUrl(true)),
+        ),
+        Parameter(
+          (p) => p
+            ..name = 'runtimeParametersBuilder'
+            ..named = true
+            ..type = refer('RuntimeParametersListBuilder?', serverpodUrl(true)),
+        ),
       ],
     ]..sort(_sortParameterByName);
 
     return Method((methodBuilder) {
       methodBuilder
-        ..docs.add(buildWithServerpodDocComments(
-          optionalParameters.map((p) => p.name).toList(),
-        ))
+        ..docs.add(
+          buildWithServerpodDocComments(
+            optionalParameters.map((p) => p.name).toList(),
+          ),
+        )
         ..name = 'withServerpod'
         ..returns = refer('void')
         ..annotations.add(refer('isTestGroup', serverpodTestUrl))
         ..requiredParameters.addAll([
-          Parameter((p) => p
-            ..name = 'testGroupName'
-            ..type = refer('String')),
-          Parameter((p) => p
-            ..name = 'testClosure'
-            ..type = refer('TestClosure<TestEndpoints>', serverpodTestUrl)),
+          Parameter(
+            (p) => p
+              ..name = 'testGroupName'
+              ..type = refer('String'),
+          ),
+          Parameter(
+            (p) => p
+              ..name = 'testClosure'
+              ..type = refer('TestClosure<TestEndpoints>', serverpodTestUrl),
+          ),
         ])
         ..optionalParameters.addAll(optionalParameters)
-        ..body = refer(
-                'buildWithServerpod<_InternalTestEndpoints>', serverpodTestUrl)
-            .call(
-          [
-            refer('testGroupName'),
-            refer('TestServerpod', serverpodTestUrl).newInstance(
-              [],
-              {
-                'testEndpoints':
-                    refer('_InternalTestEndpoints').newInstance([]),
-                'endpoints': refer('Endpoints').newInstance([]),
-                'serializationManager': refer('Protocol').newInstance([]),
-                'runMode': refer('runMode'),
-                'applyMigrations':
-                    config.isFeatureEnabled(ServerpodFeature.database)
-                        ? refer('applyMigrations')
-                        : literalBool(false),
-                'isDatabaseEnabled': literalBool(
-                  config.isFeatureEnabled(ServerpodFeature.database),
-                ),
-                'serverpodLoggingMode': refer('serverpodLoggingMode'),
-                'experimentalFeatures': refer('experimentalFeatures'),
-                if (config.isFeatureEnabled(ServerpodFeature.database))
-                  'runtimeParametersBuilder': refer('runtimeParametersBuilder'),
-              },
-            ),
-          ],
-          {
-            'maybeRollbackDatabase':
-                config.isFeatureEnabled(ServerpodFeature.database)
-                    ? refer('rollbackDatabase')
-                    : refer('RollbackDatabase', serverpodTestUrl)
-                        .property('disabled'),
-            'maybeEnableSessionLogging': refer('enableSessionLogging'),
-            'maybeTestGroupTagsOverride': refer('testGroupTagsOverride'),
-            'maybeServerpodStartTimeout': refer('serverpodStartTimeout'),
-          },
-        ).call([
-          refer('testClosure'),
-        ]).statement;
+        ..body =
+            refer(
+                  'buildWithServerpod<_InternalTestEndpoints>',
+                  serverpodTestUrl,
+                )
+                .call(
+                  [
+                    refer('testGroupName'),
+                    refer('TestServerpod', serverpodTestUrl).newInstance(
+                      [],
+                      {
+                        'testEndpoints': refer(
+                          '_InternalTestEndpoints',
+                        ).newInstance([]),
+                        'endpoints': refer('Endpoints').newInstance([]),
+                        'serializationManager': refer(
+                          'Protocol',
+                        ).newInstance([]),
+                        'runMode': refer('runMode'),
+                        'applyMigrations':
+                            config.isFeatureEnabled(ServerpodFeature.database)
+                            ? refer('applyMigrations')
+                            : literalBool(false),
+                        'isDatabaseEnabled': literalBool(
+                          config.isFeatureEnabled(ServerpodFeature.database),
+                        ),
+                        'serverpodLoggingMode': refer('serverpodLoggingMode'),
+                        'testServerOutputMode': refer('testServerOutputMode'),
+                        'serverDirectory': refer('serverDirectory'),
+                        'experimentalFeatures': refer('experimentalFeatures'),
+                        'configOverride': refer('configOverride'),
+                        if (config.isFeatureEnabled(ServerpodFeature.database))
+                          'runtimeParametersBuilder': refer(
+                            'runtimeParametersBuilder',
+                          ),
+                        if (config.isFeatureEnabled(ServerpodFeature.database))
+                          'databaseInterceptor': refer('databaseInterceptor'),
+                      },
+                    ),
+                  ],
+                  {
+                    'maybeRollbackDatabase':
+                        config.isFeatureEnabled(ServerpodFeature.database)
+                        ? refer('rollbackDatabase')
+                        : refer(
+                            'RollbackDatabase',
+                            serverpodTestUrl,
+                          ).property('disabled'),
+                    'maybeEnableSessionLogging': refer('enableSessionLogging'),
+                    'maybeTestGroupTagsOverride': refer(
+                      'testGroupTagsOverride',
+                    ),
+                    'maybeServerpodStartTimeout': refer(
+                      'serverpodStartTimeout',
+                    ),
+                    'maybeTestServerOutputMode': refer('testServerOutputMode'),
+                  },
+                )
+                .call([
+                  refer('testClosure'),
+                ])
+                .statement;
     });
   }
 
@@ -552,40 +875,43 @@ extension on ParameterDefinition {
   /// Records and record-containing containers need to be mapped to their JSON (Map) representation,
   /// whereas models and primitives can be returned verbatim.
   Code methodArgumentSerializationCode({required GeneratorConfig config}) {
-    var mapRecordToJsonRef = refer(
-      mapRecordToJsonFuncName,
-      'package:${config.serverPackage}/src/generated/protocol.dart',
-    );
-    var mapRecordContainingContainerToJsonRef = refer(
-      mapContainerToJsonFunctionName,
+    var protocolRef = refer(
+      'Protocol',
       'package:${config.serverPackage}/src/generated/protocol.dart',
     );
 
     if (type.isRecordType) {
       return refer('jsonDecode', 'dart:convert').call([
-        refer('SerializationManager', serverpodUrl(true))
-            .property('encode')
-            .call([
-          mapRecordToJsonRef.call([refer(name)])
+        refer(
+          'SerializationManager',
+          serverpodUrl(true),
+        ).property('encode').call([
+          protocolRef.call([]).property(mapRecordToJsonFuncName).call([
+            refer(name),
+          ]),
         ]),
       ]).code;
     } else if (type.returnsRecordInContainer) {
       return Block.of([
         if (type.nullable) Code('$name == null ? null :'),
         refer('jsonDecode', 'dart:convert').call([
-          refer('SerializationManager', serverpodUrl(true))
-              .property('encode')
-              .call([
-            mapRecordContainingContainerToJsonRef.call([refer(name)]),
+          refer(
+            'SerializationManager',
+            serverpodUrl(true),
+          ).property('encode').call([
+            protocolRef.call([]).property(mapContainerToJsonFunctionName).call([
+              refer(name),
+            ]),
           ]),
         ]).code,
       ]);
     } else if ((!autoSerializedTypes.contains(type.className) &&
         !extensionSerializedTypes.contains(type.className))) {
       return refer('jsonDecode', 'dart:convert').call([
-        refer('SerializationManager', serverpodUrl(true))
-            .property('encode')
-            .call([refer(name)]),
+        refer(
+          'SerializationManager',
+          serverpodUrl(true),
+        ).property('encode').call([refer(name)]),
       ]).code;
     } else {
       return refer(name).code;
@@ -648,6 +974,11 @@ extension on Expression {
           ]),
         ),
       ]);
+    }
+
+    if (returnType.isFutureType &&
+        returnType.generics.single.className == 'dynamic') {
+      return this;
     }
 
     return asA(returnType.reference(true, config: config));

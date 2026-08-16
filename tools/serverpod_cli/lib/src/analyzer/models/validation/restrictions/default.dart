@@ -1,11 +1,11 @@
 import 'package:intl/intl.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
-import 'package:serverpod_cli/src/analyzer/models/utils/duration_utils.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/base.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:source_span/source_span.dart';
 
 class DefaultValueRestriction extends ValueRestriction {
@@ -32,39 +32,118 @@ class DefaultValueRestriction extends ValueRestriction {
     var defaultValueType = field.type.defaultValueType;
     if (defaultValueType == null) return [];
 
+    var errors = <SourceSpanSeverityException>[];
+
+    // Validate immutable classes don't use non-constant default values
+    errors.addAll(
+      _validateImmutableNonConstantDefault(definition, value, span),
+    );
+
     if ((definition is ModelClassDefinition) &&
         (definition.tableName != null) &&
         (parentNodeName == defaultPrimaryKeyName)) {
-      return _idTypeDefaultValidation(
-        definition.tableName!,
-        field.type,
-        value,
-        span,
+      errors.addAll(
+        _idTypeDefaultValidation(
+          definition.tableName!,
+          field.type,
+          value,
+          span,
+        ),
       );
+      return errors;
     }
 
     switch (defaultValueType) {
       case DefaultValueAllowedType.dateTime:
-        return _dateDateValidation(value, span);
+        errors.addAll(_dateDateValidation(value, span));
       case DefaultValueAllowedType.bool:
-        return _booleanValidation(value, span);
+        errors.addAll(_booleanValidation(value, span));
       case DefaultValueAllowedType.int:
-        return _integerValidation(value, span);
+        errors.addAll(_integerValidation(value, span));
       case DefaultValueAllowedType.double:
-        return _doubleValidation(value, span);
+        errors.addAll(_doubleValidation(value, span));
       case DefaultValueAllowedType.string:
-        return _stringValidation(value, span);
+        errors.addAll(_stringValidation(value, span));
       case DefaultValueAllowedType.uuidValue:
-        return _uuidValueValidation(value, span);
+        errors.addAll(_uuidValueValidation(value, span));
       case DefaultValueAllowedType.bigInt:
-        return _bigIntValueValidation(value, span);
+        errors.addAll(_bigIntValueValidation(value, span));
       case DefaultValueAllowedType.duration:
-        return _durationValidation(value, span);
+        errors.addAll(_durationValidation(value, span));
       case DefaultValueAllowedType.isEnum:
-        return _enumValidation(value, span, field);
+        errors.addAll(_enumValidation(value, span, field));
       case DefaultValueAllowedType.uri:
-        return _uriValueValidation(value, span);
+        errors.addAll(_uriValueValidation(value, span));
     }
+
+    return errors;
+  }
+
+  /// Validates that immutable classes do not use non-constant default values.
+  ///
+  /// Returns an error if the class (or any of its ancestors) is immutable and
+  /// the field has a non-constant default value like `now` or `random`.
+  List<SourceSpanSeverityException> _validateImmutableNonConstantDefault(
+    ClassDefinition definition,
+    dynamic value,
+    SourceSpan? span,
+  ) {
+    // Only applies to defaultModel and default keys, not defaultPersist
+    if (key == Keyword.defaultPersistKey) return [];
+
+    if (definition is! ModelClassDefinition) return [];
+
+    if (!_isImmutableOrHasImmutableAncestor(definition)) return [];
+
+    if (!_isNonConstantDefaultValue(value)) return [];
+
+    var suggestion = _hasTableOrTableDescendant(definition)
+        ? ' If the model is persisted to the database, use the "${Keyword.defaultPersistKey}" key instead.'
+        : '';
+
+    return [
+      SourceSpanSeverityException(
+        'The "$key" value "$value" is not allowed '
+        'for immutable classes because it is not a constant value.$suggestion',
+        span,
+      ),
+    ];
+  }
+
+  /// Returns true if the given model or any of its ancestor classes is
+  /// immutable.
+  bool _isImmutableOrHasImmutableAncestor(ModelClassDefinition model) {
+    if (model.isImmutable) return true;
+
+    var parent = model.parentClass;
+    while (parent != null) {
+      if (parent.isImmutable) return true;
+      parent = parent.parentClass;
+    }
+
+    return false;
+  }
+
+  /// Returns true if the given model or any of its descendant classes has a
+  /// table defined.
+  bool _hasTableOrTableDescendant(ModelClassDefinition model) {
+    if (model.tableName != null) return true;
+
+    return model.descendantClasses.any((child) => child.tableName != null);
+  }
+
+  /// Returns whether a default value is a non-constant value
+  /// that cannot be used in const constructors.
+  ///
+  /// Non-constant defaults include:
+  /// - `now` for DateTime
+  /// - `random` and `random_v7` for UuidValue
+  bool _isNonConstantDefaultValue(dynamic value) {
+    if (value == null) return false;
+
+    return value == defaultDateTimeValueNow ||
+        value == defaultUuidValueRandom ||
+        value == defaultUuidValueRandomV7;
   }
 
   List<SourceSpanSeverityException> _idTypeDefaultValidation(
@@ -180,6 +259,19 @@ class DefaultValueRestriction extends ValueRestriction {
     SourceSpan? span,
   ) {
     if (value is int) return [];
+
+    if (value == defaultIntSerial) {
+      if (key == Keyword.defaultPersistKey) return [];
+
+      return [
+        SourceSpanSeverityException(
+          'The default value "$defaultIntSerial" can not be set using the '
+          '"$key" keyword. Use the "${Keyword.defaultPersistKey}" keyword '
+          'instead.',
+          span,
+        ),
+      ];
+    }
 
     return [
       SourceSpanSeverityException(

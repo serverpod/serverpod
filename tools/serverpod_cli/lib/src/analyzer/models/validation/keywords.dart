@@ -3,9 +3,11 @@ class Keyword {
   static const String exceptionType = 'exception';
   static const String enumType = 'enum';
 
+  static const String serializationDataType = 'serializationDataType';
   static const String serialized = 'serialized';
 
   static const String isSealed = 'sealed';
+  static const String isImmutable = 'immutable';
   static const String extendsClass = 'extends';
 
   static const String serverOnly = 'serverOnly';
@@ -13,10 +15,14 @@ class Keyword {
   static const String managedMigration = 'managedMigration';
   static const String fields = 'fields';
   static const String indexes = 'indexes';
+  static const String properties = 'properties';
   static const String values = 'values';
 
   static const String type = 'type';
   static const String unique = 'unique';
+  static const String nullsDistinct = 'nulls_distinct';
+  static const String per = 'per';
+  static const String operatorClass = 'operatorClass';
   static const String distanceFunction = 'distanceFunction';
   static const String parameters = 'parameters';
   static const String parent = 'parent';
@@ -31,10 +37,15 @@ class Keyword {
   static const String scope = 'scope';
   static const String persist = 'persist';
   static const String requiredKey = 'required';
+  static const String tail = 'tail';
 
   static const String defaultKey = 'default';
   static const String defaultModelKey = 'defaultModel';
   static const String defaultPersistKey = 'defaultPersist';
+
+  static const String columnKey = 'column';
+
+  static const String jsonKey = 'jsonKey';
 
   /// Special keyword to allow keys to be any string.
   static const String any = '#any';

@@ -1,0 +1,154 @@
+import 'package:serverpod/serverpod.dart';
+
+import '../../../../core.dart';
+import 'email_idp_config.dart';
+import 'email_idp_server_exceptions.dart';
+import 'utils/email_idp_account_creation_util.dart';
+import 'utils/email_idp_account_utils.dart';
+import 'utils/email_idp_authentication_util.dart';
+import 'utils/email_idp_password_reset_util.dart';
+
+/// Email account management functions.
+///
+/// This class provides atomic building blocks for composing custom authentication
+/// and administration flows. The building blocks are accessible through properties
+/// divided up into related groups.
+///
+/// - [hashUtil] - Utilities for hashing passwords and verification codes
+/// - [authentication] - Utilities for authenticating users
+/// - [accountCreation] - Utilities for creating and verifying email accounts
+/// - [passwordReset] - Utilities for resetting passwords
+///
+/// For most standard use cases, the methods exposed by [EmailIdp] and
+/// [EmailIdpAdmin] should be sufficient.
+class EmailIdpUtils {
+  /// General hash util for the email identity provider.
+  ///
+  /// Follows OWASP recommended parameters for storing passwords.
+  final Argon2HashUtil hashUtil;
+
+  /// {@macro email_idp_account_creation_util}
+  late final EmailIdpAccountCreationUtil accountCreation;
+
+  /// {@macro email_idp_password_reset_util}
+  late final EmailIdpPasswordResetUtil passwordReset;
+
+  /// {@macro email_idp_authentication_utils}
+  late final EmailIdpAuthenticationUtil authentication;
+
+  /// {@macro email_idp_account_utils}
+  final EmailIdpAccountUtils account;
+
+  /// Creates a new instance of [EmailIdpUtils].
+  EmailIdpUtils({
+    required final EmailIdpConfig config,
+    final AuthUsers authUsers = const AuthUsers(),
+  }) : hashUtil = Argon2HashUtil(
+         hashPepper: config.secretHashPepper,
+         fallbackHashPeppers: config.fallbackSecretHashPeppers,
+         hashSaltLength: config.secretHashSaltLength,
+         // 19MiB memory cost as recommended by OWASP: https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#argon2id
+         parameters: Argon2HashParameters(memory: 19456),
+       ),
+       account = EmailIdpAccountUtils() {
+    accountCreation = EmailIdpAccountCreationUtil(
+      config: EmailIdpAccountCreationUtilsConfig.fromEmailIdpConfig(config),
+      passwordHashUtils: hashUtil,
+      authUsers: authUsers,
+    );
+    passwordReset = EmailIdpPasswordResetUtil(
+      config: EmailIdpPasswordResetUtilsConfig.fromEmailIdpConfig(config),
+      passwordHashUtils: hashUtil,
+    );
+    authentication = EmailIdpAuthenticationUtil(
+      hashUtil: hashUtil,
+      failedLoginRateLimit: config.failedLoginRateLimit,
+    );
+  }
+
+  /// Returns the possible [EmailAccount] associated with a session.
+  Future<EmailAccount?> getAccount(final Session session) {
+    return switch (session.authenticated) {
+      null => Future.value(null),
+      _ => EmailAccount.db.findFirstRow(
+        session,
+        where: (final t) => t.authUserId.equals(
+          session.authenticated!.authUserId,
+        ),
+      ),
+    };
+  }
+
+  /// Replaces server-side exceptions by client-side exceptions, hiding details
+  /// that could leak account information.
+  static Future<T> withReplacedServerEmailException<T>(
+    final Future<T> Function() fn,
+  ) async {
+    try {
+      return await fn();
+    } on EmailServerException catch (e) {
+      switch (e) {
+        case EmailLoginServerException():
+          throw EmailAccountLoginException(reason: e.reason);
+        case EmailAccountRequestServerException():
+          throw EmailAccountRequestException(reason: e.reason);
+        case EmailPasswordResetServerException():
+          throw EmailAccountPasswordResetException(reason: e.reason);
+      }
+    }
+  }
+}
+
+extension on EmailLoginServerException {
+  EmailAccountLoginExceptionReason get reason {
+    switch (this) {
+      case EmailAccountNotFoundException():
+      case EmailAuthenticationInvalidCredentialsException():
+        return EmailAccountLoginExceptionReason.invalidCredentials;
+      case EmailAuthenticationTooManyAttemptsException():
+        return EmailAccountLoginExceptionReason.tooManyAttempts;
+    }
+  }
+}
+
+extension on EmailAccountRequestServerException {
+  EmailAccountRequestExceptionReason get reason {
+    switch (this) {
+      case EmailAccountRequestInvalidVerificationCodeException():
+      // It is important that NotVerified and NotFound are grouped together
+      // so that we don't leak information about the existence of the request.
+      case EmailAccountRequestNotFoundException():
+      case EmailAccountRequestNotVerifiedException():
+      case EmailAccountAlreadyRegisteredException():
+      case EmailAccountRequestVerificationCodeAlreadyUsedException():
+        return EmailAccountRequestExceptionReason.invalid;
+      case EmailAccountRequestVerificationTooManyAttemptsException():
+        return EmailAccountRequestExceptionReason.tooManyAttempts;
+      case EmailPasswordPolicyViolationException():
+      case EmailAccountRequestInvalidEmailException():
+        return EmailAccountRequestExceptionReason.policyViolation;
+      case EmailAccountRequestVerificationExpiredException():
+        return EmailAccountRequestExceptionReason.expired;
+    }
+  }
+}
+
+extension on EmailPasswordResetServerException {
+  EmailAccountPasswordResetExceptionReason get reason {
+    switch (this) {
+      case EmailPasswordResetInvalidVerificationCodeException():
+      case EmailPasswordResetRequestNotFoundException():
+      case EmailPasswordResetVerificationCodeAlreadyUsedException():
+      case EmailPasswordResetEmailNotFoundException():
+      case EmailPasswordResetNotVerifiedException():
+        return EmailAccountPasswordResetExceptionReason.invalid;
+      case EmailPasswordResetTooManyAttemptsException():
+      case EmailPasswordResetTooManyVerificationAttemptsException():
+        return EmailAccountPasswordResetExceptionReason.tooManyAttempts;
+      case EmailPasswordResetPasswordPolicyViolationException():
+        return EmailAccountPasswordResetExceptionReason.policyViolation;
+      case EmailPasswordResetRequestExpiredException():
+        return EmailAccountPasswordResetExceptionReason.expired;
+    }
+  }
+}

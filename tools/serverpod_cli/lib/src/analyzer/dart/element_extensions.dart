@@ -9,7 +9,9 @@ extension DartElementSourceSpan on Element {
     final offset = firstFragment.offset;
     final length = firstFragment.name?.length ?? 0;
     final sourceCode = lib.firstFragment.source.contents.data;
-    return SourceFile.fromString(sourceCode, url: lib.uri)
-        .span(offset, offset + length);
+    return SourceFile.fromString(
+      sourceCode,
+      url: lib.uri,
+    ).span(offset, offset + length);
   }
 }

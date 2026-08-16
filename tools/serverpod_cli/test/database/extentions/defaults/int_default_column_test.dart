@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/database/extensions.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
@@ -13,13 +14,24 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should not have the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"intDefault" integer NOT NULL',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should not have the default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"intDefault" integer NOT NULL',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should not have the default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"intDefault" INTEGER NOT NULL',
+          );
+        },
+      );
     });
 
     group('with 10 as default value', () {
@@ -32,13 +44,24 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should have the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"intDefault" integer NOT NULL DEFAULT 10',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should have the default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"intDefault" integer NOT NULL DEFAULT 10',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should have the default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"intDefault" INTEGER NOT NULL DEFAULT (10)',
+          );
+        },
+      );
     });
 
     group('with 20 as default value', () {
@@ -51,13 +74,24 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should have the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"intDefault" integer NOT NULL DEFAULT 20',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should have the default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"intDefault" integer NOT NULL DEFAULT 20',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should have the default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"intDefault" INTEGER NOT NULL DEFAULT (20)',
+          );
+        },
+      );
     });
 
     group('with nullable column and no default value', () {
@@ -69,13 +103,24 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should be nullable with no default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"intDefault" integer',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should be nullable with no default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"intDefault" integer',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should be nullable with no default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"intDefault" INTEGER',
+          );
+        },
+      );
     });
 
     group('with nullable column and 10 as default value', () {
@@ -88,13 +133,24 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should be nullable with the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"intDefault" integer DEFAULT 10',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should be nullable with the default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"intDefault" integer DEFAULT 10',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should be nullable with the default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"intDefault" INTEGER DEFAULT (10)',
+          );
+        },
+      );
     });
 
     group('with nullable column and 20 as default value', () {
@@ -107,13 +163,24 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should be nullable with the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"intDefault" integer DEFAULT 20',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should be nullable with the default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"intDefault" integer DEFAULT 20',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should be nullable with the default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"intDefault" INTEGER DEFAULT (20)',
+          );
+        },
+      );
     });
   });
 }

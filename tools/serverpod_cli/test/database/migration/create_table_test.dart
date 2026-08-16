@@ -10,8 +10,9 @@ void main() {
   group('Given an empty source but a target definition with a new table', () {
     var tableName = 'example_table';
 
-    var sourceDefinition =
-        DatabaseDefinitionBuilder().withDefaultModules().build();
+    var sourceDefinition = DatabaseDefinitionBuilder()
+        .withDefaultModules()
+        .build();
 
     var targetDefinition = DatabaseDefinitionBuilder()
         .withDefaultModules()

@@ -53,7 +53,7 @@ void main() {
               .withClassName(testClassName)
               .withFileName(testClassFileName)
               .withFields(fields)
-              .build()
+              .build(),
         ];
 
         var codeMap = generator.generateSerializableModelsCode(
@@ -61,8 +61,9 @@ void main() {
           config: config,
         );
 
-        var compilationUnit =
-            parseString(content: codeMap[expectedFilePath]!).unit;
+        var compilationUnit = parseString(
+          content: codeMap[expectedFilePath]!,
+        ).unit;
 
         baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
           compilationUnit,
@@ -71,9 +72,9 @@ void main() {
 
         privateConstructor =
             CompilationUnitHelpers.tryFindConstructorDeclaration(
-          baseClass!,
-          name: '_',
-        );
+              baseClass!,
+              name: '_',
+            );
       });
 
       group('then the DurationDefault has a private constructor', () {
@@ -94,11 +95,12 @@ void main() {
         test(
           'with durationDefault default value set correctly',
           () {
-            var initializer = privateConstructor?.initializers
-                .firstWhere((e) => e.toSource().contains('durationDefault'));
+            var initializer = privateConstructor?.initializers.firstWhere(
+              (e) => e.toSource().contains('durationDefault'),
+            );
             expect(
               initializer?.toSource(),
-              'durationDefault = durationDefault ?? Duration(days: 1, hours: 2, minutes: 10, seconds: 30, milliseconds: 100)',
+              'durationDefault = durationDefault ?? const Duration(days: 1, hours: 2, minutes: 10, seconds: 30, milliseconds: 100)',
             );
           },
         );
@@ -107,10 +109,11 @@ void main() {
           'with durationDefaultNull default value set correctly',
           () {
             var initializer = privateConstructor?.initializers.firstWhere(
-                (e) => e.toSource().contains('durationDefaultNull'));
+              (e) => e.toSource().contains('durationDefaultNull'),
+            );
             expect(
               initializer?.toSource(),
-              'durationDefaultNull = durationDefaultNull ?? Duration(days: 2, hours: 1, minutes: 20, seconds: 40, milliseconds: 100)',
+              'durationDefaultNull = durationDefaultNull ?? const Duration(days: 2, hours: 1, minutes: 20, seconds: 40, milliseconds: 100)',
             );
           },
         );
@@ -120,7 +123,7 @@ void main() {
         'when the Duration is normalized',
         () {
           test(
-            'with a default value of "1d 24h", the duration should be normalized to "Duration(days: 2, hours: 0, minutes: 0, seconds: 0, milliseconds: 0)"',
+            'with a default value of "1d 24h", the duration should be normalized to "Duration(days: 2)"',
             () {
               var normalizedField = FieldDefinitionBuilder()
                   .withName('normalizedDuration')
@@ -139,38 +142,41 @@ void main() {
               );
 
               var normalizedCompilationUnit = parseString(
-                      content: normalizedCodeMap[path.join(
-                          '..',
-                          'example_project_client',
-                          'lib',
-                          'src',
-                          'protocol',
-                          'normalized_duration.dart')]!)
-                  .unit;
+                content:
+                    normalizedCodeMap[path.join(
+                      '..',
+                      'example_project_client',
+                      'lib',
+                      'src',
+                      'protocol',
+                      'normalized_duration.dart',
+                    )]!,
+              ).unit;
 
               var normalizedBaseClass =
                   CompilationUnitHelpers.tryFindClassDeclaration(
-                normalizedCompilationUnit,
-                name: 'NormalizedDuration',
-              );
+                    normalizedCompilationUnit,
+                    name: 'NormalizedDuration',
+                  );
 
               var normalizedConstructor =
                   CompilationUnitHelpers.tryFindConstructorDeclaration(
-                normalizedBaseClass!,
-                name: '_',
-              );
+                    normalizedBaseClass!,
+                    name: '_',
+                  );
 
               var initializer = normalizedConstructor?.initializers.firstWhere(
-                  (e) => e.toSource().contains('normalizedDuration'));
+                (e) => e.toSource().contains('normalizedDuration'),
+              );
               expect(
                 initializer?.toSource(),
-                'normalizedDuration = normalizedDuration ?? Duration(days: 2, hours: 0, minutes: 0, seconds: 0, milliseconds: 0)',
+                'normalizedDuration = normalizedDuration ?? const Duration(days: 2)',
               );
             },
           );
 
           test(
-            'with a default value of "0d 48h 60min", the duration should be normalized to "Duration(days: 2, hours: 1, minutes: 0, seconds: 0, milliseconds: 0)"',
+            'with a default value of "0d 48h 60min", the duration should be normalized to "Duration(days: 2, hours: 1)"',
             () {
               var normalizedField = FieldDefinitionBuilder()
                   .withName('normalizedDuration')
@@ -189,32 +195,35 @@ void main() {
               );
 
               var normalizedCompilationUnit = parseString(
-                      content: normalizedCodeMap[path.join(
-                          '..',
-                          'example_project_client',
-                          'lib',
-                          'src',
-                          'protocol',
-                          'normalized_duration.dart')]!)
-                  .unit;
+                content:
+                    normalizedCodeMap[path.join(
+                      '..',
+                      'example_project_client',
+                      'lib',
+                      'src',
+                      'protocol',
+                      'normalized_duration.dart',
+                    )]!,
+              ).unit;
 
               var normalizedBaseClass =
                   CompilationUnitHelpers.tryFindClassDeclaration(
-                normalizedCompilationUnit,
-                name: 'NormalizedDuration',
-              );
+                    normalizedCompilationUnit,
+                    name: 'NormalizedDuration',
+                  );
 
               var normalizedConstructor =
                   CompilationUnitHelpers.tryFindConstructorDeclaration(
-                normalizedBaseClass!,
-                name: '_',
-              );
+                    normalizedBaseClass!,
+                    name: '_',
+                  );
 
               var initializer = normalizedConstructor?.initializers.firstWhere(
-                  (e) => e.toSource().contains('normalizedDuration'));
+                (e) => e.toSource().contains('normalizedDuration'),
+              );
               expect(
                 initializer?.toSource(),
-                'normalizedDuration = normalizedDuration ?? Duration(days: 2, hours: 1, minutes: 0, seconds: 0, milliseconds: 0)',
+                'normalizedDuration = normalizedDuration ?? const Duration(days: 2, hours: 1)',
               );
             },
           );
@@ -256,7 +265,7 @@ void main() {
               .withClassName(testClassName)
               .withFileName(testClassFileName)
               .withFields(fields)
-              .build()
+              .build(),
         ];
 
         var codeMap = generator.generateSerializableModelsCode(
@@ -264,8 +273,9 @@ void main() {
           config: config,
         );
 
-        var compilationUnit =
-            parseString(content: codeMap[expectedFilePath]!).unit;
+        var compilationUnit = parseString(
+          content: codeMap[expectedFilePath]!,
+        ).unit;
 
         baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
           compilationUnit,
@@ -274,9 +284,9 @@ void main() {
 
         privateConstructor =
             CompilationUnitHelpers.tryFindConstructorDeclaration(
-          baseClass!,
-          name: '_',
-        );
+              baseClass!,
+              name: '_',
+            );
       });
 
       group('then the DurationDefaultPersist has a private constructor', () {

@@ -15,190 +15,219 @@ const generator = DartServerCodeGenerator();
 
 void main() {
   group(
-      'Given a class named UuidDefault with UuidValue fields having defaultModelValue when generating code',
-      () {
-    ClassDeclaration? baseClass;
-    ConstructorDeclaration? privateConstructor;
+    'Given a class named UuidDefault with UuidValue fields having defaultModelValue when generating code',
+    () {
+      ClassDeclaration? baseClass;
+      ConstructorDeclaration? privateConstructor;
 
-    setUpAll(() {
-      var testClassName = 'UuidDefault';
-      var testClassFileName = 'uuid_default';
-      var expectedFilePath =
-          path.join('lib', 'src', 'generated', '$testClassFileName.dart');
+      setUpAll(() {
+        var testClassName = 'UuidDefault';
+        var testClassFileName = 'uuid_default';
+        var expectedFilePath = path.join(
+          'lib',
+          'src',
+          'generated',
+          '$testClassFileName.dart',
+        );
 
-      var fields = [
-        FieldDefinitionBuilder()
-            .withName('uuidDefaultRandom')
-            .withTypeUuidValue(defaultModelValue: 'random')
-            .build(),
-        FieldDefinitionBuilder()
-            .withName('uuidDefaultRandomV7')
-            .withTypeUuidValue(defaultModelValue: 'random_v7')
-            .build(),
-        FieldDefinitionBuilder()
-            .withName('uuidDefaultStr')
-            .withTypeUuidValue(
-                defaultModelValue: '550e8400-e29b-41d4-a716-446655440000')
-            .build(),
-        FieldDefinitionBuilder()
-            .withName('uuidDefaultStrNull')
-            .withTypeUuidValue(
-              defaultModelValue: '550e8400-e29b-41d4-a716-446655440000',
-              nullable: true,
-            )
-            .build(),
-      ];
+        var fields = [
+          FieldDefinitionBuilder()
+              .withName('uuidDefaultRandom')
+              .withTypeUuidValue(defaultModelValue: 'random')
+              .build(),
+          FieldDefinitionBuilder()
+              .withName('uuidDefaultRandomV7')
+              .withTypeUuidValue(defaultModelValue: 'random_v7')
+              .build(),
+          FieldDefinitionBuilder()
+              .withName('uuidDefaultStr')
+              .withTypeUuidValue(
+                defaultModelValue: '550e8400-e29b-41d4-a716-446655440000',
+              )
+              .build(),
+          FieldDefinitionBuilder()
+              .withName('uuidDefaultStrNull')
+              .withTypeUuidValue(
+                defaultModelValue: '550e8400-e29b-41d4-a716-446655440000',
+                nullable: true,
+              )
+              .build(),
+        ];
 
-      var models = [
-        ModelClassDefinitionBuilder()
-            .withClassName(testClassName)
-            .withFileName(testClassFileName)
-            .withFields(fields)
-            .build()
-      ];
+        var models = [
+          ModelClassDefinitionBuilder()
+              .withClassName(testClassName)
+              .withFileName(testClassFileName)
+              .withFields(fields)
+              .build(),
+        ];
 
-      var codeMap = generator.generateSerializableModelsCode(
-        models: models,
-        config: config,
-      );
+        var codeMap = generator.generateSerializableModelsCode(
+          models: models,
+          config: config,
+        );
 
-      var compilationUnit =
-          parseString(content: codeMap[expectedFilePath]!).unit;
+        var compilationUnit = parseString(
+          content: codeMap[expectedFilePath]!,
+        ).unit;
 
-      baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
-        compilationUnit,
-        name: testClassName,
-      );
+        baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
+          compilationUnit,
+          name: testClassName,
+        );
 
-      privateConstructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
-        baseClass!,
-        name: '_',
-      );
-    });
-
-    group('then the UuidDefault has a private constructor', () {
-      test('defined', () {
-        expect(privateConstructor, isNotNull);
+        privateConstructor =
+            CompilationUnitHelpers.tryFindConstructorDeclaration(
+              baseClass!,
+              name: '_',
+            );
       });
 
-      test(
-        'with the class vars as params',
-        () {
-          expect(
-            privateConstructor?.parameters.toSource().withoutImportPrefix,
-            '({UuidValue? uuidDefaultRandom, UuidValue? uuidDefaultRandomV7, UuidValue? uuidDefaultStr, UuidValue? uuidDefaultStrNull})',
-          );
-        },
-      );
+      group('then the UuidDefault has a private constructor', () {
+        test('defined', () {
+          expect(privateConstructor, isNotNull);
+        });
 
-      test(
-        'with uuidDefaultRandom default value set correctly',
-        () {
-          var initializer = privateConstructor?.initializers
-              .firstWhere((e) => e.toSource().contains('uuidDefaultRandom'));
-          expect(initializer?.toSource().withoutImportPrefix,
-              'uuidDefaultRandom = uuidDefaultRandom ?? Uuid().v4obj()');
-        },
-      );
+        test(
+          'with the class vars as params',
+          () {
+            expect(
+              privateConstructor?.parameters.toSource().withoutImportPrefix,
+              '({UuidValue? uuidDefaultRandom, UuidValue? uuidDefaultRandomV7, UuidValue? uuidDefaultStr, UuidValue? uuidDefaultStrNull})',
+            );
+          },
+        );
 
-      test(
-        'with uuidDefaultRandomV7 default value set correctly',
-        () {
-          var initializer = privateConstructor?.initializers
-              .firstWhere((e) => e.toSource().contains('uuidDefaultRandomV7'));
-          expect(initializer?.toSource().withoutImportPrefix,
-              'uuidDefaultRandomV7 = uuidDefaultRandomV7 ?? Uuid().v7obj()');
-        },
-      );
+        test(
+          'with uuidDefaultRandom default value set correctly',
+          () {
+            var initializer = privateConstructor?.initializers.firstWhere(
+              (e) => e.toSource().contains('uuidDefaultRandom'),
+            );
+            expect(
+              initializer?.toSource().withoutImportPrefix,
+              'uuidDefaultRandom = uuidDefaultRandom ?? const Uuid().v4obj()',
+            );
+          },
+        );
 
-      test(
-        'with uuidDefaultStr default value set correctly',
-        () {
-          var initializer = privateConstructor?.initializers
-              .firstWhere((e) => e.toSource().contains('uuidDefaultStr'));
-          expect(initializer?.toSource().withoutImportPrefix,
-              'uuidDefaultStr = uuidDefaultStr ?? UuidValue.fromString(\'550e8400-e29b-41d4-a716-446655440000\')');
-        },
-      );
+        test(
+          'with uuidDefaultRandomV7 default value set correctly',
+          () {
+            var initializer = privateConstructor?.initializers.firstWhere(
+              (e) => e.toSource().contains('uuidDefaultRandomV7'),
+            );
+            expect(
+              initializer?.toSource().withoutImportPrefix,
+              'uuidDefaultRandomV7 = uuidDefaultRandomV7 ?? const Uuid().v7obj()',
+            );
+          },
+        );
 
-      test(
-        'with uuidDefaultStrNull default value set correctly',
-        () {
-          var initializer = privateConstructor?.initializers
-              .firstWhere((e) => e.toSource().contains('uuidDefaultStrNull'));
-          expect(initializer?.toSource().withoutImportPrefix,
-              'uuidDefaultStrNull = uuidDefaultStrNull ?? UuidValue.fromString(\'550e8400-e29b-41d4-a716-446655440000\')');
-        },
-      );
-    });
-  });
+        test(
+          'with uuidDefaultStr default value set correctly',
+          () {
+            var initializer = privateConstructor?.initializers.firstWhere(
+              (e) => e.toSource().contains('uuidDefaultStr'),
+            );
+            expect(
+              initializer?.toSource().withoutImportPrefix,
+              'uuidDefaultStr = uuidDefaultStr ?? UuidValue.fromString(\'550e8400-e29b-41d4-a716-446655440000\')',
+            );
+          },
+        );
+
+        test(
+          'with uuidDefaultStrNull default value set correctly',
+          () {
+            var initializer = privateConstructor?.initializers.firstWhere(
+              (e) => e.toSource().contains('uuidDefaultStrNull'),
+            );
+            expect(
+              initializer?.toSource().withoutImportPrefix,
+              'uuidDefaultStrNull = uuidDefaultStrNull ?? UuidValue.fromString(\'550e8400-e29b-41d4-a716-446655440000\')',
+            );
+          },
+        );
+      });
+    },
+  );
 
   group(
-      'Given a class named UuidDefaultPersist with UuidValue fields having defaultPersistValue when generating code',
-      () {
-    ClassDeclaration? baseClass;
-    ConstructorDeclaration? privateConstructor;
+    'Given a class named UuidDefaultPersist with UuidValue fields having defaultPersistValue when generating code',
+    () {
+      ClassDeclaration? baseClass;
+      ConstructorDeclaration? privateConstructor;
 
-    setUpAll(() {
-      var testClassName = 'UuidDefaultPersist';
-      var testClassFileName = 'uuid_default_persist';
-      var expectedFilePath =
-          path.join('lib', 'src', 'generated', '$testClassFileName.dart');
+      setUpAll(() {
+        var testClassName = 'UuidDefaultPersist';
+        var testClassFileName = 'uuid_default_persist';
+        var expectedFilePath = path.join(
+          'lib',
+          'src',
+          'generated',
+          '$testClassFileName.dart',
+        );
 
-      var fields = [
-        FieldDefinitionBuilder()
-            .withName('uuidDefaultPersistRandom')
-            .withTypeUuidValue(defaultPersistValue: 'random', nullable: true)
-            .build(),
-        FieldDefinitionBuilder()
-            .withName('uuidDefaultPersistStr')
-            .withTypeUuidValue(
-              defaultPersistValue: '550e8400-e29b-41d4-a716-446655440000',
-              nullable: true,
-            )
-            .build(),
-      ];
+        var fields = [
+          FieldDefinitionBuilder()
+              .withName('uuidDefaultPersistRandom')
+              .withTypeUuidValue(defaultPersistValue: 'random', nullable: true)
+              .build(),
+          FieldDefinitionBuilder()
+              .withName('uuidDefaultPersistStr')
+              .withTypeUuidValue(
+                defaultPersistValue: '550e8400-e29b-41d4-a716-446655440000',
+                nullable: true,
+              )
+              .build(),
+        ];
 
-      var models = [
-        ModelClassDefinitionBuilder()
-            .withClassName(testClassName)
-            .withFileName(testClassFileName)
-            .withFields(fields)
-            .build()
-      ];
+        var models = [
+          ModelClassDefinitionBuilder()
+              .withClassName(testClassName)
+              .withFileName(testClassFileName)
+              .withFields(fields)
+              .build(),
+        ];
 
-      var codeMap = generator.generateSerializableModelsCode(
-        models: models,
-        config: config,
-      );
+        var codeMap = generator.generateSerializableModelsCode(
+          models: models,
+          config: config,
+        );
 
-      var compilationUnit =
-          parseString(content: codeMap[expectedFilePath]!).unit;
-      baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
-        compilationUnit,
-        name: testClassName,
-      );
+        var compilationUnit = parseString(
+          content: codeMap[expectedFilePath]!,
+        ).unit;
+        baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
+          compilationUnit,
+          name: testClassName,
+        );
 
-      privateConstructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
-        baseClass!,
-        name: '_',
-      );
-    });
-
-    group('then the UuidDefaultPersist has a private constructor', () {
-      test('defined', () {
-        expect(privateConstructor, isNotNull);
+        privateConstructor =
+            CompilationUnitHelpers.tryFindConstructorDeclaration(
+              baseClass!,
+              name: '_',
+            );
       });
 
-      test(
-        'with the class vars as params',
-        () {
-          expect(privateConstructor?.parameters.toSource().withoutImportPrefix,
-              '({this.uuidDefaultPersistRandom, this.uuidDefaultPersistStr})');
-        },
-      );
-    });
-  });
+      group('then the UuidDefaultPersist has a private constructor', () {
+        test('defined', () {
+          expect(privateConstructor, isNotNull);
+        });
+
+        test(
+          'with the class vars as params',
+          () {
+            expect(
+              privateConstructor?.parameters.toSource().withoutImportPrefix,
+              '({this.uuidDefaultPersistRandom, this.uuidDefaultPersistStr})',
+            );
+          },
+        );
+      });
+    },
+  );
 }
 
 extension _StrExt on String {

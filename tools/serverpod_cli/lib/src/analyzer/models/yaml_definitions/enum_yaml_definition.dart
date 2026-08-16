@@ -16,8 +16,9 @@ class EnumYamlDefinition {
       ),
       ValidateNode(
         Keyword.serialized,
-        valueRestriction:
-            EnumValueRestriction(enums: EnumSerialization.values).validate,
+        valueRestriction: EnumValueRestriction(
+          enums: EnumSerialization.values,
+        ).validate,
       ),
       ValidateNode(
         Keyword.defaultKey,
@@ -26,6 +27,10 @@ class EnumYamlDefinition {
       ValidateNode(
         Keyword.serverOnly,
         valueRestriction: BooleanValueRestriction().validate,
+      ),
+      ValidateNode(
+        Keyword.properties,
+        valueRestriction: restrictions.validateEnumProperties,
       ),
       ValidateNode(
         Keyword.values,

@@ -13,16 +13,21 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 abstract class FileNotFoundException
-    implements _i1.SerializableException, _i1.SerializableModel {
+    implements
+        _i1.SerializableException,
+        _i1.SerializableModel,
+        _i1.ProtocolSerialization {
   FileNotFoundException._({required this.message});
 
   factory FileNotFoundException({required String message}) =
       _FileNotFoundExceptionImpl;
 
   factory FileNotFoundException.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return FileNotFoundException(
-        message: jsonSerialization['message'] as String);
+      message: jsonSerialization['message'] as String,
+    );
   }
 
   String message;
@@ -33,18 +38,29 @@ abstract class FileNotFoundException
   FileNotFoundException copyWith({String? message});
   @override
   Map<String, dynamic> toJson() {
-    return {'message': message};
+    return {
+      '__className__': 'serverpod.FileNotFoundException',
+      'message': message,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod.FileNotFoundException',
+      'message': message,
+    };
   }
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return 'FileNotFoundException(message: $message)';
   }
 }
 
 class _FileNotFoundExceptionImpl extends FileNotFoundException {
   _FileNotFoundExceptionImpl({required String message})
-      : super._(message: message);
+    : super._(message: message);
 
   /// Returns a shallow copy of this [FileNotFoundException]
   /// with some or all fields replaced by the given arguments.

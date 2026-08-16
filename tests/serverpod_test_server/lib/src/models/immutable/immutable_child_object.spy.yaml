@@ -1,0 +1,5 @@
+class: ImmutableChildObject
+extends: ImmutableObject
+immutable: true
+fields:
+  childVariable: String

@@ -11,6 +11,9 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 /// Manages the connection to the server for method streams.
 @internal
 final class ClientMethodStreamManager {
+  static const Duration _defaultPingInterval = Duration(seconds: 20);
+  static const Duration _defaultIdleTimeout = Duration(seconds: 40);
+
   /// The WebSocket channel used to communicate with the server.
   /// If null, no connection is open.
   WebSocketChannel? _webSocket;
@@ -25,6 +28,18 @@ final class ClientMethodStreamManager {
   /// If null, no connection attempt is in progress.
   Timer? _connectionTimer;
 
+  /// Timer used to send periodic pings to the server.
+  Timer? _pingTimer;
+
+  /// Timer used to detect idle connections with no inbound messages.
+  Timer? _idleTimeoutTimer;
+
+  /// Timestamp of the last received message.
+  DateTime? _lastMessageReceivedAt;
+
+  final Duration _pingInterval;
+  final Duration _idleTimeout;
+
   /// Completer that is completed when the handshake is complete.
   Completer _handshakeComplete = Completer();
 
@@ -33,6 +48,9 @@ final class ClientMethodStreamManager {
 
   /// The serialization manager used to serialize and deserialize messages.
   final SerializationManager _serializationManager;
+
+  /// Optional connector used to override [WebSocketChannel.connect] in tests.
+  final WebSocketChannel Function(Uri uri)? _webSocketConnector;
 
   /// Lock used to synchronize access when establishing websocket connection.
   final Lock _lock = Lock();
@@ -50,15 +68,22 @@ final class ClientMethodStreamManager {
     required Duration connectionTimeout,
     required Uri webSocketHost,
     required SerializationManager serializationManager,
-  })  : _webSocketHost = webSocketHost,
-        _connectionTimeout = connectionTimeout,
-        _serializationManager = serializationManager;
+    @visibleForTesting Duration? pingInterval,
+    @visibleForTesting Duration? idleTimeout,
+    @visibleForTesting WebSocketChannel Function(Uri uri)? webSocketConnector,
+  }) : _webSocketHost = webSocketHost,
+       _connectionTimeout = connectionTimeout,
+       _serializationManager = serializationManager,
+       _pingInterval = pingInterval ?? _defaultPingInterval,
+       _idleTimeout = idleTimeout ?? _defaultIdleTimeout,
+       _webSocketConnector = webSocketConnector;
 
   /// Closes all open connections and streams
   ///
   /// If an error is provided, it will be added to all inbound streams.
   Future<void> closeAllConnections([Object? error]) async {
     await _lock.synchronized(() async {
+      _cancelConnectionTimer();
       var webSocket = _webSocket;
       _webSocket = null;
       await _closeAllStreams(error);
@@ -141,12 +166,14 @@ final class ClientMethodStreamManager {
     }
 
     connectionDetails.outputController.onCancel = () async {
-      _addMessageToWebSocket(CloseMethodStreamCommand.buildMessage(
-        connectionId: connectionId,
-        endpoint: connectionDetails.endpoint,
-        method: connectionDetails.method,
-        reason: CloseReason.done,
-      ));
+      _addMessageToWebSocket(
+        CloseMethodStreamCommand.buildMessage(
+          connectionId: connectionId,
+          endpoint: connectionDetails.endpoint,
+          method: connectionDetails.method,
+          reason: CloseReason.done,
+        ),
+      );
 
       await _tryCloseInboundStream(
         endpoint: connectionDetails.endpoint,
@@ -167,8 +194,24 @@ final class ClientMethodStreamManager {
 
   void _tryCloseConnection() {
     if (_inboundStreams.isEmpty && _outboundStreams.isEmpty) {
-      closeAllConnections();
+      unawaited(_closeConnectionIfUnused());
     }
+  }
+
+  /// Closes the websocket connection if no streams are using it.
+  ///
+  /// The emptiness check is repeated once the lock is acquired, since a new
+  /// method stream may have been opened while this cleanup was waiting for
+  /// the lock. In that case the connection must be kept open.
+  Future<void> _closeConnectionIfUnused() async {
+    await _lock.synchronized(() async {
+      if (_inboundStreams.isNotEmpty || _outboundStreams.isNotEmpty) return;
+      _cancelConnectionTimer();
+      var webSocket = _webSocket;
+      _webSocket = null;
+      await webSocket?.sink.close();
+      await _webSocketListenerCompleter.future;
+    });
   }
 
   /// Builds a unique key for a stream.
@@ -183,14 +226,20 @@ final class ClientMethodStreamManager {
   void _cancelConnectionTimer() {
     _connectionTimer?.cancel();
     _connectionTimer = null;
+    _pingTimer?.cancel();
+    _pingTimer = null;
+    _idleTimeoutTimer?.cancel();
+    _idleTimeoutTimer = null;
+    _lastMessageReceivedAt = null;
   }
 
   /// Closes all streams and controllers.
   /// If an exception is provided, it will be added to the inbound stream
   /// controller.
   Future<void> _closeAllStreams([Object? exception]) async {
-    var inputControllers =
-        _inboundStreams.values.map((c) => c.controller).toList();
+    var inputControllers = _inboundStreams.values
+        .map((c) => c.controller)
+        .toList();
     _inboundStreams.clear();
 
     // Remove onCancel callbacks to prevent controllers from
@@ -201,16 +250,19 @@ final class ClientMethodStreamManager {
 
     if (exception != null) {
       for (var c in inputControllers) {
+        if (c.isClosed) continue;
         c.addError(exception);
       }
     }
 
-    var outboundStreamSubscriptions =
-        _outboundStreams.values.map((c) => c.subscription).toList();
+    var outboundStreamSubscriptions = _outboundStreams.values
+        .map((c) => c.subscription)
+        .toList();
     _outboundStreams.clear();
 
-    var closeSubscriptionsFutures =
-        outboundStreamSubscriptions.map((s) => s.cancel());
+    var closeSubscriptionsFutures = outboundStreamSubscriptions.map(
+      (s) => s.cancel(),
+    );
 
     await Future.wait([
       ...closeSubscriptionsFutures,
@@ -298,17 +350,20 @@ final class ClientMethodStreamManager {
     // Close all controllers that have listeners.
     // If close is called on a controller that has no listeners, it will
     // return a future that never complete.
-    var controllersToClose =
-        controllers.where((c) => c.hasListener && !c.isClosed);
+    var controllersToClose = controllers.where(
+      (c) => c.hasListener && !c.isClosed,
+    );
 
     for (var controller in controllersToClose) {
       // Paused streams will never process the close event and
       // will never complete. Therefore we need to add a timeout to complete
       // the future.
-      futures.add(controller.close().timeout(
-            const Duration(seconds: 6),
-            onTimeout: () async => await controller.onCancel?.call(),
-          ));
+      futures.add(
+        controller.close().timeout(
+          const Duration(seconds: 6),
+          onTimeout: () async => await controller.onCancel?.call(),
+        ),
+      );
     }
 
     await Future.wait(futures);
@@ -352,7 +407,8 @@ final class ClientMethodStreamManager {
     // a close message to the server.
     inboundStreamContext.controller.onCancel = null;
 
-    if (reason == CloseReason.error) {
+    if (reason == CloseReason.error &&
+        !inboundStreamContext.controller.isClosed) {
       inboundStreamContext.controller.addError(
         const ConnectionClosedException(),
       );
@@ -380,7 +436,7 @@ final class ClientMethodStreamManager {
     await Future.wait(
       [
         ...cancelSubscriptionFutures,
-        _closeControllers([inboundStreamContext.controller])
+        _closeControllers([inboundStreamContext.controller]),
       ],
     );
   }
@@ -411,7 +467,8 @@ final class ClientMethodStreamManager {
     );
 
     var inboundStreamContext = _inboundStreams[inboundStreamKey];
-    if (inboundStreamContext == null) {
+    if (inboundStreamContext == null ||
+        inboundStreamContext.controller.isClosed) {
       return false;
     }
 
@@ -447,15 +504,19 @@ final class ClientMethodStreamManager {
       return;
     }
 
-    inboundStreamContext.controller.addError(message.exception);
+    if (!inboundStreamContext.controller.isClosed) {
+      inboundStreamContext.controller.addError(message.exception);
+    }
     await _closeControllers([inboundStreamContext.controller]);
   }
 
   Future<void> _listenToWebSocketStream(WebSocketChannel webSocket) async {
-    _webSocketListenerCompleter = Completer();
+    final webSocketListenerCompleter = Completer();
+    _webSocketListenerCompleter = webSocketListenerCompleter;
     MethodStreamException closeException = const WebSocketClosedException();
     try {
       await for (String jsonData in webSocket.stream) {
+        _resetIdleTimeout();
         if (!_handshakeComplete.isCompleted) {
           _handshakeComplete.complete();
         }
@@ -504,7 +565,8 @@ final class ClientMethodStreamManager {
             break;
           case BadRequestMessage():
             throw Exception(
-                'Bad request message: $jsonData, closing connection');
+              'Bad request message: $jsonData, closing connection',
+            );
         }
       }
     } catch (e, s) {
@@ -513,19 +575,41 @@ final class ClientMethodStreamManager {
       /// Attempt to send close message to server if connection is still open.
       await webSocket.sink.close();
     } finally {
-      _cancelConnectionTimer();
-      _webSocketListenerCompleter.complete();
+      if (!webSocketListenerCompleter.isCompleted) {
+        webSocketListenerCompleter.complete();
+      }
 
       /// Close any still open streams with an exception.
-      await closeAllConnections(closeException);
+      await _cleanUpClosedConnection(webSocket, closeException);
     }
+  }
+
+  /// Cleans up after [webSocket]'s listener has stopped.
+  ///
+  /// If a new connection has already replaced [webSocket], the manager state
+  /// (timers, streams and the current websocket) belongs to the new connection
+  /// and must not be touched. Any streams that belonged to [webSocket] were
+  /// already removed when it was torn down.
+  Future<void> _cleanUpClosedConnection(
+    WebSocketChannel webSocket,
+    Object error,
+  ) async {
+    await _lock.synchronized(() async {
+      if (_webSocket != null && !identical(_webSocket, webSocket)) return;
+      _cancelConnectionTimer();
+      _webSocket = null;
+      await _closeAllStreams(error);
+      await webSocket.sink.close();
+    });
   }
 
   Future<void> _connectSynchronized() async {
     await _lock.synchronized(() async {
       if (_webSocket != null) return;
 
-      var webSocket = WebSocketChannel.connect(_webSocketHost);
+      var webSocket =
+          _webSocketConnector?.call(_webSocketHost) ??
+          WebSocketChannel.connect(_webSocketHost);
 
       await webSocket.ready.onError((e, s) {
         throw WebSocketConnectException(e, s);
@@ -542,9 +626,11 @@ final class ClientMethodStreamManager {
       _handshakeComplete = Completer();
       unawaited(_listenToWebSocketStream(webSocket));
 
-      await _handshakeComplete.future
-          .catchError((e, s) => throw ConnectionAttemptTimedOutException());
+      await _handshakeComplete.future.catchError(
+        (e, s) => throw ConnectionAttemptTimedOutException(),
+      );
       _webSocket = webSocket;
+      _startKeepAlive();
     });
   }
 
@@ -557,6 +643,43 @@ final class ClientMethodStreamManager {
     }
 
     webSocket.sink.add(message);
+  }
+
+  void _startKeepAlive() {
+    _pingTimer?.cancel();
+    _idleTimeoutTimer?.cancel();
+    _lastMessageReceivedAt = DateTime.now();
+
+    _pingTimer = Timer.periodic(_pingInterval, (_) {
+      if (_webSocket == null) return;
+      _addMessageToWebSocket(PingCommand.buildMessage());
+    });
+
+    _idleTimeoutTimer = Timer(_idleTimeout, _handleIdleTimeout);
+  }
+
+  void _resetIdleTimeout() {
+    _lastMessageReceivedAt = DateTime.now();
+    _idleTimeoutTimer?.cancel();
+    _idleTimeoutTimer = Timer(_idleTimeout, _handleIdleTimeout);
+  }
+
+  void _handleIdleTimeout() {
+    var lastMessageReceivedAt = _lastMessageReceivedAt;
+    if (lastMessageReceivedAt == null) return;
+    var elapsed = DateTime.now().difference(lastMessageReceivedAt);
+    if (elapsed < _idleTimeout) {
+      var remaining = _idleTimeout - elapsed;
+      _idleTimeoutTimer?.cancel();
+      _idleTimeoutTimer = Timer(remaining, _handleIdleTimeout);
+      return;
+    }
+
+    unawaited(
+      closeAllConnections(
+        const MethodStreamIdleTimeoutException(),
+      ),
+    );
   }
 }
 

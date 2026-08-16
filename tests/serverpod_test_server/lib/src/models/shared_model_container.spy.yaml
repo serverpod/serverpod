@@ -1,0 +1,37 @@
+# Comprehensive test for shared package model fields in server models.
+class: SharedModelContainer
+table: shared_model_container
+fields:
+  # Plain shared class
+  sharedModel: SharedModel
+  # Shared class with module alias
+  sharedModelWithModuleAlias: serverpod_test_shared:SharedModel
+  # Nullable shared class
+  sharedModelNullable: SharedModel?
+  # Non-persisted shared class
+  nonPersistedSharedModel: SharedModel?, !persist
+  # Server-only shared class
+  serverOnlySharedModel: SharedModel?, scope=serverOnly
+  # Shared class that extends another shared class
+  sharedSubclass: SharedSubclass
+  sharedSubclassNullable: SharedSubclass?
+  # Shared enum
+  sharedEnum: SharedEnum
+  sharedEnumNullable: SharedEnum?
+  # Shared sealed class and its child
+  sharedSealedParent: SharedSealedParent
+  sharedSealedParentNullable: SharedSealedParent?
+  sharedSealedChild: SharedSealedChild
+  sharedSealedChildNullable: SharedSealedChild?
+  # Server model extending shared model that has toJsonForProtocol
+  sharedModelSubclass: SharedModelSubclass
+  sharedModelSubclassNullable: SharedModelSubclass?
+  # Collections of shared models
+  sharedModelList: List<SharedModel>
+  sharedModelNullableList: List<SharedModel?>
+  sharedModelListNullable: List<SharedModel>?
+  sharedModelMap: Map<String, SharedModel>
+  sharedModelMapNullable: Map<String, SharedModel>?
+  sharedSubclassMap: Map<String, SharedSubclass>
+  sharedModelSet: Set<SharedModel>
+  sharedModelSetNullable: Set<SharedModel>?

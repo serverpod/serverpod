@@ -14,7 +14,7 @@ import '../protocol.dart' as _i1;
 import 'package:serverpod_client/serverpod_client.dart' as _i2;
 
 abstract class ChildClass extends _i1.ParentClass
-    implements _i2.SerializableModel {
+    implements _i2.SerializableModel, _i2.ProtocolSerialization {
   ChildClass._({
     super.id,
     required super.grandParentField,
@@ -53,6 +53,18 @@ abstract class ChildClass extends _i1.ParentClass
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ChildClass',
+      if (id != null) 'id': id,
+      'grandParentField': grandParentField,
+      'parentField': parentField,
+      'childField': childField,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'ChildClass',
       if (id != null) 'id': id,
       'grandParentField': grandParentField,
       'parentField': parentField,
@@ -75,11 +87,11 @@ class _ChildClassImpl extends ChildClass {
     required String parentField,
     required int childField,
   }) : super._(
-          id: id,
-          grandParentField: grandParentField,
-          parentField: parentField,
-          childField: childField,
-        );
+         id: id,
+         grandParentField: grandParentField,
+         parentField: parentField,
+         childField: childField,
+       );
 
   /// Returns a shallow copy of this [ChildClass]
   /// with some or all fields replaced by the given arguments.

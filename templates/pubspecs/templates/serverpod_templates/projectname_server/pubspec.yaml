@@ -6,22 +6,69 @@ description: Starting point for a Serverpod server.
 environment:
   sdk: DART_VERSION
 
+#resolution: workspace #--UNCOMMENT_LINE--#
+
 dependencies:
   serverpod: SERVERPOD_VERSION
 
 dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
-  test: ^1.25.5
   serverpod_test: SERVERPOD_VERSION
+  test: ^1.25.5
 
-dependency_overrides: #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_serialization: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod_serialization #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_shared: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod_shared #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_test: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod_test #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_lints: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod_lints #--CONDITIONALLY_REMOVE_LINE--#
+# {{#flutterApp}}
+serverpod:
+  scripts:
+    # Build the Flutter web app and copy it to the server's web directory.
+    # Windows uses xcopy since flutter's --output flag doesn't work there.
+    # See: https://github.com/flutter/flutter/issues/157886
+    # On failure, clean and retry once to clear stale Flutter build caches.
+    flutter_build:
+      windows: >-
+        (if exist web\app rmdir /S /Q web\app)
+        & cd /D ..\projectname_flutter
+        # {{#website}}
+        & set ARGS=web --base-href /app/
+        # {{/website}}
+        # {{^website}}
+        & set ARGS=web --base-href /
+        # {{/website}}
+        && (call flutter build %ARGS% || (flutter clean && call flutter build %ARGS%))
+        && xcopy /E /I /Y build\web ..\projectname_server\web\app
+      posix: |
+        rm -rf ../projectname_server/web/app
+        cd ../projectname_flutter
+        # {{#website}}
+        set -- web --base-href /app/ --output ../projectname_server/web/app
+        # {{/website}}
+        # {{^website}}
+        set -- web --base-href / --output ../projectname_server/web/app
+        # {{/website}}
+        flutter build "$@" || { flutter clean && flutter build "$@"; }
+
+  # Companion Flutter apps that `serverpod start` can launch (Ctrl+R), keyed
+  # by a display alias. The default device is the web server, opening the
+  # machine's default browser when ready. All non-reserved properties are
+  # forwarded to `flutter run`. For the best IDE debugging experience, use
+  # `chrome` or a native target as the device. See the example below:
+  #
+  # Admin:
+  #   path: ../apps/admin_flutter
+  #   displayName: "Admin app"
+  #   auto_launch: true
+  #   device: chrome
+  #   target: lib/main.dart
+  #   web-hostname: 0.0.0.0
+  #   web-port: 8090
+  #   release: true
+  #   pub: false
+  #   dart-define:
+  #     API_URL=https://admin.example.com
+  #     FLAVOR=production
+  flutter_apps:
+    projectname:
+      path: ../projectname_flutter
+      displayName: "flutter_app_display_name"
+      auto_launch: true
+      target: lib/driver.dart
+# {{/flutterApp}}

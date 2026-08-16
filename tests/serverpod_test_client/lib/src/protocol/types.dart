@@ -16,7 +16,8 @@ import 'test_enum.dart' as _i3;
 import 'test_enum_stringified.dart' as _i4;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i5;
 
-abstract class Types implements _i1.SerializableModel {
+abstract class Types
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   Types._({
     this.id,
     this.anInt,
@@ -33,6 +34,10 @@ abstract class Types implements _i1.SerializableModel {
     this.aHalfVector,
     this.aSparseVector,
     this.aBit,
+    this.aGeographyPoint,
+    this.aGeographyLineString,
+    this.aGeographyPolygon,
+    this.aGeographyGeometryCollection,
     this.anEnum,
     this.aStringifiedEnum,
     this.aList,
@@ -57,6 +62,10 @@ abstract class Types implements _i1.SerializableModel {
     _i1.HalfVector? aHalfVector,
     _i1.SparseVector? aSparseVector,
     _i1.Bit? aBit,
+    _i1.GeographyPoint? aGeographyPoint,
+    _i1.GeographyLineString? aGeographyLineString,
+    _i1.GeographyPolygon? aGeographyPolygon,
+    _i1.GeographyGeometryCollection? aGeographyGeometryCollection,
     _i3.TestEnum? anEnum,
     _i4.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
@@ -69,7 +78,9 @@ abstract class Types implements _i1.SerializableModel {
     return Types(
       id: jsonSerialization['id'] as int?,
       anInt: jsonSerialization['anInt'] as int?,
-      aBool: jsonSerialization['aBool'] as bool?,
+      aBool: jsonSerialization['aBool'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(jsonSerialization['aBool']),
       aDouble: (jsonSerialization['aDouble'] as num?)?.toDouble(),
       aDateTime: jsonSerialization['aDateTime'] == null
           ? null
@@ -96,33 +107,61 @@ abstract class Types implements _i1.SerializableModel {
       aHalfVector: jsonSerialization['aHalfVector'] == null
           ? null
           : _i1.HalfVectorJsonExtension.fromJson(
-              jsonSerialization['aHalfVector']),
+              jsonSerialization['aHalfVector'],
+            ),
       aSparseVector: jsonSerialization['aSparseVector'] == null
           ? null
           : _i1.SparseVectorJsonExtension.fromJson(
-              jsonSerialization['aSparseVector']),
+              jsonSerialization['aSparseVector'],
+            ),
       aBit: jsonSerialization['aBit'] == null
           ? null
           : _i1.BitJsonExtension.fromJson(jsonSerialization['aBit']),
+      aGeographyPoint: jsonSerialization['aGeographyPoint'] == null
+          ? null
+          : _i1.GeographyPointJsonExtension.fromJson(
+              jsonSerialization['aGeographyPoint'],
+            ),
+      aGeographyLineString: jsonSerialization['aGeographyLineString'] == null
+          ? null
+          : _i1.GeographyLineStringJsonExtension.fromJson(
+              jsonSerialization['aGeographyLineString'],
+            ),
+      aGeographyPolygon: jsonSerialization['aGeographyPolygon'] == null
+          ? null
+          : _i1.GeographyPolygonJsonExtension.fromJson(
+              jsonSerialization['aGeographyPolygon'],
+            ),
+      aGeographyGeometryCollection:
+          jsonSerialization['aGeographyGeometryCollection'] == null
+          ? null
+          : _i1.GeographyGeometryCollectionJsonExtension.fromJson(
+              jsonSerialization['aGeographyGeometryCollection'],
+            ),
       anEnum: jsonSerialization['anEnum'] == null
           ? null
           : _i3.TestEnum.fromJson((jsonSerialization['anEnum'] as int)),
       aStringifiedEnum: jsonSerialization['aStringifiedEnum'] == null
           ? null
           : _i4.TestEnumStringified.fromJson(
-              (jsonSerialization['aStringifiedEnum'] as String)),
-      aList:
-          (jsonSerialization['aList'] as List?)?.map((e) => e as int).toList(),
-      aMap: (jsonSerialization['aMap'] as List?)?.fold<Map<int, int>>(
-          {}, (t, e) => {...t, e['k'] as int: e['v'] as int}),
+              (jsonSerialization['aStringifiedEnum'] as String),
+            ),
+      aList: jsonSerialization['aList'] == null
+          ? null
+          : _i5.Protocol().deserialize<List<int>>(jsonSerialization['aList']),
+      aMap: jsonSerialization['aMap'] == null
+          ? null
+          : _i5.Protocol().deserialize<Map<int, int>>(
+              jsonSerialization['aMap'],
+            ),
       aSet: jsonSerialization['aSet'] == null
           ? null
-          : _i1.SetJsonExtension.fromJson((jsonSerialization['aSet'] as List),
-              itemFromJson: (e) => e as int),
+          : _i5.Protocol().deserialize<Set<int>>(jsonSerialization['aSet']),
       aRecord: jsonSerialization['aRecord'] == null
           ? null
           : _i5.Protocol().deserialize<(String, {Uri? optionalUri})?>(
-              (jsonSerialization['aRecord'] as Map<String, dynamic>)),
+              (jsonSerialization['aRecord'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -159,6 +198,14 @@ abstract class Types implements _i1.SerializableModel {
 
   _i1.Bit? aBit;
 
+  _i1.GeographyPoint? aGeographyPoint;
+
+  _i1.GeographyLineString? aGeographyLineString;
+
+  _i1.GeographyPolygon? aGeographyPolygon;
+
+  _i1.GeographyGeometryCollection? aGeographyGeometryCollection;
+
   _i3.TestEnum? anEnum;
 
   _i4.TestEnumStringified? aStringifiedEnum;
@@ -190,6 +237,10 @@ abstract class Types implements _i1.SerializableModel {
     _i1.HalfVector? aHalfVector,
     _i1.SparseVector? aSparseVector,
     _i1.Bit? aBit,
+    _i1.GeographyPoint? aGeographyPoint,
+    _i1.GeographyLineString? aGeographyLineString,
+    _i1.GeographyPolygon? aGeographyPolygon,
+    _i1.GeographyGeometryCollection? aGeographyGeometryCollection,
     _i3.TestEnum? anEnum,
     _i4.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
@@ -200,6 +251,7 @@ abstract class Types implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Types',
       if (id != null) 'id': id,
       if (anInt != null) 'anInt': anInt,
       if (aBool != null) 'aBool': aBool,
@@ -215,13 +267,56 @@ abstract class Types implements _i1.SerializableModel {
       if (aHalfVector != null) 'aHalfVector': aHalfVector?.toJson(),
       if (aSparseVector != null) 'aSparseVector': aSparseVector?.toJson(),
       if (aBit != null) 'aBit': aBit?.toJson(),
+      if (aGeographyPoint != null) 'aGeographyPoint': aGeographyPoint?.toJson(),
+      if (aGeographyLineString != null)
+        'aGeographyLineString': aGeographyLineString?.toJson(),
+      if (aGeographyPolygon != null)
+        'aGeographyPolygon': aGeographyPolygon?.toJson(),
+      if (aGeographyGeometryCollection != null)
+        'aGeographyGeometryCollection': aGeographyGeometryCollection?.toJson(),
       if (anEnum != null) 'anEnum': anEnum?.toJson(),
       if (aStringifiedEnum != null)
         'aStringifiedEnum': aStringifiedEnum?.toJson(),
       if (aList != null) 'aList': aList?.toJson(),
       if (aMap != null) 'aMap': aMap?.toJson(),
       if (aSet != null) 'aSet': aSet?.toJson(),
-      if (aRecord != null) 'aRecord': _i5.mapRecordToJson(aRecord),
+      if (aRecord != null) 'aRecord': _i5.Protocol().mapRecordToJson(aRecord),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Types',
+      if (id != null) 'id': id,
+      if (anInt != null) 'anInt': anInt,
+      if (aBool != null) 'aBool': aBool,
+      if (aDouble != null) 'aDouble': aDouble,
+      if (aDateTime != null) 'aDateTime': aDateTime?.toJson(),
+      if (aString != null) 'aString': aString,
+      if (aByteData != null) 'aByteData': aByteData?.toJson(),
+      if (aDuration != null) 'aDuration': aDuration?.toJson(),
+      if (aUuid != null) 'aUuid': aUuid?.toJson(),
+      if (aUri != null) 'aUri': aUri?.toJson(),
+      if (aBigInt != null) 'aBigInt': aBigInt?.toJson(),
+      if (aVector != null) 'aVector': aVector?.toJson(),
+      if (aHalfVector != null) 'aHalfVector': aHalfVector?.toJson(),
+      if (aSparseVector != null) 'aSparseVector': aSparseVector?.toJson(),
+      if (aBit != null) 'aBit': aBit?.toJson(),
+      if (aGeographyPoint != null) 'aGeographyPoint': aGeographyPoint?.toJson(),
+      if (aGeographyLineString != null)
+        'aGeographyLineString': aGeographyLineString?.toJson(),
+      if (aGeographyPolygon != null)
+        'aGeographyPolygon': aGeographyPolygon?.toJson(),
+      if (aGeographyGeometryCollection != null)
+        'aGeographyGeometryCollection': aGeographyGeometryCollection?.toJson(),
+      if (anEnum != null) 'anEnum': anEnum?.toJson(),
+      if (aStringifiedEnum != null)
+        'aStringifiedEnum': aStringifiedEnum?.toJson(),
+      if (aList != null) 'aList': aList?.toJson(),
+      if (aMap != null) 'aMap': aMap?.toJson(),
+      if (aSet != null) 'aSet': aSet?.toJson(),
+      if (aRecord != null) 'aRecord': _i5.Protocol().mapRecordToJson(aRecord),
     };
   }
 
@@ -250,6 +345,10 @@ class _TypesImpl extends Types {
     _i1.HalfVector? aHalfVector,
     _i1.SparseVector? aSparseVector,
     _i1.Bit? aBit,
+    _i1.GeographyPoint? aGeographyPoint,
+    _i1.GeographyLineString? aGeographyLineString,
+    _i1.GeographyPolygon? aGeographyPolygon,
+    _i1.GeographyGeometryCollection? aGeographyGeometryCollection,
     _i3.TestEnum? anEnum,
     _i4.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
@@ -257,28 +356,32 @@ class _TypesImpl extends Types {
     Set<int>? aSet,
     (String, {Uri? optionalUri})? aRecord,
   }) : super._(
-          id: id,
-          anInt: anInt,
-          aBool: aBool,
-          aDouble: aDouble,
-          aDateTime: aDateTime,
-          aString: aString,
-          aByteData: aByteData,
-          aDuration: aDuration,
-          aUuid: aUuid,
-          aUri: aUri,
-          aBigInt: aBigInt,
-          aVector: aVector,
-          aHalfVector: aHalfVector,
-          aSparseVector: aSparseVector,
-          aBit: aBit,
-          anEnum: anEnum,
-          aStringifiedEnum: aStringifiedEnum,
-          aList: aList,
-          aMap: aMap,
-          aSet: aSet,
-          aRecord: aRecord,
-        );
+         id: id,
+         anInt: anInt,
+         aBool: aBool,
+         aDouble: aDouble,
+         aDateTime: aDateTime,
+         aString: aString,
+         aByteData: aByteData,
+         aDuration: aDuration,
+         aUuid: aUuid,
+         aUri: aUri,
+         aBigInt: aBigInt,
+         aVector: aVector,
+         aHalfVector: aHalfVector,
+         aSparseVector: aSparseVector,
+         aBit: aBit,
+         aGeographyPoint: aGeographyPoint,
+         aGeographyLineString: aGeographyLineString,
+         aGeographyPolygon: aGeographyPolygon,
+         aGeographyGeometryCollection: aGeographyGeometryCollection,
+         anEnum: anEnum,
+         aStringifiedEnum: aStringifiedEnum,
+         aList: aList,
+         aMap: aMap,
+         aSet: aSet,
+         aRecord: aRecord,
+       );
 
   /// Returns a shallow copy of this [Types]
   /// with some or all fields replaced by the given arguments.
@@ -300,6 +403,10 @@ class _TypesImpl extends Types {
     Object? aHalfVector = _Undefined,
     Object? aSparseVector = _Undefined,
     Object? aBit = _Undefined,
+    Object? aGeographyPoint = _Undefined,
+    Object? aGeographyLineString = _Undefined,
+    Object? aGeographyPolygon = _Undefined,
+    Object? aGeographyGeometryCollection = _Undefined,
     Object? anEnum = _Undefined,
     Object? aStringifiedEnum = _Undefined,
     Object? aList = _Undefined,
@@ -314,8 +421,9 @@ class _TypesImpl extends Types {
       aDouble: aDouble is double? ? aDouble : this.aDouble,
       aDateTime: aDateTime is DateTime? ? aDateTime : this.aDateTime,
       aString: aString is String? ? aString : this.aString,
-      aByteData:
-          aByteData is _i2.ByteData? ? aByteData : this.aByteData?.clone(),
+      aByteData: aByteData is _i2.ByteData?
+          ? aByteData
+          : this.aByteData?.clone(),
       aDuration: aDuration is Duration? ? aDuration : this.aDuration,
       aUuid: aUuid is _i1.UuidValue? ? aUuid : this.aUuid,
       aUri: aUri is Uri? ? aUri : this.aUri,
@@ -328,6 +436,19 @@ class _TypesImpl extends Types {
           ? aSparseVector
           : this.aSparseVector?.clone(),
       aBit: aBit is _i1.Bit? ? aBit : this.aBit?.clone(),
+      aGeographyPoint: aGeographyPoint is _i1.GeographyPoint?
+          ? aGeographyPoint
+          : this.aGeographyPoint,
+      aGeographyLineString: aGeographyLineString is _i1.GeographyLineString?
+          ? aGeographyLineString
+          : this.aGeographyLineString,
+      aGeographyPolygon: aGeographyPolygon is _i1.GeographyPolygon?
+          ? aGeographyPolygon
+          : this.aGeographyPolygon,
+      aGeographyGeometryCollection:
+          aGeographyGeometryCollection is _i1.GeographyGeometryCollection?
+          ? aGeographyGeometryCollection
+          : this.aGeographyGeometryCollection,
       anEnum: anEnum is _i3.TestEnum? ? anEnum : this.anEnum,
       aStringifiedEnum: aStringifiedEnum is _i4.TestEnumStringified?
           ? aStringifiedEnum
@@ -335,23 +456,24 @@ class _TypesImpl extends Types {
       aList: aList is List<int>? ? aList : this.aList?.map((e0) => e0).toList(),
       aMap: aMap is Map<int, int>?
           ? aMap
-          : this.aMap?.map((
+          : this.aMap?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
+              ) => MapEntry(
+                key0,
+                value0,
+              ),
+            ),
       aSet: aSet is Set<int>? ? aSet : this.aSet?.map((e0) => e0).toSet(),
       aRecord: aRecord is (String, {Uri? optionalUri})?
           ? aRecord
           : this.aRecord == null
-              ? null
-              : (
-                  this.aRecord!.$1,
-                  optionalUri: this.aRecord!.optionalUri,
-                ),
+          ? null
+          : (
+              this.aRecord!.$1,
+              optionalUri: this.aRecord!.optionalUri,
+            ),
     );
   }
 }

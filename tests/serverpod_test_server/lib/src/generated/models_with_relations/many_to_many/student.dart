@@ -8,12 +8,12 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/many_to_many/enrollment.dart' as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class Student
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -33,9 +33,11 @@ abstract class Student
     return Student(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      enrollments: (jsonSerialization['enrollments'] as List?)
-          ?.map((e) => _i2.Enrollment.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      enrollments: jsonSerialization['enrollments'] == null
+          ? null
+          : _i3.Protocol().deserialize<List<_i2.Enrollment>>(
+              jsonSerialization['enrollments'],
+            ),
     );
   }
 
@@ -64,6 +66,7 @@ abstract class Student
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Student',
       if (id != null) 'id': id,
       'name': name,
       if (enrollments != null)
@@ -74,11 +77,13 @@ abstract class Student
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'Student',
       if (id != null) 'id': id,
       'name': name,
       if (enrollments != null)
-        'enrollments':
-            enrollments?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+        'enrollments': enrollments?.toJson(
+          valueToJson: (v) => v.toJsonForProtocol(),
+        ),
     };
   }
 
@@ -91,7 +96,6 @@ abstract class Student
     int? limit,
     int? offset,
     _i1.OrderByBuilder<StudentTable>? orderBy,
-    bool orderDescending = false,
     _i1.OrderByListBuilder<StudentTable>? orderByList,
     StudentInclude? include,
   }) {
@@ -100,7 +104,6 @@ abstract class Student
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Student.t),
-      orderDescending: orderDescending,
       orderByList: orderByList?.call(Student.t),
       include: include,
     );
@@ -120,10 +123,10 @@ class _StudentImpl extends Student {
     required String name,
     List<_i2.Enrollment>? enrollments,
   }) : super._(
-          id: id,
-          name: name,
-          enrollments: enrollments,
-        );
+         id: id,
+         name: name,
+         enrollments: enrollments,
+       );
 
   /// Returns a shallow copy of this [Student]
   /// with some or all fields replaced by the given arguments.
@@ -148,9 +151,9 @@ class StudentUpdateTable extends _i1.UpdateTable<StudentTable> {
   StudentUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 }
 
 class StudentTable extends _i1.Table<int?> {
@@ -196,16 +199,17 @@ class StudentTable extends _i1.Table<int?> {
     _enrollments = _i1.ManyRelation<_i2.EnrollmentTable>(
       tableWithRelations: relationTable,
       table: _i2.EnrollmentTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _enrollments!;
   }
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-      ];
+    id,
+    name,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -236,7 +240,6 @@ class StudentIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -280,25 +283,27 @@ class StudentRepository {
   /// );
   /// ```
   Future<List<Student>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<StudentTable>? where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<StudentTable>? orderBy,
-    bool orderDescending = false,
     _i1.OrderByListBuilder<StudentTable>? orderByList,
     _i1.Transaction? transaction,
     StudentInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Student>(
       where: where?.call(Student.t),
       orderBy: orderBy?.call(Student.t),
       orderByList: orderByList?.call(Student.t),
-      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -320,37 +325,43 @@ class StudentRepository {
   /// );
   /// ```
   Future<Student?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<StudentTable>? where,
     int? offset,
     _i1.OrderByBuilder<StudentTable>? orderBy,
-    bool orderDescending = false,
     _i1.OrderByListBuilder<StudentTable>? orderByList,
     _i1.Transaction? transaction,
     StudentInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Student>(
       where: where?.call(Student.t),
       orderBy: orderBy?.call(Student.t),
       orderByList: orderByList?.call(Student.t),
-      orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
   /// Finds a single [Student] by its [id] or null if no such row exists.
   Future<Student?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     StudentInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<Student>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -360,14 +371,26 @@ class StudentRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Student>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Student> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<Student>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -375,7 +398,7 @@ class StudentRepository {
   ///
   /// The returned [Student] will have its `id` field set.
   Future<Student> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Student row, {
     _i1.Transaction? transaction,
   }) async {
@@ -385,21 +408,96 @@ class StudentRepository {
     );
   }
 
+  /// Upserts all [Student]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [Student]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<Student>> upsert(
+    _i1.DatabaseSession session,
+    List<Student> rows, {
+    required _i1.ColumnSelections<StudentTable> conflictColumns,
+    _i1.ColumnSelections<StudentTable>? updateColumns,
+    _i1.WhereExpressionBuilder<StudentTable>? updateWhere,
+    _i1.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<Student>(
+      rows,
+      conflictColumns: conflictColumns(Student.t),
+      updateColumns: updateColumns?.call(Student.t),
+      updateWhere: updateWhere?.call(Student.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [Student] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [Student] will have its `id` field set.
+  Future<Student?> upsertRow(
+    _i1.DatabaseSession session,
+    Student row, {
+    required _i1.ColumnSelections<StudentTable> conflictColumns,
+    _i1.ColumnSelections<StudentTable>? updateColumns,
+    _i1.WhereExpressionBuilder<StudentTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<Student>(
+      row,
+      conflictColumns: conflictColumns(Student.t),
+      updateColumns: updateColumns?.call(Student.t),
+      updateWhere: updateWhere?.call(Student.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [Student]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Student>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Student> rows, {
     _i1.ColumnSelections<StudentTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<Student>(
       rows,
       columns: columns?.call(Student.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -407,7 +505,7 @@ class StudentRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<Student> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Student row, {
     _i1.ColumnSelections<StudentTable>? columns,
     _i1.Transaction? transaction,
@@ -422,7 +520,7 @@ class StudentRepository {
   /// Updates a single [Student] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Student?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<StudentUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -436,16 +534,20 @@ class StudentRepository {
 
   /// Updates all [Student]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Student>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<StudentUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<StudentTable> where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<StudentTable>? orderBy,
     _i1.OrderByListBuilder<StudentTable>? orderByList,
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<Student>(
       columnValues: columnValues(Student.t.updateTable),
@@ -454,28 +556,42 @@ class StudentRepository {
       offset: offset,
       orderBy: orderBy?.call(Student.t),
       orderByList: orderByList?.call(Student.t),
-      orderDescending: orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes all [Student]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Student>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Student> rows, {
+    _i1.OrderByBuilder<StudentTable>? orderBy,
+    _i1.OrderByListBuilder<StudentTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<Student>(
       rows,
+      orderBy: orderBy?.call(Student.t),
+      orderByList: orderByList?.call(Student.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes a single [Student].
   Future<Student> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Student row, {
     _i1.Transaction? transaction,
   }) async {
@@ -486,21 +602,34 @@ class StudentRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Student>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<StudentTable> where,
+    _i1.OrderByBuilder<StudentTable>? orderBy,
+    _i1.OrderByListBuilder<StudentTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Student>(
       where: where(Student.t),
+      orderBy: orderBy?.call(Student.t),
+      orderByList: orderByList?.call(Student.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<StudentTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -508,6 +637,22 @@ class StudentRepository {
     return session.db.count<Student>(
       where: where?.call(Student.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [Student] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.DatabaseSession session, {
+    required _i1.WhereExpressionBuilder<StudentTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<Student>(
+      where: where(Student.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }
@@ -519,7 +664,7 @@ class StudentAttachRepository {
   /// Creates a relation between this [Student] and the given [Enrollment]s
   /// by setting each [Enrollment]'s foreign key `studentId` to refer to this [Student].
   Future<void> enrollments(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Student student,
     List<_i2.Enrollment> enrollment, {
     _i1.Transaction? transaction,
@@ -531,8 +676,9 @@ class StudentAttachRepository {
       throw ArgumentError.notNull('student.id');
     }
 
-    var $enrollment =
-        enrollment.map((e) => e.copyWith(studentId: student.id)).toList();
+    var $enrollment = enrollment
+        .map((e) => e.copyWith(studentId: student.id))
+        .toList();
     await session.db.update<_i2.Enrollment>(
       $enrollment,
       columns: [_i2.Enrollment.t.studentId],
@@ -547,7 +693,7 @@ class StudentAttachRowRepository {
   /// Creates a relation between this [Student] and the given [Enrollment]
   /// by setting the [Enrollment]'s foreign key `studentId` to refer to this [Student].
   Future<void> enrollments(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Student student,
     _i2.Enrollment enrollment, {
     _i1.Transaction? transaction,

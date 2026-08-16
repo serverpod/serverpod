@@ -7,6 +7,7 @@ import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+import 'package:yaml/yaml.dart';
 
 class CheckLatestVersion {
   final bool onlyMajorUpdate;
@@ -29,8 +30,17 @@ Future<bool> pubspecDependenciesMatch({
     return false;
   }
 
-  var pubspecFiles = findPubspecsFiles(directory,
-      ignorePaths: [p.join('templates', 'pubspecs'), 'test_assets']);
+  var pubspecFiles = findPubspecsFiles(
+    directory,
+    ignorePaths: [
+      p.join('templates', 'pubspecs'),
+      p.join('tests', 'temp'),
+      'test_assets',
+      // Frozen at Serverpod 4.0.0-beta.0, see issue #5443.
+      p.join('modules', 'legacy', 'serverpod_chat'),
+      p.join('examples', 'legacy', 'chat'),
+    ],
+  );
 
   Map<String, List<_ServerpodDependency>> dependencies;
   try {
@@ -41,7 +51,11 @@ Future<bool> pubspecDependenciesMatch({
     return false;
   }
 
-  var mismatchedDeps = _findMismatchedDependencies(dependencies);
+  var ignoredPackages = _loadIgnoredPackages(directory);
+  var mismatchedDeps = _findMismatchedDependencies(
+    dependencies,
+    ignoredPackages,
+  );
 
   if (mismatchedDeps.isNotEmpty) {
     _printMismatchedDependencies(mismatchedDeps, dependencies);
@@ -121,8 +135,10 @@ Future<bool> _checkLatestVersion(
   return latestVersionMatch;
 }
 
-void _printMismatchedDependencies(Set<String> mismatchedDeps,
-    Map<String, List<_ServerpodDependency>> dependencies) {
+void _printMismatchedDependencies(
+  Set<String> mismatchedDeps,
+  Map<String, List<_ServerpodDependency>> dependencies,
+) {
   log.error('Found mismatched dependencies:');
   for (var depName in mismatchedDeps) {
     log.error(
@@ -139,11 +155,51 @@ void _printMismatchedDependencies(Set<String> mismatchedDeps,
   }
 }
 
+Set<String> _loadIgnoredPackages(Directory directory) {
+  var rootPubspecFile = File(p.join(directory.path, 'pubspec.yaml'));
+  if (!rootPubspecFile.existsSync()) {
+    return {};
+  }
+
+  try {
+    var yamlString = rootPubspecFile.readAsStringSync();
+    var yaml = loadYaml(yamlString);
+
+    if (yaml is! YamlMap) {
+      return {};
+    }
+
+    var serverpodCli = yaml['serverpod_cli'];
+    if (serverpodCli is! YamlMap) {
+      return {};
+    }
+
+    var analyzePubspecs = serverpodCli['analyze_pubspecs'];
+    if (analyzePubspecs is! YamlMap) {
+      return {};
+    }
+
+    var ignorePackages = analyzePubspecs['ignore_packages'];
+    if (ignorePackages is! YamlList) {
+      return {};
+    }
+
+    return ignorePackages.cast<String>().toSet();
+  } catch (e) {
+    log.warning('Failed to load ignored packages from root pubspec.yaml: $e');
+    return {};
+  }
+}
+
 Set<String> _findMismatchedDependencies(
   Map<String, List<_ServerpodDependency>> dependencies,
+  Set<String> ignoredPackages,
 ) {
   var mismatchedDeps = <String>{};
   for (var depName in dependencies.keys) {
+    if (ignoredPackages.contains(depName)) {
+      continue;
+    }
     var deps = dependencies[depName]!;
     String? version;
     for (var dep in deps) {

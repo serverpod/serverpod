@@ -1,0 +1,39 @@
+anonymousIdp:
+  - login:
+appleIdp:
+  - login:
+  - hasAccount:
+emailIdp:
+  - login:
+  - startRegistration:
+  - verifyRegistrationCode:
+  - finishRegistration:
+  - startPasswordReset:
+  - verifyPasswordResetCode:
+  - finishPasswordReset:
+  - hasAccount:
+facebookIdp:
+  - login:
+  - hasAccount:
+firebaseIdp:
+  - login:
+  - hasAccount:
+gitHubIdp:
+  - login:
+  - hasAccount:
+googleIdp:
+  - login:
+  - loginWithCode:
+  - hasAccount:
+refreshJwtTokens:
+  - refreshAccessToken:
+microsoftIdp:
+  - login:
+  - hasAccount:
+passkeyIdp:
+  - createChallenge:
+  - register:
+  - login:
+  - hasAccount:
+greeting:
+  - hello:

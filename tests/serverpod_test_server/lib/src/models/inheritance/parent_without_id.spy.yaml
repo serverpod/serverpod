@@ -1,0 +1,4 @@
+class: ParentClassWithoutId
+extends: GrandparentClassWithId
+fields:
+    parentField: String

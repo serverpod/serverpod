@@ -13,11 +13,11 @@ class PubspecPlus {
   final YamlMap yaml;
 
   PubspecPlus.fromFile(File file)
-      : this.parse(file.readAsStringSync(), sourceUrl: file.uri);
+    : this.parse(file.readAsStringSync(), sourceUrl: file.uri);
 
   PubspecPlus.parse(String yamlString, {Uri? sourceUrl})
-      : pubspec = Pubspec.parse(yamlString, sourceUrl: sourceUrl),
-        yaml = loadYamlMap(yamlString, sourceUrl: sourceUrl);
+    : pubspec = Pubspec.parse(yamlString, sourceUrl: sourceUrl),
+      yaml = loadYamlMap(yamlString, sourceUrl: sourceUrl);
 
   /// All dependencies in the pubspec, regardless of type. Augmented with name,
   /// kind, and span.
@@ -29,21 +29,22 @@ class PubspecPlus {
       (
         deps: pubspec.dependencies,
         type: DepKind.normal,
-        yaml: yaml['dependencies'] as YamlMap?
+        yaml: yaml['dependencies'] as YamlMap?,
       ),
       (
         deps: pubspec.devDependencies,
         type: DepKind.dev,
-        yaml: yaml['dev_dependencies'] as YamlMap?
+        yaml: yaml['dev_dependencies'] as YamlMap?,
       ),
       (
         deps: pubspec.dependencyOverrides,
         type: DepKind.override,
-        yaml: yaml['dependency_overrides'] as YamlMap?
+        yaml: yaml['dependency_overrides'] as YamlMap?,
       ),
     ]) {
       for (var e in x.deps.entries) {
-        var span = x.yaml?.nodes[e.key]?.span ??
+        var span =
+            x.yaml?.nodes[e.key]?.span ??
             (throw StateError('Missing span for dependency ${e.key}'));
         yield Dep(e.key, e.value, x.type, span);
       }
@@ -73,14 +74,20 @@ class Dep<T extends Dependency> {
   ) {
     // trick to get the correct wrapped static type runtime
     return switch (dependency) {
-      (HostedDependency dep) => Dep<HostedDependency>._(name, dep, kind, span),
-      (PathDependency dep) => Dep<PathDependency>._(name, dep, kind, span),
-      (GitDependency dep) => Dep<GitDependency>._(name, dep, kind, span),
-      (SdkDependency dep) => Dep<SdkDependency>._(name, dep, kind, span),
-      // Prior to pubspec_parse 1.4.0 the Dependency class was not sealed.
-      // ignore: unreachable_switch_case
-      _ => throw StateError('Unknown dependency type: $dependency'),
-    } as Dep<T>;
+          (HostedDependency dep) => Dep<HostedDependency>._(
+            name,
+            dep,
+            kind,
+            span,
+          ),
+          (PathDependency dep) => Dep<PathDependency>._(name, dep, kind, span),
+          (GitDependency dep) => Dep<GitDependency>._(name, dep, kind, span),
+          (SdkDependency dep) => Dep<SdkDependency>._(name, dep, kind, span),
+          // Prior to pubspec_parse 1.4.0 the Dependency class was not sealed.
+          // ignore: unreachable_switch_case
+          _ => throw StateError('Unknown dependency type: $dependency'),
+        }
+        as Dep<T>;
   }
 }
 

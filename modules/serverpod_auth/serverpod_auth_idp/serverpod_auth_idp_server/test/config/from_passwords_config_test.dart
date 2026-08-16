@@ -1,0 +1,418 @@
+import 'dart:io';
+
+import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
+import 'package:serverpod_auth_idp_server/providers/apple.dart';
+import 'package:serverpod_auth_idp_server/providers/email.dart';
+import 'package:serverpod_auth_idp_server/providers/facebook.dart';
+import 'package:serverpod_auth_idp_server/providers/github.dart';
+import 'package:serverpod_auth_idp_server/providers/google.dart';
+import 'package:serverpod_auth_idp_server/providers/microsoft.dart';
+import 'package:serverpod_auth_idp_server/providers/passkey.dart';
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart';
+import 'package:test/test.dart';
+import 'package:test_descriptor/test_descriptor.dart' as d;
+
+void main() {
+  final portZeroConfig = ServerConfig(
+    port: 0,
+    publicScheme: 'http',
+    publicHost: 'localhost',
+    publicPort: 0,
+  );
+
+  group('Given missing IDP passwords', () {
+    setUpAll(() async {
+      await d.dir('config', [
+        d.file('passwords.yaml', 'test:\n  database: "test"'),
+      ]).create();
+
+      // Constructing `Serverpod` internally sets `Serverpod.instance`.
+      // This is used in `*FromPasswords` constructors to retrieve passwords.
+      Serverpod(
+        ['-m', 'test'],
+        Protocol(),
+        Endpoints(),
+        config: ServerpodConfig(apiServer: portZeroConfig),
+        serverDirectory: Directory(d.sandbox),
+      );
+    });
+
+    test(
+      'when constructing EmailIdpConfigFromPasswords then throws PasswordNotFoundException.',
+      () {
+        expect(
+          () => EmailIdpConfigFromPasswords(),
+          throwsA(
+            isA<PasswordNotFoundException>().having(
+              (final e) => e.key,
+              'key',
+              'emailSecretHashPepper',
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'when constructing GoogleIdpConfigFromPasswords then throws PasswordNotFoundException.',
+      () {
+        expect(
+          () => GoogleIdpConfigFromPasswords(),
+          throwsA(
+            isA<PasswordNotFoundException>().having(
+              (final e) => e.key,
+              'key',
+              'googleClientSecret',
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'when constructing FacebookIdpConfigFromPasswords then throws PasswordNotFoundException.',
+      () {
+        expect(
+          () => FacebookIdpConfigFromPasswords(),
+          throwsA(
+            isA<PasswordNotFoundException>().having(
+              (final e) => e.key,
+              'key',
+              'facebookAppId',
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'when constructing GitHubIdpConfigFromPasswords then throws PasswordNotFoundException.',
+      () {
+        expect(
+          () => GitHubIdpConfigFromPasswords(),
+          throwsA(
+            isA<PasswordNotFoundException>().having(
+              (final e) => e.key,
+              'key',
+              'githubClientId',
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'when constructing AppleIdpConfigFromPasswords then throws PasswordNotFoundException.',
+      () {
+        expect(
+          () => AppleIdpConfigFromPasswords(),
+          throwsA(
+            isA<PasswordNotFoundException>().having(
+              (final e) => e.key,
+              'key',
+              'appleServiceIdentifier',
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'when constructing MicrosoftIdpConfigFromPasswords then throws PasswordNotFoundException.',
+      () {
+        expect(
+          () => MicrosoftIdpConfigFromPasswords(),
+          throwsA(
+            isA<PasswordNotFoundException>().having(
+              (final e) => e.key,
+              'key',
+              'microsoftClientId',
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'when constructing PasskeyIdpConfigFromPasswords then throws PasswordNotFoundException.',
+      () {
+        expect(
+          () => PasskeyIdpConfigFromPasswords(),
+          throwsA(
+            isA<PasswordNotFoundException>().having(
+              (final e) => e.key,
+              'key',
+              'passkeyHostname',
+            ),
+          ),
+        );
+      },
+    );
+  });
+
+  group(
+    'Given emailSecretHashPepper password is present',
+
+    () {
+      setUpAll(() async {
+        await d.dir('config', [
+          d.file(
+            'passwords.yaml',
+            '''
+test:
+  database: 'test'
+  emailSecretHashPepper: 'xK9#mP2\$vL5nQ8wR3jF6hY1cT4bN7zA0'
+''',
+          ),
+        ]).create();
+
+        Serverpod(
+          ['-m', 'test'],
+          Protocol(),
+          Endpoints(),
+          config: ServerpodConfig(apiServer: portZeroConfig),
+          serverDirectory: Directory(d.sandbox),
+        );
+      });
+
+      test(
+        'when constructing EmailIdpConfigFromPasswords then succeeds.',
+        () {
+          final config = EmailIdpConfigFromPasswords();
+          expect(config, isA<EmailIdpConfig>());
+        },
+      );
+    },
+  );
+
+  group(
+    'Given googleClientSecret password is present',
+
+    () {
+      setUpAll(() async {
+        await d.dir('config', [
+          d.file(
+            'passwords.yaml',
+            '''
+test:
+  database: 'test'
+  googleClientSecret: '{"web":{"client_id":"123456789012-abcdefghijklmnopqrstuvwxyz123456.apps.googleusercontent.com","client_secret":"GOCSPX-abc123def456ghi789jkl012mno","redirect_uris":["http://localhost:8080/auth/google/callback"]}}'
+''',
+          ),
+        ]).create();
+
+        Serverpod(
+          ['-m', 'test'],
+          Protocol(),
+          Endpoints(),
+          config: ServerpodConfig(apiServer: portZeroConfig),
+          serverDirectory: Directory(d.sandbox),
+        );
+      });
+
+      test(
+        'when constructing GoogleIdpConfigFromPasswords then succeeds.',
+        () {
+          final config = GoogleIdpConfigFromPasswords();
+          expect(config, isA<GoogleIdpConfig>());
+        },
+      );
+    },
+  );
+
+  group(
+    'Given Facebook passwords are present',
+
+    () {
+      setUpAll(() async {
+        await d.dir('config', [
+          d.file(
+            'passwords.yaml',
+            '''
+test:
+  database: 'test'
+  facebookAppId: '123456789012345'
+  facebookAppSecret: 'abc123def456ghi789jkl012mno345pqr'
+''',
+          ),
+        ]).create();
+
+        Serverpod(
+          ['-m', 'test'],
+          Protocol(),
+          Endpoints(),
+          config: ServerpodConfig(apiServer: portZeroConfig),
+          serverDirectory: Directory(d.sandbox),
+        );
+      });
+
+      test(
+        'when constructing FacebookIdpConfigFromPasswords then succeeds.',
+        () {
+          final config = FacebookIdpConfigFromPasswords();
+          expect(config, isA<FacebookIdpConfig>());
+        },
+      );
+    },
+  );
+
+  group(
+    'Given GitHub passwords are present',
+
+    () {
+      setUpAll(() async {
+        await d.dir('config', [
+          d.file(
+            'passwords.yaml',
+            '''
+test:
+  database: 'test'
+  githubClientId: 'Ov23liABCDEFGHIJKLMN'
+  githubClientSecret: '1234567890abcdef1234567890abcdef12345678'
+''',
+          ),
+        ]).create();
+
+        Serverpod(
+          ['-m', 'test'],
+          Protocol(),
+          Endpoints(),
+          config: ServerpodConfig(apiServer: portZeroConfig),
+          serverDirectory: Directory(d.sandbox),
+        );
+      });
+
+      test(
+        'when constructing GitHubIdpConfigFromPasswords then succeeds.',
+        () {
+          final config = GitHubIdpConfigFromPasswords();
+          expect(config, isA<GitHubIdpConfig>());
+        },
+      );
+    },
+  );
+
+  group(
+    'Given all apple passwords are present',
+
+    () {
+      setUpAll(() async {
+        await d.dir('config', [
+          d.file(
+            'passwords.yaml',
+            '''
+test:
+  database: 'test'
+  appleServiceIdentifier: 'com.example.service.auth'
+  appleBundleIdentifier: 'com.example.app'
+  appleRedirectUri: 'https://example.com/auth/apple/callback'
+  appleTeamId: 'ABC1234DEF'
+  appleKeyId: 'KEY1234567'
+  appleKey: |
+    -----BEGIN PRIVATE KEY-----
+    MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgExample
+    PrivateKeyContentHereBase64EncodedDataExample1234567890
+    abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
+    -----END PRIVATE KEY-----
+  appleAndroidPackageIdentifier: 'com.example.app'
+  appleWebRedirectUri: 'https://example.com/auth/apple/web-complete'
+''',
+          ),
+        ]).create();
+
+        Serverpod(
+          ['-m', 'test'],
+          Protocol(),
+          Endpoints(),
+          config: ServerpodConfig(apiServer: portZeroConfig),
+          serverDirectory: Directory(d.sandbox),
+        );
+      });
+
+      test(
+        'when constructing AppleIdpConfigFromPasswords then succeeds.',
+        () {
+          final config = AppleIdpConfigFromPasswords();
+          expect(config, isA<AppleIdpConfig>());
+          expect(config.androidPackageIdentifier, 'com.example.app');
+          expect(
+            config.webRedirectUri,
+            'https://example.com/auth/apple/web-complete',
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given microsoftClientId and microsoftClientSecret passwords are present',
+
+    () {
+      setUpAll(() async {
+        await d.dir('config', [
+          d.file(
+            'passwords.yaml',
+            '''
+test:
+  database: 'test'
+  microsoftClientId: '12345678-1234-1234-1234-123456789012'
+  microsoftClientSecret: 'abc~DEF123ghi456JKL789mno012PQR345stu'
+''',
+          ),
+        ]).create();
+
+        Serverpod(
+          ['-m', 'test'],
+          Protocol(),
+          Endpoints(),
+          config: ServerpodConfig(apiServer: portZeroConfig),
+          serverDirectory: Directory(d.sandbox),
+        );
+      });
+
+      test(
+        'when constructing MicrosoftIdpConfigFromPasswords then succeeds.',
+        () {
+          final config = MicrosoftIdpConfigFromPasswords();
+          expect(config, isA<MicrosoftIdpConfig>());
+        },
+      );
+    },
+  );
+
+  group(
+    'Given passkeyHostname password is present',
+
+    () {
+      setUpAll(() async {
+        await d.dir('config', [
+          d.file(
+            'passwords.yaml',
+            '''
+test:
+  database: 'test'
+  passkeyHostname: 'auth.example.com'
+''',
+          ),
+        ]).create();
+
+        Serverpod(
+          ['-m', 'test'],
+          Protocol(),
+          Endpoints(),
+          config: ServerpodConfig(apiServer: portZeroConfig),
+          serverDirectory: Directory(d.sandbox),
+        );
+      });
+
+      test(
+        'when constructing PasskeyIdpConfigFromPasswords then succeeds.',
+        () {
+          final config = PasskeyIdpConfigFromPasswords();
+          expect(config, isA<PasskeyIdpConfig>());
+        },
+      );
+    },
+  );
+}

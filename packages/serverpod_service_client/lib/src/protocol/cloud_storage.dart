@@ -14,7 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
 
 /// An entry in the database for an uploaded file.
-abstract class CloudStorageEntry implements _i1.SerializableModel {
+abstract class CloudStorageEntry
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   CloudStorageEntry._({
     this.id,
     required this.storageId,
@@ -40,14 +41,16 @@ abstract class CloudStorageEntry implements _i1.SerializableModel {
       id: jsonSerialization['id'] as int?,
       storageId: jsonSerialization['storageId'] as String,
       path: jsonSerialization['path'] as String,
-      addedTime:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['addedTime']),
+      addedTime: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['addedTime'],
+      ),
       expiration: jsonSerialization['expiration'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['expiration']),
-      byteData:
-          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['byteData']),
-      verified: jsonSerialization['verified'] as bool,
+      byteData: _i1.ByteDataJsonExtension.fromJson(
+        jsonSerialization['byteData'],
+      ),
+      verified: _i1.BoolJsonExtension.fromJson(jsonSerialization['verified']),
     );
   }
 
@@ -89,6 +92,21 @@ abstract class CloudStorageEntry implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.CloudStorageEntry',
+      if (id != null) 'id': id,
+      'storageId': storageId,
+      'path': path,
+      'addedTime': addedTime.toJson(),
+      if (expiration != null) 'expiration': expiration?.toJson(),
+      'byteData': byteData.toJson(),
+      'verified': verified,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod.CloudStorageEntry',
       if (id != null) 'id': id,
       'storageId': storageId,
       'path': path,
@@ -117,14 +135,14 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
     required _i2.ByteData byteData,
     required bool verified,
   }) : super._(
-          id: id,
-          storageId: storageId,
-          path: path,
-          addedTime: addedTime,
-          expiration: expiration,
-          byteData: byteData,
-          verified: verified,
-        );
+         id: id,
+         storageId: storageId,
+         path: path,
+         addedTime: addedTime,
+         expiration: expiration,
+         byteData: byteData,
+         verified: verified,
+       );
 
   /// Returns a shallow copy of this [CloudStorageEntry]
   /// with some or all fields replaced by the given arguments.

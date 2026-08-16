@@ -1,7 +1,7 @@
-import 'package:super_string/super_string.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Splits a string on the separator token unless the token is inside
-/// brackets, angle brackets, ( ) and < >, curly braces, { }, single quotes '', or double quotes "".
+/// brackets, angle brackets, ( ) and < >, square brackets, [ ], curly braces, { }, single quotes '', or double quotes "".
 List<String> splitIgnoringBracketsAndBracesAndQuotes(
   String input, {
   String separator = ',',
@@ -29,18 +29,18 @@ List<String> splitIgnoringBracketsAndBracesAndQuotes(
         var isEscaped = index > 0 && input[index - 1] == '\\';
 
         if (insideDoubleQuote && char == '"' && !isEscaped) {
-          /// If inside "" and non escaped " is found, only descrease depth and switch bool value
+          /// If inside "" and non escaped " is found, only decrease depth and switch bool value
           depth--;
           insideDoubleQuote = false;
         } else if (insideSingleQuote && char == '\'' && !isEscaped) {
-          /// If inside ' and non escaped ' is found, only descrease depth and switch bool value
+          /// If inside ' and non escaped ' is found, only decrease depth and switch bool value
           depth--;
           insideSingleQuote = false;
         }
       } else {
-        if (char == '<' || char == '(' || char == '{') {
+        if (char == '<' || char == '(' || char == '{' || char == '[') {
           depth++;
-        } else if (char == '>' || char == ')' || char == '}') {
+        } else if (char == '>' || char == ')' || char == '}' || char == ']') {
           depth--;
         } else if (char == '"') {
           depth++;
@@ -59,4 +59,183 @@ List<String> splitIgnoringBracketsAndBracesAndQuotes(
   }
 
   return result;
+}
+
+/// A registry that maps template names to their content.
+/// Template names are the identifiers used in {@template name} directives.
+typedef DartDocTemplateRegistry = Map<String, String>;
+
+/// Extracts all {@template name}...{@endtemplate} definitions from documentation
+/// and returns them as a registry.
+///
+/// The template name is the identifier after {@template } and the content is
+/// everything between {@template name} and {@endtemplate}.
+///
+/// Example:
+/// ```dart
+/// /// {@template example.method}
+/// /// This is a method
+/// /// {@endtemplate}
+/// ```
+/// Will return: {'example.method': '/// This is a method'}
+DartDocTemplateRegistry extractDartDocTemplates(String? documentation) {
+  final registry = DartDocTemplateRegistry();
+
+  if (documentation == null || documentation.isEmpty) {
+    return registry;
+  }
+
+  // Pattern to extract template name and content
+  // Matches {@template name}...content...{@endtemplate}
+  // Note: Uses [^}]+ to match any template name characters, allowing for
+  // various naming conventions. The name is trimmed after extraction.
+  final templatePattern = RegExp(
+    r'^\s*///\s*\{@template\s+([^}]+)\}\s*$',
+    multiLine: true,
+  );
+  final endTemplatePattern = RegExp(
+    r'^\s*///\s*\{@endtemplate\}\s*$',
+    multiLine: true,
+  );
+
+  final lines = documentation.split('\n');
+  String? currentTemplateName;
+  final contentBuffer = StringBuffer();
+
+  for (final line in lines) {
+    final templateMatch = templatePattern.firstMatch(line);
+    if (templateMatch != null) {
+      if (currentTemplateName != null) {
+        throw FormatException(
+          'Nested template found: "$currentTemplateName" in line: "$line". '
+          'Please remove the nested template, as it is not supported.',
+          line,
+        );
+      }
+      // Start of a new template
+      currentTemplateName = templateMatch.group(1)?.trim();
+      contentBuffer.clear();
+      continue;
+    }
+
+    if (endTemplatePattern.hasMatch(line)) {
+      // End of current template
+      if (currentTemplateName != null) {
+        var content = contentBuffer.toString().trim();
+        if (content.contains('{@macro')) {
+          throw FormatException(
+            'Nested or unresolved macro reference found in template: '
+            '"$currentTemplateName". Please remove this incorrect reference.',
+            content,
+          );
+        }
+        if (content.isNotEmpty) {
+          registry[currentTemplateName] = content;
+        }
+      }
+      currentTemplateName = null;
+      continue;
+    }
+
+    if (currentTemplateName != null) {
+      // Inside a template, collect content
+      if (contentBuffer.isNotEmpty) {
+        contentBuffer.write('\n');
+      }
+      contentBuffer.write(line);
+    }
+  }
+
+  return registry;
+}
+
+/// Removes {@template ...} and {@endtemplate} markers from documentation
+/// comments, as they are only needed in source files for documentation
+/// generation and should not appear in generated files.
+///
+/// If a [templateRegistry] is provided, also resolves {@macro name} references
+/// by replacing them with the corresponding template content from the registry.
+///
+/// Example:
+/// ```dart
+/// /// {@template example.method}
+/// /// This is a method
+/// /// {@endtemplate}
+/// ```
+/// becomes:
+/// ```dart
+/// /// This is a method
+/// ```
+///
+/// And:
+/// ```dart
+/// /// {@macro example.method}
+/// ```
+/// becomes (if template is in registry):
+/// ```dart
+/// /// This is a method
+/// ```
+String? stripDocumentationTemplateMarkers(
+  String? documentation, {
+  required DartDocTemplateRegistry templateRegistry,
+}) {
+  if (documentation == null || documentation.isEmpty) {
+    return documentation;
+  }
+
+  // Regular expression to match {@template ...} lines and {@endtemplate} lines
+  // Match the entire line including the comment markers (///)
+  final templateMarkerPattern = RegExp(
+    r'^\s*///\s*\{@template\s+[^}]+\}\s*$',
+    multiLine: true,
+  );
+  final endTemplateMarkerPattern = RegExp(
+    r'^\s*///\s*\{@endtemplate\}\s*$',
+    multiLine: true,
+  );
+
+  var result = documentation;
+
+  // Remove {@template ...} lines
+  result = result.replaceAll(templateMarkerPattern, '');
+
+  // Remove {@endtemplate} lines
+  result = result.replaceAll(endTemplateMarkerPattern, '');
+
+  // Resolve {@macro name} references if template registry is provided
+  if (templateRegistry.isNotEmpty) {
+    result = _resolveMacroReferences(result, templateRegistry);
+  }
+
+  // Clean up any resulting extra blank lines (more than one consecutive blank line)
+  result = result.replaceAll(RegExp(r'(\n\s*\n)\s*\n+'), '\$1');
+
+  // Trim leading/trailing whitespace
+  result = result.trim();
+
+  return result.isEmpty ? null : result;
+}
+
+/// Resolves {@macro name} references in documentation by replacing them with
+/// the corresponding template content from the registry.
+String _resolveMacroReferences(
+  String documentation,
+  DartDocTemplateRegistry templateRegistry,
+) {
+  // Pattern to match entire lines containing only {@macro name}
+  // This matches lines like: /// {@macro template.name}
+  // Note: Uses [^}]+ to match any template name characters, allowing for
+  // various naming conventions. The name is trimmed after extraction.
+  final macroLinePattern = RegExp(
+    r'^(\s*///\s*)\{@macro\s+([^}]+)\}\s*$',
+    multiLine: true,
+  );
+
+  return documentation.replaceAllMapped(macroLinePattern, (match) {
+    final macroName = match.group(2)?.trim();
+    return switch (templateRegistry.containsKey(macroName)) {
+      true => templateRegistry[macroName]!,
+      false => match.group(0)!, // Keep the original line if macro is not found
+    };
+  });
 }

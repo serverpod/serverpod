@@ -28,594 +28,655 @@ void main() {
   );
 
   group(
-      'Given an endpoint with Stream with model generic return type when generating protocol files',
-      () {
-    var modelName = 'example_model';
-    var models = [
-      ModelClassDefinitionBuilder()
-          .withClassName(modelName.pascalCase)
-          .withFileName(modelName)
-          .build()
-    ];
-    var endpoints = [
-      EndpointDefinitionBuilder().withMethods([
-        MethodDefinitionBuilder()
-            .withName('streamingMethod')
-            .withReturnType(
-              TypeDefinitionBuilder()
-                  .withStreamOf(modelName.pascalCase)
-                  .build(),
-            )
-            .buildMethodCallDefinition()
-      ]).build()
-    ];
+    'Given an endpoint with Stream with model generic return type when generating protocol files',
+    () {
+      var modelName = 'example_model';
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName(modelName.pascalCase)
+            .withFileName(modelName)
+            .build(),
+      ];
+      var endpoints = [
+        EndpointDefinitionBuilder().withMethods([
+          MethodDefinitionBuilder()
+              .withName('streamingMethod')
+              .withReturnType(
+                TypeDefinitionBuilder()
+                    .withStreamOf(modelName.pascalCase)
+                    .build(),
+              )
+              .buildMethodCallDefinition(),
+        ]).build(),
+      ];
 
-    var protocolDefinition =
-        ProtocolDefinition(endpoints: endpoints, models: models);
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: endpoints,
+        models: models,
+        futureCalls: [],
+      );
 
-    var codeMap = generator.generateProtocolCode(
-      protocolDefinition: protocolDefinition,
-      config: config,
-    );
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
 
-    test(
-      'then the protocol.dart file is created.',
-      () {
-        expect(codeMap[expectedFileName], isNotNull);
-      },
-    );
+      test(
+        'then the protocol.dart file is created.',
+        () {
+          expect(codeMap[expectedFileName], isNotNull);
+        },
+      );
 
-    test(
-      'then the protocol.dart contains deserialization for the model type.',
-      () {
-        expect(
-          codeMap[expectedFileName],
-          contains(modelName.pascalCase),
-        );
-      },
-    );
-  });
+      test(
+        'then the protocol.dart contains deserialization for the model type.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            contains(modelName.pascalCase),
+          );
+        },
+      );
+    },
+  );
 
   group(
-      'Given a model with a field with list of other model when generating protocol files',
-      () {
-    var testModelName = 'TestModel';
-    var testModelFileName = 'test_model.dart';
-    var modelWithListName = 'modelWithList';
-    var modelWithListFileName = 'model_with_list.dart';
-    var testModel = ModelClassDefinitionBuilder()
-        .withClassName(testModelName)
-        .withFileName(testModelFileName)
-        .build();
-    var models = [
-      testModel,
-      ModelClassDefinitionBuilder()
-          .withClassName(modelWithListName)
-          .withFileName(modelWithListFileName)
-          .withField(
-            FieldDefinitionBuilder()
-                .withName('model')
-                .withType(TypeDefinitionBuilder()
-                    .withListOf(
-                      testModelName,
-                      url: defaultModuleAlias,
-                      modelInfo: testModel,
-                    )
-                    .build())
+    'Given a model with a field with list of other model when generating protocol files',
+    () {
+      var testModelName = 'TestModel';
+      var testModelFileName = 'test_model.dart';
+      var modelWithListName = 'modelWithList';
+      var modelWithListFileName = 'model_with_list.dart';
+      var testModel = ModelClassDefinitionBuilder()
+          .withClassName(testModelName)
+          .withFileName(testModelFileName)
+          .build();
+      var models = [
+        testModel,
+        ModelClassDefinitionBuilder()
+            .withClassName(modelWithListName)
+            .withFileName(modelWithListFileName)
+            .withField(
+              FieldDefinitionBuilder()
+                  .withName('model')
+                  .withType(
+                    TypeDefinitionBuilder()
+                        .withListOf(
+                          testModelName,
+                          url: defaultModuleAlias,
+                          modelInfo: testModel,
+                        )
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build(),
+      ];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [],
+        models: models,
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test(
+        'then the protocol.dart file is created.',
+        () {
+          expect(codeMap[expectedFileName], isNotNull);
+        },
+      );
+
+      test(
+        'then the protocol.dart does not contain import to itself.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            isNot(contains("import 'protocol.dart' as")),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an endpoint that returns a list of models when generating protocol files',
+    () {
+      var testModelName = 'TestModel';
+      var testModelFileName = 'test_model.dart';
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName(testModelName)
+            .withFileName(testModelFileName)
+            .build(),
+      ];
+
+      var endpoints = [
+        EndpointDefinitionBuilder().withMethods([
+          MethodDefinitionBuilder()
+              .withName('myEndpoint')
+              .withReturnType(
+                TypeDefinitionBuilder().withClassName('Future').withGenerics([
+                  TypeDefinitionBuilder().withClassName('List').withGenerics([
+                    TypeDefinitionBuilder()
+                        .withClassName(testModelName)
+                        .withNullable(false)
+                        .withUrl(defaultModuleAlias)
+                        .withModelDefinition(models.first)
+                        .build(),
+                  ]).build(),
+                ]).build(),
+              )
+              .buildMethodCallDefinition(),
+        ]).build(),
+      ];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: endpoints,
+        models: models,
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test(
+        'then the protocol.dart file is created.',
+        () {
+          expect(codeMap[expectedFileName], isNotNull);
+        },
+      );
+
+      test(
+        'then the protocol.dart does not contain import to itself.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            isNot(contains("import 'protocol.dart' as")),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an endpoint that takes a list of models as a parameter when generating protocol files',
+    () {
+      var testModelName = 'TestModel';
+      var testModelFileName = 'test_model.dart';
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName(testModelName)
+            .withFileName(testModelFileName)
+            .build(),
+      ];
+
+      var endpoints = [
+        EndpointDefinitionBuilder().withMethods([
+          MethodDefinitionBuilder().withName('myEndpoint').withParameters([
+            ParameterDefinitionBuilder()
+                .withType(
+                  TypeDefinitionBuilder().withClassName('List').withGenerics([
+                    TypeDefinitionBuilder()
+                        .withClassName(testModelName)
+                        .withNullable(false)
+                        .withUrl(defaultModuleAlias)
+                        .withModelDefinition(models.first)
+                        .build(),
+                  ]).build(),
+                )
                 .build(),
-          )
-          .build()
-    ];
+          ]).buildMethodCallDefinition(),
+        ]).build(),
+      ];
 
-    var protocolDefinition = ProtocolDefinition(endpoints: [], models: models);
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: endpoints,
+        models: models,
+        futureCalls: [],
+      );
 
-    var codeMap = generator.generateProtocolCode(
-      protocolDefinition: protocolDefinition,
-      config: config,
-    );
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
 
-    test(
-      'then the protocol.dart file is created.',
-      () {
-        expect(codeMap[expectedFileName], isNotNull);
-      },
-    );
+      test(
+        'then the protocol.dart file is created.',
+        () {
+          expect(codeMap[expectedFileName], isNotNull);
+        },
+      );
 
-    test(
-      'then the protocol.dart does not contain import to itself.',
-      () {
-        expect(
-          codeMap[expectedFileName],
-          isNot(contains("import 'protocol.dart' as")),
-        );
-      },
-    );
-  });
-
-  group(
-      'Given an endpoint that returns a list of models when generating protocol files',
-      () {
-    var testModelName = 'TestModel';
-    var testModelFileName = 'test_model.dart';
-    var models = [
-      ModelClassDefinitionBuilder()
-          .withClassName(testModelName)
-          .withFileName(testModelFileName)
-          .build(),
-    ];
-
-    var endpoints = [
-      EndpointDefinitionBuilder().withMethods([
-        MethodDefinitionBuilder()
-            .withName('myEndpoint')
-            .withReturnType(
-              TypeDefinitionBuilder().withClassName('Future').withGenerics([
-                TypeDefinitionBuilder().withClassName('List').withGenerics([
-                  TypeDefinitionBuilder()
-                      .withClassName(testModelName)
-                      .withNullable(false)
-                      .withUrl(defaultModuleAlias)
-                      .withModelDefinition(models.first)
-                      .build()
-                ]).build(),
-              ]).build(),
-            )
-            .buildMethodCallDefinition()
-      ]).build()
-    ];
-
-    var protocolDefinition = ProtocolDefinition(
-      endpoints: endpoints,
-      models: models,
-    );
-
-    var codeMap = generator.generateProtocolCode(
-      protocolDefinition: protocolDefinition,
-      config: config,
-    );
-
-    test(
-      'then the protocol.dart file is created.',
-      () {
-        expect(codeMap[expectedFileName], isNotNull);
-      },
-    );
-
-    test(
-      'then the protocol.dart does not contain import to itself.',
-      () {
-        expect(
-          codeMap[expectedFileName],
-          isNot(contains("import 'protocol.dart' as")),
-        );
-      },
-    );
-  });
+      test(
+        'then the protocol.dart does not contain import to itself.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            isNot(contains("import 'protocol.dart' as")),
+          );
+        },
+      );
+    },
+  );
 
   group(
-      'Given an endpoint that takes a list of models as a parameter when generating protocol files',
-      () {
-    var testModelName = 'TestModel';
-    var testModelFileName = 'test_model.dart';
-    var models = [
-      ModelClassDefinitionBuilder()
-          .withClassName(testModelName)
-          .withFileName(testModelFileName)
-          .build(),
-    ];
+    'Given an endpoint that takes a list of models as a named parameter when generating protocol files',
+    () {
+      var testModelName = 'TestModel';
+      var testModelFileName = 'test_model.dart';
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName(testModelName)
+            .withFileName(testModelFileName)
+            .build(),
+      ];
 
-    var endpoints = [
-      EndpointDefinitionBuilder().withMethods([
-        MethodDefinitionBuilder().withName('myEndpoint').withParameters([
-          ParameterDefinitionBuilder()
-              .withType(
+      var endpoints = [
+        EndpointDefinitionBuilder().withMethods([
+          MethodDefinitionBuilder().withName('myEndpoint').withParametersNamed([
+            ParameterDefinitionBuilder()
+                .withType(
                   TypeDefinitionBuilder().withClassName('List').withGenerics([
+                    TypeDefinitionBuilder()
+                        .withClassName(testModelName)
+                        .withNullable(false)
+                        .withUrl(defaultModuleAlias)
+                        .withModelDefinition(models.first)
+                        .build(),
+                  ]).build(),
+                )
+                .build(),
+          ]).buildMethodCallDefinition(),
+        ]).build(),
+      ];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: endpoints,
+        models: models,
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test(
+        'then the protocol.dart file is created.',
+        () {
+          expect(codeMap[expectedFileName], isNotNull);
+        },
+      );
+
+      test(
+        'then the protocol.dart does not contain import to itself.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            isNot(contains("import 'protocol.dart' as")),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an endpoint that takes a list of models as a named parameter when generating protocol files',
+    () {
+      var testModelName = 'TestModel';
+      var testModelFileName = 'test_model.dart';
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName(testModelName)
+            .withFileName(testModelFileName)
+            .build(),
+      ];
+
+      var endpoints = [
+        EndpointDefinitionBuilder().withMethods([
+          MethodDefinitionBuilder()
+              .withName('myEndpoint')
+              .withParametersPositional([
+                ParameterDefinitionBuilder()
+                    .withType(
+                      TypeDefinitionBuilder()
+                          .withClassName('List')
+                          .withGenerics([
+                            TypeDefinitionBuilder()
+                                .withClassName(testModelName)
+                                .withNullable(false)
+                                .withUrl(defaultModuleAlias)
+                                .withModelDefinition(models.first)
+                                .build(),
+                          ])
+                          .build(),
+                    )
+                    .build(),
+              ])
+              .buildMethodCallDefinition(),
+        ]).build(),
+      ];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: endpoints,
+        models: models,
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test(
+        'then the protocol.dart file is created.',
+        () {
+          expect(codeMap[expectedFileName], isNotNull);
+        },
+      );
+
+      test(
+        'then the protocol.dart does not contain import to itself.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            isNot(contains("import 'protocol.dart' as")),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an endpoint with Stream with a model return type when generating protocol files',
+    () {
+      var modelName = 'example_model';
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName(modelName.pascalCase)
+            .withFileName(modelName)
+            .build(),
+      ];
+      var endpoints = [
+        EndpointDefinitionBuilder().withMethods([
+          MethodDefinitionBuilder()
+              .withName('streamingMethod')
+              .withReturnType(
                 TypeDefinitionBuilder()
-                    .withClassName(testModelName)
-                    .withNullable(false)
-                    .withUrl(defaultModuleAlias)
-                    .withModelDefinition(models.first)
-                    .build()
-              ]).build())
-              .build()
-        ]).buildMethodCallDefinition()
-      ]).build()
-    ];
+                    .withStreamOf(modelName.pascalCase)
+                    .build(),
+              )
+              .buildMethodCallDefinition(),
+        ]).build(),
+      ];
 
-    var protocolDefinition = ProtocolDefinition(
-      endpoints: endpoints,
-      models: models,
-    );
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: endpoints,
+        models: models,
+        futureCalls: [],
+      );
 
-    var codeMap = generator.generateProtocolCode(
-      protocolDefinition: protocolDefinition,
-      config: config,
-    );
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
 
-    test(
-      'then the protocol.dart file is created.',
-      () {
-        expect(codeMap[expectedFileName], isNotNull);
-      },
-    );
+      test(
+        'then the protocol.dart file is created.',
+        () {
+          expect(codeMap[expectedFileName], isNotNull);
+        },
+      );
 
-    test(
-      'then the protocol.dart does not contain import to itself.',
-      () {
-        expect(
-          codeMap[expectedFileName],
-          isNot(contains("import 'protocol.dart' as")),
-        );
-      },
-    );
-  });
+      test(
+        'then the protocol.dart does not contain an overwrite of `wrapWithClassName`.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            isNot(contains('wrapWithClassName')),
+          );
+        },
+      );
+    },
+  );
 
   group(
-      'Given an endpoint that takes a list of models as a named parameter when generating protocol files',
-      () {
-    var testModelName = 'TestModel';
-    var testModelFileName = 'test_model.dart';
-    var models = [
-      ModelClassDefinitionBuilder()
-          .withClassName(testModelName)
-          .withFileName(testModelFileName)
-          .build(),
-    ];
-
-    var endpoints = [
-      EndpointDefinitionBuilder().withMethods([
-        MethodDefinitionBuilder().withName('myEndpoint').withParametersNamed([
-          ParameterDefinitionBuilder()
-              .withType(
-                  TypeDefinitionBuilder().withClassName('List').withGenerics([
-                TypeDefinitionBuilder()
-                    .withClassName(testModelName)
-                    .withNullable(false)
-                    .withUrl(defaultModuleAlias)
-                    .withModelDefinition(models.first)
-                    .build()
-              ]).build())
-              .build()
-        ]).buildMethodCallDefinition()
-      ]).build()
-    ];
-
-    var protocolDefinition = ProtocolDefinition(
-      endpoints: endpoints,
-      models: models,
-    );
-
-    var codeMap = generator.generateProtocolCode(
-      protocolDefinition: protocolDefinition,
-      config: config,
-    );
-
-    test(
-      'then the protocol.dart file is created.',
-      () {
-        expect(codeMap[expectedFileName], isNotNull);
-      },
-    );
-
-    test(
-      'then the protocol.dart does not contain import to itself.',
-      () {
-        expect(
-          codeMap[expectedFileName],
-          isNot(contains("import 'protocol.dart' as")),
-        );
-      },
-    );
-  });
-
-  group(
-      'Given an endpoint that takes a list of models as a named parameter when generating protocol files',
-      () {
-    var testModelName = 'TestModel';
-    var testModelFileName = 'test_model.dart';
-    var models = [
-      ModelClassDefinitionBuilder()
-          .withClassName(testModelName)
-          .withFileName(testModelFileName)
-          .build(),
-    ];
-
-    var endpoints = [
-      EndpointDefinitionBuilder().withMethods([
-        MethodDefinitionBuilder()
-            .withName('myEndpoint')
-            .withParametersPositional([
-          ParameterDefinitionBuilder()
-              .withType(
-                  TypeDefinitionBuilder().withClassName('List').withGenerics([
-                TypeDefinitionBuilder()
-                    .withClassName(testModelName)
-                    .withNullable(false)
-                    .withUrl(defaultModuleAlias)
-                    .withModelDefinition(models.first)
-                    .build()
-              ]).build())
-              .build()
-        ]).buildMethodCallDefinition()
-      ]).build()
-    ];
-
-    var protocolDefinition = ProtocolDefinition(
-      endpoints: endpoints,
-      models: models,
-    );
-
-    var codeMap = generator.generateProtocolCode(
-      protocolDefinition: protocolDefinition,
-      config: config,
-    );
-
-    test(
-      'then the protocol.dart file is created.',
-      () {
-        expect(codeMap[expectedFileName], isNotNull);
-      },
-    );
-
-    test(
-      'then the protocol.dart does not contain import to itself.',
-      () {
-        expect(
-          codeMap[expectedFileName],
-          isNot(contains("import 'protocol.dart' as")),
-        );
-      },
-    );
-  });
-
-  group(
-      'Given an endpoint with Stream with a model return type when generating protocol files',
-      () {
-    var modelName = 'example_model';
-    var models = [
-      ModelClassDefinitionBuilder()
-          .withClassName(modelName.pascalCase)
-          .withFileName(modelName)
-          .build()
-    ];
-    var endpoints = [
-      EndpointDefinitionBuilder().withMethods([
-        MethodDefinitionBuilder()
-            .withName('streamingMethod')
-            .withReturnType(
-              TypeDefinitionBuilder()
-                  .withStreamOf(modelName.pascalCase)
-                  .build(),
-            )
-            .buildMethodCallDefinition()
-      ]).build()
-    ];
-
-    var protocolDefinition =
-        ProtocolDefinition(endpoints: endpoints, models: models);
-
-    var codeMap = generator.generateProtocolCode(
-      protocolDefinition: protocolDefinition,
-      config: config,
-    );
-
-    test(
-      'then the protocol.dart file is created.',
-      () {
-        expect(codeMap[expectedFileName], isNotNull);
-      },
-    );
-
-    test(
-      'then the protocol.dart does not contain an overwrite of `wrapWithClassName`.',
-      () {
-        expect(
-          codeMap[expectedFileName],
-          isNot(contains('wrapWithClassName')),
-        );
-      },
-    );
-  });
-
-  group(
-      'Given an endpoint with Stream with a record return type when generating protocol files',
-      () {
-    var endpoints = [
-      EndpointDefinitionBuilder().withMethods([
-        MethodDefinitionBuilder()
-            .withName('streamingMethod')
-            .withReturnType(
-              TypeDefinitionBuilder().withClassName('Stream').withGenerics([
-                TypeDefinitionBuilder().withRecordOf([
-                  TypeDefinitionBuilder().withClassName('int').build()
-                ]).build()
-              ]).build(),
-            )
-            .buildMethodCallDefinition()
-      ]).build()
-    ];
-
-    var protocolDefinition =
-        ProtocolDefinition(endpoints: endpoints, models: []);
-
-    var codeMap = generator.generateProtocolCode(
-      protocolDefinition: protocolDefinition,
-      config: config,
-    );
-
-    test(
-      'then the protocol.dart file is created.',
-      () {
-        expect(codeMap[expectedFileName], isNotNull);
-      },
-    );
-
-    test(
-      'then the protocol.dart contains an overwrite of `wrapWithClassName`.',
-      () {
-        expect(
-          codeMap[expectedFileName],
-          contains('wrapWithClassName'),
-        );
-      },
-    );
-  });
-
-  group(
-      'Given an endpoint with a Future record return type when generating protocol files',
-      () {
-    var endpoints = [
-      EndpointDefinitionBuilder().withMethods([
-        MethodDefinitionBuilder()
-            .withName('streamingMethod')
-            .withReturnType(
-              TypeDefinitionBuilder().withClassName('Future').withGenerics([
-                TypeDefinitionBuilder().withRecordOf([
-                  TypeDefinitionBuilder().withClassName('int').build()
-                ]).build()
-              ]).build(),
-            )
-            .buildMethodCallDefinition()
-      ]).build()
-    ];
-
-    var protocolDefinition =
-        ProtocolDefinition(endpoints: endpoints, models: []);
-
-    var codeMap = generator.generateProtocolCode(
-      protocolDefinition: protocolDefinition,
-      config: config,
-    );
-
-    test(
-      'then the protocol.dart file is created.',
-      () {
-        expect(codeMap[expectedFileName], isNotNull);
-      },
-    );
-
-    test(
-      'then the protocol.dart does not contain an overwrite of `wrapWithClassName`.',
-      () {
-        expect(
-          codeMap[expectedFileName],
-          isNot(contains('wrapWithClassName')),
-        );
-      },
-    );
-  });
-
-  group(
-      'Given an endpoint with a Future<int> return type and Stream of record parameter when generating protocol files',
-      () {
-    var endpoints = [
-      EndpointDefinitionBuilder().withMethods([
-        MethodDefinitionBuilder()
-            .withName('streamingMethod')
-            .withReturnType(
-              TypeDefinitionBuilder().withClassName('Future').withGenerics([
-                TypeDefinitionBuilder().withRecordOf([
-                  TypeDefinitionBuilder().withClassName('int').build()
-                ]).build(),
-              ]).build(),
-            )
-            .withParameters([
-          ParameterDefinitionBuilder()
-              .withName('streamOfRecords')
-              .withType(
+    'Given an endpoint with Stream with a record return type when generating protocol files',
+    () {
+      var endpoints = [
+        EndpointDefinitionBuilder().withMethods([
+          MethodDefinitionBuilder()
+              .withName('streamingMethod')
+              .withReturnType(
                 TypeDefinitionBuilder().withClassName('Stream').withGenerics([
                   TypeDefinitionBuilder().withRecordOf([
-                    TypeDefinitionBuilder().withClassName('int').build()
+                    TypeDefinitionBuilder().withClassName('int').build(),
                   ]).build(),
                 ]).build(),
               )
-              .build()
-        ]).buildMethodCallDefinition()
-      ]).build()
-    ];
+              .buildMethodCallDefinition(),
+        ]).build(),
+      ];
 
-    var protocolDefinition =
-        ProtocolDefinition(endpoints: endpoints, models: []);
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: endpoints,
+        models: [],
+        futureCalls: [],
+      );
 
-    var codeMap = generator.generateProtocolCode(
-      protocolDefinition: protocolDefinition,
-      config: config,
-    );
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
 
-    test(
-      'then the protocol.dart file is created.',
-      () {
-        expect(codeMap[expectedFileName], isNotNull);
-      },
-    );
+      test(
+        'then the protocol.dart file is created.',
+        () {
+          expect(codeMap[expectedFileName], isNotNull);
+        },
+      );
 
-    test(
-      'then the protocol.dart contains an overwrite of `wrapWithClassName`.',
-      () {
-        expect(
-          codeMap[expectedFileName],
-          contains('wrapWithClassName'),
-        );
-      },
-    );
-  });
+      test(
+        'then the protocol.dart contains an overwrite of `wrapWithClassName`.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            contains('wrapWithClassName'),
+          );
+        },
+      );
+    },
+  );
 
   group(
-      'Given an endpoint with a Future<int> return type and Stream of records (List) parameter when generating protocol files',
-      () {
-    var endpoints = [
-      EndpointDefinitionBuilder().withMethods([
-        MethodDefinitionBuilder()
-            .withName('streamingMethod')
-            .withReturnType(
-              TypeDefinitionBuilder().withClassName('Future').withGenerics([
-                TypeDefinitionBuilder().withRecordOf([
-                  TypeDefinitionBuilder().withClassName('int').build()
-                ]).build(),
-              ]).build(),
-            )
-            .withParameters([
-          ParameterDefinitionBuilder()
-              .withName('streamOfRecords')
-              .withType(
-                TypeDefinitionBuilder().withClassName('Stream').withGenerics([
-                  TypeDefinitionBuilder().withClassName('List').withGenerics([
-                    TypeDefinitionBuilder().withRecordOf([
-                      TypeDefinitionBuilder().withClassName('int').build()
-                    ]).build()
+    'Given an endpoint with a Future record return type when generating protocol files',
+    () {
+      var endpoints = [
+        EndpointDefinitionBuilder().withMethods([
+          MethodDefinitionBuilder()
+              .withName('streamingMethod')
+              .withReturnType(
+                TypeDefinitionBuilder().withClassName('Future').withGenerics([
+                  TypeDefinitionBuilder().withRecordOf([
+                    TypeDefinitionBuilder().withClassName('int').build(),
                   ]).build(),
                 ]).build(),
               )
-              .build()
-        ]).buildMethodCallDefinition()
-      ]).build()
-    ];
+              .buildMethodCallDefinition(),
+        ]).build(),
+      ];
 
-    var protocolDefinition =
-        ProtocolDefinition(endpoints: endpoints, models: []);
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: endpoints,
+        models: [],
+        futureCalls: [],
+      );
 
-    var codeMap = generator.generateProtocolCode(
-      protocolDefinition: protocolDefinition,
-      config: config,
-    );
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
 
-    test(
-      'then the protocol.dart file is created.',
-      () {
-        expect(codeMap[expectedFileName], isNotNull);
-      },
-    );
+      test(
+        'then the protocol.dart file is created.',
+        () {
+          expect(codeMap[expectedFileName], isNotNull);
+        },
+      );
 
-    test(
-      'then the protocol.dart contains an overwrite of `wrapWithClassName`.',
-      () {
-        expect(
-          codeMap[expectedFileName],
-          contains('wrapWithClassName'),
-        );
-      },
-    );
-  });
+      test(
+        'then the protocol.dart does not contain an overwrite of `wrapWithClassName`.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            isNot(contains('wrapWithClassName')),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an endpoint with a Future<int> return type and Stream of record parameter when generating protocol files',
+    () {
+      var endpoints = [
+        EndpointDefinitionBuilder().withMethods([
+          MethodDefinitionBuilder()
+              .withName('streamingMethod')
+              .withReturnType(
+                TypeDefinitionBuilder().withClassName('Future').withGenerics([
+                  TypeDefinitionBuilder().withRecordOf([
+                    TypeDefinitionBuilder().withClassName('int').build(),
+                  ]).build(),
+                ]).build(),
+              )
+              .withParameters([
+                ParameterDefinitionBuilder()
+                    .withName('streamOfRecords')
+                    .withType(
+                      TypeDefinitionBuilder()
+                          .withClassName('Stream')
+                          .withGenerics([
+                            TypeDefinitionBuilder().withRecordOf([
+                              TypeDefinitionBuilder()
+                                  .withClassName('int')
+                                  .build(),
+                            ]).build(),
+                          ])
+                          .build(),
+                    )
+                    .build(),
+              ])
+              .buildMethodCallDefinition(),
+        ]).build(),
+      ];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: endpoints,
+        models: [],
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test(
+        'then the protocol.dart file is created.',
+        () {
+          expect(codeMap[expectedFileName], isNotNull);
+        },
+      );
+
+      test(
+        'then the protocol.dart contains an overwrite of `wrapWithClassName`.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            contains('wrapWithClassName'),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an endpoint with a Future<int> return type and Stream of records (List) parameter when generating protocol files',
+    () {
+      var endpoints = [
+        EndpointDefinitionBuilder().withMethods([
+          MethodDefinitionBuilder()
+              .withName('streamingMethod')
+              .withReturnType(
+                TypeDefinitionBuilder().withClassName('Future').withGenerics([
+                  TypeDefinitionBuilder().withRecordOf([
+                    TypeDefinitionBuilder().withClassName('int').build(),
+                  ]).build(),
+                ]).build(),
+              )
+              .withParameters([
+                ParameterDefinitionBuilder()
+                    .withName('streamOfRecords')
+                    .withType(
+                      TypeDefinitionBuilder()
+                          .withClassName('Stream')
+                          .withGenerics([
+                            TypeDefinitionBuilder()
+                                .withClassName('List')
+                                .withGenerics([
+                                  TypeDefinitionBuilder().withRecordOf([
+                                    TypeDefinitionBuilder()
+                                        .withClassName('int')
+                                        .build(),
+                                  ]).build(),
+                                ])
+                                .build(),
+                          ])
+                          .build(),
+                    )
+                    .build(),
+              ])
+              .buildMethodCallDefinition(),
+        ]).build(),
+      ];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: endpoints,
+        models: [],
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test(
+        'then the protocol.dart file is created.',
+        () {
+          expect(codeMap[expectedFileName], isNotNull);
+        },
+      );
+
+      test(
+        'then the protocol.dart contains an overwrite of `wrapWithClassName`.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            contains('wrapWithClassName'),
+          );
+        },
+      );
+    },
+  );
 
   group('Given a model with vector fields when generating protocol files', () {
     var testModelName = 'ModelWithVector';
@@ -628,10 +689,14 @@ void main() {
           .withTableName('model_with_vector')
           .withVectorField('embedding', dimension: 384)
           .withVectorField('nullableEmbedding', dimension: 512, nullable: true)
-          .build()
+          .build(),
     ];
 
-    var protocolDefinition = ProtocolDefinition(endpoints: [], models: models);
+    var protocolDefinition = ProtocolDefinition(
+      endpoints: [],
+      models: models,
+      futureCalls: [],
+    );
 
     var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,
@@ -645,136 +710,565 @@ void main() {
     late var content = codeMap[expectedFileName]!;
 
     test(
-        'then the protocol contains non-nullable vector field with correct type and dimension.',
-        () {
-      expect(content, contains('dartType: \'Vector(384)\''));
-      expect(content, contains('vectorDimension: 384'));
-    });
+      'then target table definitions are generated as a static getter.',
+      () {
+        expect(
+          content,
+          matches(
+            RegExp(
+              r'static List<.*TableDefinition> get targetTableDefinitions =>',
+            ),
+          ),
+        );
+      },
+    );
 
     test(
-        'then the protocol contains nullable vector field with correct type and dimension parameter.',
-        () {
-      expect(content, contains('dartType: \'Vector(512)?\''));
-      expect(content, contains('vectorDimension: 512'));
-    });
+      'then the protocol contains non-nullable vector field with correct type and dimension.',
+      () {
+        expect(content, contains('dartType: \'Vector(384)\''));
+        expect(content, contains('vectorDimension: 384'));
+      },
+    );
+
+    test(
+      'then the protocol contains nullable vector field with correct type and dimension parameter.',
+      () {
+        expect(content, contains('dartType: \'Vector(512)?\''));
+        expect(content, contains('vectorDimension: 512'));
+      },
+    );
   });
 
   group(
-      'Given a model with vector fields and indexes when generating protocol files',
-      () {
-    var testModelName = 'ModelWithVectorIndexes';
-    var testModelFileName = 'model_with_vector_indexes';
+    'Given a model with vector fields and indexes when generating protocol files',
+    () {
+      var testModelName = 'ModelWithVectorIndexes';
+      var testModelFileName = 'model_with_vector_indexes';
 
-    var models = [
-      ModelClassDefinitionBuilder()
-          .withClassName(testModelName)
-          .withFileName(testModelFileName)
-          .withTableName('model_with_vector_indexes')
-          .withVectorField('vectorDefault', dimension: 512)
-          .withVectorField('vectorHnsw', dimension: 512)
-          .withVectorField('vectorHnswWithParams', dimension: 512)
-          .withVectorField('vectorIvfflat', dimension: 512)
-          .withVectorField('vectorIvfflatWithParams', dimension: 512)
-          .withIndexesFromDefinitions([
-        IndexDefinitionBuilder()
-            .withIndexName('vector_index_default')
-            .withType('hnsw')
-            .withVectorDistanceFunction(VectorDistanceFunction.l2)
-            .withElements([
-          IndexElementDefinition(
-            definition: 'vectorDefault',
-            type: IndexElementDefinitionType.column,
-          )
-        ]).build(),
-        IndexDefinitionBuilder()
-            .withIndexName('vector_index_hnsw')
-            .withType('hnsw')
-            .withVectorDistanceFunction(VectorDistanceFunction.l2)
-            .withElements([
-          IndexElementDefinition(
-            definition: 'vectorHnsw',
-            type: IndexElementDefinitionType.column,
-          )
-        ]).build(),
-        IndexDefinitionBuilder()
-            .withIndexName('vector_index_hnsw_with_params')
-            .withType('hnsw')
-            .withVectorDistanceFunction(VectorDistanceFunction.cosine)
-            .withParameters({
-          'm': '64',
-          'ef_construction': '200',
-        }).withElements([
-          IndexElementDefinition(
-            definition: 'vectorHnswWithParams',
-            type: IndexElementDefinitionType.column,
-          )
-        ]).build(),
-        IndexDefinitionBuilder()
-            .withIndexName('vector_index_ivfflat')
-            .withType('ivfflat')
-            .withVectorDistanceFunction(VectorDistanceFunction.l2)
-            .withElements([
-          IndexElementDefinition(
-            definition: 'vectorIvfflat',
-            type: IndexElementDefinitionType.column,
-          )
-        ]).build(),
-        IndexDefinitionBuilder()
-            .withIndexName('vector_index_ivfflat_with_params')
-            .withType('ivfflat')
-            .withVectorDistanceFunction(VectorDistanceFunction.innerProduct)
-            .withParameters({
-          'lists': '300',
-        }).withElements([
-          IndexElementDefinition(
-            definition: 'vectorIvfflatWithParams',
-            type: IndexElementDefinitionType.column,
-          )
-        ]).build(),
-      ]).build()
-    ];
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName(testModelName)
+            .withFileName(testModelFileName)
+            .withTableName('model_with_vector_indexes')
+            .withVectorField('vectorDefault', dimension: 512)
+            .withVectorField('vectorHnsw', dimension: 512)
+            .withVectorField('vectorHnswWithParams', dimension: 512)
+            .withVectorField('vectorIvfflat', dimension: 512)
+            .withVectorField('vectorIvfflatWithParams', dimension: 512)
+            .withIndexesFromDefinitions([
+              IndexDefinitionBuilder()
+                  .withIndexName('vector_index_default')
+                  .withType('hnsw')
+                  .withVectorDistanceFunction(VectorDistanceFunction.l2)
+                  .withElements([
+                    IndexElementDefinition(
+                      definition: 'vectorDefault',
+                      type: IndexElementDefinitionType.column,
+                    ),
+                  ])
+                  .build(),
+              IndexDefinitionBuilder()
+                  .withIndexName('vector_index_hnsw')
+                  .withType('hnsw')
+                  .withVectorDistanceFunction(VectorDistanceFunction.l2)
+                  .withElements([
+                    IndexElementDefinition(
+                      definition: 'vectorHnsw',
+                      type: IndexElementDefinitionType.column,
+                    ),
+                  ])
+                  .build(),
+              IndexDefinitionBuilder()
+                  .withIndexName('vector_index_hnsw_with_params')
+                  .withType('hnsw')
+                  .withVectorDistanceFunction(VectorDistanceFunction.cosine)
+                  .withParameters({
+                    'm': '64',
+                    'ef_construction': '200',
+                  })
+                  .withElements([
+                    IndexElementDefinition(
+                      definition: 'vectorHnswWithParams',
+                      type: IndexElementDefinitionType.column,
+                    ),
+                  ])
+                  .build(),
+              IndexDefinitionBuilder()
+                  .withIndexName('vector_index_ivfflat')
+                  .withType('ivfflat')
+                  .withVectorDistanceFunction(VectorDistanceFunction.l2)
+                  .withElements([
+                    IndexElementDefinition(
+                      definition: 'vectorIvfflat',
+                      type: IndexElementDefinitionType.column,
+                    ),
+                  ])
+                  .build(),
+              IndexDefinitionBuilder()
+                  .withIndexName('vector_index_ivfflat_with_params')
+                  .withType('ivfflat')
+                  .withVectorDistanceFunction(
+                    VectorDistanceFunction.innerProduct,
+                  )
+                  .withParameters({
+                    'lists': '300',
+                  })
+                  .withElements([
+                    IndexElementDefinition(
+                      definition: 'vectorIvfflatWithParams',
+                      type: IndexElementDefinitionType.column,
+                    ),
+                  ])
+                  .build(),
+            ])
+            .build(),
+      ];
 
-    var protocolDefinition = ProtocolDefinition(endpoints: [], models: models);
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [],
+        models: models,
+        futureCalls: [],
+      );
 
-    var codeMap = generator.generateProtocolCode(
-      protocolDefinition: protocolDefinition,
-      config: config,
-    );
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
 
-    test('then the protocol.dart file is created.', () {
-      expect(codeMap[expectedFileName], isNotNull);
-    });
+      test('then the protocol.dart file is created.', () {
+        expect(codeMap[expectedFileName], isNotNull);
+      });
 
-    late var content = codeMap[expectedFileName]!;
+      late var content = codeMap[expectedFileName]!;
 
-    test('then the protocol contains HNSW index with L2 distance.', () {
-      expect(content, contains('indexName: \'vector_index_default\''));
-      expect(content, contains('type: \'hnsw\''));
-      expect(content, contains('VectorDistanceFunction.l2'));
-    });
+      test('then the protocol contains HNSW index with L2 distance.', () {
+        expect(content, contains('indexName: \'vector_index_default\''));
+        expect(content, contains('type: \'hnsw\''));
+        expect(content, contains('VectorDistanceFunction.l2'));
+      });
 
-    test(
+      test(
         'then the protocol contains HNSW index with cosine distance and parameters.',
         () {
-      expect(content, contains('indexName: \'vector_index_hnsw_with_params\''));
-      expect(content, contains('VectorDistanceFunction.cosine'));
-      expect(content, contains('\'m\': \'64\''));
-      expect(content, contains('\'ef_construction\': \'200\''));
-    });
+          expect(
+            content,
+            contains('indexName: \'vector_index_hnsw_with_params\''),
+          );
+          expect(content, contains('VectorDistanceFunction.cosine'));
+          expect(content, contains('\'m\': \'64\''));
+          expect(content, contains('\'ef_construction\': \'200\''));
+        },
+      );
 
-    test('then the protocol contains IVFFLAT index with L2 distance.', () {
-      expect(content, contains('indexName: \'vector_index_ivfflat\''));
-      expect(content, contains('type: \'ivfflat\''));
-      expect(content, contains('VectorDistanceFunction.l2'));
-    });
+      test('then the protocol contains IVFFLAT index with L2 distance.', () {
+        expect(content, contains('indexName: \'vector_index_ivfflat\''));
+        expect(content, contains('type: \'ivfflat\''));
+        expect(content, contains('VectorDistanceFunction.l2'));
+      });
 
-    test(
+      test(
         'then the protocol contains IVFFLAT index with innerProduct distance and parameters.',
         () {
-      expect(
-          content, contains('indexName: \'vector_index_ivfflat_with_params\''));
-      expect(content, contains('VectorDistanceFunction.innerProduct'));
-      expect(content, contains('\'lists\': \'300\''));
-    });
-  });
+          expect(
+            content,
+            contains('indexName: \'vector_index_ivfflat_with_params\''),
+          );
+          expect(content, contains('VectorDistanceFunction.innerProduct'));
+          expect(content, contains('\'lists\': \'300\''));
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a model that is referenced in list relations of multiple models when generating protocol files',
+    () {
+      var personModelName = 'Person';
+      var personModelFileName = 'person';
+      var cityModelName = 'City';
+      var cityModelFileName = 'city';
+      var organizationModelName = 'Organization';
+      var organizationModelFileName = 'organization';
+
+      var personModel = ModelClassDefinitionBuilder()
+          .withClassName(personModelName)
+          .withFileName(personModelFileName)
+          .withTableName('person')
+          .build();
+
+      var cityModel = ModelClassDefinitionBuilder()
+          .withClassName(cityModelName)
+          .withFileName(cityModelFileName)
+          .withTableName('city')
+          .withListRelationField(
+            'citizens',
+            personModelName,
+            'cityId',
+          )
+          .build();
+
+      var organizationModel = ModelClassDefinitionBuilder()
+          .withClassName(organizationModelName)
+          .withFileName(organizationModelFileName)
+          .withTableName('organization')
+          .withListRelationField(
+            'people',
+            personModelName,
+            'organizationId',
+            nullableRelation: true,
+          )
+          .build();
+
+      var models = [personModel, cityModel, organizationModel];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [],
+        models: models,
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test(
+        'then the deserialize method contains exactly one entry for the referenced model.',
+        () {
+          var protocolContent = codeMap[expectedFileName]!;
+
+          // Count occurrences of List<Person>? type check
+          // This should appear only once even though it's referenced in multiple models
+          // Pattern matches: getType<List<Person>?>() or similar variations
+          var listPersonPattern = RegExp(
+            r'if\s*\(\s*t\s*==\s*[^)]*List<[^>]*Person[^>]*>\?[^)]*\)',
+            multiLine: true,
+          );
+
+          var matches = listPersonPattern.allMatches(protocolContent);
+          var count = matches.length;
+
+          expect(count, equals(1));
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an endpoint returning a Map with non-String key (e.g., DateTime) when generating protocol files',
+    () {
+      var endpoints = [
+        EndpointDefinitionBuilder().withMethods([
+          MethodDefinitionBuilder()
+              .withName('dateTimeMapMethod')
+              .withReturnType(
+                TypeDefinitionBuilder().withClassName('Future').withGenerics([
+                  TypeDefinitionBuilder().withMapOf('DateTime', 'bool').build(),
+                ]).build(),
+              )
+              .buildMethodCallDefinition(),
+        ]).build(),
+      ];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: endpoints,
+        models: [],
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test(
+        'then the protocol.dart file is created.',
+        () {
+          expect(codeMap[expectedFileName], isNotNull);
+        },
+      );
+
+      test(
+        'then the protocol.dart contains the mapContainerToJson function.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            contains('mapContainerToJson'),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an endpoint with a Map<int, bool> parameter (non-String key) when generating protocol files',
+    () {
+      var endpoints = [
+        EndpointDefinitionBuilder().withMethods([
+          MethodDefinitionBuilder().withName('intMapMethod').withParameters([
+            ParameterDefinitionBuilder()
+                .withName('intBoolMap')
+                .withType(
+                  TypeDefinitionBuilder().withMapOf('int', 'bool').build(),
+                )
+                .build(),
+          ]).buildMethodCallDefinition(),
+        ]).build(),
+      ];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: endpoints,
+        models: [],
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test(
+        'then the protocol.dart file is created.',
+        () {
+          expect(codeMap[expectedFileName], isNotNull);
+        },
+      );
+
+      test(
+        'then the protocol.dart contains the mapContainerToJson function.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            contains('mapContainerToJson'),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an endpoint returning a nested List containing a Map with non-String key when generating protocol files',
+    () {
+      var endpoints = [
+        EndpointDefinitionBuilder().withMethods([
+          MethodDefinitionBuilder()
+              .withName('nestedNonStringKeyMapMethod')
+              .withReturnType(
+                TypeDefinitionBuilder().withClassName('Future').withGenerics([
+                  TypeDefinitionBuilder().withClassName('List').withGenerics([
+                    TypeDefinitionBuilder().withMapOf('int', 'String').build(),
+                  ]).build(),
+                ]).build(),
+              )
+              .buildMethodCallDefinition(),
+        ]).build(),
+      ];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: endpoints,
+        models: [],
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test(
+        'then the protocol.dart file is created.',
+        () {
+          expect(codeMap[expectedFileName], isNotNull);
+        },
+      );
+
+      test(
+        'then the protocol.dart contains the mapContainerToJson function.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            contains('mapContainerToJson'),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given serverOnly models with List field of another serverOnly model when generating protocol files',
+    () {
+      var serverOnlyModel = 'Article';
+      var serverOnlyModelWithList = 'ArticleList';
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName(serverOnlyModel)
+            .withFileName('article')
+            .withServerOnly(true)
+            .withSimpleField('name', 'String')
+            .withSimpleField('price', 'double')
+            .build(),
+        ModelClassDefinitionBuilder()
+            .withClassName(serverOnlyModelWithList)
+            .withFileName('article_list')
+            .withServerOnly(true)
+            .withListField(
+              'results',
+              serverOnlyModel,
+              scope: ModelFieldScopeDefinition.serverOnly,
+            )
+            .build(),
+      ];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [],
+        models: models,
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test(
+        'then the protocol.dart file is created.',
+        () {
+          expect(codeMap[expectedFileName], isNotNull);
+        },
+      );
+
+      test(
+        'then the protocol.dart contains reference to serverOnly model.',
+        () {
+          var protocolContent = codeMap[expectedFileName]!;
+          expect(protocolContent, contains('Article'));
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an endpoint that returns a named record with a model type when generating protocol files',
+    () {
+      var testModelName = 'TestModel';
+      var testModelFileName = 'test_model';
+      var testModel = ModelClassDefinitionBuilder()
+          .withClassName(testModelName)
+          .withFileName(testModelFileName)
+          .build();
+      var models = [testModel];
+
+      var endpoints = [
+        EndpointDefinitionBuilder().withMethods([
+          MethodDefinitionBuilder()
+              .withName('myEndpoint')
+              .withReturnType(
+                TypeDefinitionBuilder().withClassName('Future').withGenerics([
+                  TypeDefinitionBuilder().withRecordOf([
+                    TypeDefinitionBuilder()
+                        .withClassName(testModelName)
+                        .withNullable(false)
+                        .withUrl(defaultModuleAlias)
+                        .withModelDefinition(testModel)
+                        .withRecordFieldName('model')
+                        .build(),
+                  ]).build(),
+                ]).build(),
+              )
+              .buildMethodCallDefinition(),
+        ]).build(),
+      ];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: endpoints,
+        models: models,
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test(
+        'then the protocol.dart file is created.',
+        () {
+          expect(codeMap[expectedFileName], isNotNull);
+        },
+      );
+
+      test(
+        'then the protocol.dart mapRecordToJson calls .toJson() on the model field.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            contains('record.model.toJson()'),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an endpoint that returns a named record with a nullable model type when generating protocol files',
+    () {
+      var testModelName = 'TestModel';
+      var testModelFileName = 'test_model';
+      var testModel = ModelClassDefinitionBuilder()
+          .withClassName(testModelName)
+          .withFileName(testModelFileName)
+          .build();
+      var models = [testModel];
+
+      var endpoints = [
+        EndpointDefinitionBuilder().withMethods([
+          MethodDefinitionBuilder()
+              .withName('myEndpoint')
+              .withReturnType(
+                TypeDefinitionBuilder().withClassName('Future').withGenerics([
+                  TypeDefinitionBuilder().withRecordOf([
+                    TypeDefinitionBuilder()
+                        .withClassName(testModelName)
+                        .withNullable(true)
+                        .withUrl(defaultModuleAlias)
+                        .withModelDefinition(testModel)
+                        .withRecordFieldName('model')
+                        .build(),
+                  ]).build(),
+                ]).build(),
+              )
+              .buildMethodCallDefinition(),
+        ]).build(),
+      ];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: endpoints,
+        models: models,
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test(
+        'then the protocol.dart file is created.',
+        () {
+          expect(codeMap[expectedFileName], isNotNull);
+        },
+      );
+
+      test(
+        'then the protocol.dart mapRecordToJson calls ?.toJson() on the nullable model field.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            contains('record.model?.toJson()'),
+          );
+        },
+      );
+    },
+  );
 }

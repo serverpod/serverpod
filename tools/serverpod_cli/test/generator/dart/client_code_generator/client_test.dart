@@ -1,7 +1,9 @@
+import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:path/path.dart' as path;
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
 import 'package:test/test.dart';
 
@@ -9,7 +11,10 @@ import '../../../test_util/builders/annotation_definition_builder.dart';
 import '../../../test_util/builders/endpoint_definition_builder.dart';
 import '../../../test_util/builders/generator_config_builder.dart';
 import '../../../test_util/builders/method_definition_builder.dart';
+import '../../../test_util/builders/model_class_definition_builder.dart';
+import '../../../test_util/builders/parameter_definition_builder.dart';
 import '../../../test_util/builders/type_definition_builder.dart';
+import '../../../test_util/compilation_unit_helpers.dart';
 
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
@@ -26,220 +31,493 @@ void main() {
   );
 
   group(
-      'Given a protocol definition with a method with Stream return value when generating client file',
-      () {
-    var endpointName = 'testing';
-    var methodName = 'streamMethod';
-    var protocolDefinition = ProtocolDefinition(
-      endpoints: [
-        EndpointDefinitionBuilder()
-            .withClassName('${endpointName.pascalCase}Endpoint')
-            .withName(endpointName)
-            .withMethods([
-          MethodDefinitionBuilder()
-              .withName(methodName)
-              .withReturnType(
-                TypeDefinitionBuilder()
-                    .withStreamOf('String')
-                    .withUrl('dart:async')
-                    .build(),
-              )
-              .buildMethodStreamDefinition(),
-        ]).build(),
-      ],
-      models: [],
-    );
+    'Given a protocol definition, '
+    'when generating the client file,',
+    () {
+      late String generatedClient;
 
-    var codeMap = generator.generateProtocolCode(
-      protocolDefinition: protocolDefinition,
-      config: config,
-    );
+      setUpAll(() {
+        var codeMap = generator.generateProtocolCode(
+          protocolDefinition: const ProtocolDefinition(
+            endpoints: [],
+            models: [],
+            futureCalls: [],
+          ),
+          config: config,
+        );
+        generatedClient = codeMap[expectedFileName]!;
+      });
 
-    test('then client file is created.', () {
-      expect(codeMap, contains(expectedFileName));
-    });
-    var endpointsFile = codeMap[expectedFileName];
+      test(
+        'then its constructor does not expose the authKeyProvider as a parameter.',
+        () {
+          expect(
+            generatedClient,
+            isNot(contains('super.authKeyProvider')),
+          );
+        },
+      );
 
-    test(
+      test(
+        'then its constructor does not expose the legacy authenticationKeyManager parameter.',
+        () {
+          expect(
+            generatedClient,
+            isNot(contains('authenticationKeyManager')),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a protocol definition with a method with Stream return value when generating client file',
+    () {
+      var endpointName = 'testing';
+      var methodName = 'streamMethod';
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [
+          EndpointDefinitionBuilder()
+              .withClassName('${endpointName.pascalCase}Endpoint')
+              .withName(endpointName)
+              .withMethods([
+                MethodDefinitionBuilder()
+                    .withName(methodName)
+                    .withReturnType(
+                      TypeDefinitionBuilder()
+                          .withStreamOf('String')
+                          .withUrl('dart:async')
+                          .build(),
+                    )
+                    .buildMethodStreamDefinition(),
+              ])
+              .build(),
+        ],
+        models: [],
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test('then client file is created.', () {
+        expect(codeMap, contains(expectedFileName));
+      });
+      var endpointsFile = codeMap[expectedFileName];
+
+      test(
         'then client file contains endpoint method for the streaming endpoint.',
         () {
-      expect(endpointsFile, contains('_i2.Stream<String> $methodName()'));
-      expect(
-          endpointsFile,
-          contains(
-              'caller.callStreamingServerEndpoint<_i2.Stream<String>, String'));
-    });
-  });
-
-  group(
-      'Given a protocol definition with a method with only a Stream parameter when generating client file',
-      () {
-    var endpointName = 'testing';
-    var methodName = 'streamMethod';
-    var protocolDefinition = ProtocolDefinition(
-      endpoints: [
-        EndpointDefinitionBuilder()
-            .withClassName('${endpointName.pascalCase}Endpoint')
-            .withName(endpointName)
-            .withMethods([
-          MethodDefinitionBuilder().withName(methodName).withParameters([
-            ParameterDefinition(
-              name: 'streamParam',
-              type: TypeDefinitionBuilder()
-                  .withStreamOf('String')
-                  .withUrl('dart:async')
-                  .build(),
-              required: true,
+          expect(endpointsFile, contains('_i2.Stream<String> $methodName()'));
+          expect(
+            endpointsFile,
+            contains(
+              'caller.callStreamingServerEndpoint<_i2.Stream<String>, String',
             ),
-          ]).buildMethodStreamDefinition(),
-        ]).build(),
-      ],
-      models: [],
-    );
-
-    var codeMap = generator.generateProtocolCode(
-      protocolDefinition: protocolDefinition,
-      config: config,
-    );
-
-    test('then client file is created.', () {
-      expect(codeMap, contains(expectedFileName));
-    });
-    var endpointsFile = codeMap[expectedFileName];
-
-    test('then client file endpoint method for the streaming endpoint.', () {
-      expect(
-          endpointsFile,
-          contains(
-              'Future<String> $methodName(_i2.Stream<String> streamParam)'));
-      expect(
-          endpointsFile,
-          contains(
-              'caller.callStreamingServerEndpoint<Future<String>, String'));
-    });
-  });
+          );
+        },
+      );
+    },
+  );
 
   group(
-      'Given a protocol definition with a method with "@Deprecated(..)" annotation when generating client file',
-      () {
-    var endpointName = 'testing';
-    var methodName = 'deprecatedMethod';
-    var protocolDefinition = ProtocolDefinition(
-      endpoints: [
-        EndpointDefinitionBuilder()
-            .withClassName('${endpointName.pascalCase}Endpoint')
-            .withName(endpointName)
-            .withMethods([
-          MethodDefinitionBuilder().withName(methodName).withAnnotations([
-            AnnotationDefinitionBuilder()
-                .withName('Deprecated')
-                .withArguments(["'This method is deprecated.'"]).build(),
-          ]).buildMethodCallDefinition(),
-        ]).build(),
-      ],
-      models: [],
-    );
+    'Given a protocol definition with a method with only a Stream parameter when generating client file',
+    () {
+      var endpointName = 'testing';
+      var methodName = 'streamMethod';
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [
+          EndpointDefinitionBuilder()
+              .withClassName('${endpointName.pascalCase}Endpoint')
+              .withName(endpointName)
+              .withMethods([
+                MethodDefinitionBuilder().withName(methodName).withParameters([
+                  ParameterDefinition(
+                    name: 'streamParam',
+                    type: TypeDefinitionBuilder()
+                        .withStreamOf('String')
+                        .withUrl('dart:async')
+                        .build(),
+                    required: true,
+                    annotations: const [],
+                  ),
+                ]).buildMethodStreamDefinition(),
+              ])
+              .build(),
+        ],
+        models: [],
+        futureCalls: [],
+      );
 
-    var codeMap = generator.generateProtocolCode(
-      protocolDefinition: protocolDefinition,
-      config: config,
-    );
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
 
-    test('then client file is created.', () {
-      expect(codeMap, contains(expectedFileName));
-    });
-    var endpointsFile = codeMap[expectedFileName];
+      test('then client file is created.', () {
+        expect(codeMap, contains(expectedFileName));
+      });
+      var endpointsFile = codeMap[expectedFileName];
 
-    test('then client file contains "@Deprecated(..)" annotation for method.',
+      test('then client file endpoint method for the streaming endpoint.', () {
+        expect(
+          endpointsFile,
+          contains(
+            'Future<String> $methodName(_i2.Stream<String> streamParam)',
+          ),
+        );
+        expect(
+          endpointsFile,
+          contains('caller.callStreamingServerEndpoint<Future<String>, String'),
+        );
+      });
+    },
+  );
+
+  group(
+    'Given a protocol definition with a method with "@Deprecated(..)" annotation when generating client file',
+    () {
+      var endpointName = 'testing';
+      var methodName = 'deprecatedMethod';
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [
+          EndpointDefinitionBuilder()
+              .withClassName('${endpointName.pascalCase}Endpoint')
+              .withName(endpointName)
+              .withMethods([
+                MethodDefinitionBuilder().withName(methodName).withAnnotations([
+                  AnnotationDefinitionBuilder()
+                      .withName('Deprecated')
+                      .withArguments(["'This method is deprecated.'"])
+                      .build(),
+                ]).buildMethodCallDefinition(),
+              ])
+              .build(),
+        ],
+        models: [],
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test('then client file is created.', () {
+        expect(codeMap, contains(expectedFileName));
+      });
+      var endpointsFile = codeMap[expectedFileName];
+
+      test(
+        'then client file contains "@Deprecated(..)" annotation for method.',
         () {
-      expect(
-        endpointsFile,
-        contains(
-          "@Deprecated('This method is deprecated.')",
-        ),
+          expect(
+            endpointsFile,
+            contains(
+              "@Deprecated('This method is deprecated.')",
+            ),
+          );
+        },
       );
-    });
-  });
+    },
+  );
 
   group(
-      'Given a protocol definition with a method with "@deprecated" annotation when generating client file',
-      () {
-    var endpointName = 'testing';
-    var methodName = 'deprecatedMethod';
-    var protocolDefinition = ProtocolDefinition(
-      endpoints: [
-        EndpointDefinitionBuilder()
-            .withClassName('${endpointName.pascalCase}Endpoint')
-            .withName(endpointName)
-            .withMethods([
-          MethodDefinitionBuilder().withName(methodName).withAnnotations([
-            AnnotationDefinitionBuilder().withName('deprecated').build(),
-          ]).buildMethodCallDefinition(),
-        ]).build(),
-      ],
-      models: [],
-    );
-
-    var codeMap = generator.generateProtocolCode(
-      protocolDefinition: protocolDefinition,
-      config: config,
-    );
-
-    test('then client file is created.', () {
-      expect(codeMap, contains(expectedFileName));
-    });
-    var endpointsFile = codeMap[expectedFileName];
-
-    test('then client file contains "@deprecated" annotation for method.', () {
-      expect(
-        endpointsFile,
-        contains(
-          '@deprecated\n',
-        ),
+    'Given a protocol definition with a method with "@deprecated" annotation when generating client file',
+    () {
+      var endpointName = 'testing';
+      var methodName = 'deprecatedMethod';
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [
+          EndpointDefinitionBuilder()
+              .withClassName('${endpointName.pascalCase}Endpoint')
+              .withName(endpointName)
+              .withMethods([
+                MethodDefinitionBuilder().withName(methodName).withAnnotations([
+                  AnnotationDefinitionBuilder().withName('deprecated').build(),
+                ]).buildMethodCallDefinition(),
+              ])
+              .build(),
+        ],
+        models: [],
+        futureCalls: [],
       );
-    });
-  });
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test('then client file is created.', () {
+        expect(codeMap, contains(expectedFileName));
+      });
+      var endpointsFile = codeMap[expectedFileName];
+
+      test(
+        'then client file contains "@deprecated" annotation for method.',
+        () {
+          expect(
+            endpointsFile,
+            contains(
+              '@deprecated\n',
+            ),
+          );
+        },
+      );
+    },
+  );
 
   group(
-      'Given a protocol definition with a method with "@TestCustomAnnotation(.., ..)" annotation when generating client file',
-      () {
-    var endpointName = 'testing';
-    var methodName = 'customAnnotatedMethod';
-    var protocolDefinition = ProtocolDefinition(
-      endpoints: [
-        EndpointDefinitionBuilder()
-            .withClassName('${endpointName.pascalCase}Endpoint')
-            .withName(endpointName)
-            .withMethods([
-          MethodDefinitionBuilder().withName(methodName).withAnnotations([
-            AnnotationDefinitionBuilder()
-                .withName('TestCustomAnnotation')
-                .withArguments(["'a string literal argument'", '42']).build(),
-          ]).buildMethodCallDefinition(),
-        ]).build(),
-      ],
-      models: [],
-    );
+    'Given a protocol definition with a method with "@TestCustomAnnotation(.., ..)" annotation when generating client file',
+    () {
+      var endpointName = 'testing';
+      var methodName = 'customAnnotatedMethod';
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [
+          EndpointDefinitionBuilder()
+              .withClassName('${endpointName.pascalCase}Endpoint')
+              .withName(endpointName)
+              .withMethods([
+                MethodDefinitionBuilder().withName(methodName).withAnnotations([
+                  AnnotationDefinitionBuilder()
+                      .withName('TestCustomAnnotation')
+                      .withArguments(["'a string literal argument'", '42'])
+                      .build(),
+                ]).buildMethodCallDefinition(),
+              ])
+              .build(),
+        ],
+        models: [],
+        futureCalls: [],
+      );
 
-    var codeMap = generator.generateProtocolCode(
-      protocolDefinition: protocolDefinition,
-      config: config,
-    );
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
 
-    test('then client file is created.', () {
-      expect(codeMap, contains(expectedFileName));
-    });
-    var endpointsFile = codeMap[expectedFileName];
+      test('then client file is created.', () {
+        expect(codeMap, contains(expectedFileName));
+      });
+      var endpointsFile = codeMap[expectedFileName];
 
-    test(
+      test(
         'then client file contains "@TestCustomAnnotation(.., ..)" annotation for method.',
         () {
-      expect(
-        endpointsFile,
-        contains(
-          "@TestCustomAnnotation('a string literal argument', 42)",
-        ),
+          expect(
+            endpointsFile,
+            contains(
+              "@TestCustomAnnotation('a string literal argument', 42)",
+            ),
+          );
+        },
       );
-    });
-  });
+    },
+  );
+
+  group(
+    'Given a protocol definition with a method with a parameter annotated with "@deprecated" when generating client file',
+    () {
+      var endpointName = 'testing';
+      var methodName = 'methodWithDeprecatedParam';
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [
+          EndpointDefinitionBuilder()
+              .withClassName('${endpointName.pascalCase}Endpoint')
+              .withName(endpointName)
+              .withMethods([
+                MethodDefinitionBuilder().withName(methodName).withParameters([
+                  ParameterDefinitionBuilder()
+                      .withName('deprecatedParam')
+                      .withType(
+                        TypeDefinitionBuilder().withClassName('String').build(),
+                      )
+                      .withRequired(true)
+                      .withAnnotations([
+                        AnnotationDefinitionBuilder()
+                            .withName('deprecated')
+                            .build(),
+                      ])
+                      .build(),
+                ]).buildMethodCallDefinition(),
+              ])
+              .build(),
+        ],
+        models: [],
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test('then client file is created.', () {
+        expect(codeMap, contains(expectedFileName));
+      });
+      var endpointsFile = codeMap[expectedFileName];
+
+      test(
+        'then client file contains "@deprecated" annotation for parameter.',
+        () {
+          expect(
+            endpointsFile,
+            contains(
+              '@deprecated String deprecatedParam',
+            ),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a protocol definition with a method with a parameter annotated with "@Deprecated(..)" when generating client file',
+    () {
+      var endpointName = 'testing';
+      var methodName = 'methodWithDeprecatedParamMessage';
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [
+          EndpointDefinitionBuilder()
+              .withClassName('${endpointName.pascalCase}Endpoint')
+              .withName(endpointName)
+              .withMethods([
+                MethodDefinitionBuilder().withName(methodName).withParameters([
+                  ParameterDefinitionBuilder()
+                      .withName('deprecatedParam')
+                      .withType(
+                        TypeDefinitionBuilder().withClassName('String').build(),
+                      )
+                      .withRequired(true)
+                      .withAnnotations([
+                        AnnotationDefinitionBuilder()
+                            .withName('Deprecated')
+                            .withArguments(["'This parameter is deprecated'"])
+                            .build(),
+                      ])
+                      .build(),
+                ]).buildMethodCallDefinition(),
+              ])
+              .build(),
+        ],
+        models: [],
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test('then client file is created.', () {
+        expect(codeMap, contains(expectedFileName));
+      });
+      var endpointsFile = codeMap[expectedFileName];
+
+      test(
+        'then client file contains "@Deprecated(..)" annotation for parameter.',
+        () {
+          expect(
+            endpointsFile,
+            contains(
+              "@Deprecated('This parameter is deprecated') String deprecatedParam",
+            ),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a protocol definition with a client database table when generating client file',
+    () {
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [],
+        models: [
+          ModelClassDefinitionBuilder()
+              .withClassName('Example')
+              .withFileName('example')
+              .withTableName('example')
+              .withDatabase(ModelDatabaseDefinition.client)
+              .build(),
+        ],
+        futureCalls: [],
+      );
+
+      late var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      late var compilationUnit = parseString(
+        content: codeMap[expectedFileName]!,
+      ).unit;
+
+      late var clientFile = codeMap[expectedFileName];
+
+      test('then the client file contains a createSession method.', () {
+        expect(clientFile, isNotNull);
+        expect(
+          clientFile,
+          matches(r'Future<_i[\d+]\.ClientDatabaseSession> createSession\('),
+        );
+      });
+
+      group('then the createSession method', () {
+        late var clientClass = CompilationUnitHelpers.tryFindClassDeclaration(
+          compilationUnit,
+          name: 'Client',
+        );
+
+        late var createSessionMethod =
+            CompilationUnitHelpers.tryFindMethodDeclaration(
+              clientClass!,
+              name: 'createSession',
+            )?.toSource();
+
+        test('has the path parameter as first parameter.', () {
+          expect(createSessionMethod, contains('(String path'));
+        });
+
+        test('has an optional isDebugMode parameter.', () {
+          expect(createSessionMethod, contains('bool isDebugMode = false'));
+        });
+
+        test('has an optional runMigrations parameter.', () {
+          expect(createSessionMethod, contains('bool runMigrations = true'));
+        });
+
+        test('forwards runMigrations to ClientDatabaseSession.open.', () {
+          expect(createSessionMethod, contains('runMigrations: runMigrations'));
+        });
+
+        test('calls ClientDatabaseSession.open.', () {
+          expect(createSessionMethod, contains('ClientDatabaseSession.open('));
+        });
+
+        test('contains docs for path, runMigrations, and isDebugMode.', () {
+          expect(
+            clientFile,
+            contains(
+              '/// Creates a new client-side database session for the given path.',
+            ),
+          );
+          expect(
+            clientFile,
+            contains(
+              '/// If [runMigrations] is true, pending migrations will be applied when',
+            ),
+          );
+          expect(
+            clientFile,
+            contains(
+              '/// If [isDebugMode] is true, the database integrity will be verified after',
+            ),
+          );
+        });
+      });
+    },
+  );
 }

@@ -1,0 +1,48 @@
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
+
+name: serverpod_auth_migration_server
+description: Serverpod authentication migration server module.
+version: 4.0.0-beta.3
+repository: https://github.com/serverpod/serverpod
+
+environment:
+  sdk: '^3.10.3'
+
+dependencies:
+  meta: ^1.15.0
+  serverpod: 4.0.0-beta.3
+  serverpod_auth_bridge_server: 4.0.0-beta.3
+  serverpod_auth_core_server: 4.0.0-beta.3
+  serverpod_auth_idp_server: 4.0.0-beta.3
+  serverpod_auth_server: 4.0.0-beta.3
+  serverpod_shared: 4.0.0-beta.3
+
+dev_dependencies:
+  serverpod_lints: 4.0.0-beta.3
+  serverpod_test: 4.0.0-beta.3
+  test: ^1.25.5
+
+dependency_overrides:
+  serverpod:
+    path: ../../../../packages/serverpod
+  serverpod_auth_bridge_server:
+    path: ../../serverpod_auth_bridge/serverpod_auth_bridge_server
+  serverpod_auth_core_server:
+    path: ../../serverpod_auth_core/serverpod_auth_core_server
+  serverpod_auth_idp_server:
+    path: ../../serverpod_auth_idp/serverpod_auth_idp_server
+  serverpod_auth_server:
+    path: ../../../legacy/serverpod_auth/serverpod_auth_server
+  serverpod_database:
+    path: ../../../../packages/serverpod_database
+  serverpod_embedded_postgres:
+    path: ../../../../packages/serverpod_embedded_postgres
+  serverpod_lints:
+    path: ../../../../packages/serverpod_lints
+  serverpod_serialization:
+    path: ../../../../packages/serverpod_serialization
+  serverpod_shared:
+    path: ../../../../packages/serverpod_shared
+  serverpod_test:
+    path: ../../../../packages/serverpod_test

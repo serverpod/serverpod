@@ -3,12 +3,34 @@ import 'dart:typed_data';
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
+/// Expose static fromJson builder for bool that handles bool or int values.
+/// Required to handle SQL boolean values that are stored as 0 or 1.
+extension BoolJsonExtension on bool {
+  /// Returns a deserialized version of the [bool].
+  static bool fromJson(dynamic value) {
+    if (value is bool) return value;
+    if (value is int) {
+      if (value != 0 && value != 1) {
+        throw DeserializationTypeNotFoundException(
+          message: 'Expected int to be 0 or 1, but got $value',
+          type: int,
+        );
+      }
+      return value == 1;
+    }
+    throw DeserializationTypeNotFoundException(type: value.runtimeType);
+  }
+}
+
 /// Expose toJson on DateTime
 /// Expose static fromJson builder
 extension DateTimeJsonExtension on DateTime {
   /// Returns a deserialized version of the [DateTime].
   static DateTime fromJson(dynamic value) {
     if (value is DateTime) return value;
+    if (value is int) {
+      return DateTime.fromMillisecondsSinceEpoch(value, isUtc: true);
+    }
     return DateTime.parse(value as String);
   }
 
@@ -35,6 +57,7 @@ extension UuidValueJsonExtension on UuidValue {
   /// Returns a deserialized version of the [UuidValue].
   static UuidValue fromJson(dynamic value) {
     if (value is UuidValue) return value;
+    if (value is Uint8List) return UuidValue.fromByteList(value);
     return UuidValue.withValidation(value as String);
   }
 
@@ -110,8 +133,9 @@ extension MapJsonExtension<K, V> on Map<K, V> {
     if (_keyType != String) {
       return entries.map((e) {
         var serializedKey = keyToJson != null ? keyToJson(e.key) : e.key;
-        var serializedValue =
-            valueToJson != null ? valueToJson(e.value) : e.value;
+        var serializedValue = valueToJson != null
+            ? valueToJson(e.value)
+            : e.value;
         return {'k': serializedKey, 'v': serializedValue};
       }).toList();
     }
@@ -141,23 +165,6 @@ extension SetJsonExtension<T> on Set<T> {
     if (valueToJson == null) return toList();
 
     return map<dynamic>(valueToJson).toList();
-  }
-
-  /// Returns a deserialized version of the [Set].
-  static Set<T>? fromJson<T>(
-    dynamic value, {
-    required T Function(dynamic) itemFromJson,
-  }) {
-    if (value is Set<T>) return value;
-
-    var set = (value as List?)?.map(itemFromJson).toSet();
-
-    if (set != null && value!.length != set.length) {
-      throw Exception(
-          'Input list for Set contained duplicate items. List with length ${value.length} resulted in a set with only ${set.length} item(s).');
-    }
-
-    return set;
   }
 }
 
@@ -249,4 +256,299 @@ extension BitJsonExtension on Bit {
         ? Bit.fromString(value)
         : _fromList(json.decode(value) as List);
   }
+}
+
+/// Expose toJson on [GeographyPoint] and a static fromJson builder.
+extension GeographyPointJsonExtension on GeographyPoint {
+  /// Returns a deserialized [GeographyPoint] from various formats.
+  ///
+  /// Handles:
+  /// - [GeographyPoint] — returned as-is
+  /// - [Uint8List] — decoded from EWKB binary (as returned by PostgreSQL)
+  /// - [String] — decoded from EWKT (e.g. `SRID=4326;POINT(-0.12 51.5)`)
+  /// - [Map] — decoded from a JSON map with longitude/latitude/srid keys
+  static GeographyPoint fromJson(dynamic value) {
+    if (value is GeographyPoint) return value;
+    if (value is Uint8List) return GeographyPoint.fromBinary(value);
+    if (value is String) return _fromEwkt(value);
+    if (value is Map) {
+      return GeographyPoint(
+        longitude: (value['longitude'] as num).toDouble(),
+        latitude: (value['latitude'] as num).toDouble(),
+        srid: value['srid'] as int? ?? Geography.defaultSrid,
+      );
+    }
+    throw ArgumentError(
+      'Cannot deserialize ${value.runtimeType} as GeographyPoint',
+    );
+  }
+
+  static GeographyPoint _fromEwkt(String value) {
+    var s = value;
+    var srid = Geography.defaultSrid;
+    if (s.startsWith('SRID=')) {
+      final semi = s.indexOf(';');
+      srid = int.parse(s.substring(5, semi));
+      s = s.substring(semi + 1);
+    }
+    final open = s.indexOf('(');
+    final close = s.indexOf(')');
+    final parts = s.substring(open + 1, close).split(' ');
+    return GeographyPoint(
+      longitude: double.parse(parts[0]),
+      latitude: double.parse(parts[1]),
+      srid: srid,
+    );
+  }
+
+  /// Returns the EWKT representation as a [String].
+  ///
+  /// This is the format the PostgreSQL encoder uses when building INSERT/UPDATE
+  /// SQL. The value flows through [TableRow.toJson] → encoder → SQL literal.
+  String toJson() => toEwkt();
+}
+
+/// Expose toJson on [GeographyLineString] and a static fromJson builder.
+extension GeographyLineStringJsonExtension on GeographyLineString {
+  /// Returns a deserialized [GeographyLineString] from various formats.
+  ///
+  /// Handles:
+  /// - [GeographyLineString] — returned as-is
+  /// - [Uint8List] — decoded from EWKB binary (as returned by PostgreSQL)
+  /// - [String] — decoded from EWKT (e.g. `SRID=4326;LINESTRING(0 0, 1 1)`)
+  /// - [Map] — decoded from a JSON map with srid and points keys
+  static GeographyLineString fromJson(dynamic value) {
+    if (value is GeographyLineString) return value;
+    if (value is Uint8List) return GeographyLineString.fromBinary(value);
+    if (value is String) return _fromEwkt(value);
+    if (value is Map) {
+      final srid = value['srid'] as int? ?? Geography.defaultSrid;
+      final rawPoints = value['points'] as List;
+      final points = rawPoints.map((p) {
+        final m = p as Map;
+        return GeographyPoint(
+          longitude: (m['longitude'] as num).toDouble(),
+          latitude: (m['latitude'] as num).toDouble(),
+          srid: srid,
+        );
+      }).toList();
+      return GeographyLineString(points: points, srid: srid);
+    }
+    throw ArgumentError(
+      'Cannot deserialize ${value.runtimeType} as GeographyLineString',
+    );
+  }
+
+  static GeographyLineString _fromEwkt(String value) {
+    var s = value;
+    var srid = Geography.defaultSrid;
+    if (s.startsWith('SRID=')) {
+      final semi = s.indexOf(';');
+      srid = int.parse(s.substring(5, semi));
+      s = s.substring(semi + 1);
+    }
+    final open = s.indexOf('(');
+    final close = s.lastIndexOf(')');
+    final coordStr = s.substring(open + 1, close).trim();
+    final points = coordStr.isEmpty
+        ? <GeographyPoint>[]
+        : coordStr.split(',').map((part) {
+            final xy = part.trim().split(' ');
+            return GeographyPoint(
+              longitude: double.parse(xy[0]),
+              latitude: double.parse(xy[1]),
+              srid: srid,
+            );
+          }).toList();
+    return GeographyLineString(points: points, srid: srid);
+  }
+
+  /// Returns the EWKT representation as a [String].
+  String toJson() => toEwkt();
+}
+
+/// Expose toJson on [GeographyPolygon] and a static fromJson builder.
+extension GeographyPolygonJsonExtension on GeographyPolygon {
+  /// Returns a deserialized [GeographyPolygon] from various formats.
+  ///
+  /// Handles:
+  /// - [GeographyPolygon] — returned as-is
+  /// - [Uint8List] — decoded from EWKB binary (as returned by PostgreSQL)
+  /// - [String] — decoded from EWKT
+  /// - [Map] — decoded from a JSON map with srid, exteriorRing, holes keys
+  static GeographyPolygon fromJson(dynamic value) {
+    if (value is GeographyPolygon) return value;
+    if (value is Uint8List) return GeographyPolygon.fromBinary(value);
+    if (value is String) return _fromEwkt(value);
+    if (value is Map) {
+      final srid = value['srid'] as int? ?? Geography.defaultSrid;
+      List<GeographyPoint> parseRing(List pts) => pts.map((p) {
+        final m = p as Map;
+        return GeographyPoint(
+          longitude: (m['longitude'] as num).toDouble(),
+          latitude: (m['latitude'] as num).toDouble(),
+          srid: srid,
+        );
+      }).toList();
+      final exterior = parseRing(value['exteriorRing'] as List);
+      final holes = (value['holes'] as List? ?? [])
+          .map((h) => parseRing(h as List))
+          .toList();
+      return GeographyPolygon(exteriorRing: exterior, holes: holes, srid: srid);
+    }
+    throw ArgumentError(
+      'Cannot deserialize ${value.runtimeType} as GeographyPolygon',
+    );
+  }
+
+  static GeographyPolygon _fromEwkt(String value) {
+    var s = value;
+    var srid = Geography.defaultSrid;
+    if (s.startsWith('SRID=')) {
+      final semi = s.indexOf(';');
+      srid = int.parse(s.substring(5, semi));
+      s = s.substring(semi + 1);
+    }
+    // Strip "POLYGON(" prefix and trailing ")"
+    s = s.trim();
+    final start = s.indexOf('(');
+    s = s.substring(start + 1, s.length - 1);
+
+    final rings = <List<GeographyPoint>>[];
+    // Each ring is "(lon lat, ...)"
+    var depth = 0;
+    var ringStart = 0;
+    for (var i = 0; i < s.length; i++) {
+      if (s[i] == '(') {
+        depth++;
+        if (depth == 1) ringStart = i;
+      } else if (s[i] == ')') {
+        depth--;
+        if (depth == 0) {
+          final ringStr = s.substring(ringStart + 1, i);
+          final points = ringStr.split(',').map((part) {
+            final xy = part.trim().split(' ');
+            return GeographyPoint(
+              longitude: double.parse(xy[0]),
+              latitude: double.parse(xy[1]),
+              srid: srid,
+            );
+          }).toList();
+          rings.add(points);
+        }
+      }
+    }
+
+    return GeographyPolygon(
+      exteriorRing: rings.isNotEmpty ? rings[0] : const [],
+      holes: rings.length > 1 ? rings.sublist(1) : const [],
+      srid: srid,
+    );
+  }
+
+  /// Returns the EWKT representation as a [String].
+  String toJson() => toEwkt();
+}
+
+/// Expose toJson on [GeographyGeometryCollection] and a static fromJson builder.
+extension GeographyGeometryCollectionJsonExtension
+    on GeographyGeometryCollection {
+  /// Returns a deserialized [GeographyGeometryCollection] from various formats.
+  ///
+  /// Handles:
+  /// - [GeographyGeometryCollection] — returned as-is
+  /// - [Uint8List] — decoded from EWKB binary (as returned by PostgreSQL)
+  /// - [String] — decoded from EWKT
+  /// - [Map] — decoded from a JSON map with srid and geometries keys
+  static GeographyGeometryCollection fromJson(dynamic value) {
+    if (value is GeographyGeometryCollection) return value;
+    if (value is Uint8List) {
+      return GeographyGeometryCollection.fromBinary(value);
+    }
+    if (value is String) return _fromEwkt(value);
+    if (value is Map) {
+      final srid = value['srid'] as int? ?? Geography.defaultSrid;
+      // Each element is already a serialized geography (EWKT or map).
+      final rawGeoms = value['geometries'] as List;
+      final geoms = rawGeoms.map<Geography>((g) {
+        if (g is String) return _geomFromEwktString(g);
+        if (g is Map) return _geomFromMap(g);
+        throw ArgumentError('Cannot deserialize geometry element: $g');
+      }).toList();
+      return GeographyGeometryCollection(geometries: geoms, srid: srid);
+    }
+    throw ArgumentError(
+      'Cannot deserialize ${value.runtimeType} as GeographyGeometryCollection',
+    );
+  }
+
+  static GeographyGeometryCollection _fromEwkt(String value) {
+    var s = value;
+    var srid = Geography.defaultSrid;
+    if (s.startsWith('SRID=')) {
+      final semi = s.indexOf(';');
+      srid = int.parse(s.substring(5, semi));
+      s = s.substring(semi + 1);
+    }
+    s = s.trim();
+    final start = s.indexOf('(');
+    final inner = s.substring(start + 1, s.length - 1).trim();
+    final geoms = _splitTopLevel(
+      inner,
+    ).map((g) => _geomFromEwktString(g.trim())).toList();
+    return GeographyGeometryCollection(geometries: geoms, srid: srid);
+  }
+
+  static Geography _geomFromEwktString(String s) {
+    // Strip optional "SRID=xxx;" prefix before type-dispatching so that strings
+    // like "SRID=4326;POINT(...)" are handled correctly.
+    final body = s.contains(';') ? s.substring(s.indexOf(';') + 1).trim() : s;
+    final upper = body.toUpperCase();
+    if (upper.startsWith('POINT')) {
+      return GeographyPointJsonExtension.fromJson(s);
+    }
+    if (upper.startsWith('LINESTRING')) {
+      return GeographyLineStringJsonExtension.fromJson(s);
+    }
+    if (upper.startsWith('POLYGON')) {
+      return GeographyPolygonJsonExtension.fromJson(s);
+    }
+    throw ArgumentError('Unsupported geometry type in EWKT: $s');
+  }
+
+  static Geography _geomFromMap(Map m) {
+    final type = m['type'] as String?;
+    switch (type) {
+      case 'GeographyPoint':
+        return GeographyPointJsonExtension.fromJson(m);
+      case 'GeographyLineString':
+        return GeographyLineStringJsonExtension.fromJson(m);
+      case 'GeographyPolygon':
+        return GeographyPolygonJsonExtension.fromJson(m);
+      default:
+        throw ArgumentError('Unknown geometry type map entry: $m');
+    }
+  }
+
+  /// Splits a top-level comma-separated list, respecting nested parentheses.
+  static List<String> _splitTopLevel(String s) {
+    final parts = <String>[];
+    var depth = 0;
+    var start = 0;
+    for (var i = 0; i < s.length; i++) {
+      if (s[i] == '(') {
+        depth++;
+      } else if (s[i] == ')') {
+        depth--;
+      } else if (s[i] == ',' && depth == 0) {
+        parts.add(s.substring(start, i));
+        start = i + 1;
+      }
+    }
+    if (start < s.length) parts.add(s.substring(start));
+    return parts;
+  }
+
+  /// Returns the EWKT representation as a [String].
+  String toJson() => toEwkt();
 }

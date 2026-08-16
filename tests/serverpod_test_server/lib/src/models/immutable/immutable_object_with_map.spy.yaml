@@ -1,0 +1,4 @@
+class: ImmutableObjectWithMap
+immutable: true
+fields:
+  mapVariable: Map<String, String>

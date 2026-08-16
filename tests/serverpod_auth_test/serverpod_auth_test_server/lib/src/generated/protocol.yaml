@@ -1,0 +1,66 @@
+appleAccount:
+  - login:
+  - hasAccount:
+authTest:
+  - createTestUser:
+  - createSasToken:
+  - deleteSasTokens:
+  - createJwtToken:
+  - deleteJwtRefreshTokens:
+  - destroySpecificRefreshToken:
+  - checkSession:
+authenticatedStreamingTest:
+  - openAuthenticatedStream:
+emailAccountBackwardsCompatibilityTest:
+  - createLegacyUser:
+  - createLegacySession:
+  - migrateUser:
+  - getNewAuthUserId:
+  - deleteLegacyAuthData:
+  - sessionUserIdentifier:
+  - checkLegacyPassword:
+emailAccount:
+  - login:
+  - startRegistration:
+  - verifyRegistrationCode:
+  - finishRegistration:
+  - startPasswordReset:
+  - verifyPasswordResetCode:
+  - finishPasswordReset:
+  - hasAccount:
+firebaseAccount:
+  - login:
+  - hasAccount:
+gitHubAccount:
+  - login:
+  - hasAccount:
+googleAccountBackwardsCompatibilityTest:
+  - login:
+  - loginWithCode:
+  - hasAccount:
+googleAccount:
+  - login:
+  - loginWithCode:
+  - hasAccount:
+jwtRefresh:
+  - refreshAccessToken:
+passkeyAccount:
+  - createChallenge:
+  - register:
+  - login:
+  - hasAccount:
+passwordImportingEmailAccount:
+  - login:
+  - startRegistration:
+  - verifyRegistrationCode:
+  - finishRegistration:
+  - startPasswordReset:
+  - verifyPasswordResetCode:
+  - finishPasswordReset:
+  - hasAccount:
+userProfile:
+  - removeUserImage:
+  - setUserImage:
+  - changeUserName:
+  - changeFullName:
+  - get:

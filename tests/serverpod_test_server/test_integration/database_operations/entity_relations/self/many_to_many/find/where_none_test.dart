@@ -36,8 +36,10 @@ void main() async {
           Blocking(blockedById: member[2].id!, blockedId: member[0].id!),
         ]);
 
-        var fetchedMembers =
-            await Member.db.find(session, where: (t) => t.blocking.none());
+        var fetchedMembers = await Member.db.find(
+          session,
+          where: (t) => t.blocking.none(),
+        );
 
         var memberNames = fetchedMembers.map((e) => e.name);
 

@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Information about a single server in a cluster.
-abstract class ClusterServerInfo implements _i1.SerializableModel {
+abstract class ClusterServerInfo
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ClusterServerInfo._({required this.serverId});
 
   factory ClusterServerInfo({required String serverId}) =
@@ -32,7 +33,18 @@ abstract class ClusterServerInfo implements _i1.SerializableModel {
   ClusterServerInfo copyWith({String? serverId});
   @override
   Map<String, dynamic> toJson() {
-    return {'serverId': serverId};
+    return {
+      '__className__': 'serverpod.ClusterServerInfo',
+      'serverId': serverId,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod.ClusterServerInfo',
+      'serverId': serverId,
+    };
   }
 
   @override
@@ -43,7 +55,7 @@ abstract class ClusterServerInfo implements _i1.SerializableModel {
 
 class _ClusterServerInfoImpl extends ClusterServerInfo {
   _ClusterServerInfoImpl({required String serverId})
-      : super._(serverId: serverId);
+    : super._(serverId: serverId);
 
   /// Returns a shallow copy of this [ClusterServerInfo]
   /// with some or all fields replaced by the given arguments.

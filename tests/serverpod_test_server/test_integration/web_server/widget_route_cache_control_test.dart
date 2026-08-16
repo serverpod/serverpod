@@ -6,7 +6,9 @@ import 'package:http/http.dart' as http;
 // Test widget classes
 class TestHtmlWidget extends WebWidget {
   @override
-  String toString() => '<html><body>Test HTML</body></html>';
+  String render({String? Function(String)? onMissingVariable}) {
+    return '<html><body>Test HTML</body></html>';
+  }
 }
 
 class TestJsonWidget extends JsonWidget {
@@ -51,7 +53,7 @@ void main() {
       serverpod.webServer.addRoute(JsonTestRoute(), '/json-route');
       serverpod.webServer.addRoute(RedirectTestRoute(), '/redirect-route');
 
-      await serverpod.start();
+      await serverpod.startWithDatabase();
     });
 
     tearDown(() async {
@@ -59,54 +61,55 @@ void main() {
     });
 
     test(
-        'when requesting an HTML widget route '
-        'then the cache-control header is set to no-cache and private',
-        () async {
-      var response = await http.get(
-        Uri.parse('http://localhost:8082/html-route'),
-      );
+      'when requesting an HTML widget route '
+      'then the cache-control header is set to no-cache and private',
+      () async {
+        var response = await http.get(
+          Uri.parse('${serverpod.webUrl}html-route'),
+        );
 
-      expect(response.headers['cache-control'], 'no-cache, private');
-    });
-
-    test(
-        'when requesting a JSON widget route '
-        'then the cache-control header is set to no-cache and private',
-        () async {
-      var response = await http.get(
-        Uri.parse('http://localhost:8082/json-route'),
-      );
-
-      expect(response.headers['cache-control'], 'no-cache, private');
-    });
+        expect(response.headers['cache-control'], 'no-cache, private');
+      },
+    );
 
     test(
-        'when requesting a JSON widget route '
+      'when requesting a JSON widget route '
+      'then the cache-control header is set to no-cache and private',
+      () async {
+        var response = await http.get(
+          Uri.parse('${serverpod.webUrl}json-route'),
+        );
+
+        expect(response.headers['cache-control'], 'no-cache, private');
+      },
+    );
+
+    test('when requesting a JSON widget route '
         'then the content-type is application/json', () async {
       var response = await http.get(
-        Uri.parse('http://localhost:8082/json-route'),
+        Uri.parse('${serverpod.webUrl}json-route'),
       );
 
       expect(response.headers['content-type'], contains('application/json'));
     });
 
     test(
-        'when requesting an HTML widget route '
-        'then the content-type is text/html even with cache headers set',
-        () async {
-      var response = await http.get(
-        Uri.parse('http://localhost:8082/html-route'),
-      );
+      'when requesting an HTML widget route '
+      'then the content-type is text/html even with cache headers set',
+      () async {
+        var response = await http.get(
+          Uri.parse('${serverpod.webUrl}html-route'),
+        );
 
-      expect(response.headers['content-type'], contains('text/html'));
-      expect(response.headers['cache-control'], 'no-cache, private');
-    });
+        expect(response.headers['content-type'], contains('text/html'));
+        expect(response.headers['cache-control'], 'no-cache, private');
+      },
+    );
 
-    test(
-        'when requesting a JSON widget route '
+    test('when requesting a JSON widget route '
         'then both content-type and cache headers are set correctly', () async {
       var response = await http.get(
-        Uri.parse('http://localhost:8082/json-route'),
+        Uri.parse('${serverpod.webUrl}json-route'),
       );
 
       expect(response.headers['content-type'], contains('application/json'));
@@ -114,30 +117,34 @@ void main() {
     });
 
     test(
-        'when requesting a redirect widget route '
-        'then the redirect response does not have cache-control headers',
-        () async {
-      // Create client that doesn't follow redirects
-      var client = http.Client();
-      var request = http.Request(
-          'GET', Uri.parse('http://localhost:8082/redirect-route'));
-      request.followRedirects = false;
+      'when requesting a redirect widget route '
+      'then the redirect response does not have cache-control headers',
+      () async {
+        // Create client that doesn't follow redirects
+        var client = http.Client();
+        var request = http.Request(
+          'GET',
+          Uri.parse('${serverpod.webUrl}redirect-route'),
+        );
+        request.followRedirects = false;
 
-      var streamedResponse = await client.send(request);
-      var response = await http.Response.fromStream(streamedResponse);
+        var streamedResponse = await client.send(request);
+        var response = await http.Response.fromStream(streamedResponse);
 
-      expect(response.statusCode, 303); // See Other redirect
-      // Redirect responses don't get cache control headers applied
-      // since they return early before the cache control logic
-      expect(response.headers['cache-control'], isNull);
-    });
+        expect(response.statusCode, 303); // See Other redirect
+        // Redirect responses don't get cache control headers applied
+        // since they return early before the cache control logic
+        expect(response.headers['cache-control'], isNull);
+      },
+    );
 
-    test(
-        'when requesting a redirect widget route '
+    test('when requesting a redirect widget route '
         'then the location header is set correctly', () async {
       var client = http.Client();
       var request = http.Request(
-          'GET', Uri.parse('http://localhost:8082/redirect-route'));
+        'GET',
+        Uri.parse('${serverpod.webUrl}redirect-route'),
+      );
       request.followRedirects = false;
 
       var streamedResponse = await client.send(request);

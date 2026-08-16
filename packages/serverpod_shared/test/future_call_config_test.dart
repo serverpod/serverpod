@@ -9,7 +9,7 @@ void main() {
   var serverId = null;
   var passwords = {
     'serviceSecret': 'longpasswordthatisrequired',
-    'database': 'dbpassword'
+    'database': 'dbpassword',
   };
 
   test(
@@ -53,6 +53,8 @@ apiServer:
 futureCall:
   concurrencyLimit: 5
   scanInterval: 2000
+  checkBrokenCalls: false
+  deleteBrokenCalls: true
 ''';
 
       var config = ServerpodConfig.loadFromMap(
@@ -63,8 +65,12 @@ futureCall:
       );
 
       expect(config.futureCall.concurrencyLimit, equals(5));
-      expect(config.futureCall.scanInterval,
-          equals(const Duration(milliseconds: 2000)));
+      expect(
+        config.futureCall.scanInterval,
+        equals(const Duration(milliseconds: 2000)),
+      );
+      expect(config.futureCall.checkBrokenCalls, isFalse);
+      expect(config.futureCall.deleteBrokenCalls, isTrue);
     },
   );
 
@@ -85,17 +91,25 @@ futureCall:
           'futureCall': {
             'concurrencyLimit': 5,
             'scanInterval': 2000,
+            'checkBrokenCalls': false,
+            'deleteBrokenCalls': false,
           },
         },
         environment: {
           'SERVERPOD_FUTURE_CALL_CONCURRENCY_LIMIT': '10',
           'SERVERPOD_FUTURE_CALL_SCAN_INTERVAL': '3000',
+          'SERVERPOD_FUTURE_CALL_CHECK_BROKEN_CALLS': 'true',
+          'SERVERPOD_FUTURE_CALL_DELETE_BROKEN_CALLS': 'true',
         },
       );
 
       expect(config.futureCall.concurrencyLimit, equals(10));
-      expect(config.futureCall.scanInterval,
-          equals(const Duration(milliseconds: 3000)));
+      expect(
+        config.futureCall.scanInterval,
+        equals(const Duration(milliseconds: 3000)),
+      );
+      expect(config.futureCall.checkBrokenCalls, isTrue);
+      expect(config.futureCall.deleteBrokenCalls, isTrue);
     },
   );
 
@@ -124,7 +138,8 @@ futureCall:
             (e) => e.toString(),
             'message',
             contains(
-                'Invalid value (invalid) for SERVERPOD_FUTURE_CALL_CONCURRENCY_LIMIT.'),
+              'Invalid value (invalid) for SERVERPOD_FUTURE_CALL_CONCURRENCY_LIMIT.',
+            ),
           ),
         ),
       );
@@ -148,16 +163,22 @@ futureCall:
           'futureCall': {
             'concurrencyLimit': 5,
             'scanInterval': 2000,
+            'deleteBrokenCalls': true,
           },
         },
         environment: {
           'SERVERPOD_FUTURE_CALL_CONCURRENCY_LIMIT': '10',
+          'SERVERPOD_FUTURE_CALL_CHECK_BROKEN_CALLS': 'false',
         },
       );
 
       expect(config.futureCall.concurrencyLimit, equals(10));
-      expect(config.futureCall.scanInterval,
-          equals(const Duration(milliseconds: 2000)));
+      expect(
+        config.futureCall.scanInterval,
+        equals(const Duration(milliseconds: 2000)),
+      );
+      expect(config.futureCall.checkBrokenCalls, isFalse);
+      expect(config.futureCall.deleteBrokenCalls, isTrue);
     },
   );
 
@@ -298,10 +319,37 @@ futureCall:
             (e) => e.toString(),
             'message',
             contains(
-                'Invalid value (invalid) for SERVERPOD_FUTURE_CALL_SCAN_INTERVAL'),
+              'Invalid value (invalid) for SERVERPOD_FUTURE_CALL_SCAN_INTERVAL',
+            ),
           ),
         ),
       );
+    },
+  );
+
+  test(
+    'Given a Serverpod config without checkBrokenCalls and deleteBrokenCalls configured '
+    'when loading from Map then they both use default values',
+    () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+futureCall:
+  scanInterval: 2000
+''';
+
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        loadYaml(serverpodConfig),
+      );
+
+      expect(config.futureCall.checkBrokenCalls, isNull);
+      expect(config.futureCall.deleteBrokenCalls, isFalse);
     },
   );
 }

@@ -1,0 +1,5 @@
+### A parent class.
+class: PolymorphicParent
+fields:
+  ### The parent field.
+  parent: String

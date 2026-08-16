@@ -1,0 +1,168 @@
+---
+name: serverpod-models
+description: Define Serverpod data models in YAML (.spy.yaml), serialization, database tables, relations, enums, and exceptions. Use when creating or editing models, database schema, .spy.yaml files, or Serverpod ORM entities.
+---
+
+# Serverpod Models
+
+Models are defined in `.spy.yaml` files anywhere under server `lib/`. They generate Dart classes for server and client, and optionally database tables.
+
+After each change to models, ensure that the code is generated (automatically when a `serverpod start` is running or manually with `serverpod generate`). If models with `table` have changed, the database schema must be updated following the [migration workflow](../serverpod-migrations/SKILL.md).
+
+## Basic class
+
+```yaml
+class: Company
+fields:
+  name: String
+  foundedDate: DateTime?
+  employees: List<Employee>
+```
+
+Field types: `bool`, `int`, `double`, `String`, `Duration`, `DateTime`, `ByteData`, `UuidValue`, `Uri`, `BigInt`, generated classes/enums/exceptions, `List<T>`, `Map<K,V>`, `Set<T>`, `Record`. Use `?` for nullable.
+
+## Required fields
+
+```yaml
+class: Person
+fields:
+  name: String
+  nickname: String?, required
+```
+
+## Database table
+
+Add `table` for a database table + ORM:
+
+```yaml
+class: Company
+table: company
+fields:
+  name: String
+  foundedDate: DateTime?
+```
+
+## Scope
+
+- **Server-only class:** `serverOnly: true`
+- **Per-field:** `scope=serverOnly`, `scope=none` (default `all`)
+- **Non-persisted field:** `!persist` (not stored in DB)
+- **JSON key alias:** `jsonKey=display_name`
+
+## Immutable classes
+
+`immutable: true` — final fields, `==`, `hashCode`, `copyWith`.
+
+## Inheritance
+
+- `extends: ParentClass` — child inherits parent fields. Only one class in hierarchy has `table`.
+- `sealed: true` — abstract sealed hierarchy for exhaustive subtypes. No `table` on sealed class.
+
+If parent is `serverOnly`, children must be too. Children cannot redefine parent fields.
+
+## Enums
+
+```yaml
+enum: Status
+values:
+  - pending
+  - active
+  - completed
+```
+
+Default serialization: `byName`. Set `serialized: byIndex` to use index.
+
+## Exceptions
+
+Use `exception:` instead of `class:` for serializable exceptions. Same field types as classes; supports `default` and `defaultModel`. Uncaught exceptions become generic 500 errors on the client; only serializable exceptions send their data.
+
+```yaml
+exception: MyException
+fields:
+  message: String
+  errorType: MyEnum
+```
+
+Throw on server, catch on client:
+
+```dart
+// Server
+throw MyException(message: 'Failed', errorType: MyEnum.thingyError);
+
+// Client
+try {
+  await client.example.doThingy();
+} on MyException catch (e) {
+  print(e.message);
+}
+```
+
+Serializable exceptions can also be sent over streams (both directions; the stream closes after). Do not put sensitive data in exception fields — they are sent to the client.
+
+## Indexes
+
+```yaml
+indexes:
+  company_name_idx:
+    fields: name
+    unique: true
+```
+
+Field-level `unique` auto-generates a btree unique index:
+
+```yaml
+fields:
+  tenantId: int
+  category: String
+  # single-column unique index
+  email: String, unique
+  # composite unique index on (category, value)
+  value: String, unique(per=category)
+  # composite unique index on (category, tenantId, value)
+  amount: int, unique(per=[category, tenantId])
+```
+
+## Relations
+
+**One-to-one** (FK with unique index):
+
+- ID field: `addressId: int, relation(parent=address)` + unique index on `addressId`
+- Object field: `address: Address?, relation` (generates `addressId`)
+- Optional: `relation(optional)` for nullable FK; `relation(field=customId)` for custom FK name
+- Bidirectional: same `relation(name=...)` on both sides, `field=` on FK side
+
+**One-to-many:**
+
+- "One" side: `employees: List<Employee>?, relation`
+- "Many" side: `companyId: int, relation(parent=company)` (no unique index)
+- Bidirectional: `relation(name=company_employees)` on both sides
+
+**Many-to-many:** Use a join table model with two relation fields.
+
+Querying: `include` for eager loading, `includeList` with `where`/`orderBy`/`limit`/`offset` for list relations. `attach`/`detach` for managing relations.
+
+## Client-side database
+
+Models with the `table` keyword can also generate a client-side database with the `database` keyword:
+
+```yaml
+class: Company
+table: company
+database: client
+```
+
+| Value | Description |
+| ------- | ----------- |
+| `server` | Generates tables only on the server, and a non-table model on the client package (default). |
+| `client` | Generates tables only on the client, and a non-table model on the server package. |
+| `all` | Generates table models on both server and client. |
+
+For how to use the client-side database, see the [Serverpod Database](../serverpod-database/SKILL.md#client-side-database#client-side-database) skill.
+
+## Backward compatibility
+
+To keep backward compatibility, do not change or remove fields in serialized classes used by clients. Add new fields only if nullable or with a default value, so older clients that don't send the field still work.
+
+## Custom serialization
+
+To use serializable models not in YAML: implement `toJson()`, `fromJson`, `copyWith()`. Register in `config/generator.yaml` under `extraClasses` with full URI (e.g. `package:my_shared/my_shared.dart:ClassName`). Both server and client must depend on the package. Freezed classes with `fromJson` work the same way. Implement `ProtocolSerialization` with `toJsonForProtocol()` to omit fields when sending to client.

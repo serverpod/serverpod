@@ -1,0 +1,4 @@
+exception: NotFoundException
+extends: SealedAppException
+fields:
+  code: int

@@ -1,0 +1,44 @@
+# TEMPLATE
+
+publish_to: none
+
+name: serverpod_test_sqlite_flutter
+version: 1.0.0
+description: Flutter web tests for Serverpod client-side databases.
+repository: https://github.com/serverpod/serverpod
+
+environment:
+  sdk: DART_VERSION
+  flutter: FLUTTER_VERSION
+
+dependencies:
+  flutter:
+    sdk: flutter
+  serverpod_test_sqlite_client:
+    path: ../serverpod_test_sqlite_client
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  serverpod_database: SERVERPOD_VERSION
+
+dependency_overrides:
+  serverpod_auth_core_client:
+    path: ../../../modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_client
+  serverpod_auth_idp_client:
+    path: ../../../modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_client
+  serverpod_client:
+    path: ../../../packages/serverpod_client
+  serverpod_database:
+    path: ../../../packages/serverpod_database
+  serverpod_embedded_postgres:
+    path: ../../../packages/serverpod_embedded_postgres
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization
+  serverpod_service_client:
+    path: ../../../packages/serverpod_service_client
+  serverpod_shared:
+    path: ../../../packages/serverpod_shared
+
+flutter:
+  uses-material-design: true

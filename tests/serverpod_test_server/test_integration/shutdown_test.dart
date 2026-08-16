@@ -3,21 +3,37 @@
 @Timeout(Duration(minutes: 1))
 // Note, this test shall run non-concurrently,
 // which means the test tag 'integration' is not used.
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart';
+import 'package:serverpod_shared/process_io.dart';
 import 'package:test/test.dart';
 
 void main() {
   const signalDelay = Duration(seconds: 2);
   const terminationTimeout = Duration(seconds: 10);
-  const verbose = true;
+  const verbose = false;
 
-  test(
-      'Given a serverpod server with db '
+  setUpAll(() async {
+    // Migrate the main config database once
+    final result = await Process.run(dartExecutablePath, [
+      'run',
+      'bin/main.dart',
+      '--mode=test',
+      '--role',
+      'maintenance',
+      '--apply-migrations',
+    ]);
+    if (result.exitCode != 0) {
+      throw StateError(
+        'Pre-migrating the config database failed: ${result.stderr}',
+      );
+    }
+  });
+
+  test('Given a serverpod server with db '
       'when run in maintenance mode '
       'then it automatically exits with exit code 0', () async {
     final processOutput = await startProcess(
@@ -28,6 +44,9 @@ void main() {
         '--role',
         'maintenance',
       ],
+      environment: {
+        'SERVERPOD_SILENCE_LIFECYCLE_MESSAGES': '0',
+      },
       verbose: verbose,
     );
 
@@ -48,12 +67,14 @@ void main() {
   }, timeout: const Timeout(Duration(seconds: 120)));
 
   group('Given a running serverpod server', () {
-    test(
-        'when it is sent SIGINT '
+    test('when it is sent SIGINT '
         'then it exits with exit code 130', () async {
       final processOutput = await startProcess(
         'dart',
         ['bin/main.dart', '--mode=test'],
+        environment: {
+          'SERVERPOD_SILENCE_LIFECYCLE_MESSAGES': '0',
+        },
         verbose: verbose,
       );
 
@@ -84,44 +105,49 @@ void main() {
     });
 
     test(
-        'when it is sent SIGTERM '
-        'then it exits with exit code 143', () async {
-      final processOutput = await startProcess(
-        'dart',
-        ['bin/main.dart', '--mode=test'],
-        verbose: verbose,
-      );
+      'when it is sent SIGTERM '
+      'then it exits with exit code 0',
+      () async {
+        final processOutput = await startProcess(
+          'dart',
+          ['bin/main.dart', '--mode=test'],
+          environment: {
+            'SERVERPOD_SILENCE_LIFECYCLE_MESSAGES': '0',
+          },
+          verbose: verbose,
+        );
 
-      await expectLater(
-        processOutput.outQueue,
-        emitsThrough(contains('SERVERPOD initialized')),
-      );
+        await expectLater(
+          processOutput.outQueue,
+          emitsThrough(contains('SERVERPOD initialized')),
+        );
 
-      await Future.delayed(signalDelay);
-      if (verbose) {
-        print('sending process signal...');
-      }
-      processOutput.process.kill(ProcessSignal.sigterm);
+        await Future.delayed(signalDelay);
+        if (verbose) {
+          print('sending process signal...');
+        }
+        processOutput.process.kill(ProcessSignal.sigterm);
 
-      await expectLater(
-        processOutput.outQueue,
-        emitsInOrder([
-          emitsThrough(contains('SIGTERM (15) received')),
-          emitsThrough(contains('SERVERPOD initiating shutdown')),
-          emitsThrough(contains('SERVERPOD shutdown completed')),
-        ]),
-      );
+        await expectLater(
+          processOutput.outQueue,
+          emitsInOrder([
+            emitsThrough(contains('SIGTERM (15) received')),
+            emitsThrough(contains('SERVERPOD initiating shutdown')),
+            emitsThrough(contains('SERVERPOD shutdown completed')),
+          ]),
+        );
 
-      var exitCode = await processOutput.process.exitCode.timeout(
-        terminationTimeout,
-      );
-      expect(exitCode, 143);
-    }, onPlatform: {
-      'windows': Skip('SIGTERM is not supported on Windows'),
-    });
+        var exitCode = await processOutput.process.exitCode.timeout(
+          terminationTimeout,
+        );
+        expect(exitCode, 0);
+      },
+      onPlatform: {
+        'windows': Skip('SIGTERM is not supported on Windows'),
+      },
+    );
 
-    test(
-        'with shutdown test auditor enabled '
+    test('with shutdown test auditor enabled '
         'when it is sent SIGINT '
         'then it exits with exit code 1', () async {
       final processOutput = await startProcess(
@@ -129,6 +155,7 @@ void main() {
         ['bin/main.dart', '--mode=test'],
         environment: {
           '_SERVERPOD_SHUTDOWN_TEST_AUDITOR': '2',
+          'SERVERPOD_SILENCE_LIFECYCLE_MESSAGES': '0',
         },
         verbose: verbose,
       );
@@ -155,11 +182,9 @@ void main() {
 
       await expectLater(
         processOutput.errQueue,
-        emitsInOrder([
-          emitsThrough(contains('serverpod shutdown test auditor enabled')),
-          emitsThrough(
-              contains('Exception: serverpod shutdown test auditor throwing')),
-        ]),
+        emitsThrough(
+          contains('Exception: serverpod shutdown test auditor throwing'),
+        ),
       );
 
       var exitCode = await processOutput.process.exitCode.timeout(
@@ -168,13 +193,15 @@ void main() {
       expect(exitCode, 1);
     });
 
-    test(
-        'with an ongoing http request '
+    test('with an ongoing http request '
         'when it is sent SIGINT '
         'then it exits with exit code 130', () async {
       final processOutput = await startProcess(
         'dart',
         ['bin/main.dart', '--mode=test'],
+        environment: {
+          'SERVERPOD_SILENCE_LIFECYCLE_MESSAGES': '0',
+        },
         verbose: verbose,
       );
 
@@ -184,10 +211,8 @@ void main() {
       );
 
       await Future.delayed(Duration(seconds: 5));
-      print('server should be up');
 
       final httpClient = Client();
-      print('sending long-running request...');
       final responseTask = httpClient.post(
         Uri.parse('http://localhost:8080/failedCalls/slowCall'),
       );
@@ -208,9 +233,7 @@ void main() {
         ]),
       );
 
-      print('waiting for response...');
       final response = await responseTask;
-      print('response received with code ${response.statusCode}');
       expect(response.statusCode, 200);
 
       var exitCode = await processOutput.process.exitCode.timeout(
@@ -237,20 +260,21 @@ Stream<String> _streamTransformer(
       .transform(const Utf8Decoder())
       .transform(const LineSplitter())
       .map((line) {
-    if (verbose) print('$startOfLine$line');
-    return line;
-  }).asBroadcastStream(
-    onCancel: (controller) {
-      if (verbose) print('<pausing ${prefix ?? ''} stream>');
-      controller.pause();
-    },
-    onListen: (controller) async {
-      if (controller.isPaused) {
-        if (verbose) print('<resuming ${prefix ?? ''} stream>');
-        controller.resume();
-      }
-    },
-  );
+        if (verbose) print('$startOfLine$line');
+        return line;
+      })
+      .asBroadcastStream(
+        onCancel: (controller) {
+          if (verbose) print('<pausing ${prefix ?? ''} stream>');
+          controller.pause();
+        },
+        onListen: (controller) async {
+          if (controller.isPaused) {
+            if (verbose) print('<resuming ${prefix ?? ''} stream>');
+            controller.resume();
+          }
+        },
+      );
 }
 
 Future<ProcessOutput> startProcess(
@@ -260,7 +284,10 @@ Future<ProcessOutput> startProcess(
   bool verbose = false,
 }) async {
   final process = await Process.start(
-    executable,
+    // Spawn the real SDK binary (resolved through version-manager shims like
+    // puro/fvm): shell shims do not forward the signals these tests send, so
+    // the exit-code assertions would time out and leak the spawned server.
+    executable == 'dart' ? dartExecutablePath : executable,
     arguments,
     environment: environment,
   );

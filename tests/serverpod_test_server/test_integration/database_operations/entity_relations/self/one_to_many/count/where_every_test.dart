@@ -85,8 +85,9 @@ void main() async {
         var catCount = await Cat.db.count(
           session,
           where: (t) => t.kittens.every(
-              // All cats where all kittens has kittens with name starting with 'Nest'
-              (o) => o.kittens.every((c) => c.name.ilike('nest%'))),
+            // All cats where all kittens has kittens with name starting with 'Nest'
+            (o) => o.kittens.every((c) => c.name.ilike('nest%')),
+          ),
         );
 
         expect(catCount, 1);

@@ -11,9 +11,12 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'future_call_scheduling.dart' as _i2;
+import 'package:serverpod_service_client/src/protocol/protocol.dart' as _i3;
 
 /// A serialized future call with bindings to the database.
-abstract class FutureCallEntry implements _i1.SerializableModel {
+abstract class FutureCallEntry
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   FutureCallEntry._({
     this.id,
     required this.name,
@@ -21,6 +24,7 @@ abstract class FutureCallEntry implements _i1.SerializableModel {
     this.serializedObject,
     required this.serverId,
     this.identifier,
+    this.scheduling,
   });
 
   factory FutureCallEntry({
@@ -30,6 +34,7 @@ abstract class FutureCallEntry implements _i1.SerializableModel {
     String? serializedObject,
     required String serverId,
     String? identifier,
+    _i2.FutureCallScheduling? scheduling,
   }) = _FutureCallEntryImpl;
 
   factory FutureCallEntry.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -40,6 +45,11 @@ abstract class FutureCallEntry implements _i1.SerializableModel {
       serializedObject: jsonSerialization['serializedObject'] as String?,
       serverId: jsonSerialization['serverId'] as String,
       identifier: jsonSerialization['identifier'] as String?,
+      scheduling: jsonSerialization['scheduling'] == null
+          ? null
+          : _i3.Protocol().deserialize<_i2.FutureCallScheduling>(
+              jsonSerialization['scheduling'],
+            ),
     );
   }
 
@@ -63,6 +73,10 @@ abstract class FutureCallEntry implements _i1.SerializableModel {
   /// An optional identifier which can be used to cancel the call.
   String? identifier;
 
+  /// Specifies how recurring calls should be scheduled.
+  /// This field is null for one-off future calls.
+  _i2.FutureCallScheduling? scheduling;
+
   /// Returns a shallow copy of this [FutureCallEntry]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -73,16 +87,33 @@ abstract class FutureCallEntry implements _i1.SerializableModel {
     String? serializedObject,
     String? serverId,
     String? identifier,
+    _i2.FutureCallScheduling? scheduling,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.FutureCallEntry',
       if (id != null) 'id': id,
       'name': name,
       'time': time.toJson(),
       if (serializedObject != null) 'serializedObject': serializedObject,
       'serverId': serverId,
       if (identifier != null) 'identifier': identifier,
+      if (scheduling != null) 'scheduling': scheduling?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod.FutureCallEntry',
+      if (id != null) 'id': id,
+      'name': name,
+      'time': time.toJson(),
+      if (serializedObject != null) 'serializedObject': serializedObject,
+      'serverId': serverId,
+      if (identifier != null) 'identifier': identifier,
+      if (scheduling != null) 'scheduling': scheduling?.toJsonForProtocol(),
     };
   }
 
@@ -102,14 +133,16 @@ class _FutureCallEntryImpl extends FutureCallEntry {
     String? serializedObject,
     required String serverId,
     String? identifier,
+    _i2.FutureCallScheduling? scheduling,
   }) : super._(
-          id: id,
-          name: name,
-          time: time,
-          serializedObject: serializedObject,
-          serverId: serverId,
-          identifier: identifier,
-        );
+         id: id,
+         name: name,
+         time: time,
+         serializedObject: serializedObject,
+         serverId: serverId,
+         identifier: identifier,
+         scheduling: scheduling,
+       );
 
   /// Returns a shallow copy of this [FutureCallEntry]
   /// with some or all fields replaced by the given arguments.
@@ -122,6 +155,7 @@ class _FutureCallEntryImpl extends FutureCallEntry {
     Object? serializedObject = _Undefined,
     String? serverId,
     Object? identifier = _Undefined,
+    Object? scheduling = _Undefined,
   }) {
     return FutureCallEntry(
       id: id is int? ? id : this.id,
@@ -132,6 +166,9 @@ class _FutureCallEntryImpl extends FutureCallEntry {
           : this.serializedObject,
       serverId: serverId ?? this.serverId,
       identifier: identifier is String? ? identifier : this.identifier,
+      scheduling: scheduling is _i2.FutureCallScheduling?
+          ? scheduling
+          : this.scheduling?.copyWith(),
     );
   }
 }

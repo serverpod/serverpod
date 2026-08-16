@@ -20,12 +20,14 @@ void main() {
       expect(moduleName, 'serverpod');
     });
 
-    test('moduleNameFromServerPackageName - throws exception for invalid input',
-        () {
-      expect(
-        () => moduleNameFromServerPackageName('invalidPackage'),
-        throwsA(isA<LocateModuleNameFromServerPackageNameException>()),
-      );
-    });
+    test(
+      'moduleNameFromServerPackageName - throws exception for invalid input',
+      () {
+        expect(
+          () => moduleNameFromServerPackageName('invalidPackage'),
+          throwsA(isA<LocateModuleNameFromServerPackageNameException>()),
+        );
+      },
+    );
   });
 }

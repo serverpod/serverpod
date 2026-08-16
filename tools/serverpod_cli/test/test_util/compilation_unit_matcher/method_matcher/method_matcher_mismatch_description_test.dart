@@ -11,20 +11,21 @@ void main() {
     );
 
     test(
-        'when matching class and non-existing method then mismatch description is correct',
-        () {
-      final matcher =
-          containsClass('User').withMethod('nonExistentMethod') as Matcher;
-      final description = StringDescription();
-      matcher.describeMismatch(compilationUnit, description, {}, false);
+      'when matching class and non-existing method then mismatch description is correct',
+      () {
+        final matcher =
+            containsClass('User').withMethod('nonExistentMethod') as Matcher;
+        final description = StringDescription();
+        matcher.describeMismatch(compilationUnit, description, {}, false);
 
-      expect(
-        description.toString(),
-        equals(
-          'does not contain method "nonExistentMethod". Found methods: []',
-        ),
-      );
-    });
+        expect(
+          description.toString(),
+          equals(
+            'does not contain method "nonExistentMethod". Found methods: []',
+          ),
+        );
+      },
+    );
   });
 
   group('Given compilation unit with class with String return method', () {
@@ -37,62 +38,73 @@ void main() {
     );
 
     test(
-        'when matching with non-existent method then mismatch description is correct',
-        () {
-      final matcher =
-          containsClass('User').withMethod('nonExistentMethod') as Matcher;
-      final description = StringDescription();
-      matcher.describeMismatch(compilationUnit, description, {}, false);
+      'when matching with non-existent method then mismatch description is correct',
+      () {
+        final matcher =
+            containsClass('User').withMethod('nonExistentMethod') as Matcher;
+        final description = StringDescription();
+        matcher.describeMismatch(compilationUnit, description, {}, false);
 
-      expect(
-        description.toString(),
-        equals(
-            'does not contain method "nonExistentMethod". Found methods: [getName]'),
-      );
-    });
-
-    test(
-        'when matching class and override method then mismatch description is correct',
-        () {
-      final matcher = containsClass('User')
-          .withMethod('getName', isOverride: true) as Matcher;
-      final description = StringDescription();
-      matcher.describeMismatch(compilationUnit, description, {}, false);
-
-      expect(
-        description.toString(),
-        equals('contains method "getName" but it is not overridden'),
-      );
-    });
+        expect(
+          description.toString(),
+          equals(
+            'does not contain method "nonExistentMethod". Found methods: [getName]',
+          ),
+        );
+      },
+    );
 
     test(
-        'when matching class and int return method then mismatch description is correct',
-        () {
-      final matcher = containsClass('User')
-          .withMethod('getName', returnType: 'int') as Matcher;
-      final description = StringDescription();
-      matcher.describeMismatch(compilationUnit, description, {}, false);
+      'when matching class and override method then mismatch description is correct',
+      () {
+        final matcher =
+            containsClass('User').withMethod('getName', isOverride: true)
+                as Matcher;
+        final description = StringDescription();
+        matcher.describeMismatch(compilationUnit, description, {}, false);
 
-      expect(
-        description.toString(),
-        equals('contains method "getName" but it returns "String"'),
-      );
-    });
+        expect(
+          description.toString(),
+          equals('contains method "getName" but it is not overridden'),
+        );
+      },
+    );
 
     test(
-        'when matching class and override int return method then mismatch description is correct',
-        () {
-      final matcher = containsClass('User').withMethod('getName',
-          isOverride: true, returnType: 'int') as Matcher;
-      final description = StringDescription();
-      matcher.describeMismatch(compilationUnit, description, {}, false);
+      'when matching class and int return method then mismatch description is correct',
+      () {
+        final matcher =
+            containsClass('User').withMethod('getName', returnType: 'int')
+                as Matcher;
+        final description = StringDescription();
+        matcher.describeMismatch(compilationUnit, description, {}, false);
 
-      expect(
-        description.toString(),
-        equals(
-            'contains method "getName" but it is not overridden and returns "String"'),
-      );
-    });
+        expect(
+          description.toString(),
+          equals('contains method "getName" but it returns "String"'),
+        );
+      },
+    );
+
+    test(
+      'when matching class and override int return method then mismatch description is correct',
+      () {
+        final matcher =
+            containsClass(
+                  'User',
+                ).withMethod('getName', isOverride: true, returnType: 'int')
+                as Matcher;
+        final description = StringDescription();
+        matcher.describeMismatch(compilationUnit, description, {}, false);
+
+        expect(
+          description.toString(),
+          equals(
+            'contains method "getName" but it is not overridden and returns "String"',
+          ),
+        );
+      },
+    );
   });
 
   group('Given compilation unit with class with multiple methods', () {
@@ -106,19 +118,21 @@ void main() {
     );
 
     test(
-        'when matching with non-existent method then mismatch description is correct',
-        () {
-      final matcher =
-          containsClass('User').withMethod('nonExistentMethod') as Matcher;
-      final description = StringDescription();
-      matcher.describeMismatch(compilationUnit, description, {}, false);
+      'when matching with non-existent method then mismatch description is correct',
+      () {
+        final matcher =
+            containsClass('User').withMethod('nonExistentMethod') as Matcher;
+        final description = StringDescription();
+        matcher.describeMismatch(compilationUnit, description, {}, false);
 
-      expect(
-        description.toString(),
-        equals(
-            'does not contain method "nonExistentMethod". Found methods: [getName, getHobby]'),
-      );
-    });
+        expect(
+          description.toString(),
+          equals(
+            'does not contain method "nonExistentMethod". Found methods: [getName, getHobby]',
+          ),
+        );
+      },
+    );
   });
   group('Given compilation unit with class with overridden method', () {
     late final compilationUnit = parseCode(
@@ -131,17 +145,19 @@ void main() {
     );
 
     test(
-        'when matching class and non-overridden method then mismatch description is correct',
-        () {
-      final matcher = containsClass('User')
-          .withMethod('getName', isOverride: false) as Matcher;
-      final description = StringDescription();
-      matcher.describeMismatch(compilationUnit, description, {}, false);
+      'when matching class and non-overridden method then mismatch description is correct',
+      () {
+        final matcher =
+            containsClass('User').withMethod('getName', isOverride: false)
+                as Matcher;
+        final description = StringDescription();
+        matcher.describeMismatch(compilationUnit, description, {}, false);
 
-      expect(
-        description.toString(),
-        equals('contains method "getName" but it is overridden'),
-      );
-    });
+        expect(
+          description.toString(),
+          equals('contains method "getName" but it is overridden'),
+        );
+      },
+    );
   });
 }

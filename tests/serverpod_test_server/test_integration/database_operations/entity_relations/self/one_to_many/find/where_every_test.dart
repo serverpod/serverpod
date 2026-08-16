@@ -75,8 +75,9 @@ void main() async {
 
         var fetchedCats = await Cat.db.find(
           session,
-          where: (t) => t.kittens
-              .every((t) => t.name.ilike('kitt%') | t.name.equals('Smulan II')),
+          where: (t) => t.kittens.every(
+            (t) => t.name.ilike('kitt%') | t.name.equals('Smulan II'),
+          ),
         );
 
         var catNames = fetchedCats.map((e) => e.name);
@@ -139,8 +140,9 @@ void main() async {
         var fetchedCats = await Cat.db.find(
           session,
           where: (t) => t.kittens.every(
-              // All cats where all kittens has kittens with name starting with 'Nest'
-              (o) => o.kittens.every((c) => c.name.ilike('nest%'))),
+            // All cats where all kittens has kittens with name starting with 'Nest'
+            (o) => o.kittens.every((c) => c.name.ilike('nest%')),
+          ),
         );
 
         var catNames = fetchedCats.map((e) => e.name);

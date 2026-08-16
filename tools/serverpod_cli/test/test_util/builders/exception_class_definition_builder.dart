@@ -1,5 +1,6 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 
+import 'serializable_entity_field_definition_builder.dart';
 import 'type_definition_builder.dart';
 
 typedef _FieldBuilder = SerializableModelFieldDefinition Function();
@@ -12,14 +13,21 @@ class ExceptionClassDefinitionBuilder {
   bool _serverOnly;
   List<_FieldBuilder> _fields;
   List<String>? _documentation;
+  bool _isSealed;
+  InheritanceDefinition? _extendsClass;
+  List<InheritanceDefinition> _childClasses;
+  String? _sharedPackageName;
+  String? _typeUrl;
 
   ExceptionClassDefinitionBuilder()
-      : _fileName = 'example',
-        _sourceFileName = 'example.yaml',
-        _className = 'Example',
-        _fields = [],
-        _subDirParts = [],
-        _serverOnly = false;
+    : _fileName = 'example',
+      _sourceFileName = 'example.yaml',
+      _className = 'Example',
+      _fields = [],
+      _subDirParts = [],
+      _serverOnly = false,
+      _isSealed = false,
+      _childClasses = [];
 
   ExceptionClassDefinition build() {
     return ExceptionClassDefinition(
@@ -29,8 +37,15 @@ class ExceptionClassDefinitionBuilder {
       fields: _fields.map((f) => f()).toList(),
       subDirParts: _subDirParts,
       serverOnly: _serverOnly,
+      isSealed: _isSealed,
+      extendsClass: _extendsClass,
+      childClasses: _childClasses,
       documentation: _documentation,
-      type: TypeDefinitionBuilder().withClassName(_className).build(),
+      type: TypeDefinitionBuilder()
+          .withClassName(_className)
+          .withUrl(_typeUrl)
+          .build(),
+      sharedPackageName: _sharedPackageName,
     );
   }
 
@@ -60,7 +75,8 @@ class ExceptionClassDefinitionBuilder {
   }
 
   ExceptionClassDefinitionBuilder withField(
-      SerializableModelFieldDefinition field) {
+    SerializableModelFieldDefinition field,
+  ) {
     _fields.add(() => field);
     return this;
   }
@@ -68,13 +84,69 @@ class ExceptionClassDefinitionBuilder {
   ExceptionClassDefinitionBuilder withFields(
     List<SerializableModelFieldDefinition> fields,
   ) {
-    _fields = fields.map((f) => () => f).toList();
+    _fields = fields
+        .map(
+          (f) =>
+              () => f,
+        )
+        .toList();
     return this;
   }
 
   ExceptionClassDefinitionBuilder withDocumentation(
-      List<String>? documentation) {
+    List<String>? documentation,
+  ) {
     _documentation = documentation;
+    return this;
+  }
+
+  ExceptionClassDefinitionBuilder withSharedPackageName(
+    String? sharedPackageName,
+  ) {
+    _sharedPackageName = sharedPackageName;
+    return this;
+  }
+
+  ExceptionClassDefinitionBuilder withTypeUrl(String? url) {
+    _typeUrl = url;
+    return this;
+  }
+
+  ExceptionClassDefinitionBuilder withSimpleField(
+    String fieldName,
+    String type, {
+    bool nullable = false,
+  }) {
+    _fields.add(
+      () => FieldDefinitionBuilder()
+          .withName(fieldName)
+          .withTypeDefinition(type, nullable)
+          .build(),
+    );
+    return this;
+  }
+
+  ExceptionClassDefinitionBuilder withIsSealed(bool isSealed) {
+    _isSealed = isSealed;
+    return this;
+  }
+
+  ExceptionClassDefinitionBuilder withExtendsClass(
+    ExceptionClassDefinition parentClass,
+  ) {
+    _extendsClass = ResolvedInheritanceDefinition<ExceptionClassDefinition>(
+      parentClass,
+    );
+    return this;
+  }
+
+  ExceptionClassDefinitionBuilder withChildClasses(
+    List<ExceptionClassDefinition> childClasses,
+  ) {
+    _childClasses = [
+      for (var child in childClasses)
+        ResolvedInheritanceDefinition<ExceptionClassDefinition>(child),
+    ];
     return this;
   }
 }

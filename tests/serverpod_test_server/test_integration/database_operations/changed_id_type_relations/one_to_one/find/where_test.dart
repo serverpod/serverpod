@@ -20,7 +20,10 @@ Future<void> _createTestDatabase(Session session) async {
 
   // Citizens
   var alex = CitizenInt(
-      name: 'Alex', companyId: serverpod.id!, oldCompanyId: systemair.id!);
+    name: 'Alex',
+    companyId: serverpod.id!,
+    oldCompanyId: systemair.id!,
+  );
   var isak = CitizenInt(name: 'Isak', companyId: serverpod.id!);
   var lina = CitizenInt(name: 'Lina', companyId: systemair.id!);
   var joanna = CitizenInt(name: 'Joanna', companyId: systemair.id!);
@@ -49,17 +52,27 @@ Future<void> _createTestDatabase(Session session) async {
 }
 
 Future<int> deleteAll(Session session) async {
-  var addressDeletions = await AddressUuid.db
-      .deleteWhere(session, where: (_) => Constant.bool(true));
-  var citizenDeletions = await CitizenInt.db
-      .deleteWhere(session, where: (_) => Constant.bool(true));
-  var companyDeletions = await CompanyUuid.db
-      .deleteWhere(session, where: (_) => Constant.bool(true));
-  var townDeletions =
-      await TownInt.db.deleteWhere(session, where: (_) => Constant.bool(true));
+  var addressDeletions = await AddressUuid.db.deleteWhere(
+    session,
+    where: (_) => Constant.bool(true),
+  );
+  var citizenDeletions = await CitizenInt.db.deleteWhere(
+    session,
+    where: (_) => Constant.bool(true),
+  );
+  var companyDeletions = await CompanyUuid.db.deleteWhere(
+    session,
+    where: (_) => Constant.bool(true),
+  );
+  var townDeletions = await TownInt.db.deleteWhere(
+    session,
+    where: (_) => Constant.bool(true),
+  );
 
-  var postDeletions =
-      await Post.db.deleteWhere(session, where: (_) => Constant.bool(true));
+  var postDeletions = await Post.db.deleteWhere(
+    session,
+    where: (_) => Constant.bool(true),
+  );
 
   return townDeletions.length +
       companyDeletions.length +
@@ -71,41 +84,47 @@ Future<int> deleteAll(Session session) async {
 void main() async {
   var session = await IntegrationTestServer().session();
 
-  group('Given models with relations when filtering on relation attributes',
-      () {
-    setUpAll(() async {
-      await _createTestDatabase(session);
-    });
+  group(
+    'Given models with relations when filtering on relation attributes',
+    () {
+      setUpAll(() async {
+        await _createTestDatabase(session);
+      });
 
-    tearDownAll(() async => await deleteAll(session));
+      tearDownAll(() async => await deleteAll(session));
 
-    test('then expected models are returned.', () async {
-      var citizens = await CitizenInt.db.find(
-        session,
-        where: (t) => t.company.name.equals('Serverpod'),
-      );
-      var citizenNames = citizens.map((e) => e.name);
-      expect(citizenNames, unorderedEquals(['Alex', 'Isak']));
-    });
-  });
+      test('then expected models are returned.', () async {
+        var citizens = await CitizenInt.db.find(
+          session,
+          where: (t) => t.company.name.equals('Serverpod'),
+        );
+        var citizenNames = citizens.map((e) => e.name);
+        expect(citizenNames, unorderedEquals(['Alex', 'Isak']));
+      });
+    },
+  );
 
   group(
-      'Given models with nested relations when filtering on nested relation attributes',
-      () {
-    late List<CitizenInt> citizensWithCompanyTownStockholm;
-    setUpAll(() async {
-      await _createTestDatabase(session);
-      citizensWithCompanyTownStockholm = await CitizenInt.db.find(
-        session,
-        where: (t) => t.company.town.name.equals('Stockholm'),
-      );
-    });
+    'Given models with nested relations when filtering on nested relation attributes',
+    () {
+      late List<CitizenInt> citizensWithCompanyTownStockholm;
+      setUpAll(() async {
+        await _createTestDatabase(session);
+        citizensWithCompanyTownStockholm = await CitizenInt.db.find(
+          session,
+          where: (t) => t.company.town.name.equals('Stockholm'),
+        );
+      });
 
-    tearDownAll(() async => await deleteAll(session));
+      tearDownAll(() async => await deleteAll(session));
 
-    test('then expected models are returned.', () {
-      var citizenNames = citizensWithCompanyTownStockholm.map((e) => e.name);
-      expect(citizenNames, unorderedEquals(['Alex', 'Isak', 'Theo', 'Haris']));
-    });
-  });
+      test('then expected models are returned.', () {
+        var citizenNames = citizensWithCompanyTownStockholm.map((e) => e.name);
+        expect(
+          citizenNames,
+          unorderedEquals(['Alex', 'Isak', 'Theo', 'Haris']),
+        );
+      });
+    },
+  );
 }

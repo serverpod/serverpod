@@ -14,7 +14,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 enum ByIndexEnumWithNameValue implements _i1.SerializableModel {
   type,
-  name;
+  name,
+  ;
 
   static ByIndexEnumWithNameValue fromJson(int index) {
     switch (index) {
@@ -24,7 +25,8 @@ enum ByIndexEnumWithNameValue implements _i1.SerializableModel {
         return ByIndexEnumWithNameValue.name;
       default:
         throw ArgumentError(
-            'Value "$index" cannot be converted to "ByIndexEnumWithNameValue"');
+          'Value "$index" cannot be converted to "ByIndexEnumWithNameValue"',
+        );
     }
   }
 

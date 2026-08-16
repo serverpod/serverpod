@@ -21,8 +21,7 @@ void main() {
       .withFileName('post_class')
       .build();
 
-  group('Given a class with a non-optional relation and "serverOnly" scope',
-      () {
+  group('Given a class with a non-optional relation and "serverOnly" scope', () {
     test(
       'when analyzed then an error is generated for an object relation',
       () {
@@ -42,8 +41,11 @@ void main() {
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -76,8 +78,11 @@ void main() {
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isEmpty);
       },
@@ -104,8 +109,11 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(collector.errors, isEmpty);
     },

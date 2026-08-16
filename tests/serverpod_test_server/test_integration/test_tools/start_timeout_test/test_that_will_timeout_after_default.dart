@@ -9,10 +9,12 @@ void main() {
     // The staging config has intentionally been set to not find the database and provoke timeout.
     runMode: ServerpodRunMode.staging,
     (sessionBuilder, endpoints) {
-      test('then dummy test should not be run and exit code should be non-zero',
-          () async {
-        expect(true, true);
-      });
+      test(
+        'then dummy test should not be run and exit code should be non-zero',
+        () async {
+          expect(true, true);
+        },
+      );
     },
   );
 }

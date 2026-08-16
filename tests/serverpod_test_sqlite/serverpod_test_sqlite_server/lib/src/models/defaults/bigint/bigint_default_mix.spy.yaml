@@ -1,0 +1,6 @@
+class: BigIntDefaultMix
+table: bigint_default_mix
+fields:
+  bigIntDefaultAndDefaultModel: BigInt, default=1, defaultModel=2
+  bigIntDefaultAndDefaultPersist: BigInt, default=-12345678901234567890, defaultPersist=12345678901234567890
+  bigIntDefaultModelAndDefaultPersist: BigInt, defaultModel=1234567890123456789099999999, defaultPersist=-1234567890123456789099999999

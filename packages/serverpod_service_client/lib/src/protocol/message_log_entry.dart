@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// A log entry for a message sent in a streaming session.
-abstract class MessageLogEntry implements _i1.SerializableModel {
+abstract class MessageLogEntry
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   MessageLogEntry._({
     this.id,
     required this.sessionLogId,
@@ -53,7 +54,7 @@ abstract class MessageLogEntry implements _i1.SerializableModel {
       duration: (jsonSerialization['duration'] as num).toDouble(),
       error: jsonSerialization['error'] as String?,
       stackTrace: jsonSerialization['stackTrace'] as String?,
-      slow: jsonSerialization['slow'] as bool,
+      slow: _i1.BoolJsonExtension.fromJson(jsonSerialization['slow']),
       order: jsonSerialization['order'] as int,
     );
   }
@@ -114,6 +115,25 @@ abstract class MessageLogEntry implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.MessageLogEntry',
+      if (id != null) 'id': id,
+      'sessionLogId': sessionLogId,
+      'serverId': serverId,
+      'messageId': messageId,
+      'endpoint': endpoint,
+      'messageName': messageName,
+      'duration': duration,
+      if (error != null) 'error': error,
+      if (stackTrace != null) 'stackTrace': stackTrace,
+      'slow': slow,
+      'order': order,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod.MessageLogEntry',
       if (id != null) 'id': id,
       'sessionLogId': sessionLogId,
       'serverId': serverId,
@@ -150,18 +170,18 @@ class _MessageLogEntryImpl extends MessageLogEntry {
     required bool slow,
     required int order,
   }) : super._(
-          id: id,
-          sessionLogId: sessionLogId,
-          serverId: serverId,
-          messageId: messageId,
-          endpoint: endpoint,
-          messageName: messageName,
-          duration: duration,
-          error: error,
-          stackTrace: stackTrace,
-          slow: slow,
-          order: order,
-        );
+         id: id,
+         sessionLogId: sessionLogId,
+         serverId: serverId,
+         messageId: messageId,
+         endpoint: endpoint,
+         messageName: messageName,
+         duration: duration,
+         error: error,
+         stackTrace: stackTrace,
+         slow: slow,
+         order: order,
+       );
 
   /// Returns a shallow copy of this [MessageLogEntry]
   /// with some or all fields replaced by the given arguments.

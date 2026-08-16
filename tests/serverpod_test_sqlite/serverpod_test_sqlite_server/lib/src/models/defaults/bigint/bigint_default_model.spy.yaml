@@ -1,0 +1,5 @@
+class: BigIntDefaultModel
+table: bigint_default_model
+fields:
+  bigIntDefaultModelStr: BigInt, defaultModel=1234567890123456789099999999
+  bigIntDefaultModelStrNull: BigInt?, defaultModel=-1234567890123456789099999999

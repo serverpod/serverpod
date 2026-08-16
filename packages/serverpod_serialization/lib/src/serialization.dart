@@ -24,39 +24,6 @@ class DeserializationTypeNotFoundException implements Exception {
   String toString() => message;
 }
 
-/// **DEPRECATED**: This class is deprecated and will be removed in version 2.1.
-/// Please implement the [SerializableModel] interface instead for creating serializable
-/// models.
-///
-/// **Migration Guide**:
-/// - Replace `extends SerializableEntity` with `implements SerializableModel`
-///   in your model classes.
-///
-/// ```dart
-/// // Before:
-/// class CustomClass extends SerializableEntity {
-///   // Your code here
-/// }
-///
-/// // After:
-/// class CustomClass implements SerializableModel {
-///   // Your code here
-/// }
-/// ```
-///
-/// For more details, refer to the
-/// [migration documentation](https://docs.serverpod.dev/next/upgrading/upgrade-to-two)
-@Deprecated(
-  'This class is deprecated and will be removed in version 2.1. '
-  'Please implement SerializableModel instead.',
-)
-abstract mixin class SerializableEntity implements SerializableModel {
-  @override
-  String toString() {
-    return SerializationManager.encode(this);
-  }
-}
-
 /// The [SerializableModel] is the base interface for all serializable objects in
 /// Serverpod, except primitives.
 abstract interface class SerializableModel {
@@ -66,7 +33,15 @@ abstract interface class SerializableModel {
 }
 
 /// The [ProtocolSerialization] defines a toJsonForProtocol method which makes it
-/// possible to limit what fields are serialized
+/// possible to limit what fields are serialized when communicating over the
+/// protocol.
+///
+/// Implement this whenever protocol serialization must produce a different
+/// result than [SerializableModel.toJson] — for example to strip `serverOnly`
+/// fields, or to omit hidden persisted `scope: none` fields (such as implicit
+/// relation FKs) that belong in the database but not on the wire. If
+/// `toJsonForProtocol` would be identical to `toJson`, implementing this is not
+/// required.
 abstract interface class ProtocolSerialization {
   /// Returns a JSON structure of the model, optimized for Protocol communication.
   dynamic toJsonForProtocol();
@@ -79,6 +54,13 @@ Type getType<T>() => T;
 /// serialization, but also for serializing objects. This class is typically
 /// extended by generated code.
 abstract class SerializationManager {
+  /// The name of the module that defines the serialization.
+  ///
+  /// This method will be implemented by the generated code.
+  String getModuleName() {
+    throw UnimplementedError('This protocol does not have a module name.');
+  }
+
   /// Decodes the provided json [String] to an object of type [t] or [T].
   T decode<T>(String data, [Type? t]) {
     return deserialize<T>(jsonDecode(data), t);
@@ -98,7 +80,6 @@ abstract class SerializationManager {
   T deserialize<T>(dynamic data, [Type? t]) {
     t ??= T;
 
-    //TODO: all the "dart native" types should be listed here
     if (_isNullableType<int>(t)) {
       return data;
     } else if (_isNullableType<double>(t)) {
@@ -106,7 +87,8 @@ abstract class SerializationManager {
     } else if (_isNullableType<String>(t)) {
       return data;
     } else if (_isNullableType<bool>(t)) {
-      return data;
+      if (data == null) return null as T;
+      return BoolJsonExtension.fromJson(data) as T;
     } else if (_isNullableType<DateTime>(t)) {
       if (data == null) return null as T;
       return DateTimeJsonExtension.fromJson(data) as T;
@@ -131,6 +113,18 @@ abstract class SerializationManager {
     } else if (_isNullableType<Bit>(t)) {
       if (data == null) return null as T;
       return BitJsonExtension.fromJson(data) as T;
+    } else if (_isNullableType<GeographyPoint>(t)) {
+      if (data == null) return null as T;
+      return GeographyPointJsonExtension.fromJson(data) as T;
+    } else if (_isNullableType<GeographyLineString>(t)) {
+      if (data == null) return null as T;
+      return GeographyLineStringJsonExtension.fromJson(data) as T;
+    } else if (_isNullableType<GeographyPolygon>(t)) {
+      if (data == null) return null as T;
+      return GeographyPolygonJsonExtension.fromJson(data) as T;
+    } else if (_isNullableType<GeographyGeometryCollection>(t)) {
+      if (data == null) return null as T;
+      return GeographyGeometryCollectionJsonExtension.fromJson(data) as T;
     } else if (_isNullableType<Uri>(t)) {
       if (data == null) return null as T;
       return Uri.parse(data) as T;
@@ -176,6 +170,14 @@ abstract class SerializationManager {
       return 'SparseVector';
     } else if (data is Bit) {
       return 'Bit';
+    } else if (data is GeographyPoint) {
+      return 'GeographyPoint';
+    } else if (data is GeographyLineString) {
+      return 'GeographyLineString';
+    } else if (data is GeographyPolygon) {
+      return 'GeographyPolygon';
+    } else if (data is GeographyGeometryCollection) {
+      return 'GeographyGeometryCollection';
     }
 
     return null;
@@ -184,39 +186,74 @@ abstract class SerializationManager {
   /// Deserialize the provided json [data] by using the className stored in the [data].
   dynamic deserializeByClassName(Map<String, dynamic> data) {
     var className = data['className'];
+    var raw = data['data'];
     switch (className) {
       case 'null':
         return null;
       case 'int':
-        return deserialize<int>(data['data']);
+        return deserialize<int>(raw);
       case 'double':
-        return deserialize<double>(data['data']);
+        return deserialize<double>(raw);
       case 'String':
-        return deserialize<String>(data['data']);
+        return deserialize<String>(raw);
       case 'bool':
-        return deserialize<bool>(data['data']);
+        return deserialize<bool>(raw);
       case 'DateTime':
-        return deserialize<DateTime>(data['data']);
+        return deserialize<DateTime>(raw);
       case 'ByteData':
-        return deserialize<ByteData>(data['data']);
+        return deserialize<ByteData>(raw);
       case 'Duration':
-        return deserialize<Duration>(data['data']);
+        return deserialize<Duration>(raw);
       case 'UuidValue':
-        return deserialize<UuidValue>(data['data']);
+        return deserialize<UuidValue>(raw);
       case 'Uri':
-        return deserialize<Uri>(data['data']);
+        return deserialize<Uri>(raw);
       case 'BigInt':
-        return deserialize<BigInt>(data['data']);
+        return deserialize<BigInt>(raw);
       case 'Vector':
-        return deserialize<Vector>(data['data']);
+        return deserialize<Vector>(raw);
       case 'HalfVector':
-        return deserialize<HalfVector>(data['data']);
+        return deserialize<HalfVector>(raw);
       case 'SparseVector':
-        return deserialize<SparseVector>(data['data']);
+        return deserialize<SparseVector>(raw);
       case 'Bit':
-        return deserialize<Bit>(data['data']);
+        return deserialize<Bit>(raw);
+      case 'GeographyPoint':
+        return deserialize<GeographyPoint>(raw);
+      case 'GeographyLineString':
+        return deserialize<GeographyLineString>(raw);
+      case 'GeographyPolygon':
+        return deserialize<GeographyPolygon>(raw);
+      case 'GeographyGeometryCollection':
+        return deserialize<GeographyGeometryCollection>(raw);
+      case 'List' when raw is List:
+        return raw.map(deserializeDynamicFieldValue).toList();
+      case 'Set' when raw is List:
+        return raw.map(deserializeDynamicFieldValue).toSet();
+      case 'Map' when raw is Map<String, dynamic>:
+        return raw.map((k, v) => MapEntry(k, deserializeDynamicFieldValue(v)));
+      case 'Map' when raw is List:
+        return Map<dynamic, dynamic>.fromEntries(
+          raw.cast<Map<String, dynamic>>().map(
+            (e) => MapEntry(
+              deserializeDynamicFieldValue(e['k']),
+              deserializeDynamicFieldValue(e['v']),
+            ),
+          ),
+        );
     }
     throw FormatException('No deserialization found for type named $className');
+  }
+
+  /// Decodes a value for a `dynamic` model field: a JSON object ([Map]) with
+  /// `className` and `data` (see [dynamicFieldToJson]).
+  dynamic deserializeDynamicFieldValue(Object? value) {
+    if (value == null) return null;
+    if (value is Map<String, dynamic>) return deserializeByClassName(value);
+    throw FormatException(
+      'Dynamic fields are encoded as a Map with className and data, but got '
+      '${value.runtimeType} instead.',
+    );
   }
 
   /// Wraps serialized data with its class name so that it can be deserialized
@@ -235,6 +272,60 @@ abstract class SerializationManager {
     };
   }
 
+  /// Converts an object to a JSON-encodable format.
+  /// This method is used by the JSON encoder to convert objects to JSON.
+  static Object? toEncodable(Object? object) => _toEncodable(object, false);
+
+  /// Converts the provided [object] to a format suitable for protocol serialization.
+  /// If the object is a [ProtocolSerialization], it will be converted to JSON using
+  /// the [toJsonForProtocol] method.
+  static Object? toEncodableForProtocol(Object? object) =>
+      _toEncodable(object, true);
+
+  static Object? _toEncodable(Object? object, bool encodeForProtocol) =>
+      switch (object) {
+        null => null,
+        bool() => object,
+        num() => object,
+        String() => object,
+        List<dynamic> l => [
+          for (final i in l) _toEncodable(i, encodeForProtocol),
+        ],
+        Map<String, dynamic> m => {
+          for (final i in m.entries)
+            i.key: _toEncodable(i.value, encodeForProtocol),
+        },
+        DateTime() => object.toUtc().toIso8601String(),
+        ByteData() => object.base64encodedString(),
+        Duration() => object.inMilliseconds,
+        UuidValue() => object.uuid,
+        Uri() => object.toString(),
+        BigInt() => object.toString(),
+        Vector() => object.toList(),
+        HalfVector() => object.toList(),
+        SparseVector() => object.toList(),
+        Bit() => object.toList(),
+        Set<dynamic> s => [
+          for (final i in s) _toEncodable(i, encodeForProtocol),
+        ],
+        ProtocolSerialization() when encodeForProtocol =>
+          object.toJsonForProtocol(),
+        Map(keyType: != String) => [
+          for (final e in object.entries)
+            {
+              'k': _toEncodable(e.key, encodeForProtocol),
+              'v': _toEncodable(e.value, encodeForProtocol),
+            },
+        ],
+        Record() => throw Exception(
+          'Records are not supported. '
+          'They must be converted beforehand via `Protocol.mapRecordToJson` '
+          'or the enclosing `SerializableModel`.',
+        ),
+        SerializableModel() => object.toJson(),
+        _ => object.safeToJson(),
+      };
+
   /// Encode the provided [object] to a Json-formatted [String].
   /// If [formatted] is true, the output will be formatted with two spaces
   /// indentation.
@@ -243,52 +334,11 @@ abstract class SerializationManager {
     bool formatted = false,
     bool encodeForProtocol = false,
   }) {
-    // This is the only time [jsonEncode] should be used in the project.
-    return JsonEncoder.withIndent(
+    final encoder = JsonEncoder.withIndent(
       formatted ? '  ' : null,
-      (nonEncodable) {
-        //TODO: Remove this in 2.0.0 as the extensions should be used instead.
-        if (nonEncodable is DateTime) {
-          return nonEncodable.toUtc().toIso8601String();
-        } else if (nonEncodable is ByteData) {
-          return nonEncodable.base64encodedString();
-        } else if (nonEncodable is Duration) {
-          return nonEncodable.inMilliseconds;
-        } else if (nonEncodable is UuidValue) {
-          return nonEncodable.uuid;
-        } else if (nonEncodable is Uri) {
-          return nonEncodable.toString();
-        } else if (nonEncodable is BigInt) {
-          return nonEncodable.toString();
-        } else if (nonEncodable is Vector) {
-          return nonEncodable.toList();
-        } else if (nonEncodable is HalfVector) {
-          return nonEncodable.toList();
-        } else if (nonEncodable is SparseVector) {
-          return nonEncodable.toList();
-        } else if (nonEncodable is Bit) {
-          return nonEncodable.toList();
-        } else if (nonEncodable is Set) {
-          return nonEncodable.toList();
-        } else if (nonEncodable is Map && nonEncodable.keyType != String) {
-          return nonEncodable.entries
-              .map((e) => {'k': e.key, 'v': e.value})
-              .toList();
-        } else if (encodeForProtocol && nonEncodable is ProtocolSerialization) {
-          return nonEncodable.toJsonForProtocol();
-        } else {
-          if (object is Record) {
-            throw Exception(
-              'Records are not supported in `encode`. They must be converted beforehand via `Protocol.mapRecordToJson` or the enclosing `SerializableModel`.',
-            );
-          }
-
-          // ignore: avoid_dynamic_calls
-          return nonEncodable?.toJson();
-          // throws NoSuchMethodError if toJson is not implemented
-        }
-      },
-    ).convert(object);
+      encodeForProtocol ? toEncodableForProtocol : toEncodable,
+    );
+    return encoder.convert(object);
   }
 
   /// Encode the provided [object] to a Json-formatted [String].
@@ -298,16 +348,6 @@ abstract class SerializationManager {
     Object? object, {
     bool formatted = false,
   }) {
-    /// Added this check to avoid the multiple if-else conditions inside the encode method
-    /// If the object implements ProtocolSerialization, directly use toJsonForProtocol.
-    if (object is ProtocolSerialization) {
-      return encode(
-        object.toJsonForProtocol(),
-        formatted: formatted,
-        encodeForProtocol: true,
-      );
-    }
-
     return encode(
       object,
       formatted: formatted,
@@ -344,6 +384,62 @@ abstract class SerializationManager {
       encodeForProtocol: true,
     );
   }
+
+  /// Returns a JSON-encodable structure for a `dynamic` model field.
+  ///
+  /// Recursively encodes [List], [Set], and [Map] children so each element
+  /// keeps type information via `className` / `data` wrappers.
+  ///
+  /// When [forProtocol] is true, nested [ProtocolSerialization] values use
+  /// [ProtocolSerialization.toJsonForProtocol].
+  ///
+  /// Module and shared package protocols override this method to resolve host
+  /// project types via registered host protocols.
+  Object? dynamicFieldToJson(
+    Object? object, {
+    bool forProtocol = false,
+  }) {
+    return switch (object) {
+      List() => {
+        'className': 'List',
+        'data': [
+          for (final e in object)
+            dynamicFieldToJson(e, forProtocol: forProtocol),
+        ],
+      },
+      Set() => {
+        'className': 'Set',
+        'data': [
+          for (final e in object)
+            dynamicFieldToJson(e, forProtocol: forProtocol),
+        ],
+      },
+      Map()
+          when object is Map<String, dynamic> ||
+              object.keys.every((k) => k is String) =>
+        {
+          'className': 'Map',
+          'data': {
+            for (final e in object.entries)
+              e.key as String: dynamicFieldToJson(
+                e.value,
+                forProtocol: forProtocol,
+              ),
+          },
+        },
+      Map() => {
+        'className': 'Map',
+        'data': [
+          for (final e in object.entries)
+            {
+              'k': dynamicFieldToJson(e.key, forProtocol: forProtocol),
+              'v': dynamicFieldToJson(e.value, forProtocol: forProtocol),
+            },
+        ],
+      },
+      _ => _toEncodable(wrapWithClassName(object), forProtocol),
+    };
+  }
 }
 
 /// All datatypes that are serialized by default.
@@ -363,6 +459,10 @@ const extensionSerializedTypes = [
   'HalfVector',
   'SparseVector',
   'Bit',
+  'GeographyPoint',
+  'GeographyLineString',
+  'GeographyPolygon',
+  'GeographyGeometryCollection',
   'Map',
   'List',
   'Set',
@@ -370,4 +470,17 @@ const extensionSerializedTypes = [
 
 extension<K, V> on Map<K, V> {
   Type get keyType => K;
+}
+
+extension on Object? {
+  /// Returns a safe JSON representation of the object.
+  /// If the object does not implement the [toJson] method,
+  /// it will be returned as is.
+  Object? safeToJson() {
+    try {
+      return (this as dynamic).toJson();
+    } catch (_) {
+      return this;
+    }
+  }
 }

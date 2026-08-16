@@ -12,8 +12,10 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../models_with_relations/one_to_one/town.dart' as _i2;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
-abstract class Company implements _i1.SerializableModel {
+abstract class Company
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   Company._({
     this.id,
     required this.name,
@@ -35,8 +37,7 @@ abstract class Company implements _i1.SerializableModel {
       townId: jsonSerialization['townId'] as int,
       town: jsonSerialization['town'] == null
           ? null
-          : _i2.Town.fromJson(
-              (jsonSerialization['town'] as Map<String, dynamic>)),
+          : _i3.Protocol().deserialize<_i2.Town>(jsonSerialization['town']),
     );
   }
 
@@ -63,10 +64,22 @@ abstract class Company implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Company',
       if (id != null) 'id': id,
       'name': name,
       'townId': townId,
       if (town != null) 'town': town?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Company',
+      if (id != null) 'id': id,
+      'name': name,
+      'townId': townId,
+      if (town != null) 'town': town?.toJsonForProtocol(),
     };
   }
 
@@ -85,11 +98,11 @@ class _CompanyImpl extends Company {
     required int townId,
     _i2.Town? town,
   }) : super._(
-          id: id,
-          name: name,
-          townId: townId,
-          town: town,
-        );
+         id: id,
+         name: name,
+         townId: townId,
+         town: town,
+       );
 
   /// Returns a shallow copy of this [Company]
   /// with some or all fields replaced by the given arguments.

@@ -11,21 +11,23 @@ void main() {
     "Given an unknown type for protocol, ",
     () {
       test(
-          'when trying to deserialize using server protocol, then a DeserializationTypeNotFoundException exception is thrown',
-          () {
-        expect(
-          () => server.Protocol().deserialize<DeserializationTestClass>({}),
-          throwsA(isA<DeserializationTypeNotFoundException>()),
-        );
-      });
+        'when trying to deserialize using server protocol, then a DeserializationTypeNotFoundException exception is thrown',
+        () {
+          expect(
+            () => server.Protocol().deserialize<DeserializationTestClass>({}),
+            throwsA(isA<DeserializationTypeNotFoundException>()),
+          );
+        },
+      );
       test(
-          'when trying to deserialize using client protocol, then a DeserializationTypeNotFoundException exception is thrown',
-          () {
-        expect(
-          () => Protocol().deserialize<DeserializationTestClass>({}),
-          throwsA(isA<DeserializationTypeNotFoundException>()),
-        );
-      });
+        'when trying to deserialize using client protocol, then a DeserializationTypeNotFoundException exception is thrown',
+        () {
+          expect(
+            () => Protocol().deserialize<DeserializationTestClass>({}),
+            throwsA(isA<DeserializationTypeNotFoundException>()),
+          );
+        },
+      );
     },
   );
 
@@ -33,28 +35,30 @@ void main() {
     "Given an known type for 'server' protocol but unknown type for 'auth' module, ",
     () {
       test(
-          'when trying to deserialize with valid data, then no DeserializationTypeNotFoundException exception is thrown',
-          () {
-        expect(
-          server.Protocol().deserialize<module.ModuleClass>({
-            "name": "test",
-            "data": 0,
-          }),
-          isA<module.ModuleClass>(),
-        );
-      });
+        'when trying to deserialize with valid data, then no DeserializationTypeNotFoundException exception is thrown',
+        () {
+          expect(
+            server.Protocol().deserialize<module.ModuleClass>({
+              "name": "test",
+              "data": 0,
+            }),
+            isA<module.ModuleClass>(),
+          );
+        },
+      );
 
       test(
-          'when trying to deserialize with invalid data, then TypeError exception is thrown and not DeserializationTypeNotFoundException',
-          () {
-        expect(
-          () => server.Protocol().deserialize<module.ModuleClass>({
-            "name": "test",
-            "data": "test",
-          }),
-          throwsA(isA<TypeError>()),
-        );
-      });
+        'when trying to deserialize with invalid data, then TypeError exception is thrown and not DeserializationTypeNotFoundException',
+        () {
+          expect(
+            () => server.Protocol().deserialize<module.ModuleClass>({
+              "name": "test",
+              "data": "test",
+            }),
+            throwsA(isA<TypeError>()),
+          );
+        },
+      );
     },
   );
 }

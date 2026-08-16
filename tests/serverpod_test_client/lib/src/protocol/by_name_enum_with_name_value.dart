@@ -14,7 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 enum ByNameEnumWithNameValue implements _i1.SerializableModel {
   type,
-  name;
+  name,
+  ;
 
   static ByNameEnumWithNameValue fromJson(String name) {
     switch (name) {
@@ -24,7 +25,8 @@ enum ByNameEnumWithNameValue implements _i1.SerializableModel {
         return ByNameEnumWithNameValue.name;
       default:
         throw ArgumentError(
-            'Value "$name" cannot be converted to "ByNameEnumWithNameValue"');
+          'Value "$name" cannot be converted to "ByNameEnumWithNameValue"',
+        );
     }
   }
 

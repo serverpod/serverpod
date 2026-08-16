@@ -16,8 +16,9 @@ class FlutterConnectivityMonitor extends ConnectivityMonitor {
     var connectionTime = DateTime.now();
 
     // Start listening to connection status changes.
-    _connectivitySubscription =
-        Connectivity().onConnectivityChanged.listen((event) {
+    _connectivitySubscription = Connectivity().onConnectivityChanged.listen((
+      event,
+    ) {
       final bool hasConnectivity =
           !(event.length == 1 && event.first == ConnectivityResult.none);
 

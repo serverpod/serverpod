@@ -1,3 +1,6 @@
 analyzer:
   exclude:
     - templates/**
+
+formatter:
+  trailing_commas: preserve

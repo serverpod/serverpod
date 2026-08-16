@@ -20,7 +20,8 @@ abstract class MyModuleFeatureModel
       _MyModuleFeatureModelImpl;
 
   factory MyModuleFeatureModel.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return MyModuleFeatureModel(name: jsonSerialization['name'] as String);
   }
 
@@ -32,12 +33,18 @@ abstract class MyModuleFeatureModel
   MyModuleFeatureModel copyWith({String? name});
   @override
   Map<String, dynamic> toJson() {
-    return {'name': name};
+    return {
+      '__className__': 'serverpod_test_module.MyModuleFeatureModel',
+      'name': name,
+    };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {'name': name};
+    return {
+      '__className__': 'serverpod_test_module.MyModuleFeatureModel',
+      'name': name,
+    };
   }
 
   @override

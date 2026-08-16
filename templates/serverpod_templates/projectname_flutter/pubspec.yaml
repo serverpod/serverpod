@@ -18,33 +18,31 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.5.0 <4.0.0'
-  flutter: '>=3.24.0'
+  sdk: '^3.10.3'
+  flutter: '^3.38.4'
+
+#resolution: workspace #--UNCOMMENT_LINE--#
 
 dependencies:
-  flutter:
-    sdk: flutter
-  serverpod_flutter: 3.0.0-alpha.1
-  projectname_client:
-    path: ../projectname_client
-
-
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.5
+  flutter:
+    sdk: flutter
+  google_fonts: ^8.1.0
+  projectname_client:
+    path: ../projectname_client
+  serverpod_flutter: 4.0.0-beta.3
 
 dev_dependencies:
+  # Used for agents to drive the app through the Dart MCP
+  flutter_driver:
+    sdk: flutter
   flutter_lints: '>=3.0.0 <7.0.0'
   flutter_test:
     sdk: flutter
 
-dependency_overrides: 
-  serverpod_flutter: 
-    path: ../../../packages/serverpod_flutter 
-  serverpod_client: 
-    path: ../../../packages/serverpod_client 
-  serverpod_serialization: 
-    path: ../../../packages/serverpod_serialization 
+dependency_overrides:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -67,6 +65,8 @@ flutter:
 
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/assets-and-images/#from-packages
+  assets:
+    - assets/config.json
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a

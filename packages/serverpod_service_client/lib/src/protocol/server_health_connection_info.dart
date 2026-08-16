@@ -15,7 +15,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 /// Represents a snapshot of the number of open connections the server currently
 /// is handling. An entry is written every minute for each server. All health
 /// data can be accessed through Serverpod Insights.
-abstract class ServerHealthConnectionInfo implements _i1.SerializableModel {
+abstract class ServerHealthConnectionInfo
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ServerHealthConnectionInfo._({
     this.id,
     required this.serverId,
@@ -37,12 +38,14 @@ abstract class ServerHealthConnectionInfo implements _i1.SerializableModel {
   }) = _ServerHealthConnectionInfoImpl;
 
   factory ServerHealthConnectionInfo.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ServerHealthConnectionInfo(
       id: jsonSerialization['id'] as int?,
       serverId: jsonSerialization['serverId'] as String,
-      timestamp:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['timestamp']),
+      timestamp: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['timestamp'],
+      ),
       active: jsonSerialization['active'] as int,
       closing: jsonSerialization['closing'] as int,
       idle: jsonSerialization['idle'] as int,
@@ -89,6 +92,21 @@ abstract class ServerHealthConnectionInfo implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.ServerHealthConnectionInfo',
+      if (id != null) 'id': id,
+      'serverId': serverId,
+      'timestamp': timestamp.toJson(),
+      'active': active,
+      'closing': closing,
+      'idle': idle,
+      'granularity': granularity,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod.ServerHealthConnectionInfo',
       if (id != null) 'id': id,
       'serverId': serverId,
       'timestamp': timestamp.toJson(),
@@ -117,14 +135,14 @@ class _ServerHealthConnectionInfoImpl extends ServerHealthConnectionInfo {
     required int idle,
     required int granularity,
   }) : super._(
-          id: id,
-          serverId: serverId,
-          timestamp: timestamp,
-          active: active,
-          closing: closing,
-          idle: idle,
-          granularity: granularity,
-        );
+         id: id,
+         serverId: serverId,
+         timestamp: timestamp,
+         active: active,
+         closing: closing,
+         idle: idle,
+         granularity: granularity,
+       );
 
   /// Returns a shallow copy of this [ServerHealthConnectionInfo]
   /// with some or all fields replaced by the given arguments.

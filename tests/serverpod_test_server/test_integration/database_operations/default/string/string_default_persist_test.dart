@@ -7,10 +7,12 @@ void main() async {
   var session = await IntegrationTestServer().session();
 
   group('Given a class with "defaultPersist" fields,', () {
-    tearDownAll(() async => StringDefaultPersist.db.deleteWhere(
-          session,
-          where: (_) => Constant.bool(true),
-        ));
+    tearDownAll(
+      () async => StringDefaultPersist.db.deleteWhere(
+        session,
+        where: (_) => Constant.bool(true),
+      ),
+    );
 
     test(
       'when creating a record in the database, then the "defaultPersist=\'This is a default persist value\'" field should match the default value',
@@ -36,8 +38,9 @@ void main() async {
         VALUES (DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT);
         ''',
         );
-        var databaseObject =
-            await StringDefaultPersist.db.findFirstRow(session);
+        var databaseObject = await StringDefaultPersist.db.findFirstRow(
+          session,
+        );
         expect(
           databaseObject?.stringDefaultPersist,
           equals('This is a default persist value'),
@@ -89,8 +92,9 @@ void main() async {
         VALUES (DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT);
         ''',
         );
-        var databaseObject =
-            await StringDefaultPersist.db.findFirstRow(session);
+        var databaseObject = await StringDefaultPersist.db.findFirstRow(
+          session,
+        );
         expect(
           databaseObject
               ?.stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote,
@@ -143,8 +147,9 @@ void main() async {
         VALUES (DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT);
         ''',
         );
-        var databaseObject =
-            await StringDefaultPersist.db.findFirstRow(session);
+        var databaseObject = await StringDefaultPersist.db.findFirstRow(
+          session,
+        );
         expect(
           databaseObject
               ?.stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote,
@@ -197,8 +202,9 @@ void main() async {
         VALUES (DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT);
         ''',
         );
-        var databaseObject =
-            await StringDefaultPersist.db.findFirstRow(session);
+        var databaseObject = await StringDefaultPersist.db.findFirstRow(
+          session,
+        );
         expect(
           databaseObject
               ?.stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote,
@@ -256,8 +262,9 @@ void main() async {
         VALUES (DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT);
         ''',
         );
-        var databaseObject =
-            await StringDefaultPersist.db.findFirstRow(session);
+        var databaseObject = await StringDefaultPersist.db.findFirstRow(
+          session,
+        );
         expect(
           databaseObject
               ?.stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote,
@@ -309,8 +316,9 @@ void main() async {
         VALUES (DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT);
         ''',
         );
-        var databaseObject =
-            await StringDefaultPersist.db.findFirstRow(session);
+        var databaseObject = await StringDefaultPersist.db.findFirstRow(
+          session,
+        );
         expect(
           databaseObject?.stringDefaultPersistSingleQuoteWithOneDoubleQuote,
           equals('This is a "default persist value'),
@@ -361,8 +369,9 @@ void main() async {
         VALUES (DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT);
         ''',
         );
-        var databaseObject =
-            await StringDefaultPersist.db.findFirstRow(session);
+        var databaseObject = await StringDefaultPersist.db.findFirstRow(
+          session,
+        );
         expect(
           databaseObject?.stringDefaultPersistSingleQuoteWithTwoDoubleQuote,
           equals('This is a "default" persist value'),
@@ -413,8 +422,9 @@ void main() async {
         VALUES (DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT);
         ''',
         );
-        var databaseObject =
-            await StringDefaultPersist.db.findFirstRow(session);
+        var databaseObject = await StringDefaultPersist.db.findFirstRow(
+          session,
+        );
         expect(
           databaseObject?.stringDefaultPersistDoubleQuoteWithOneSingleQuote,
           equals('This is a \'default persist value'),
@@ -465,8 +475,9 @@ void main() async {
         VALUES (DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT);
         ''',
         );
-        var databaseObject =
-            await StringDefaultPersist.db.findFirstRow(session);
+        var databaseObject = await StringDefaultPersist.db.findFirstRow(
+          session,
+        );
         expect(
           databaseObject?.stringDefaultPersistDoubleQuoteWithTwoSingleQuote,
           equals('This is a \'default\' persist value'),

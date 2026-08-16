@@ -3,8 +3,7 @@ import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test(
-      'Given a registered shutdown task '
+  test('Given a registered shutdown task '
       'when the server is shutdown '
       'then the task is executed.', () async {
     var called = false;
@@ -22,8 +21,7 @@ void main() {
     expect(called, isTrue);
   });
 
-  test(
-      'Given added and then removed shutdown task '
+  test('Given added and then removed shutdown task '
       'when the server is shutdown '
       'then the task is not executed.', () async {
     var called = false;
@@ -43,8 +41,7 @@ void main() {
     expect(called, isFalse);
   });
 
-  test(
-      'Given shutdown task that records number of calls '
+  test('Given shutdown task that records number of calls '
       'when the server is shutdown multiple times '
       'then the task is executed once for each shutdown.', () async {
     var callCount = 0;
@@ -63,8 +60,7 @@ void main() {
     expect(callCount, equals(2));
   });
 
-  test(
-      'Given a shutdown task that throws an error '
+  test('Given a shutdown task that throws an error '
       'when the server is shutdown '
       'then the error is thrown from shutdown.', () async {
     var serverpod = IntegrationTestServer.create();
@@ -81,8 +77,7 @@ void main() {
     );
   });
 
-  test(
-      'Given multiple shutdown tasks that throw errors '
+  test('Given multiple shutdown tasks that throw errors '
       'when the server is shutdown '
       'then last thrown exception is thrown from shutdown method.', () async {
     var exception1 = #firstException;
@@ -109,8 +104,7 @@ void main() {
     );
   });
 
-  test(
-      'Given multiple shutdown tasks '
+  test('Given multiple shutdown tasks '
       'when the server is shutdown '
       'then tasks are executed concurrently.', () async {
     final completer1 = Completer<void>();
@@ -139,31 +133,41 @@ void main() {
   });
 
   test(
-      'Given a registered shutdown task '
-      'when the server is shutdown '
-      'then the task is executed after all request receiving services are shutdown.',
-      () async {
-    var serverStopped = false;
-    var webServerStopped = false;
-    var serviceServerStopped = false;
+    'Given a registered shutdown task '
+    'when the server is shutdown '
+    'then the task is executed after all request receiving services are shutdown.',
+    () async {
+      var serverStopped = false;
+      var webServerStopped = false;
+      var serviceServerStopped = false;
 
-    var serverpod = IntegrationTestServer.create();
-    serverpod.experimental.shutdownTasks.addTask(
-      #testTask,
-      () async {
-        serverStopped = serverpod.server.running;
-        webServerStopped = serverpod.webServer.running;
-        serviceServerStopped = serverpod.serviceServer.running;
-      },
-    );
+      var serverpod = IntegrationTestServer.create();
+      serverpod.experimental.shutdownTasks.addTask(
+        #testTask,
+        () async {
+          serverStopped = serverpod.server.running;
+          webServerStopped = serverpod.webServer.running;
+          serviceServerStopped = serverpod.serviceServer.running;
+        },
+      );
 
-    await serverpod.shutdown(exitProcess: false);
+      await serverpod.shutdown(exitProcess: false);
 
-    expect(serverStopped, isFalse,
-        reason: 'Server was not shutdown when task executed');
-    expect(webServerStopped, isFalse,
-        reason: 'Web server was not shutdown when task executed');
-    expect(serviceServerStopped, isFalse,
-        reason: 'Service server was not shutdown when task executed');
-  });
+      expect(
+        serverStopped,
+        isFalse,
+        reason: 'Server was not shutdown when task executed',
+      );
+      expect(
+        webServerStopped,
+        isFalse,
+        reason: 'Web server was not shutdown when task executed',
+      );
+      expect(
+        serviceServerStopped,
+        isFalse,
+        reason: 'Service server was not shutdown when task executed',
+      );
+    },
+  );
 }

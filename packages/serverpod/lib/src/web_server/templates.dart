@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:mustache_template/mustache.dart';
 import 'package:path/path.dart';
+import 'package:whiskers/whiskers.dart';
 
 /// Global access to all templates loaded when starting the webserver.
 final Templates templates = Templates();
@@ -19,26 +19,31 @@ class Templates {
 
   /// Recursively loads templates from subdirectories
   Future<void> _loadTemplatesRecursively(
-      Directory dir, String relativePath) async {
+    Directory dir,
+    String relativePath,
+  ) async {
     await for (var entity in dir.list()) {
       if (entity is File && extension(entity.path).toLowerCase() == '.html') {
         var file = entity;
         var fileName = basenameWithoutExtension(file.path);
 
         // Create template key with relative path
-        var templateKey =
-            relativePath.isEmpty ? fileName : '$relativePath/$fileName';
+        var templateKey = relativePath.isEmpty
+            ? fileName
+            : '$relativePath/$fileName';
 
         var data = await file.readAsString();
 
         _templates[templateKey] = Template(
           data,
           name: templateKey,
+          lenient: true,
         );
       } else if (entity is Directory) {
         var subDirName = basename(entity.path);
-        var newRelativePath =
-            relativePath.isEmpty ? subDirName : '$relativePath/$subDirName';
+        var newRelativePath = relativePath.isEmpty
+            ? subDirName
+            : '$relativePath/$subDirName';
         await _loadTemplatesRecursively(entity, newRelativePath);
       }
     }
@@ -48,6 +53,9 @@ class Templates {
   Template? operator [](String name) {
     return _templates[name];
   }
+
+  /// Clears all cached templates so they are reloaded on next [loadAll].
+  void clear() => _templates.clear();
 
   /// Returns true if no templates are loaded.
   bool get isEmpty => _templates.isEmpty;

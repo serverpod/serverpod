@@ -12,7 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class Chapter implements _i1.SerializableModel {
+abstract class Chapter
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   Chapter._({
     this.id,
     required this.title,
@@ -47,6 +48,16 @@ abstract class Chapter implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Chapter',
+      if (id != null) 'id': id,
+      'title': title,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Chapter',
       if (id != null) 'id': id,
       'title': title,
     };
@@ -65,9 +76,9 @@ class _ChapterImpl extends Chapter {
     int? id,
     required String title,
   }) : super._(
-          id: id,
-          title: title,
-        );
+         id: id,
+         title: title,
+       );
 
   /// Returns a shallow copy of this [Chapter]
   /// with some or all fields replaced by the given arguments.

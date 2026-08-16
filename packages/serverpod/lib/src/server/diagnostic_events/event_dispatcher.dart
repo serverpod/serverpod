@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'dart:io';
+
+import 'package:serverpod_shared/log.dart';
 
 import 'event_handler.dart';
 
@@ -25,9 +26,11 @@ class DiagnosticEventDispatcher implements DiagnosticEventHandler {
     required OriginSpace space,
     required DiagnosticEventContext context,
   }) {
-    var futures = _handlers.map((handler) => Future(
-          () => handler.handleEvent(event, space: space, context: context),
-        ));
+    var futures = _handlers.map(
+      (handler) => Future(
+        () => handler.handleEvent(event, space: space, context: context),
+      ),
+    );
 
     var to = timeout;
     if (to != null) {
@@ -39,11 +42,11 @@ class DiagnosticEventDispatcher implements DiagnosticEventHandler {
       if (errors is Iterable<AsyncError?>) {
         for (var error in errors) {
           if (error != null) {
-            stderr.writeln('Error in event handler: $error');
+            log.error('Error in event handler', error: error);
           }
         }
       } else {
-        stderr.writeln('Error in an event handler: $errors');
+        log.error('Error in event handler', error: errors);
       }
       return e.values;
     });

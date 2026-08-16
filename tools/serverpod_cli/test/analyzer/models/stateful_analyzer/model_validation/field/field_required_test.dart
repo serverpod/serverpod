@@ -19,12 +19,14 @@ void main() {
             email: String?, required
             phone: String?
           ''',
-      ).build()
+      ).build(),
     ];
     var collector = CodeGenerationCollector();
-    var definitions =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+    var definitions = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    ).validateAll();
 
     test('then no errors are collected.', () {
       expect(
@@ -66,11 +68,14 @@ void main() {
           fields:
             name: String, required
           ''',
-      ).build()
+      ).build(),
     ];
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(config, models, onErrorsCollector(collector))
-        .validateAll();
+    StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    ).validateAll();
 
     test('then a validation error is collected.', () {
       expect(
@@ -98,12 +103,14 @@ void main() {
             email: String?, required
             phone: String?
           ''',
-      ).build()
+      ).build(),
     ];
     var collector = CodeGenerationCollector();
-    var definitions =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+    var definitions = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    ).validateAll();
 
     test('then no errors are collected.', () {
       expect(
@@ -145,11 +152,14 @@ void main() {
           fields:
             name: String, required
           ''',
-      ).build()
+      ).build(),
     ];
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(config, models, onErrorsCollector(collector))
-        .validateAll();
+    StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    ).validateAll();
 
     test('then a validation error is collected.', () {
       expect(

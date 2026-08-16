@@ -1,0 +1,13 @@
+### Lightweight DTO to be used as specification while creating a new user profile.
+class: UserProfileData
+fields:
+  ### The first name of the user or the user's nickname.
+  userName: String?
+
+  ### The full name of the user.
+  fullName: String?
+
+  ### The email of the user.
+  ###
+  ### Stored in lower-case.
+  email: String?

@@ -1,5 +1,5 @@
 
-import { ExtensionContext, window } from 'vscode';
+import { debug, ExtensionContext, window } from 'vscode';
 import {
 	LanguageClient,
 	LanguageClientOptions,
@@ -9,10 +9,23 @@ import {
 } from 'vscode-languageclient/node';
 import { execSync } from 'child_process';
 import { satisfies, coerce } from 'semver';
+import { resolveServerpodFlutterAttach } from './flutter_device_selection';
 
 let client: LanguageClient;
 
 export function activate(context: ExtensionContext) {
+	// Device selection for `serverpod start` companion-app attach sessions.
+	// Registered before the CLI version gate so debugging still works when
+	// the language server cannot start. Uses the pre-substitution hook so the
+	// selected device lands on the config before Dart-Code injects its own in
+	// resolveDebugConfigurationWithSubstitutedVariables.
+	context.subscriptions.push(
+		debug.registerDebugConfigurationProvider('dart', {
+			resolveDebugConfiguration: (folder, config) =>
+				resolveServerpodFlutterAttach(config, folder?.uri.fsPath),
+		})
+	);
+
 	let output;
 	try {
 		output = execSync('serverpod version');
@@ -61,11 +74,13 @@ export function deactivate(): Thenable<void> | undefined {
 	if (!client) {
 		return undefined;
 	}
-	return client.stop();
+	const stopPromise = client.stop();
+	client = undefined as any;
+	return stopPromise;
 }
 
 
-function validVersion(versionString: string): boolean {
+export function validVersion(versionString: string): boolean {
 	console.log(versionString);
 	const versionTag = versionString.split(':')[1];
 	const versionNumber = coerce(versionTag);

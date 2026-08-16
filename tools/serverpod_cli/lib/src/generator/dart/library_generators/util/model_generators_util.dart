@@ -83,22 +83,22 @@ class ModelAllocatorContext {
     List<SerializableModelDefinition> models,
   ) {
     return models.where(
-      (e) => e is! ModelClassDefinition || e.sealedTopNode == null,
+      (e) => e is! ClassDefinition || e.sealedTopNode == null,
     );
   }
 
   /// Returns all sealed top node classes.
-  static Iterable<ModelClassDefinition> _getSealedTopNodeClasses(
+  static Iterable<ClassDefinition> _getSealedTopNodeClasses(
     List<SerializableModelDefinition> models,
   ) {
-    return models
-        .whereType<ModelClassDefinition>()
-        .where((element) => element.isSealedTopNode);
+    return models.whereType<ClassDefinition>().where(
+      (element) => element.isSealedTopNode,
+    );
   }
 
   /// Returns a list of sealed hierarchies.
   /// Each hierarchy is represented by a list of classes.
-  static Iterable<Iterable<ModelClassDefinition>> _getSealedHierarchies(
+  static Iterable<Iterable<ClassDefinition>> _getSealedHierarchies(
     List<SerializableModelDefinition> models,
   ) {
     var sealedClasses = _getSealedTopNodeClasses(models);
@@ -117,13 +117,28 @@ extension SerializableModelPath on SerializableModelDefinition {
   /// Returns a String with the file path.
   /// Consisting of `subDirParts` + `filename.dart`
   String get filePath => p.joinAll([
-        ...subDirParts,
-        '$fileName.dart',
-      ]);
+    ...subDirParts,
+    '$fileName.dart',
+  ]);
 
   /// Returns a String with the full server or client path followed by
-  /// `filename.dart`.
+  /// `filename.dart`. When the model is a shared model, returns the path inside
+  /// the shared package's generated directory.
   String getFullFilePath(GeneratorConfig config, {required bool serverCode}) {
+    if (isSharedModel && sharedPackageName != null) {
+      var pathParts = config.sharedModelsSourcePathsParts[sharedPackageName];
+      if (pathParts != null) {
+        return p.joinAll([
+          ...config.serverPackageDirectoryPathParts,
+          ...pathParts,
+          'lib',
+          'src',
+          'generated',
+          filePath,
+        ]);
+      }
+    }
+
     return p.joinAll([
       ...serverCode
           ? config.generatedServeModelPathParts

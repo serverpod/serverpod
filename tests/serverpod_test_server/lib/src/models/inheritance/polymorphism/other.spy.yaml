@@ -1,0 +1,5 @@
+### An unrelated class with the same fields as the Parent class.
+class: SimilarButNotParent
+fields:
+  ### The parent field.
+  parent: String

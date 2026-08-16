@@ -1,0 +1,16 @@
+class: ObjectWithGeographyPolygon
+table: object_with_geography_polygon
+fields:
+  polygon: GeographyPolygon
+  polygonIndexedGist: GeographyPolygon
+  polygonIndexedSpgist: GeographyPolygon
+
+indexes:
+  geography_polygon_index_default:
+    fields: polygon
+  geography_polygon_index_gist:
+    fields: polygonIndexedGist
+    type: gist
+  geography_polygon_index_spgist:
+    fields: polygonIndexedSpgist
+    type: spgist

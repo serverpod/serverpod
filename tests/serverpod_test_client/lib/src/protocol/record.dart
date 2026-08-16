@@ -13,17 +13,20 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i2;
 
-abstract class Record implements _i1.SerializableModel {
+abstract class Record
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   Record._({this.aBoolRecord});
 
   factory Record({(bool,)? aBoolRecord}) = _RecordImpl;
 
   factory Record.fromJson(Map<String, dynamic> jsonSerialization) {
     return Record(
-        aBoolRecord: jsonSerialization['aBoolRecord'] == null
-            ? null
-            : _i2.Protocol().deserialize<(bool,)?>(
-                (jsonSerialization['aBoolRecord'] as Map<String, dynamic>)));
+      aBoolRecord: jsonSerialization['aBoolRecord'] == null
+          ? null
+          : _i2.Protocol().deserialize<(bool,)?>(
+              (jsonSerialization['aBoolRecord'] as Map<String, dynamic>),
+            ),
+    );
   }
 
   (bool,)? aBoolRecord;
@@ -35,7 +38,18 @@ abstract class Record implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
-      if (aBoolRecord != null) 'aBoolRecord': _i2.mapRecordToJson(aBoolRecord)
+      '__className__': 'Record',
+      if (aBoolRecord != null)
+        'aBoolRecord': _i2.Protocol().mapRecordToJson(aBoolRecord),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Record',
+      if (aBoolRecord != null)
+        'aBoolRecord': _i2.Protocol().mapRecordToJson(aBoolRecord),
     };
   }
 
@@ -56,10 +70,11 @@ class _RecordImpl extends Record {
   @override
   Record copyWith({Object? aBoolRecord = _Undefined}) {
     return Record(
-        aBoolRecord: aBoolRecord is (bool,)?
-            ? aBoolRecord
-            : this.aBoolRecord == null
-                ? null
-                : (this.aBoolRecord!.$1,));
+      aBoolRecord: aBoolRecord is (bool,)?
+          ? aBoolRecord
+          : this.aBoolRecord == null
+          ? null
+          : (this.aBoolRecord!.$1,),
+    );
   }
 }

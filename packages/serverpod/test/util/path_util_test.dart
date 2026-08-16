@@ -38,23 +38,26 @@ void main() {
         );
         expect(result, equals(false));
       });
-      test('when there is no matching directory or perfect match return false.',
-          () {
-        var result = PathUtil.isFileWhitelisted(
-          'mydirectory/myfile.xxx',
-          {
-            'mydirectory/otherfile.xxx',
-          },
-        );
-        expect(result, equals(false));
-      });
+      test(
+        'when there is no matching directory or perfect match return false.',
+        () {
+          var result = PathUtil.isFileWhitelisted(
+            'mydirectory/myfile.xxx',
+            {
+              'mydirectory/otherfile.xxx',
+            },
+          );
+          expect(result, equals(false));
+        },
+      );
     });
   });
   group('For PathUtil.relativePathToPlatformPath', () {
     group('given a unix path', () {
       test('a correct platform specific path is returned.', () {
-        var result =
-            PathUtil.relativePathToPlatformPath('mydirectory/myfile.xxx');
+        var result = PathUtil.relativePathToPlatformPath(
+          'mydirectory/myfile.xxx',
+        );
         expect(result, equals('mydirectory${p.separator}myfile.xxx'));
       });
     });

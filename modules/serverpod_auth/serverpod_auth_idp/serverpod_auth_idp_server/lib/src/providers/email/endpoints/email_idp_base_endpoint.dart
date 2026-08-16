@@ -1,0 +1,203 @@
+import 'package:serverpod/serverpod.dart';
+
+import '../../../../../core.dart';
+import '../business/email_idp.dart';
+
+/// Base endpoint for email-based accounts.
+///
+/// Uses `serverpod_auth_session` for session creation upon successful login,
+/// and `serverpod_auth_profile` to create profiles for new users upon
+/// registration.
+///
+/// Subclass this in your own application to expose an endpoint including all
+/// methods.
+/// For further details see https://docs.serverpod.dev/concepts/working-with-endpoints#inheriting-from-an-endpoint-class-marked-abstract
+/// Alternatively you can build up your own endpoint on top of the same business
+/// logic by using [EmailIdp].
+abstract class EmailIdpBaseEndpoint extends IdpBaseEndpoint {
+  /// Accessor for the configured Email Idp instance.
+  /// By default this uses the global instance configured in
+  /// [AuthServices].
+  ///
+  /// If you want to use a different instance, override this getter.
+  EmailIdp get emailIdp => AuthServices.instance.emailIdp;
+
+  /// {@template email_account_base_endpoint.login}
+  /// Logs in the user and returns a new session.
+  ///
+  /// Throws an [EmailAccountLoginException] in case of errors, with reason:
+  /// - [EmailAccountLoginExceptionReason.invalidCredentials] if the email or
+  ///   password is incorrect.
+  /// - [EmailAccountLoginExceptionReason.tooManyAttempts] if there have been
+  ///   too many failed login attempts.
+  ///
+  /// Throws an [AuthUserBlockedException] if the auth user is blocked.
+  /// {@endtemplate}
+  Future<AuthSuccess> login(
+    final Session session, {
+    required final String email,
+    required final String password,
+  }) async {
+    return emailIdp.login(
+      session,
+      email: email,
+      password: password,
+    );
+  }
+
+  /// {@template email_account_base_endpoint.start_registration}
+  /// Starts the registration for a new user account with an email-based login
+  /// associated to it.
+  ///
+  /// Upon successful completion of this method, an email will have been
+  /// sent to [email] with a verification link, which the user must open to
+  /// complete the registration.
+  ///
+  /// Always returns a account request ID, which can be used to complete the
+  /// registration. If the email is already registered, the returned ID will not
+  /// be valid.
+  /// {@endtemplate}
+  Future<UuidValue> startRegistration(
+    final Session session, {
+    required final String email,
+  }) async {
+    return emailIdp.startRegistration(
+      session,
+      email: email,
+    );
+  }
+
+  /// {@template email_account_base_endpoint.verify_registration_code}
+  /// Verifies an account request code and returns a token
+  /// that can be used to complete the account creation.
+  ///
+  /// Throws an [EmailAccountRequestException] in case of errors, with reason:
+  /// - [EmailAccountRequestExceptionReason.expired] if the account request has
+  ///   already expired.
+  /// - [EmailAccountRequestExceptionReason.policyViolation] if the password
+  ///   does not comply with the password policy.
+  /// - [EmailAccountRequestExceptionReason.invalid] if no request exists
+  ///   for the given [accountRequestId] or [verificationCode] is invalid.
+  /// {@endtemplate}
+  Future<String> verifyRegistrationCode(
+    final Session session, {
+    required final UuidValue accountRequestId,
+    required final String verificationCode,
+  }) async {
+    return emailIdp.verifyRegistrationCode(
+      session,
+      accountRequestId: accountRequestId,
+      verificationCode: verificationCode,
+    );
+  }
+
+  /// {@template email_account_base_endpoint.finish_registration}
+  /// Completes a new account registration, creating a new auth user with a
+  /// profile and attaching the given email account to it.
+  ///
+  /// Throws an [EmailAccountRequestException] in case of errors, with reason:
+  /// - [EmailAccountRequestExceptionReason.expired] if the account request has
+  ///   already expired.
+  /// - [EmailAccountRequestExceptionReason.policyViolation] if the password
+  ///   does not comply with the password policy.
+  /// - [EmailAccountRequestExceptionReason.invalid] if the [registrationToken]
+  ///   is invalid.
+  ///
+  /// Throws an [AuthUserBlockedException] if the auth user is blocked.
+  ///
+  /// Returns a session for the newly created user.
+  /// {@endtemplate}
+  Future<AuthSuccess> finishRegistration(
+    final Session session, {
+    required final String registrationToken,
+    required final String password,
+  }) async {
+    return emailIdp.finishRegistration(
+      session,
+      registrationToken: registrationToken,
+      password: password,
+    );
+  }
+
+  /// {@template email_account_base_endpoint.start_password_reset}
+  /// Requests a password reset for [email].
+  ///
+  /// If the email address is registered, an email with reset instructions will
+  /// be send out. If the email is unknown, this method will have no effect.
+  ///
+  /// Always returns a password reset request ID, which can be used to complete
+  /// the reset. If the email is not registered, the returned ID will not be
+  /// valid.
+  ///
+  /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
+  /// - [EmailAccountPasswordResetExceptionReason.tooManyAttempts] if the user has
+  ///   made too many attempts trying to request a password reset.
+  ///
+  /// {@endtemplate}
+  Future<UuidValue> startPasswordReset(
+    final Session session, {
+    required final String email,
+  }) async {
+    return emailIdp.startPasswordReset(session, email: email);
+  }
+
+  /// {@template email_account_base_endpoint.verify_password_reset_code}
+  /// Verifies a password reset code and returns a finishPasswordResetToken
+  /// that can be used to finish the password reset.
+  ///
+  /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
+  /// - [EmailAccountPasswordResetExceptionReason.expired] if the password reset
+  ///   request has already expired.
+  /// - [EmailAccountPasswordResetExceptionReason.tooManyAttempts] if the user has
+  ///   made too many attempts trying to verify the password reset.
+  /// - [EmailAccountPasswordResetExceptionReason.invalid] if no request exists
+  ///   for the given [passwordResetRequestId] or [verificationCode] is invalid.
+  ///
+  /// If multiple steps are required to complete the password reset, this endpoint
+  /// should be overridden to return credentials for the next step instead
+  /// of the credentials for setting the password.
+  /// {@endtemplate}
+  Future<String> verifyPasswordResetCode(
+    final Session session, {
+    required final UuidValue passwordResetRequestId,
+    required final String verificationCode,
+  }) async {
+    return emailIdp.verifyPasswordResetCode(
+      session,
+      passwordResetRequestId: passwordResetRequestId,
+      verificationCode: verificationCode,
+    );
+  }
+
+  /// {@template email_account_base_endpoint.finish_password_reset}
+  /// Completes a password reset request by setting a new password.
+  ///
+  /// The [verificationCode] returned from [verifyPasswordResetCode] is used to
+  /// validate the password reset request.
+  ///
+  /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
+  /// - [EmailAccountPasswordResetExceptionReason.expired] if the password reset
+  ///   request has already expired.
+  /// - [EmailAccountPasswordResetExceptionReason.policyViolation] if the new
+  ///   password does not comply with the password policy.
+  /// - [EmailAccountPasswordResetExceptionReason.invalid] if no request exists
+  ///   for the given [passwordResetRequestId] or [verificationCode] is invalid.
+  ///
+  /// Throws an [AuthUserBlockedException] if the auth user is blocked.
+  /// {@endtemplate}
+  Future<void> finishPasswordReset(
+    final Session session, {
+    required final String finishPasswordResetToken,
+    required final String newPassword,
+  }) async {
+    await emailIdp.finishPasswordReset(
+      session,
+      finishPasswordResetToken: finishPasswordResetToken,
+      newPassword: newPassword,
+    );
+  }
+
+  @override
+  Future<bool> hasAccount(final Session session) async =>
+      await emailIdp.hasAccount(session);
+}

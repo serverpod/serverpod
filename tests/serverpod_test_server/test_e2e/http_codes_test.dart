@@ -8,12 +8,7 @@ import 'package:uuid/uuid.dart';
 
 void main() {
   group('Given an HTTP client invoking a serverpod endpoint method', () {
-    setUpAll(() async {});
-
-    tearDownAll(() async {});
-
-    test(
-        'when calling an endpoint method with correct parameters '
+    test('when calling an endpoint method with correct parameters '
         'then it should respond with 200 ok', () async {
       var response = await http.post(
         Uri.parse('${serverUrl}simple'),
@@ -27,8 +22,7 @@ void main() {
       expect(response.body, contains('Hello Starbase Alpha'));
     });
 
-    test(
-        'when calling an endpoint method with missing parameters '
+    test('when calling an endpoint method with missing parameters '
         'then it should respond with 400 bad request', () async {
       var response = await http.post(
         Uri.parse('${serverUrl}simple'),
@@ -41,8 +35,7 @@ void main() {
       expect(response.body, contains('Missing required query parameter: name'));
     });
 
-    test(
-        'when calling an endpoint method with non-existing endpoint path '
+    test('when calling an endpoint method with non-existing endpoint path '
         'then it should respond with 404 not found', () async {
       final nonExistingPath =
           'path_${Uuid().v4().replaceAll('-', '_').toLowerCase()}';
@@ -55,11 +48,10 @@ void main() {
       );
 
       expect(response.statusCode, 404);
-      expect(response.body, contains('Endpoint $nonExistingPath not found'));
+      expect(response.body, contains('Endpoint not found'));
     });
 
-    test(
-        'when calling an endpoint method with non-existing method name '
+    test('when calling an endpoint method with non-existing method name '
         'then it should respond with 400 bad request', () async {
       final nonExistingName =
           'path_${Uuid().v4().replaceAll('-', '_').toLowerCase()}';
@@ -72,11 +64,10 @@ void main() {
       );
 
       expect(response.statusCode, 400);
-      expect(response.body, contains('Method "$nonExistingName" not found'));
+      expect(response.body, contains('Method not found'));
     });
 
-    test(
-        'when calling an endpoint method with missing method name attribute '
+    test('when calling an endpoint method with missing method name attribute '
         'then it should respond with 400 bad request', () async {
       var response = await http.post(
         Uri.parse('${serverUrl}simple'),

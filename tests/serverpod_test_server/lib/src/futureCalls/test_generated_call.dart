@@ -1,0 +1,36 @@
+import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_test_server/src/generated/protocol.dart';
+
+class TestGeneratedCall extends FutureCall {
+  Future<void> hello(Session session, String name) async {
+    session.log('Hello $name');
+  }
+
+  Future<void> bye(Session session, String name, {int code = 0}) async {
+    session.log('Bye $name. Code: $code');
+  }
+
+  /// A sample future call that logs data.
+  Future<void> logData(Session session, SimpleData data) async {
+    session.log('Data: ${data.num}');
+  }
+
+  Future<void> doTask(Session session) async {
+    session.log('Sample future call with only session parameter');
+  }
+
+  /// A future call method named `invoke`, which is not reserved and generates
+  /// a wrapper like any other method.
+  Future<void> invoke(Session session, String name) async {
+    session.log('Invoked $name');
+  }
+
+  /// Future call with enum parameter.
+  Future<void> executeWithTrigger(
+    Session session,
+    String entityId, {
+    required MyTriggerType triggerType,
+  }) async {
+    session.log('Entity: $entityId, Trigger: $triggerType');
+  }
+}

@@ -22,13 +22,15 @@ void main() {
           fields:
             intType: int, default=10
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+        var definitions = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -49,13 +51,15 @@ void main() {
           fields:
             intType: int, default=20
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+        var definitions = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -77,12 +81,15 @@ void main() {
           fields:
             intType: int, default=
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -105,12 +112,15 @@ void main() {
         fields:
           intInvalid: int?, default=TEN
         ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -133,12 +143,15 @@ void main() {
         fields:
           intInvalid: int?, default=10.5
         ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -161,12 +174,15 @@ void main() {
           fields:
             intInvalid: int?, default=test
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -174,6 +190,39 @@ void main() {
         expect(
           firstError.message,
           'The "default" value must be a valid integer (e.g., "default"=10).',
+        );
+      },
+    );
+
+    test(
+      'when the field is of type int and the default is set to "serial", '
+      'then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            intType: int?, default=serial
+          ''',
+          ).build(),
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
+          'The default value "serial" can not be set using the "default" '
+          'keyword. Use the "defaultPersist" keyword instead.',
         );
       },
     );
@@ -190,12 +239,15 @@ void main() {
           fields:
             id: int?, default=serial
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors.first.message,

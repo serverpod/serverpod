@@ -5,6 +5,9 @@
 # Conventional directory for build outputs
 build/
 
+# Ignore the flutter web app directory
+web/app
+
 # Directory created by dartdoc
 doc/api/
 
@@ -13,3 +16,9 @@ config/passwords.yaml
 
 # Firebase service account key for Firebase auth
 config/firebase_service_account_key.json
+
+# Embedded PostgreSQL runtime artifacts (data dir, sockets, pidfiles)
+.serverpod/
+
+# SQLite databases created by the ephemeral test database
+**/sp_*.db*

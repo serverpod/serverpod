@@ -10,8 +10,7 @@ import '../../../../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
-  group('Given a class with fields with a "default" keyword for Duration type',
-      () {
+  group('Given a class with fields with a "default" keyword for Duration type', () {
     test(
       'when the field is of type Duration and the default is set to "1d 2h 10min 30s 100ms", then the field should have a "default model" and "default persist" value',
       () {
@@ -23,19 +22,23 @@ void main() {
           fields:
             durationType: Duration, default=1d 2h 10min 30s 100ms
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+        var definitions = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isEmpty);
 
         var definition = definitions.first as ClassDefinition;
         expect(
-            definition.fields.last.defaultModelValue, '1d 2h 10min 30s 100ms');
+          definition.fields.last.defaultModelValue,
+          '1d 2h 10min 30s 100ms',
+        );
         expect(
           definition.fields.last.defaultPersistValue,
           '1d 2h 10min 30s 100ms',
@@ -54,12 +57,15 @@ void main() {
           fields:
             durationType: Duration, default=
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -82,12 +88,15 @@ void main() {
         fields:
           durationInvalid: Duration?, default=INVALID_DURATION
         ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -110,12 +119,15 @@ void main() {
         fields:
           durationInvalid: Duration?, default=10 hours
         ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 

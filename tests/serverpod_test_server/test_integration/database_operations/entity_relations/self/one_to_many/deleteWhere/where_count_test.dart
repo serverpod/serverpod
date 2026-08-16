@@ -204,9 +204,12 @@ void main() async {
 
         var deletedCats = await Cat.db.deleteWhere(
           session,
-          where: (t) => t.kittens.count(
-              // All cats with more than 1 kitten with more than 1 kittens named Zelda
-              (o) => o.kittens.count((c) => c.name.ilike('zelda%')) > 1) > 1,
+          where: (t) =>
+              t.kittens.count(
+                // All cats with more than 1 kitten with more than 1 kittens named Zelda
+                (o) => o.kittens.count((c) => c.name.ilike('zelda%')) > 1,
+              ) >
+              1,
         );
 
         expect(deletedCats, hasLength(1));

@@ -4,16 +4,17 @@ import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/config/serverpod_feature.dart';
+import 'package:serverpod_cli/src/migrations/create_migration_action.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
-import 'package:serverpod_cli/src/util/project_name.dart';
+import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
-import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
 
 enum CreateMigrationOption<V> implements OptionDefinition<V> {
+  empty(CreateMigrationCommand.emptyOption),
   force(CreateMigrationCommand.forceOption),
-  tag(CreateMigrationCommand.tagOption);
+  tag(CreateMigrationCommand.tagOption),
+  ;
 
   const CreateMigrationOption(this.option);
 
@@ -22,6 +23,13 @@ enum CreateMigrationOption<V> implements OptionDefinition<V> {
 }
 
 class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
+  static const emptyOption = FlagOption(
+    argName: 'empty',
+    negatable: false,
+    defaultsTo: false,
+    helpText: 'Creates the migration even if there are no database changes.',
+  );
+
   static const forceOption = FlagOption(
     argName: 'force',
     argAbbrev: 'f',
@@ -60,79 +68,74 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
   Future<void> runWithConfig(
     final Configuration<CreateMigrationOption> commandConfig,
   ) async {
-    bool force = commandConfig.value(CreateMigrationOption.force);
-    String? tag = commandConfig.optionalValue(CreateMigrationOption.tag);
+    final empty = commandConfig.value(CreateMigrationOption.empty);
+    final force = commandConfig.value(CreateMigrationOption.force);
+    final tag = commandConfig.optionalValue(CreateMigrationOption.tag);
+
+    // Get interactive flag from global configuration
+    final interactive = serverpodRunner.globalConfiguration.optionalValue(
+      GlobalOption.interactive,
+    );
 
     GeneratorConfig config;
     try {
-      config = await GeneratorConfig.load();
-    } catch (_) {
+      config = await GeneratorConfig.load(interactive: interactive);
+    } catch (e) {
+      log.error('$e');
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
-    if (!config.isFeatureEnabled(ServerpodFeature.database)) {
-      log.error(
-        'The database feature is not enabled in this project. '
-        'This command cannot be used.',
-      );
-      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
-    }
-
-    var projectName = await getProjectName();
-    if (projectName == null) {
-      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
-    }
-
-    var generator = MigrationGenerator(
-      directory: Directory.current,
-      projectName: projectName,
-    );
-
-    MigrationVersion? migration;
+    late final CreateMigrationOutcome outcome;
     await log.progress('Creating migration', () async {
-      try {
-        migration = await generator.createMigration(
-          tag: tag,
-          force: force,
-          config: config,
-        );
-      } on MigrationVersionLoadException catch (e) {
-        log.error(
-          'Unable to determine latest database definition due to a corrupted '
-          'migration. Please re-create or remove the migration version and try '
-          'again. Migration version: "${e.versionName}".',
-        );
-        log.error(e.exception);
-      } on GenerateMigrationDatabaseDefinitionException {
-        log.error('Unable to generate database definition for project.');
-      } on MigrationVersionAlreadyExistsException catch (e) {
-        log.error(
-          'Unable to create migration. A directory with the same name already '
-          'exists: "${e.directoryPath}".',
-        );
-      }
-
-      return migration != null;
+      outcome = await createMigrationAction(
+        config: config,
+        tag: tag,
+        empty: empty,
+        force: force,
+      );
+      return outcome.success;
     });
 
-    var projectDirectory = migration?.projectDirectory;
-    var migrationName = migration?.versionName;
-    if (migration == null ||
-        projectDirectory == null ||
-        migrationName == null) {
+    _logMigrationOutcome(outcome);
+    if (outcome.success) {
+      log.info('Done.', type: TextLogType.success);
+    } else {
       throw ExitException.error();
     }
+  }
+}
 
-    log.info(
-      'Migration created: ${path.relative(
-        MigrationConstants.migrationVersionDirectory(
-          projectDirectory,
-          migrationName,
-        ).path,
-        from: Directory.current.path,
-      )}',
-      type: TextLogType.bullet,
-    );
-    log.info('Done.', type: TextLogType.success);
+void _logMigrationOutcome(
+  CreateMigrationOutcome outcome, {
+  bool isServer = true,
+}) {
+  final label = '${isServer ? 'Server' : 'Client'} migration';
+  switch (outcome) {
+    case CreateMigrationFailed(:final message):
+      log.error(message);
+    case CreateMigrationAborted():
+      log.error(
+        '$label aborted. Use --force to ignore warnings.',
+        type: TextLogType.bullet,
+      );
+    case CreateMigrationNoChanges():
+      log.info(
+        '$label skipped. No changes detected.',
+        type: TextLogType.bullet,
+      );
+    case CreateMigrationCreated(:final migrationDirectory):
+      log.info(
+        '$label created: ${path.relative(
+          migrationDirectory,
+          from: Directory.current.path,
+        )}',
+        type: TextLogType.bullet,
+      );
+    case CreateMigrationServerClientCreated(
+      :final serverResult,
+      :final clientResult,
+    ):
+      _logMigrationOutcome(serverResult, isServer: true);
+      _logMigrationOutcome(clientResult, isServer: false);
   }
 }

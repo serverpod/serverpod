@@ -3,7 +3,6 @@ import 'package:path/path.dart' as p;
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
-import 'package:serverpod_cli/src/analyzer/models/utils/duration_utils.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/class_generators/repository_classes.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/library_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/class_generators_util.dart';
@@ -13,12 +12,16 @@ import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// The name of the method used to convert a model to JSON.
 const String _toJsonMethodName = 'toJson';
 
 /// The name of the method used to convert a model to JSON for protocol serialization.
 const String _toJsonForProtocolMethodName = 'toJsonForProtocol';
+
+/// The hidden field name for the class name in the JSON serialization.
+const String _classNameHiddenField = '__className__';
 
 /// Generates the dart libraries for [SerializableModelDefinition]s.
 class SerializableModelLibraryGenerator {
@@ -29,6 +32,12 @@ class SerializableModelLibraryGenerator {
     required this.serverCode,
     required this.config,
   });
+
+  String get _databaseRuntimeUrl => serverpodDatabaseRuntimeUrl(serverCode);
+
+  bool _shouldGenerateTableCode(ModelClassDefinition classDefinition) {
+    return classDefinition.shouldGenerateTableCode(serverCode);
+  }
 
   /// Generate the file for a model.
   Library generateModelLibrary(
@@ -52,30 +61,51 @@ class SerializableModelLibraryGenerator {
   }
 
   Library _generateExceptionLibrary(ExceptionClassDefinition definition) {
-    var fields = definition.fields;
+    var fields = definition.fieldsIncludingInherited;
     var className = definition.className;
-    var nonNullableField = fields
-        .where((field) => field.shouldIncludeField(serverCode))
-        .any((field) => field.type.nullable);
+    var sealedTopNode = definition.sealedTopNode;
 
     return Library(
       (libraryBuilder) {
+        if (definition.isSealedTopNode) {
+          for (var child in definition.descendantClasses) {
+            var childPath = p.relative(
+              child.filePath,
+              from: p.dirname(definition.filePath),
+            );
+            libraryBuilder.directives.add(Directive.part(childPath));
+          }
+        }
+
+        if (!definition.isSealedTopNode && sealedTopNode != null) {
+          var topNodePath = p.relative(
+            sealedTopNode.filePath,
+            from: p.dirname(definition.filePath),
+          );
+          libraryBuilder.directives.add(Directive.partOf(topNodePath));
+        }
         libraryBuilder.body.addAll([
           _buildExceptionClass(
             className,
             definition,
             fields,
           ),
-          if (nonNullableField) _buildUndefinedClass(),
-          _buildModelImplClass(
-            className,
-            null,
-            fields,
-            subDirParts: definition.subDirParts,
-            inheritedFields: [],
-            isParentClass: false,
-            hasImplicitClass: false,
-          ),
+          // We need to generate the implementation class for the copyWith method
+          // to support differentiating between null and undefined values.
+          // https://stackoverflow.com/questions/68009392/dart-custom-copywith-method-with-nullable-properties
+          if (_shouldCreateUndefinedClass(definition, fields))
+            _buildUndefinedClass(),
+          if (!definition.isParentClass)
+            _buildModelImplClass(
+              className,
+              null,
+              fields,
+              subDirParts: definition.subDirParts,
+              inheritedFields: [],
+              isParentClass: false,
+              hasImplicitClass: false,
+              isImmutable: false,
+            ),
         ]);
       },
     );
@@ -85,7 +115,9 @@ class SerializableModelLibraryGenerator {
   Library _generateModelClassLibrary(
     ModelClassDefinition classDefinition,
   ) {
-    String? tableName = classDefinition.tableName;
+    String? tableName = classDefinition.shouldGenerateTableCode(serverCode)
+        ? classDefinition.tableName
+        : null;
     var className = classDefinition.className;
     var fields = classDefinition.fieldsIncludingInherited;
     var sealedTopNode = classDefinition.sealedTopNode;
@@ -95,8 +127,10 @@ class SerializableModelLibraryGenerator {
       config: config,
     );
 
-    var requiresImplicitClass =
-        buildRepository.hasImplicitClassOperations(fields);
+    var requiresImplicitClass = buildRepository.hasImplicitClassOperations(
+      fields,
+      hasTableForModel: _shouldGenerateTableCode(classDefinition),
+    );
 
     return Library(
       (libraryBuilder) {
@@ -139,18 +173,21 @@ class SerializableModelLibraryGenerator {
               subDirParts: classDefinition.subDirParts,
               inheritedFields: classDefinition.inheritedFields,
               isParentClass: classDefinition.isParentClass,
+              isImmutable: classDefinition.isImmutable,
               hasImplicitClass: requiresImplicitClass,
             ),
           if (requiresImplicitClass)
             _buildModelImplicitClass(className, classDefinition),
         ]);
 
-        if (serverCode && tableName != null) {
-          var idTypeReference = classDefinition.idField.type.reference(
-            serverCode,
-            subDirParts: classDefinition.subDirParts,
-            config: config,
-          ) as TypeReference;
+        if (_shouldGenerateTableCode(classDefinition)) {
+          var idTypeReference =
+              classDefinition.idField.type.reference(
+                    serverCode,
+                    subDirParts: classDefinition.subDirParts,
+                    config: config,
+                  )
+                  as TypeReference;
 
           libraryBuilder.body.addAll([
             _buildModelUpdateTableClass(
@@ -160,7 +197,7 @@ class SerializableModelLibraryGenerator {
             ),
             _buildModelTableClass(
               className,
-              tableName,
+              tableName!,
               fields,
               classDefinition,
               idTypeReference,
@@ -213,6 +250,8 @@ class SerializableModelLibraryGenerator {
           // https://github.com/serverpod/serverpod/issues/3462
           if (buildRepository.hasRelationWithNonNullableIds(fields)) {
             libraryBuilder.ignoreForFile.add('unnecessary_null_comparison');
+            // On Dart 3.10+, this issue becomes a `dead_code` lint.
+            libraryBuilder.ignoreForFile.add('dead_code');
           }
         }
       },
@@ -224,71 +263,146 @@ class SerializableModelLibraryGenerator {
     ExceptionClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
   ) {
+    var parentClass = classDefinition.parentClass;
     return Class((classBuilder) {
       classBuilder
         ..name = className
         ..docs.addAll(classDefinition.documentation ?? []);
 
-      classBuilder.abstract = true;
-
-      classBuilder.implements
-          .add(refer('SerializableException', serverpodUrl(serverCode)));
-
-      classBuilder.implements
-          .add(refer('SerializableModel', serverpodUrl(serverCode)));
-
-      if (serverCode) {
-        classBuilder.implements
-            .add(refer('ProtocolSerialization', serverpodUrl(serverCode)));
+      if (!classDefinition.isParentClass) {
+        classBuilder.abstract = true;
       }
 
-      classBuilder.fields.addAll(_buildModelClassFields(
-        classDefinition.fields,
-        null,
-        classDefinition.subDirParts,
-      ));
+      if (classDefinition.isSealed) {
+        classBuilder.sealed = true;
+      }
+
+      if (parentClass != null) {
+        classBuilder.extend = parentClass.type.reference(
+          serverCode,
+          subDirParts: classDefinition.subDirParts,
+          config: config,
+        );
+      }
+
+      classBuilder.implements.add(
+        refer('SerializableException', serverpodUrl(serverCode)),
+      );
+
+      classBuilder.implements.add(
+        refer('SerializableModel', serverpodUrl(serverCode)),
+      );
+
+      classBuilder.implements.add(
+        refer('ProtocolSerialization', serverpodUrl(serverCode)),
+      );
+
+      classBuilder.fields.addAll(
+        _buildModelClassFields(
+          classDefinition.fields,
+          null,
+          classDefinition.subDirParts,
+          isClassImmutable: false,
+          isTableOwner: false,
+        ),
+      );
 
       classBuilder.constructors.addAll([
         _buildModelClassConstructor(
           fields,
           null,
-          isParentClass: false,
+          isParentClass: classDefinition.isParentClass,
           subDirParts: classDefinition.subDirParts,
-          inheritedFields: [],
+          inheritedFields: classDefinition.inheritedFields,
+          isImmutable: false,
         ),
-        _buildModelClassFactoryConstructor(
-          className,
-          fields,
-          null,
-          inheritedFields: [],
-          subDirParts: classDefinition.subDirParts,
-        ),
-        _buildModelClassFromJsonConstructor(
-          className,
-          fields,
-          subDirParts: classDefinition.subDirParts,
-          hasImplicitClass: false,
-        )
+        if (!classDefinition.isParentClass)
+          _buildModelClassFactoryConstructor(
+            className,
+            fields,
+            null,
+            inheritedFields: classDefinition.inheritedFields,
+            subDirParts: classDefinition.subDirParts,
+            isImmutable: false,
+          ),
+        if (!classDefinition.isSealed)
+          _buildModelClassFromJsonConstructor(
+            className,
+            fields,
+            null,
+            subDirParts: classDefinition.subDirParts,
+            hasImplicitClass: false,
+            currentSharedPackageName: classDefinition.sharedPackageName,
+          ),
       ]);
 
-      classBuilder.methods.add(_buildAbstractCopyWithMethod(
-        className,
-        fields,
-        shouldOverrideAbstractCopyWith: () => false,
-        subDirParts: classDefinition.subDirParts,
-        inheritedFields: [],
-      ));
-
-      classBuilder.methods.add(_buildModelClassToJsonMethod(fields));
-
-      // Serialization for database and everything
-      if (serverCode) {
+      if (!classDefinition.isParentClass) {
         classBuilder.methods.add(
-          _buildModelClassToJsonForProtocolMethod(fields),
+          _buildAbstractCopyWithMethod(
+            className,
+            fields,
+            shouldOverrideAbstractCopyWith: () =>
+                _shouldOverrideAbstractCopyWithMethod(classDefinition),
+            subDirParts: classDefinition.subDirParts,
+            inheritedFields: classDefinition.inheritedFields,
+            isIdInherited: false,
+          ),
+        );
+      } else if (!classDefinition.isSealed) {
+        classBuilder.methods.add(
+          _buildCopyWithMethod(
+            fields,
+            subDirParts: classDefinition.subDirParts,
+            className: className,
+            isParentClass: classDefinition.isParentClass,
+            hasImplicitClass: false,
+            tableName: null,
+            classDefinition: classDefinition,
+          ),
+        );
+      } else if (classDefinition.isSealed && classDefinition.isParentClass) {
+        classBuilder.methods.add(
+          _buildAbstractCopyWithMethod(
+            className,
+            fields,
+            shouldOverrideAbstractCopyWith: () => false,
+            subDirParts: classDefinition.subDirParts,
+            inheritedFields: classDefinition.inheritedFields,
+            isIdInherited: false,
+          ),
+        );
+      }
+      if (!classDefinition.isSealed) {
+        classBuilder.methods.add(
+          _buildModelClassToJsonMethod(
+            fields,
+            className,
+            classDefinition.sharedPackageName,
+            null,
+          ),
         );
       }
 
-      classBuilder.methods.add(_buildToStringMethod(serverCode));
+      // Serialization for database and everything
+      if (!classDefinition.isSealed) {
+        classBuilder.methods.add(
+          _buildModelClassToJsonForProtocolMethod(
+            fields,
+            classDefinition.serverOnly,
+            className,
+            classDefinition.sharedPackageName,
+            null,
+          ),
+        );
+      }
+      if (!classDefinition.isSealed) {
+        classBuilder.methods.add(
+          _buildExceptionToStringMethod(
+            className,
+            fields,
+          ),
+        );
+      }
     });
   }
 
@@ -299,9 +413,11 @@ class SerializableModelLibraryGenerator {
     List<SerializableModelFieldDefinition> fields, {
     required bool hasImplicitClass,
   }) {
-    var relationFields = fields.where((field) =>
-        field.relation is ObjectRelationDefinition ||
-        field.relation is ListRelationDefinition);
+    var relationFields = fields.where(
+      (field) =>
+          field.relation is ObjectRelationDefinition ||
+          field.relation is ListRelationDefinition,
+    );
 
     var parentClass = classDefinition.parentClass;
 
@@ -326,19 +442,23 @@ class SerializableModelLibraryGenerator {
         );
       }
 
-      if (serverCode && tableName != null) {
-        var idTypeReference = classDefinition.idField.type.reference(
-          serverCode,
-          subDirParts: classDefinition.subDirParts,
-          config: config,
-        ) as TypeReference;
+      if (_shouldGenerateTableCode(classDefinition)) {
+        var idTypeReference =
+            classDefinition.idField.type.reference(
+                  serverCode,
+                  subDirParts: classDefinition.subDirParts,
+                  config: config,
+                )
+                as TypeReference;
 
-        classBuilder.implements.add(TypeReference(
-          (f) => f
-            ..symbol = 'TableRow'
-            ..url = serverpodUrl(serverCode)
-            ..types.add(idTypeReference),
-        ));
+        classBuilder.implements.add(
+          TypeReference(
+            (f) => f
+              ..symbol = 'TableRow'
+              ..url = _databaseRuntimeUrl
+              ..types.add(idTypeReference),
+          ),
+        );
 
         classBuilder.fields.addAll([
           _buildModelClassTableField(className),
@@ -346,31 +466,44 @@ class SerializableModelLibraryGenerator {
 
         classBuilder.fields.add(_buildModelClassDBField(className));
 
-        classBuilder.fields.add(Field(
-          (f) => f
-            ..name = 'id'
-            ..type = idTypeReference
-            ..annotations.add(
-              refer('override'),
-            ),
-        ));
+        classBuilder.fields.add(
+          Field(
+            (f) {
+              f
+                ..name = 'id'
+                ..type = idTypeReference
+                ..annotations.add(refer('override'));
+              if (classDefinition.isImmutable) {
+                f.modifier = FieldModifier.final$;
+              }
+            },
+          ),
+        );
 
         classBuilder.methods.add(_buildModelClassTableGetter(idTypeReference));
       } else {
-        classBuilder.implements
-            .add(refer('SerializableModel', serverpodUrl(serverCode)));
+        classBuilder.implements.add(
+          refer('SerializableModel', serverpodUrl(serverCode)),
+        );
       }
 
-      if (serverCode) {
-        classBuilder.implements
-            .add(refer('ProtocolSerialization', serverpodUrl(serverCode)));
-      }
+      // Every model implements ProtocolSerialization on every side so that
+      // protocol encoding can recurse through `toJsonForProtocol` at any nesting
+      // level, stripping hidden fields even when a table model is nested inside
+      // a model that has none of its own.
+      classBuilder.implements.add(
+        refer('ProtocolSerialization', serverpodUrl(serverCode)),
+      );
 
-      classBuilder.fields.addAll(_buildModelClassFields(
-        classDefinition.fields,
-        tableName,
-        classDefinition.subDirParts,
-      ));
+      classBuilder.fields.addAll(
+        _buildModelClassFields(
+          classDefinition.fields,
+          tableName,
+          classDefinition.subDirParts,
+          isClassImmutable: classDefinition.isImmutable,
+          isTableOwner: classDefinition.isTableOwner(serverCode),
+        ),
+      );
 
       classBuilder.constructors.addAll([
         _buildModelClassConstructor(
@@ -379,6 +512,7 @@ class SerializableModelLibraryGenerator {
           isParentClass: classDefinition.isParentClass,
           subDirParts: classDefinition.subDirParts,
           inheritedFields: classDefinition.inheritedFields,
+          isImmutable: classDefinition.isImmutable,
         ),
         if (!classDefinition.isParentClass)
           _buildModelClassFactoryConstructor(
@@ -387,49 +521,92 @@ class SerializableModelLibraryGenerator {
             tableName,
             inheritedFields: classDefinition.inheritedFields,
             subDirParts: classDefinition.subDirParts,
+            isImmutable: classDefinition.isImmutable,
           ),
         if (!classDefinition.isSealed)
           _buildModelClassFromJsonConstructor(
             className,
             fields,
+            tableName,
             subDirParts: classDefinition.subDirParts,
             hasImplicitClass: hasImplicitClass,
-          )
+            currentSharedPackageName: classDefinition.sharedPackageName,
+          ),
       ]);
 
       if (!classDefinition.isParentClass) {
-        classBuilder.methods.add(_buildAbstractCopyWithMethod(
-          className,
-          fields,
-          shouldOverrideAbstractCopyWith: () =>
-              _shouldOverrideAbstractCopyWithMethod(classDefinition),
-          subDirParts: classDefinition.subDirParts,
-          inheritedFields: classDefinition.inheritedFields,
-        ));
+        classBuilder.methods.add(
+          _buildAbstractCopyWithMethod(
+            className,
+            fields,
+            shouldOverrideAbstractCopyWith: () =>
+                _shouldOverrideAbstractCopyWithMethod(classDefinition),
+            subDirParts: classDefinition.subDirParts,
+            inheritedFields: classDefinition.inheritedFields,
+            isIdInherited: classDefinition.isIdInherited,
+          ),
+        );
       } else if (!classDefinition.isSealed) {
-        classBuilder.methods.add(_buildCopyWithMethod(
-          fields,
-          subDirParts: classDefinition.subDirParts,
-          className: className,
-          isParentClass: classDefinition.isParentClass,
-          hasImplicitClass: hasImplicitClass,
-        ));
+        classBuilder.methods.add(
+          _buildCopyWithMethod(
+            fields,
+            subDirParts: classDefinition.subDirParts,
+            className: className,
+            isParentClass: classDefinition.isParentClass,
+            hasImplicitClass: hasImplicitClass,
+            tableName: tableName,
+            classDefinition: classDefinition,
+          ),
+        );
+      } else if (classDefinition.isSealed && classDefinition.isParentClass) {
+        classBuilder.methods.add(
+          _buildAbstractCopyWithMethod(
+            className,
+            fields,
+            shouldOverrideAbstractCopyWith: () => false,
+            subDirParts: classDefinition.subDirParts,
+            inheritedFields: classDefinition.inheritedFields,
+            isIdInherited: classDefinition.isIdInherited,
+          ),
+        );
       }
+
+      // Immutability
+      if (classDefinition.isImmutable) {
+        classBuilder.methods.add(_buildEqualOperator(classDefinition, fields));
+        classBuilder.methods.add(_buildHashCodeMethod(classDefinition, fields));
+        classBuilder.annotations.add(
+          refer('immutable', serverpodUrl(serverCode)),
+        );
+      }
+
       // Serialization
 
       if (!classDefinition.isSealed) {
-        classBuilder.methods.add(_buildModelClassToJsonMethod(fields));
+        classBuilder.methods.add(
+          _buildModelClassToJsonMethod(
+            fields,
+            className,
+            classDefinition.sharedPackageName,
+            tableName,
+          ),
+        );
       }
 
       // Serialization for database and everything
-      if (serverCode) {
-        if (!classDefinition.isSealed) {
-          classBuilder.methods.add(
-            _buildModelClassToJsonForProtocolMethod(fields),
-          );
-        }
-
-        if (tableName != null) {
+      if (!classDefinition.isSealed) {
+        classBuilder.methods.add(
+          _buildModelClassToJsonForProtocolMethod(
+            fields,
+            classDefinition.serverOnly,
+            className,
+            classDefinition.sharedPackageName,
+            tableName,
+          ),
+        );
+      }
+      if (classDefinition.isTableOwner(serverCode)) {
+        if (_shouldGenerateTableCode(classDefinition)) {
           classBuilder.methods.addAll([
             _buildModelClassIncludeMethod(
               className,
@@ -449,14 +626,20 @@ class SerializableModelLibraryGenerator {
     });
   }
 
+  /// Nullable params and `dynamic` fields use `Object? ... = _Undefined` so
+  /// omitted args differ from explicit `null`.
+  bool _fieldUsesUndefinedCopyWithSentinel(
+    SerializableModelFieldDefinition field,
+  ) => field.type.nullable || field.type.className == 'dynamic';
+
   bool _shouldCreateUndefinedClass(
-    ModelClassDefinition classDefinition,
+    ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
   ) {
     if (classDefinition.sealedTopNode == null) {
       return fields
           .where((field) => field.shouldIncludeField(serverCode))
-          .any((field) => field.type.nullable);
+          .any(_fieldUsesUndefinedCopyWithSentinel);
     }
 
     if (!classDefinition.isSealedTopNode) {
@@ -467,12 +650,12 @@ class SerializableModelLibraryGenerator {
     var descendants = classDefinition.descendantClasses;
 
     for (var descendant in descendants) {
-      descendantFields.addAll(descendant.fields);
+      descendantFields.addAll(descendant.fieldsIncludingInherited);
     }
 
     return descendantFields
         .where((field) => field.shouldIncludeField(serverCode))
-        .any((field) => field.type.nullable);
+        .any(_fieldUsesUndefinedCopyWithSentinel);
   }
 
   Class _buildUndefinedClass() {
@@ -487,6 +670,7 @@ class SerializableModelLibraryGenerator {
     required List<SerializableModelFieldDefinition> inheritedFields,
     required bool isParentClass,
     required bool hasImplicitClass,
+    required bool isImmutable,
   }) {
     return Class((classBuilder) {
       classBuilder
@@ -498,15 +682,19 @@ class SerializableModelLibraryGenerator {
             tableName,
             subDirParts: subDirParts,
             inheritedFields: inheritedFields,
+            isImmutable: isImmutable,
           ),
         )
-        ..methods.add(_buildCopyWithMethod(
-          fields,
-          subDirParts: subDirParts,
-          className: className,
-          isParentClass: isParentClass,
-          hasImplicitClass: hasImplicitClass,
-        ));
+        ..methods.add(
+          _buildCopyWithMethod(
+            fields,
+            subDirParts: subDirParts,
+            className: className,
+            isParentClass: isParentClass,
+            hasImplicitClass: hasImplicitClass,
+            tableName: tableName,
+          ),
+        );
     });
   }
 
@@ -514,116 +702,162 @@ class SerializableModelLibraryGenerator {
     String className,
     ModelClassDefinition classDefinition,
   ) {
-    var hiddenFields = classDefinition.fields
-        .where((field) => field.hiddenSerializableField(serverCode));
-    var visibleFields = classDefinition.fields
-        .where((field) => field.shouldIncludeField(serverCode));
+    var hiddenFields = classDefinition.fields.where(
+      (field) => field.shouldIncludeHiddenFieldInModelClass(
+        serverCode,
+        modelHasTable: _shouldGenerateTableCode(classDefinition),
+      ),
+    );
+    var visibleFields = classDefinition.fieldsIncludingInherited.where(
+      (field) => field.shouldIncludeField(serverCode),
+    );
     return Class((classBuilder) {
       classBuilder
         ..name = '${className}Implicit'
         ..extend = refer('_${className}Impl')
-        ..fields.addAll(hiddenFields.map((field) {
-          return Field((fieldBuilder) {
-            fieldBuilder
-              ..name = _createSerializableFieldName(serverCode, field)
-              ..type = field.type.reference(
-                serverCode,
-                config: config,
-                subDirParts: classDefinition.subDirParts,
-              )
-              ..modifier = FieldModifier.final$
-              ..annotations.add(refer('override'));
-          });
-        }))
-        ..constructors.add(Constructor((constructorBuilder) {
-          Map<String, Expression> namedParams =
-              visibleFields.fold({}, (map, field) {
-            return {
-              ...map,
-              field.name: refer(field.name),
-            };
-          });
-
-          constructorBuilder
-            ..name = '_'
-            ..optionalParameters.addAll(
-              _buildModelClassConstructorParameters(
-                classDefinition.fields,
-                classDefinition.tableName,
-                setAsToThis: false,
-                subDirParts: classDefinition.subDirParts,
-                inheritedFields: classDefinition.inheritedFields,
-              ),
-            )
-            ..optionalParameters.addAll(hiddenFields.map((field) {
-              return Parameter((p) => p
-                ..name = createFieldName(serverCode, field)
-                ..named = true
+        ..fields.addAll(
+          hiddenFields.map((field) {
+            return Field((fieldBuilder) {
+              fieldBuilder
+                ..name = _createSerializableFieldName(
+                  serverCode,
+                  field,
+                  tableName: classDefinition.tableName,
+                )
                 ..type = field.type.reference(
                   serverCode,
                   config: config,
                   subDirParts: classDefinition.subDirParts,
-                ));
-            }))
-            ..initializers.addAll([
-              for (var field in hiddenFields)
-                refer(_createSerializableFieldName(serverCode, field))
-                    .assign(
-                      refer(createFieldName(serverCode, field)),
-                    )
-                    .code,
-              refer('super').call([], namedParams).code,
-            ]);
-        }))
-        ..constructors.add(Constructor((constructorBuilder) {
-          constructorBuilder
-            ..factory = true
-            ..requiredParameters.add(Parameter((p) => p
-              ..name = className.camelCase
-              ..type = refer(className)))
-            ..optionalParameters.addAll(hiddenFields.map((field) {
-              return Parameter((p) => p
-                ..name = createFieldName(serverCode, field)
-                ..named = true
-                ..type = field.type.reference(
-                  serverCode,
-                  config: config,
-                  subDirParts: classDefinition.subDirParts,
-                ));
-            }))
-            ..body = Block((blockBuilder) {
-              blockBuilder.statements.add(refer('${className}Implicit')
-                  .property('_')
-                  .call([], {
-                    ...visibleFields.fold({}, (map, field) {
-                      return {
-                        ...map,
-                        field.name:
-                            refer(className.camelCase).property(field.name),
-                      };
-                    }),
-                    ...hiddenFields.fold({}, (map, field) {
-                      return {
-                        ...map,
-                        createFieldName(serverCode, field):
-                            refer(createFieldName(serverCode, field)),
-                      };
-                    })
-                  })
-                  .returned
-                  .statement);
+                )
+                ..modifier = FieldModifier.final$
+                ..annotations.add(refer('override'));
             });
-        }));
+          }),
+        )
+        ..constructors.add(
+          Constructor((constructorBuilder) {
+            Map<String, Expression> namedParams = visibleFields.fold({}, (
+              map,
+              field,
+            ) {
+              return {
+                ...map,
+                field.name: refer(field.name),
+              };
+            });
+
+            constructorBuilder
+              ..name = '_'
+              ..optionalParameters.addAll(
+                _buildModelClassConstructorParameters(
+                  classDefinition.fieldsIncludingInherited,
+                  classDefinition.tableName,
+                  setAsToThis: false,
+                  subDirParts: classDefinition.subDirParts,
+                  inheritedFields: [
+                    if (classDefinition.isIdInherited) classDefinition.idField,
+                    ...classDefinition.inheritedFields,
+                  ],
+                ),
+              )
+              ..optionalParameters.addAll(
+                hiddenFields.map((field) {
+                  return Parameter(
+                    (p) => p
+                      ..name = createFieldName(serverCode, field)
+                      ..named = true
+                      ..type = field.type.reference(
+                        serverCode,
+                        config: config,
+                        subDirParts: classDefinition.subDirParts,
+                      ),
+                  );
+                }),
+              )
+              ..initializers.addAll([
+                for (var field in hiddenFields)
+                  refer(
+                        _createSerializableFieldName(
+                          serverCode,
+                          field,
+                          tableName: classDefinition.tableName,
+                        ),
+                      )
+                      .assign(
+                        refer(createFieldName(serverCode, field)),
+                      )
+                      .code,
+                refer('super').call([], namedParams).code,
+              ]);
+          }),
+        )
+        ..constructors.add(
+          Constructor((constructorBuilder) {
+            constructorBuilder
+              ..factory = true
+              ..requiredParameters.add(
+                Parameter(
+                  (p) => p
+                    ..name = className.camelCase
+                    ..type = refer(className),
+                ),
+              )
+              ..optionalParameters.addAll(
+                hiddenFields.map((field) {
+                  return Parameter(
+                    (p) => p
+                      ..name = createFieldName(serverCode, field)
+                      ..named = true
+                      ..type = field.type.reference(
+                        serverCode,
+                        config: config,
+                        subDirParts: classDefinition.subDirParts,
+                      ),
+                  );
+                }),
+              )
+              ..body = Block((blockBuilder) {
+                blockBuilder.statements.add(
+                  refer('${className}Implicit')
+                      .property('_')
+                      .call([], {
+                        ...visibleFields.fold({}, (map, field) {
+                          return {
+                            ...map,
+                            field.name: refer(
+                              className.camelCase,
+                            ).property(field.name),
+                          };
+                        }),
+                        ...hiddenFields.fold({}, (map, field) {
+                          return {
+                            ...map,
+                            createFieldName(serverCode, field): refer(
+                              createFieldName(serverCode, field),
+                            ),
+                          };
+                        }),
+                      })
+                      .returned
+                      .statement,
+                );
+              });
+          }),
+        );
     });
   }
 
   bool _shouldOverrideAbstractCopyWithMethod(
-    ModelClassDefinition classDefinition,
+    ClassDefinition classDefinition,
   ) {
     var parentClass = classDefinition.parentClass;
 
     if (parentClass == null) {
       return false;
+    }
+
+    if (parentClass.isSealed) {
+      return true;
     }
 
     if (classDefinition.everyParentIsSealed) {
@@ -639,6 +873,7 @@ class SerializableModelLibraryGenerator {
     required bool Function() shouldOverrideAbstractCopyWith,
     required List<String> subDirParts,
     required List<SerializableModelFieldDefinition> inheritedFields,
+    required bool isIdInherited,
   }) {
     return Method((methodBuilder) {
       if (shouldOverrideAbstractCopyWith()) {
@@ -646,16 +881,20 @@ class SerializableModelLibraryGenerator {
       }
 
       methodBuilder
-        ..docs.add('/// Returns a shallow copy of this [$className]\n'
-            '/// with some or all fields replaced by the given arguments.')
-        ..annotations
-            .add(refer('useResult', serverpodUrl(serverCode)).expression)
+        ..docs.add(
+          '/// Returns a shallow copy of this [$className]\n'
+          '/// with some or all fields replaced by the given arguments.',
+        )
+        ..annotations.add(
+          refer('useResult', serverpodUrl(serverCode)).expression,
+        )
         ..name = 'copyWith'
         ..optionalParameters.addAll(
           _buildAbstractCopyWithParameters(
             fields,
             subDirParts: subDirParts,
             inheritedFields: inheritedFields,
+            isIdInherited: isIdInherited,
           ),
         )
         ..returns = refer(className);
@@ -668,17 +907,34 @@ class SerializableModelLibraryGenerator {
     required String className,
     required bool isParentClass,
     required hasImplicitClass,
+    String? tableName,
+    ClassDefinition? classDefinition,
   }) {
     return Method(
       (m) {
         m.name = 'copyWith';
-        m.docs.add('/// Returns a shallow copy of this [$className] \n'
-            '/// with some or all fields replaced by the given arguments.');
-        m.annotations
-            .add(refer('useResult', serverpodUrl(serverCode)).expression);
-        if (!isParentClass) {
+        m.docs.add(
+          '/// Returns a shallow copy of this [$className] \n'
+          '/// with some or all fields replaced by the given arguments.',
+        );
+        m.annotations.add(
+          refer('useResult', serverpodUrl(serverCode)).expression,
+        );
+
+        var shouldOverride = !isParentClass;
+        if (classDefinition != null) {
+          var parentClass = classDefinition.parentClass;
+          if (parentClass != null && parentClass.isSealed) {
+            shouldOverride = true;
+          }
+        } else {
+          shouldOverride = true;
+        }
+
+        if (shouldOverride) {
           m.annotations.add(refer('override'));
         }
+
         m.optionalParameters.addAll(
           fields.where((field) => field.shouldIncludeField(serverCode)).map(
             (field) {
@@ -689,9 +945,14 @@ class SerializableModelLibraryGenerator {
                 config: config,
               );
 
-              var type = field.type.nullable ? refer('Object?') : fieldType;
-              var defaultValue =
-                  field.type.nullable ? const Code('_Undefined') : null;
+              final usesUndefinedCopyWithDefault =
+                  _fieldUsesUndefinedCopyWithSentinel(field);
+              var type = usesUndefinedCopyWithDefault
+                  ? refer('Object?')
+                  : fieldType;
+              var defaultValue = usesUndefinedCopyWithDefault
+                  ? const Code('_Undefined')
+                  : null;
 
               return Parameter((p) {
                 p
@@ -710,6 +971,7 @@ class SerializableModelLibraryGenerator {
               _buildCopyWithAssignment(
                 fields,
                 subDirParts: subDirParts,
+                tableName: tableName,
               ),
             )
             .returned
@@ -721,11 +983,17 @@ class SerializableModelLibraryGenerator {
   Map<String, Expression> _buildCopyWithAssignment(
     List<SerializableModelFieldDefinition> fields, {
     required List<String> subDirParts,
+    String? tableName,
   }) {
-    var visibleFields =
-        fields.where((field) => field.shouldIncludeField(serverCode));
-    var hiddenSerializableFields =
-        fields.where((field) => field.hiddenSerializableField(serverCode));
+    var visibleFields = fields.where(
+      (field) => field.shouldIncludeField(serverCode),
+    );
+    var hiddenSerializableFields = fields.where(
+      (field) => field.shouldIncludeHiddenFieldInModelClass(
+        serverCode,
+        modelHasTable: tableName != null,
+      ),
+    );
 
     var visibleAssignments = visibleFields.fold({}, (map, field) {
       Expression assignment = _buildDeepCloneTree(
@@ -735,14 +1003,25 @@ class SerializableModelLibraryGenerator {
       );
 
       Expression valueDefinition;
-      if (field.type.nullable) {
+      if (field.type.className == 'dynamic') {
+        // Since `dynamic` also covers `_Undefined`, the check for `param`
+        // must be inverted to explicitly not be `_Undefined`.
         valueDefinition = refer(field.name)
-            .isA(field.type.reference(
-              serverCode,
-              nullable: field.type.nullable,
-              subDirParts: subDirParts,
-              config: config,
-            ))
+            .notEqualTo(refer('_Undefined'))
+            .conditional(
+              refer(field.name),
+              assignment,
+            );
+      } else if (field.type.nullable) {
+        valueDefinition = refer(field.name)
+            .isA(
+              field.type.reference(
+                serverCode,
+                nullable: field.type.nullable,
+                subDirParts: subDirParts,
+                config: config,
+              ),
+            )
             .conditional(
               refer(field.name),
               assignment,
@@ -760,7 +1039,11 @@ class SerializableModelLibraryGenerator {
       return map
         ..[createFieldName(serverCode, field)] = _buildDeepCloneTree(
           field.type,
-          _createSerializableFieldName(serverCode, field),
+          _createSerializableFieldName(
+            serverCode,
+            field,
+            tableName: tableName,
+          ),
           isRoot: true,
         );
     });
@@ -769,6 +1052,114 @@ class SerializableModelLibraryGenerator {
       ...visibleAssignments,
       ...hiddenAssignments,
     };
+  }
+
+  Method _buildEqualOperator(
+    ClassDefinition classDefinition,
+    List<SerializableModelFieldDefinition> fields,
+  ) {
+    var includedFields = fields.where(
+      (field) => field.shouldIncludeField(serverCode),
+    );
+
+    return Method(
+      (m) {
+        m.name = 'operator ==';
+        m.annotations.add(refer('override'));
+        m.requiredParameters.add(
+          Parameter((p) {
+            p
+              ..name = 'other'
+              ..named = false
+              ..type = refer('Object');
+          }),
+        );
+
+        var comparisons = [
+          refer('other').property('runtimeType').equalTo(refer('runtimeType')),
+          refer('other').isA(refer(classDefinition.className)),
+          ...includedFields.map((field) {
+            var name = field.name;
+            var thisProperty = refer(name);
+            var otherProperty = refer('other').property(name);
+
+            if (field.type.isCollectionType) {
+              return refer('DeepCollectionEquality', serverpodSerializationUrl)
+                  .constInstance([])
+                  .property('equals')
+                  .call([otherProperty, thisProperty]);
+            }
+
+            return _wrapWithParentheses(
+              refer('identical')
+                  .call([otherProperty, thisProperty])
+                  .or(otherProperty.equalTo(thisProperty)),
+            );
+          }),
+        ];
+
+        var comparisonCode = refer('identical')
+            .call([refer('other'), refer('this')])
+            .or(comparisons.reduce((value, nextField) => value.and(nextField)));
+
+        m.returns = refer('bool');
+        m.body = Block.of([
+          const Code('return '),
+          comparisonCode.code,
+          const Code(';'),
+        ]);
+      },
+    );
+  }
+
+  Expression _wrapWithParentheses(Expression expr) {
+    return CodeExpression(Code('(${expr.accept(DartEmitter())})'));
+  }
+
+  Method _buildHashCodeMethod(
+    ClassDefinition classDefinition,
+    List<SerializableModelFieldDefinition> fields,
+  ) {
+    var includedFields = fields.where(
+      (field) => field.shouldIncludeField(serverCode),
+    );
+
+    return Method(
+      (m) {
+        m.name = 'hashCode';
+        m.type = MethodType.getter;
+        m.annotations.add(refer('override'));
+
+        var expressions = [
+          refer('runtimeType'),
+          ...includedFields.map((field) {
+            if (field.type.isCollectionType) {
+              return refer(
+                'DeepCollectionEquality',
+                serverpodSerializationUrl,
+              ).constInstance([]).property('hash').call([refer(field.name)]);
+            }
+
+            return refer(field.name);
+          }),
+        ];
+
+        var hashCode = switch (expressions.length) {
+          1 => expressions.first.property('hashCode'),
+          <= 20 => refer('Object').property('hash').call(expressions),
+          _ => refer('Object').property('hashAll').call([
+            literalList(expressions),
+          ]),
+        };
+
+        m.returns = refer('int');
+        m.body = Block.of([
+          const Code('return '),
+          hashCode.code,
+          const Code(';'),
+        ]);
+      },
+    );
   }
 
   Expression _buildDeepCloneTree(
@@ -794,18 +1185,18 @@ class SerializableModelLibraryGenerator {
     // For now the model types do not contain records, so casting is valid
     var nextCallback = switch (type.className) {
       ListKeyword.className => _buildListCloneCallback(
-          type.generics.first,
-          depth,
-        ),
+        type.generics.first,
+        depth,
+      ),
       SetKeyword.className => _buildSetCloneCallback(
-          type.generics.first,
-          depth,
-        ),
+        type.generics.first,
+        depth,
+      ),
       MapKeyword.className => _buildMapCloneCallback(
-          type.generics[0],
-          type.generics[1],
-          depth,
-        ),
+        type.generics[0],
+        type.generics[1],
+        depth,
+      ),
       _ => throw UnimplementedError("Can't clone type ${type.className}"),
     };
 
@@ -817,8 +1208,7 @@ class SerializableModelLibraryGenerator {
     expression = switch (type.nullable) {
       true => expression.nullSafeProperty(Keyword.mapFunctionName),
       false => expression.property(Keyword.mapFunctionName),
-    }
-        .call([nextCallback]);
+    }.call([nextCallback]);
 
     if (type.isListType) {
       return expression.property(ListKeyword.toList).call([]);
@@ -830,19 +1220,30 @@ class SerializableModelLibraryGenerator {
   }
 
   Expression _buildShallowClone(
-      TypeDefinition type, String variableName, bool isRoot) {
+    TypeDefinition type,
+    String variableName,
+    bool isRoot,
+  ) {
     var isNonMutableType =
         type.isEnumType || nonMutableTypeNames.contains(type.className);
-    if (isNonMutableType) {
+    if (isNonMutableType || type.className == 'dynamic') {
       return isRoot
           ? refer(Keyword.thisKeyword).property(variableName)
           : refer(variableName);
     } else if (hasCloneExtensionTypes.contains(type.className)) {
       return _buildMaybeNullMethodCall(
-          type.nullable, variableName, Keyword.cloneExtensionName, isRoot);
+        type.nullable,
+        variableName,
+        Keyword.cloneExtensionName,
+        isRoot,
+      );
     } else {
       return _buildMaybeNullMethodCall(
-          type.nullable, variableName, Keyword.copyWithMethodName, isRoot);
+        type.nullable,
+        variableName,
+        Keyword.copyWithMethodName,
+        isRoot,
+      );
     }
   }
 
@@ -856,8 +1257,11 @@ class SerializableModelLibraryGenerator {
           ..requiredParameters.add(
             Parameter((p) => p..name = variableName),
           )
-          ..body =
-              _buildDeepCloneTree(type, variableName, depth: depth + 1).code;
+          ..body = _buildDeepCloneTree(
+            type,
+            variableName,
+            depth: depth + 1,
+          ).code;
       },
     ).closure;
   }
@@ -872,8 +1276,11 @@ class SerializableModelLibraryGenerator {
           ..requiredParameters.add(
             Parameter((p) => p..name = variableName),
           )
-          ..body =
-              _buildDeepCloneTree(type, variableName, depth: depth + 1).code;
+          ..body = _buildDeepCloneTree(
+            type,
+            variableName,
+            depth: depth + 1,
+          ).code;
       },
     ).closure;
   }
@@ -897,10 +1304,16 @@ class SerializableModelLibraryGenerator {
             Parameter((p) => p..name = valueVariableName),
           );
 
-        var keyArg =
-            _buildDeepCloneTree(keyType, keyVariableName, depth: depth + 1);
-        var valueArg =
-            _buildDeepCloneTree(valueType, valueVariableName, depth: depth + 1);
+        var keyArg = _buildDeepCloneTree(
+          keyType,
+          keyVariableName,
+          depth: depth + 1,
+        );
+        var valueArg = _buildDeepCloneTree(
+          valueType,
+          valueVariableName,
+          depth: depth + 1,
+        );
 
         builder.body = refer(MapKeyword.mapEntry).call([keyArg, valueArg]).code;
       },
@@ -913,8 +1326,9 @@ class SerializableModelLibraryGenerator {
     List<TypeDefinition> fields,
     int depth,
   ) {
-    var positionalFields =
-        fields.where((f) => f.recordFieldName == null).toList();
+    var positionalFields = fields
+        .where((f) => f.recordFieldName == null)
+        .toList();
     var namedFields = fields.where((f) => f.recordFieldName != null).toList();
 
     var prefix = depth == 0 ? 'this.' : '';
@@ -926,17 +1340,19 @@ class SerializableModelLibraryGenerator {
         const Code('('),
         for (var (i, positionalField) in positionalFields.indexed) ...[
           _buildDeepCloneTree(
-                  positionalField, '$prefix$name$accessor.\$${i + 1}',
-                  depth: depth + 1)
-              .code,
+            positionalField,
+            '$prefix$name$accessor.\$${i + 1}',
+            depth: depth + 1,
+          ).code,
           const Code(','),
         ],
         for (var namedField in namedFields) ...[
           Code('${namedField.recordFieldName!}:'),
-          _buildDeepCloneTree(namedField,
-                  '$prefix$name$accessor.${namedField.recordFieldName!}',
-                  depth: depth + 1)
-              .code,
+          _buildDeepCloneTree(
+            namedField,
+            '$prefix$name$accessor.${namedField.recordFieldName!}',
+            depth: depth + 1,
+          ).code,
           const Code(','),
         ],
         const Code(')'),
@@ -970,7 +1386,7 @@ class SerializableModelLibraryGenerator {
         ..returns = TypeReference(
           (f) => f
             ..symbol = 'Table'
-            ..url = serverpodUrl(serverCode)
+            ..url = _databaseRuntimeUrl
             ..types.add(idTypeReference),
         )
         ..lambda = true
@@ -979,26 +1395,32 @@ class SerializableModelLibraryGenerator {
   }
 
   Field _buildModelClassTableField(String className) {
-    return Field((f) => f
-      ..static = true
-      ..modifier = FieldModifier.final$
-      ..name = 't'
-      ..assignment = refer('${className}Table').call([]).code);
+    return Field(
+      (f) => f
+        ..static = true
+        ..modifier = FieldModifier.final$
+        ..name = 't'
+        ..assignment = refer('${className}Table').call([]).code,
+    );
   }
 
   Field _buildModelClassDBField(String className) {
-    return Field((f) => f
-      ..static = true
-      ..modifier = FieldModifier.constant
-      ..name = 'db'
-      ..assignment =
-          refer('${className}Repository').property('_').call([]).code);
+    return Field(
+      (f) => f
+        ..static = true
+        ..modifier = FieldModifier.constant
+        ..name = 'db'
+        ..assignment = refer(
+          '${className}Repository',
+        ).property('_').call([]).code,
+    );
   }
 
   Method _buildModelClassIncludeMethod(
-      String className,
-      Iterable<SerializableModelFieldDefinition> relationFields,
-      List<String> subDirParts) {
+    String className,
+    Iterable<SerializableModelFieldDefinition> relationFields,
+    List<String> subDirParts,
+  ) {
     return Method(
       (m) => m
         ..static = true
@@ -1078,21 +1500,16 @@ class SerializableModelLibraryGenerator {
           ),
           Parameter(
             (p) => p
-              ..name = 'orderDescending'
-              ..named = true
-              ..defaultTo = const Code('false')
-              ..type = refer('bool'),
-          ),
-          Parameter(
-            (p) => p
               ..name = 'orderByList'
               ..named = true
               ..type = typeOrderByListBuilder(className, serverCode),
           ),
-          Parameter((p) => p
-            ..name = 'include'
-            ..named = true
-            ..type = refer('${className}Include?'))
+          Parameter(
+            (p) => p
+              ..name = 'include'
+              ..named = true
+              ..type = refer('${className}Include?'),
+          ),
         ])
         ..body = refer('${className}IncludeList')
             .property('_')
@@ -1103,7 +1520,6 @@ class SerializableModelLibraryGenerator {
               'orderBy': refer('orderBy').nullSafeProperty('call').call(
                 [refer(className).property('t')],
               ),
-              'orderDescending': refer('orderDescending'),
               'orderByList': refer('orderByList').nullSafeProperty('call').call(
                 [refer(className).property('t')],
               ),
@@ -1115,7 +1531,11 @@ class SerializableModelLibraryGenerator {
   }
 
   Method _buildModelClassToJsonMethod(
-      Iterable<SerializableModelFieldDefinition> fields) {
+    Iterable<SerializableModelFieldDefinition> fields,
+    String className,
+    String? currentSharedPackageName,
+    String? tableName,
+  ) {
     return Method(
       (m) {
         m.returns = refer('Map<String,dynamic>');
@@ -1127,14 +1547,26 @@ class SerializableModelLibraryGenerator {
         // since the [toJson] method is included both on server and client side models,
         // on the client side the server-only fields are missing and we should not
         // generate serialization for these fields.
+        //
+        // Include implicit one-to-many child FKs in client toJson only when the
+        // model is table-backed here (hidden field exists on the class).
         if (!serverCode) {
-          filteredFields = filteredFields
-              .where((field) => field.shouldSerializeField(serverCode));
+          filteredFields = filteredFields.where(
+            (field) =>
+                field.shouldSerializeField(serverCode) ||
+                field.shouldIncludeHiddenFieldInModelClass(
+                  serverCode,
+                  modelHasTable: tableName != null,
+                ),
+          );
         }
 
         m.body = _createToJsonBodyFromFields(
           filteredFields,
           _toJsonMethodName,
+          className,
+          currentSharedPackageName,
+          tableName,
         );
       },
     );
@@ -1142,6 +1574,10 @@ class SerializableModelLibraryGenerator {
 
   Method _buildModelClassToJsonForProtocolMethod(
     Iterable<SerializableModelFieldDefinition> fields,
+    bool isServerOnlyClass,
+    String className,
+    String? currentSharedPackageName,
+    String? tableName,
   ) {
     return Method(
       (m) {
@@ -1149,12 +1585,17 @@ class SerializableModelLibraryGenerator {
         m.name = _toJsonForProtocolMethodName;
         m.annotations.add(refer('override'));
 
-        var filteredFields =
-            fields.where((field) => field.shouldSerializeField(serverCode));
+        var filteredFields = fields.where(
+          (field) =>
+              field.shouldSerializeField(serverCode) && !isServerOnlyClass,
+        );
 
         m.body = _createToJsonBodyFromFields(
           filteredFields,
           _toJsonForProtocolMethodName,
+          isServerOnlyClass ? null : className,
+          currentSharedPackageName,
+          tableName,
         );
       },
     );
@@ -1170,13 +1611,46 @@ class SerializableModelLibraryGenerator {
         m.annotations.add(refer('override'));
         m.body = Block.of([
           const Code('return '),
-          refer('SerializationManager', serverpodUrl(serverCode))
-              .property('encode')
-              .call(
+          refer(
+            'SerializationManager',
+            serverpodUrl(serverCode),
+          ).property('encode').call(
             [refer('this')],
           ).code,
           const Code(';'),
         ]);
+      },
+    );
+  }
+
+  Method _buildExceptionToStringMethod(
+    String className,
+    List<SerializableModelFieldDefinition> fields,
+  ) {
+    return Method(
+      (m) {
+        m.returns = refer('String');
+        m.name = 'toString';
+        m.annotations.add(refer('override'));
+
+        var visibleFields = fields.where(
+          (field) => field.shouldIncludeField(serverCode),
+        );
+
+        if (visibleFields.isEmpty) {
+          // For exceptions with no fields, return just the class name
+          m.body = literalString(className).returned.statement;
+        } else {
+          // For exceptions with fields, return "ClassName(field1: $field1, field2: $field2)"
+          var fieldStrings = visibleFields
+              .map((field) {
+                return '${field.name}: \$${field.name}';
+              })
+              .join(', ');
+          m.body = literalString(
+            '$className($fieldStrings)',
+          ).returned.statement;
+        }
       },
     );
   }
@@ -1186,6 +1660,7 @@ class SerializableModelLibraryGenerator {
     TypeDefinition fieldType,
     String methodName, {
     bool nullCheckedReference = false,
+    String? currentSharedPackageName,
   }) {
     if (fieldType.isSerializedValue) return fieldRef;
 
@@ -1193,25 +1668,28 @@ class SerializableModelLibraryGenerator {
     // to treat it as potentially null.
     var nullableField = nullCheckedReference ? false : fieldType.nullable;
 
+    var protocolRef = getProtocolReference(
+      serverCode,
+      config,
+      currentSharedPackageName: currentSharedPackageName,
+    );
+    if (fieldType.className == 'dynamic') {
+      final methodToJson = protocolRef.call([]).property('dynamicFieldToJson');
+      return (methodName == _toJsonForProtocolMethodName)
+          ? methodToJson.call([fieldRef], {'forProtocol': literal(true)})
+          : methodToJson.call([fieldRef]);
+    }
     if (fieldType.isRecordType) {
-      var mapRecordToJsonRef = refer(
-        mapRecordToJsonFuncName,
-        serverCode
-            ? 'package:${config.serverPackage}/src/generated/protocol.dart'
-            : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
+      return protocolRef.call([]).property(mapRecordToJsonFuncName).call(
+        [
+          fieldRef,
+        ],
       );
-
-      return mapRecordToJsonRef.call([fieldRef]);
     } else if (fieldType.returnsRecordInContainer) {
-      var mapContainerToJsonRef = refer(
-        mapContainerToJsonFunctionName,
-        serverCode
-            ? 'package:${config.serverPackage}/src/generated/protocol.dart'
-            : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
-      );
-
-      return mapContainerToJsonRef.call(
-        [refer('${fieldRef.symbol}${nullableField ? '!' : ''}')],
+      return protocolRef.call([]).property(mapContainerToJsonFunctionName).call(
+        [
+          refer('${fieldRef.symbol}${nullableField ? '!' : ''}'),
+        ],
       );
     }
 
@@ -1244,6 +1722,7 @@ class SerializableModelLibraryGenerator {
             const Code('?'),
             toJsonForProtocolExpression.call([]).code,
             const Code(':'),
+            const Code('// ignore: dead_code\n'),
             toJsonExpression.call([]).code,
           ],
         ),
@@ -1251,7 +1730,14 @@ class SerializableModelLibraryGenerator {
       return fieldExpression;
     }
 
-    var toJson = fieldType.isSerializedByExtension || fieldType.isEnumType
+    // Every generated model and exception implements ProtocolSerialization on
+    // every side, so a nested model/exception field mirrors the parent's
+    // serialization method (e.g. `toJsonForProtocol`). Enums have no protocol
+    // form and are always serialized with `toJson`.
+    var toJson =
+        fieldType.isSerializedByExtension ||
+            fieldType.isEnumType ||
+            fieldType.projectModelDefinition is! ClassDefinition
         ? _toJsonMethodName
         : methodName;
 
@@ -1276,8 +1762,9 @@ class SerializableModelLibraryGenerator {
               refer('v'),
               fieldType.generics.first,
               methodName,
+              currentSharedPackageName: currentSharedPackageName,
             ).code,
-        ).closure
+        ).closure,
       };
     } else if (fieldType.isMapType) {
       if (!fieldType.generics.first.isSerializedValue) {
@@ -1293,8 +1780,9 @@ class SerializableModelLibraryGenerator {
                 refer('k'),
                 fieldType.generics.first,
                 methodName,
+                currentSharedPackageName: currentSharedPackageName,
               ).code,
-          ).closure
+          ).closure,
         };
       }
 
@@ -1311,8 +1799,9 @@ class SerializableModelLibraryGenerator {
                 refer('v'),
                 fieldType.generics.last,
                 methodName,
+                currentSharedPackageName: currentSharedPackageName,
               ).code,
-          ).closure
+          ).closure,
         };
       }
     }
@@ -1323,11 +1812,15 @@ class SerializableModelLibraryGenerator {
   Code _createToJsonBodyFromFields(
     Iterable<SerializableModelFieldDefinition> fields,
     String toJsonMethodName,
+    String? className,
+    String? currentSharedPackageName,
+    String? tableName,
   ) {
     var map = fields.fold<Map<Code, Expression>>({}, (map, field) {
       var fieldName = _createSerializableFieldNameReference(
         serverCode,
         field,
+        tableName: tableName,
       );
 
       Expression fieldRef = _toJsonCallConversionMethod(
@@ -1336,30 +1829,51 @@ class SerializableModelLibraryGenerator {
         toJsonMethodName,
         // Hidden serializable fields are final so no additional null check
         // is needed.
-        nullCheckedReference: field.hiddenSerializableField(serverCode),
+        nullCheckedReference: field.shouldIncludeHiddenFieldInModelClass(
+          serverCode,
+          modelHasTable: tableName != null,
+        ),
+        currentSharedPackageName: currentSharedPackageName,
       );
+
+      final fieldKey = field.jsonKey;
 
       return {
         ...map,
         if (field.type.nullable)
-          Code("if (${fieldName.symbol} != null) '${field.name}'"): fieldRef,
-        if (!field.type.nullable) Code("'${field.name}'"): fieldRef,
+          Code("if (${fieldName.symbol} != null) '$fieldKey'"): fieldRef,
+        if (!field.type.nullable) Code("'$fieldKey'"): fieldRef,
       };
     });
 
-    return literalMap(map).returned.statement;
+    const classNameCode = Code("'$_classNameHiddenField'");
+
+    return literalMap({
+      if (className != null)
+        classNameCode: config.type != PackageType.server
+            ? literalString('${config.name}.$className')
+            : literalString(className),
+      ...map,
+    }).returned.statement;
   }
 
   Constructor _buildModelClassFromJsonConstructor(
     String className,
-    List<SerializableModelFieldDefinition> fields, {
+    List<SerializableModelFieldDefinition> fields,
+    String? tableName, {
     required List<String> subDirParts,
     required bool hasImplicitClass,
+    String? currentSharedPackageName,
   }) {
-    var visibleFields =
-        fields.where((field) => field.shouldIncludeField(serverCode));
-    var hiddenSerializableFields =
-        fields.where((field) => field.hiddenSerializableField(serverCode));
+    var visibleFields = fields.where(
+      (field) => field.shouldIncludeField(serverCode),
+    );
+    var hiddenSerializableFields = fields.where(
+      (field) => field.shouldIncludeHiddenFieldInModelClass(
+        serverCode,
+        modelHasTable: tableName != null,
+      ),
+    );
     return Constructor((c) {
       c.factory = true;
       c.name = 'fromJson';
@@ -1377,6 +1891,7 @@ class SerializableModelLibraryGenerator {
                 serverCode,
                 config,
                 subDirParts,
+                currentSharedPackageName,
               ),
             for (var field in hiddenSerializableFields)
               createFieldName(serverCode, field): buildFromJsonForField(
@@ -1384,7 +1899,8 @@ class SerializableModelLibraryGenerator {
                 serverCode,
                 config,
                 subDirParts,
-              )
+                currentSharedPackageName,
+              ),
           })
           .returned
           .statement;
@@ -1394,6 +1910,7 @@ class SerializableModelLibraryGenerator {
   Constructor _buildModelClassConstructor(
     List<SerializableModelFieldDefinition> fields,
     String? tableName, {
+    required bool isImmutable,
     required bool isParentClass,
     required List<String> subDirParts,
     required List<SerializableModelFieldDefinition> inheritedFields,
@@ -1402,19 +1919,27 @@ class SerializableModelLibraryGenerator {
       if (!isParentClass) {
         c.name = '_';
       }
-      c.optionalParameters.addAll(_buildModelClassConstructorParameters(
-        fields,
-        tableName,
-        setAsToThis: true,
-        subDirParts: subDirParts,
-        inheritedFields: inheritedFields,
-      ));
+      c.optionalParameters.addAll(
+        _buildModelClassConstructorParameters(
+          fields,
+          tableName,
+          setAsToThis: true,
+          subDirParts: subDirParts,
+          inheritedFields: inheritedFields,
+        ),
+      );
 
-      var classFields =
-          fields.where((field) => !inheritedFields.contains(field)).toList();
+      if (isImmutable) {
+        c.constant = true;
+      }
+
+      var classFields = fields
+          .where((field) => !inheritedFields.contains(field))
+          .toList();
 
       var defaultValueFields = classFields.where(
-          (field) => field.hasDefaults && field.shouldIncludeField(serverCode));
+        (field) => field.hasDefaults && field.shouldIncludeField(serverCode),
+      );
       for (var field in defaultValueFields) {
         Code? defaultCode = _getDefaultValue(
           field,
@@ -1422,22 +1947,33 @@ class SerializableModelLibraryGenerator {
         );
         if (defaultCode == null) continue;
 
-        c.initializers.add(Block.of([
-          refer(field.name).code,
-          const Code('='),
-          refer(field.name).ifNullThen(CodeExpression(defaultCode)).code,
-        ]));
+        c.initializers.add(
+          Block.of([
+            refer(field.name).code,
+            const Code('='),
+            refer(field.name).ifNullThen(CodeExpression(defaultCode)).code,
+          ]),
+        );
       }
 
       var implicitFields = classFields.where(
-        (field) => field.hiddenSerializableField(serverCode),
+        (field) => field.shouldIncludeHiddenFieldInModelClass(
+          serverCode,
+          modelHasTable: tableName != null,
+        ),
       );
       for (var field in implicitFields) {
-        c.initializers.add(Block.of([
-          _createSerializableFieldNameReference(serverCode, field).code,
-          const Code('='),
-          literalNull.code,
-        ]));
+        c.initializers.add(
+          Block.of([
+            _createSerializableFieldNameReference(
+              serverCode,
+              field,
+              tableName: tableName,
+            ).code,
+            const Code('='),
+            literalNull.code,
+          ]),
+        );
       }
     });
   }
@@ -1446,18 +1982,25 @@ class SerializableModelLibraryGenerator {
     String className,
     List<SerializableModelFieldDefinition> fields,
     String? tableName, {
+    required bool isImmutable,
     required List<String> subDirParts,
     required List<SerializableModelFieldDefinition> inheritedFields,
   }) {
     return Constructor((c) {
       c.factory = true;
-      c.optionalParameters.addAll(_buildModelClassConstructorParameters(
-        fields,
-        tableName,
-        setAsToThis: false,
-        subDirParts: subDirParts,
-        inheritedFields: inheritedFields,
-      ));
+      c.optionalParameters.addAll(
+        _buildModelClassConstructorParameters(
+          fields,
+          tableName,
+          setAsToThis: false,
+          subDirParts: subDirParts,
+          inheritedFields: inheritedFields,
+        ),
+      );
+
+      if (isImmutable) {
+        c.constant = true;
+      }
 
       c.redirect = refer('_${className}Impl');
     });
@@ -1466,26 +2009,33 @@ class SerializableModelLibraryGenerator {
   Constructor _buildModelImplClassConstructor(
     List<SerializableModelFieldDefinition> fields,
     String? tableName, {
+    required bool isImmutable,
     required List<String> subDirParts,
     required List<SerializableModelFieldDefinition> inheritedFields,
   }) {
     return Constructor((c) {
-      c.optionalParameters.addAll(_buildModelClassConstructorParameters(
-        fields,
-        tableName,
-        setAsToThis: false,
-        subDirParts: subDirParts,
-        inheritedFields: inheritedFields,
-      ));
+      c.optionalParameters.addAll(
+        _buildModelClassConstructorParameters(
+          fields,
+          tableName,
+          setAsToThis: false,
+          subDirParts: subDirParts,
+          inheritedFields: inheritedFields,
+        ),
+      );
 
       Map<String, Expression> namedParams = fields
           .where((field) => field.shouldIncludeField(serverCode))
           .fold({}, (map, field) {
-        return {
-          ...map,
-          field.name: refer(field.name),
-        };
-      });
+            return {
+              ...map,
+              field.name: refer(field.name),
+            };
+          });
+
+      if (isImmutable) {
+        c.constant = true;
+      }
 
       c.initializers.add(refer('super._').call([], namedParams).code);
     });
@@ -1498,10 +2048,11 @@ class SerializableModelLibraryGenerator {
     required bool setAsToThis,
     required List<SerializableModelFieldDefinition> inheritedFields,
   }) {
-    return fields
-        .where((field) => field.shouldIncludeField(serverCode))
-        .map((field) {
-      bool shouldIncludeType = !setAsToThis ||
+    return fields.where((field) => field.shouldIncludeField(serverCode)).map((
+      field,
+    ) {
+      bool shouldIncludeType =
+          !setAsToThis ||
           (field.defaultModelValue != null) &&
               (!inheritedFields.contains(field));
 
@@ -1518,7 +2069,8 @@ class SerializableModelLibraryGenerator {
         p
           ..named = true
           ..name = field.name
-          ..required = !(field.type.nullable || hasDefaults) ||
+          ..required =
+              !(field.type.nullable || hasDefaults) ||
               (field.type.nullable && field.isRequired);
 
         if (shouldIncludeType) {
@@ -1548,9 +2100,9 @@ class SerializableModelLibraryGenerator {
         if (defaultValue == defaultDateTimeValueNow) {
           return refer(field.type.className).property('now').call([]).code;
         }
-        return refer(field.type.className)
-            .property('parse')
-            .call([CodeExpression(Code("'$defaultValue'"))]).code;
+        return refer(field.type.className).property('parse').call([
+          CodeExpression(Code("'$defaultValue'")),
+        ]).code;
       case DefaultValueAllowedType.bool:
         return switch (defaultValue) {
           true => literalBool(true).code,
@@ -1573,30 +2125,36 @@ class SerializableModelLibraryGenerator {
           _ => null,
         };
         if (uuidGeneratorMethod != null) {
-          return refer('Uuid()', serverpodUrl(serverCode))
-              .property(uuidGeneratorMethod)
-              .call([]).code;
+          return refer(
+            'Uuid',
+            serverpodUrl(serverCode),
+          ).constInstance([]).property(uuidGeneratorMethod).call([]).code;
         }
 
-        return refer(field.type.className, serverpodUrl(serverCode))
-            .property('fromString')
-            .call([literalString(defaultValue)]).code;
+        return refer(
+          field.type.className,
+          serverpodUrl(serverCode),
+        ).property('fromString').call([literalString(defaultValue)]).code;
       case DefaultValueAllowedType.uri:
-        return refer(field.type.className)
-            .property('parse')
-            .call([literalString(defaultValue)]).code;
+        return refer(
+          field.type.className,
+        ).property('parse').call([literalString(defaultValue)]).code;
       case DefaultValueAllowedType.bigInt:
-        return refer(field.type.className)
-            .property('parse')
-            .call([literalString(defaultValue)]).code;
+        return refer(
+          field.type.className,
+        ).property('parse').call([literalString(defaultValue)]).code;
       case DefaultValueAllowedType.duration:
         Duration parsedDuration = parseDuration(defaultValue);
-        return refer(field.type.className).call([], {
-          'days': literalNum(parsedDuration.days),
-          'hours': literalNum(parsedDuration.hours),
-          'minutes': literalNum(parsedDuration.minutes),
-          'seconds': literalNum(parsedDuration.seconds),
-          'milliseconds': literalNum(parsedDuration.milliseconds),
+        return refer(field.type.className).constInstance([], {
+          if (parsedDuration.days != 0) 'days': literalNum(parsedDuration.days),
+          if (parsedDuration.hours != 0)
+            'hours': literalNum(parsedDuration.hours),
+          if (parsedDuration.minutes != 0)
+            'minutes': literalNum(parsedDuration.minutes),
+          if (parsedDuration.seconds != 0)
+            'seconds': literalNum(parsedDuration.seconds),
+          if (parsedDuration.milliseconds != 0)
+            'milliseconds': literalNum(parsedDuration.milliseconds),
         }).code;
       case DefaultValueAllowedType.isEnum:
         var enumDefinition = field.type.enumDefinition;
@@ -1615,10 +2173,11 @@ class SerializableModelLibraryGenerator {
     List<SerializableModelFieldDefinition> fields, {
     required List<String> subDirParts,
     required List<SerializableModelFieldDefinition> inheritedFields,
+    required bool isIdInherited,
   }) {
-    return fields
-        .where((field) => field.shouldIncludeField(serverCode))
-        .map((field) {
+    return fields.where((field) => field.shouldIncludeField(serverCode)).map((
+      field,
+    ) {
       var fieldType = field.type.reference(
         serverCode,
         nullable: true,
@@ -1626,7 +2185,9 @@ class SerializableModelLibraryGenerator {
         config: config,
       );
 
-      var isInheritedField = inheritedFields.contains(field);
+      var isInheritedField =
+          inheritedFields.contains(field) ||
+          (field.name == defaultPrimaryKeyName && isIdInherited);
 
       var type = field.type.nullable && isInheritedField
           ? refer('Object?')
@@ -1642,66 +2203,100 @@ class SerializableModelLibraryGenerator {
   }
 
   List<Field> _buildModelClassFields(
-      List<SerializableModelFieldDefinition> fields,
-      String? tableName,
-      List<String> subDirParts) {
+    List<SerializableModelFieldDefinition> fields,
+    String? tableName,
+    List<String> subDirParts, {
+    required bool isClassImmutable,
+    required bool isTableOwner,
+  }) {
     List<Field> modelClassFields = [];
     var classFields = fields
-        .where((f) =>
-            f.shouldIncludeField(serverCode) ||
-            (tableName != null && f.hiddenSerializableField(serverCode)))
-        .where((f) => !(f.name == 'id' && serverCode && tableName != null));
+        .where(
+          (f) =>
+              f.shouldIncludeField(serverCode) ||
+              f.shouldIncludeHiddenFieldInModelClass(
+                serverCode,
+                modelHasTable: tableName != null,
+              ),
+        )
+        .where((f) => !(f.name == 'id' && isTableOwner && tableName != null));
 
     for (var field in classFields) {
-      modelClassFields.add(Field((f) {
-        f
-          ..type = field.type.reference(
+      modelClassFields.add(
+        Field((f) {
+          f
+            ..type = field.type.reference(
+              serverCode,
+              subDirParts: subDirParts,
+              config: config,
+            )
+            ..name = _createSerializableFieldNameReference(
+              serverCode,
+              field,
+              tableName: tableName,
+            ).symbol
+            ..docs.addAll(field.documentation ?? []);
+          if (field.shouldIncludeHiddenFieldInModelClass(
             serverCode,
-            subDirParts: subDirParts,
-            config: config,
-          )
-          ..name =
-              _createSerializableFieldNameReference(serverCode, field).symbol
-          ..docs.addAll(field.documentation ?? []);
-        if (field.hiddenSerializableField(serverCode)) {
-          f.modifier = FieldModifier.final$;
-        }
-      }));
+            modelHasTable: tableName != null,
+          )) {
+            f.modifier = FieldModifier.final$;
+          } else {
+            f.modifier = isClassImmutable
+                ? FieldModifier.final$
+                : FieldModifier.var$;
+          }
+        }),
+      );
     }
 
     return modelClassFields;
   }
 
   Class _buildModelTableClass(
-      String className,
-      String tableName,
-      List<SerializableModelFieldDefinition> fields,
-      ClassDefinition classDefinition,
-      TypeReference idTypeReference) {
-    var serializedFields = fields
-        .where((f) => f.shouldSerializeFieldForDatabase(serverCode))
-        .toSet();
+    String className,
+    String tableName,
+    List<SerializableModelFieldDefinition> fields,
+    ModelClassDefinition classDefinition,
+    TypeReference idTypeReference,
+  ) {
+    var serializedFields = fields.where((f) => f.shouldPersist).toSet();
+    // Omit scope-none persisted columns from [managedColumns] on server and
+    // client (e.g. implicit foreign keys).
     var hiddenSerializedFields = serializedFields
-        .where((f) => f.hiddenSerializableField(serverCode))
+        .where(
+          (f) => f.shouldPersist && f.scope == ModelFieldScopeDefinition.none,
+        )
         .toSet();
     return Class((c) {
       c.name = '${className}Table';
-      c.extend = TypeReference((f) => f
-        ..symbol = 'Table'
-        ..url = serverpodUrl(serverCode)
-        ..types.add(idTypeReference));
+      c.extend = TypeReference(
+        (f) => f
+          ..symbol = 'Table'
+          ..url = _databaseRuntimeUrl
+          ..types.add(idTypeReference),
+      );
 
       c.constructors.add(
-          _buildModelTableClassConstructor(tableName, fields, classDefinition));
+        _buildModelTableClassConstructor(tableName, fields, classDefinition),
+      );
 
-      c.fields.add(Field((f) => f
-        ..name = 'updateTable'
-        ..late = true
-        ..modifier = FieldModifier.final$
-        ..type = refer('${className}UpdateTable')));
+      c.fields.add(
+        Field(
+          (f) => f
+            ..name = 'updateTable'
+            ..late = true
+            ..modifier = FieldModifier.final$
+            ..type = refer('${className}UpdateTable'),
+        ),
+      );
 
       c.fields.addAll(
-        _buildModelTableClassFields(fields, classDefinition.subDirParts),
+        _buildModelTableClassFields(
+          fields,
+          classDefinition.subDirParts,
+          isTableOwner: classDefinition.isTableOwner(serverCode),
+        ),
       );
 
       c.methods.addAll([
@@ -1722,12 +2317,18 @@ class SerializableModelLibraryGenerator {
           ),
       ]);
 
-      var relationFields = fields.where((f) =>
-          f.relation is ObjectRelationDefinition ||
-          f.relation is ListRelationDefinition);
+      var relationFields = fields.where(
+        (f) =>
+            f.relation is ObjectRelationDefinition ||
+            f.relation is ListRelationDefinition,
+      );
       if (relationFields.isNotEmpty) {
-        c.methods.add(_buildModelTableClassGetRelationTable(
-            relationFields, idTypeReference));
+        c.methods.add(
+          _buildModelTableClassGetRelationTable(
+            relationFields,
+            idTypeReference,
+          ),
+        );
       }
     });
   }
@@ -1735,100 +2336,122 @@ class SerializableModelLibraryGenerator {
   Class _buildModelUpdateTableClass(
     String className,
     List<SerializableModelFieldDefinition> fields,
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
   ) {
     var serializedFields = fields
-        .where((f) => f.shouldSerializeFieldForDatabase(serverCode))
-        .where((f) => !(f.name == 'id' && serverCode));
+        .where((f) => f.shouldPersist)
+        .where(
+          (f) => !(f.name == 'id' && classDefinition.isTableOwner(serverCode)),
+        );
 
     return Class((c) {
       c.name = '${className}UpdateTable';
 
       // Extend UpdateTable<T> base class
-      c.extend = TypeReference((t) => t
-        ..symbol = 'UpdateTable'
-        ..url = serverpodUrl(serverCode)
-        ..types.add(refer('${className}Table')));
+      c.extend = TypeReference(
+        (t) => t
+          ..symbol = 'UpdateTable'
+          ..url = _databaseRuntimeUrl
+          ..types.add(refer('${className}Table')),
+      );
 
       // Use super constructor
-      c.constructors.add(Constructor((constructor) {
-        constructor.requiredParameters.add(Parameter((p) => p
-          ..name = 'table'
-          ..toSuper = true));
-      }));
+      c.constructors.add(
+        Constructor((constructor) {
+          constructor.requiredParameters.add(
+            Parameter(
+              (p) => p
+                ..name = 'table'
+                ..toSuper = true,
+            ),
+          );
+        }),
+      );
 
       // Add a method for each column that returns a ColumnValue
       for (var field in serializedFields) {
-        c.methods.add(Method((m) {
-          var fieldType = field.type.reference(
-            serverCode,
-            nullable: field.type.nullable,
-            subDirParts: classDefinition.subDirParts,
-            config: config,
-          );
-
-          // For records, the second type parameter should be Map<String, dynamic>?
-          var secondTypeParam = field.type.isRecordType
-              ? TypeReference((t) => t
-                ..symbol = 'Map'
-                ..types.addAll([
-                  refer('String'),
-                  refer('dynamic'),
-                ])
-                ..isNullable = true)
-              : field.type.reference(
-                  serverCode,
-                  nullable: false,
-                  subDirParts: classDefinition.subDirParts,
-                  config: config,
-                );
-
-          m
-            ..name = createFieldName(serverCode, field)
-            ..returns = TypeReference((t) => t
-              ..symbol = 'ColumnValue'
-              ..url = serverpodUrl(serverCode)
-              ..types.addAll([
-                field.type.reference(
-                  serverCode,
-                  nullable: false,
-                  subDirParts: classDefinition.subDirParts,
-                  config: config,
-                ),
-                secondTypeParam,
-              ]))
-            ..requiredParameters.add(Parameter((p) => p
-              ..name = 'value'
-              ..type = fieldType))
-            ..lambda = true;
-
-          // For records, we need to call mapRecordToJson
-          if (field.type.isRecordType) {
-            var mapRecordToJsonRef = refer(
-              mapRecordToJsonFuncName,
-              serverCode
-                  ? 'package:${config.serverPackage}/src/generated/protocol.dart'
-                  : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
+        c.methods.add(
+          Method((m) {
+            var fieldType = field.type.reference(
+              serverCode,
+              nullable: field.type.nullable,
+              subDirParts: classDefinition.subDirParts,
+              config: config,
             );
 
-            m.body = refer('ColumnValue', serverpodUrl(serverCode)).call([
-              refer('table').property(createFieldName(serverCode, field)),
-              mapRecordToJsonRef.call([refer('value')])
-            ]).code;
-          } else {
-            m.body = refer('ColumnValue', serverpodUrl(serverCode)).call([
-              refer('table').property(createFieldName(serverCode, field)),
-              refer('value')
-            ]).code;
-          }
-        }));
+            // For records, the second type parameter should be Map<String, dynamic>?
+            var secondTypeParam = field.type.isRecordType
+                ? TypeReference(
+                    (t) => t
+                      ..symbol = 'Map'
+                      ..types.addAll([
+                        refer('String'),
+                        refer('dynamic'),
+                      ])
+                      ..isNullable = true,
+                  )
+                : field.type.reference(
+                    serverCode,
+                    nullable: false,
+                    subDirParts: classDefinition.subDirParts,
+                    config: config,
+                  );
+
+            m
+              ..name = _createDatabaseFieldName(field)
+              ..returns = TypeReference(
+                (t) => t
+                  ..symbol = 'ColumnValue'
+                  ..url = _databaseRuntimeUrl
+                  ..types.addAll([
+                    field.type.reference(
+                      serverCode,
+                      nullable: false,
+                      subDirParts: classDefinition.subDirParts,
+                      config: config,
+                    ),
+                    secondTypeParam,
+                  ]),
+              )
+              ..requiredParameters.add(
+                Parameter(
+                  (p) => p
+                    ..name = 'value'
+                    ..type = fieldType,
+                ),
+              )
+              ..lambda = true;
+
+            // For records, we need to call mapRecordToJson
+            if (field.type.isRecordType) {
+              var protocolRef = getProtocolReference(
+                serverCode,
+                config,
+                currentSharedPackageName: classDefinition.sharedPackageName,
+              );
+
+              m.body = refer('ColumnValue', _databaseRuntimeUrl).call([
+                refer('table').property(createFieldName(serverCode, field)),
+                protocolRef.call([]).property(mapRecordToJsonFuncName).call([
+                  refer('value'),
+                ]),
+              ]).code;
+            } else {
+              m.body = refer('ColumnValue', _databaseRuntimeUrl).call([
+                refer('table').property(createFieldName(serverCode, field)),
+                refer('value'),
+              ]).code;
+            }
+          }),
+        );
       }
     });
   }
 
   Method _buildModelTableClassGetRelationTable(
-      Iterable<SerializableModelFieldDefinition> relationFields,
-      TypeReference idTypeReference) {
+    Iterable<SerializableModelFieldDefinition> relationFields,
+    TypeReference idTypeReference,
+  ) {
     return Method(
       (m) => m
         ..annotations.add(refer('override'))
@@ -1836,7 +2459,7 @@ class SerializableModelLibraryGenerator {
           (t) => t
             ..symbol = 'Table'
             ..isNullable = true
-            ..url = serverpodUrl(true),
+            ..url = _databaseRuntimeUrl,
         )
         ..name = 'getRelationTable'
         ..requiredParameters.add(
@@ -1846,24 +2469,27 @@ class SerializableModelLibraryGenerator {
               ..name = 'relationField',
           ),
         )
-        ..body = (BlockBuilder()
-              ..statements.addAll([
-                for (var relationField in relationFields)
-                  Block.of([
-                    Code(
-                        'if (relationField == ${literalString(relationField.name)}) {'),
-                    lazyCode(() {
-                      var fieldName = relationField.name;
-                      if (relationField.relation is ListRelationDefinition) {
-                        fieldName = '__$fieldName';
-                      }
-                      return refer(fieldName).returned.statement;
-                    }),
-                    const Code('}'),
-                  ]),
-                const Code('return null;'),
-              ]))
-            .build(),
+        ..body =
+            (BlockBuilder()
+                  ..statements.addAll([
+                    for (var relationField in relationFields)
+                      Block.of([
+                        Code(
+                          'if (relationField == ${literalString(relationField.name)}) {',
+                        ),
+                        lazyCode(() {
+                          var fieldName = relationField.name;
+                          if (relationField.relation
+                              is ListRelationDefinition) {
+                            fieldName = '__$fieldName';
+                          }
+                          return refer(fieldName).returned.statement;
+                        }),
+                        const Code('}'),
+                      ]),
+                    const Code('return null;'),
+                  ]))
+                .build(),
     );
   }
 
@@ -1878,85 +2504,110 @@ class SerializableModelLibraryGenerator {
           (t) => t
             ..symbol = 'List'
             ..types.add(
-              refer('Column', serverpodUrl(true)),
+              refer('Column', _databaseRuntimeUrl),
             ),
         )
         ..name = name
         ..lambda = true
         ..type = MethodType.getter
         ..body = literalList(
-          fields.map((f) => refer(createFieldName(serverCode, f))),
+          fields.map((f) => refer(_createDatabaseFieldName(f))),
         ).code,
     );
   }
 
   List<Field> _buildModelTableClassFields(
     List<SerializableModelFieldDefinition> fields,
-    List<String> subDirParts,
-  ) {
+    List<String> subDirParts, {
+    required bool isTableOwner,
+  }) {
     List<Field> tableFields = [];
 
     for (var field in fields) {
       // Simple column field
-      if (field.shouldSerializeFieldForDatabase(serverCode) &&
-          !(field.name == 'id' && serverCode)) {
-        tableFields.add(Field((f) => f
-          ..late = true
-          ..modifier = FieldModifier.final$
-          ..name = createFieldName(serverCode, field)
-          ..docs.addAll(field.documentation ?? [])
-          ..type = TypeReference((t) => t
-            ..symbol = field.type.columnType
-            ..url = serverpodUrl(true)
-            ..types
-                .addAll(field.type.isEnumType || field.type.isColumnSerializable
-                    ? [
-                        field.type.reference(
-                          serverCode,
-                          nullable: false,
-                          subDirParts: subDirParts,
-                          config: config,
-                        )
-                      ]
-                    : []))));
+      if (field.shouldPersist && !(field.name == 'id' && isTableOwner)) {
+        tableFields.add(
+          Field(
+            (f) => f
+              ..late = true
+              ..modifier = FieldModifier.final$
+              ..name = _createDatabaseFieldName(field)
+              ..docs.addAll(field.documentation ?? [])
+              ..type = TypeReference(
+                (t) => t
+                  ..symbol = field.type.columnType
+                  ..url = _databaseRuntimeUrl
+                  ..types.addAll(
+                    field.type.isEnumType ||
+                            field.type.isColumnSerializable ||
+                            field.type.isColumnStructured
+                        ? [
+                            field.type.reference(
+                              serverCode,
+                              nullable: false,
+                              subDirParts: subDirParts,
+                              config: config,
+                            ),
+                          ]
+                        : [],
+                  ),
+              ),
+          ),
+        );
       } else if (field.relation is ObjectRelationDefinition) {
         // Add internal nullable table field
-        tableFields.add(Field((f) => f
-          ..name = '_${field.name}'
-          ..docs.addAll(field.documentation ?? [])
-          ..type = field.type.reference(
-            serverCode,
-            subDirParts: subDirParts,
-            config: config,
-            nullable: true,
-            typeSuffix: 'Table',
-          )));
+        tableFields.add(
+          Field(
+            (f) => f
+              ..name = '_${field.name}'
+              ..docs.addAll(field.documentation ?? [])
+              ..type = field.type.reference(
+                serverCode,
+                subDirParts: subDirParts,
+                config: config,
+                nullable: true,
+                typeSuffix: 'Table',
+              ),
+          ),
+        );
       } else if (field.relation is ListRelationDefinition) {
-        tableFields.add(Field((f) => f
-          ..name = '___${field.name}'
-          ..docs.addAll(field.documentation ?? [])
-          ..type = field.type.generics.first.reference(
-            serverCode,
-            subDirParts: subDirParts,
-            config: config,
-            nullable: true,
-            typeSuffix: 'Table',
-          )));
+        tableFields.add(
+          Field(
+            (f) => f
+              ..name = '___${field.name}'
+              ..docs.addAll(field.documentation ?? [])
+              ..type = field.type.generics.first.reference(
+                serverCode,
+                subDirParts: subDirParts,
+                config: config,
+                nullable: true,
+                typeSuffix: 'Table',
+              ),
+          ),
+        );
         // Add internal nullable many relation field
-        tableFields.add(Field((f) => f
-          ..name = '_${field.name}'
-          ..docs.addAll(field.documentation ?? [])
-          ..type = TypeReference((t) => t
-            ..symbol = 'ManyRelation'
-            ..url = serverpodUrl(serverCode)
-            ..isNullable = true
-            ..types.add(field.type.generics.first.reference(
-              serverCode,
-              subDirParts: subDirParts,
-              config: config,
-              nullable: false,
-              typeSuffix: 'Table',
-            )))));
+        tableFields.add(
+          Field(
+            (f) => f
+              ..name = '_${field.name}'
+              ..docs.addAll(field.documentation ?? [])
+              ..type = TypeReference(
+                (t) => t
+                  ..symbol = 'ManyRelation'
+                  ..url = _databaseRuntimeUrl
+                  ..isNullable = true
+                  ..types.add(
+                    field.type.generics.first.reference(
+                      serverCode,
+                      subDirParts: subDirParts,
+                      config: config,
+                      nullable: false,
+                      typeSuffix: 'Table',
+                    ),
+                  ),
+              ),
+          ),
+        );
       }
     }
 
@@ -1980,19 +2631,23 @@ class SerializableModelLibraryGenerator {
       String relationFieldName = '';
       String relationForeignFieldName = '';
       String fieldName = '';
-      TypeReference fieldType = field.type.reference(
-        serverCode,
-        subDirParts: subDirParts,
-        config: config,
-        nullable: false,
-      ) as TypeReference;
-      TypeReference tableType = field.type.reference(
-        serverCode,
-        subDirParts: subDirParts,
-        config: config,
-        nullable: false,
-        typeSuffix: 'Table',
-      ) as TypeReference;
+      TypeReference fieldType =
+          field.type.reference(
+                serverCode,
+                subDirParts: subDirParts,
+                config: config,
+                nullable: false,
+              )
+              as TypeReference;
+      TypeReference tableType =
+          field.type.reference(
+                serverCode,
+                subDirParts: subDirParts,
+                config: config,
+                nullable: false,
+                typeSuffix: 'Table',
+              )
+              as TypeReference;
 
       var relation = field.relation;
       if (relation is ObjectRelationDefinition) {
@@ -2003,60 +2658,70 @@ class SerializableModelLibraryGenerator {
         relationFieldName = relation.fieldName;
         relationForeignFieldName = createForeignFieldName(relation);
         fieldName = '__${field.name}';
-        fieldType = field.type.generics.first.reference(
-          serverCode,
-          subDirParts: subDirParts,
-          config: config,
-          nullable: false,
-        ) as TypeReference;
-        tableType = (field.type.generics.first).reference(
-          serverCode,
-          subDirParts: subDirParts,
-          config: config,
-          nullable: false,
-          typeSuffix: 'Table',
-        ) as TypeReference;
+        fieldType =
+            field.type.generics.first.reference(
+                  serverCode,
+                  subDirParts: subDirParts,
+                  config: config,
+                  nullable: false,
+                )
+                as TypeReference;
+        tableType =
+            (field.type.generics.first).reference(
+                  serverCode,
+                  subDirParts: subDirParts,
+                  config: config,
+                  nullable: false,
+                  typeSuffix: 'Table',
+                )
+                as TypeReference;
       }
 
       // Add getter method for relation table that creates the table
-      getters.add(Method((m) => m
-        ..name = fieldName
-        ..type = MethodType.getter
-        ..returns = tableType
-        ..body = Block.of([
-          Code('if (_$fieldName != null) return _$fieldName!;'),
-          refer('_$fieldName')
-              .assign(
-                refer(
-                  'createRelationTable',
-                  serverpodUrl(true),
-                ).call(
-                  [],
-                  {
-                    'relationFieldName': literalString(fieldName),
-                    'field': refer(classDefinition.className)
-                        .property('t')
-                        .property(relationFieldName),
-                    'foreignField': fieldType
-                        .property('t')
-                        .property(relationForeignFieldName),
-                    'tableRelation': refer('tableRelation'),
-                    'createTable': Method(
-                      (m) => m
-                        ..requiredParameters.addAll([
-                          Parameter((p) => p..name = 'foreignTableRelation'),
-                        ])
-                        ..lambda = true
-                        ..body = tableType.call([], {
-                          'tableRelation': refer('foreignTableRelation')
-                        }).code,
-                    ).closure
-                  },
-                ),
-              )
-              .statement,
-          Code('return _$fieldName!;'),
-        ])));
+      getters.add(
+        Method(
+          (m) => m
+            ..name = fieldName
+            ..type = MethodType.getter
+            ..returns = tableType
+            ..body = Block.of([
+              Code('if (_$fieldName != null) return _$fieldName!;'),
+              refer('_$fieldName')
+                  .assign(
+                    refer(
+                      'createRelationTable',
+                      _databaseRuntimeUrl,
+                    ).call(
+                      [],
+                      {
+                        'relationFieldName': literalString(fieldName),
+                        'field': refer(
+                          classDefinition.className,
+                        ).property('t').property(relationFieldName),
+                        'foreignField': fieldType
+                            .property('t')
+                            .property(relationForeignFieldName),
+                        'tableRelation': refer('tableRelation'),
+                        'createTable': Method(
+                          (m) => m
+                            ..requiredParameters.addAll([
+                              Parameter(
+                                (p) => p..name = 'foreignTableRelation',
+                              ),
+                            ])
+                            ..lambda = true
+                            ..body = tableType.call([], {
+                              'tableRelation': refer('foreignTableRelation'),
+                            }).code,
+                        ).closure,
+                      },
+                    ),
+                  )
+                  .statement,
+              Code('return _$fieldName!;'),
+            ]),
+        ),
+      );
     }
 
     return getters;
@@ -2068,118 +2733,140 @@ class SerializableModelLibraryGenerator {
   ) {
     List<Method> getters = [];
 
-    var manyRelationFields =
-        fields.where((f) => f.relation is ListRelationDefinition);
+    var manyRelationFields = fields.where(
+      (f) => f.relation is ListRelationDefinition,
+    );
 
     for (var field in manyRelationFields) {
       var listRelation = field.relation as ListRelationDefinition;
 
-      getters.add(Method((m) => m
-        ..name = field.name
-        ..type = MethodType.getter
-        ..returns = TypeReference((t) => t
-          ..symbol = 'ManyRelation'
-          ..url = serverpodUrl(serverCode)
-          ..types.add(field.type.generics.first.reference(
-            serverCode,
-            subDirParts: classDefinition.subDirParts,
-            config: config,
-            nullable: false,
-            typeSuffix: 'Table',
-          )))
-        ..body = Block.of([
-          Code('if (_${field.name} != null) return _${field.name}!;'),
-          declareVar('relationTable')
-              .assign(
-                refer(
-                  'createRelationTable',
-                  serverpodUrl(true),
-                ).call(
-                  [],
-                  {
-                    'relationFieldName': literalString(field.name),
-                    'field': refer(classDefinition.className)
-                        .property('t')
-                        .property(listRelation.fieldName),
-                    'foreignField': field.type.generics.first
-                        .reference(
-                          serverCode,
-                          subDirParts: classDefinition.subDirParts,
-                          config: config,
-                          nullable: false,
-                        )
-                        .property('t')
-                        .property(
-                          listRelation.implicitForeignField
-                              ? createImplicitFieldName(
-                                  listRelation.foreignFieldName)
-                              : listRelation.foreignFieldName,
-                        ),
-                    'tableRelation': refer('tableRelation'),
-                    'createTable': Method(
-                      (m) => m
-                        ..requiredParameters.addAll([
-                          Parameter((p) => p..name = 'foreignTableRelation'),
-                        ])
-                        ..lambda = true
-                        ..body = field.type.generics.first
-                            .reference(
-                          serverCode,
-                          subDirParts: classDefinition.subDirParts,
-                          config: config,
-                          nullable: false,
-                          typeSuffix: 'Table',
-                        )
-                            .call([], {
-                          'tableRelation': refer('foreignTableRelation')
-                        }).code,
-                    ).closure
-                  },
-                ),
-              )
-              .statement,
-          refer('_${field.name}')
-              .assign(
-                TypeReference((t) => t
-                  ..symbol = 'ManyRelation'
-                  ..url = serverpodUrl(serverCode)
-                  ..types.add(field.type.generics.first.reference(
+      getters.add(
+        Method(
+          (m) => m
+            ..name = field.name
+            ..type = MethodType.getter
+            ..returns = TypeReference(
+              (t) => t
+                ..symbol = 'ManyRelation'
+                ..url = _databaseRuntimeUrl
+                ..types.add(
+                  field.type.generics.first.reference(
                     serverCode,
                     subDirParts: classDefinition.subDirParts,
                     config: config,
                     nullable: false,
                     typeSuffix: 'Table',
-                  ))).call(
-                  [],
-                  {
-                    'tableWithRelations': refer('relationTable'),
-                    'table': field.type.generics.first
-                        .reference(serverCode,
+                  ),
+                ),
+            )
+            ..body = Block.of([
+              Code('if (_${field.name} != null) return _${field.name}!;'),
+              declareVar('relationTable')
+                  .assign(
+                    refer(
+                      'createRelationTable',
+                      _databaseRuntimeUrl,
+                    ).call(
+                      [],
+                      {
+                        'relationFieldName': literalString(field.name),
+                        'field': refer(
+                          classDefinition.className,
+                        ).property('t').property(listRelation.fieldName),
+                        'foreignField': field.type.generics.first
+                            .reference(
+                              serverCode,
+                              subDirParts: classDefinition.subDirParts,
+                              config: config,
+                              nullable: false,
+                            )
+                            .property('t')
+                            .property(
+                              listRelation.implicitForeignField
+                                  ? createImplicitFieldName(
+                                      listRelation.foreignFieldName,
+                                    )
+                                  : listRelation.foreignFieldName,
+                            ),
+                        'tableRelation': refer('tableRelation'),
+                        'createTable': Method(
+                          (m) => m
+                            ..requiredParameters.addAll([
+                              Parameter(
+                                (p) => p..name = 'foreignTableRelation',
+                              ),
+                            ])
+                            ..lambda = true
+                            ..body = field.type.generics.first
+                                .reference(
+                                  serverCode,
+                                  subDirParts: classDefinition.subDirParts,
+                                  config: config,
+                                  nullable: false,
+                                  typeSuffix: 'Table',
+                                )
+                                .call([], {
+                                  'tableRelation': refer(
+                                    'foreignTableRelation',
+                                  ),
+                                })
+                                .code,
+                        ).closure,
+                      },
+                    ),
+                  )
+                  .statement,
+              refer('_${field.name}')
+                  .assign(
+                    TypeReference(
+                      (t) => t
+                        ..symbol = 'ManyRelation'
+                        ..url = _databaseRuntimeUrl
+                        ..types.add(
+                          field.type.generics.first.reference(
+                            serverCode,
                             subDirParts: classDefinition.subDirParts,
                             config: config,
                             nullable: false,
-                            typeSuffix: 'Table')
-                        .call([], {
-                      'tableRelation': refer('relationTable')
-                          .property('tableRelation')
-                          .nullChecked
-                          .property('lastRelation')
-                    })
-                  },
-                ),
-              )
-              .statement,
-          Code('return _${field.name}!;'),
-        ])));
+                            typeSuffix: 'Table',
+                          ),
+                        ),
+                    ).call(
+                      [],
+                      {
+                        'tableWithRelations': refer('relationTable'),
+                        'table': field.type.generics.first
+                            .reference(
+                              serverCode,
+                              subDirParts: classDefinition.subDirParts,
+                              config: config,
+                              nullable: false,
+                              typeSuffix: 'Table',
+                            )
+                            .call([], {
+                              'tableRelation': refer('relationTable')
+                                  .property('tableRelation')
+                                  .nullChecked
+                                  .property('lastRelation'),
+                            }),
+                      },
+                    ),
+                  )
+                  .statement,
+              Code('return _${field.name}!;'),
+            ]),
+        ),
+      );
     }
 
     return getters;
   }
 
   Constructor _buildModelTableClassConstructor(
-      String tableName,
-      List<SerializableModelFieldDefinition> fields,
-      ClassDefinition classDefinition) {
+    String tableName,
+    List<SerializableModelFieldDefinition> fields,
+    ModelClassDefinition classDefinition,
+  ) {
     return Constructor((constructorBuilder) {
       constructorBuilder.optionalParameters.add(
         Parameter(
@@ -2189,22 +2876,31 @@ class SerializableModelLibraryGenerator {
             ..named = true,
         ),
       );
-      constructorBuilder.initializers.add(refer('super')
-          .call([], {'tableName': literalString(tableName)}).code);
+      constructorBuilder.initializers.add(
+        refer('super').call([], {'tableName': literalString(tableName)}).code,
+      );
 
       constructorBuilder.body = Block.of([
         refer('updateTable')
-            .assign(refer('${classDefinition.className}UpdateTable')
-                .call([refer('this')]))
+            .assign(
+              refer(
+                '${classDefinition.className}UpdateTable',
+              ).call([refer('this')]),
+            )
             .statement,
         for (var field in fields.where(
-            (field) => field.shouldSerializeFieldForDatabase(serverCode)))
-          if (!(field.name == 'id' && serverCode))
-            refer(createFieldName(serverCode, field))
-                .assign(field.type.isEnumType
-                    ? _buildModelTableEnumFieldTypeReference(field)
-                    : _buildModelTableGeneralFieldExpression(
-                        field, classDefinition))
+          (field) => field.shouldPersist,
+        ))
+          if (!(field.name == 'id' && classDefinition.isTableOwner(serverCode)))
+            refer(_createDatabaseFieldName(field))
+                .assign(
+                  field.type.isEnumType
+                      ? _buildModelTableEnumFieldTypeReference(field)
+                      : _buildModelTableGeneralFieldExpression(
+                          field,
+                          classDefinition,
+                        ),
+                )
                 .statement,
       ]);
     });
@@ -2217,26 +2913,31 @@ class SerializableModelLibraryGenerator {
     assert(!field.type.isEnumType);
 
     var constructorArgs = <Expression>[
-      literalString(field.name),
+      literalString(field.columnName),
       refer('this'),
     ];
 
-    return TypeReference((t) => t
-      ..symbol = field.type.columnType
-      ..url = serverpodUrl(true)
-      ..types.addAll(field.type.isColumnSerializable
-          ? [
-              field.type.reference(
-                serverCode,
-                nullable: false,
-                subDirParts: classDefinition.subDirParts,
-                config: config,
-              )
-            ]
-          : [])).call(constructorArgs, {
+    return TypeReference(
+      (t) => t
+        ..symbol = field.type.columnType
+        ..url = _databaseRuntimeUrl
+        ..types.addAll(
+          field.type.isColumnSerializable || field.type.isColumnStructured
+              ? [
+                  field.type.reference(
+                    serverCode,
+                    nullable: false,
+                    subDirParts: classDefinition.subDirParts,
+                    config: config,
+                  ),
+                ]
+              : [],
+        ),
+    ).call(constructorArgs, {
       if (field.type.isVectorType)
         'dimension': literalNum(field.type.vectorDimension!),
       if (field.defaultPersistValue != null) 'hasDefault': literalBool(true),
+      if (field.hasColumnNameOverride) 'fieldName': literalString(field.name),
     });
   }
 
@@ -2244,7 +2945,7 @@ class SerializableModelLibraryGenerator {
     SerializableModelFieldDefinition field,
   ) {
     assert(field.type.isEnumType);
-    var enumType = refer('EnumSerialization', serverpodUrl(serverCode));
+    var enumType = refer('EnumSerialization', _databaseRuntimeUrl);
     Expression serializedAs;
 
     switch (field.type.enumDefinition?.serialized) {
@@ -2257,16 +2958,22 @@ class SerializableModelLibraryGenerator {
         break;
     }
 
-    return TypeReference((t) => t
-      ..symbol = field.type.columnType
-      ..url = serverpodUrl(true)
-      ..types.addAll([])).call([
-      literalString(field.name),
-      refer('this'),
-      serializedAs,
-    ], {
-      if (field.defaultPersistValue != null) 'hasDefault': literalBool(true),
-    });
+    return TypeReference(
+      (t) => t
+        ..symbol = field.type.columnType
+        ..url = _databaseRuntimeUrl
+        ..types.addAll([]),
+    ).call(
+      [
+        literalString(field.columnName),
+        refer('this'),
+        serializedAs,
+      ],
+      {
+        if (field.defaultPersistValue != null) 'hasDefault': literalBool(true),
+        if (field.hasColumnNameOverride) 'fieldName': literalString(field.name),
+      },
+    );
   }
 
   Class _buildModelIncludeClass(
@@ -2276,23 +2983,29 @@ class SerializableModelLibraryGenerator {
     TypeReference idTypeReference,
   ) {
     return Class(((c) {
-      c.extend = refer('IncludeObject', serverpodUrl(true));
+      c.extend = refer('IncludeObject', _databaseRuntimeUrl);
       c.name = '${className}Include';
       var relationFields = fields
-          .where((f) =>
-              f.relation is ObjectRelationDefinition ||
-              f.relation is ListRelationDefinition)
+          .where(
+            (f) =>
+                f.relation is ObjectRelationDefinition ||
+                f.relation is ListRelationDefinition,
+          )
           .toList();
 
-      c.constructors.add(_buildModelIncludeClassConstructor(
-        relationFields,
-        classDefinition,
-      ));
+      c.constructors.add(
+        _buildModelIncludeClassConstructor(
+          relationFields,
+          classDefinition,
+        ),
+      );
 
-      c.fields.addAll(_buildModelIncludeClassFields(
-        relationFields,
-        classDefinition,
-      ));
+      c.fields.addAll(
+        _buildModelIncludeClassFields(
+          relationFields,
+          classDefinition,
+        ),
+      );
 
       c.methods.addAll([
         _buildModelIncludeClassIncludesGetter(relationFields),
@@ -2308,7 +3021,7 @@ class SerializableModelLibraryGenerator {
     TypeReference idTypeReference,
   ) {
     return Class(((c) {
-      c.extend = refer('IncludeList', serverpodUrl(true));
+      c.extend = refer('IncludeList', _databaseRuntimeUrl);
       c.name = '${className}IncludeList';
 
       c.constructors.add(_buildModelIncludeListClassConstructor(className));
@@ -2356,12 +3069,6 @@ class SerializableModelLibraryGenerator {
         ),
         Parameter(
           (p) => p
-            ..name = 'orderDescending'
-            ..toSuper = true
-            ..named = true,
-        ),
-        Parameter(
-          (p) => p
             ..name = 'orderByList'
             ..toSuper = true
             ..named = true,
@@ -2371,16 +3078,18 @@ class SerializableModelLibraryGenerator {
             ..name = 'include'
             ..toSuper = true
             ..named = true,
-        )
+        ),
       ]);
 
       constructorBuilder.body = Block.of([
         refer('super')
             .property('where')
-            .assign(refer('where').nullSafeProperty('call').call(
-              [refer(className).property('t')],
-            ))
-            .statement
+            .assign(
+              refer('where').nullSafeProperty('call').call(
+                [refer(className).property('t')],
+              ),
+            )
+            .statement,
       ]);
     });
   }
@@ -2389,19 +3098,20 @@ class SerializableModelLibraryGenerator {
     return Method(
       (m) => m
         ..annotations.add(refer('override'))
-        ..returns = TypeReference((t) => t
-          ..symbol = 'Map'
-          ..types.addAll([
-            refer('String'),
-            refer('Include?', serverpodUrl(true)),
-          ]))
+        ..returns = TypeReference(
+          (t) => t
+            ..symbol = 'Map'
+            ..types.addAll([
+              refer('String'),
+              refer('Include?', _databaseRuntimeUrl),
+            ]),
+        )
         ..name = 'includes'
         ..lambda = true
         ..type = MethodType.getter
-        ..body = refer('include')
-            .nullSafeProperty('includes')
-            .ifNullThen(literalMap({}))
-            .code,
+        ..body = refer(
+          'include',
+        ).nullSafeProperty('includes').ifNullThen(literalMap({})).code,
     );
   }
 
@@ -2412,10 +3122,12 @@ class SerializableModelLibraryGenerator {
     return Method(
       (m) => m
         ..annotations.add(refer('override'))
-        ..returns = TypeReference((t) => t
-          ..symbol = 'Table'
-          ..types.add(idTypeReference)
-          ..url = serverpodUrl(serverCode))
+        ..returns = TypeReference(
+          (t) => t
+            ..symbol = 'Table'
+            ..types.add(idTypeReference)
+            ..url = _databaseRuntimeUrl,
+        )
         ..name = 'table'
         ..lambda = true
         ..type = MethodType.getter
@@ -2424,51 +3136,63 @@ class SerializableModelLibraryGenerator {
   }
 
   Method _buildModelIncludeClassIncludesGetter(
-      List<SerializableModelFieldDefinition> objectRelationFields) {
+    List<SerializableModelFieldDefinition> objectRelationFields,
+  ) {
     return Method(
       (m) => m
         ..annotations.add(refer('override'))
-        ..returns = TypeReference((t) => t
-          ..symbol = 'Map'
-          ..types.addAll([
-            refer('String'),
-            refer('Include?', serverpodUrl(true)),
-          ]))
+        ..returns = TypeReference(
+          (t) => t
+            ..symbol = 'Map'
+            ..types.addAll([
+              refer('String'),
+              refer('Include?', _databaseRuntimeUrl),
+            ]),
+        )
         ..name = 'includes'
         ..lambda = true
         ..type = MethodType.getter
         ..body = literalMap({
           for (var field in objectRelationFields)
-            literalString(field.name): refer('_${field.name}')
+            literalString(field.name): refer('_${field.name}'),
         }).code,
     );
   }
 
   List<Field> _buildModelIncludeClassFields(
-      List<SerializableModelFieldDefinition> objectRelationFields,
-      ClassDefinition classDefinition) {
+    List<SerializableModelFieldDefinition> objectRelationFields,
+    ClassDefinition classDefinition,
+  ) {
     List<Field> modelIncludeClassFields = [];
     for (var field in objectRelationFields) {
       if (field.relation is ObjectRelationDefinition) {
-        modelIncludeClassFields.add(Field((f) => f
-          ..name = '_${field.name}'
-          ..type = field.type.reference(
-            serverCode,
-            subDirParts: classDefinition.subDirParts,
-            config: config,
-            nullable: true,
-            typeSuffix: 'Include',
-          )));
+        modelIncludeClassFields.add(
+          Field(
+            (f) => f
+              ..name = '_${field.name}'
+              ..type = field.type.reference(
+                serverCode,
+                subDirParts: classDefinition.subDirParts,
+                config: config,
+                nullable: true,
+                typeSuffix: 'Include',
+              ),
+          ),
+        );
       } else if (field.relation is ListRelationDefinition) {
-        modelIncludeClassFields.add(Field((f) => f
-          ..name = '_${field.name}'
-          ..type = field.type.generics.first.reference(
-            serverCode,
-            subDirParts: classDefinition.subDirParts,
-            config: config,
-            nullable: true,
-            typeSuffix: 'IncludeList',
-          )));
+        modelIncludeClassFields.add(
+          Field(
+            (f) => f
+              ..name = '_${field.name}'
+              ..type = field.type.generics.first.reference(
+                serverCode,
+                subDirParts: classDefinition.subDirParts,
+                config: config,
+                nullable: true,
+                typeSuffix: 'IncludeList',
+              ),
+          ),
+        );
       }
     }
     return modelIncludeClassFields;
@@ -2486,31 +3210,35 @@ class SerializableModelLibraryGenerator {
 
       for (var field in relationFields) {
         if (field.relation is ObjectRelationDefinition) {
-          constructorBuilder.optionalParameters.add(Parameter(
-            (p) => p
-              ..name = field.name
-              ..type = field.type.reference(
-                serverCode,
-                subDirParts: classDefinition.subDirParts,
-                config: config,
-                nullable: true,
-                typeSuffix: 'Include',
-              )
-              ..named = true,
-          ));
+          constructorBuilder.optionalParameters.add(
+            Parameter(
+              (p) => p
+                ..name = field.name
+                ..type = field.type.reference(
+                  serverCode,
+                  subDirParts: classDefinition.subDirParts,
+                  config: config,
+                  nullable: true,
+                  typeSuffix: 'Include',
+                )
+                ..named = true,
+            ),
+          );
         } else if (field.relation is ListRelationDefinition) {
-          constructorBuilder.optionalParameters.add(Parameter(
-            (p) => p
-              ..name = field.name
-              ..type = field.type.generics.first.reference(
-                serverCode,
-                subDirParts: classDefinition.subDirParts,
-                config: config,
-                nullable: true,
-                typeSuffix: 'IncludeList',
-              )
-              ..named = true,
-          ));
+          constructorBuilder.optionalParameters.add(
+            Parameter(
+              (p) => p
+                ..name = field.name
+                ..type = field.type.generics.first.reference(
+                  serverCode,
+                  subDirParts: classDefinition.subDirParts,
+                  config: config,
+                  nullable: true,
+                  typeSuffix: 'IncludeList',
+                )
+                ..named = true,
+            ),
+          );
         }
       }
 
@@ -2528,30 +3256,93 @@ class SerializableModelLibraryGenerator {
         Enum((e) {
           e.name = enumDefinition.className;
           e.docs.addAll(enumDefinition.documentation ?? []);
-          e.implements
-              .add(refer('SerializableModel', serverpodUrl(serverCode)));
-          e.values.addAll([
-            for (var value in enumDefinition.values)
-              EnumValue((v) {
-                v
-                  ..name = value.name
-                  ..docs.addAll(value.documentation ?? []);
-              })
-          ]);
+          e.implements.add(
+            refer('SerializableModel', serverpodUrl(serverCode)),
+          );
 
-          // Check if the enum has a value named "name"
-          bool hasValueNamedName =
-              enumDefinition.values.any((v) => v.name == 'name');
+          if (enumDefinition.isEnhanced) {
+            e.values.addAll([
+              for (final value in enumDefinition.values)
+                EnumValue((v) {
+                  v
+                    ..name = value.name
+                    ..docs.addAll(value.documentation ?? []);
+
+                  final args = <Expression>[];
+                  for (final property in enumDefinition.properties) {
+                    final propertyValue = value.propertyValues[property.name];
+                    if (propertyValue != null) {
+                      args.add(
+                        _formatPropertyValueForExpression(
+                          propertyValue,
+                          property.type,
+                        ),
+                      );
+                    } else if (property.defaultValue != null) {
+                      args.add(
+                        _formatPropertyValueForExpression(
+                          property.defaultValue,
+                          property.type,
+                        ),
+                      );
+                    }
+                  }
+                  v.arguments.addAll(args);
+                }),
+            ]);
+
+            e.constructors.add(
+              Constructor((c) {
+                c.constant = true;
+                for (final property in enumDefinition.properties) {
+                  c.requiredParameters.add(
+                    Parameter(
+                      (p) => p
+                        ..name = property.name
+                        ..toThis = true,
+                    ),
+                  );
+                }
+              }),
+            );
+
+            for (final property in enumDefinition.properties) {
+              e.fields.add(
+                Field((f) {
+                  f
+                    ..name = property.name
+                    ..modifier = FieldModifier.final$
+                    ..type = _parsePropertyType(property.type)
+                    ..docs.addAll(property.documentation ?? []);
+                }),
+              );
+            }
+          } else {
+            e.values.addAll([
+              for (final value in enumDefinition.values)
+                EnumValue((v) {
+                  v
+                    ..name = value.name
+                    ..docs.addAll(value.documentation ?? []);
+                }),
+            ]);
+          }
+
+          bool hasValueNamedName = enumDefinition.values.any(
+            (v) => v.name == 'name',
+          );
 
           switch (enumDefinition.serialized) {
             case EnumSerialization.byIndex:
               e.methods.addAll(enumSerializationMethodsByIndex(enumDefinition));
               break;
             case EnumSerialization.byName:
-              e.methods.addAll(enumSerializationMethodsByName(
-                enumDefinition,
-                hasValueNamedName: hasValueNamedName,
-              ));
+              e.methods.addAll(
+                enumSerializationMethodsByName(
+                  enumDefinition,
+                  hasValueNamedName: hasValueNamedName,
+                ),
+              );
               break;
           }
 
@@ -2571,26 +3362,75 @@ class SerializableModelLibraryGenerator {
     return library;
   }
 
+  Expression _formatPropertyValueForExpression(dynamic value, String type) {
+    if (value == null) {
+      return literalNull;
+    }
+
+    var baseType = type.endsWith('?')
+        ? type.substring(0, type.length - 1)
+        : type;
+
+    switch (baseType) {
+      case 'int':
+        return literalNum(value);
+      case 'double':
+        return literalNum(value);
+      case 'bool':
+        return literalBool(value);
+      case 'String':
+      default:
+        var str = value.toString();
+        if (str.startsWith("'") && str.endsWith("'")) {
+          str = str.substring(1, str.length - 1);
+        }
+        return literalString(str);
+    }
+  }
+
+  /// Parses a property type string to a Reference
+  Reference _parsePropertyType(String type) {
+    // Handle nullable types
+    var isNullable = type.endsWith('?');
+    var baseType = isNullable ? type.substring(0, type.length - 1) : type;
+
+    var typeRef = refer(baseType);
+    return isNullable
+        ? TypeReference(
+            (t) => t
+              ..symbol = baseType
+              ..isNullable = true,
+          )
+        : typeRef;
+  }
+
   List<Method> enumSerializationMethodsByIndex(EnumDefinition enumDefinition) {
     return [
-      Method((m) => m
-        ..static = true
-        ..returns = refer(enumDefinition.className)
-        ..name = 'fromJson'
-        ..requiredParameters.add(Parameter((p) => p
-          ..name = 'index'
-          ..type = refer('int')))
-        ..body = (BlockBuilder()
-              ..statements.addAll([
-                const Code('switch(index){'),
-                for (int i = 0; i < enumDefinition.values.length; i++)
-                  Code(
-                    'case $i: return ${enumDefinition.className}.${enumDefinition.values[i].name};',
-                  ),
-                _buildDefaultSwitchCase(enumDefinition, 'index'),
-                const Code('}'),
-              ]))
-            .build()),
+      Method(
+        (m) => m
+          ..static = true
+          ..returns = refer(enumDefinition.className)
+          ..name = 'fromJson'
+          ..requiredParameters.add(
+            Parameter(
+              (p) => p
+                ..name = 'index'
+                ..type = refer('int'),
+            ),
+          )
+          ..body =
+              (BlockBuilder()
+                    ..statements.addAll([
+                      const Code('switch(index){'),
+                      for (int i = 0; i < enumDefinition.values.length; i++)
+                        Code(
+                          'case $i: return ${enumDefinition.className}.${enumDefinition.values[i].name};',
+                        ),
+                      _buildDefaultSwitchCase(enumDefinition, 'index'),
+                      const Code('}'),
+                    ]))
+                  .build(),
+      ),
       Method(
         (m) => m
           ..annotations.add(refer('override'))
@@ -2607,24 +3447,31 @@ class SerializableModelLibraryGenerator {
     required bool hasValueNamedName,
   }) {
     return [
-      Method((m) => m
-        ..static = true
-        ..returns = refer(enumDefinition.className)
-        ..name = 'fromJson'
-        ..requiredParameters.add(Parameter((p) => p
-          ..name = 'name'
-          ..type = refer('String')))
-        ..body = (BlockBuilder()
-              ..statements.addAll([
-                const Code('switch(name){'),
-                for (var value in enumDefinition.values)
-                  Code(
-                    "case '${value.name}': return ${enumDefinition.className}.${value.name};",
-                  ),
-                _buildDefaultSwitchCase(enumDefinition, 'name'),
-                const Code('}'),
-              ]))
-            .build()),
+      Method(
+        (m) => m
+          ..static = true
+          ..returns = refer(enumDefinition.className)
+          ..name = 'fromJson'
+          ..requiredParameters.add(
+            Parameter(
+              (p) => p
+                ..name = 'name'
+                ..type = refer('String'),
+            ),
+          )
+          ..body =
+              (BlockBuilder()
+                    ..statements.addAll([
+                      const Code('switch(name){'),
+                      for (var value in enumDefinition.values)
+                        Code(
+                          "case '${value.name}': return ${enumDefinition.className}.${value.name};",
+                        ),
+                      _buildDefaultSwitchCase(enumDefinition, 'name'),
+                      const Code('}'),
+                    ]))
+                  .build(),
+      ),
       Method(
         (m) => m
           ..annotations.add(refer('override'))
@@ -2639,6 +3486,11 @@ class SerializableModelLibraryGenerator {
   /// Generate a temporary protocol library, that just exports the models.
   /// This is needed, since analyzing the endpoints requires a valid
   /// protocol.dart file.
+  ///
+  /// Also includes a stub [Protocol] class extending [SerializationManager] so
+  /// generated model files that call `Protocol()` compile even before the full
+  /// protocol is written. The stub is overwritten by the real [Protocol] when
+  /// [ServerpodCodeGenerator.generateProtocolDefinition] runs.
   Library generateTemporaryProtocol({
     required List<SerializableModelDefinition> models,
   }) {
@@ -2646,25 +3498,100 @@ class SerializableModelLibraryGenerator {
 
     library.name = 'protocol';
 
+    library.directives.add(
+      Directive.import(
+        'package:serverpod_serialization/serverpod_serialization.dart',
+      ),
+    );
+
     // exports
     library.directives.addAll([
       for (var classInfo in models) Directive.export(classInfo.fileRef()),
-      if (!serverCode) Directive.export('client.dart'),
     ]);
+
+    library.body.add(_buildTemporaryProtocolStubClass());
 
     return library.build();
   }
 
+  /// Stub [Protocol] used only while the temporary protocol.dart is on disk.
+  ///
+  /// Extends [SerializationManager] so generated model code inherits correct
+  /// signatures for `deserialize`, `dynamicFieldToJson`, and related helpers.
+  /// Only [mapRecordToJson] and [mapContainerToJson] are declared here because
+  /// they are generated on [Protocol], not on the base class.
+  Class _buildTemporaryProtocolStubClass() {
+    return Class(
+      (c) => c
+        ..name = 'Protocol'
+        ..extend = refer('SerializationManager')
+        ..constructors.addAll([
+          Constructor(
+            (c) => c
+              ..factory = true
+              ..redirect = refer('_'),
+          ),
+          Constructor((c) => c..name = '_'),
+        ])
+        ..methods.addAll([
+          Method(
+            (m) => m
+              ..name = mapRecordToJsonFuncName
+              ..returns = TypeReference(
+                (t) => t
+                  ..symbol = 'Map'
+                  ..types.addAll([refer('String'), refer('dynamic')])
+                  ..isNullable = true,
+              )
+              ..requiredParameters.add(
+                Parameter(
+                  (p) => p
+                    ..name = 'record'
+                    ..type = refer('Record?'),
+                ),
+              )
+              ..body = literalNull.returned.statement,
+          ),
+          Method(
+            (m) => m
+              ..name = mapContainerToJsonFunctionName
+              ..returns = refer('Object?')
+              ..requiredParameters.add(
+                Parameter(
+                  (p) => p
+                    ..name = 'obj'
+                    ..type = refer('Object'),
+                ),
+              )
+              ..body = refer('obj').returned.statement,
+          ),
+        ]),
+    );
+  }
+
   Reference _createSerializableFieldNameReference(
     bool serverCode,
-    SerializableModelFieldDefinition field,
-  ) {
-    return refer(_createSerializableFieldName(serverCode, field));
+    SerializableModelFieldDefinition field, {
+    String? tableName,
+  }) {
+    return refer(
+      _createSerializableFieldName(
+        serverCode,
+        field,
+        tableName: tableName,
+      ),
+    );
   }
 
   String _createSerializableFieldName(
-      bool serverCode, SerializableModelFieldDefinition field) {
-    if (field.hiddenSerializableField(serverCode) &&
+    bool serverCode,
+    SerializableModelFieldDefinition field, {
+    String? tableName,
+  }) {
+    if (field.shouldIncludeHiddenFieldInModelClass(
+          serverCode,
+          modelHasTable: tableName != null,
+        ) &&
         !field.name.startsWith('_')) {
       return '_${field.name}';
     }
@@ -2672,8 +3599,22 @@ class SerializableModelLibraryGenerator {
     return field.name;
   }
 
+  bool _isHiddenDatabaseField(SerializableModelFieldDefinition field) {
+    return field.shouldPersist && field.scope == ModelFieldScopeDefinition.none;
+  }
+
+  String _createDatabaseFieldName(SerializableModelFieldDefinition field) {
+    if (_isHiddenDatabaseField(field)) {
+      return createImplicitFieldName(field.name);
+    }
+
+    return createFieldName(serverCode, field);
+  }
+
   Code _buildDefaultSwitchCase(
-      EnumDefinition enumDefinition, String valueFieldName) {
+    EnumDefinition enumDefinition,
+    String valueFieldName,
+  ) {
     if (enumDefinition.defaultValue == null) {
       return Code(
         'default: throw ArgumentError(\'Value "\$$valueFieldName" cannot be converted to "${enumDefinition.className}"\');',
@@ -2689,10 +3630,19 @@ class SimpleData {}
 
 extension on BuildRepositoryClass {
   bool hasRelationWithNonNullableIds(
-      List<SerializableModelFieldDefinition> fields) {
+    List<SerializableModelFieldDefinition> fields,
+  ) {
     return hasAttachOperations(fields) ||
         hasAttachRowOperations(fields) ||
         hasDetachOperations(fields) ||
         hasDetachRowOperations(fields);
   }
+}
+
+extension on ModelClassDefinition {
+  bool isTableOwner(bool serverCode) => switch (database) {
+    ModelDatabaseDefinition.all => true,
+    ModelDatabaseDefinition.server => serverCode,
+    ModelDatabaseDefinition.client => !serverCode,
+  };
 }

@@ -1,0 +1,6 @@
+### A child class.
+class: PolymorphicChild
+extends: PolymorphicParent
+fields:
+  ### The child field.
+  child: String

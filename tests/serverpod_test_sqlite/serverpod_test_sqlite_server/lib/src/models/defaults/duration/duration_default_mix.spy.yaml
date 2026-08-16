@@ -1,0 +1,6 @@
+class: DurationDefaultMix
+table: duration_default_mix
+fields:
+  durationDefaultAndDefaultModel: Duration, default=1d 2h 10min 30s 100ms, defaultModel=2d 1h 20min 40s 100ms
+  durationDefaultAndDefaultPersist: Duration, default=1d 2h 10min 30s 100ms, defaultPersist=2d 1h 20min 40s 100ms
+  durationDefaultModelAndDefaultPersist: Duration, defaultModel=1d 2h 10min 30s 100ms, defaultPersist=2d 1h 20min 40s 100ms

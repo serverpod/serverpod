@@ -19,11 +19,14 @@ void main() {
           fields:
             parentId: int, database
           ''',
-        ).build()
+        ).build(),
       ];
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(collector.errors, isNotEmpty);
 

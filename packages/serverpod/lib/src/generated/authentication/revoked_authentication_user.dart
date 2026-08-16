@@ -20,7 +20,8 @@ abstract class RevokedAuthenticationUser
   factory RevokedAuthenticationUser() = _RevokedAuthenticationUserImpl;
 
   factory RevokedAuthenticationUser.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return RevokedAuthenticationUser();
   }
 
@@ -30,7 +31,7 @@ abstract class RevokedAuthenticationUser
   RevokedAuthenticationUser copyWith();
   @override
   Map<String, dynamic> toJson() {
-    return {};
+    return {'__className__': 'serverpod.RevokedAuthenticationUser'};
   }
 
   @override

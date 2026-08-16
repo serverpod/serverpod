@@ -54,7 +54,7 @@ abstract class QueryLogEntry
       numRows: jsonSerialization['numRows'] as int?,
       error: jsonSerialization['error'] as String?,
       stackTrace: jsonSerialization['stackTrace'] as String?,
-      slow: jsonSerialization['slow'] as bool,
+      slow: _i1.BoolJsonExtension.fromJson(jsonSerialization['slow']),
       order: jsonSerialization['order'] as int,
     );
   }
@@ -120,6 +120,7 @@ abstract class QueryLogEntry
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.QueryLogEntry',
       if (id != null) 'id': id,
       'serverId': serverId,
       'sessionLogId': sessionLogId,
@@ -137,6 +138,7 @@ abstract class QueryLogEntry
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.QueryLogEntry',
       if (id != null) 'id': id,
       'serverId': serverId,
       'sessionLogId': sessionLogId,
@@ -160,7 +162,6 @@ abstract class QueryLogEntry
     int? limit,
     int? offset,
     _i1.OrderByBuilder<QueryLogEntryTable>? orderBy,
-    bool orderDescending = false,
     _i1.OrderByListBuilder<QueryLogEntryTable>? orderByList,
     QueryLogEntryInclude? include,
   }) {
@@ -169,7 +170,6 @@ abstract class QueryLogEntry
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(QueryLogEntry.t),
-      orderDescending: orderDescending,
       orderByList: orderByList?.call(QueryLogEntry.t),
       include: include,
     );
@@ -197,18 +197,18 @@ class _QueryLogEntryImpl extends QueryLogEntry {
     required bool slow,
     required int order,
   }) : super._(
-          id: id,
-          serverId: serverId,
-          sessionLogId: sessionLogId,
-          messageId: messageId,
-          query: query,
-          duration: duration,
-          numRows: numRows,
-          error: error,
-          stackTrace: stackTrace,
-          slow: slow,
-          order: order,
-        );
+         id: id,
+         serverId: serverId,
+         sessionLogId: sessionLogId,
+         messageId: messageId,
+         query: query,
+         duration: duration,
+         numRows: numRows,
+         error: error,
+         stackTrace: stackTrace,
+         slow: slow,
+         order: order,
+       );
 
   /// Returns a shallow copy of this [QueryLogEntry]
   /// with some or all fields replaced by the given arguments.
@@ -247,59 +247,59 @@ class QueryLogEntryUpdateTable extends _i1.UpdateTable<QueryLogEntryTable> {
   QueryLogEntryUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> serverId(String value) => _i1.ColumnValue(
-        table.serverId,
-        value,
-      );
+    table.serverId,
+    value,
+  );
 
   _i1.ColumnValue<int, int> sessionLogId(int value) => _i1.ColumnValue(
-        table.sessionLogId,
-        value,
-      );
+    table.sessionLogId,
+    value,
+  );
 
   _i1.ColumnValue<int, int> messageId(int? value) => _i1.ColumnValue(
-        table.messageId,
-        value,
-      );
+    table.messageId,
+    value,
+  );
 
   _i1.ColumnValue<String, String> query(String value) => _i1.ColumnValue(
-        table.query,
-        value,
-      );
+    table.query,
+    value,
+  );
 
   _i1.ColumnValue<double, double> duration(double value) => _i1.ColumnValue(
-        table.duration,
-        value,
-      );
+    table.duration,
+    value,
+  );
 
   _i1.ColumnValue<int, int> numRows(int? value) => _i1.ColumnValue(
-        table.numRows,
-        value,
-      );
+    table.numRows,
+    value,
+  );
 
   _i1.ColumnValue<String, String> error(String? value) => _i1.ColumnValue(
-        table.error,
-        value,
-      );
+    table.error,
+    value,
+  );
 
   _i1.ColumnValue<String, String> stackTrace(String? value) => _i1.ColumnValue(
-        table.stackTrace,
-        value,
-      );
+    table.stackTrace,
+    value,
+  );
 
   _i1.ColumnValue<bool, bool> slow(bool value) => _i1.ColumnValue(
-        table.slow,
-        value,
-      );
+    table.slow,
+    value,
+  );
 
   _i1.ColumnValue<int, int> order(int value) => _i1.ColumnValue(
-        table.order,
-        value,
-      );
+    table.order,
+    value,
+  );
 }
 
 class QueryLogEntryTable extends _i1.Table<int?> {
   QueryLogEntryTable({super.tableRelation})
-      : super(tableName: 'serverpod_query_log') {
+    : super(tableName: 'serverpod_query_log') {
     updateTable = QueryLogEntryUpdateTable(this);
     serverId = _i1.ColumnString(
       'serverId',
@@ -379,18 +379,18 @@ class QueryLogEntryTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        serverId,
-        sessionLogId,
-        messageId,
-        query,
-        duration,
-        numRows,
-        error,
-        stackTrace,
-        slow,
-        order,
-      ];
+    id,
+    serverId,
+    sessionLogId,
+    messageId,
+    query,
+    duration,
+    numRows,
+    error,
+    stackTrace,
+    slow,
+    order,
+  ];
 }
 
 class QueryLogEntryInclude extends _i1.IncludeObject {
@@ -409,7 +409,6 @@ class QueryLogEntryIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -449,23 +448,25 @@ class QueryLogEntryRepository {
   /// );
   /// ```
   Future<List<QueryLogEntry>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<QueryLogEntryTable>? where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<QueryLogEntryTable>? orderBy,
-    bool orderDescending = false,
     _i1.OrderByListBuilder<QueryLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<QueryLogEntry>(
       where: where?.call(QueryLogEntry.t),
       orderBy: orderBy?.call(QueryLogEntry.t),
       orderByList: orderByList?.call(QueryLogEntry.t),
-      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -487,33 +488,39 @@ class QueryLogEntryRepository {
   /// );
   /// ```
   Future<QueryLogEntry?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<QueryLogEntryTable>? where,
     int? offset,
     _i1.OrderByBuilder<QueryLogEntryTable>? orderBy,
-    bool orderDescending = false,
     _i1.OrderByListBuilder<QueryLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<QueryLogEntry>(
       where: where?.call(QueryLogEntry.t),
       orderBy: orderBy?.call(QueryLogEntry.t),
       orderByList: orderByList?.call(QueryLogEntry.t),
-      orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
   /// Finds a single [QueryLogEntry] by its [id] or null if no such row exists.
   Future<QueryLogEntry?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<QueryLogEntry>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -523,14 +530,26 @@ class QueryLogEntryRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<QueryLogEntry>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<QueryLogEntry> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<QueryLogEntry>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -538,7 +557,7 @@ class QueryLogEntryRepository {
   ///
   /// The returned [QueryLogEntry] will have its `id` field set.
   Future<QueryLogEntry> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     QueryLogEntry row, {
     _i1.Transaction? transaction,
   }) async {
@@ -548,21 +567,96 @@ class QueryLogEntryRepository {
     );
   }
 
+  /// Upserts all [QueryLogEntry]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [QueryLogEntry]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<QueryLogEntry>> upsert(
+    _i1.DatabaseSession session,
+    List<QueryLogEntry> rows, {
+    required _i1.ColumnSelections<QueryLogEntryTable> conflictColumns,
+    _i1.ColumnSelections<QueryLogEntryTable>? updateColumns,
+    _i1.WhereExpressionBuilder<QueryLogEntryTable>? updateWhere,
+    _i1.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<QueryLogEntry>(
+      rows,
+      conflictColumns: conflictColumns(QueryLogEntry.t),
+      updateColumns: updateColumns?.call(QueryLogEntry.t),
+      updateWhere: updateWhere?.call(QueryLogEntry.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [QueryLogEntry] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [QueryLogEntry] will have its `id` field set.
+  Future<QueryLogEntry?> upsertRow(
+    _i1.DatabaseSession session,
+    QueryLogEntry row, {
+    required _i1.ColumnSelections<QueryLogEntryTable> conflictColumns,
+    _i1.ColumnSelections<QueryLogEntryTable>? updateColumns,
+    _i1.WhereExpressionBuilder<QueryLogEntryTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<QueryLogEntry>(
+      row,
+      conflictColumns: conflictColumns(QueryLogEntry.t),
+      updateColumns: updateColumns?.call(QueryLogEntry.t),
+      updateWhere: updateWhere?.call(QueryLogEntry.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [QueryLogEntry]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<QueryLogEntry>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<QueryLogEntry> rows, {
     _i1.ColumnSelections<QueryLogEntryTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<QueryLogEntry>(
       rows,
       columns: columns?.call(QueryLogEntry.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -570,7 +664,7 @@ class QueryLogEntryRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<QueryLogEntry> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     QueryLogEntry row, {
     _i1.ColumnSelections<QueryLogEntryTable>? columns,
     _i1.Transaction? transaction,
@@ -585,7 +679,7 @@ class QueryLogEntryRepository {
   /// Updates a single [QueryLogEntry] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<QueryLogEntry?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<QueryLogEntryUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -599,16 +693,20 @@ class QueryLogEntryRepository {
 
   /// Updates all [QueryLogEntry]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<QueryLogEntry>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<QueryLogEntryUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<QueryLogEntryTable> where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<QueryLogEntryTable>? orderBy,
     _i1.OrderByListBuilder<QueryLogEntryTable>? orderByList,
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<QueryLogEntry>(
       columnValues: columnValues(QueryLogEntry.t.updateTable),
@@ -617,28 +715,42 @@ class QueryLogEntryRepository {
       offset: offset,
       orderBy: orderBy?.call(QueryLogEntry.t),
       orderByList: orderByList?.call(QueryLogEntry.t),
-      orderDescending: orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes all [QueryLogEntry]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<QueryLogEntry>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<QueryLogEntry> rows, {
+    _i1.OrderByBuilder<QueryLogEntryTable>? orderBy,
+    _i1.OrderByListBuilder<QueryLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<QueryLogEntry>(
       rows,
+      orderBy: orderBy?.call(QueryLogEntry.t),
+      orderByList: orderByList?.call(QueryLogEntry.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes a single [QueryLogEntry].
   Future<QueryLogEntry> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     QueryLogEntry row, {
     _i1.Transaction? transaction,
   }) async {
@@ -649,21 +761,34 @@ class QueryLogEntryRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<QueryLogEntry>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<QueryLogEntryTable> where,
+    _i1.OrderByBuilder<QueryLogEntryTable>? orderBy,
+    _i1.OrderByListBuilder<QueryLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<QueryLogEntry>(
       where: where(QueryLogEntry.t),
+      orderBy: orderBy?.call(QueryLogEntry.t),
+      orderByList: orderByList?.call(QueryLogEntry.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<QueryLogEntryTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -671,6 +796,22 @@ class QueryLogEntryRepository {
     return session.db.count<QueryLogEntry>(
       where: where?.call(QueryLogEntry.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [QueryLogEntry] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.DatabaseSession session, {
+    required _i1.WhereExpressionBuilder<QueryLogEntryTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<QueryLogEntry>(
+      where: where(QueryLogEntry.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

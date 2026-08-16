@@ -1,0 +1,517 @@
+/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
+/*   To generate run: "serverpod generate"    */
+
+// ignore_for_file: implementation_imports
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
+// ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
+// ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: dead_code, unnecessary_type_check
+
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/protocol.dart' as _i2;
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
+    as _i3;
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
+    as _i4;
+import 'legacy_authentication_fail_reason.dart' as _i5;
+import 'legacy_authentication_response.dart' as _i6;
+import 'legacy_email_password.dart' as _i7;
+import 'legacy_external_user_identifier.dart' as _i8;
+import 'legacy_session.dart' as _i9;
+import 'legacy_user_info.dart' as _i10;
+import 'legacy_user_settings_config.dart' as _i11;
+export 'legacy_authentication_fail_reason.dart';
+export 'legacy_authentication_response.dart';
+export 'legacy_email_password.dart';
+export 'legacy_external_user_identifier.dart';
+export 'legacy_session.dart';
+export 'legacy_user_info.dart';
+export 'legacy_user_settings_config.dart';
+
+class Protocol extends _i1.DatabaseSerializationManager {
+  Protocol._();
+
+  factory Protocol() => _instance;
+
+  static final Protocol _instance = Protocol._();
+
+  final Set<_i1.SerializationManager> _hostProtocols = {};
+
+  static List<_i2.TableDefinition> get targetTableDefinitions => [
+    _i2.TableDefinition(
+      name: 'serverpod_auth_bridge_email_password',
+      dartName: 'LegacyEmailPassword',
+      schema: 'public',
+      module: 'serverpod_auth_bridge',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue?',
+          columnDefault: 'random_v7',
+        ),
+        _i2.ColumnDefinition(
+          name: 'emailAccountId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'hash',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'serverpod_auth_bridge_email_password_fk_0',
+          columns: ['emailAccountId'],
+          referenceTable: 'serverpod_auth_idp_email_account',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_bridge_email_password_account',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'emailAccountId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'serverpod_auth_bridge_external_user_id',
+      dartName: 'LegacyExternalUserIdentifier',
+      schema: 'public',
+      module: 'serverpod_auth_bridge',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue?',
+          columnDefault: 'random_v7',
+        ),
+        _i2.ColumnDefinition(
+          name: 'authUserId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userIdentifier',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'serverpod_auth_bridge_external_user_id_fk_0',
+          columns: ['authUserId'],
+          referenceTable: 'serverpod_auth_core_user',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_bridge_external_user_id_id',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'userIdentifier',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'serverpod_auth_bridge_session',
+      dartName: 'LegacySession',
+      schema: 'public',
+      module: 'serverpod_auth_bridge',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'serial',
+        ),
+        _i2.ColumnDefinition(
+          name: 'authUserId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'scopeNames',
+          columnType: _i2.ColumnType.json,
+          isNullable: false,
+          dartType: 'Set<String>',
+        ),
+        _i2.ColumnDefinition(
+          name: 'hash',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'method',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'serverpod_auth_bridge_session_fk_0',
+          columns: ['authUserId'],
+          referenceTable: 'serverpod_auth_core_user',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+      ],
+      indexes: [],
+      managed: true,
+    ),
+    ..._i3.Protocol.targetTableDefinitions,
+    ..._i4.Protocol.targetTableDefinitions,
+  ];
+
+  void registerHostProtocol(
+    String projectName,
+    _i1.SerializationManager protocol,
+  ) {
+    _hostProtocols.add(protocol);
+  }
+
+  static String? getClassNameFromObjectJson(dynamic data) {
+    if (data is! Map) return null;
+    final className = data['__className__'] as String?;
+    if (className == null) return null;
+    if (!className.startsWith('serverpod_auth_bridge.')) return className;
+    return className.substring(22);
+  }
+
+  @override
+  T deserialize<T>(
+    dynamic data, [
+    Type? t,
+  ]) {
+    t ??= T;
+
+    final dataClassName = getClassNameFromObjectJson(data);
+    if (dataClassName != null && dataClassName != getClassNameForType(t)) {
+      try {
+        return deserializeByClassName({
+          'className': dataClassName,
+          'data': data,
+        });
+      } on FormatException catch (_) {
+        // If the className is not recognized (e.g., older client receiving
+        // data with a new subtype), fall back to deserializing without the
+        // className, using the expected type T.
+      }
+    }
+
+    if (t == _i5.LegacyAuthenticationFailReason) {
+      return _i5.LegacyAuthenticationFailReason.fromJson(data) as T;
+    }
+    if (t == _i6.LegacyAuthenticationResponse) {
+      return _i6.LegacyAuthenticationResponse.fromJson(data) as T;
+    }
+    if (t == _i7.LegacyEmailPassword) {
+      return _i7.LegacyEmailPassword.fromJson(data) as T;
+    }
+    if (t == _i8.LegacyExternalUserIdentifier) {
+      return _i8.LegacyExternalUserIdentifier.fromJson(data) as T;
+    }
+    if (t == _i9.LegacySession) {
+      return _i9.LegacySession.fromJson(data) as T;
+    }
+    if (t == _i10.LegacyUserInfo) {
+      return _i10.LegacyUserInfo.fromJson(data) as T;
+    }
+    if (t == _i11.LegacyUserSettingsConfig) {
+      return _i11.LegacyUserSettingsConfig.fromJson(data) as T;
+    }
+    if (t == _i1.getType<_i5.LegacyAuthenticationFailReason?>()) {
+      return (data != null
+              ? _i5.LegacyAuthenticationFailReason.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i6.LegacyAuthenticationResponse?>()) {
+      return (data != null
+              ? _i6.LegacyAuthenticationResponse.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i7.LegacyEmailPassword?>()) {
+      return (data != null ? _i7.LegacyEmailPassword.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i8.LegacyExternalUserIdentifier?>()) {
+      return (data != null
+              ? _i8.LegacyExternalUserIdentifier.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i9.LegacySession?>()) {
+      return (data != null ? _i9.LegacySession.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i10.LegacyUserInfo?>()) {
+      return (data != null ? _i10.LegacyUserInfo.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i11.LegacyUserSettingsConfig?>()) {
+      return (data != null
+              ? _i11.LegacyUserSettingsConfig.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == Set<String>) {
+      return (data as List).map((e) => deserialize<String>(e)).toSet() as T;
+    }
+    if (t == List<String>) {
+      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
+    }
+    try {
+      return _i3.Protocol().deserialize<T>(data, t);
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+    try {
+      return _i4.Protocol().deserialize<T>(data, t);
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+    try {
+      return _i2.Protocol().deserialize<T>(data, t);
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+    return super.deserialize<T>(data, t);
+  }
+
+  static String? getClassNameForType(Type type) {
+    return switch (type) {
+      _i5.LegacyAuthenticationFailReason => 'LegacyAuthenticationFailReason',
+      _i6.LegacyAuthenticationResponse => 'LegacyAuthenticationResponse',
+      _i7.LegacyEmailPassword => 'LegacyEmailPassword',
+      _i8.LegacyExternalUserIdentifier => 'LegacyExternalUserIdentifier',
+      _i9.LegacySession => 'LegacySession',
+      _i10.LegacyUserInfo => 'LegacyUserInfo',
+      _i11.LegacyUserSettingsConfig => 'LegacyUserSettingsConfig',
+      _ => null,
+    };
+  }
+
+  @override
+  String? getClassNameForObject(Object? data) {
+    String? className = super.getClassNameForObject(data);
+    if (className != null) return className;
+
+    if (data is Map<String, dynamic> && data['__className__'] is String) {
+      return (data['__className__'] as String).replaceFirst(
+        'serverpod_auth_bridge.',
+        '',
+      );
+    }
+
+    switch (data) {
+      case _i5.LegacyAuthenticationFailReason():
+        return 'LegacyAuthenticationFailReason';
+      case _i6.LegacyAuthenticationResponse():
+        return 'LegacyAuthenticationResponse';
+      case _i7.LegacyEmailPassword():
+        return 'LegacyEmailPassword';
+      case _i8.LegacyExternalUserIdentifier():
+        return 'LegacyExternalUserIdentifier';
+      case _i9.LegacySession():
+        return 'LegacySession';
+      case _i10.LegacyUserInfo():
+        return 'LegacyUserInfo';
+      case _i11.LegacyUserSettingsConfig():
+        return 'LegacyUserSettingsConfig';
+    }
+    className = _i2.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return className.contains('.') ? className : 'serverpod.$className';
+    }
+    return null;
+  }
+
+  @override
+  dynamic deserializeByClassName(Map<String, dynamic> data) {
+    var dataClassName = data['className'];
+    if (dataClassName is! String) {
+      return super.deserializeByClassName(data);
+    }
+    if (dataClassName == 'LegacyAuthenticationFailReason') {
+      return deserialize<_i5.LegacyAuthenticationFailReason>(data['data']);
+    }
+    if (dataClassName == 'LegacyAuthenticationResponse') {
+      return deserialize<_i6.LegacyAuthenticationResponse>(data['data']);
+    }
+    if (dataClassName == 'LegacyEmailPassword') {
+      return deserialize<_i7.LegacyEmailPassword>(data['data']);
+    }
+    if (dataClassName == 'LegacyExternalUserIdentifier') {
+      return deserialize<_i8.LegacyExternalUserIdentifier>(data['data']);
+    }
+    if (dataClassName == 'LegacySession') {
+      return deserialize<_i9.LegacySession>(data['data']);
+    }
+    if (dataClassName == 'LegacyUserInfo') {
+      return deserialize<_i10.LegacyUserInfo>(data['data']);
+    }
+    if (dataClassName == 'LegacyUserSettingsConfig') {
+      return deserialize<_i11.LegacyUserSettingsConfig>(data['data']);
+    }
+    if (dataClassName.startsWith('serverpod.')) {
+      data['className'] = dataClassName.substring(10);
+      return _i2.Protocol().deserializeByClassName(data);
+    }
+    return super.deserializeByClassName(data);
+  }
+
+  @override
+  Object? dynamicFieldToJson(
+    Object? object, {
+    bool forProtocol = false,
+  }) {
+    if ((object is List || object is Set || object is Map) ||
+        getClassNameForObject(object) != null) {
+      return super.dynamicFieldToJson(object, forProtocol: forProtocol);
+    }
+    for (final protocol in _hostProtocols) {
+      final className = protocol.getClassNameForObject(object);
+      if (className == null) continue;
+      final host = protocol.getModuleName();
+      final wrapped = {
+        'className': className.contains('.') ? className : '$host.$className',
+        'data': object,
+      };
+      return forProtocol
+          ? _i1.SerializationManager.toEncodableForProtocol(wrapped)
+          : _i1.SerializationManager.toEncodable(wrapped);
+    }
+    return super.dynamicFieldToJson(object, forProtocol: forProtocol);
+  }
+
+  @override
+  dynamic deserializeDynamicFieldValue(Object? value) {
+    if (value == null) return null;
+    if (value is! Map<String, dynamic> || value['className'] is! String) {
+      throw FormatException(
+        'Dynamic fields are encoded as a Map with className and data, but got '
+        '${value.runtimeType} instead.',
+      );
+    }
+    final className = value['className'] as String;
+    for (final protocol in _hostProtocols) {
+      final host = protocol.getModuleName();
+      final hostPrefix = '$host.';
+      if (className.startsWith(hostPrefix)) {
+        final strippedClassName = className.substring(hostPrefix.length);
+        if (strippedClassName.contains('.')) {
+          throw FormatException(
+            'Dynamic field className must not use multiple prefixes: $className',
+          );
+        }
+        final hostData = Map<String, dynamic>.from(value);
+        hostData['className'] = strippedClassName;
+        return protocol.deserializeByClassName(hostData);
+      }
+    }
+    if (className.contains('.')) {
+      for (final protocol in _hostProtocols) {
+        try {
+          return protocol.deserializeByClassName(value);
+        } on FormatException catch (_) {}
+      }
+    }
+    return deserializeByClassName(value);
+  }
+
+  @override
+  _i1.Table? getTableForType(Type t) {
+    {
+      var table = _i3.Protocol().getTableForType(t);
+      if (table != null) {
+        return table;
+      }
+    }
+    {
+      var table = _i4.Protocol().getTableForType(t);
+      if (table != null) {
+        return table;
+      }
+    }
+    {
+      var table = _i2.Protocol().getTableForType(t);
+      if (table != null) {
+        return table;
+      }
+    }
+    switch (t) {
+      case _i7.LegacyEmailPassword:
+        return _i7.LegacyEmailPassword.t;
+      case _i8.LegacyExternalUserIdentifier:
+        return _i8.LegacyExternalUserIdentifier.t;
+      case _i9.LegacySession:
+        return _i9.LegacySession.t;
+    }
+    return null;
+  }
+
+  @override
+  List<_i2.TableDefinition> getTargetTableDefinitions() =>
+      targetTableDefinitions;
+
+  @override
+  String getModuleName() => 'serverpod_auth_bridge';
+
+  /// Maps any `Record`s known to this [Protocol] to their JSON representation
+  ///
+  /// Throws in case the record type is not known.
+  ///
+  /// This method will return `null` (only) for `null` inputs.
+  Map<String, dynamic>? mapRecordToJson(Record? record) {
+    if (record == null) {
+      return null;
+    }
+    try {
+      return _i3.Protocol().mapRecordToJson(record);
+    } catch (_) {}
+    try {
+      return _i4.Protocol().mapRecordToJson(record);
+    } catch (_) {}
+    throw Exception('Unsupported record type ${record.runtimeType}');
+  }
+}

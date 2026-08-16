@@ -9,54 +9,98 @@ environment:
   sdk: DART_VERSION
 
 dependencies:
-  archive: '>=3.3.7 <5.0.0'
+  analyzer: '>=8.1.0 <11.0.0'
+  archive: ^4.0.0
   args: ^2.7.0
+  async: ^2.11.0
   ci: ^0.1.0
+  cli_tools: ^0.13.2
+  code_assets: ^1.0.0
   code_builder: ^4.5.0
-  dart_style: ^3.0.0
+  collection: ^1.18.0
+  config: ^0.9.0
+  dart_data_home: ^0.1.0
+  dart_mcp: '>=0.4.1 <0.6.0'
+  # Pinned exactly, not ranged: the generator formats the code it writes, so a
+  # dart_style change is a change to every generated file in every project. An
+  # exact pin keeps that under our control instead of a `pub upgrade`'s.
+  #
+  # It no longer has to match the `dart_style` bundled with the user's SDK.
+  # Serverpod supports Dart 3.10+, which spans the fix for
+  # https://github.com/dart-lang/dart_style/issues/1785, and no single version
+  # can match both sides of it. Code is now ensured to be stable by adding a
+  # trailing comma to enums before calling the formatter.
+  #
+  # 3.1.7 is the latest version compatible with analyzer <11. Version 3.1.8
+  # adds Dart 3.13 support but requires analyzer 12, so upgrade both
+  # dependencies together when Serverpod targets Dart 3.13.
+  dart_style: 3.1.7
+  data_assets: '>=0.19.0 <0.20.0'
+  ffi: ^2.1.4
+  file: ^7.0.1
+  hooks: ^1.0.0
+  hooks_runner: ^1.2.1
   http: '>=1.1.0 <2.0.0'
   intl: '>=0.19.0 <0.21.0'
-  recase: ^4.1.0
-  built_collection: ^5.1.1
+  isolated_object: ^0.1.0
+  json_rpc_2: ^4.0.0
+  # Bridge type only: hooks_runner's NativeAssetsBuildRunner requires a
+  # Logger argument. All log records are forwarded to the serverpod CLI
+  # logger; we never call package:logging methods directly.
+  logging: ^1.2.0
+  lsp_server: ^0.4.0
+  meta: ^1.15.0
+  nocterm: ^0.9.0
   package_config: ^2.1.0
-  pubspec_parse: ^1.4.0
-  source_span: ^1.10.0
-  super_string: ^1.0.3
-  watcher: ^1.0.2
-  analyzer: ^8.1.0
   path: ^1.8.3
   pub_api_client: '>=2.4.0 <4.0.0'
-  uuid: ^4.1.0
-  yaml: ^3.1.2
-  serverpod_shared: SERVERPOD_VERSION
+  pub_semver: ^2.1.4
+  pubspec_parse: ^1.5.0
+  # Nocterm permits quiver 3.0.0, which cannot compile on Dart 3.
+  quiver: ^3.2.2
+  recase: ^4.1.0
+  serverpod_database: SERVERPOD_VERSION
+  serverpod_embedded_postgres: SERVERPOD_VERSION
+  serverpod_logging_cli: ^0.1.0
   serverpod_serialization: SERVERPOD_VERSION
   serverpod_service_client: SERVERPOD_VERSION
-  async: ^2.11.0
-  meta: ^1.15.0
-  json_rpc_2: ^4.0.0
+  serverpod_shared: SERVERPOD_VERSION
+  serverpod_tui: ^0.12.0
+  skills: ^0.3.1
+  source_span: ^1.10.0
   stream_channel: ^2.1.1
-  lsp_server: ^0.4.0
-  pub_semver: ^2.1.4
-  cli_tools: ^0.7.0
-  config: ^0.7.0
+  stream_transform: ^2.1.0
+  uuid: ^4.5.3
+  vm_service: '>=13.0.0 <16.0.0'
+  watcher: ^1.0.2
+  whiskers: ^0.1.1
+  # win32 6.0.0 requires Dart 3.11, while Serverpod supports Dart 3.10.
+  win32: ^6.0.1
+  yaml: ^3.1.2
+  yaml_edit: ^2.2.2
 
 dev_dependencies:
+  postgres: ^3.4.0
   serverpod_lints: SERVERPOD_VERSION
   term_glyph: ^1.2.2
   test: ^1.25.5
   test_descriptor: ^2.0.2
 
 dependency_overrides:
-  serverpod_shared:
-    path: ../../packages/serverpod_shared
+  serverpod_client:
+    path: ../../packages/serverpod_client
+  serverpod_database:
+    path: ../../packages/serverpod_database
+  serverpod_embedded_postgres:
+    path: ../../packages/serverpod_embedded_postgres
+  serverpod_lints:
+    path: ../../packages/serverpod_lints
   serverpod_serialization:
     path: ../../packages/serverpod_serialization
   serverpod_service_client:
     path: ../../packages/serverpod_service_client
-  serverpod_lints:
-    path: ../../packages/serverpod_lints
-  serverpod_client:
-    path: ../../packages/serverpod_client
+  serverpod_shared:
+    path: ../../packages/serverpod_shared
 
 executables:
   serverpod: serverpod_cli

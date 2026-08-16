@@ -1,5 +1,6 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:path/path.dart' as path;
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:test/test.dart';
 
@@ -15,8 +16,12 @@ void main() {
   var testClassName = 'Example';
   var repositoryClassName = '${testClassName}Repository';
   var testClassFileName = 'example';
-  var expectedFilePath =
-      path.join('lib', 'src', 'generated', '$testClassFileName.dart');
+  var expectedFilePath = path.join(
+    'lib',
+    'src',
+    'generated',
+    '$testClassFileName.dart',
+  );
 
   group('Given a class with table name when generating code', () {
     var tableName = 'example_table';
@@ -24,7 +29,7 @@ void main() {
       ModelClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withTableName(tableName)
-          .build()
+          .build(),
     ];
 
     var codeMap = generator.generateSerializableModelsCode(
@@ -95,7 +100,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             findMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -128,13 +133,6 @@ void main() {
           );
         });
 
-        test('that takes the orderDescending bool as an optional param', () {
-          expect(
-            findMethod?.parameters?.toSource(),
-            contains('bool orderDescending'),
-          );
-        });
-
         test('that takes the orderByList as an optional param', () {
           expect(
             findMethod?.parameters?.toSource(),
@@ -146,6 +144,20 @@ void main() {
           expect(
             findMethod?.parameters?.toSource(),
             contains('Transaction? transaction'),
+          );
+        });
+
+        test('that takes the lockMode as an optional param', () {
+          expect(
+            findMethod?.parameters?.toSource(),
+            contains('LockMode? lockMode'),
+          );
+        });
+
+        test('that takes the lockBehavior as an optional param', () {
+          expect(
+            findMethod?.parameters?.toSource(),
+            contains('LockBehavior? lockBehavior'),
           );
         });
       });
@@ -180,7 +192,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             findRowMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -216,20 +228,24 @@ void main() {
           );
         });
 
-        test(
-            'that takes the orderDescending as a named param with the default value false',
-            () {
-          var params = findRowMethod?.parameters?.toSource();
-          expect(
-            params,
-            contains('bool orderDescending = false'),
-          );
-        });
-
         test('that takes the transaction object as an optional param', () {
           expect(
             findRowMethod?.parameters?.toSource(),
             contains('Transaction? transaction'),
+          );
+        });
+
+        test('that takes the lockMode as an optional param', () {
+          expect(
+            findRowMethod?.parameters?.toSource(),
+            contains('LockMode? lockMode'),
+          );
+        });
+
+        test('that takes the lockBehavior as an optional param', () {
+          expect(
+            findRowMethod?.parameters?.toSource(),
+            contains('LockBehavior? lockBehavior'),
           );
         });
       });
@@ -264,7 +280,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             findByIdMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -281,6 +297,86 @@ void main() {
             contains('Transaction? transaction'),
           );
         });
+
+        test('that takes the lockMode as an optional param', () {
+          expect(
+            findByIdMethod?.parameters?.toSource(),
+            contains('LockMode? lockMode'),
+          );
+        });
+
+        test('that takes the lockBehavior as an optional param', () {
+          expect(
+            findByIdMethod?.parameters?.toSource(),
+            contains('LockBehavior? lockBehavior'),
+          );
+        });
+      });
+
+      group('has a lockRows method', () {
+        var lockRowsMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          repositoryClass!,
+          name: 'lockRows',
+        );
+
+        test('defined', () {
+          expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              repositoryClass,
+              name: 'lockRows',
+            ),
+            isTrue,
+          );
+        });
+
+        test('that returns a Future<void>', () {
+          expect(
+            lockRowsMethod?.returnType?.toSource(),
+            contains('Future<void>'),
+          );
+        });
+
+        test('that takes the session as a required param', () {
+          expect(
+            lockRowsMethod?.parameters?.toSource(),
+            contains('DatabaseSession session'),
+          );
+        });
+
+        test('that takes the where callback as a named required param', () {
+          expect(
+            lockRowsMethod?.parameters?.toSource(),
+            contains(
+              'required _i1.WhereExpressionBuilder<${testClassName}Table> where',
+            ),
+          );
+        });
+
+        test('that takes the lockMode as a named required param', () {
+          expect(
+            lockRowsMethod?.parameters?.toSource(),
+            contains('required _i1.LockMode lockMode'),
+          );
+        });
+
+        test('that takes the transaction as a named required param', () {
+          expect(
+            lockRowsMethod?.parameters?.toSource(),
+            contains('required _i1.Transaction transaction'),
+          );
+        });
+
+        test(
+          'that takes the lockBehavior with a default value of wait',
+          () {
+            expect(
+              lockRowsMethod?.parameters?.toSource(),
+              contains(
+                '_i1.LockBehavior lockBehavior = _i1.LockBehavior.wait',
+              ),
+            );
+          },
+        );
       });
 
       group('has an insert method', () {
@@ -308,7 +404,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             insertMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -323,6 +419,20 @@ void main() {
           expect(
             insertMethod?.parameters?.toSource(),
             contains('Transaction? transaction'),
+          );
+        });
+
+        test('that takes the ignoreConflicts bool as an optional param', () {
+          expect(
+            insertMethod?.parameters?.toSource(),
+            contains('bool ignoreConflicts = false'),
+          );
+        });
+
+        test('that takes the noReturn bool as an optional param', () {
+          expect(
+            insertMethod?.parameters?.toSource(),
+            contains('bool noReturn = false'),
           );
         });
       });
@@ -357,7 +467,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             insertRowMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -372,6 +482,13 @@ void main() {
           expect(
             insertRowMethod?.parameters?.toSource(),
             contains('Transaction? transaction'),
+          );
+        });
+
+        test('that does not have the ignoreConflicts param', () {
+          expect(
+            insertRowMethod?.parameters?.toSource(),
+            isNot(contains('ignoreConflicts')),
           );
         });
       });
@@ -401,7 +518,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             updateMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -416,6 +533,13 @@ void main() {
           expect(
             updateMethod?.parameters?.toSource(),
             contains('Transaction? transaction'),
+          );
+        });
+
+        test('that takes the noReturn bool as an optional param', () {
+          expect(
+            updateMethod?.parameters?.toSource(),
+            contains('bool noReturn = false'),
           );
         });
       });
@@ -450,7 +574,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             updateRowMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -494,7 +618,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             deleteMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -505,10 +629,31 @@ void main() {
           );
         });
 
+        test('that takes the orderBy column as an optional param', () {
+          expect(
+            deleteMethod?.parameters?.toSource(),
+            contains('OrderByBuilder<ExampleTable>? orderBy'),
+          );
+        });
+
+        test('that takes the orderByList as an optional param', () {
+          expect(
+            deleteMethod?.parameters?.toSource(),
+            contains('OrderByListBuilder<ExampleTable>? orderByList'),
+          );
+        });
+
         test('that takes the transaction object as an optional param', () {
           expect(
             deleteMethod?.parameters?.toSource(),
             contains('Transaction? transaction'),
+          );
+        });
+
+        test('that takes the noReturn bool as an optional param', () {
+          expect(
+            deleteMethod?.parameters?.toSource(),
+            contains('bool noReturn = false'),
           );
         });
       });
@@ -543,7 +688,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             deleteRowMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -592,7 +737,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             deleteWhereMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -604,10 +749,31 @@ void main() {
           );
         });
 
+        test('that takes the orderBy column as an optional param', () {
+          expect(
+            deleteWhereMethod?.parameters?.toSource(),
+            contains('OrderByBuilder<ExampleTable>? orderBy'),
+          );
+        });
+
+        test('that takes the orderByList as an optional param', () {
+          expect(
+            deleteWhereMethod?.parameters?.toSource(),
+            contains('OrderByListBuilder<ExampleTable>? orderByList'),
+          );
+        });
+
         test('that takes the transaction object as an optional param', () {
           expect(
             deleteWhereMethod?.parameters?.toSource(),
             contains('Transaction? transaction'),
+          );
+        });
+
+        test('that takes the noReturn bool as an optional param', () {
+          expect(
+            deleteWhereMethod?.parameters?.toSource(),
+            contains('bool noReturn = false'),
           );
         });
       });
@@ -642,7 +808,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             countMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -685,23 +851,24 @@ void main() {
         });
 
         test(
-            'that returns a future with an optional instance of the base class',
-            () {
-          expect(
-            updateByIdMethod?.returnType?.toSource(),
-            contains('Future'),
-          );
+          'that returns a future with an optional instance of the base class',
+          () {
+            expect(
+              updateByIdMethod?.returnType?.toSource(),
+              contains('Future'),
+            );
 
-          expect(
-            updateByIdMethod?.returnType?.toSource(),
-            contains('$testClassName?'),
-          );
-        });
+            expect(
+              updateByIdMethod?.returnType?.toSource(),
+              contains('$testClassName?'),
+            );
+          },
+        );
 
         test('that takes the session as a required param', () {
           expect(
             updateByIdMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -717,7 +884,8 @@ void main() {
           expect(
             params,
             contains(
-                'required _i1.ColumnValueListBuilder<${testClassName}UpdateTable> columnValues'),
+              'required _i1.ColumnValueListBuilder<${testClassName}UpdateTable> columnValues',
+            ),
           );
         });
 
@@ -759,7 +927,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             updateWhereMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -768,7 +936,8 @@ void main() {
           expect(
             params,
             contains(
-                'required _i1.ColumnValueListBuilder<${testClassName}UpdateTable> columnValues'),
+              'required _i1.ColumnValueListBuilder<${testClassName}UpdateTable> columnValues',
+            ),
           );
         });
 
@@ -777,7 +946,8 @@ void main() {
           expect(
             params,
             contains(
-                'required _i1.WhereExpressionBuilder<${testClassName}Table> where'),
+              'required _i1.WhereExpressionBuilder<${testClassName}Table> where',
+            ),
           );
         });
 
@@ -806,14 +976,8 @@ void main() {
           expect(
             updateWhereMethod?.parameters?.toSource(),
             contains(
-                '_i1.OrderByListBuilder<${testClassName}Table>? orderByList'),
-          );
-        });
-
-        test('that takes the orderDescending bool as an optional param', () {
-          expect(
-            updateWhereMethod?.parameters?.toSource(),
-            contains('bool orderDescending'),
+              '_i1.OrderByListBuilder<${testClassName}Table>? orderByList',
+            ),
           );
         });
 
@@ -823,7 +987,65 @@ void main() {
             contains('Transaction? transaction'),
           );
         });
+
+        test('that takes the noReturn bool as an optional param', () {
+          expect(
+            updateWhereMethod?.parameters?.toSource(),
+            contains('bool noReturn = false'),
+          );
+        });
       });
     }, skip: repositoryClass == null);
   });
+
+  test(
+    'Given a class with table name declared on the project '
+    'when generating code '
+    'then the DatabaseSession is imported from the serverpod package.',
+    () {
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withFileName(testClassFileName)
+            .withTableName('example_table')
+            .withDatabase(ModelDatabaseDefinition.all)
+            .build(),
+      ];
+
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
+
+      var compilationUnit = parseString(
+        content: codeMap[expectedFilePath]!,
+      ).unit;
+
+      var repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        compilationUnit,
+        name: repositoryClassName,
+      );
+
+      expect(
+        repositoryClass,
+        isNotNull,
+        reason: 'Missing class named $repositoryClassName.',
+      );
+
+      expect(
+        CompilationUnitHelpers.hasImportDirective(
+          compilationUnit,
+          uri: 'package:serverpod/serverpod.dart',
+        ),
+        isTrue,
+      );
+
+      expect(
+        CompilationUnitHelpers.hasImportDirective(
+          compilationUnit,
+          uri: 'package:serverpod_database/serverpod_database.dart',
+        ),
+        isFalse,
+      );
+    },
+  );
 }

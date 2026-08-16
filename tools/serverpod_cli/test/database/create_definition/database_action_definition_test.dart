@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
@@ -8,126 +9,298 @@ import '../../test_util/builders/model_class_definition_builder.dart';
 import '../../test_util/builders/serializable_entity_field_definition_builder.dart';
 
 void main() {
-  test(
-      'Given a class definition with a table, then generate a table with that name.',
-      () {
-    var field = FieldDefinitionBuilder().withPrimaryKey().build();
-    var model = ModelClassDefinitionBuilder()
-        .withTableName('example')
-        .withField(field)
-        .build();
-
-    var databaseDefinition = createDatabaseDefinitionFromModels(
-      [model],
-      'example',
-      [],
-    );
-
-    expect(databaseDefinition.tables, hasLength(1));
-    expect(databaseDefinition.tables.first.name, 'example');
-  });
   group(
-      'Given a class definition with a foreign relation with onDelete and onUpdate set to "SetNull"',
-      () {
-    var relation = ForeignRelationDefinitionBuilder()
-        .withParentTable('example')
-        .withReferenceFieldName('id')
-        .withOnDelete(ForeignKeyAction.setNull)
-        .withOnUpdate(ForeignKeyAction.setNull)
-        .build();
+    'Given a class definition with a table when generating a database definition',
+    () {
+      var field = FieldDefinitionBuilder().withPrimaryKey().build();
+      var model = ModelClassDefinitionBuilder()
+          .withTableName('example')
+          .withField(field)
+          .build();
 
-    var field = FieldDefinitionBuilder()
-        .withName('parentId')
-        .withIdType(isNullable: true)
-        .withRelation(relation)
-        .build();
-
-    var model = ModelClassDefinitionBuilder()
-        .withTableName('example')
-        .withField(field)
-        .build();
-
-    var databaseDefinition = createDatabaseDefinitionFromModels(
-      [model],
-      'example',
-      [],
-    );
-
-    var tablesDoNotExist = databaseDefinition.tables.isEmpty;
-    test('then a foreign relation exists.', () {
-      var table = databaseDefinition.tables.first;
-      expect(
-        table.foreignKeys,
-        isNotEmpty,
-        reason: 'Expected a foreign relation to exists.',
+      late var databaseDefinition = createDatabaseDefinitionFromModels(
+        [model],
+        'example',
+        [],
       );
-    }, skip: tablesDoNotExist);
 
-    group(' ', () {
-      var table = databaseDefinition.tables.first;
+      test('then the schemaVersion is set to 2.', () {
+        expect(databaseDefinition.schemaVersion, 2);
+      });
 
-      var foreignKeyDoNotExist =
-          databaseDefinition.tables.first.foreignKeys.isEmpty;
+      test('then the id column is primary.', () {
+        var idColumn = databaseDefinition.tables.first.columns.first;
+        expect(idColumn.isPrimary, isTrue);
+      });
 
-      test('then the foreign key references is a self reference.', () {
-        var foreignKey = table.foreignKeys.first;
+      test('then the id column has default "serial".', () {
+        var idColumn = databaseDefinition.tables.first.columns.first;
+        expect(idColumn.columnDefault, defaultIntSerial);
+      });
 
-        var referenceDatabase = foreignKey.referenceTable;
-        expect(referenceDatabase, 'example');
+      test('then the id column has no PKEY index.', () {
+        var hasPkeyIndex = databaseDefinition.tables.first.indexes.any(
+          (i) => i.isPrimary && i.indexName.endsWith('_pkey'),
+        );
+        expect(hasPkeyIndex, isFalse);
+      });
+    },
+  );
 
-        var referenceColumn = foreignKey.referenceColumns.first;
-        expect(referenceColumn, 'id');
-      }, skip: foreignKeyDoNotExist);
+  test(
+    'Given a class definition with a table, then generate a table with that name.',
+    () {
+      var field = FieldDefinitionBuilder().withPrimaryKey().build();
+      var model = ModelClassDefinitionBuilder()
+          .withTableName('example')
+          .withField(field)
+          .build();
 
-      test(
+      var databaseDefinition = createDatabaseDefinitionFromModels(
+        [model],
+        'example',
+        [],
+      );
+
+      expect(databaseDefinition.tables, hasLength(1));
+      expect(databaseDefinition.tables.first.name, 'example');
+    },
+  );
+  group(
+    'Given a class definition with a foreign relation with onDelete and onUpdate set to "SetNull"',
+    () {
+      var relation = ForeignRelationDefinitionBuilder()
+          .withParentTable('example')
+          .withReferenceFieldName('id')
+          .withOnDelete(ForeignKeyAction.setNull)
+          .withOnUpdate(ForeignKeyAction.setNull)
+          .build();
+
+      var field = FieldDefinitionBuilder()
+          .withName('parentId')
+          .withIdType(isNullable: true)
+          .withRelation(relation)
+          .build();
+
+      var model = ModelClassDefinitionBuilder()
+          .withTableName('example')
+          .withField(field)
+          .build();
+
+      var databaseDefinition = createDatabaseDefinitionFromModels(
+        [model],
+        'example',
+        [],
+      );
+
+      var tablesDoNotExist = databaseDefinition.tables.isEmpty;
+      test('then a foreign relation exists.', () {
+        var table = databaseDefinition.tables.first;
+        expect(
+          table.foreignKeys,
+          isNotEmpty,
+          reason: 'Expected a foreign relation to exists.',
+        );
+      }, skip: tablesDoNotExist);
+
+      group(' ', () {
+        var table = databaseDefinition.tables.first;
+
+        var foreignKeyDoNotExist =
+            databaseDefinition.tables.first.foreignKeys.isEmpty;
+
+        test(
+          'then the foreign key references is a self reference.',
+          () {
+            var foreignKey = table.foreignKeys.first;
+
+            var referenceDatabase = foreignKey.referenceTable;
+            expect(referenceDatabase, 'example');
+
+            var referenceColumn = foreignKey.referenceColumns.first;
+            expect(referenceColumn, 'id');
+          },
+          skip: foreignKeyDoNotExist,
+        );
+
+        test(
           'then generate a database definition with onDelete set on the foreign key.',
           () {
-        var foreignKey = table.foreignKeys.first;
+            var foreignKey = table.foreignKeys.first;
 
-        expect(foreignKey.onDelete, ForeignKeyAction.setNull);
-      }, skip: foreignKeyDoNotExist);
+            expect(foreignKey.onDelete, ForeignKeyAction.setNull);
+          },
+          skip: foreignKeyDoNotExist,
+        );
 
-      test(
+        test(
           'then generate a database definition with onUpdate set on the foreign key.',
           () {
+            var foreignKey = table.foreignKeys.first;
+            expect(foreignKey.onUpdate, ForeignKeyAction.setNull);
+          },
+          skip: foreignKeyDoNotExist,
+        );
+      }, skip: tablesDoNotExist);
+
+      group('when generating sql code', () {
+        var module = 'test-module';
+        var version = 'version';
+
+        var sql = databaseDefinition.toPgSql(
+          installedModules: [
+            DatabaseMigrationVersion(
+              module: module,
+              version: version,
+            ),
+          ],
+        );
+
+        test('then on delete is set to set null.', () {
+          expect(sql.contains('ON DELETE SET NULL'), isTrue);
+        });
+
+        test('then on update is set to set null.', () {
+          expect(sql.contains('ON UPDATE SET NULL'), isTrue);
+        });
+
+        test('then migration version insert is added.', () {
+          expect(
+            sql,
+            contains(
+              'INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")',
+            ),
+          );
+          expect(sql, contains('VALUES (\'$module\', \'$version\', now())'));
+          expect(sql, contains('ON CONFLICT ("module")'));
+          expect(
+            sql,
+            contains(
+              'DO UPDATE SET "version" = \'$version\', "timestamp" = now();',
+            ),
+          );
+        });
+      });
+    },
+  );
+
+  group(
+    'Given a class definition with a table with an explicit column name ',
+    () {
+      const fieldName = 'userName';
+      const columnName = 'user_name';
+      const columnType = 'String';
+      const tableName = 'example';
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withTableName(tableName)
+            .withField(
+              FieldDefinitionBuilder()
+                  .withName(fieldName)
+                  .withColumnNameOverride(columnName)
+                  .withTypeDefinition(columnType, true)
+                  .withScope(ModelFieldScopeDefinition.all)
+                  .withShouldPersist(true)
+                  .build(),
+            )
+            .build(),
+      ];
+
+      test('then a column with the explicit name is generated.', () {
+        var databaseDefinition = createDatabaseDefinitionFromModels(
+          models,
+          tableName,
+          [],
+        );
+
+        expect(databaseDefinition.tables, hasLength(1));
+        expect(databaseDefinition.tables.first.name, tableName);
+        final table = databaseDefinition.findTableNamed(tableName);
+        expect(table, isNotNull);
+        final column = table!.findColumnNamed(columnName);
+        expect(column, isNotNull);
+      });
+
+      test('with a foreign relation, then the foreign key columns includes '
+          'the explicit column name', () {
+        var relation = ForeignRelationDefinitionBuilder()
+            .withParentTable(tableName)
+            .withReferenceFieldName('id')
+            .withOnDelete(ForeignKeyAction.setNull)
+            .withOnUpdate(ForeignKeyAction.setNull)
+            .build();
+
+        const relationFieldName = 'parentId';
+        const relationColumnName = 'parent_id';
+
+        var field = FieldDefinitionBuilder()
+            .withName(relationFieldName)
+            .withColumnNameOverride(relationColumnName)
+            .withIdType(isNullable: true)
+            .withRelation(relation)
+            .build();
+
+        var model = ModelClassDefinitionBuilder()
+            .withTableName('${tableName}_child')
+            .withField(field)
+            .build();
+        models.add(model);
+
+        var databaseDefinition = createDatabaseDefinitionFromModels(
+          models,
+          tableName,
+          [],
+        );
+        var table = databaseDefinition.tables.last;
+        expect(
+          table.foreignKeys,
+          isNotEmpty,
+          reason: 'Expected a foreign relation to exists.',
+        );
         var foreignKey = table.foreignKeys.first;
-        expect(foreignKey.onUpdate, ForeignKeyAction.setNull);
-      }, skip: foreignKeyDoNotExist);
-    }, skip: tablesDoNotExist);
-
-    group('when generating sql code', () {
-      var module = 'test-module';
-      var version = 'version';
-
-      var sql = databaseDefinition.toPgSql(installedModules: [
-        DatabaseMigrationVersion(
-          module: module,
-          version: version,
-        )
-      ]);
-
-      test('then on delete is set to set null.', () {
-        expect(sql.contains('ON DELETE SET NULL'), isTrue);
+        expect(foreignKey.columns, contains(relationColumnName));
       });
+    },
+  );
 
-      test('then on update is set to set null.', () {
-        expect(sql.contains('ON UPDATE SET NULL'), isTrue);
-      });
+  group(
+    'Given a class definition with a serial int field when generating a database definition',
+    () {
+      var field = FieldDefinitionBuilder()
+          .withName('syncVersion')
+          .withTypeIntSerial(nullable: true)
+          .build();
+      var model = ModelClassDefinitionBuilder()
+          .withTableName('example')
+          .withField(field)
+          .build();
 
-      test('then migration version insert is added.', () {
-        expect(
-          sql,
-          contains(
-              'INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")'),
+      late var databaseDefinition = createDatabaseDefinitionFromModels(
+        [model],
+        'example',
+        [],
+      );
+
+      test('then the serial column is not primary.', () {
+        var serialColumn = databaseDefinition.tables.first.columns.firstWhere(
+          (c) => c.name == 'syncVersion',
         );
-        expect(sql, contains('VALUES (\'$module\', \'$version\', now())'));
-        expect(sql, contains('ON CONFLICT ("module")'));
-        expect(
-          sql,
-          contains(
-              'DO UPDATE SET "version" = \'$version\', "timestamp" = now();'),
-        );
+        expect(serialColumn.isPrimary, isFalse);
       });
-    });
-  });
+
+      test('then the serial column has default "serial".', () {
+        var serialColumn = databaseDefinition.tables.first.columns.firstWhere(
+          (c) => c.name == 'syncVersion',
+        );
+        expect(serialColumn.columnDefault, defaultIntSerial);
+      });
+
+      test('then the serial column is not nullable.', () {
+        var serialColumn = databaseDefinition.tables.first.columns.firstWhere(
+          (c) => c.name == 'syncVersion',
+        );
+        expect(serialColumn.isNullable, isFalse);
+      });
+    },
+  );
 }

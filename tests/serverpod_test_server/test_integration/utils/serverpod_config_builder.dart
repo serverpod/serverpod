@@ -42,7 +42,8 @@ class ServerpodConfigBuilder {
       database: _database ?? DatabaseConfigBuilder().build(),
       redis: _redis ?? RedisConfigBuilder().build(),
       serviceSecret: _serviceSecret,
-      sessionLogs: _sessionLogs ??
+      sessionLogs:
+          _sessionLogs ??
           SessionLogConfig.buildDefault(
             databaseEnabled: true,
             runMode: _runMode,
@@ -177,23 +178,23 @@ class ServerpodConfigBuilder {
   }
 
   ServerConfig _createDefaultApiServer() => ServerConfig(
-        port: 8080,
-        publicHost: 'localhost',
-        publicPort: 8080,
-        publicScheme: 'http',
-      );
+    port: 8080,
+    publicHost: 'localhost',
+    publicPort: 8080,
+    publicScheme: 'http',
+  );
 
   ServerConfig _createDefaultInsightsServer() => ServerConfig(
-        port: 8081,
-        publicHost: 'localhost',
-        publicPort: 8081,
-        publicScheme: 'http',
-      );
+    port: 8081,
+    publicHost: 'localhost',
+    publicPort: 8081,
+    publicScheme: 'http',
+  );
 
   ServerConfig _createDefaultWebServer() => ServerConfig(
-        port: 8082,
-        publicHost: 'localhost',
-        publicPort: 8082,
-        publicScheme: 'http',
-      );
+    port: 8082,
+    publicHost: 'localhost',
+    publicPort: 8082,
+    publicScheme: 'http',
+  );
 }

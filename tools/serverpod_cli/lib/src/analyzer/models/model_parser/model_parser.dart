@@ -1,7 +1,9 @@
 import 'package:serverpod_cli/src/analyzer/models/converter/converter.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/serialization_data_type.dart';
 import 'package:serverpod_cli/src/analyzer/models/utils/quote_utils.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
+import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/util/extensions.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
@@ -17,9 +19,11 @@ class ModelParser {
     String outFileName,
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
-    List<TypeDefinition> extraClasses,
+    GeneratorConfig config,
   ) {
     var isSealed = _parseIsSealed(documentContents);
+
+    var isImmutable = _parseIsImmutable(documentContents);
 
     var extendsClass = _parseExtendsClass(documentContents);
 
@@ -28,40 +32,48 @@ class ModelParser {
     var manageMigration = _parseBool(migrationValue) ?? true;
 
     var tableName = _parseTableName(documentContents);
+    var database = _parseDatabase(documentContents);
+    var serializationDataType = _parseSerializationDataType(documentContents);
 
     return _initializeFromClassFields(
-        documentTypeName: documentTypeName,
-        protocolSource: protocolSource,
-        outFileName: outFileName,
-        documentContents: documentContents,
-        docsExtractor: docsExtractor,
-        extraClasses: extraClasses,
-        hasTable: tableName != null,
-        initialize: ({
-          required String className,
-          required TypeDefinition classType,
-          required bool serverOnly,
-          required List<SerializableModelFieldDefinition> fields,
-          required List<String>? classDocumentation,
-        }) {
-          var indexes = _parseIndexes(documentContents, fields);
+      documentTypeName: documentTypeName,
+      protocolSource: protocolSource,
+      outFileName: outFileName,
+      documentContents: documentContents,
+      docsExtractor: docsExtractor,
+      config: config,
+      hasTable: tableName != null,
+      initialize:
+          ({
+            required String className,
+            required TypeDefinition classType,
+            required bool serverOnly,
+            required List<SerializableModelFieldDefinition> fields,
+            required List<String>? classDocumentation,
+          }) {
+            var indexes = _parseIndexes(documentContents, fields);
 
-          return ModelClassDefinition(
-            className: className,
-            isSealed: isSealed,
-            extendsClass: extendsClass,
-            sourceFileName: protocolSource.yamlSourceUri.path,
-            tableName: tableName,
-            manageMigration: manageMigration,
-            fileName: outFileName,
-            fields: fields,
-            indexes: indexes,
-            subDirParts: protocolSource.subDirPathParts,
-            documentation: classDocumentation,
-            serverOnly: serverOnly,
-            type: classType,
-          );
-        });
+            return ModelClassDefinition(
+              className: className,
+              isSealed: isSealed,
+              isImmutable: isImmutable,
+              extendsClass: extendsClass,
+              sourceFileName: protocolSource.yamlSourceUri.path,
+              database: database,
+              tableName: tableName,
+              serializationDataType: serializationDataType,
+              manageMigration: manageMigration,
+              fileName: outFileName,
+              fields: fields,
+              indexes: indexes,
+              subDirParts: protocolSource.subDirPathParts,
+              documentation: classDocumentation,
+              serverOnly: serverOnly,
+              type: classType,
+              sharedPackageName: protocolSource.sharedPackageName,
+            );
+          },
+    );
   }
 
   static SerializableModelDefinition? serializeExceptionClassFile(
@@ -70,33 +82,38 @@ class ModelParser {
     String outFileName,
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
-    List<TypeDefinition> extraClasses,
+    GeneratorConfig config,
   ) {
+    var isSealed = _parseIsSealed(documentContents);
+    var extendsClass = _parseExtendsClass(documentContents);
     return _initializeFromClassFields(
       documentTypeName: documentTypeName,
       protocolSource: protocolSource,
       outFileName: outFileName,
       documentContents: documentContents,
       docsExtractor: docsExtractor,
-      extraClasses: extraClasses,
+      config: config,
       hasTable: false,
-      initialize: ({
-        required String className,
-        required TypeDefinition classType,
-        required bool serverOnly,
-        required List<SerializableModelFieldDefinition> fields,
-        required List<String>? classDocumentation,
-      }) =>
-          ExceptionClassDefinition(
-        className: className,
-        fields: fields,
-        fileName: outFileName,
-        serverOnly: serverOnly,
-        sourceFileName: protocolSource.yamlSourceUri.path,
-        type: classType,
-        subDirParts: protocolSource.subDirPathParts,
-        documentation: classDocumentation,
-      ),
+      initialize:
+          ({
+            required String className,
+            required TypeDefinition classType,
+            required bool serverOnly,
+            required List<SerializableModelFieldDefinition> fields,
+            required List<String>? classDocumentation,
+          }) => ExceptionClassDefinition(
+            className: className,
+            isSealed: isSealed,
+            extendsClass: extendsClass,
+            fields: fields,
+            fileName: outFileName,
+            serverOnly: serverOnly,
+            sourceFileName: protocolSource.yamlSourceUri.path,
+            type: classType,
+            subDirParts: protocolSource.subDirPathParts,
+            documentation: classDocumentation,
+            sharedPackageName: protocolSource.sharedPackageName,
+          ),
     );
   }
 
@@ -111,7 +128,7 @@ class ModelParser {
     required String outFileName,
     required YamlMap documentContents,
     required YamlDocumentationExtractor docsExtractor,
-    required List<TypeDefinition> extraClasses,
+    required GeneratorConfig config,
     required bool hasTable,
     required T Function({
       required String className,
@@ -119,7 +136,8 @@ class ModelParser {
       required bool serverOnly,
       required List<SerializableModelFieldDefinition> fields,
       required List<String>? classDocumentation,
-    }) initialize,
+    })
+    initialize,
   }) {
     YamlNode? classNode = documentContents.nodes[documentTypeName];
 
@@ -137,18 +155,19 @@ class ModelParser {
     var className = classNode.value;
     if (className is! String) return null;
 
+    var extraClasses = config.extraClasses;
+
     var classType = parseType(
       '${protocolSource.moduleAlias}:$className',
       extraClasses: extraClasses,
     );
 
-    var tableName = _parseTableName(documentContents);
     var serverOnly = _parseServerOnly(documentContents);
+
     var fields = _parseClassFields(
       documentContents,
       docsExtractor,
-      tableName != null,
-      extraClasses,
+      config,
       serverOnly,
     );
 
@@ -175,8 +194,9 @@ class ModelParser {
     );
 
     var serverOnly = _parseServerOnly(documentContents);
-    var serializeAs = _parseSerializedAs(documentContents);
-    var values = _parseEnumValues(documentContents, docsExtractor);
+    var serializedAs = _parseSerializedAs(documentContents);
+    var properties = _parseEnumProperties(documentContents, docsExtractor);
+    var values = _parseEnumValues(documentContents, docsExtractor, properties);
     var enumType = parseType(
       '${protocolSource.moduleAlias}:$className',
       extraClasses: [],
@@ -192,12 +212,14 @@ class ModelParser {
       sourceFileName: protocolSource.yamlSourceUri.path,
       className: className,
       values: values,
-      serialized: serializeAs,
+      serialized: serializedAs,
       documentation: enumDocumentation,
       defaultValue: defaultEnumDefinitionValue,
       subDirParts: protocolSource.subDirPathParts,
       serverOnly: serverOnly,
       type: enumType,
+      properties: properties,
+      sharedPackageName: protocolSource.sharedPackageName,
     );
     enumDef.type.enumDefinition = enumDef;
     return enumDef;
@@ -208,6 +230,13 @@ class ModelParser {
     if (isSealed is! bool) return false;
 
     return isSealed;
+  }
+
+  static bool _parseIsImmutable(YamlMap documentContents) {
+    var isImmutable = documentContents.nodes[Keyword.isImmutable]?.value;
+    if (isImmutable is! bool) return false;
+
+    return isImmutable;
   }
 
   static UnresolvedInheritanceDefinition? _parseExtendsClass(
@@ -226,12 +255,45 @@ class ModelParser {
     return serverOnly;
   }
 
+  static SerializationDataType? _parseSerializationDataType(
+    YamlMap documentContents,
+  ) {
+    if (documentContents.nodes[Keyword.serializationDataType] == null) {
+      return null;
+    }
+    final serializationDataType =
+        documentContents.nodes[Keyword.serializationDataType]?.value;
+
+    return convertToEnum<SerializationDataType>(
+      value: serializationDataType,
+      enumDefault: SerializationDataType.json,
+      enumValues: SerializationDataType.values,
+    );
+  }
+
+  static void _resolveSerializationDataType(
+    TypeDefinition typeResult,
+    YamlMap documentContents,
+    SerializationDataType? defaultSerializationDataType,
+  ) {
+    final explicitValue = _parseSerializationDataType(documentContents);
+    if (explicitValue != null) {
+      typeResult.serializationDataType = explicitValue;
+    } else if (typeResult.isColumnSerializable ||
+        typeResult.isColumnStructured) {
+      // Only serializable types should receive the default override (like
+      // lists, maps, serializable models and custom classes). Otherwise we
+      // would incorrectly flag other types as `.isJsonbSerialized`.
+      typeResult.serializationDataType = defaultSerializationDataType;
+    }
+  }
+
   static EnumSerialization _parseSerializedAs(YamlMap documentContents) {
     var serializedAs = documentContents.nodes[Keyword.serialized]?.value;
 
     return convertToEnum<EnumSerialization>(
       value: serializedAs,
-      enumDefault: EnumSerialization.byIndex,
+      enumDefault: EnumSerialization.byName,
       enumValues: EnumSerialization.values,
     );
   }
@@ -243,69 +305,42 @@ class ModelParser {
     return tableName;
   }
 
+  static ModelDatabaseDefinition _parseDatabase(YamlMap documentContents) {
+    var database = documentContents.nodes[Keyword.database]?.value;
+    if (database is! String) return ModelDatabaseDefinition.server;
+
+    return convertToEnum(
+      value: database,
+      enumDefault: ModelDatabaseDefinition.server,
+      enumValues: ModelDatabaseDefinition.values,
+    );
+  }
+
   static List<SerializableModelFieldDefinition> _parseClassFields(
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
-    bool hasTable,
-    List<TypeDefinition> extraClasses,
+    GeneratorConfig config,
     bool serverOnlyClass,
   ) {
     List<SerializableModelFieldDefinition> fields = [];
 
+    var defaultSerializationDataType =
+        _parseSerializationDataType(documentContents) ??
+        (config.serializeAsJsonbByDefault ? SerializationDataType.jsonb : null);
+
     var fieldsNode = documentContents.nodes[Keyword.fields];
     if (fieldsNode is YamlMap) {
       var fieldsNodeEntries = fieldsNode.nodes.entries;
-      fields.addAll(fieldsNodeEntries.expand((fieldNode) {
-        return _parseModelFieldDefinition(
-          fieldNode,
-          docsExtractor,
-          extraClasses,
-          serverOnlyClass,
-        );
-      }).toList());
-    }
-
-    if (hasTable) {
-      final defaultIdType = SupportedIdType.int;
-
-      var maybeIdField =
-          fields.where((f) => f.name == defaultPrimaryKeyName).firstOrNull;
-
-      var idFieldType = maybeIdField?.type ?? defaultIdType.type.asNullable;
-
-      var defaultPersistValue = (maybeIdField != null)
-          ? maybeIdField.defaultPersistValue
-          : defaultIdType.defaultValue;
-
-      // The 'int' id type can be specified without a default value.
-      if (maybeIdField?.type.className == 'int') {
-        defaultPersistValue ??= SupportedIdType.int.defaultValue;
-      }
-
-      var defaultModelValue = maybeIdField?.defaultModelValue;
-      if (maybeIdField == null && defaultIdType.type.className != 'int') {
-        defaultModelValue ??= defaultIdType.defaultValue;
-      }
-
-      var defaultIdFieldDoc = [
-        '/// The database id, set if the object has been inserted into the',
-        '/// database or if it has been fetched from the database. Otherwise,',
-        '/// the id will be null.',
-      ];
-
-      fields.removeWhere((f) => f.name == defaultPrimaryKeyName);
-      fields.insert(
-        0,
-        SerializableModelFieldDefinition(
-          name: defaultPrimaryKeyName,
-          type: idFieldType,
-          scope: ModelFieldScopeDefinition.all,
-          defaultModelValue: defaultModelValue,
-          defaultPersistValue: defaultPersistValue ?? defaultModelValue,
-          shouldPersist: true,
-          documentation: maybeIdField?.documentation ?? defaultIdFieldDoc,
-          isRequired: false, // ID fields are typically optional
-        ),
+      fields.addAll(
+        fieldsNodeEntries.expand((fieldNode) {
+          return _parseModelFieldDefinition(
+            fieldNode,
+            docsExtractor,
+            config,
+            serverOnlyClass,
+            defaultSerializationDataType,
+          );
+        }).toList(),
       );
     }
 
@@ -315,8 +350,9 @@ class ModelParser {
   static List<SerializableModelFieldDefinition> _parseModelFieldDefinition(
     MapEntry<dynamic, YamlNode> fieldNode,
     YamlDocumentationExtractor docsExtractor,
-    List<TypeDefinition> extraClasses,
+    GeneratorConfig config,
     bool serverOnlyClass,
+    SerializationDataType? defaultSerializationDataType,
   ) {
     var key = fieldNode.key;
     if (key is! YamlScalar) return [];
@@ -335,6 +371,14 @@ class ModelParser {
     var fieldName = key.value;
     if (fieldName is! String) return [];
 
+    final columnNode = node.nodes[Keyword.columnKey];
+    final columnValue = columnNode?.value;
+    final columnNameOverride = columnValue is String ? columnValue : null;
+
+    final jsonKeyNode = node.nodes[Keyword.jsonKey];
+    final jsonKeyValue = jsonKeyNode?.value;
+    final jsonKeyOverride = jsonKeyValue is String ? jsonKeyValue : null;
+
     var typeNode = node.nodes[Keyword.type];
     var typeValue = typeNode?.value;
     if (typeNode is! YamlScalar) return [];
@@ -342,9 +386,16 @@ class ModelParser {
 
     var fieldDocumentation = docsExtractor.getDocumentation(key.span.start);
 
+    var extraClasses = config.extraClasses;
+
     var typeResult = parseType(
       typeValue,
       extraClasses: extraClasses,
+    );
+    _resolveSerializationDataType(
+      typeResult,
+      node,
+      defaultSerializationDataType,
     );
 
     var scope = _parseClassFieldScope(node, serverOnlyClass);
@@ -368,6 +419,8 @@ class ModelParser {
     );
 
     var isRequired = _parseIsRequired(node);
+    var isTail = _parseIsTail(node);
+    var uniquePerFieldNames = _parseUniqueField(node);
 
     return [
       SerializableModelFieldDefinition(
@@ -380,7 +433,11 @@ class ModelParser {
         defaultModelValue: defaultModelValue,
         defaultPersistValue: defaultPersistValue,
         isRequired: isRequired,
-      )
+        isTail: isTail,
+        columnNameOverride: columnNameOverride,
+        jsonKeyOverride: jsonKeyOverride,
+        uniquePerFieldNames: uniquePerFieldNames,
+      ),
     ];
   }
 
@@ -511,6 +568,28 @@ class ModelParser {
     return _parseBooleanKey(node, Keyword.requiredKey);
   }
 
+  static bool _parseIsTail(YamlMap node) {
+    return _parseBooleanKey(node, Keyword.tail);
+  }
+
+  static List<String>? _parseUniqueField(YamlMap node) {
+    var value = node.nodes[Keyword.unique]?.value;
+    return switch (value) {
+      null => null,
+      bool() => value ? [] : null,
+      String() when value.toLowerCase() == 'true' => [],
+      String() when value.toLowerCase() == 'false' => null,
+      YamlMap() => _parseUniquePerFields(value),
+      _ => [],
+    };
+  }
+
+  static List<String> _parseUniquePerFields(YamlMap uniqueMap) {
+    var perValue = uniqueMap.nodes[Keyword.per]?.value;
+    if (perValue == null) return [];
+    return parseUniquePerFields(perValue) ?? [];
+  }
+
   static dynamic _parseDefaultValue(
     YamlMap node,
     String keyword,
@@ -600,10 +679,18 @@ class ModelParser {
     YamlMap documentContents,
     List<SerializableModelFieldDefinition> fields,
   ) {
-    var indexesNode = documentContents.nodes[Keyword.indexes];
-    if (indexesNode is! YamlMap) return [];
+    // Generate automatic unique indexes for fields with unique modifier
+    var tableName = documentContents.nodes[Keyword.table]?.value;
+    var autoGeneratedIndexes = [
+      if (tableName is String)
+        for (var field in fields)
+          ?field.autoGeneratedUniqueIndexDefinition(tableName, fields),
+    ];
 
-    var indexes = indexesNode.nodes.entries.map((node) {
+    var indexesNode = documentContents.nodes[Keyword.indexes];
+    if (indexesNode is! YamlMap) return autoGeneratedIndexes;
+
+    var explicitIndexes = indexesNode.nodes.entries.map((node) {
       var keyScalar = node.key;
       var nodeDocument = node.value;
       if (keyScalar is! YamlScalar) return null;
@@ -613,31 +700,53 @@ class ModelParser {
       if (indexName is! String) return null;
 
       var indexFields = _parseIndexFields(nodeDocument, fields);
-      var indexFieldsTypes = fields.where((f) => indexFields.contains(f.name));
+      var indexFieldsTypes = fields.where(
+        (f) => indexFields.contains(f.columnName),
+      );
       var type = _parseIndexType(
         nodeDocument,
-        onlyVectorFields: indexFieldsTypes.isNotEmpty &&
+        onlyVectorFields:
+            indexFieldsTypes.isNotEmpty &&
             indexFieldsTypes.every((f) => f.type.isVectorType),
+        onlyJsonbFields:
+            indexFieldsTypes.isNotEmpty &&
+            indexFieldsTypes.every((f) => f.type.isJsonbSerialized),
+        onlyGeographyFields:
+            indexFieldsTypes.isNotEmpty &&
+            indexFieldsTypes.every((f) => f.type.isGeographyType),
       );
       var unique = _parseUniqueKey(nodeDocument);
-      var distanceFunction =
-          _parseDistanceFunction(nodeDocument, type, indexFieldsTypes);
+      var nullsDistinct = _parseNullsDistinctKey(nodeDocument);
+      var operatorClass = _parseOperatorClass(
+        nodeDocument,
+        type,
+        indexFieldsTypes,
+      );
+      var distanceFunction = _parseDistanceFunction(
+        nodeDocument,
+        type,
+        indexFieldsTypes,
+      );
       var parameters = _parseParametersKey(nodeDocument);
 
       return SerializableModelIndexDefinition(
         name: indexName,
         type: type,
         unique: unique,
+        nullsDistinct: nullsDistinct,
         fields: indexFields,
+        ginOperatorClass: operatorClass,
         vectorDistanceFunction: distanceFunction,
         parameters: parameters,
       );
     });
 
-    return indexes
-        .where((index) => index != null)
-        .cast<SerializableModelIndexDefinition>()
-        .toList();
+    return [
+      ...autoGeneratedIndexes,
+      ...explicitIndexes
+          .where((index) => index != null)
+          .cast<SerializableModelIndexDefinition>(),
+    ];
   }
 
   static List<String> _parseIndexFields(
@@ -650,6 +759,16 @@ class ModelParser {
     var stringifiedFields = fieldsNode.value;
     if (stringifiedFields is! String) return [];
 
+    for (var field in fields) {
+      // Use expected column name for all fields
+      if (field.hasColumnNameOverride) {
+        stringifiedFields = (stringifiedFields as String).replaceAll(
+          field.name,
+          field.columnName,
+        );
+      }
+    }
+
     var indexFields = convertIndexList(stringifiedFields);
 
     return indexFields;
@@ -658,12 +777,17 @@ class ModelParser {
   static String _parseIndexType(
     YamlMap documentContents, {
     required bool onlyVectorFields,
+    required bool onlyJsonbFields,
+    required bool onlyGeographyFields,
   }) {
     var typeNode = documentContents.nodes[Keyword.type];
     var type = typeNode?.value;
 
     if (type == null || type is! String) {
-      return onlyVectorFields ? 'hnsw' : 'btree';
+      if (onlyVectorFields) return 'hnsw';
+      if (onlyJsonbFields) return 'gin';
+      if (onlyGeographyFields) return 'gist';
+      return 'btree';
     }
 
     return type;
@@ -673,6 +797,34 @@ class ModelParser {
     var node = documentContents.nodes[Keyword.unique];
     var nodeValue = node?.value;
     return nodeValue is bool ? nodeValue : false;
+  }
+
+  static bool? _parseNullsDistinctKey(YamlMap documentContents) {
+    var node = documentContents.nodes[Keyword.nullsDistinct];
+    var nodeValue = node?.value;
+    return nodeValue is bool ? nodeValue : null;
+  }
+
+  static GinOperatorClass? _parseOperatorClass(
+    YamlMap documentContents,
+    String indexType,
+    Iterable<SerializableModelFieldDefinition> indexFieldsTypes,
+  ) {
+    var node = documentContents.nodes[Keyword.operatorClass];
+    var nodeValue = node?.value;
+
+    if (nodeValue is! String) {
+      return (indexType == 'gin') ? GinOperatorClass.jsonbOps : null;
+    }
+
+    try {
+      return unsafeConvertToEnum(
+        value: nodeValue,
+        enumValues: GinOperatorClass.values,
+      );
+    } catch (_) {
+      return null;
+    }
   }
 
   static VectorDistanceFunction? _parseDistanceFunction(
@@ -686,8 +838,8 @@ class ModelParser {
     if (nodeValue is! String) {
       return VectorIndexType.values.any((e) => e.name == indexType)
           ? (indexFieldsTypes.any((field) => field.type.className == 'Bit')
-              ? VectorDistanceFunction.hamming
-              : VectorDistanceFunction.l2)
+                ? VectorDistanceFunction.hamming
+                : VectorDistanceFunction.l2)
           : null;
     }
 
@@ -723,37 +875,218 @@ class ModelParser {
     List<ProtocolEnumValueDefinition> values,
     TypeDefinition fieldType,
   ) {
-    final defaultValue =
-        _parseDefaultValue(documentContents, Keyword.defaultKey, fieldType);
+    final defaultValue = _parseDefaultValue(
+      documentContents,
+      Keyword.defaultKey,
+      fieldType,
+    );
     return values.where((value) => value.name == defaultValue).firstOrNull;
+  }
+
+  /// Parse enum properties from YAML
+  static List<EnumPropertyDefinition> _parseEnumProperties(
+    YamlMap documentContents,
+    YamlDocumentationExtractor docsExtractor,
+  ) {
+    var propertiesNode = documentContents.nodes[Keyword.properties];
+    if (propertiesNode == null) return [];
+
+    var propertiesMap = propertiesNode.value;
+    if (propertiesMap is! YamlMap) return [];
+
+    var properties = <EnumPropertyDefinition>[];
+
+    for (var entry in propertiesMap.nodes.entries) {
+      var keyNode = entry.key;
+      var valueNode = entry.value;
+      if (keyNode is! YamlScalar) continue;
+      if (valueNode is! YamlScalar) continue;
+
+      var propertyName = keyNode.value;
+      var propertyValue = valueNode.value;
+      if (propertyName is! String) continue;
+      if (propertyValue is! String) continue;
+
+      // Parse "Type, default=value" syntax
+      var parts = propertyValue.split(',').map((s) => s.trim()).toList();
+      var type = parts[0];
+
+      dynamic defaultValue;
+      var isRequired = true;
+
+      // Parse modifiers
+      for (var i = 1; i < parts.length; i++) {
+        var modifier = parts[i];
+        if (modifier.startsWith('default=')) {
+          isRequired = false;
+          var defaultStr = modifier.substring('default='.length);
+          defaultValue = _parseEnumPropertyDefaultValue(defaultStr, type);
+        }
+      }
+
+      var propDocumentation = docsExtractor.getDocumentation(
+        keyNode.span.start,
+      );
+
+      properties.add(
+        EnumPropertyDefinition(
+          name: propertyName,
+          type: type,
+          isRequired: isRequired,
+          defaultValue: defaultValue,
+          documentation: propDocumentation,
+        ),
+      );
+    }
+
+    return properties;
+  }
+
+  /// Parse default value based on type (handles quoted strings from YAML)
+  static dynamic _parseEnumPropertyDefaultValue(String valueStr, String type) {
+    var unquotedValue = _removeQuotes(valueStr);
+
+    if (unquotedValue == 'null') {
+      return null;
+    }
+
+    return _parseTypedValue(unquotedValue, type);
+  }
+
+  static String _removeQuotes(String value) {
+    if (value.startsWith("'") && value.endsWith("'")) {
+      return value.substring(1, value.length - 1);
+    }
+    if (value.startsWith('"') && value.endsWith('"')) {
+      return value.substring(1, value.length - 1);
+    }
+    return value;
+  }
+
+  static dynamic _parseTypedValue(String valueStr, String type) {
+    var baseType = type.endsWith('?')
+        ? type.substring(0, type.length - 1)
+        : type;
+
+    switch (baseType) {
+      case 'int':
+        return int.tryParse(valueStr);
+      case 'double':
+        return double.tryParse(valueStr);
+      case 'bool':
+        var lower = valueStr.toLowerCase();
+        if (lower == 'true') return true;
+        if (lower == 'false') return false;
+        return null;
+      case 'String':
+      default:
+        var escaped = valueStr.replaceAll("'", r"\'");
+        return "'$escaped'";
+    }
   }
 
   static List<ProtocolEnumValueDefinition> _parseEnumValues(
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
+    List<EnumPropertyDefinition> properties,
   ) {
     var valuesNode = documentContents.nodes[Keyword.values];
     if (valuesNode is! YamlList) return [];
 
     var values = valuesNode.nodes.map((node) {
       var value = node.value;
-      if (value is! String) return null;
+      var docLocation = _calculateDocLocation(node.span.start);
 
-      var start = node.span.start;
-      // 2 is the length of '- ' in '- enumValue'
-      var valueDocumentation = docsExtractor.getDocumentation(
-        SourceLocation(start.offset - 2,
-            column: start.column - 2,
-            line: start.line,
-            sourceUrl: start.sourceUrl),
-      );
+      if (value is String) {
+        return _parseSimpleEnumValue(value, docsExtractor, docLocation);
+      }
 
-      return ProtocolEnumValueDefinition(value, valueDocumentation);
+      if (value is YamlMap) {
+        return _parseEnhancedEnumValue(
+          value,
+          docsExtractor,
+          docLocation,
+          properties,
+        );
+      }
+
+      return null;
     });
 
     return values
         .where((value) => value != null)
         .cast<ProtocolEnumValueDefinition>()
         .toList();
+  }
+
+  static SourceLocation _calculateDocLocation(SourceLocation start) {
+    // Offset by 2 for the '- ' prefix in YAML list items
+    return SourceLocation(
+      start.offset - 2,
+      column: start.column - 2,
+      line: start.line,
+      sourceUrl: start.sourceUrl,
+    );
+  }
+
+  static ProtocolEnumValueDefinition _parseSimpleEnumValue(
+    String value,
+    YamlDocumentationExtractor docsExtractor,
+    SourceLocation docLocation,
+  ) {
+    var documentation = docsExtractor.getDocumentation(docLocation);
+    return ProtocolEnumValueDefinition(value, documentation);
+  }
+
+  static ProtocolEnumValueDefinition? _parseEnhancedEnumValue(
+    YamlMap valueMap,
+    YamlDocumentationExtractor docsExtractor,
+    SourceLocation docLocation,
+    List<EnumPropertyDefinition> properties,
+  ) {
+    var entries = valueMap.entries.toList();
+    if (entries.isEmpty) return null;
+
+    var enumValueName = entries[0].key.toString();
+    var propertyValuesMap = entries[0].value;
+    var documentation = docsExtractor.getDocumentation(docLocation);
+    var propertyValues = _extractPropertyValues(propertyValuesMap, properties);
+
+    return ProtocolEnumValueDefinition(
+      enumValueName,
+      documentation,
+      propertyValues,
+    );
+  }
+
+  static Map<String, dynamic> _extractPropertyValues(
+    dynamic propertyValuesMap,
+    List<EnumPropertyDefinition> properties,
+  ) {
+    var propertyValues = <String, dynamic>{};
+
+    if (propertyValuesMap is! YamlMap || properties.isEmpty) {
+      return propertyValues;
+    }
+
+    for (var property in properties) {
+      var propertyValue = propertyValuesMap[property.name];
+      if (propertyValue != null) {
+        propertyValues[property.name] = _parseEnumPropertyValue(
+          propertyValue,
+          property.type,
+        );
+      } else if (property.defaultValue != null) {
+        propertyValues[property.name] = property.defaultValue;
+      }
+    }
+
+    return propertyValues;
+  }
+
+  /// Parses a property value from YAML to the appropriate Dart type
+  static dynamic _parseEnumPropertyValue(dynamic value, String type) {
+    if (value == null) return null;
+    return _parseTypedValue(value.toString(), type);
   }
 }

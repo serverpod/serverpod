@@ -1,0 +1,20 @@
+# TEMPLATE
+
+name: serverpod_auth_client
+description: Serverpod authentication client.
+version: SERVERPOD_VERSION
+repository: https://github.com/serverpod/serverpod
+homepage: https://serverpod.dev
+issue_tracker: https://github.com/serverpod/serverpod/issues
+
+environment:
+  sdk: DART_VERSION
+dependencies:
+  lints: '>=3.0.0 <7.0.0'
+  serverpod_client: SERVERPOD_VERSION
+
+dependency_overrides:
+  serverpod_client:
+    path: ../../../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../../../packages/serverpod_serialization

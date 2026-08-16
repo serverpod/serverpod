@@ -7,8 +7,9 @@ class MethodDefinitionBuilder {
   String _name = 'example';
   String? _documentationComment;
   List<AnnotationDefinition> _annotations = [];
-  TypeDefinition _returnType =
-      TypeDefinitionBuilder().withFutureOf('String').build();
+  TypeDefinition _returnType = TypeDefinitionBuilder()
+      .withFutureOf('String')
+      .build();
   List<ParameterDefinition> _parameters = [];
   List<ParameterDefinition> _parametersPositional = [];
   List<ParameterDefinition> _parametersNamed = [];

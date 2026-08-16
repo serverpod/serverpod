@@ -1,0 +1,32 @@
+class: ObjectWithVector
+table: object_with_vector
+fields:
+  vector: Vector(512)
+  vectorNullable: Vector(512)?
+  vectorIndexedHnsw: Vector(512)
+  vectorIndexedHnswWithParams: Vector(512)
+  vectorIndexedIvfflat: Vector(512)
+  vectorIndexedIvfflatWithParams: Vector(512)
+
+indexes:
+  vector_index_default:
+    fields: vector
+  vector_index_hnsw:
+    fields: vectorIndexedHnsw
+    type: hnsw
+  vector_index_hnsw_with_params:
+    fields: vectorIndexedHnswWithParams
+    type: hnsw
+    distanceFunction: cosine
+    parameters:
+      m: 64
+      ef_construction: 200
+  vector_index_ivfflat:
+    fields: vectorIndexedIvfflat
+    type: ivfflat
+  vector_index_ivfflat_with_params:
+    fields: vectorIndexedIvfflatWithParams
+    type: ivfflat
+    distanceFunction: innerProduct
+    parameters:
+      lists: 300

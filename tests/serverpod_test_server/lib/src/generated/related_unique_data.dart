@@ -8,12 +8,12 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'unique_data.dart' as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class RelatedUniqueData
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -37,8 +37,9 @@ abstract class RelatedUniqueData
       uniqueDataId: jsonSerialization['uniqueDataId'] as int,
       uniqueData: jsonSerialization['uniqueData'] == null
           ? null
-          : _i2.UniqueData.fromJson(
-              (jsonSerialization['uniqueData'] as Map<String, dynamic>)),
+          : _i3.Protocol().deserialize<_i2.UniqueData>(
+              jsonSerialization['uniqueData'],
+            ),
       number: jsonSerialization['number'] as int,
     );
   }
@@ -71,6 +72,7 @@ abstract class RelatedUniqueData
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'RelatedUniqueData',
       if (id != null) 'id': id,
       'uniqueDataId': uniqueDataId,
       if (uniqueData != null) 'uniqueData': uniqueData?.toJson(),
@@ -81,6 +83,7 @@ abstract class RelatedUniqueData
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'RelatedUniqueData',
       if (id != null) 'id': id,
       'uniqueDataId': uniqueDataId,
       if (uniqueData != null) 'uniqueData': uniqueData?.toJsonForProtocol(),
@@ -97,7 +100,6 @@ abstract class RelatedUniqueData
     int? limit,
     int? offset,
     _i1.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
-    bool orderDescending = false,
     _i1.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
     RelatedUniqueDataInclude? include,
   }) {
@@ -106,7 +108,6 @@ abstract class RelatedUniqueData
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(RelatedUniqueData.t),
-      orderDescending: orderDescending,
       orderByList: orderByList?.call(RelatedUniqueData.t),
       include: include,
     );
@@ -127,11 +128,11 @@ class _RelatedUniqueDataImpl extends RelatedUniqueData {
     _i2.UniqueData? uniqueData,
     required int number,
   }) : super._(
-          id: id,
-          uniqueDataId: uniqueDataId,
-          uniqueData: uniqueData,
-          number: number,
-        );
+         id: id,
+         uniqueDataId: uniqueDataId,
+         uniqueData: uniqueData,
+         number: number,
+       );
 
   /// Returns a shallow copy of this [RelatedUniqueData]
   /// with some or all fields replaced by the given arguments.
@@ -159,19 +160,19 @@ class RelatedUniqueDataUpdateTable
   RelatedUniqueDataUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> uniqueDataId(int value) => _i1.ColumnValue(
-        table.uniqueDataId,
-        value,
-      );
+    table.uniqueDataId,
+    value,
+  );
 
   _i1.ColumnValue<int, int> number(int value) => _i1.ColumnValue(
-        table.number,
-        value,
-      );
+    table.number,
+    value,
+  );
 }
 
 class RelatedUniqueDataTable extends _i1.Table<int?> {
   RelatedUniqueDataTable({super.tableRelation})
-      : super(tableName: 'related_unique_data') {
+    : super(tableName: 'related_unique_data') {
     updateTable = RelatedUniqueDataUpdateTable(this);
     uniqueDataId = _i1.ColumnInt(
       'uniqueDataId',
@@ -206,10 +207,10 @@ class RelatedUniqueDataTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        uniqueDataId,
-        number,
-      ];
+    id,
+    uniqueDataId,
+    number,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -240,7 +241,6 @@ class RelatedUniqueDataIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -282,25 +282,27 @@ class RelatedUniqueDataRepository {
   /// );
   /// ```
   Future<List<RelatedUniqueData>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
-    bool orderDescending = false,
     _i1.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
     _i1.Transaction? transaction,
     RelatedUniqueDataInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<RelatedUniqueData>(
       where: where?.call(RelatedUniqueData.t),
       orderBy: orderBy?.call(RelatedUniqueData.t),
       orderByList: orderByList?.call(RelatedUniqueData.t),
-      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -322,37 +324,43 @@ class RelatedUniqueDataRepository {
   /// );
   /// ```
   Future<RelatedUniqueData?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     int? offset,
     _i1.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
-    bool orderDescending = false,
     _i1.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
     _i1.Transaction? transaction,
     RelatedUniqueDataInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<RelatedUniqueData>(
       where: where?.call(RelatedUniqueData.t),
       orderBy: orderBy?.call(RelatedUniqueData.t),
       orderByList: orderByList?.call(RelatedUniqueData.t),
-      orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
   /// Finds a single [RelatedUniqueData] by its [id] or null if no such row exists.
   Future<RelatedUniqueData?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     RelatedUniqueDataInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<RelatedUniqueData>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -362,14 +370,26 @@ class RelatedUniqueDataRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<RelatedUniqueData>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<RelatedUniqueData> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<RelatedUniqueData>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -377,7 +397,7 @@ class RelatedUniqueDataRepository {
   ///
   /// The returned [RelatedUniqueData] will have its `id` field set.
   Future<RelatedUniqueData> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     RelatedUniqueData row, {
     _i1.Transaction? transaction,
   }) async {
@@ -387,21 +407,96 @@ class RelatedUniqueDataRepository {
     );
   }
 
+  /// Upserts all [RelatedUniqueData]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [RelatedUniqueData]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<RelatedUniqueData>> upsert(
+    _i1.DatabaseSession session,
+    List<RelatedUniqueData> rows, {
+    required _i1.ColumnSelections<RelatedUniqueDataTable> conflictColumns,
+    _i1.ColumnSelections<RelatedUniqueDataTable>? updateColumns,
+    _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? updateWhere,
+    _i1.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<RelatedUniqueData>(
+      rows,
+      conflictColumns: conflictColumns(RelatedUniqueData.t),
+      updateColumns: updateColumns?.call(RelatedUniqueData.t),
+      updateWhere: updateWhere?.call(RelatedUniqueData.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [RelatedUniqueData] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [RelatedUniqueData] will have its `id` field set.
+  Future<RelatedUniqueData?> upsertRow(
+    _i1.DatabaseSession session,
+    RelatedUniqueData row, {
+    required _i1.ColumnSelections<RelatedUniqueDataTable> conflictColumns,
+    _i1.ColumnSelections<RelatedUniqueDataTable>? updateColumns,
+    _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<RelatedUniqueData>(
+      row,
+      conflictColumns: conflictColumns(RelatedUniqueData.t),
+      updateColumns: updateColumns?.call(RelatedUniqueData.t),
+      updateWhere: updateWhere?.call(RelatedUniqueData.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [RelatedUniqueData]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<RelatedUniqueData>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<RelatedUniqueData> rows, {
     _i1.ColumnSelections<RelatedUniqueDataTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<RelatedUniqueData>(
       rows,
       columns: columns?.call(RelatedUniqueData.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -409,7 +504,7 @@ class RelatedUniqueDataRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<RelatedUniqueData> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     RelatedUniqueData row, {
     _i1.ColumnSelections<RelatedUniqueDataTable>? columns,
     _i1.Transaction? transaction,
@@ -424,10 +519,10 @@ class RelatedUniqueDataRepository {
   /// Updates a single [RelatedUniqueData] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<RelatedUniqueData?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<RelatedUniqueDataUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<RelatedUniqueData>(
@@ -439,17 +534,21 @@ class RelatedUniqueDataRepository {
 
   /// Updates all [RelatedUniqueData]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<RelatedUniqueData>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<RelatedUniqueDataUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<RelatedUniqueDataTable> where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
     _i1.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<RelatedUniqueData>(
       columnValues: columnValues(RelatedUniqueData.t.updateTable),
@@ -458,28 +557,42 @@ class RelatedUniqueDataRepository {
       offset: offset,
       orderBy: orderBy?.call(RelatedUniqueData.t),
       orderByList: orderByList?.call(RelatedUniqueData.t),
-      orderDescending: orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes all [RelatedUniqueData]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<RelatedUniqueData>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<RelatedUniqueData> rows, {
+    _i1.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
+    _i1.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<RelatedUniqueData>(
       rows,
+      orderBy: orderBy?.call(RelatedUniqueData.t),
+      orderByList: orderByList?.call(RelatedUniqueData.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes a single [RelatedUniqueData].
   Future<RelatedUniqueData> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     RelatedUniqueData row, {
     _i1.Transaction? transaction,
   }) async {
@@ -490,21 +603,34 @@ class RelatedUniqueDataRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<RelatedUniqueData>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<RelatedUniqueDataTable> where,
+    _i1.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
+    _i1.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<RelatedUniqueData>(
       where: where(RelatedUniqueData.t),
+      orderBy: orderBy?.call(RelatedUniqueData.t),
+      orderByList: orderByList?.call(RelatedUniqueData.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -512,6 +638,22 @@ class RelatedUniqueDataRepository {
     return session.db.count<RelatedUniqueData>(
       where: where?.call(RelatedUniqueData.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [RelatedUniqueData] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.DatabaseSession session, {
+    required _i1.WhereExpressionBuilder<RelatedUniqueDataTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<RelatedUniqueData>(
+      where: where(RelatedUniqueData.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }
@@ -523,7 +665,7 @@ class RelatedUniqueDataAttachRowRepository {
   /// Creates a relation between the given [RelatedUniqueData] and [UniqueData]
   /// by setting the [RelatedUniqueData]'s foreign key `uniqueDataId` to refer to the [UniqueData].
   Future<void> uniqueData(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     RelatedUniqueData relatedUniqueData,
     _i2.UniqueData uniqueData, {
     _i1.Transaction? transaction,
@@ -535,8 +677,9 @@ class RelatedUniqueDataAttachRowRepository {
       throw ArgumentError.notNull('uniqueData.id');
     }
 
-    var $relatedUniqueData =
-        relatedUniqueData.copyWith(uniqueDataId: uniqueData.id);
+    var $relatedUniqueData = relatedUniqueData.copyWith(
+      uniqueDataId: uniqueData.id,
+    );
     await session.db.updateRow<RelatedUniqueData>(
       $relatedUniqueData,
       columns: [RelatedUniqueData.t.uniqueDataId],

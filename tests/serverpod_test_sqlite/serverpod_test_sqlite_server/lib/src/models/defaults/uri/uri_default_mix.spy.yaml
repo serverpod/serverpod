@@ -1,0 +1,6 @@
+class: UriDefaultMix
+table: uri_default_mix
+fields:
+  uriDefaultAndDefaultModel: Uri, default='https://serverpod.dev/default', defaultModel='https://serverpod.dev/defaultModel'
+  uriDefaultAndDefaultPersist: Uri, default='https://serverpod.dev/default', defaultPersist='https://serverpod.dev/defaultPersist'
+  uriDefaultModelAndDefaultPersist: Uri, defaultModel='https://serverpod.dev/defaultModel', defaultPersist='https://serverpod.dev/defaultPersist'

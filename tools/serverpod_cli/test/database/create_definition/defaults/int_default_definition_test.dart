@@ -57,8 +57,10 @@ void main() {
     });
 
     group('when no "defaultPersist" is set', () {
-      var field =
-          FieldDefinitionBuilder().withName('intDefault').withTypeInt().build();
+      var field = FieldDefinitionBuilder()
+          .withName('intDefault')
+          .withTypeInt()
+          .build();
 
       var model = ModelClassDefinitionBuilder()
           .withTableName('example')

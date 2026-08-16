@@ -4,12 +4,9 @@ description: Starting point for a Serverpod module client.
 # homepage: https://www.example.com
 
 environment:
-  sdk: '>=3.5.0 <4.0.0'
-dependencies:
-  serverpod_client: 3.0.0-alpha.1
+  sdk: '^3.10.3'
 
-dependency_overrides: 
-  serverpod_client: 
-    path: ../../../packages/serverpod_client 
-  serverpod_serialization: 
-    path: ../../../packages/serverpod_serialization 
+#resolution: workspace #--UNCOMMENT_LINE--#
+
+dependencies:
+  serverpod_client: 4.0.0-beta.3

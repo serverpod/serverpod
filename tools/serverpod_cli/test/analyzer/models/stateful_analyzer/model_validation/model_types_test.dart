@@ -16,12 +16,15 @@ void main() {
         fields:
           name: String
         ''',
-      ).build()
+      ).build(),
     ];
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(config, models, onErrorsCollector(collector))
-        .validateAll();
+    StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    ).validateAll();
 
     expect(
       collector.errors,
@@ -34,77 +37,86 @@ void main() {
   });
 
   test(
-      'Given a PascalCASEString class name with several uppercase letters, then no errors are collected.',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a PascalCASEString class name with several uppercase letters, then no errors are collected.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
         exception: PascalCASEString
         fields:
           name: String
         ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer(config, models, onErrorsCollector(collector))
-        .validateAll();
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
-    expect(
-      collector.errors,
-      isEmpty,
-      reason: 'Expected no errors but some were generated.',
-    );
-  });
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors but some were generated.',
+      );
+    },
+  );
 
   test(
-      'Given a PascalCASEString class name with several uppercase letters, then an exception with that name is generated.',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a PascalCASEString class name with several uppercase letters, then an exception with that name is generated.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
         exception: PascalCASEString
         fields:
           name: String
         ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    StatefulAnalyzer analyzer = StatefulAnalyzer(config, models);
+      StatefulAnalyzer analyzer = StatefulAnalyzer(config, models);
 
-    var definitions = analyzer.validateAll();
-    expect(definitions.first.className, 'PascalCASEString');
-  });
+      var definitions = analyzer.validateAll();
+      expect(definitions.first.className, 'PascalCASEString');
+    },
+  );
 
   test(
-      'Given a camelCase class name, then give an error indicating that PascalCase is required.',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a camelCase class name, then give an error indicating that PascalCase is required.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
         class: exampleClass
         fields:
           name: String
         ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer(config, models, onErrorsCollector(collector))
-        .validateAll();
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
-    expect(
-      collector.errors,
-      isNotEmpty,
-      reason: 'Expected an error but none was generated.',
-    );
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error but none was generated.',
+      );
 
-    var error = collector.errors.first;
-    expect(
-      error.message,
-      'The "class" type must be a valid class name (e.g. PascalCaseString).',
-    );
-  });
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        'The "class" type must be a valid class name (e.g. PascalCaseString).',
+      );
+    },
+  );
 
   test(
     'Given a snake_case exception name, then give an error indicating that PascalCase is required.',
@@ -116,12 +128,15 @@ void main() {
           fields:
             name: String
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -148,12 +163,15 @@ void main() {
             - yes
             - no
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -179,12 +197,15 @@ void main() {
           fields:
             name: String
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -210,12 +231,15 @@ void main() {
           fields:
             name: String
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -241,12 +265,15 @@ void main() {
           fields:
             name: String
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -272,12 +299,15 @@ void main() {
           fields:
             name: String
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -303,12 +333,15 @@ void main() {
           fields:
             name: String
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -334,12 +367,15 @@ void main() {
           fields:
             name: String
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -365,12 +401,15 @@ void main() {
           fields:
             name: String
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -396,12 +435,15 @@ void main() {
           fields:
             name: String
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -428,12 +470,15 @@ void main() {
             fields:
               name: String
             ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(
           collector.errors,
@@ -459,13 +504,16 @@ exception: ExampleException
 fields:
   name: String
 ''',
-      ).build()
+      ).build(),
     ];
     var collector = CodeGenerationCollector();
 
     test('Then return a human readable error message when analyzing.', () {
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -481,8 +529,11 @@ fields:
     });
 
     test('Then the second type is highlighted.', () {
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -509,13 +560,16 @@ fields:
         fields:
           name: String
         ''',
-      ).build()
+      ).build(),
     ];
     var collector = CodeGenerationCollector();
 
     test('then return a human readable error message when analyzing.', () {
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -541,13 +595,16 @@ enum: ExampleType
 fields:
   name: String
 ''',
-      ).build()
+      ).build(),
     ];
     var collector = CodeGenerationCollector();
 
     test('then return a human readable error message when analyzing.', () {
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -563,8 +620,11 @@ fields:
     });
 
     test('then the second and third type is highlighted.', () {
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,

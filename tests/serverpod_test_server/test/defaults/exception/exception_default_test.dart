@@ -212,8 +212,9 @@ void main() async {
       test(
         'when an exception is created with a specific value for "defaultUuid", then the field value should match the provided value',
         () {
-          var uuid =
-              UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000');
+          var uuid = UuidValue.fromString(
+            '550e8400-e29b-41d4-a716-446655440000',
+          );
           var exception = DefaultException(
             defaultUuid: uuid,
           );
