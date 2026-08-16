@@ -78,17 +78,34 @@ String convertToSingleQuotedString(String value) {
   );
 }
 
-/// Converts a raw Dart string into a single quoted SQL string literal.
+/// Converts a Dart string into a SQL-safe string by escaping necessary characters.
 ///
-/// Single quotes within the value are doubled, which is how SQL escapes them
-/// inside a string literal. Double quotes carry no meaning inside a SQL string
-/// literal and are left untouched.
+/// This method handles:
+/// - Escaping single quotes (`'`) to prevent SQL injection and syntax errors.
+/// - Handling escaped double quotes (`"`), ensuring they are correctly represented in SQL by doubling them.
+///
+/// The method performs validation to ensure the string contains valid quoting.
 ///
 /// ### Examples:
 /// ```dart
-/// escapeSqlString("This is a 'default persist value") // Returns "'This is a ''default persist value'"
-/// escapeSqlString('This is a "default" persist value') // Returns "'This is a \"default\" persist value'"
+/// _escapeSqlString("This is a \'default persist value")  // Returns "This is a ''default persist value"
+/// _escapeSqlString("This is a \"default\" persist value") // Returns "This is a ""default"" persist value"
 /// ```
+///
+/// Throws:
+/// - `FormatException` if the string contains invalid quoting.
 String escapeSqlString(String value) {
-  return "'${value.replaceAll("'", "''")}'";
+  if (isValidSingleQuote(value)) {
+    return value.replaceAll("\\'", "''").replaceAll('\\"', '"');
+  }
+
+  if (isValidDoubleQuote(value)) {
+    return value.replaceAll("\\'", "'").replaceAll('\\"', '""');
+  }
+
+  /// This exception is unlikely to be thrown due to prior validation checks,
+  /// but it's included as a safeguard to handle any unexpected input.
+  throw FormatException(
+    'The string contains invalid quoting or escape sequences: $value',
+  );
 }

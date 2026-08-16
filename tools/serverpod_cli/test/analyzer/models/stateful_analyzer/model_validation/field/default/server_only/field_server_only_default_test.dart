@@ -101,8 +101,6 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.length, 3);
 
-        // TODO REFACTOR THIS
-
         // Check normal field
         expect(definition.fields[0].defaultModelValue, 'Normal message');
         expect(definition.fields[0].scope, ModelFieldScopeDefinition.all);
