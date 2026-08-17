@@ -117,26 +117,34 @@ void main() {
     );
   });
 
-  test(
-    'Given a non-deferrable foreign key, '
-    'when generating SQL for both dialects, '
-    'then neither contains a DEFERRABLE clause.',
-    () {
-      var database = _databaseWithTables([
-        _departmentTable(),
-        _employeeTable(),
-      ]);
+  group('Given a non-deferrable foreign key, ', () {
+    var database = _databaseWithTables([
+      _departmentTable(),
+      _employeeTable(),
+    ]);
 
-      expect(
-        PostgresSqlGenerator().generateSql(database),
-        isNot(contains('DEFERRABLE')),
-      );
-      expect(
-        SqliteSqlGenerator().generateSql(database),
-        isNot(contains('DEFERRABLE')),
-      );
-    },
-  );
+    test(
+      'when generating Postgres SQL, '
+      'then it does not contain a DEFERRABLE clause.',
+      () {
+        expect(
+          PostgresSqlGenerator().generateSql(database),
+          isNot(contains('DEFERRABLE')),
+        );
+      },
+    );
+
+    test(
+      'when generating SQLite SQL, '
+      'then it does not contain a DEFERRABLE clause.',
+      () {
+        expect(
+          SqliteSqlGenerator().generateSql(database),
+          isNot(contains('DEFERRABLE')),
+        );
+      },
+    );
+  });
 }
 
 ForeignKeyDefinition _employeeForeignKey({DeferrableConstraint? deferrable}) =>

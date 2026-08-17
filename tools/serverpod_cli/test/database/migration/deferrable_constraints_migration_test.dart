@@ -8,93 +8,91 @@ import '../../test_util/builders/database/index_definition_builder.dart';
 import '../../test_util/builders/database/table_definition_builder.dart';
 
 void main() {
-  group(
-    'Given a non-deferrable foreign key in the source and a deferrable one in '
-    'the target, when generating a migration, ',
+  test(
+    'Given a non-deferrable foreign key in the source and a deferrable one in the target, '
+    'when generating a migration, '
+    'then the foreign key is replaced with the deferrable one.',
     () {
-      test('then the foreign key is replaced with the deferrable one.', () {
-        var source = _databaseWithTables([
-          _departmentTable(),
-          _employeeTable(),
-        ]);
-        var target = _databaseWithTables([
-          _departmentTable(),
-          _employeeTable(deferrable: DeferrableConstraint.initiallyImmediate),
-        ]);
+      var source = _databaseWithTables([
+        _departmentTable(),
+        _employeeTable(),
+      ]);
+      var target = _databaseWithTables([
+        _departmentTable(),
+        _employeeTable(deferrable: DeferrableConstraint.initiallyImmediate),
+      ]);
 
-        var migration = generateDatabaseMigration(
-          databaseSource: source,
-          databaseTarget: target,
-        );
+      var migration = generateDatabaseMigration(
+        databaseSource: source,
+        databaseTarget: target,
+      );
 
-        var employeeMigration = migration.actions
-            .map((action) => action.alterTable)
-            .whereType<TableMigration>()
-            .firstWhere((table) => table.name == 'employee');
+      var employeeMigration = migration.actions
+          .map((action) => action.alterTable)
+          .whereType<TableMigration>()
+          .firstWhere((table) => table.name == 'employee');
 
-        expect(employeeMigration.deleteForeignKeys, ['employee_fk_0']);
-        expect(employeeMigration.addForeignKeys, hasLength(1));
-        expect(
-          employeeMigration.addForeignKeys.first.deferrable,
-          DeferrableConstraint.initiallyImmediate,
-        );
-      });
+      expect(employeeMigration.deleteForeignKeys, ['employee_fk_0']);
+      expect(employeeMigration.addForeignKeys, hasLength(1));
+      expect(
+        employeeMigration.addForeignKeys.first.deferrable,
+        DeferrableConstraint.initiallyImmediate,
+      );
     },
   );
 
-  group(
+  test(
     'Given a foreign key changing from initiallyImmediate to initiallyDeferred, '
-    'when generating a migration, ',
+    'when generating a migration, '
+    'then the foreign key is replaced.',
     () {
-      test('then the foreign key is replaced.', () {
-        var source = _databaseWithTables([
-          _departmentTable(),
-          _employeeTable(deferrable: DeferrableConstraint.initiallyImmediate),
-        ]);
-        var target = _databaseWithTables([
-          _departmentTable(),
-          _employeeTable(deferrable: DeferrableConstraint.initiallyDeferred),
-        ]);
+      var source = _databaseWithTables([
+        _departmentTable(),
+        _employeeTable(deferrable: DeferrableConstraint.initiallyImmediate),
+      ]);
+      var target = _databaseWithTables([
+        _departmentTable(),
+        _employeeTable(deferrable: DeferrableConstraint.initiallyDeferred),
+      ]);
 
-        var migration = generateDatabaseMigration(
-          databaseSource: source,
-          databaseTarget: target,
-        );
+      var migration = generateDatabaseMigration(
+        databaseSource: source,
+        databaseTarget: target,
+      );
 
-        var employeeMigration = migration.actions
-            .map((action) => action.alterTable)
-            .whereType<TableMigration>()
-            .firstWhere((table) => table.name == 'employee');
+      var employeeMigration = migration.actions
+          .map((action) => action.alterTable)
+          .whereType<TableMigration>()
+          .firstWhere((table) => table.name == 'employee');
 
-        expect(employeeMigration.deleteForeignKeys, ['employee_fk_0']);
-        expect(
-          employeeMigration.addForeignKeys.first.deferrable,
-          DeferrableConstraint.initiallyDeferred,
-        );
-      });
+      expect(employeeMigration.deleteForeignKeys, ['employee_fk_0']);
+      expect(
+        employeeMigration.addForeignKeys.first.deferrable,
+        DeferrableConstraint.initiallyDeferred,
+      );
     },
   );
 
-  group(
-    'Given identical deferrable foreign keys, when generating a migration, ',
+  test(
+    'Given identical deferrable foreign keys, '
+    'when generating a migration, '
+    'then no foreign key changes are generated.',
     () {
-      test('then no foreign key changes are generated.', () {
-        var source = _databaseWithTables([
-          _departmentTable(),
-          _employeeTable(deferrable: DeferrableConstraint.initiallyImmediate),
-        ]);
-        var target = _databaseWithTables([
-          _departmentTable(),
-          _employeeTable(deferrable: DeferrableConstraint.initiallyImmediate),
-        ]);
+      var source = _databaseWithTables([
+        _departmentTable(),
+        _employeeTable(deferrable: DeferrableConstraint.initiallyImmediate),
+      ]);
+      var target = _databaseWithTables([
+        _departmentTable(),
+        _employeeTable(deferrable: DeferrableConstraint.initiallyImmediate),
+      ]);
 
-        var migration = generateDatabaseMigration(
-          databaseSource: source,
-          databaseTarget: target,
-        );
+      var migration = generateDatabaseMigration(
+        databaseSource: source,
+        databaseTarget: target,
+      );
 
-        expect(migration.actions, isEmpty);
-      });
+      expect(migration.actions, isEmpty);
     },
   );
 }
