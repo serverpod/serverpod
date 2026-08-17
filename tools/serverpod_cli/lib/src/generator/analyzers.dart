@@ -19,6 +19,7 @@ import 'dart/server_code_generator.dart';
 import 'dart/temp_protocol_generator.dart';
 import 'dart_formatters.dart';
 import 'serverpod_code_generator.dart';
+import 'shared_package_ownership.dart';
 
 /// Result of a code generation run.
 typedef GenerateResult = ({
@@ -164,6 +165,29 @@ class Analyzers {
     GenerationRequirements requirements = GenerationRequirements.full,
     Set<String>? affectedPaths,
   }) async {
+    final ownershipConflicts = await findSharedPackageOwnershipConflicts(
+      config,
+    );
+    if (ownershipConflicts.isNotEmpty) {
+      for (final conflict in ownershipConflicts) {
+        log.error(
+          'Shared package "${conflict.packageName}" is already owned by '
+          '"${conflict.existingOwner}" and cannot also be owned by '
+          '"${conflict.attemptedOwner}". A shared package must have exactly '
+          'one owner. Remove it from one project\'s shared_packages setting. '
+          'To transfer ownership, remove the old wiring and generated output '
+          'before generating it from the new owner. Existing generated '
+          'protocol: "${conflict.protocolPath}".',
+        );
+      }
+
+      return (
+        success: false,
+        generatedFiles: <String>{},
+        protocolAnalyticsSnapshot: null,
+      );
+    }
+
     bool success = true;
     final protocolBackups = <String, String>{};
     final stubOverlayPaths = <String>[];
