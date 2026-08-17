@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:serverpod_database/serverpod_database.dart';
-import 'package:serverpod/src/hot_reload/hot_reload.dart';
 import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod/src/util/path_util.dart';
 import 'package:serverpod_shared/log.dart' hide LogEntry;
@@ -130,15 +129,6 @@ class InsightsEndpoint extends Endpoint {
     return SessionLogResult(sessionLog: sessionLogInfo);
   }
 
-  /// Get the latest [numEntries] from the session log.
-  Future<SessionLogResult> getOpenSessionLog(
-    Session session,
-    int? numEntries,
-    SessionLogFilter? filter,
-  ) async {
-    return SessionLogResult(sessionLog: []);
-  }
-
   /// Retrieve information about the state of the caches on this server.
   Future<CachesInfo> getCachesInfo(Session session, bool fetchKeys) async {
     return CachesInfo(
@@ -154,11 +144,6 @@ class InsightsEndpoint extends Endpoint {
       maxEntries: cache.maxLocalEntries,
       keys: fetchKeys ? cache.localKeys : null,
     );
-  }
-
-  /// Safely shuts down this [ServerPod].
-  Future<void> shutdown(Session session) async {
-    await server.serverpod.shutdown();
   }
 
   /// Performs a health check on the running [ServerPod].
@@ -189,17 +174,6 @@ class InsightsEndpoint extends Endpoint {
       metrics: metrics,
       connectionInfos: connectionInfos,
     );
-  }
-
-  /// Performs a hot reload of the server.
-  Future<bool> hotReload(Session session) async {
-    if (!await HotReloader.isHotReloadAvailable()) {
-      log.error(
-        'Hot reload is not available. You need to run dart with --enable-vm-service.',
-      );
-      return false;
-    }
-    return await HotReloader.hotReload();
   }
 
   /// Returns the target structure of the database defined in the
@@ -351,18 +325,6 @@ class InsightsEndpoint extends Endpoint {
       database: session.db,
       table: table,
     );
-  }
-
-  /// Executes SQL commands. Returns the number of rows affected.
-  Future<int> executeSql(Session session, String sql) async {
-    try {
-      return await session.db.unsafeExecute(sql);
-    } catch (e) {
-      throw ServerpodSqlException(
-        message: '$e',
-        sql: sql,
-      );
-    }
   }
 
   /// Fetches a file from the server. Only whitelisted files in

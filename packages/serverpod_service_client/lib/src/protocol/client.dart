@@ -70,19 +70,6 @@ class EndpointInsights extends _i1.EndpointRef {
     },
   );
 
-  /// Get the latest [numEntries] from the session log.
-  _i2.Future<_i4.SessionLogResult> getOpenSessionLog(
-    int? numEntries,
-    _i5.SessionLogFilter? filter,
-  ) => caller.callServerEndpoint<_i4.SessionLogResult>(
-    'insights',
-    'getOpenSessionLog',
-    {
-      'numEntries': numEntries,
-      'filter': filter,
-    },
-  );
-
   /// Retrieve information about the state of the caches on this server.
   _i2.Future<_i6.CachesInfo> getCachesInfo(bool fetchKeys) =>
       caller.callServerEndpoint<_i6.CachesInfo>(
@@ -90,13 +77,6 @@ class EndpointInsights extends _i1.EndpointRef {
         'getCachesInfo',
         {'fetchKeys': fetchKeys},
       );
-
-  /// Safely shuts down this [ServerPod].
-  _i2.Future<void> shutdown() => caller.callServerEndpoint<void>(
-    'insights',
-    'shutdown',
-    {},
-  );
 
   /// Performs a health check on the running [ServerPod].
   _i2.Future<_i7.ServerHealthResult> checkHealth() =>
@@ -117,13 +97,6 @@ class EndpointInsights extends _i1.EndpointRef {
       'start': start,
       'end': end,
     },
-  );
-
-  /// Performs a hot reload of the server.
-  _i2.Future<bool> hotReload() => caller.callServerEndpoint<bool>(
-    'insights',
-    'hotReload',
-    {},
   );
 
   /// Returns the target structure of the database defined in the
@@ -222,13 +195,6 @@ class EndpointInsights extends _i1.EndpointRef {
         'getDatabaseRowCount',
         {'table': table},
       );
-
-  /// Executes SQL commands. Returns the number of rows affected.
-  _i2.Future<int> executeSql(String sql) => caller.callServerEndpoint<int>(
-    'insights',
-    'executeSql',
-    {'sql': sql},
-  );
 
   /// Fetches a file from the server. Only whitelisted files in
   /// [Serverpod.filesWhitelistedForInsights] can be fetched.

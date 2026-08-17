@@ -11,7 +11,7 @@ void main() {
 
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetSql: 'DROP TABLE IF EXISTS $tableName;',
+        resetQueries: ['DROP TABLE IF EXISTS $tableName;'],
         serviceClient: serviceClient,
       );
     });
@@ -87,12 +87,12 @@ fields:
         await MigrationTestUtils.runApplyMigrations();
 
         // Insert test data to verify no data loss
-        await serviceClient.insights.executeSql(
+        await serviceClient.insights.runQueries([
           '''
 INSERT INTO "$tableName" ("id", "$originalColumnName")
 VALUES (1, 'test_value_1'), (2, 'test_value_2');
 ''',
-        );
+        ]);
 
         // Now rename the column using column override
         var renameTag = 'rename-column';

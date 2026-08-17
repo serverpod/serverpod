@@ -7,7 +7,7 @@ void main() {
   group('Given database matching latest migration', () {
     tearDownAll(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
+        resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
         serviceClient: serviceClient,
       );
     });
@@ -79,7 +79,7 @@ fields:
   group('Given database with migrations that would be destructive if reverted', () {
     tearDownAll(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
+        resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
         serviceClient: serviceClient,
       );
     });
@@ -170,7 +170,7 @@ fields:
     () {
       tearDown(() async {
         await MigrationTestUtils.migrationTestCleanup(
-          resetSql: 'DROP TABLE IF EXISTS migrated_table;',
+          resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
           serviceClient: serviceClient,
         );
       });
@@ -239,7 +239,7 @@ indexes:
     () {
       tearDown(() async {
         await MigrationTestUtils.migrationTestCleanup(
-          resetSql: 'DROP TABLE IF EXISTS migrated_table;',
+          resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
           serviceClient: serviceClient,
         );
       });
@@ -260,9 +260,9 @@ fields:
           ],
         );
 
-        await serviceClient.insights.executeSql(
+        await serviceClient.insights.runQueries([
           'DELETE FROM serverpod_migrations WHERE module=\'serverpod_test_sqlite\';',
-        );
+        ]);
       });
 
       test(
@@ -290,7 +290,7 @@ fields:
   group('Given database not matching latest migration', () {
     tearDownAll(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
+        resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
         serviceClient: serviceClient,
       );
     });

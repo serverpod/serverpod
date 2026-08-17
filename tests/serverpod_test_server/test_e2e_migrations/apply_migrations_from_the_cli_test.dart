@@ -56,7 +56,7 @@ void main() {
 
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetSql: 'DROP TABLE IF EXISTS ${tables.join(', ')};',
+        resetQueries: ['DROP TABLE IF EXISTS ${tables.join(', ')};'],
         serviceClient: serviceClient,
       );
     });
@@ -91,16 +91,16 @@ void main() {
 
     setUp(() async {
       // Rename a table to simulate a schema drift
-      await serviceClient.insights.executeSql(
+      await serviceClient.insights.runQueries([
         'ALTER TABLE "$tableName" RENAME TO "$renamedTableName";',
-      );
+      ]);
     });
 
     tearDown(() async {
       await MigrationTestUtils.migrationArtifactsCleanup();
-      await serviceClient.insights.executeSql(
+      await serviceClient.insights.runQueries([
         'ALTER TABLE IF EXISTS "$renamedTableName" RENAME TO "$tableName";',
-      );
+      ]);
     });
 
     test(

@@ -95,31 +95,6 @@ class Endpoints extends _i1.EndpointDispatch {
                     params['filter'],
                   ),
         ),
-        'getOpenSessionLog': _i1.MethodConnector(
-          name: 'getOpenSessionLog',
-          params: {
-            'numEntries': _i1.ParameterDescription(
-              name: 'numEntries',
-              type: _i1.getType<int?>(),
-              nullable: true,
-            ),
-            'filter': _i1.ParameterDescription(
-              name: 'filter',
-              type: _i1.getType<_i4.SessionLogFilter?>(),
-              nullable: true,
-            ),
-          },
-          call:
-              (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async => (endpoints['insights'] as _i2.InsightsEndpoint)
-                  .getOpenSessionLog(
-                    session,
-                    params['numEntries'],
-                    params['filter'],
-                  ),
-        ),
         'getCachesInfo': _i1.MethodConnector(
           name: 'getCachesInfo',
           params: {
@@ -138,16 +113,6 @@ class Endpoints extends _i1.EndpointDispatch {
                     session,
                     params['fetchKeys'],
                   ),
-        ),
-        'shutdown': _i1.MethodConnector(
-          name: 'shutdown',
-          params: {},
-          call:
-              (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async => (endpoints['insights'] as _i2.InsightsEndpoint)
-                  .shutdown(session),
         ),
         'checkHealth': _i1.MethodConnector(
           name: 'checkHealth',
@@ -183,16 +148,6 @@ class Endpoints extends _i1.EndpointDispatch {
                     params['start'],
                     params['end'],
                   ),
-        ),
-        'hotReload': _i1.MethodConnector(
-          name: 'hotReload',
-          params: {},
-          call:
-              (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async => (endpoints['insights'] as _i2.InsightsEndpoint)
-                  .hotReload(session),
         ),
         'getTargetTableDefinition': _i1.MethodConnector(
           name: 'getTargetTableDefinition',
@@ -322,25 +277,6 @@ class Endpoints extends _i1.EndpointDispatch {
                   .getDatabaseRowCount(
                     session,
                     table: params['table'],
-                  ),
-        ),
-        'executeSql': _i1.MethodConnector(
-          name: 'executeSql',
-          params: {
-            'sql': _i1.ParameterDescription(
-              name: 'sql',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-          },
-          call:
-              (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['insights'] as _i2.InsightsEndpoint).executeSql(
-                    session,
-                    params['sql'],
                   ),
         ),
         'fetchFile': _i1.MethodConnector(

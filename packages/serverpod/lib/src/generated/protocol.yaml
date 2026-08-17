@@ -3,12 +3,9 @@ insights:
   - setRuntimeSettings:
   - clearAllLogs:
   - getSessionLog:
-  - getOpenSessionLog:
   - getCachesInfo:
-  - shutdown:
   - checkHealth:
   - getHealthData:
-  - hotReload:
   - getTargetTableDefinition:
   - getLiveDatabaseDefinition:
   - applyMigrations:
@@ -16,5 +13,4 @@ insights:
   - fetchDatabaseBulkData:
   - runQueries:
   - getDatabaseRowCount:
-  - executeSql:
   - fetchFile:

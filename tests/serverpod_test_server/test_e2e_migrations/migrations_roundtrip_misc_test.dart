@@ -86,7 +86,7 @@ void main() {
       var newTable = 'z_new_table';
       tearDown(() async {
         await MigrationTestUtils.migrationTestCleanup(
-          resetSql: 'DROP TABLE IF EXISTS $oldTable, $newTable;',
+          resetQueries: ['DROP TABLE IF EXISTS $oldTable, $newTable;'],
           serviceClient: serviceClient,
         );
       });
@@ -177,7 +177,7 @@ void main() {
     () {
       tearDown(() async {
         await MigrationTestUtils.migrationTestCleanup(
-          resetSql: 'DROP TABLE IF EXISTS migrated_table;',
+          resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
           serviceClient: serviceClient,
         );
       });

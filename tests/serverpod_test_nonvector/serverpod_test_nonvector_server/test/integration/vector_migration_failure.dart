@@ -17,7 +17,7 @@ void main() {
       group('when applying a migration with no vector columns', () {
         tearDown(() async {
           await MigrationTestUtils.migrationTestCleanup(
-            resetSql: 'DROP TABLE IF EXISTS integrity_test_table;',
+            resetQueries: ['DROP TABLE IF EXISTS integrity_test_table;'],
             serviceClient: serviceClient,
           );
         });
@@ -77,7 +77,7 @@ fields:
       group('when applying a migration with a vector column', () {
         tearDown(() async {
           await MigrationTestUtils.migrationTestCleanup(
-            resetSql: 'DROP TABLE IF EXISTS vector_test_table;',
+            resetQueries: ['DROP TABLE IF EXISTS vector_test_table;'],
             serviceClient: serviceClient,
           );
         });

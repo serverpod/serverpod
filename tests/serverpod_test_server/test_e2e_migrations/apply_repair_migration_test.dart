@@ -7,7 +7,9 @@ void main() {
   group('Given database not matching latest migration', () {
     tearDownAll(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetSql: 'DROP TABLE IF EXISTS migrated_table, migrated_table_2;',
+        resetQueries: [
+          'DROP TABLE IF EXISTS migrated_table, migrated_table_2;',
+        ],
         serviceClient: serviceClient,
       );
     });
@@ -85,7 +87,9 @@ fields:
   group('Given database matching latest migration', () {
     tearDownAll(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetSql: 'DROP TABLE IF EXISTS migrated_table, migrated_table_2;',
+        resetQueries: [
+          'DROP TABLE IF EXISTS migrated_table, migrated_table_2;',
+        ],
         serviceClient: serviceClient,
       );
     });
@@ -168,7 +172,9 @@ fields:
     () {
       tearDownAll(() async {
         await MigrationTestUtils.migrationTestCleanup(
-          resetSql: 'DROP TABLE IF EXISTS migrated_table, migrated_table_2;',
+          resetQueries: [
+            'DROP TABLE IF EXISTS migrated_table, migrated_table_2;',
+          ],
           serviceClient: serviceClient,
         );
       });

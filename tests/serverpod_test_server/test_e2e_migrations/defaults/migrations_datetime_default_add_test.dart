@@ -27,7 +27,7 @@ void main() {
 
       tearDown(() async {
         await MigrationTestUtils.migrationTestCleanup(
-          resetSql: 'DROP TABLE IF EXISTS existing_table;',
+          resetQueries: ['DROP TABLE IF EXISTS existing_table;'],
           serviceClient: serviceClient,
         );
       });
@@ -119,7 +119,7 @@ void main() {
 
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetSql: 'DROP TABLE IF EXISTS existing_table;',
+        resetQueries: ['DROP TABLE IF EXISTS existing_table;'],
         serviceClient: serviceClient,
       );
     });

@@ -7,7 +7,7 @@ void main() {
   group('Given new protocol model with table', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
+        resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
         serviceClient: serviceClient,
       );
     });
@@ -61,10 +61,11 @@ void main() {
   group('Given multiple new protocol models with table', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetSql:
-            'DROP TABLE IF EXISTS migrated_table;'
-            'DROP TABLE IF EXISTS migrated_table_2;'
-            'DROP TABLE IF EXISTS migrated_table_3;',
+        resetQueries: [
+          'DROP TABLE IF EXISTS migrated_table;',
+          'DROP TABLE IF EXISTS migrated_table_2;',
+          'DROP TABLE IF EXISTS migrated_table_3;',
+        ],
         serviceClient: serviceClient,
       );
     });
@@ -136,7 +137,7 @@ void main() {
   group('Given protocol model with table that is removed', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
+        resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
         serviceClient: serviceClient,
       );
     });
@@ -174,7 +175,7 @@ void main() {
   group('Given protocol model with table that is removed', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
+        resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
         serviceClient: serviceClient,
       );
     });

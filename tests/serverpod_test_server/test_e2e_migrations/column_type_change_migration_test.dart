@@ -29,7 +29,7 @@ void main() {
 
       tearDown(() async {
         await MigrationTestUtils.migrationTestCleanup(
-          resetSql: 'DROP TABLE IF EXISTS migrated_table;',
+          resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
           serviceClient: serviceClient,
         );
       });
@@ -114,7 +114,7 @@ void main() {
 
       tearDown(() async {
         await MigrationTestUtils.migrationTestCleanup(
-          resetSql: 'DROP TABLE IF EXISTS migrated_table;',
+          resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
           serviceClient: serviceClient,
         );
       });
@@ -175,7 +175,7 @@ void main() {
 
       tearDown(() async {
         await MigrationTestUtils.migrationTestCleanup(
-          resetSql: 'DROP TABLE IF EXISTS migrated_table;',
+          resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
           serviceClient: serviceClient,
         );
       });
@@ -190,10 +190,10 @@ void main() {
           );
 
           // Insert test data
-          await serviceClient.insights.executeSql(
+          await serviceClient.insights.runQueries([
             "INSERT INTO migrated_table (data) VALUES "
-            "('[\"dart\",\"flutter\"]'), ('[]'), ('[\"special\"]')",
-          );
+                "('[\"dart\",\"flutter\"]'), ('[]'), ('[\"special\"]')",
+          ]);
 
           // Migrate json → jsonb
           var exitCode = await MigrationTestUtils.createMigrationFromProtocols(

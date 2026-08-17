@@ -119,12 +119,15 @@ abstract class MigrationTestUtils {
   }
 
   static Future<void> migrationTestCleanup({
-    String? resetSql,
+    List<String>? resetQueries,
     required Client serviceClient,
   }) async {
     await migrationArtifactsCleanup();
-    if (resetSql != null) {
-      await _resetDatabase(resetSql: resetSql, serviceClient: serviceClient);
+    if (resetQueries != null) {
+      await _resetDatabase(
+        resetQueries: resetQueries,
+        serviceClient: serviceClient,
+      );
     }
     await _setDatabaseMigrationToLatestInRegistry(serviceClient: serviceClient);
   }
@@ -291,9 +294,9 @@ abstract class MigrationTestUtils {
 
   static Future<void> _resetDatabase({
     required Client serviceClient,
-    required String resetSql,
+    required List<String> resetQueries,
   }) async {
-    await serviceClient.insights.executeSql(resetSql);
+    await serviceClient.insights.runQueries(resetQueries);
   }
 
   static Future<void> _setDatabaseMigrationToLatestInRegistry({
@@ -307,13 +310,15 @@ abstract class MigrationTestUtils {
       DatabaseDialect.postgres => 'now()',
     };
 
-    await serviceClient.insights.executeSql('''
+    await serviceClient.insights.runQueries([
+      '''
 INSERT INTO "${serverProtocol.DatabaseMigrationVersion.t.tableName}"
     ("module", "version", "timestamp")
     VALUES ('$_moduleName', '$latestMigration', $timestampSql)
     ON CONFLICT ("module")
     DO UPDATE SET "version" = '$latestMigration';
-''');
+''',
+    ]);
   }
 
   static Future<int> _runProcess(

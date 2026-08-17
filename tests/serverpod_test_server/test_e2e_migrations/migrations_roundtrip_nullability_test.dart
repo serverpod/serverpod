@@ -7,7 +7,7 @@ void main() {
   group('Given existing protocol model with nullability added to column', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
+        resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
         serviceClient: serviceClient,
       );
     });
@@ -96,7 +96,7 @@ void main() {
   group('Given existing protocol model with nullability removed from column', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
+        resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
         serviceClient: serviceClient,
       );
     });
@@ -188,7 +188,7 @@ void main() {
     () {
       tearDown(() async {
         await MigrationTestUtils.migrationTestCleanup(
-          resetSql: 'DROP TABLE IF EXISTS migrated_table;',
+          resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
           serviceClient: serviceClient,
         );
       });
