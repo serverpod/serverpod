@@ -1,6 +1,7 @@
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 import 'foreign_relation_definition_builder.dart';
@@ -271,6 +272,7 @@ class ModelClassDefinitionBuilder {
     String? foreignKeyFieldName,
     TypeDefinition? foreignKeyParentTableIdType,
     bool nullableRelation = false,
+    DeferrableConstraint? deferrable,
   }) {
     var foreignFieldName = foreignKeyFieldName ?? '${fieldName}Id';
     var foreignTableIdType = foreignKeyParentTableIdType ?? TypeDefinition.int;
@@ -298,6 +300,7 @@ class ModelClassDefinitionBuilder {
             ForeignRelationDefinitionBuilder()
                 .withParentTable(parentTable)
                 .withReferenceFieldName('id')
+                .withDeferrable(deferrable)
                 .build(),
           )
           .build(),
