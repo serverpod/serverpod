@@ -215,12 +215,15 @@ class SqliteDatabaseAnalyzer extends DatabaseAnalyzer {
     if (start < 0) return null;
 
     var end = createTableSql.indexOf(',\n', start);
-    var clause = (end < 0
-            ? createTableSql.substring(start)
-            : createTableSql.substring(start, end))
-        .toUpperCase();
+    var clause =
+        (end < 0
+                ? createTableSql.substring(start)
+                : createTableSql.substring(start, end))
+            .toUpperCase();
 
-    if (!clause.contains('DEFERRABLE')) return null;
+    if (clause.contains('NOT DEFERRABLE') || !clause.contains('DEFERRABLE')) {
+      return null;
+    }
     return clause.contains('INITIALLY DEFERRED')
         ? DeferrableConstraint.initiallyDeferred
         : DeferrableConstraint.initiallyImmediate;

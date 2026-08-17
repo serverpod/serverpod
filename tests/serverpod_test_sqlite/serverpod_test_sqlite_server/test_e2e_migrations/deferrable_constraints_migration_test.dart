@@ -264,4 +264,31 @@ fields:
       );
     },
   );
+
+  test(
+    'Given a foreign key manually declared as NOT DEFERRABLE, '
+    'when reading the live database definition, '
+    'then the foreign key is not deferrable.',
+    () async {
+      await serviceClient.insights.executeSql(
+        'CREATE TABLE "$_parentTable" ("id" INTEGER PRIMARY KEY);',
+      );
+      await serviceClient.insights.executeSql('''
+CREATE TABLE "$_childTable" (
+  "id" INTEGER PRIMARY KEY,
+  "parentId" INTEGER,
+  CONSTRAINT "${_childTable}_fk_0" FOREIGN KEY ("parentId") REFERENCES "$_parentTable" ("id") NOT DEFERRABLE
+);
+''');
+
+      var liveDefinition = await serviceClient.insights
+          .getLiveDatabaseDefinition();
+      var childTable = liveDefinition.tables.firstWhere(
+        (table) => table.name == _childTable,
+      );
+
+      expect(childTable.foreignKeys, hasLength(1));
+      expect(childTable.foreignKeyOn('parentId').deferrable, isNull);
+    },
+  );
 }
