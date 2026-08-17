@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 import 'package:serverpod_database/serverpod_database.dart';
-import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod/protocol.dart' as serverProtocol;
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
@@ -120,16 +119,13 @@ abstract class MigrationTestUtils {
 
   static Future<void> migrationTestCleanup({
     List<String>? resetQueries,
-    required Client serviceClient,
+    required Future<void> Function(List<String> queries) runQueries,
   }) async {
     await migrationArtifactsCleanup();
     if (resetQueries != null) {
-      await _resetDatabase(
-        resetQueries: resetQueries,
-        serviceClient: serviceClient,
-      );
+      await runQueries(resetQueries);
     }
-    await _setDatabaseMigrationToLatestInRegistry(serviceClient: serviceClient);
+    await _setDatabaseMigrationToLatestInRegistry(runQueries: runQueries);
   }
 
   /// Removes tagged migrations, repair migration, protocol test files, and
@@ -292,15 +288,8 @@ abstract class MigrationTestUtils {
     }
   }
 
-  static Future<void> _resetDatabase({
-    required Client serviceClient,
-    required List<String> resetQueries,
-  }) async {
-    await serviceClient.insights.runQueries(resetQueries);
-  }
-
   static Future<void> _setDatabaseMigrationToLatestInRegistry({
-    required Client serviceClient,
+    required Future<void> Function(List<String> queries) runQueries,
   }) async {
     var versions = await loadMigrationRegistry();
     var latestMigration = versions.lastOrNull;
@@ -310,7 +299,7 @@ abstract class MigrationTestUtils {
       DatabaseDialect.postgres => 'now()',
     };
 
-    await serviceClient.insights.runQueries([
+    await runQueries([
       '''
 INSERT INTO "${serverProtocol.DatabaseMigrationVersion.t.tableName}"
     ("module", "version", "timestamp")

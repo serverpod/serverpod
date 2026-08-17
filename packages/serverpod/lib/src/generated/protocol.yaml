@@ -10,7 +10,4 @@ insights:
   - getLiveDatabaseDefinition:
   - applyMigrations:
   - getDatabaseDefinitions:
-  - fetchDatabaseBulkData:
-  - runQueries:
-  - getDatabaseRowCount:
   - fetchFile:
