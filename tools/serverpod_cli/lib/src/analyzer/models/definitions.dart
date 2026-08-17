@@ -412,6 +412,12 @@ class SerializableModelFieldDefinition {
   /// Whether this field should have a unique index auto-generated for it.
   bool get shouldCreateUniqueIndex => uniquePerFieldNames != null;
 
+  /// Whether this field is the primary key of the table it belongs to.
+  ///
+  /// This is resolved before validation runs, so it can be relied on when
+  /// validating relations.
+  final bool isPrimaryKey;
+
   /// Create a new [SerializableModelFieldDefinition].
   SerializableModelFieldDefinition({
     required this.name,
@@ -427,6 +433,7 @@ class SerializableModelFieldDefinition {
     String? columnNameOverride,
     String? jsonKeyOverride,
     this.uniquePerFieldNames,
+    this.isPrimaryKey = false,
   }) : _columnNameOverride = columnNameOverride,
        _jsonKeyOverride = jsonKeyOverride;
 

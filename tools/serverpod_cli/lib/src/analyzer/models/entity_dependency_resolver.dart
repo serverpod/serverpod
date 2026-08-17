@@ -128,6 +128,7 @@ class ModelDependencyResolver {
         shouldPersist: true,
         documentation: maybeIdField?.documentation ?? defaultIdFieldDoc,
         isRequired: false, // ID fields are typically optional
+        isPrimaryKey: true,
       ),
     );
   }
