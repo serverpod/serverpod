@@ -1,7 +1,13 @@
+import 'package:serverpod_serialization/serverpod_serialization.dart';
+
 import 'http/http_status.dart';
+import 'serverpod_client_shared.dart';
+
+part 'method_stream/method_stream_manager_exceptions.dart';
+part 'serverpod_client_get_endpoint_exception.dart';
 
 /// [Exception] thrown when errors in communication with the server occurs.
-class ServerpodClientException implements Exception {
+sealed class ServerpodClientException implements Exception {
   /// Error message sent from the server.
   final String message;
 
@@ -27,7 +33,11 @@ class ServerpodClientUnknownException extends ServerpodClientException {
 }
 
 /// [Exception] thrown when HTTP errors occur in communication with the server.
-class ServerpodClientHttpException extends ServerpodClientException {
+///
+/// Sealed like [ServerpodClientException], so a `switch` over the status code
+/// exceptions is also checked for exhaustiveness. Status codes without a
+/// dedicated exception are reported as [ServerpodClientUnknownHttpException].
+sealed class ServerpodClientHttpException extends ServerpodClientException {
   /// Http status code associated with the error.
   final int statusCode;
 
@@ -78,4 +88,13 @@ class ServerpodClientInternalServerError extends ServerpodClientHttpException {
   /// Creates an Internal Server Error Exception
   ServerpodClientInternalServerError()
     : super('Internal server error', HttpStatus.internalServerError);
+}
+
+/// Thrown if the server responded with an HTTP status code that the client has
+/// no dedicated exception for.
+class ServerpodClientUnknownHttpException extends ServerpodClientHttpException {
+  /// Creates an Unknown Http Exception from the response [data] and the
+  /// [statusCode] the server responded with.
+  ServerpodClientUnknownHttpException(String data, int statusCode)
+    : super('Unknown error, data: $data', statusCode);
 }

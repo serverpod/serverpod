@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:http/http.dart' as http;
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:test/test.dart';
@@ -53,6 +55,36 @@ void main() {
               (e) => e.message,
               'message',
               contains('Connection failed'),
+            ),
+          ),
+        );
+      },
+    );
+  });
+
+  group('Given a client whose requests fail with a TimeoutException', () {
+    late TestServerpodClient client;
+
+    setUp(() {
+      client = TestServerpodClient(
+        host: Uri.http('localhost:8080'),
+        httpClientOverride: _FailingHttpClient(TimeoutException('Too slow')),
+      );
+    });
+
+    tearDown(() => client.close());
+
+    test(
+      'when calling an endpoint, '
+      'then a ServerpodClientNetworkException is thrown',
+      () async {
+        await expectLater(
+          client.callServerEndpoint<String>('test', 'method', {'arg': 'value'}),
+          throwsA(
+            isA<ServerpodClientNetworkException>().having(
+              (e) => e.message,
+              'message',
+              'Request timed out',
             ),
           ),
         );
