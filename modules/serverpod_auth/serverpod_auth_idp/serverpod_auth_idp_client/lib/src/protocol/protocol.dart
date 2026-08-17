@@ -12,45 +12,45 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'providers/anonymous/models/exceptions/anonymous_account_blocked_exception.dart'
-    as _i2;
-import 'providers/anonymous/models/exceptions/anonymous_account_blocked_exception_reason.dart'
-    as _i3;
-import 'providers/email/models/exceptions/email_account_login_exception.dart'
-    as _i4;
-import 'providers/email/models/exceptions/email_account_login_exception_reason.dart'
-    as _i5;
-import 'providers/email/models/exceptions/email_account_password_reset_exception.dart'
-    as _i6;
-import 'providers/email/models/exceptions/email_account_password_reset_exception_reason.dart'
-    as _i7;
-import 'providers/email/models/exceptions/email_account_request_exception.dart'
-    as _i8;
-import 'providers/email/models/exceptions/email_account_request_exception_reason.dart'
-    as _i9;
-import 'providers/facebook/models/facebook_access_token_verification_exception.dart'
-    as _i10;
-import 'providers/firebase/models/firebase_email_not_verified_exception.dart'
-    as _i11;
-import 'providers/firebase/models/firebase_id_token_verification_exception.dart'
-    as _i12;
-import 'providers/github/models/github_access_token_verification_exception.dart'
-    as _i13;
-import 'providers/google/models/google_id_token_verification_exception.dart'
-    as _i14;
-import 'providers/microsoft/models/microsoft_access_token_verification_exception.dart'
-    as _i15;
-import 'providers/passkey/models/passkey_challenge_expired_exception.dart'
-    as _i16;
-import 'providers/passkey/models/passkey_challenge_not_found_exception.dart'
-    as _i17;
-import 'providers/passkey/models/passkey_login_request.dart' as _i18;
-import 'providers/passkey/models/passkey_public_key_not_found_exception.dart'
-    as _i19;
-import 'providers/passkey/models/passkey_registration_request.dart' as _i20;
-import 'dart:typed_data' as _i21;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i22;
+    as _i2;
+import 'providers/anonymous/models/exceptions/anonymous_account_blocked_exception.dart'
+    as _i3;
+import 'providers/anonymous/models/exceptions/anonymous_account_blocked_exception_reason.dart'
+    as _i4;
+import 'providers/email/models/exceptions/email_account_login_exception.dart'
+    as _i5;
+import 'providers/email/models/exceptions/email_account_login_exception_reason.dart'
+    as _i6;
+import 'providers/email/models/exceptions/email_account_password_reset_exception.dart'
+    as _i7;
+import 'providers/email/models/exceptions/email_account_password_reset_exception_reason.dart'
+    as _i8;
+import 'providers/email/models/exceptions/email_account_request_exception.dart'
+    as _i9;
+import 'providers/email/models/exceptions/email_account_request_exception_reason.dart'
+    as _i10;
+import 'providers/facebook/models/facebook_access_token_verification_exception.dart'
+    as _i11;
+import 'providers/firebase/models/firebase_email_not_verified_exception.dart'
+    as _i12;
+import 'providers/firebase/models/firebase_id_token_verification_exception.dart'
+    as _i13;
+import 'providers/github/models/github_access_token_verification_exception.dart'
+    as _i14;
+import 'providers/google/models/google_id_token_verification_exception.dart'
+    as _i15;
+import 'providers/microsoft/models/microsoft_access_token_verification_exception.dart'
+    as _i16;
+import 'providers/passkey/models/passkey_challenge_expired_exception.dart'
+    as _i17;
+import 'providers/passkey/models/passkey_challenge_not_found_exception.dart'
+    as _i18;
+import 'providers/passkey/models/passkey_login_request.dart' as _i19;
+import 'providers/passkey/models/passkey_public_key_not_found_exception.dart'
+    as _i20;
+import 'providers/passkey/models/passkey_registration_request.dart' as _i21;
+import 'dart:typed_data' as _i22;
 export 'providers/anonymous/models/exceptions/anonymous_account_blocked_exception.dart';
 export 'providers/anonymous/models/exceptions/anonymous_account_blocked_exception_reason.dart';
 export 'providers/email/models/exceptions/email_account_login_exception.dart';
@@ -80,6 +80,9 @@ class Protocol extends _i1.SerializationManager {
   static final Protocol _instance = Protocol._();
 
   final Set<_i1.SerializationManager> _hostProtocols = {};
+
+  static final Map<Type, dynamic Function(dynamic, Protocol)> _deserializers =
+      _buildDeserializers();
 
   void registerHostProtocol(
     String projectName,
@@ -117,226 +120,52 @@ class Protocol extends _i1.SerializationManager {
       }
     }
 
-    if (t == _i2.AnonymousAccountBlockedException) {
-      return _i2.AnonymousAccountBlockedException.fromJson(data) as T;
-    }
-    if (t == _i3.AnonymousAccountBlockedExceptionReason) {
-      return _i3.AnonymousAccountBlockedExceptionReason.fromJson(data) as T;
-    }
-    if (t == _i4.EmailAccountLoginException) {
-      return _i4.EmailAccountLoginException.fromJson(data) as T;
-    }
-    if (t == _i5.EmailAccountLoginExceptionReason) {
-      return _i5.EmailAccountLoginExceptionReason.fromJson(data) as T;
-    }
-    if (t == _i6.EmailAccountPasswordResetException) {
-      return _i6.EmailAccountPasswordResetException.fromJson(data) as T;
-    }
-    if (t == _i7.EmailAccountPasswordResetExceptionReason) {
-      return _i7.EmailAccountPasswordResetExceptionReason.fromJson(data) as T;
-    }
-    if (t == _i8.EmailAccountRequestException) {
-      return _i8.EmailAccountRequestException.fromJson(data) as T;
-    }
-    if (t == _i9.EmailAccountRequestExceptionReason) {
-      return _i9.EmailAccountRequestExceptionReason.fromJson(data) as T;
-    }
-    if (t == _i10.FacebookAccessTokenVerificationException) {
-      return _i10.FacebookAccessTokenVerificationException.fromJson(data) as T;
-    }
-    if (t == _i11.FirebaseEmailNotVerifiedException) {
-      return _i11.FirebaseEmailNotVerifiedException.fromJson(data) as T;
-    }
-    if (t == _i12.FirebaseIdTokenVerificationException) {
-      return _i12.FirebaseIdTokenVerificationException.fromJson(data) as T;
-    }
-    if (t == _i13.GitHubAccessTokenVerificationException) {
-      return _i13.GitHubAccessTokenVerificationException.fromJson(data) as T;
-    }
-    if (t == _i14.GoogleIdTokenVerificationException) {
-      return _i14.GoogleIdTokenVerificationException.fromJson(data) as T;
-    }
-    if (t == _i15.MicrosoftAccessTokenVerificationException) {
-      return _i15.MicrosoftAccessTokenVerificationException.fromJson(data) as T;
-    }
-    if (t == _i16.PasskeyChallengeExpiredException) {
-      return _i16.PasskeyChallengeExpiredException.fromJson(data) as T;
-    }
-    if (t == _i17.PasskeyChallengeNotFoundException) {
-      return _i17.PasskeyChallengeNotFoundException.fromJson(data) as T;
-    }
-    if (t == _i18.PasskeyLoginRequest) {
-      return _i18.PasskeyLoginRequest.fromJson(data) as T;
-    }
-    if (t == _i19.PasskeyPublicKeyNotFoundException) {
-      return _i19.PasskeyPublicKeyNotFoundException.fromJson(data) as T;
-    }
-    if (t == _i20.PasskeyRegistrationRequest) {
-      return _i20.PasskeyRegistrationRequest.fromJson(data) as T;
-    }
-    if (t == _i1.getType<_i2.AnonymousAccountBlockedException?>()) {
-      return (data != null
-              ? _i2.AnonymousAccountBlockedException.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i3.AnonymousAccountBlockedExceptionReason?>()) {
-      return (data != null
-              ? _i3.AnonymousAccountBlockedExceptionReason.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i4.EmailAccountLoginException?>()) {
-      return (data != null
-              ? _i4.EmailAccountLoginException.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i5.EmailAccountLoginExceptionReason?>()) {
-      return (data != null
-              ? _i5.EmailAccountLoginExceptionReason.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i6.EmailAccountPasswordResetException?>()) {
-      return (data != null
-              ? _i6.EmailAccountPasswordResetException.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i7.EmailAccountPasswordResetExceptionReason?>()) {
-      return (data != null
-              ? _i7.EmailAccountPasswordResetExceptionReason.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i8.EmailAccountRequestException?>()) {
-      return (data != null
-              ? _i8.EmailAccountRequestException.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i9.EmailAccountRequestExceptionReason?>()) {
-      return (data != null
-              ? _i9.EmailAccountRequestExceptionReason.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i10.FacebookAccessTokenVerificationException?>()) {
-      return (data != null
-              ? _i10.FacebookAccessTokenVerificationException.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i11.FirebaseEmailNotVerifiedException?>()) {
-      return (data != null
-              ? _i11.FirebaseEmailNotVerifiedException.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i12.FirebaseIdTokenVerificationException?>()) {
-      return (data != null
-              ? _i12.FirebaseIdTokenVerificationException.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i13.GitHubAccessTokenVerificationException?>()) {
-      return (data != null
-              ? _i13.GitHubAccessTokenVerificationException.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i14.GoogleIdTokenVerificationException?>()) {
-      return (data != null
-              ? _i14.GoogleIdTokenVerificationException.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i15.MicrosoftAccessTokenVerificationException?>()) {
-      return (data != null
-              ? _i15.MicrosoftAccessTokenVerificationException.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i16.PasskeyChallengeExpiredException?>()) {
-      return (data != null
-              ? _i16.PasskeyChallengeExpiredException.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i17.PasskeyChallengeNotFoundException?>()) {
-      return (data != null
-              ? _i17.PasskeyChallengeNotFoundException.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i18.PasskeyLoginRequest?>()) {
-      return (data != null ? _i18.PasskeyLoginRequest.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i19.PasskeyPublicKeyNotFoundException?>()) {
-      return (data != null
-              ? _i19.PasskeyPublicKeyNotFoundException.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i20.PasskeyRegistrationRequest?>()) {
-      return (data != null
-              ? _i20.PasskeyRegistrationRequest.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<({_i21.ByteData challenge, _i1.UuidValue id})>()) {
-      return (
-            challenge: deserialize<_i21.ByteData>(
-              ((data as Map)['n'] as Map)['challenge'],
-            ),
-            id: deserialize<_i1.UuidValue>(data['n']['id']),
-          )
-          as T;
+    final fn = _deserializers[t];
+    if (fn != null) {
+      return fn(data, this) as T;
     }
     try {
-      return _i22.Protocol().deserialize<T>(data, t);
+      return _i2.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _i2.AnonymousAccountBlockedException =>
+      _i3.AnonymousAccountBlockedException =>
         'AnonymousAccountBlockedException',
-      _i3.AnonymousAccountBlockedExceptionReason =>
+      _i4.AnonymousAccountBlockedExceptionReason =>
         'AnonymousAccountBlockedExceptionReason',
-      _i4.EmailAccountLoginException => 'EmailAccountLoginException',
-      _i5.EmailAccountLoginExceptionReason =>
+      _i5.EmailAccountLoginException => 'EmailAccountLoginException',
+      _i6.EmailAccountLoginExceptionReason =>
         'EmailAccountLoginExceptionReason',
-      _i6.EmailAccountPasswordResetException =>
+      _i7.EmailAccountPasswordResetException =>
         'EmailAccountPasswordResetException',
-      _i7.EmailAccountPasswordResetExceptionReason =>
+      _i8.EmailAccountPasswordResetExceptionReason =>
         'EmailAccountPasswordResetExceptionReason',
-      _i8.EmailAccountRequestException => 'EmailAccountRequestException',
-      _i9.EmailAccountRequestExceptionReason =>
+      _i9.EmailAccountRequestException => 'EmailAccountRequestException',
+      _i10.EmailAccountRequestExceptionReason =>
         'EmailAccountRequestExceptionReason',
-      _i10.FacebookAccessTokenVerificationException =>
+      _i11.FacebookAccessTokenVerificationException =>
         'FacebookAccessTokenVerificationException',
-      _i11.FirebaseEmailNotVerifiedException =>
+      _i12.FirebaseEmailNotVerifiedException =>
         'FirebaseEmailNotVerifiedException',
-      _i12.FirebaseIdTokenVerificationException =>
+      _i13.FirebaseIdTokenVerificationException =>
         'FirebaseIdTokenVerificationException',
-      _i13.GitHubAccessTokenVerificationException =>
+      _i14.GitHubAccessTokenVerificationException =>
         'GitHubAccessTokenVerificationException',
-      _i14.GoogleIdTokenVerificationException =>
+      _i15.GoogleIdTokenVerificationException =>
         'GoogleIdTokenVerificationException',
-      _i15.MicrosoftAccessTokenVerificationException =>
+      _i16.MicrosoftAccessTokenVerificationException =>
         'MicrosoftAccessTokenVerificationException',
-      _i16.PasskeyChallengeExpiredException =>
+      _i17.PasskeyChallengeExpiredException =>
         'PasskeyChallengeExpiredException',
-      _i17.PasskeyChallengeNotFoundException =>
+      _i18.PasskeyChallengeNotFoundException =>
         'PasskeyChallengeNotFoundException',
-      _i18.PasskeyLoginRequest => 'PasskeyLoginRequest',
-      _i19.PasskeyPublicKeyNotFoundException =>
+      _i19.PasskeyLoginRequest => 'PasskeyLoginRequest',
+      _i20.PasskeyPublicKeyNotFoundException =>
         'PasskeyPublicKeyNotFoundException',
-      _i20.PasskeyRegistrationRequest => 'PasskeyRegistrationRequest',
+      _i21.PasskeyRegistrationRequest => 'PasskeyRegistrationRequest',
       _ => null,
     };
   }
@@ -354,43 +183,43 @@ class Protocol extends _i1.SerializationManager {
     }
 
     switch (data) {
-      case _i2.AnonymousAccountBlockedException():
+      case _i3.AnonymousAccountBlockedException():
         return 'AnonymousAccountBlockedException';
-      case _i3.AnonymousAccountBlockedExceptionReason():
+      case _i4.AnonymousAccountBlockedExceptionReason():
         return 'AnonymousAccountBlockedExceptionReason';
-      case _i4.EmailAccountLoginException():
+      case _i5.EmailAccountLoginException():
         return 'EmailAccountLoginException';
-      case _i5.EmailAccountLoginExceptionReason():
+      case _i6.EmailAccountLoginExceptionReason():
         return 'EmailAccountLoginExceptionReason';
-      case _i6.EmailAccountPasswordResetException():
+      case _i7.EmailAccountPasswordResetException():
         return 'EmailAccountPasswordResetException';
-      case _i7.EmailAccountPasswordResetExceptionReason():
+      case _i8.EmailAccountPasswordResetExceptionReason():
         return 'EmailAccountPasswordResetExceptionReason';
-      case _i8.EmailAccountRequestException():
+      case _i9.EmailAccountRequestException():
         return 'EmailAccountRequestException';
-      case _i9.EmailAccountRequestExceptionReason():
+      case _i10.EmailAccountRequestExceptionReason():
         return 'EmailAccountRequestExceptionReason';
-      case _i10.FacebookAccessTokenVerificationException():
+      case _i11.FacebookAccessTokenVerificationException():
         return 'FacebookAccessTokenVerificationException';
-      case _i11.FirebaseEmailNotVerifiedException():
+      case _i12.FirebaseEmailNotVerifiedException():
         return 'FirebaseEmailNotVerifiedException';
-      case _i12.FirebaseIdTokenVerificationException():
+      case _i13.FirebaseIdTokenVerificationException():
         return 'FirebaseIdTokenVerificationException';
-      case _i13.GitHubAccessTokenVerificationException():
+      case _i14.GitHubAccessTokenVerificationException():
         return 'GitHubAccessTokenVerificationException';
-      case _i14.GoogleIdTokenVerificationException():
+      case _i15.GoogleIdTokenVerificationException():
         return 'GoogleIdTokenVerificationException';
-      case _i15.MicrosoftAccessTokenVerificationException():
+      case _i16.MicrosoftAccessTokenVerificationException():
         return 'MicrosoftAccessTokenVerificationException';
-      case _i16.PasskeyChallengeExpiredException():
+      case _i17.PasskeyChallengeExpiredException():
         return 'PasskeyChallengeExpiredException';
-      case _i17.PasskeyChallengeNotFoundException():
+      case _i18.PasskeyChallengeNotFoundException():
         return 'PasskeyChallengeNotFoundException';
-      case _i18.PasskeyLoginRequest():
+      case _i19.PasskeyLoginRequest():
         return 'PasskeyLoginRequest';
-      case _i19.PasskeyPublicKeyNotFoundException():
+      case _i20.PasskeyPublicKeyNotFoundException():
         return 'PasskeyPublicKeyNotFoundException';
-      case _i20.PasskeyRegistrationRequest():
+      case _i21.PasskeyRegistrationRequest():
         return 'PasskeyRegistrationRequest';
     }
     return null;
@@ -403,73 +232,73 @@ class Protocol extends _i1.SerializationManager {
       return super.deserializeByClassName(data);
     }
     if (dataClassName == 'AnonymousAccountBlockedException') {
-      return deserialize<_i2.AnonymousAccountBlockedException>(data['data']);
+      return deserialize<_i3.AnonymousAccountBlockedException>(data['data']);
     }
     if (dataClassName == 'AnonymousAccountBlockedExceptionReason') {
-      return deserialize<_i3.AnonymousAccountBlockedExceptionReason>(
+      return deserialize<_i4.AnonymousAccountBlockedExceptionReason>(
         data['data'],
       );
     }
     if (dataClassName == 'EmailAccountLoginException') {
-      return deserialize<_i4.EmailAccountLoginException>(data['data']);
+      return deserialize<_i5.EmailAccountLoginException>(data['data']);
     }
     if (dataClassName == 'EmailAccountLoginExceptionReason') {
-      return deserialize<_i5.EmailAccountLoginExceptionReason>(data['data']);
+      return deserialize<_i6.EmailAccountLoginExceptionReason>(data['data']);
     }
     if (dataClassName == 'EmailAccountPasswordResetException') {
-      return deserialize<_i6.EmailAccountPasswordResetException>(data['data']);
+      return deserialize<_i7.EmailAccountPasswordResetException>(data['data']);
     }
     if (dataClassName == 'EmailAccountPasswordResetExceptionReason') {
-      return deserialize<_i7.EmailAccountPasswordResetExceptionReason>(
+      return deserialize<_i8.EmailAccountPasswordResetExceptionReason>(
         data['data'],
       );
     }
     if (dataClassName == 'EmailAccountRequestException') {
-      return deserialize<_i8.EmailAccountRequestException>(data['data']);
+      return deserialize<_i9.EmailAccountRequestException>(data['data']);
     }
     if (dataClassName == 'EmailAccountRequestExceptionReason') {
-      return deserialize<_i9.EmailAccountRequestExceptionReason>(data['data']);
+      return deserialize<_i10.EmailAccountRequestExceptionReason>(data['data']);
     }
     if (dataClassName == 'FacebookAccessTokenVerificationException') {
-      return deserialize<_i10.FacebookAccessTokenVerificationException>(
+      return deserialize<_i11.FacebookAccessTokenVerificationException>(
         data['data'],
       );
     }
     if (dataClassName == 'FirebaseEmailNotVerifiedException') {
-      return deserialize<_i11.FirebaseEmailNotVerifiedException>(data['data']);
+      return deserialize<_i12.FirebaseEmailNotVerifiedException>(data['data']);
     }
     if (dataClassName == 'FirebaseIdTokenVerificationException') {
-      return deserialize<_i12.FirebaseIdTokenVerificationException>(
+      return deserialize<_i13.FirebaseIdTokenVerificationException>(
         data['data'],
       );
     }
     if (dataClassName == 'GitHubAccessTokenVerificationException') {
-      return deserialize<_i13.GitHubAccessTokenVerificationException>(
+      return deserialize<_i14.GitHubAccessTokenVerificationException>(
         data['data'],
       );
     }
     if (dataClassName == 'GoogleIdTokenVerificationException') {
-      return deserialize<_i14.GoogleIdTokenVerificationException>(data['data']);
+      return deserialize<_i15.GoogleIdTokenVerificationException>(data['data']);
     }
     if (dataClassName == 'MicrosoftAccessTokenVerificationException') {
-      return deserialize<_i15.MicrosoftAccessTokenVerificationException>(
+      return deserialize<_i16.MicrosoftAccessTokenVerificationException>(
         data['data'],
       );
     }
     if (dataClassName == 'PasskeyChallengeExpiredException') {
-      return deserialize<_i16.PasskeyChallengeExpiredException>(data['data']);
+      return deserialize<_i17.PasskeyChallengeExpiredException>(data['data']);
     }
     if (dataClassName == 'PasskeyChallengeNotFoundException') {
-      return deserialize<_i17.PasskeyChallengeNotFoundException>(data['data']);
+      return deserialize<_i18.PasskeyChallengeNotFoundException>(data['data']);
     }
     if (dataClassName == 'PasskeyLoginRequest') {
-      return deserialize<_i18.PasskeyLoginRequest>(data['data']);
+      return deserialize<_i19.PasskeyLoginRequest>(data['data']);
     }
     if (dataClassName == 'PasskeyPublicKeyNotFoundException') {
-      return deserialize<_i19.PasskeyPublicKeyNotFoundException>(data['data']);
+      return deserialize<_i20.PasskeyPublicKeyNotFoundException>(data['data']);
     }
     if (dataClassName == 'PasskeyRegistrationRequest') {
-      return deserialize<_i20.PasskeyRegistrationRequest>(data['data']);
+      return deserialize<_i21.PasskeyRegistrationRequest>(data['data']);
     }
     return super.deserializeByClassName(data);
   }
@@ -545,7 +374,7 @@ class Protocol extends _i1.SerializationManager {
     if (record == null) {
       return null;
     }
-    if (record is ({_i21.ByteData challenge, _i1.UuidValue id})) {
+    if (record is ({_i22.ByteData challenge, _i1.UuidValue id})) {
       return {
         "n": {
           "challenge": record.challenge.toJson(),
@@ -554,7 +383,7 @@ class Protocol extends _i1.SerializationManager {
       };
     }
     try {
-      return _i22.Protocol().mapRecordToJson(record);
+      return _i2.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }
@@ -609,5 +438,125 @@ class Protocol extends _i1.SerializationManager {
     }
 
     return obj;
+  }
+
+  static Map<Type, dynamic Function(dynamic, Protocol)> _buildDeserializers() {
+    final map = <Type, dynamic Function(dynamic, Protocol)>{};
+    map[_i3.AnonymousAccountBlockedException] = (data, protocol) =>
+        _i3.AnonymousAccountBlockedException.fromJson(data);
+    map[_i4.AnonymousAccountBlockedExceptionReason] = (data, protocol) =>
+        _i4.AnonymousAccountBlockedExceptionReason.fromJson(data);
+    map[_i5.EmailAccountLoginException] = (data, protocol) =>
+        _i5.EmailAccountLoginException.fromJson(data);
+    map[_i6.EmailAccountLoginExceptionReason] = (data, protocol) =>
+        _i6.EmailAccountLoginExceptionReason.fromJson(data);
+    map[_i7.EmailAccountPasswordResetException] = (data, protocol) =>
+        _i7.EmailAccountPasswordResetException.fromJson(data);
+    map[_i8.EmailAccountPasswordResetExceptionReason] = (data, protocol) =>
+        _i8.EmailAccountPasswordResetExceptionReason.fromJson(data);
+    map[_i9.EmailAccountRequestException] = (data, protocol) =>
+        _i9.EmailAccountRequestException.fromJson(data);
+    map[_i10.EmailAccountRequestExceptionReason] = (data, protocol) =>
+        _i10.EmailAccountRequestExceptionReason.fromJson(data);
+    map[_i11.FacebookAccessTokenVerificationException] = (data, protocol) =>
+        _i11.FacebookAccessTokenVerificationException.fromJson(data);
+    map[_i12.FirebaseEmailNotVerifiedException] = (data, protocol) =>
+        _i12.FirebaseEmailNotVerifiedException.fromJson(data);
+    map[_i13.FirebaseIdTokenVerificationException] = (data, protocol) =>
+        _i13.FirebaseIdTokenVerificationException.fromJson(data);
+    map[_i14.GitHubAccessTokenVerificationException] = (data, protocol) =>
+        _i14.GitHubAccessTokenVerificationException.fromJson(data);
+    map[_i15.GoogleIdTokenVerificationException] = (data, protocol) =>
+        _i15.GoogleIdTokenVerificationException.fromJson(data);
+    map[_i16.MicrosoftAccessTokenVerificationException] = (data, protocol) =>
+        _i16.MicrosoftAccessTokenVerificationException.fromJson(data);
+    map[_i17.PasskeyChallengeExpiredException] = (data, protocol) =>
+        _i17.PasskeyChallengeExpiredException.fromJson(data);
+    map[_i18.PasskeyChallengeNotFoundException] = (data, protocol) =>
+        _i18.PasskeyChallengeNotFoundException.fromJson(data);
+    map[_i19.PasskeyLoginRequest] = (data, protocol) =>
+        _i19.PasskeyLoginRequest.fromJson(data);
+    map[_i20.PasskeyPublicKeyNotFoundException] = (data, protocol) =>
+        _i20.PasskeyPublicKeyNotFoundException.fromJson(data);
+    map[_i21.PasskeyRegistrationRequest] = (data, protocol) =>
+        _i21.PasskeyRegistrationRequest.fromJson(data);
+    map[_i1
+        .getType<_i3.AnonymousAccountBlockedException?>()] = (data, protocol) =>
+        (data != null
+        ? _i3.AnonymousAccountBlockedException.fromJson(data)
+        : null);
+    map[_i1.getType<_i4.AnonymousAccountBlockedExceptionReason?>()] =
+        (data, protocol) => (data != null
+        ? _i4.AnonymousAccountBlockedExceptionReason.fromJson(data)
+        : null);
+    map[_i1.getType<_i5.EmailAccountLoginException?>()] = (data, protocol) =>
+        (data != null ? _i5.EmailAccountLoginException.fromJson(data) : null);
+    map[_i1
+        .getType<_i6.EmailAccountLoginExceptionReason?>()] = (data, protocol) =>
+        (data != null
+        ? _i6.EmailAccountLoginExceptionReason.fromJson(data)
+        : null);
+    map[_i1.getType<_i7.EmailAccountPasswordResetException?>()] =
+        (data, protocol) => (data != null
+        ? _i7.EmailAccountPasswordResetException.fromJson(data)
+        : null);
+    map[_i1.getType<_i8.EmailAccountPasswordResetExceptionReason?>()] =
+        (data, protocol) => (data != null
+        ? _i8.EmailAccountPasswordResetExceptionReason.fromJson(data)
+        : null);
+    map[_i1.getType<_i9.EmailAccountRequestException?>()] = (data, protocol) =>
+        (data != null ? _i9.EmailAccountRequestException.fromJson(data) : null);
+    map[_i1.getType<_i10.EmailAccountRequestExceptionReason?>()] =
+        (data, protocol) => (data != null
+        ? _i10.EmailAccountRequestExceptionReason.fromJson(data)
+        : null);
+    map[_i1.getType<_i11.FacebookAccessTokenVerificationException?>()] =
+        (data, protocol) => (data != null
+        ? _i11.FacebookAccessTokenVerificationException.fromJson(data)
+        : null);
+    map[_i1.getType<_i12.FirebaseEmailNotVerifiedException?>()] =
+        (data, protocol) => (data != null
+        ? _i12.FirebaseEmailNotVerifiedException.fromJson(data)
+        : null);
+    map[_i1.getType<_i13.FirebaseIdTokenVerificationException?>()] =
+        (data, protocol) => (data != null
+        ? _i13.FirebaseIdTokenVerificationException.fromJson(data)
+        : null);
+    map[_i1.getType<_i14.GitHubAccessTokenVerificationException?>()] =
+        (data, protocol) => (data != null
+        ? _i14.GitHubAccessTokenVerificationException.fromJson(data)
+        : null);
+    map[_i1.getType<_i15.GoogleIdTokenVerificationException?>()] =
+        (data, protocol) => (data != null
+        ? _i15.GoogleIdTokenVerificationException.fromJson(data)
+        : null);
+    map[_i1.getType<_i16.MicrosoftAccessTokenVerificationException?>()] =
+        (data, protocol) => (data != null
+        ? _i16.MicrosoftAccessTokenVerificationException.fromJson(data)
+        : null);
+    map[_i1.getType<_i17.PasskeyChallengeExpiredException?>()] =
+        (data, protocol) => (data != null
+        ? _i17.PasskeyChallengeExpiredException.fromJson(data)
+        : null);
+    map[_i1.getType<_i18.PasskeyChallengeNotFoundException?>()] =
+        (data, protocol) => (data != null
+        ? _i18.PasskeyChallengeNotFoundException.fromJson(data)
+        : null);
+    map[_i1.getType<_i19.PasskeyLoginRequest?>()] = (data, protocol) =>
+        (data != null ? _i19.PasskeyLoginRequest.fromJson(data) : null);
+    map[_i1.getType<_i20.PasskeyPublicKeyNotFoundException?>()] =
+        (data, protocol) => (data != null
+        ? _i20.PasskeyPublicKeyNotFoundException.fromJson(data)
+        : null);
+    map[_i1.getType<_i21.PasskeyRegistrationRequest?>()] = (data, protocol) =>
+        (data != null ? _i21.PasskeyRegistrationRequest.fromJson(data) : null);
+    map[_i1.getType<({_i22.ByteData challenge, _i1.UuidValue id})>()] =
+        (data, protocol) => (
+          challenge: protocol.deserialize<_i22.ByteData>(
+            ((data as Map)['n'] as Map)['challenge'],
+          ),
+          id: protocol.deserialize<_i1.UuidValue>(data['n']['id']),
+        );
+    return map;
   }
 }
