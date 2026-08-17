@@ -736,9 +736,13 @@ sealed class RelationDefinition {
 class UnresolvedListRelationDefinition extends RelationDefinition {
   final bool nullableRelation;
 
+  /// References the field in the current object that the foreign key points to.
+  final String referenceFieldName;
+
   UnresolvedListRelationDefinition({
     String? name,
     required this.nullableRelation,
+    this.referenceFieldName = defaultPrimaryKeyName,
   }) : super(name, false);
 }
 
@@ -847,6 +851,9 @@ class UnresolvedObjectRelationDefinition extends RelationDefinition {
   /// Only used for implicit relations, toggles if the relation id is nullable.
   final bool nullableRelation;
 
+  /// References the field in the parent table that the foreign key points to.
+  final String referenceFieldName;
+
   UnresolvedObjectRelationDefinition({
     String? name,
     required this.fieldName,
@@ -854,6 +861,7 @@ class UnresolvedObjectRelationDefinition extends RelationDefinition {
     required this.onUpdate,
     required bool isForeignKeyOrigin,
     this.nullableRelation = false,
+    this.referenceFieldName = defaultPrimaryKeyName,
   }) : super(name, isForeignKeyOrigin);
 }
 

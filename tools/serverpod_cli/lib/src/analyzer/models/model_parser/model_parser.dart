@@ -462,16 +462,19 @@ class ModelParser {
 
     var optionalRelation = _isOptionalRelation(node);
 
+    var referenceFieldName = defaultPrimaryKeyName;
+
     if (typeResult.isListType) {
       return UnresolvedListRelationDefinition(
         name: relationName,
         nullableRelation: optionalRelation,
+        referenceFieldName: referenceFieldName,
       );
     } else if (typeResult.isIdType && parentTable != null) {
       return ForeignRelationDefinition(
         name: relationName,
         parentTable: parentTable,
-        foreignFieldName: defaultPrimaryKeyName,
+        foreignFieldName: referenceFieldName,
         onUpdate: onUpdate,
         onDelete: onDelete,
       );
@@ -483,6 +486,7 @@ class ModelParser {
         onDelete: onDelete,
         isForeignKeyOrigin: relationFieldName != null,
         nullableRelation: optionalRelation,
+        referenceFieldName: referenceFieldName,
       );
     } else {
       return null;
