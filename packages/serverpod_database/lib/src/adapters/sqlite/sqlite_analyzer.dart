@@ -149,6 +149,7 @@ class SqliteDatabaseAnalyzer extends DatabaseAnalyzer {
     required String tableName,
   }) async {
     var quotedTable = _quoteIdentifier(tableName);
+    var createTableSql = await _getCreateTableSql(tableName);
     var queryResult = await database.unsafeQuery(
       'PRAGMA foreign_key_list($quotedTable)',
     );
@@ -187,8 +188,42 @@ class SqliteDatabaseAnalyzer extends DatabaseAnalyzer {
         onUpdate: onUpdate,
         onDelete: onDelete,
         matchType: matchType,
+        deferrable: _foreignKeyDeferrable(createTableSql, constraintName),
       );
     }).toList();
+  }
+
+  Future<String?> _getCreateTableSql(String tableName) async {
+    var result = await database.unsafeQuery(
+      'SELECT sql FROM sqlite_master '
+      "WHERE type = 'table' AND name = '${tableName.replaceAll("'", "''")}'",
+    );
+    if (result.isEmpty) return null;
+    return result.first[0] as String?;
+  }
+
+  /// SQLite does not expose whether a foreign key is deferrable through the
+  /// `foreign_key_list` pragma, so it has to be read back from the constraint
+  /// clause in the stored `CREATE TABLE` statement.
+  DeferrableConstraint? _foreignKeyDeferrable(
+    String? createTableSql,
+    String constraintName,
+  ) {
+    if (createTableSql == null) return null;
+
+    var start = createTableSql.indexOf('CONSTRAINT "$constraintName"');
+    if (start < 0) return null;
+
+    var end = createTableSql.indexOf(',\n', start);
+    var clause = (end < 0
+            ? createTableSql.substring(start)
+            : createTableSql.substring(start, end))
+        .toUpperCase();
+
+    if (!clause.contains('DEFERRABLE')) return null;
+    return clause.contains('INITIALLY DEFERRED')
+        ? DeferrableConstraint.initiallyDeferred
+        : DeferrableConstraint.initiallyImmediate;
   }
 
   ForeignKeyAction? _parseForeignKeyAction(String? value) {

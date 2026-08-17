@@ -125,6 +125,7 @@ List<ForeignKeyDefinition> _createForeignKeys(
         referenceColumns: ['id'],
         onDelete: relation.onDelete,
         onUpdate: relation.onUpdate,
+        deferrable: relation.deferrable,
       ),
     );
   }

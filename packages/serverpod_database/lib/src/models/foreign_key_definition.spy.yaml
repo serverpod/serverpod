@@ -17,3 +17,6 @@ fields:
   onDelete: ForeignKeyAction?
   ### The match type of the foreign key
   matchType: ForeignKeyMatchType?
+  ### Whether the constraint is deferrable and when it is checked by default.
+  ### Null means the constraint is not deferrable.
+  deferrable: DeferrableConstraint?

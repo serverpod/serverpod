@@ -281,9 +281,11 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
   }) async {
     var queryResult = await database.unsafeQuery(
       // We want to get the constraint name (0), on update type (1),
-      // on delete type (2), match type (3), constraint columns (4)
-      // referenced table (5), namespace / schema of the referenced table (6),
-      // referenced columns (7) for each foreign key.
+      // on delete type (2), match type (3), whether the constraint is
+      // deferrable (4), whether it is initially deferred (5),
+      // constraint columns (6), referenced table (7), namespace / schema of
+      // the referenced table (8) and referenced columns (9) for each foreign
+      // key.
       //
       // Most data is in the pg_constraint table.
       // Join pg_class as t (table) to filter by the table name.
@@ -294,7 +296,7 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
       // The first ARRAY resolves the column name for each of the columns in conkey.
       // The second ARRAY resolves the column name for each of the referenced columns in confkey.
       '''
-SELECT conname::text, confupdtype::text, confdeltype::text, confmatchtype::text,
+SELECT conname::text, confupdtype::text, confdeltype::text, confmatchtype::text, condeferrable::boolean, condeferred::boolean,
 ARRAY(
        SELECT attname::text
        FROM unnest(conkey) as i
@@ -319,16 +321,30 @@ WHERE contype = 'f' AND t.relname = '$tableName' AND nt.nspname = '$schemaName';
         .map(
           (key) => ForeignKeyDefinition(
             constraintName: key[0],
-            columns: key[4],
-            referenceTable: key[5],
-            referenceTableSchema: key[6],
-            referenceColumns: key[7],
+            columns: key[6],
+            referenceTable: key[7],
+            referenceTableSchema: key[8],
+            referenceColumns: key[9],
             onUpdate: (key[1] as String).toForeignKeyAction(),
             onDelete: (key[2] as String).toForeignKeyAction(),
             matchType: (key[3] as String).toForeignKeyMatchType(),
+            deferrable: _deferrableConstraint(
+              isDeferrable: key[4] as bool,
+              isInitiallyDeferred: key[5] as bool,
+            ),
           ),
         )
         .toList();
+  }
+
+  DeferrableConstraint? _deferrableConstraint({
+    required bool isDeferrable,
+    required bool isInitiallyDeferred,
+  }) {
+    if (!isDeferrable) return null;
+    return isInitiallyDeferred
+        ? DeferrableConstraint.initiallyDeferred
+        : DeferrableConstraint.initiallyImmediate;
   }
 }
 
