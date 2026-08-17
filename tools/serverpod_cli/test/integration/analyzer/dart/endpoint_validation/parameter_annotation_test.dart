@@ -21,10 +21,11 @@ void main() {
   });
 
   group(
-    'Given endpoint method with @deprecated parameter annotation when analyzed',
+    'Given endpoint method with @deprecated parameter annotation, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -67,10 +68,11 @@ class TestEndpoint extends Endpoint {
   );
 
   group(
-    'Given endpoint method with @Deprecated parameter annotation when analyzed',
+    'Given endpoint method with @Deprecated parameter annotation, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 

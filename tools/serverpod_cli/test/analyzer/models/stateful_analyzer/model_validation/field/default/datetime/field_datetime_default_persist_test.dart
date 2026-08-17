@@ -10,9 +10,10 @@ import '../../../../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
-  group('Given a class with fields with a "defaultPersist" keyword', () {
+  group('Given a class with fields with a "defaultPersist" keyword,', () {
     test(
-      'when the field is of type DateTime and the defaultPersist is set to "now", then the field should have a "default persist" value',
+      'when the field is of type DateTime and the defaultPersist is set to "now", '
+      'then the field should have a "default persist" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -40,7 +41,8 @@ void main() {
     );
 
     test(
-      'when the field is of type DateTime and the defaultPersist is set to UTC format string, then the field should have a "default persist" value',
+      'when the field is of type DateTime and the defaultPersist is set to UTC format string, '
+      'then the field should have a "default persist" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -72,7 +74,8 @@ void main() {
     );
 
     test(
-      'when the field is of type DateTime and the defaultPersist is empty, then an error is generated',
+      'when the field is of type DateTime and the defaultPersist is empty, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -103,7 +106,8 @@ void main() {
     );
 
     test(
-      'when the field is of type DateTime with an invalid defaultPersist value "NOW", then an error is generated',
+      'when the field is of type DateTime with an invalid defaultPersist value "NOW", '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -134,7 +138,8 @@ void main() {
     );
 
     test(
-      'when the field is of type DateTime with an invalid defaultPersist value, then an error is generated',
+      'when the field is of type DateTime with an invalid defaultPersist value, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -165,7 +170,8 @@ void main() {
     );
 
     test(
-      'when the field is of type DateTime with Date without Time defaultPersist value, then an error is generated',
+      'when the field is of type DateTime with Date without Time defaultPersist value, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -196,7 +202,8 @@ void main() {
     );
 
     test(
-      'when the field is of type DateTime with non-UTC defaultPersist value, then an error is generated',
+      'when the field is of type DateTime with non-UTC defaultPersist value, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -227,7 +234,8 @@ void main() {
     );
 
     test(
-      'when the field is of type DateTime with an invalid day in the defaultPersist value, then an error is generated',
+      'when the field is of type DateTime with an invalid day in the defaultPersist value, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -258,7 +266,8 @@ void main() {
     );
 
     test(
-      'when the field is of type DateTime with an invalid month in the defaultPersist value, then an error is generated',
+      'when the field is of type DateTime with an invalid month in the defaultPersist value, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -289,7 +298,8 @@ void main() {
     );
 
     test(
-      'when the field is of type DateTime with an invalid hour in the defaultPersist value, then an error is generated',
+      'when the field is of type DateTime with an invalid hour in the defaultPersist value, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -320,7 +330,8 @@ void main() {
     );
 
     test(
-      'when the field is of type DateTime with an invalid minute in the defaultPersist value, then an error is generated',
+      'when the field is of type DateTime with an invalid minute in the defaultPersist value, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -351,7 +362,8 @@ void main() {
     );
 
     test(
-      'when the field is of type DateTime with an invalid second in the defaultPersist value, then an error is generated',
+      'when the field is of type DateTime with an invalid second in the defaultPersist value, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -382,7 +394,8 @@ void main() {
     );
 
     test(
-      'when the field is of type DateTime with an invalid millisecond in the defaultPersist value, then an error is generated',
+      'when the field is of type DateTime with an invalid millisecond in the defaultPersist value, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -413,7 +426,8 @@ void main() {
     );
 
     test(
-      'when the field is of type DateTime non-nullable type, then an error is generated',
+      'when the field is of type DateTime non-nullable type, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(

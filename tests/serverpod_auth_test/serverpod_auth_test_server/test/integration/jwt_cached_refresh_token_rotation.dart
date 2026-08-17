@@ -31,7 +31,7 @@ void main() {
   });
 
   withServerpod(
-    'Given JWT auth, a client with cached storage and an expiring refresh token that is changed directly on the storage layer to a non-expiring refresh token ',
+    'Given JWT auth, a client with cached storage and an expiring refresh token that is changed directly on the storage layer to a non-expiring refresh token,',
     (final sessionBuilder, final endpoints) {
       setUp(() async {
         onAuthInfoChangedCalls = 0;
@@ -72,7 +72,7 @@ void main() {
         expect(client.auth.authInfo?.refreshToken, oldAuthSuccess.refreshToken);
       });
 
-      group('when calling refresh ', () {
+      group('when calling refresh,', () {
         late RefreshAuthKeyResult refreshResult;
         late int onAuthInfoCallsBeforeRefresh;
 
@@ -110,7 +110,7 @@ void main() {
   );
 
   withServerpod(
-    'Given JWT auth, a client with cached storage and an expiring refresh token that is changed directly on the storage layer to a another expiring refresh token ',
+    'Given JWT auth, a client with cached storage and an expiring refresh token that is changed directly on the storage layer to a another expiring refresh token,',
     (final sessionBuilder, final endpoints) {
       setUp(() async {
         onAuthInfoChangedCalls = 0;
@@ -151,7 +151,7 @@ void main() {
         expect(client.auth.authInfo?.refreshToken, oldAuthSuccess.refreshToken);
       });
 
-      group('when calling refresh ', () {
+      group('when calling refresh,', () {
         late RefreshAuthKeyResult refreshResult;
         late int onAuthInfoCallsBeforeRefresh;
 

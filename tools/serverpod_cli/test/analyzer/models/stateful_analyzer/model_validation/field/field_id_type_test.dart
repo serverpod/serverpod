@@ -9,8 +9,8 @@ import '../../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
-  group('Given a class with a table defined and no id field', () {
-    var models = [
+  group('Given a class with a table defined and no id field,', () {
+    late var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -21,8 +21,8 @@ void main() {
       ).build(),
     ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(
+    late var collector = CodeGenerationCollector();
+    late var analyzer = StatefulAnalyzer(
       config,
       models,
       onErrorsCollector(collector),
@@ -53,7 +53,8 @@ void main() {
   });
 
   test(
-    'Given a class with the int id type set as non-nullable then an error is collected',
+    'Given a class with the int id type set as non-nullable, '
+    'then an error is collected',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -82,9 +83,9 @@ void main() {
   );
 
   group(
-    'Given a class with the int id type set as nullable with no default value',
+    'Given a class with the int id type set as nullable with no default value,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -95,7 +96,7 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late final definitions = StatefulAnalyzer(
         config,
         models,
@@ -114,7 +115,8 @@ void main() {
   );
 
   test(
-    'Given a class with the UUID id type and no default value, then an error is collected.',
+    'Given a class with the UUID id type and no default value, '
+    'then an error is collected.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -142,8 +144,8 @@ void main() {
     },
   );
 
-  group('Given a class with the UUID id type correctly set', () {
-    var models = [
+  group('Given a class with the UUID id type correctly set,', () {
+    late var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -154,7 +156,7 @@ void main() {
       ).build(),
     ];
 
-    var collector = CodeGenerationCollector();
+    late var collector = CodeGenerationCollector();
     late final definitions = StatefulAnalyzer(
       config,
       models,

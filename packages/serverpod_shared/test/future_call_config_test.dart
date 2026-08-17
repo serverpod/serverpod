@@ -13,7 +13,9 @@ void main() {
   };
 
   test(
-    'Given a Serverpod config missing futureCall configuration when loading from Map then futureCall defaults to default values',
+    'Given a Serverpod config missing futureCall configuration, '
+    'when loading from Map, '
+    'then futureCall defaults to default values',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -42,7 +44,9 @@ apiServer:
   );
 
   test(
-    'Given a Serverpod config with futureCall configuration when loading from Map then futureCall uses configured values',
+    'Given a Serverpod config with futureCall configuration, '
+    'when loading from Map, '
+    'then futureCall uses configured values',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -75,7 +79,9 @@ futureCall:
   );
 
   test(
-    'Given a Serverpod config with futureCall when environment variables override them then futureCall config reflects the environment overrides',
+    'Given a Serverpod config with futureCall, '
+    'when environment variables override them, '
+    'then futureCall config reflects the environment overrides',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -114,7 +120,8 @@ futureCall:
   );
 
   test(
-    'Given invalid environment variable values for futureCall config then throws Exception',
+    'Given invalid environment variable values for futureCall config, '
+    'then throws Exception',
     () {
       expect(
         () => ServerpodConfig.loadFromMap(
@@ -147,7 +154,8 @@ futureCall:
   );
 
   test(
-    'Given partial environment variable overrides for futureCall config then only specified values are overridden',
+    'Given partial environment variable overrides for futureCall config, '
+    'then only specified values are overridden',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -183,7 +191,9 @@ futureCall:
   );
 
   test(
-    'Given a Serverpod config with only concurrencyLimit configured when loading from Map then scanInterval uses default value',
+    'Given a Serverpod config with only concurrencyLimit configured, '
+    'when loading from Map, '
+    'then scanInterval uses default value',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -211,7 +221,9 @@ futureCall:
   );
 
   test(
-    'Given a Serverpod config with only scanInterval configured when loading from Map then concurrencyLimit uses default value',
+    'Given a Serverpod config with only scanInterval configured, '
+    'when loading from Map, '
+    'then concurrencyLimit uses default value',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -242,7 +254,9 @@ futureCall:
   );
 
   test(
-    'Given a negative concurrencyLimit when loading from Map then sets concurrencyLimit to null (unlimited concurrency)',
+    'Given a negative concurrencyLimit, '
+    'when loading from Map, '
+    'then sets concurrencyLimit to null (unlimited concurrency)',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -266,7 +280,9 @@ futureCall:
   );
 
   test(
-    'Given a null concurrencyLimit when loading from Map then allows unlimited concurrency',
+    'Given a null concurrencyLimit, '
+    'when loading from Map, '
+    'then allows unlimited concurrency',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -295,7 +311,9 @@ futureCall:
   );
 
   test(
-    'Given an invalid scanInterval in environment variable when loading from Map then throws Exception',
+    'Given an invalid scanInterval in environment variable, '
+    'when loading from Map, '
+    'then throws Exception',
     () {
       expect(
         () => ServerpodConfig.loadFromMap(
@@ -328,8 +346,9 @@ futureCall:
   );
 
   test(
-    'Given a Serverpod config without checkBrokenCalls and deleteBrokenCalls configured '
-    'when loading from Map then they both use default values',
+    'Given a Serverpod config without checkBrokenCalls and deleteBrokenCalls configured, '
+    'when loading from Map, '
+    'then they both use default values',
     () {
       var serverpodConfig = '''
 apiServer:

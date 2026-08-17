@@ -35,9 +35,10 @@ void main() {
   );
 
   group(
-    'Given a child-class named $childClassName with one primitive var extending a parent-class named $parentClassName with one primitive var when generating code',
+    'Given a child-class named $childClassName with one primitive var extending a parent-class named $parentClassName with one primitive var, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(parentClassName)
             .withFileName(parentClassFileName)
@@ -66,26 +67,26 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var parentCompilationUnit = parseString(
+      late var parentCompilationUnit = parseString(
         content: codeMap[parentExpectedFilePath]!,
       ).unit;
-      var childCompilationUnit = parseString(
+      late var childCompilationUnit = parseString(
         content: codeMap[childExpectedFilePath]!,
       ).unit;
 
       group('Then the $parentClassName', () {
-        var parentClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        late var parentClass = CompilationUnitHelpers.tryFindClassDeclaration(
           parentCompilationUnit,
           name: parentClassName,
         );
 
         group('has a public constructor', () {
-          var publicConstructor =
+          late var publicConstructor =
               CompilationUnitHelpers.tryFindConstructorDeclaration(
                 parentClass!,
                 name: null,
@@ -102,13 +103,13 @@ void main() {
       });
 
       group('Then the $childClassName', () {
-        var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        late var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
           childCompilationUnit,
           name: childClassName,
         );
 
         group('has a private constructor', () {
-          var privateConstructor =
+          late var privateConstructor =
               CompilationUnitHelpers.tryFindConstructorDeclaration(
                 childClass!,
                 name: '_',
@@ -127,7 +128,7 @@ void main() {
         });
 
         group('has a factory constructor', () {
-          var factoryConstructor =
+          late var factoryConstructor =
               CompilationUnitHelpers.tryFindConstructorDeclaration(
                 childClass!,
                 name: null,
@@ -165,10 +166,11 @@ void main() {
         });
 
         group('has a copyWith method', () {
-          var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            childClass!,
-            name: 'copyWith',
-          );
+          late var copyWithMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                childClass!,
+                name: 'copyWith',
+              );
 
           test('declared', () {
             expect(
@@ -203,7 +205,7 @@ void main() {
           }, skip: copyWithMethod == null);
         }, skip: childClass == null);
       });
-      var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      late var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
         childCompilationUnit,
         name: '_${childClassName}Impl',
       );
@@ -217,7 +219,7 @@ void main() {
 
       group('then the class named _${childClassName}Impl', () {
         group('has a constructor', () {
-          var defaultConstructor =
+          late var defaultConstructor =
               CompilationUnitHelpers.tryFindConstructorDeclaration(
                 copyWithClass!,
                 name: null,
@@ -254,9 +256,10 @@ void main() {
   );
 
   group(
-    'Given a child-class named $childClassName with one primitive var and a var with default value extending a parent-class named $parentClassName with one primitive var and a var with default value when generating code',
+    'Given a child-class named $childClassName with one primitive var and a var with default value extending a parent-class named $parentClassName with one primitive var and a var with default value, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(parentClassName)
             .withFileName(parentClassFileName)
@@ -297,26 +300,26 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var parentCompilationUnit = parseString(
+      late var parentCompilationUnit = parseString(
         content: codeMap[parentExpectedFilePath]!,
       ).unit;
-      var childCompilationUnit = parseString(
+      late var childCompilationUnit = parseString(
         content: codeMap[childExpectedFilePath]!,
       ).unit;
 
       group('Then the $parentClassName', () {
-        var parentClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        late var parentClass = CompilationUnitHelpers.tryFindClassDeclaration(
           parentCompilationUnit,
           name: parentClassName,
         );
 
         group('has a public constructor', () {
-          var publicConstructor =
+          late var publicConstructor =
               CompilationUnitHelpers.tryFindConstructorDeclaration(
                 parentClass!,
                 name: null,
@@ -338,13 +341,13 @@ void main() {
       });
 
       group('Then the $childClassName', () {
-        var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        late var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
           childCompilationUnit,
           name: childClassName,
         );
 
         group('has a private constructor', () {
-          var privateConstructor =
+          late var privateConstructor =
               CompilationUnitHelpers.tryFindConstructorDeclaration(
                 childClass!,
                 name: '_',
@@ -372,7 +375,7 @@ void main() {
         });
 
         group('has a factory constructor', () {
-          var factoryConstructor =
+          late var factoryConstructor =
               CompilationUnitHelpers.tryFindConstructorDeclaration(
                 childClass!,
                 name: null,
@@ -387,10 +390,11 @@ void main() {
         });
 
         group('has a copyWith method', () {
-          var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            childClass!,
-            name: 'copyWith',
-          );
+          late var copyWithMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                childClass!,
+                name: 'copyWith',
+              );
 
           test(
             'with the named params set where all variables are nullable.',
@@ -404,14 +408,14 @@ void main() {
           );
         }, skip: childClass == null);
       });
-      var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      late var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
         childCompilationUnit,
         name: '_${childClassName}Impl',
       );
 
       group('then the class named _${childClassName}Impl', () {
         group('has a constructor', () {
-          var defaultConstructor =
+          late var defaultConstructor =
               CompilationUnitHelpers.tryFindConstructorDeclaration(
                 copyWithClass!,
                 name: null,

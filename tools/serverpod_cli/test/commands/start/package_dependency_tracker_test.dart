@@ -364,7 +364,7 @@ void main() {
     );
 
     test(
-      'when the graph disappears then reappears unchanged, '
+      'when the graph disappears, then reappears unchanged, '
       'then no change is reported',
       () async {
         await createSyntheticDartTool();

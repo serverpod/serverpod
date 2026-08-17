@@ -10,7 +10,9 @@ import '../../test_util/builders/project_dependency_factory.dart';
 
 void main() {
   test(
-    'Given serverpod module dependency when loading modules then module configuration is loaded',
+    'Given serverpod module dependency, '
+    'when loading modules, '
+    'then module configuration is loaded',
     () async {
       const moduleName = 'module_server';
 
@@ -34,7 +36,9 @@ void main() {
   );
 
   test(
-    'Given serverpod module dependency with transitive serverpod module dependency when loading modules then module configuration for both modules are loaded',
+    'Given serverpod module dependency with transitive serverpod module dependency, '
+    'when loading modules, '
+    'then module configuration for both modules are loaded',
     () async {
       const moduleName = 'module_server';
       const transitiveModuleName = 'transitive_module_server';
@@ -66,7 +70,9 @@ void main() {
   );
 
   test(
-    'Given serverpod module dependency with deeply nested transitive serverpod module dependency when loading modules then module configuration for all modules are loaded',
+    'Given serverpod module dependency with deeply nested transitive serverpod module dependency, '
+    'when loading modules, '
+    'then module configuration for all modules are loaded',
     () async {
       const moduleName = 'module_server';
       const firstTransitiveModuleName = 'first_transitive_module_server';
@@ -113,7 +119,9 @@ void main() {
   );
 
   test(
-    'Given multiple serverpod module dependencies when loading modules then module configurations are loaded',
+    'Given multiple serverpod module dependencies, '
+    'when loading modules, '
+    'then module configurations are loaded',
     () async {
       const firstModule = 'first_module_server';
       const secondModule = 'second_module_server';
@@ -144,7 +152,9 @@ void main() {
   );
 
   test(
-    'Given no serverpod module dependencies when loading modules then no module configuration is loaded',
+    'Given no serverpod module dependencies, '
+    'when loading modules, '
+    'then no module configuration is loaded',
     () async {
       var ProjectDependencyContext(:packageConfig, :projectPubspec) =
           await ProjectDependencyStructureFactory().construct();
@@ -159,7 +169,9 @@ void main() {
   );
 
   test(
-    'Given serverpod module dependency that does not exist in package config when loading modules then exception is thrown',
+    'Given serverpod module dependency that does not exist in package config, '
+    'when loading modules, '
+    'then exception is thrown',
     () async {
       const module = 'module_server';
 
@@ -191,7 +203,9 @@ void main() {
   );
 
   test(
-    'Given serverpod module dependency with transitive module dependency that does not exist in package config when loading modules then exception is thrown',
+    'Given serverpod module dependency with transitive module dependency that does not exist in package config, '
+    'when loading modules, '
+    'then exception is thrown',
     () async {
       const moduleName = 'module_server';
       const transitiveModuleName = 'transitive_module_server';
@@ -230,7 +244,9 @@ void main() {
   );
 
   test(
-    'Given serverpod module dependency that is missing generator config when loading modules then no module configuration is loaded',
+    'Given serverpod module dependency that is missing generator config, '
+    'when loading modules, '
+    'then no module configuration is loaded',
     () async {
       const moduleName = 'module_server';
 
@@ -258,7 +274,9 @@ void main() {
   );
 
   test(
-    'Given no serverpod module dependencies but one exists in package config when loading modules then no module configuration is loaded',
+    'Given no serverpod module dependencies but one exists in package config, '
+    'when loading modules, '
+    'then no module configuration is loaded',
     () async {
       const moduleName = 'module_server';
 

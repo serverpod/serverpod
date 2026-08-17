@@ -4,7 +4,7 @@ import 'package:serverpod_test_sqlite_server/test_util/service_client.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a table with a column', () {
+  group('Given a table with a column,', () {
     const tableName = 'column_rename_test_table';
     const originalColumnName = 'original_name';
     const newColumnName = 'renamed_name';
@@ -17,7 +17,8 @@ void main() {
     });
 
     test(
-      'when creating table with initial column name then table is created with that column.',
+      'when creating table with initial column name, '
+      'then table is created with that column.',
       () async {
         var tag = 'create-table-with-original-column';
         var targetStateProtocols = {
@@ -65,7 +66,7 @@ fields:
     );
 
     test(
-      'when renaming column using column override '
+      'when renaming column using column override, '
       'then live schema exposes the new column name and prior cell values are preserved.',
       () async {
         // First create the table with original column

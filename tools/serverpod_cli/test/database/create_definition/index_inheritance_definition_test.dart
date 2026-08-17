@@ -7,7 +7,7 @@ import '../../test_util/builders/model_class_definition_builder.dart';
 void main() {
   test(
     'Given a parent model with an index and a child model with a table that extends it, '
-    'when creating database definitions '
+    'when creating database definitions, '
     'then the child table gets an index based on the inherited one.',
     () {
       var parentIndex = SerializableModelIndexDefinition(
@@ -54,7 +54,7 @@ void main() {
 
   test(
     'Given a grandchild model with a table that extends a child model that extends a parent model with an index, '
-    'when creating database definitions '
+    'when creating database definitions, '
     'then the grandchild table gets an index based on the inherited one from the parent model.',
     () {
       var parentIndex = SerializableModelIndexDefinition(

@@ -9,7 +9,7 @@ import 'package:uuid/uuid.dart';
 
 void main() async {
   group(
-    'Given an existing directory with a valid project name and no server directory',
+    'Given an existing directory with a valid project name and no server directory,',
     () {
       late String projectName;
       late String projectDir;
@@ -26,7 +26,8 @@ void main() async {
       });
 
       test(
-        'when create is called with dot then project is created in the current directory.',
+        'when create is called with dot, '
+        'then project is created in the current directory.',
         () async {
           var result = await runServerpod(
             ['create', '.', '--template', 'server', '--no-interactive'],

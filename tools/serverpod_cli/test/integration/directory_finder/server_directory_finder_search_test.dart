@@ -8,7 +8,7 @@ import 'package:test_descriptor/test_descriptor.dart' as d;
 import '../../test_util/server_directory_finder_helpers.dart';
 
 void main() {
-  group('ServerDirectoryFinder.search', () {
+  group('ServerDirectoryFinder.search,', () {
     test(
       'Given current directory is a server directory, '
       'when search is called, '

@@ -9,7 +9,7 @@ import '../../../../../test_util/builders/model_source_builder.dart';
 
 void main() {
   var config = GeneratorConfigBuilder().build();
-  group('Valid datatypes', () {
+  group('Valid datatypes,', () {
     var builtInTypes = [
       'String',
       'String?',
@@ -60,8 +60,8 @@ void main() {
     ];
 
     for (var datatype in datatypes) {
-      group('Given a class with a field with the type $datatype', () {
-        var models = [
+      group('Given a class with a field with the type $datatype,', () {
+        late var models = [
           ModelSourceBuilder().withYaml(
             '''
             class: Example
@@ -71,13 +71,13 @@ void main() {
           ).build(),
         ];
 
-        var collector = CodeGenerationCollector();
-        StatefulAnalyzer analyzer = StatefulAnalyzer(
+        late var collector = CodeGenerationCollector();
+        late StatefulAnalyzer analyzer = StatefulAnalyzer(
           config,
           models,
           onErrorsCollector(collector),
         );
-        var definitions = analyzer.validateAll();
+        late var definitions = analyzer.validateAll();
 
         test('then no errors was generated', () {
           expect(collector.errors, isEmpty);
@@ -124,7 +124,7 @@ void main() {
     }
 
     test(
-      'Given a class with type dynamic '
+      'Given a class with type dynamic, '
       'when validating, '
       'then it is serialized as JSON.',
       () {
@@ -157,10 +157,10 @@ void main() {
       },
     );
 
-    group('Given a class with a field containing another model', () {
+    group('Given a class with a field containing another model,', () {
       var containedClassName = 'User';
       var testClassName = 'Example';
-      var models = [
+      late var models = [
         ModelSourceBuilder().withFileName('user.spy.yaml').withYaml(
           '''
 class: $containedClassName
@@ -177,19 +177,19 @@ fields:
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late StatefulAnalyzer analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       test('then no errors was generated', () {
         expect(collector.errors, isEmpty);
       });
 
-      var testClassDefinition = definitions
+      late var testClassDefinition = definitions
           .whereType<ClassDefinition>()
           .where((e) => e.className == testClassName)
           .firstOrNull;
@@ -225,11 +225,12 @@ fields:
     });
 
     group(
-      'Given a class with a field containing a model first defined in a module and then the project (order matters)',
+      'Given a class with a field containing a model first defined in a module and, '
+      'then the project (order matters),',
       () {
         var containedClassName = 'User';
         var testClassName = 'Example';
-        var models = [
+        late var models = [
           ModelSourceBuilder()
               .withFileName('user.spy.yaml')
               .withModuleAlias('module')
@@ -257,19 +258,19 @@ fields:
           ).build(),
         ];
 
-        var collector = CodeGenerationCollector();
-        StatefulAnalyzer analyzer = StatefulAnalyzer(
+        late var collector = CodeGenerationCollector();
+        late StatefulAnalyzer analyzer = StatefulAnalyzer(
           config,
           models,
           onErrorsCollector(collector),
         );
-        var definitions = analyzer.validateAll();
+        late var definitions = analyzer.validateAll();
 
         test('then no errors was generated', () {
           expect(collector.errors, isEmpty);
         });
 
-        var testClassDefinition = definitions
+        late var testClassDefinition = definitions
             .whereType<ClassDefinition>()
             .where((e) => e.className == testClassName)
             .firstOrNull;
@@ -294,8 +295,8 @@ fields:
       },
     );
 
-    group('Given a class with a field with a module type', () {
-      var models = [
+    group('Given a class with a field with a module type,', () {
+      late var models = [
         ModelSourceBuilder().withModuleAlias('auth').withYaml(
           '''
           class: UserInfo
@@ -313,13 +314,13 @@ fields:
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late StatefulAnalyzer analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       test('then no errors was generated', () {
         expect(collector.errors, isEmpty);
@@ -342,9 +343,9 @@ fields:
     });
 
     group(
-      'Given a class with a field with a serverpod class type referenced by module prefix',
+      'Given a class with a field with a serverpod class type referenced by module prefix,',
       () {
-        var models = [
+        late var models = [
           ModelSourceBuilder().withModuleAlias('serverpod').withYaml(
             '''
           class: ServerpodClass
@@ -362,13 +363,13 @@ fields:
           ).build(),
         ];
 
-        var collector = CodeGenerationCollector();
-        StatefulAnalyzer analyzer = StatefulAnalyzer(
+        late var collector = CodeGenerationCollector();
+        late StatefulAnalyzer analyzer = StatefulAnalyzer(
           config,
           models,
           onErrorsCollector(collector),
         );
-        var definitions = analyzer.validateAll();
+        late var definitions = analyzer.validateAll();
 
         test('then no errors was generated', () {
           expect(collector.errors, isEmpty);
@@ -392,9 +393,9 @@ fields:
     );
 
     group(
-      'Given a class with a field with a serverpod class type referenced by module prefix',
+      'Given a class with a field with a serverpod class type referenced by module prefix,',
       () {
-        var models = [
+        late var models = [
           ModelSourceBuilder().withModuleAlias('serverpod').withYaml(
             '''
           class: ServerpodClass
@@ -412,13 +413,13 @@ fields:
           ).build(),
         ];
 
-        var collector = CodeGenerationCollector();
-        StatefulAnalyzer analyzer = StatefulAnalyzer(
+        late var collector = CodeGenerationCollector();
+        late StatefulAnalyzer analyzer = StatefulAnalyzer(
           config,
           models,
           onErrorsCollector(collector),
         );
-        var definitions = analyzer.validateAll();
+        late var definitions = analyzer.validateAll();
 
         test('then no errors was generated', () {
           expect(collector.errors, isEmpty);
@@ -442,7 +443,8 @@ fields:
     );
 
     test(
-      'Given a class with a field with a module type without the module:alias path then an error is reported that the datatype does not exist.',
+      'Given a class with a field with a module type without the module:alias path, '
+      'then an error is reported that the datatype does not exist.',
       () {
         var models = [
           ModelSourceBuilder().withModuleAlias('auth').withYaml(
@@ -479,7 +481,8 @@ fields:
     );
 
     test(
-      'Given a module class referencing another module class then no errors are reported.',
+      'Given a module class referencing another module class, '
+      'then no errors are reported.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -527,8 +530,8 @@ fields:
       },
     );
 
-    group('Given a class with a field with the type ByteData', () {
-      var models = [
+    group('Given a class with a field with the type ByteData,', () {
+      late var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -538,13 +541,13 @@ fields:
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late StatefulAnalyzer analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       test('then no errors was generated', () {
         expect(collector.errors, isEmpty);
@@ -567,8 +570,8 @@ fields:
       });
     });
 
-    group('Given a class with a field with the type MyEnum', () {
-      var models = [
+    group('Given a class with a field with the type MyEnum,', () {
+      late var models = [
         ModelSourceBuilder().withFileName('example').withYaml(
           '''
           class: Example
@@ -586,13 +589,13 @@ fields:
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late StatefulAnalyzer analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       test('then no errors was generated', () {
         expect(collector.errors, isEmpty);
@@ -619,8 +622,8 @@ fields:
       });
     });
 
-    group('Given a class with a field with the type List<MyEnum>', () {
-      var models = [
+    group('Given a class with a field with the type List<MyEnum>,', () {
+      late var models = [
         ModelSourceBuilder().withFileName('example').withYaml(
           '''
           class: Example
@@ -638,13 +641,13 @@ fields:
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late StatefulAnalyzer analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       test('then the nested type is tagged as an enum', () {
         var definition = definitions.first as ClassDefinition;
@@ -664,7 +667,8 @@ fields:
     });
 
     test(
-      'Given a class with a field with the type Map<MyEnum, MyEnum> then the nested type is tagged as an enum',
+      'Given a class with a field with the type Map<MyEnum, MyEnum>, '
+      'then the nested type is tagged as an enum',
       () {
         var models = [
           ModelSourceBuilder().withFileName('example').withYaml(
@@ -705,8 +709,8 @@ fields:
       },
     );
 
-    group('Given a class with a field with an enum type from a module', () {
-      var models = [
+    group('Given a class with a field with an enum type from a module,', () {
+      late var models = [
         ModelSourceBuilder().withFileName('example').withYaml(
           '''
           class: Example
@@ -728,13 +732,13 @@ fields:
             .build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late StatefulAnalyzer analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       test('then no errors was generated', () {
         expect(collector.errors, isEmpty);
@@ -752,7 +756,8 @@ fields:
     });
 
     test(
-      'Given a class with a field of a Map type with a lot of whitespace, then all the data types components are extracted.',
+      'Given a class with a field of a Map type with a lot of whitespace, '
+      'then all the data types components are extracted.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -822,7 +827,8 @@ fields:
     );
 
     test(
-      'Given a class with a field of a Map type, then all the data types components are extracted.',
+      'Given a class with a field of a Map type, '
+      'then all the data types components are extracted.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -880,7 +886,7 @@ fields:
     );
   });
 
-  group('Invalid datatypes', () {
+  group('Invalid datatypes,', () {
     var invalidDatatypes = [
       '???',
       'String???',
@@ -893,7 +899,8 @@ fields:
 
     for (var datatype in invalidDatatypes) {
       test(
-        'Given a class with a field with only $datatype as the type, then collect an error that it is an invalid type.',
+        'Given a class with a field with only $datatype as the type, '
+        'then collect an error that it is an invalid type.',
         () {
           var models = [
             ModelSourceBuilder().withYaml(
@@ -930,7 +937,8 @@ fields:
     }
 
     test(
-      'Given an invalid datatype as the generic type of a List then the error location is scoped to the generic type.',
+      'Given an invalid datatype as the generic type of a List, '
+      'then the error location is scoped to the generic type.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -979,7 +987,8 @@ fields:
     );
 
     test(
-      'Given a class with a field without a datatype defined, then collect an error that defining a datatype is required.',
+      'Given a class with a field without a datatype defined, '
+      'then collect an error that defining a datatype is required.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -1015,7 +1024,8 @@ fields:
     );
 
     test(
-      'Given a List type without the generic definition then an error is reported that the generic has to be specified.',
+      'Given a List type without the generic definition, '
+      'then an error is reported that the generic has to be specified.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -1051,7 +1061,8 @@ fields:
     );
 
     test(
-      'Given a List type with several generic types then an error is reported that only one generic can be specified.',
+      'Given a List type with several generic types, '
+      'then an error is reported that only one generic can be specified.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -1087,7 +1098,8 @@ fields:
     );
 
     test(
-      'Given a Map type without the generic definition then an error is reported that the generics has to be specified.',
+      'Given a Map type without the generic definition, '
+      'then an error is reported that the generics has to be specified.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -1123,7 +1135,8 @@ fields:
     );
 
     test(
-      'Given a Map type with too man generic types then an error is reported that two generics has to be specified.',
+      'Given a Map type with too man generic types, '
+      'then an error is reported that two generics has to be specified.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -1159,7 +1172,7 @@ fields:
     );
 
     test(
-      'Given a Map with a String type as key then no errors are reported',
+      'Given a Map with a String type as key, then no errors are reported',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -1187,7 +1200,7 @@ fields:
       },
     );
 
-    test('Given a Map with a int type as key then no errors are reported', () {
+    test('Given a Map with a int type as key, then no errors are reported', () {
       var models = [
         ModelSourceBuilder().withYaml(
           '''
@@ -1214,7 +1227,8 @@ fields:
     });
 
     test(
-      'Given a class without a generic type but specified with one then an error is reported that the generic has to be removed.',
+      'Given a class without a generic type but specified with one, '
+      'then an error is reported that the generic has to be removed.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -1250,7 +1264,7 @@ fields:
     );
 
     test(
-      'Given a class with a field with a dynamic? type '
+      'Given a class with a field with a dynamic? type, '
       'when validating, '
       'then an error is reported.',
       () {
@@ -1282,7 +1296,7 @@ fields:
     );
 
     test(
-      'Given a List with dynamic? as the element type '
+      'Given a List with dynamic? as the element type, '
       'when validating, '
       'then an error is reported.',
       () {
@@ -1458,70 +1472,10 @@ fields:
     });
   });
 
-  group('Given a class with a type set to the class name of a custom type', () {
-    var type = TypeDefinition(
-      className: 'CustomExample',
-      generics: const [],
-      nullable: false,
-      url: 'package:shared_package/src/lib/custom_example.dart',
-      customClass: true,
-    );
-
-    var config = GeneratorConfigBuilder().withExtraClasses([type]).build();
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
-          class: Example
-          fields:
-            name: CustomExample
-          ''',
-      ).build(),
-    ];
-
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    var definitions = analyzer.validateAll();
-
-    test('then no errors was generated', () {
-      expect(
-        collector.errors,
-        isEmpty,
-        reason: 'Expected no errors, but one was generated.',
-      );
-    });
-
-    test('then the field type is set.', () {
-      var definition = definitions.first as ClassDefinition;
-      expect(definition.fields.first.type.className, 'CustomExample');
-    });
-
-    test('then the type url is set to the custom type.', () {
-      var definition = definitions.first as ClassDefinition;
-      expect(
-        definition.fields.first.type.url,
-        'package:shared_package/src/lib/custom_example.dart',
-      );
-    });
-
-    test('then the type is not nullable', () {
-      var definition = definitions.first as ClassDefinition;
-      expect(definition.fields.first.type.nullable, isFalse);
-    });
-
-    test('then field type does not have projectModelDefinition set', () {
-      var definition = definitions.first as ClassDefinition;
-      expect(definition.fields.first.type.projectModelDefinition, isNull);
-    });
-  });
-
   group(
-    'Given a class with a nullable type set to the class name of a custom type',
+    'Given a class with a type set to the class name of a custom type,',
     () {
-      var type = TypeDefinition(
+      late var type = TypeDefinition(
         className: 'CustomExample',
         generics: const [],
         nullable: false,
@@ -1529,8 +1483,75 @@ fields:
         customClass: true,
       );
 
-      var config = GeneratorConfigBuilder().withExtraClasses([type]).build();
-      var models = [
+      late var config = GeneratorConfigBuilder().withExtraClasses([
+        type,
+      ]).build();
+      late var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            name: CustomExample
+          ''',
+        ).build(),
+      ];
+
+      late var collector = CodeGenerationCollector();
+      late StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      late var definitions = analyzer.validateAll();
+
+      test('then no errors was generated', () {
+        expect(
+          collector.errors,
+          isEmpty,
+          reason: 'Expected no errors, but one was generated.',
+        );
+      });
+
+      test('then the field type is set.', () {
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields.first.type.className, 'CustomExample');
+      });
+
+      test('then the type url is set to the custom type.', () {
+        var definition = definitions.first as ClassDefinition;
+        expect(
+          definition.fields.first.type.url,
+          'package:shared_package/src/lib/custom_example.dart',
+        );
+      });
+
+      test('then the type is not nullable', () {
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields.first.type.nullable, isFalse);
+      });
+
+      test('then field type does not have projectModelDefinition set', () {
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields.first.type.projectModelDefinition, isNull);
+      });
+    },
+  );
+
+  group(
+    'Given a class with a nullable type set to the class name of a custom type,',
+    () {
+      late var type = TypeDefinition(
+        className: 'CustomExample',
+        generics: const [],
+        nullable: false,
+        url: 'package:shared_package/src/lib/custom_example.dart',
+        customClass: true,
+      );
+
+      late var config = GeneratorConfigBuilder().withExtraClasses([
+        type,
+      ]).build();
+      late var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -1540,13 +1561,13 @@ fields:
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late StatefulAnalyzer analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       test('then no errors was generated', () {
         expect(
@@ -1563,8 +1584,8 @@ fields:
     },
   );
 
-  group('Given a class with a type set to a list of custom classes', () {
-    var type = TypeDefinition(
+  group('Given a class with a type set to a list of custom classes,', () {
+    late var type = TypeDefinition(
       className: 'CustomExample',
       generics: const [],
       nullable: false,
@@ -1572,8 +1593,8 @@ fields:
       customClass: true,
     );
 
-    var config = GeneratorConfigBuilder().withExtraClasses([type]).build();
-    var models = [
+    late var config = GeneratorConfigBuilder().withExtraClasses([type]).build();
+    late var models = [
       ModelSourceBuilder().withYaml(
         '''
           class: Example
@@ -1583,13 +1604,13 @@ fields:
       ).build(),
     ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
+    late var collector = CodeGenerationCollector();
+    late StatefulAnalyzer analyzer = StatefulAnalyzer(
       config,
       models,
       onErrorsCollector(collector),
     );
-    var definitions = analyzer.validateAll();
+    late var definitions = analyzer.validateAll();
 
     test('then no errors was generated', () {
       expect(
@@ -1616,8 +1637,8 @@ fields:
     });
   });
 
-  group('Given a class with a type set to a map of custom classes', () {
-    var type = TypeDefinition(
+  group('Given a class with a type set to a map of custom classes,', () {
+    late var type = TypeDefinition(
       className: 'CustomExample',
       generics: const [],
       nullable: false,
@@ -1625,8 +1646,8 @@ fields:
       customClass: true,
     );
 
-    var config = GeneratorConfigBuilder().withExtraClasses([type]).build();
-    var models = [
+    late var config = GeneratorConfigBuilder().withExtraClasses([type]).build();
+    late var models = [
       ModelSourceBuilder().withYaml(
         '''
           class: Example
@@ -1636,13 +1657,13 @@ fields:
       ).build(),
     ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
+    late var collector = CodeGenerationCollector();
+    late StatefulAnalyzer analyzer = StatefulAnalyzer(
       config,
       models,
       onErrorsCollector(collector),
     );
-    var definitions = analyzer.validateAll();
+    late var definitions = analyzer.validateAll();
 
     test('then no errors was generated', () {
       expect(
@@ -1679,50 +1700,54 @@ fields:
     });
   });
 
-  group('Given a class with a field type to a module that is not imported', () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+  group(
+    'Given a class with a field type to a module that is not imported,',
+    () {
+      late var models = [
+        ModelSourceBuilder().withYaml(
+          '''
           class: Example
           fields:
             user: module:auth:UserInfo
           ''',
-      ).build(),
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    analyzer.validateAll();
-
-    test('then an error that the module does not exist is reported.', () {
-      expect(
-        collector.errors,
-        isNotEmpty,
-        reason: 'Expected an error, but none was generated.',
+      late var collector = CodeGenerationCollector();
+      late StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
       );
+      analyzer.validateAll();
 
-      var error = collector.errors.first;
+      test('then an error that the module does not exist is reported.', () {
+        expect(
+          collector.errors,
+          isNotEmpty,
+          reason: 'Expected an error, but none was generated.',
+        );
 
-      expect(error.message, 'The referenced module "auth" is not found.');
-    });
+        var error = collector.errors.first;
 
-    test('then the error message location pinpoints the module name.', () {
-      var error = collector.errors.first;
+        expect(error.message, 'The referenced module "auth" is not found.');
+      });
 
-      expect(error.span?.start.line, 2);
-      expect(error.span?.start.column, 25);
+      test('then the error message location pinpoints the module name.', () {
+        var error = collector.errors.first;
 
-      expect(error.span?.end.line, 2);
-      expect(error.span?.end.column, 29);
-    });
-  });
+        expect(error.span?.start.line, 2);
+        expect(error.span?.start.column, 25);
+
+        expect(error.span?.end.line, 2);
+        expect(error.span?.end.column, 29);
+      });
+    },
+  );
 
   test(
-    'Given a class with a field type reference to serverpod that is not imported then an error that serverpod does not exist is reported.',
+    'Given a class with a field type reference to serverpod that is not imported, '
+    'then an error that serverpod does not exist is reported.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -1754,8 +1779,8 @@ fields:
     },
   );
 
-  group('Given a class with an int field when analyzing', () {
-    var models = [
+  group('Given a class with an int field, when analyzing,', () {
+    late var models = [
       ModelSourceBuilder().withYaml(
         '''
             class: Example
@@ -1765,13 +1790,13 @@ fields:
       ).build(),
     ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
+    late var collector = CodeGenerationCollector();
+    late StatefulAnalyzer analyzer = StatefulAnalyzer(
       config,
       models,
       onErrorsCollector(collector),
     );
-    var definitions = analyzer.validateAll();
+    late var definitions = analyzer.validateAll();
 
     test('then no errors was generated', () {
       expect(collector.errors, isEmpty);
@@ -1783,9 +1808,10 @@ fields:
     });
   });
 
-  group('Given a class with a field with Vector type', () {
+  group('Given a class with a field with Vector type,', () {
     test(
-      'when missing dimension, then collect an error that dimension must be defined.',
+      'when missing dimension, '
+      'then collect an error that dimension must be defined.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -1822,7 +1848,8 @@ fields:
     );
 
     test(
-      'when dimension is zero, then collect an error that dimension must be greater than zero.',
+      'when dimension is zero, '
+      'then collect an error that dimension must be greater than zero.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -1859,7 +1886,8 @@ fields:
     );
 
     test(
-      'when dimension is negative, then collect an error that dimension must be greater than zero.',
+      'when dimension is negative, '
+      'then collect an error that dimension must be greater than zero.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -1896,7 +1924,8 @@ fields:
     );
 
     test(
-      'when dimension is a float value, then collect an error that dimension must be a valid integer.',
+      'when dimension is a float value, '
+      'then collect an error that dimension must be a valid integer.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -1933,7 +1962,8 @@ fields:
     );
 
     test(
-      'when dimension is a string, then collect an error that dimension must be a valid integer.',
+      'when dimension is a string, '
+      'then collect an error that dimension must be a valid integer.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -1970,7 +2000,8 @@ fields:
     );
 
     test(
-      'when dimension is malformed with only opening parentheses, then collect an error.',
+      'when dimension is malformed with only opening parentheses, '
+      'then collect an error.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -2007,7 +2038,8 @@ fields:
     );
 
     test(
-      'when dimension is malformed with more than one opening parentheses, then collect an error.',
+      'when dimension is malformed with more than one opening parentheses, '
+      'then collect an error.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -2044,7 +2076,8 @@ fields:
     );
 
     test(
-      'when dimension is malformed with only closing parentheses, then collect an error.',
+      'when dimension is malformed with only closing parentheses, '
+      'then collect an error.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -2081,7 +2114,8 @@ fields:
     );
 
     test(
-      'when dimension is malformed with more than one closing parentheses, then collect an error.',
+      'when dimension is malformed with more than one closing parentheses, '
+      'then collect an error.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(

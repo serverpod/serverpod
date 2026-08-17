@@ -50,7 +50,7 @@ void main() {
   });
 
   group(
-    'Given a route that requires authentication is added to an authenticated path',
+    'Given a route that requires authentication is added to an authenticated path,',
     () {
       test('when client requests the path without authorization, '
           'then a 401 Unauthorized is returned', () async {

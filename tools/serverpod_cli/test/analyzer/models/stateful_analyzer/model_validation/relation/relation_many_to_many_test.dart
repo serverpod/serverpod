@@ -9,7 +9,8 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   test(
-    'Given a class with an implicit many to many relation then an error is collected that it is not supported.',
+    'Given a class with an implicit many to many relation, '
+    'then an error is collected that it is not supported.',
     () {
       var models = [
         ModelSourceBuilder().withFileName('post').withYaml(

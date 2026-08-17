@@ -6,7 +6,8 @@ void main() {
   var client = Client(serverUrl);
 
   test(
-    'Given a model with a required filed when sending it to the echo server it is returned unmodified',
+    'Given a model with a required filed, '
+    'when sending it to the echo server it is returned unmodified',
     () async {
       var model = ModelWithRequiredField(name: 'John Doe', email: null);
       var result = await client.echoRequiredField.echoModel(model);
@@ -18,7 +19,8 @@ void main() {
   );
 
   test(
-    'Given endpoint that throws an exception with a required field, when calling it, the exception is received',
+    'Given endpoint that throws an exception with a required field, '
+    'when calling it, the exception is received',
     () async {
       await expectLater(
         client.echoRequiredField.throwException(),

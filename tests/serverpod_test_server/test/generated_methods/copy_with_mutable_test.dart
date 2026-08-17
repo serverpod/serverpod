@@ -5,10 +5,10 @@ import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Copy behavior', () {
-    group('Given an object with an int when copying with a new value', () {
-      var types = Types(anInt: 1);
-      var typesCopy = types.copyWith(anInt: 2);
+  group('Copy behavior,', () {
+    group('Given an object with an int, when copying with a new value,', () {
+      late var types = Types(anInt: 1);
+      late var typesCopy = types.copyWith(anInt: 2);
 
       test('then the original object is unmodified.', () {
         expect(types.anInt, 1);
@@ -24,7 +24,9 @@ void main() {
     });
 
     test(
-      'Given an object with an int when copying the object without giving a new value then the copy has the same value.',
+      'Given an object with an int, '
+      'when copying the object without giving a new value, '
+      'then the copy has the same value.',
       () {
         var types = Types(anInt: 1);
         var typesCopy = types.copyWith();
@@ -34,7 +36,9 @@ void main() {
     );
 
     test(
-      'Given an object with a nullable int when copying the object setting it to null then the copy is null but not the original.',
+      'Given an object with a nullable int, '
+      'when copying the object setting it to null, '
+      'then the copy is null but not the original.',
       () {
         var types = Types(anInt: 1);
         var typesCopy = types.copyWith(anInt: null);
@@ -45,9 +49,11 @@ void main() {
     );
   });
 
-  group('mutability', () {
+  group('mutability,', () {
     test(
-      'Given an object with an int and a copy of that object when mutating the original then the copy is unmodified.',
+      'Given an object with an int and a copy of that object, '
+      'when mutating the original, '
+      'then the copy is unmodified.',
       () {
         var types = Types(anInt: 1);
         var typesCopy = types.copyWith();
@@ -58,7 +64,9 @@ void main() {
     );
 
     test(
-      'Given an object with an double and a copy of that object when mutating the original then the copy is unmodified.',
+      'Given an object with an double and a copy of that object, '
+      'when mutating the original, '
+      'then the copy is unmodified.',
       () {
         var types = Types(aDouble: 1);
         var typesCopy = types.copyWith();
@@ -69,7 +77,9 @@ void main() {
     );
 
     test(
-      'Given an object with an bool and a copy of that object when mutating the original then the copy is unmodified.',
+      'Given an object with an bool and a copy of that object, '
+      'when mutating the original, '
+      'then the copy is unmodified.',
       () {
         var types = Types(aBool: false);
         var typesCopy = types.copyWith();
@@ -80,7 +90,9 @@ void main() {
     );
 
     test(
-      'Given an object with an String and a copy of that object when mutating the original then the copy is unmodified.',
+      'Given an object with an String and a copy of that object, '
+      'when mutating the original, '
+      'then the copy is unmodified.',
       () {
         var types = Types(aString: 'hello');
         var typesCopy = types.copyWith();
@@ -91,7 +103,9 @@ void main() {
     );
 
     test(
-      'Given an object with an Duration and a copy of that object when mutating the original then the copy is unmodified.',
+      'Given an object with an Duration and a copy of that object, '
+      'when mutating the original, '
+      'then the copy is unmodified.',
       () {
         var types = Types(aDuration: Duration(seconds: 1));
         var typesCopy = types.copyWith();
@@ -105,7 +119,9 @@ void main() {
     );
 
     test(
-      'Given an object with an Uuid and a copy of that object when mutating the original then the copy is unmodified.',
+      'Given an object with an Uuid and a copy of that object, '
+      'when mutating the original, '
+      'then the copy is unmodified.',
       () {
         // ignore: deprecated_member_use
         var uuid = UuidValue.fromString(Uuid.NAMESPACE_NIL);
@@ -123,7 +139,9 @@ void main() {
     );
 
     test(
-      'Given an object with an Uri and a copy of that object when mutating the original then the copy is unmodified.',
+      'Given an object with an Uri and a copy of that object, '
+      'when mutating the original, '
+      'then the copy is unmodified.',
       () {
         var uri = Uri.parse('https://serverpod.dev');
 
@@ -136,7 +154,9 @@ void main() {
     );
 
     test(
-      'Given an object with an BigInt and a copy of that object when mutating the original then the copy is unmodified.',
+      'Given an object with an BigInt and a copy of that object, '
+      'when mutating the original, '
+      'then the copy is unmodified.',
       () {
         var bigInt = BigInt.one;
 
@@ -152,7 +172,9 @@ void main() {
     );
 
     test(
-      'Given an object with an DateTime and a copy of that object when mutating the original then the copy is unmodified.',
+      'Given an object with an DateTime and a copy of that object, '
+      'when mutating the original, '
+      'then the copy is unmodified.',
       () {
         var dateTime = DateTime.fromMillisecondsSinceEpoch(1000);
 
@@ -168,7 +190,9 @@ void main() {
     );
 
     test(
-      'Given an object with an ByteData and a copy of that object when mutating the original then the copy is unmodified.',
+      'Given an object with an ByteData and a copy of that object, '
+      'when mutating the original, '
+      'then the copy is unmodified.',
       () {
         var byteData = Uint8List.fromList([0, 1, 2, 3, 4]).buffer.asByteData();
 
@@ -184,7 +208,9 @@ void main() {
     );
 
     test(
-      'Given an object with an ByteData and a copy of that object when mutating the original then the copy is unmodified.',
+      'Given an object with an ByteData and a copy of that object, '
+      'when mutating the original, '
+      'then the copy is unmodified.',
       () {
         var byteData = Uint64List.fromList([0, 1, 2, 3, 4]).buffer.asByteData();
 
@@ -200,7 +226,9 @@ void main() {
     );
 
     test(
-      'Given an object with an ByteData and a copy of that object when mutating the original then the copy is unmodified.',
+      'Given an object with an ByteData and a copy of that object, '
+      'when mutating the original, '
+      'then the copy is unmodified.',
       () {
         var byteData = Float32List.fromList([
           0,
@@ -222,7 +250,9 @@ void main() {
     );
 
     test(
-      'Given an object with a List and a copy of that object when mutating the original then the copy is unmodified.',
+      'Given an object with a List and a copy of that object, '
+      'when mutating the original, '
+      'then the copy is unmodified.',
       () {
         var list = [SimpleData(num: 1), SimpleData(num: 2)];
 
@@ -240,7 +270,9 @@ void main() {
     );
 
     test(
-      'Given an object with a List and a copy of that object when mutating an object in the list then the copy is unmodified.',
+      'Given an object with a List and a copy of that object, '
+      'when mutating an object in the list, '
+      'then the copy is unmodified.',
       () {
         var list = [SimpleData(num: 1), SimpleData(num: 2)];
 
@@ -258,7 +290,9 @@ void main() {
     );
 
     test(
-      'Given an object with a Map and a copy of that object when mutating the original then the copy is unmodified.',
+      'Given an object with a Map and a copy of that object, '
+      'when mutating the original, '
+      'then the copy is unmodified.',
       () {
         var map = {'a': SimpleData(num: 1), 'b': SimpleData(num: 2)};
 
@@ -275,7 +309,9 @@ void main() {
     );
 
     test(
-      'Given an object with a Map and a copy of that object when mutating an object in the map then the copy is unmodified.',
+      'Given an object with a Map and a copy of that object, '
+      'when mutating an object in the map, '
+      'then the copy is unmodified.',
       () {
         var map = {'a': SimpleData(num: 1), 'b': SimpleData(num: 2)};
 
@@ -292,9 +328,9 @@ void main() {
     );
 
     group(
-      'Given an object with nested Lists and Maps when calling copyWith',
+      'Given an object with nested Lists and Maps, when calling copyWith,',
       () {
-        var objectWithNestedObjects = ObjectWithObject(
+        late var objectWithNestedObjects = ObjectWithObject(
           data: SimpleData(num: 1),
           dataList: [SimpleData(num: 2)],
           listWithNullableData: [],
@@ -371,7 +407,9 @@ void main() {
     );
 
     test(
-      'Given an object with an Enum in a nested List when calling copyWith then the Enum is copied',
+      'Given an object with an Enum in a nested List, '
+      'when calling copyWith, '
+      'then the Enum is copied',
       () {
         var objectWithEnum = ObjectWithEnum(
           testEnum: TestEnum.two,

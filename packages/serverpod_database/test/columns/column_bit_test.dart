@@ -6,37 +6,38 @@ import 'package:test/test.dart';
 void main() {
   ValueEncoder.set(const PostgresValueEncoder());
 
-  group('Given a ColumnBit', () {
+  group('Given a ColumnBit,', () {
     var columnName = 'signature';
     var dimension = 6;
-    var column = ColumnBit(
+    late var column = ColumnBit(
       columnName,
       Table<int?>(tableName: 'test'),
       dimension: dimension,
     );
 
     test(
-      'when toString is called then column name within double quotes is returned.',
+      'when toString is called, '
+      'then column name within double quotes is returned.',
       () {
         expect(column.toString(), '"test"."$columnName"');
       },
     );
 
-    test('when columnName getter is called then column name is returned.', () {
+    test('when columnName getter is called, then column name is returned.', () {
       expect(column.columnName, columnName);
     });
 
-    test('when type is called then Bit is returned.', () {
+    test('when type is called, then Bit is returned.', () {
       expect(column.type, Bit);
     });
 
-    test('when dimension is accessed then correct dimension is returned.', () {
+    test('when dimension is accessed, then correct dimension is returned.', () {
       expect(column.dimension, dimension);
     });
 
-    group('with _ColumnDefaultOperations mixin', () {
+    group('with _ColumnDefaultOperations mixin,', () {
       test(
-        'when equals compared to bit value then output is equals expression.',
+        'when equals compared to bit value, then output is equals expression.',
         () {
           var testBit = Bit.fromString('101010');
           var comparisonExpression = column.equals(testBit);
@@ -49,7 +50,8 @@ void main() {
       );
 
       test(
-        'when NOT equals compared to bit value then output is NOT equals expression.',
+        'when NOT equals compared to bit value, '
+        'then output is NOT equals expression.',
         () {
           var testBit = Bit.fromString('101010');
           var comparisonExpression = column.notEquals(testBit);
@@ -62,7 +64,8 @@ void main() {
       );
 
       test(
-        'when checking if expression is in value set then output is IN expression.',
+        'when checking if expression is in value set, '
+        'then output is IN expression.',
         () {
           var comparisonExpression = column.inSet(<Bit>{
             Bit.fromString('101010'),
@@ -78,7 +81,8 @@ void main() {
       );
 
       test(
-        'when checking if expression is in empty value set then output is FALSE expression.',
+        'when checking if expression is in empty value set, '
+        'then output is FALSE expression.',
         () {
           var comparisonExpression = column.inSet(<Bit>{});
 
@@ -87,7 +91,8 @@ void main() {
       );
 
       test(
-        'when checking if expression is NOT in value set then output is NOT IN expression.',
+        'when checking if expression is NOT in value set, '
+        'then output is NOT IN expression.',
         () {
           var comparisonExpression = column.notInSet(<Bit>{
             Bit.fromString('101010'),
@@ -103,7 +108,8 @@ void main() {
       );
 
       test(
-        'when checking if expression is NOT in empty value set then output is TRUE expression.',
+        'when checking if expression is NOT in empty value set, '
+        'then output is TRUE expression.',
         () {
           var comparisonExpression = column.notInSet(<Bit>{});
 
@@ -112,9 +118,10 @@ void main() {
       );
     });
 
-    group('with bit-specific distance operations', () {
+    group('with bit-specific distance operations,', () {
       test(
-        'when distanceHamming is called then output is correct operator expression.',
+        'when distanceHamming is called, '
+        'then output is correct operator expression.',
         () {
           var testBit = Bit.fromString('101010');
           var comparisonExpression = column.distanceHamming(testBit);
@@ -126,7 +133,8 @@ void main() {
       );
 
       test(
-        'when distanceJaccard is called then output is correct operator expression.',
+        'when distanceJaccard is called, '
+        'then output is correct operator expression.',
         () {
           var testBit = Bit.fromString('101010');
           var comparisonExpression = column.distanceJaccard(testBit);

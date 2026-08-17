@@ -76,7 +76,8 @@ void main() {
       });
 
       test(
-        'when the latest revision is revoked, then the stream closes with a ConnectionClosedException',
+        'when the latest revision is revoked, '
+        'then the stream closes with a ConnectionClosedException',
         () async {
           final deleted = await client.authTest.destroySpecificRefreshToken(
             finalToken,

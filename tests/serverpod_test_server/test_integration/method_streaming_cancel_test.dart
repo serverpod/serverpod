@@ -4,10 +4,10 @@ import 'test_tools/serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given call to MethodStreamingEndpoint',
+    'Given call to MethodStreamingEndpoint,',
     (sessionBuilder, endpoints) {
       test(
-        'when calling an endpoint returning a non-broadcast stream and cancelling '
+        'when calling an endpoint returning a non-broadcast stream and cancelling, '
         'then will cancel',
         () async {
           var stream = endpoints.methodStreaming.intStreamFromValue(
@@ -21,7 +21,7 @@ void main() {
       );
 
       test(
-        'when calling an endpoint returning a broadcast stream and cancelling '
+        'when calling an endpoint returning a broadcast stream and cancelling, '
         'then it should cancel and trigger the onCancel hook on the stream controller',
         () async {
           var wasStreamCancelled = endpoints.methodStreaming
@@ -44,7 +44,7 @@ void main() {
       );
 
       test(
-        'when calling an endpoint returning a broadcast stream and cancelling '
+        'when calling an endpoint returning a broadcast stream and cancelling, '
         'then it should close the session and call its will close listener',
         () async {
           var wasSessionWillCloseListenerCalled = endpoints.methodStreaming

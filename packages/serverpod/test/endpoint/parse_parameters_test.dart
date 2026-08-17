@@ -5,7 +5,9 @@ import 'package:test/test.dart';
 
 void main() {
   test(
-    'Given no parameter descriptions when parsing null parameter string then empty map is returned.',
+    'Given no parameter descriptions, '
+    'when parsing null parameter string, '
+    'then empty map is returned.',
     () {
       expect(
         parseParameters({}, {}, Protocol()),
@@ -14,8 +16,8 @@ void main() {
     },
   );
 
-  group('Given single non nullable parameter description', () {
-    var parameterDescriptions = {
+  group('Given single non nullable parameter description,', () {
+    late var parameterDescriptions = {
       'arg1': ParameterDescription(
         name: 'arg1',
         type: int,
@@ -23,7 +25,7 @@ void main() {
       ),
     };
 
-    test('when parsing valid input then parameter is parsed.', () {
+    test('when parsing valid input, then parameter is parsed.', () {
       expect(
         parseParameters(
           {'arg1': 42},
@@ -35,7 +37,8 @@ void main() {
     });
 
     test(
-      'when parsing param with different argument name then an exception is thrown.',
+      'when parsing param with different argument name, '
+      'then an exception is thrown.',
       () {
         expect(
           () => parseParameters(
@@ -49,7 +52,8 @@ void main() {
     );
 
     test(
-      'when parsing parameter string with additional parameter then additional parameter is ignored',
+      'when parsing parameter string with additional parameter, '
+      'then additional parameter is ignored',
       () {
         expect(
           parseParameters(
@@ -63,8 +67,8 @@ void main() {
     );
   });
 
-  group('Given single nullable parameter description', () {
-    var parameterDescriptions = {
+  group('Given single nullable parameter description,', () {
+    late var parameterDescriptions = {
       'arg1': ParameterDescription(
         name: 'arg1',
         type: int,
@@ -72,7 +76,7 @@ void main() {
       ),
     };
 
-    test('when parsing valid input then parameter is parsed.', () {
+    test('when parsing valid input, then parameter is parsed.', () {
       expect(
         parseParameters(
           {'arg1': 42},
@@ -84,7 +88,7 @@ void main() {
     });
 
     test(
-      'when parsing empty parameter input then an empty map is returned.',
+      'when parsing empty parameter input, then an empty map is returned.',
       () {
         expect(
           parseParameters(
@@ -98,8 +102,8 @@ void main() {
     );
   });
 
-  group('Given multiple non nullable parameter descriptions', () {
-    var parameterDescriptions = {
+  group('Given multiple non nullable parameter descriptions,', () {
+    late var parameterDescriptions = {
       'arg1': ParameterDescription(
         name: 'arg1',
         type: int,
@@ -112,7 +116,8 @@ void main() {
       ),
     };
 
-    test('when parsing valid parameter string then parameters are parsed.', () {
+    test('when parsing valid parameter string, '
+        'then parameters are parsed.', () {
       expect(
         parseParameters(
           {'arg1': 42, 'arg2': 'value'},
@@ -124,7 +129,8 @@ void main() {
     });
 
     test(
-      'when parsing parameter input is only containing one of the required parameters then an exception is thrown.',
+      'when parsing parameter input is only containing one of the required parameters, '
+      'then an exception is thrown.',
       () {
         expect(
           () => parseParameters(

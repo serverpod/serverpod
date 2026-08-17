@@ -11,7 +11,7 @@ void main() async {
   });
 
   group(
-    'Given inserting an object inside a transaction that is cancelled but has a return value ',
+    'Given inserting an object inside a transaction that is cancelled but has a return value,',
     () {
       late Future<UniqueData> transactionFuture;
 
@@ -40,7 +40,7 @@ void main() async {
       });
 
       test(
-        'when running the transaction then should return the inserted data.',
+        'when running the transaction, then should return the inserted data.',
         () async {
           var insertedData = await transactionFuture;
 
@@ -49,7 +49,7 @@ void main() async {
       );
 
       test(
-        'when calling `count` after the transaction then should return 0.',
+        'when calling `count` after the transaction, then should return 0.',
         () async {
           await transactionFuture;
 

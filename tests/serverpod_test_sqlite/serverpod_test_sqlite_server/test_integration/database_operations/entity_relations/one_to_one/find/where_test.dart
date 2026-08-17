@@ -85,7 +85,7 @@ void main() async {
   var session = await IntegrationTestServer().session();
 
   group(
-    'Given models with relations when filtering on relation attributes',
+    'Given models with relations, when filtering on relation attributes,',
     () {
       setUpAll(() async {
         await _createTestDatabase(session);
@@ -105,7 +105,8 @@ void main() async {
   );
 
   group(
-    'Given models with nested relations when filtering on nested relation attributes',
+    'Given models with nested relations, '
+    'when filtering on nested relation attributes,',
     () {
       late List<Citizen> citizensWithCompanyTownStockholm;
       setUpAll(() async {

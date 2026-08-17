@@ -21,7 +21,8 @@ void main() {
   );
 
   group(
-    'Given protocol definition with a concrete endpoint that extends another concrete endpoint when generating server files',
+    'Given protocol definition with a concrete endpoint that extends another concrete endpoint, '
+    'when generating server files,',
     () {
       var baseEndpointName = 'base';
       var concreteEndpointName = 'subclass';
@@ -29,7 +30,7 @@ void main() {
       var concreteMethodName = 'subclassMethod';
 
       // Create base endpoint
-      var baseEndpoint = EndpointDefinitionBuilder()
+      late var baseEndpoint = EndpointDefinitionBuilder()
           .withClassName('${baseEndpointName.pascalCase}Endpoint')
           .withName(baseEndpointName)
           .withMethods([
@@ -40,7 +41,7 @@ void main() {
           .build();
 
       // Create endpoint that extends base endpoint
-      var concreteEndpoint = EndpointDefinitionBuilder()
+      late var concreteEndpoint = EndpointDefinitionBuilder()
           .withClassName('${concreteEndpointName.pascalCase}Endpoint')
           .withName(concreteEndpointName)
           .withExtends(baseEndpoint)
@@ -54,7 +55,7 @@ void main() {
           ])
           .build();
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [baseEndpoint, concreteEndpoint],
         models: [],
         futureCalls: [],

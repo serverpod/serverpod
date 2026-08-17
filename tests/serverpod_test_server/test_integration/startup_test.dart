@@ -3,7 +3,7 @@ import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a Serverpod server instance', () {
+  group('Given a Serverpod server instance,', () {
     late Serverpod server;
 
     setUp(() async {

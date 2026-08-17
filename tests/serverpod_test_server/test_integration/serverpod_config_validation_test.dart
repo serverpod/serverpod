@@ -7,10 +7,10 @@ void main() {
   var passwords = {'serviceSecret': 'longpasswordthatisrequired'};
 
   group(
-    'Given ServerpodConfig with invalid environment variables',
+    'Given ServerpodConfig with invalid environment variables,',
     () {
       test(
-        'when invalid websocketPingInterval is provided via environment variable '
+        'when invalid websocketPingInterval is provided via environment variable, '
         'then ArgumentError is thrown with exit code 1 message',
         () {
           expect(
@@ -38,7 +38,7 @@ void main() {
       );
 
       test(
-        'when zero websocketPingInterval is provided via environment variable '
+        'when zero websocketPingInterval is provided via environment variable, '
         'then ArgumentError is thrown with appropriate message',
         () {
           expect(
@@ -66,7 +66,7 @@ void main() {
       );
 
       test(
-        'when non-numeric websocketPingInterval is provided via environment variable '
+        'when non-numeric websocketPingInterval is provided via environment variable, '
         'then ArgumentError is thrown with appropriate message',
         () {
           expect(
@@ -94,7 +94,7 @@ void main() {
       );
 
       test(
-        'when valid websocketPingInterval is provided via environment variable '
+        'when valid websocketPingInterval is provided via environment variable, '
         'then config loads successfully with the correct value',
         () {
           final config = ServerpodConfig.loadFromMap(

@@ -15,7 +15,7 @@ void main() {
     publicPort: 0,
   );
 
-  group('Given a WebServer.addRoute', () {
+  group('Given a WebServer.addRoute,', () {
     late Serverpod pod;
 
     setUp(() async {
@@ -34,7 +34,7 @@ void main() {
       await pod.shutdown(exitProcess: false);
     });
 
-    group('when calling with a tail-path', () {
+    group('when calling with a tail-path,', () {
       test(
         'then it accepts route with root-path',
         () {
@@ -81,7 +81,7 @@ void main() {
       );
     });
 
-    group('when calling without tail path', () {
+    group('when calling without tail path,', () {
       test(
         'then it accepts route that registers sub-routes',
         () {
@@ -161,7 +161,7 @@ void main() {
     );
   });
 
-  group('Given a WebServer with host-specific routes', () {
+  group('Given a WebServer with host-specific routes,', () {
     late Serverpod pod;
     late int port;
 
@@ -198,7 +198,8 @@ void main() {
     });
 
     test(
-      'when request has matching host header, then host-specific route responds',
+      'when request has matching host header, '
+      'then host-specific route responds',
       () async {
         final response = await http.get(
           Uri.parse('http://localhost:$port/data'),
@@ -211,7 +212,8 @@ void main() {
     );
 
     test(
-      'when request has different matching host header, then corresponding route responds',
+      'when request has different matching host header, '
+      'then corresponding route responds',
       () async {
         final response = await http.get(
           Uri.parse('http://localhost:$port/data'),
@@ -224,7 +226,8 @@ void main() {
     );
 
     test(
-      'when request has non-matching host header for host-specific route, then returns 404',
+      'when request has non-matching host header for host-specific route, '
+      'then returns 404',
       () async {
         final response = await http.get(
           Uri.parse('http://localhost:$port/data'),
@@ -249,7 +252,8 @@ void main() {
     );
 
     test(
-      'when route has no host restriction, then it responds without host header',
+      'when route has no host restriction, '
+      'then it responds without host header',
       () async {
         final response = await http.get(
           Uri.parse('http://127.0.0.1:$port/health'),

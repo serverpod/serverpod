@@ -3,8 +3,8 @@ import 'package:test/test.dart';
 
 void main() {
   test(
-    'Given a NotFoundException object '
-    'when serialized '
+    'Given a NotFoundException object, '
+    'when serialized, '
     'then it produces JSON with the concrete exception class name.',
     () {
       final exception = NotFoundException(
@@ -21,8 +21,8 @@ void main() {
   );
 
   test(
-    'Given a ValidationException object '
-    'when serialized '
+    'Given a ValidationException object, '
+    'when serialized, '
     'then it produces JSON with the concrete exception class name.',
     () {
       final exception = ValidationException(
@@ -39,8 +39,8 @@ void main() {
   );
 
   test(
-    'Given a NotFoundException object '
-    'when deserialized as SealedAppException '
+    'Given a NotFoundException object, '
+    'when deserialized as SealedAppException, '
     'then it maintains the runtime type.',
     () {
       final exception = NotFoundException(
@@ -59,8 +59,8 @@ void main() {
   );
 
   test(
-    'Given a ValidationException object '
-    'when deserialized as SealedAppException '
+    'Given a ValidationException object, '
+    'when deserialized as SealedAppException, '
     'then it maintains the runtime type.',
     () {
       final exception = ValidationException(
@@ -79,8 +79,8 @@ void main() {
   );
 
   test(
-    'Given a NotFoundException object '
-    'when deserialized using deserializeByClassName '
+    'Given a NotFoundException object, '
+    'when deserialized using deserializeByClassName, '
     'then it deserializes as the concrete exception type.',
     () {
       final exception = NotFoundException(
@@ -102,8 +102,8 @@ void main() {
   );
 
   test(
-    'Given JSON for a sealed exception subtype '
-    'when deserialized using the sealed parent className '
+    'Given JSON for a sealed exception subtype, '
+    'when deserialized using the sealed parent className, '
     'then deserialization fails because the parent is not registered.',
     () {
       final exception = NotFoundException(
@@ -122,8 +122,8 @@ void main() {
   );
 
   test(
-    'Given a NotFoundException object '
-    'when using copyWith through a sealed parent reference '
+    'Given a NotFoundException object, '
+    'when using copyWith through a sealed parent reference, '
     'then it creates a copy with updated values.',
     () {
       final exception = NotFoundException(
@@ -142,8 +142,8 @@ void main() {
   );
 
   test(
-    'Given an ObjectWithSealedException '
-    'when created with sealed exception fields '
+    'Given an ObjectWithSealedException, '
+    'when created with sealed exception fields, '
     'then it serializes and deserializes correctly.',
     () {
       final notFound = NotFoundException(
@@ -167,8 +167,8 @@ void main() {
   );
 
   test(
-    'Given an ExtendedAppException '
-    'when created '
+    'Given an ExtendedAppException, '
+    'when created, '
     'then it is a subtype of BaseAppException.',
     () {
       final exception = ExtendedAppException(
@@ -181,8 +181,8 @@ void main() {
   );
 
   test(
-    'Given an ExtendedAppException object '
-    'when round-tripped through JSON '
+    'Given an ExtendedAppException object, '
+    'when round-tripped through JSON, '
     'then inherited and child fields are preserved.',
     () {
       final exception = ExtendedAppException(

@@ -2,8 +2,8 @@ import 'package:serverpod_test_client/src/protocol/object_with_dynamic.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a model with dynamic fields', () {
-    final model = ObjectWithDynamic(
+  group('Given a model with dynamic fields,', () {
+    late final model = ObjectWithDynamic(
       id: 1,
       payload: 'test',
       jsonbPayload: 1,

@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 void main() {
   ascii = false;
 
-  group('Given a valid pubspec.yaml', () {
+  group('Given a valid pubspec.yaml,', () {
     const pubspecString = '''
 name: x_server
 environment:
@@ -20,7 +20,7 @@ dev_dependencies:
   test: ^1.25.5
   serverpod_test: 2.3.1
 ''';
-    group('when calling PubspecPlus.parse', () {
+    group('when calling PubspecPlus.parse,', () {
       late PubspecPlus pubspecPlus = PubspecPlus.parse(pubspecString);
       var depsByName = {for (var d in pubspecPlus.deps) d.name: d};
 

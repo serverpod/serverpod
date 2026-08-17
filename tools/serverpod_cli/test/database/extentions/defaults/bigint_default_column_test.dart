@@ -5,8 +5,8 @@ import 'package:test/test.dart';
 
 void main() {
   group('Given BigInt column definition', () {
-    group('with no default value', () {
-      ColumnDefinition defaultColumn = ColumnDefinition(
+    group('with no default value,', () {
+      late ColumnDefinition defaultColumn = ColumnDefinition(
         name: 'bigint',
         columnType: ColumnType.text,
         isNullable: false,
@@ -14,7 +14,8 @@ void main() {
       );
 
       test(
-        'when converting to PostgreSQL SQL code, then it should not have the default value',
+        'when converting to PostgreSQL SQL code, '
+        'then it should not have the default value',
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
@@ -24,7 +25,8 @@ void main() {
       );
 
       test(
-        'when converting to SQLite SQL code, then it should not have the default value',
+        'when converting to SQLite SQL code, '
+        'then it should not have the default value',
         () {
           expect(
             defaultColumn.toSqlFragment(),
@@ -34,8 +36,8 @@ void main() {
       );
     });
 
-    group('with a specific BigInt string as default value', () {
-      ColumnDefinition defaultColumn = ColumnDefinition(
+    group('with a specific BigInt string as default value,', () {
+      late ColumnDefinition defaultColumn = ColumnDefinition(
         name: 'bigint',
         columnType: ColumnType.text,
         isNullable: false,
@@ -44,7 +46,8 @@ void main() {
       );
 
       test(
-        'when converting to PostgreSQL SQL code, then it should have the default value',
+        'when converting to PostgreSQL SQL code, '
+        'then it should have the default value',
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
@@ -54,7 +57,8 @@ void main() {
       );
 
       test(
-        'when converting to SQLite SQL code, then it should have the default value',
+        'when converting to SQLite SQL code, '
+        'then it should have the default value',
         () {
           expect(
             defaultColumn.toSqlFragment(),
@@ -64,8 +68,8 @@ void main() {
       );
     });
 
-    group('with nullable column and no default value', () {
-      ColumnDefinition defaultColumn = ColumnDefinition(
+    group('with nullable column and no default value,', () {
+      late ColumnDefinition defaultColumn = ColumnDefinition(
         name: 'bigint',
         columnType: ColumnType.text,
         isNullable: true,
@@ -73,7 +77,8 @@ void main() {
       );
 
       test(
-        'when converting to PostgreSQL SQL code, then it should be nullable with no default value',
+        'when converting to PostgreSQL SQL code, '
+        'then it should be nullable with no default value',
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
@@ -83,7 +88,8 @@ void main() {
       );
 
       test(
-        'when converting to SQLite SQL code, then it should be nullable with no default value',
+        'when converting to SQLite SQL code, '
+        'then it should be nullable with no default value',
         () {
           expect(
             defaultColumn.toSqlFragment(),

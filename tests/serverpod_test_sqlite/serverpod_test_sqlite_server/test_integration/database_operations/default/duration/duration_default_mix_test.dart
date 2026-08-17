@@ -15,7 +15,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "durationDefaultAndDefaultModel" field value should match the default value',
+      'when creating a record in the database with an unsafe query, '
+      'then the "durationDefaultAndDefaultModel" field value should match the default value',
       () async {
         await session.db.unsafeQuery(
           'INSERT INTO "${DurationDefaultMix.t.tableName}" DEFAULT VALUES',
@@ -37,7 +38,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "durationDefaultAndDefaultPersist" field value should match the defaultPersist value',
+      'when creating a record in the database with an unsafe query, '
+      'then the "durationDefaultAndDefaultPersist" field value should match the defaultPersist value',
       () async {
         await session.db.unsafeQuery(
           'INSERT INTO "${DurationDefaultMix.t.tableName}" DEFAULT VALUES',
@@ -59,7 +61,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "durationDefaultModelAndDefaultPersist" field value should match the defaultPersist value',
+      'when creating a record in the database with an unsafe query, '
+      'then the "durationDefaultModelAndDefaultPersist" field value should match the defaultPersist value',
       () async {
         await session.db.unsafeQuery(
           'INSERT INTO "${DurationDefaultMix.t.tableName}" DEFAULT VALUES',
@@ -81,7 +84,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with specific values, then the "durationDefaultAndDefaultModel" field value should match the provided value',
+      'when creating a record in the database with specific values, '
+      'then the "durationDefaultAndDefaultModel" field value should match the provided value',
       () async {
         var specificDuration = Duration(
           days: 3,
@@ -105,7 +109,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with specific values, then the "durationDefaultAndDefaultPersist" field value should match the provided value',
+      'when creating a record in the database with specific values, '
+      'then the "durationDefaultAndDefaultPersist" field value should match the provided value',
       () async {
         var specificDuration = Duration(
           days: 3,
@@ -129,7 +134,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with specific values, then the "durationDefaultModelAndDefaultPersist" field value should match the provided value',
+      'when creating a record in the database with specific values, '
+      'then the "durationDefaultModelAndDefaultPersist" field value should match the provided value',
       () async {
         var specificDuration = Duration(
           days: 4,

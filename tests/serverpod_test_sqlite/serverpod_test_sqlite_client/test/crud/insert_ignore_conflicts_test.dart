@@ -7,9 +7,10 @@ import '../test_util.dart';
 void main() {
   initTestClientSession();
 
-  group('Given an empty database', () {
+  group('Given an empty database,', () {
     test(
-      'when inserting with ignoreConflicts then all rows are inserted and returned.',
+      'when inserting with ignoreConflicts, '
+      'then all rows are inserted and returned.',
       () async {
         var data = <UniqueData>[
           UniqueData(number: 1, email: 'a@serverpod.dev'),
@@ -30,7 +31,7 @@ void main() {
     );
   });
 
-  group('Given a row with a unique constraint', () {
+  group('Given a row with a unique constraint,', () {
     setUp(() async {
       await UniqueData.db.insertRow(
         session,
@@ -39,7 +40,8 @@ void main() {
     });
 
     test(
-      'when inserting a conflicting row with ignoreConflicts then an empty list is returned.',
+      'when inserting a conflicting row with ignoreConflicts, '
+      'then an empty list is returned.',
       () async {
         var inserted = await UniqueData.db.insert(
           session,
@@ -52,7 +54,8 @@ void main() {
     );
 
     test(
-      'when inserting a mix of new and conflicting rows with ignoreConflicts then only new rows are returned.',
+      'when inserting a mix of new and conflicting rows with ignoreConflicts, '
+      'then only new rows are returned.',
       () async {
         var data = <UniqueData>[
           UniqueData(number: 2, email: 'existing@serverpod.dev'),
@@ -75,7 +78,8 @@ void main() {
     );
 
     test(
-      'when inserting a conflicting row without ignoreConflicts then a DatabaseQueryException is thrown.',
+      'when inserting a conflicting row without ignoreConflicts, '
+      'then a DatabaseQueryException is thrown.',
       () async {
         expect(
           UniqueData.db.insert(
@@ -94,7 +98,8 @@ void main() {
     );
 
     test(
-      'when inserting with ignoreConflicts within a transaction then only non-conflicting rows are inserted.',
+      'when inserting with ignoreConflicts within a transaction, '
+      'then only non-conflicting rows are inserted.',
       () async {
         await session.db.transaction((transaction) async {
           var data = <UniqueData>[
@@ -120,10 +125,11 @@ void main() {
   });
 
   group(
-    'Given an empty database and a table model with non persistent fields',
+    'Given an empty database and a table model with non persistent fields,',
     () {
       test(
-        'when inserting with ignoreConflicts then all rows are inserted with non-persistent fields preserved.',
+        'when inserting with ignoreConflicts, '
+        'then all rows are inserted with non-persistent fields preserved.',
         () async {
           var data = <UniqueDataWithNonPersist>[
             UniqueDataWithNonPersist(
@@ -156,7 +162,7 @@ void main() {
   );
 
   group(
-    'Given a row with a unique constraint and a table model with non persistent fields',
+    'Given a row with a unique constraint and a table model with non persistent fields,',
     () {
       setUp(() async {
         await UniqueDataWithNonPersist.db.insertRow(
@@ -169,7 +175,8 @@ void main() {
       });
 
       test(
-        'when inserting a conflicting row with ignoreConflicts then an empty list is returned.',
+        'when inserting a conflicting row with ignoreConflicts, '
+        'then an empty list is returned.',
         () async {
           var inserted = await UniqueDataWithNonPersist.db.insert(
             session,
@@ -188,7 +195,8 @@ void main() {
       );
 
       test(
-        'when inserting a mix of new and conflicting rows with ignoreConflicts then only new rows are returned with non-persistent fields preserved.',
+        'when inserting a mix of new and conflicting rows with ignoreConflicts, '
+        'then only new rows are returned with non-persistent fields preserved.',
         () async {
           var data = <UniqueDataWithNonPersist>[
             UniqueDataWithNonPersist(
@@ -220,7 +228,8 @@ void main() {
       );
 
       test(
-        'when inserting with ignoreConflicts within a transaction then only non-conflicting rows are inserted with non-persistent fields preserved.',
+        'when inserting with ignoreConflicts within a transaction, '
+        'then only non-conflicting rows are inserted with non-persistent fields preserved.',
         () async {
           await session.db.transaction((transaction) async {
             var data = <UniqueDataWithNonPersist>[
@@ -254,7 +263,8 @@ void main() {
       );
 
       test(
-        'when inserting only conflicting rows with ignoreConflicts then an empty list is returned.',
+        'when inserting only conflicting rows with ignoreConflicts, '
+        'then an empty list is returned.',
         () async {
           var inserted = await UniqueDataWithNonPersist.db.insert(
             session,

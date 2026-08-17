@@ -8,11 +8,12 @@ import '../serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given a session key based on a session secret which would result in `+` when base64 encoded,',
+    'Given a session key based on a session secret which would result in `+`, '
+    'when base64 encoded,',
     (final sessionBuilder, final endpoints) {
       late Session session;
-      final secret = Uint8List.fromList([0, 0, 250]);
-      final serverSideSessionId = const Uuid().v4obj();
+      late final secret = Uint8List.fromList([0, 0, 250]);
+      late final serverSideSessionId = const Uuid().v4obj();
       late String serverSideSessionToken;
 
       setUp(() {
@@ -25,14 +26,16 @@ void main() {
       });
 
       test(
-        'when inspecting the key, then it does not contain a "+" because the encoding is URL safe.',
+        'when inspecting the key, '
+        'then it does not contain a "+" because the encoding is URL safe.',
         () {
           expect(serverSideSessionToken, isNot(contains('+')));
         },
       );
 
       test(
-        'when inspecting the key, then contains the secret in the expected format.',
+        'when inspecting the key, '
+        'then contains the secret in the expected format.',
         () {
           // In non-URL-safe base64 this would end in `+g==`
           expect(serverSideSessionToken, endsWith('-g=='));

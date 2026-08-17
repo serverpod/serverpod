@@ -6,7 +6,7 @@ void main() {
   late ProcessResult result;
 
   group(
-    'Given a serverpod config without a database entry and environment variables for the database',
+    'Given a serverpod config without a database entry and environment variables for the database,',
     () {
       setUpAll(() async {
         result = await Process.run(
@@ -46,7 +46,7 @@ void main() {
   );
 
   group(
-    'Given a serverpod config and an environment variable overriding the database host',
+    'Given a serverpod config and an environment variable overriding the database host,',
     () {
       setUpAll(() async {
         result = await Process.run(
@@ -71,7 +71,7 @@ void main() {
   );
 
   group(
-    'Given a serverpod config without a database entry but only partial environment variables for the database',
+    'Given a serverpod config without a database entry but only partial environment variables for the database,',
     () {
       setUpAll(() async {
         result = await Process.run(
@@ -91,7 +91,7 @@ void main() {
   );
 
   group(
-    'Given that the serverpod config does not exist but environment variables are configured for the api server',
+    'Given that the serverpod config does not exist but environment variables are configured for the api server,',
     () {
       setUpAll(() async {
         result = await Process.run(
@@ -130,7 +130,7 @@ void main() {
   );
 
   group(
-    'Given that the serverpod config does not exist and no environment variables are configured',
+    'Given that the serverpod config does not exist and no environment variables are configured,',
     () {
       setUpAll(() async {
         result = await Process.run(

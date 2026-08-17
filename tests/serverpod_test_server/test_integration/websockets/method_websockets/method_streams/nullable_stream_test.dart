@@ -9,7 +9,7 @@ import '../../websocket_extensions.dart';
 
 void main() {
   group(
-    'Given a method stream connection to an endpoint that echoes a input stream with nullable generic',
+    'Given a method stream connection to an endpoint that echoes a input stream with nullable generic,',
     () {
       var endpoint = 'methodStreaming';
       var method = 'nullableIntEchoStream';
@@ -30,14 +30,14 @@ void main() {
         await webSocket.tryClose();
       });
 
-      group('when a stream of values are passed in', () {
+      group('when a stream of values are passed in,', () {
         late Completer<CloseMethodStreamCommand> closeMethodStreamCommand;
-        TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
+        late TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
         var inputValues = [1, null, 3];
         late List<int?> endpointResponses;
 
         var inputParameter = 'stream';
-        var connectionId = const Uuid().v4obj();
+        late var connectionId = const Uuid().v4obj();
 
         setUp(() async {
           endpointResponses = [];
@@ -142,7 +142,7 @@ void main() {
   );
 
   group(
-    'Given a method stream endpoint that returns first value from nullable int stream in',
+    'Given a method stream endpoint that returns first value from nullable int stream in,',
     () {
       var endpoint = 'methodStreaming';
       var method = 'nullableIntReturnFromStream';
@@ -163,15 +163,15 @@ void main() {
         await webSocket.tryClose();
       });
 
-      group('when a null value is passed in', () {
+      group('when a null value is passed in,', () {
         late Completer<CloseMethodStreamCommand> closeMethodStreamCommand;
         late Completer<CloseMethodStreamCommand>
         closeMethodStreamParameterCommand;
-        TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
+        late TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
         late List<int?> endpointResponses;
 
         var inputParameter = 'stream';
-        var connectionId = const Uuid().v4obj();
+        late var connectionId = const Uuid().v4obj();
 
         setUp(() async {
           endpointResponses = [];

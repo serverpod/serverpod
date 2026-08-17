@@ -21,10 +21,11 @@ void main() {
   });
 
   group(
-    'Given endpoint class with @unauthenticatedClientCall annotation and child class when analyzed',
+    'Given endpoint class with @unauthenticatedClientCall annotation and child class, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -71,10 +72,11 @@ class ChildEndpoint extends BaseEndpoint {}
   );
 
   group(
-    'Given endpoint class with @doNotGenerate annotation and child class when analyzed',
+    'Given endpoint class with @doNotGenerate annotation and child class, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -117,10 +119,11 @@ class ChildEndpoint extends BaseEndpoint {}
   );
 
   group(
-    'Given child class with additional annotation different from parent annotation when analyzed',
+    'Given child class with additional annotation different from parent annotation, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -168,9 +171,9 @@ class ChildEndpoint extends BaseEndpoint {}
     },
   );
 
-  group('Given multi-level inheritance with annotations when analyzed', () {
-    var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
+  group('Given multi-level inheritance with annotations, when analyzed,', () {
+    late var collector = CodeGenerationCollector();
+    late var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
 

@@ -114,7 +114,7 @@ void main() {
     await closeLogger();
   });
 
-  group('Given a ServerArgsRef', () {
+  group('Given a ServerArgsRef,', () {
     test(
       'when the value is mutated after a closure captured the ref, '
       'then the closure observes the new value',
@@ -153,7 +153,7 @@ void main() {
     );
   });
 
-  group('Given a WatchLoopContext', () {
+  group('Given a WatchLoopContext,', () {
     late _FakeCompiler compiler;
     late _FakeServer server;
     late _FakeProxy proxy;

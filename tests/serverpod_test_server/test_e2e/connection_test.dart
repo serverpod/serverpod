@@ -21,9 +21,11 @@ ByteData createByteData() {
 void main() {
   var client = Client(serverUrl);
 
-  group('Calls', () {
+  group('Calls,', () {
     test(
-      'Given the test server, when the global int is set to 10 and 1 is added, then 11 is returned',
+      'Given the test server, '
+      'when the global int is set to 10 and 1 is added, '
+      'then 11 is returned',
       () async {
         await client.simple.setGlobalInt(10);
         await client.simple.addToGlobalInt();

@@ -20,9 +20,9 @@ void main() {
 
   for (var action in databaseActions) {
     group(
-      'Given a class with onUpdate database action explicitly set to $action',
+      'Given a class with onUpdate database action explicitly set to $action,',
       () {
-        var models = [
+        late var models = [
           ModelSourceBuilder().withYaml(
             '''
         class: Example
@@ -33,20 +33,20 @@ void main() {
           ).build(),
         ];
 
-        var collector = CodeGenerationCollector();
-        var analyzer = StatefulAnalyzer(
+        late var collector = CodeGenerationCollector();
+        late var analyzer = StatefulAnalyzer(
           config,
           models,
           onErrorsCollector(collector),
         );
-        var definitions = analyzer.validateAll();
+        late var definitions = analyzer.validateAll();
 
         test('then no errors are detected.', () {
           expect(collector.errors, isEmpty);
         });
 
         var model = definitions.first as ClassDefinition;
-        var field = model.findField('exampleId');
+        late var field = model.findField('exampleId');
 
         var noneFieldRelation =
             field == null || field.relation is! ForeignRelationDefinition;
@@ -64,9 +64,9 @@ void main() {
 
   for (var action in databaseActions) {
     group(
-      'Given a class with onDelete database action explicitly set to $action',
+      'Given a class with onDelete database action explicitly set to $action,',
       () {
-        var models = [
+        late var models = [
           ModelSourceBuilder().withYaml(
             '''
         class: Example
@@ -77,20 +77,20 @@ void main() {
           ).build(),
         ];
 
-        var collector = CodeGenerationCollector();
-        var analyzer = StatefulAnalyzer(
+        late var collector = CodeGenerationCollector();
+        late var analyzer = StatefulAnalyzer(
           config,
           models,
           onErrorsCollector(collector),
         );
-        var definitions = analyzer.validateAll();
+        late var definitions = analyzer.validateAll();
         var model = definitions.first as ClassDefinition;
 
         test('then no errors are detected.', () {
           expect(collector.errors, isEmpty);
         });
 
-        var field = model.findField('exampleId');
+        late var field = model.findField('exampleId');
 
         var noneFieldRelation =
             field == null || field.relation is! ForeignRelationDefinition;
@@ -105,8 +105,8 @@ void main() {
     );
   }
 
-  group('Given a class with no database action explicitly set', () {
-    var models = [
+  group('Given a class with no database action explicitly set,', () {
+    late var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -117,20 +117,20 @@ void main() {
       ).build(),
     ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(
+    late var collector = CodeGenerationCollector();
+    late var analyzer = StatefulAnalyzer(
       config,
       models,
       onErrorsCollector(collector),
     );
-    var definitions = analyzer.validateAll();
+    late var definitions = analyzer.validateAll();
     var model = definitions.first as ClassDefinition;
 
     test('then no errors are detected.', () {
       expect(collector.errors, isEmpty);
     });
 
-    var field = model.findField('exampleId');
+    late var field = model.findField('exampleId');
 
     var noneFieldRelation =
         field == null || field.relation is! ForeignRelationDefinition;
@@ -146,7 +146,8 @@ void main() {
   });
 
   test(
-    'Given a class with onUpdate database action set to an invalid value, then collect an error.',
+    'Given a class with onUpdate database action set to an invalid value, '
+    'then collect an error.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -182,7 +183,8 @@ void main() {
   );
 
   test(
-    'Given a class with onDelete database action set to an invalid value, then collect an error.',
+    'Given a class with onDelete database action set to an invalid value, '
+    'then collect an error.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -218,9 +220,9 @@ void main() {
   );
 
   group(
-    'Given a class with a named object relation on both sides with onDelete defined on the side not holding the foreign key',
+    'Given a class with a named object relation on both sides with onDelete defined on the side not holding the foreign key,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withFileName('user').withYaml(
           '''
 class: User
@@ -244,8 +246,8 @@ fields:
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
@@ -285,11 +287,11 @@ fields:
   );
 
   group(
-    'Given a class with a named object relation on both sides with onUpdate defined on the side not holding the foreign key',
+    'Given a class with a named object relation on both sides with onUpdate defined on the side not holding the foreign key,',
     () {
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
 
-      var models = [
+      late var models = [
         ModelSourceBuilder().withFileName('user').withYaml(
           '''
 class: User
@@ -313,7 +315,7 @@ fields:
         ).build(),
       ];
 
-      var analyzer = StatefulAnalyzer(
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
@@ -353,11 +355,11 @@ fields:
   );
 
   group(
-    'Given a class with a named object - list relation with onDelete defined on the side not holding the foreign key',
+    'Given a class with a named object - list relation with onDelete defined on the side not holding the foreign key,',
     () {
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
 
-      var models = [
+      late var models = [
         ModelSourceBuilder().withFileName('user').withYaml(
           '''
         class: User
@@ -377,7 +379,7 @@ fields:
         ).build(),
       ];
 
-      var analyzer = StatefulAnalyzer(
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
@@ -400,11 +402,11 @@ fields:
   );
 
   group(
-    'Given a class with a named object - list relation with onUpdate defined on the side not holding the foreign key',
+    'Given a class with a named object - list relation with onUpdate defined on the side not holding the foreign key,',
     () {
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
 
-      var models = [
+      late var models = [
         ModelSourceBuilder().withFileName('user').withYaml(
           '''
         class: User
@@ -424,7 +426,7 @@ fields:
         ).build(),
       ];
 
-      var analyzer = StatefulAnalyzer(
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),

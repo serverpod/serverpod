@@ -7,9 +7,9 @@ import 'package:test/test.dart';
 // exists. `dart test` runs each test file in its own isolate, which keeps this
 // guarantee.
 void main() {
-  group('Given no Serverpod has been initialized, ', () {
+  group('Given no Serverpod has been initialized,', () {
     test(
-      'when Serverpod.instance is accessed then a StateError is thrown.',
+      'when Serverpod.instance is accessed, then a StateError is thrown.',
       () {
         expect(
           () => Serverpod.instance,

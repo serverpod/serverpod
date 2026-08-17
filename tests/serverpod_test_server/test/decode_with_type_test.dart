@@ -6,7 +6,9 @@ void main() {
   var protocol = Protocol();
 
   test(
-    'Given a integer when encoding and decoding with type then output matches input',
+    'Given a integer, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       int number = 1;
       var encoded = protocol.encodeWithType(number);
@@ -16,7 +18,9 @@ void main() {
   );
 
   test(
-    'Given a non-null nullable integer when encoding and decoding with type then output matches input',
+    'Given a non-null nullable integer, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       int? number = 1;
       var encoded = protocol.encodeWithType(number);
@@ -26,7 +30,9 @@ void main() {
   );
 
   test(
-    'Given a null nullable integer when encoding and decoding with type then output matches input',
+    'Given a null nullable integer, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       int? number = null;
       var encoded = protocol.encodeWithType(number);
@@ -36,7 +42,9 @@ void main() {
   );
 
   test(
-    'Given a non-null SimpleData object when encoding and decoding with type then output matches input',
+    'Given a non-null SimpleData object, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       SimpleData simpleData = SimpleData.fromJson({'num': 1});
       var encoded = protocol.encodeWithType(simpleData);
@@ -47,7 +55,9 @@ void main() {
   );
 
   test(
-    'Given a non-null nullable SimpleData object when encoding and decoding with type then output matches input',
+    'Given a non-null nullable SimpleData object, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       SimpleData? simpleData = SimpleData.fromJson({'num': 1});
       var encoded = protocol.encodeWithType(simpleData);
@@ -58,7 +68,9 @@ void main() {
   );
 
   test(
-    'Given a null nullable SimpleData object when encoding and decoding with type then output matches input',
+    'Given a null nullable SimpleData object, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       SimpleData? simpleData = null;
       var encoded = protocol.encodeWithType(simpleData);
@@ -69,7 +81,9 @@ void main() {
   );
 
   test(
-    'Given a Serverpod defined model when encoding and decoding with type then output matches input',
+    'Given a Serverpod defined model, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       var serverpodDefinedModel = serverpod.ClusterServerInfo(
         serverId: 'Hello World',

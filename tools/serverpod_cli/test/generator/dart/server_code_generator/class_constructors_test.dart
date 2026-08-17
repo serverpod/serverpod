@@ -25,9 +25,10 @@ void main() {
   );
 
   group(
-    'Given a class named $testClassName with two primitive vars when generating code',
+    'Given a class named $testClassName with two primitive vars, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -36,23 +37,23 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var compilationUnit = parseString(
+      late var compilationUnit = parseString(
         content: codeMap[expectedFilePath]!,
       ).unit;
 
       group('then the $testClassName', () {
-        var baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        late var baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
           compilationUnit,
           name: testClassName,
         );
 
         group('has a private constructor', () {
-          var privateConstructor =
+          late var privateConstructor =
               CompilationUnitHelpers.tryFindConstructorDeclaration(
                 baseClass!,
                 name: '_',
@@ -71,7 +72,7 @@ void main() {
         });
 
         group('has a factory constructor', () {
-          var factoryConstructor =
+          late var factoryConstructor =
               CompilationUnitHelpers.tryFindConstructorDeclaration(
                 baseClass!,
                 name: null,
@@ -109,10 +110,11 @@ void main() {
         });
 
         group('has a copyWith method', () {
-          var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            baseClass!,
-            name: 'copyWith',
-          );
+          late var copyWithMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                baseClass!,
+                name: 'copyWith',
+              );
           test('declared', () {
             expect(
               copyWithMethod,
@@ -143,7 +145,7 @@ void main() {
         }, skip: baseClass == null);
       });
 
-      var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      late var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
         compilationUnit,
         name: '_${testClassName}Impl',
       );
@@ -157,7 +159,7 @@ void main() {
 
       group('then the class named _${testClassName}Impl', () {
         group('has a constructor', () {
-          var defaultConstructor =
+          late var defaultConstructor =
               CompilationUnitHelpers.tryFindConstructorDeclaration(
                 copyWithClass!,
                 name: null,
@@ -194,9 +196,10 @@ void main() {
   );
 
   group(
-    'Given a class named $testClassName with a var with none scope when generating code',
+    'Given a class named $testClassName with a var with none scope, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -210,23 +213,23 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var compilationUnit = parseString(
+      late var compilationUnit = parseString(
         content: codeMap[expectedFilePath]!,
       ).unit;
 
       group('then the $testClassName', () {
-        var baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        late var baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
           compilationUnit,
           name: testClassName,
         );
 
         group('has a private constructor', () {
-          var privateConstructor =
+          late var privateConstructor =
               CompilationUnitHelpers.tryFindConstructorDeclaration(
                 baseClass!,
                 name: '_',
@@ -245,7 +248,7 @@ void main() {
         });
 
         group('has a factory constructor', () {
-          var factoryConstructor =
+          late var factoryConstructor =
               CompilationUnitHelpers.tryFindConstructorDeclaration(
                 baseClass!,
                 name: null,
@@ -260,7 +263,7 @@ void main() {
         });
       });
 
-      var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      late var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
         compilationUnit,
         name: '_${testClassName}Impl',
       );
@@ -274,7 +277,7 @@ void main() {
 
       group('then the class named _${testClassName}Impl', () {
         group('has a constructor', () {
-          var defaultConstructor =
+          late var defaultConstructor =
               CompilationUnitHelpers.tryFindConstructorDeclaration(
                 copyWithClass!,
                 name: null,
@@ -303,9 +306,10 @@ void main() {
   );
 
   group(
-    'Given a class named $testClassName with a var with serverOnly scope when generating code',
+    'Given a class named $testClassName with a var with serverOnly scope, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -319,23 +323,23 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var compilationUnit = parseString(
+      late var compilationUnit = parseString(
         content: codeMap[expectedFilePath]!,
       ).unit;
 
       group('then the $testClassName', () {
-        var baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        late var baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
           compilationUnit,
           name: testClassName,
         );
 
         group('has a private constructor', () {
-          var privateConstructor =
+          late var privateConstructor =
               CompilationUnitHelpers.tryFindConstructorDeclaration(
                 baseClass!,
                 name: '_',
@@ -354,7 +358,7 @@ void main() {
         });
 
         group('has a factory constructor', () {
-          var factoryConstructor =
+          late var factoryConstructor =
               CompilationUnitHelpers.tryFindConstructorDeclaration(
                 baseClass!,
                 name: null,
@@ -369,7 +373,7 @@ void main() {
         });
       });
 
-      var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      late var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
         compilationUnit,
         name: '_${testClassName}Impl',
       );
@@ -383,7 +387,7 @@ void main() {
 
       group('then the class named _${testClassName}Impl', () {
         group('has a constructor', () {
-          var defaultConstructor =
+          late var defaultConstructor =
               CompilationUnitHelpers.tryFindConstructorDeclaration(
                 copyWithClass!,
                 name: null,
@@ -415,9 +419,9 @@ void main() {
   );
 
   group(
-    'Given a class named $testClassName with a list var when generating code',
+    'Given a class named $testClassName with a list var, when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -432,21 +436,21 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var compilationUnit = parseString(
+      late var compilationUnit = parseString(
         content: codeMap[expectedFilePath]!,
       ).unit;
 
-      var implClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      late var implClass = CompilationUnitHelpers.tryFindClassDeclaration(
         compilationUnit,
         name: '_${testClassName}Impl',
       );
 
-      var baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      late var baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
         compilationUnit,
         name: testClassName,
       );

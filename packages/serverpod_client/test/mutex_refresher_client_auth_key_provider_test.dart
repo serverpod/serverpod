@@ -14,13 +14,13 @@ void main() {
     provider = MutexRefresherClientAuthKeyProvider(delegate);
   });
 
-  group('Given a mutex protected auth key provider with an initial token', () {
+  group('Given a mutex protected auth key provider with an initial token,', () {
     setUp(() {
       delegate.setAuthKey('initial-token');
     });
 
     test(
-      'when refresh fails then returns original auth header value.',
+      'when refresh fails, then returns original auth header value.',
       () async {
         delegate.setRefresh(() => RefreshAuthKeyResult.failedOther);
 
@@ -31,7 +31,8 @@ void main() {
       },
     );
 
-    test('when refresh succeeds then returns new auth header value.', () async {
+    test('when refresh succeeds, '
+        'then returns new auth header value.', () async {
       delegate.setRefresh(() {
         delegate.setAuthKey('refreshed-token');
         return RefreshAuthKeyResult.success;
@@ -43,7 +44,7 @@ void main() {
       expect(delegate.refreshCallCount, 1);
     });
 
-    test('when multiple refreshAuthKey calls are made concurrently '
+    test('when multiple refreshAuthKey calls are made concurrently, '
         'then only one call performs refresh due to locking.', () async {
       delegate.setRefresh(() async {
         await Future.delayed(const Duration(milliseconds: 50));
@@ -57,7 +58,7 @@ void main() {
       expect(delegate.refreshCallCount, 1);
     });
 
-    test('when multiple authHeaderValue calls are made concurrently '
+    test('when multiple authHeaderValue calls are made concurrently, '
         'then only one call performs refresh due to locking.', () async {
       delegate.setRefresh(() async {
         await Future.delayed(const Duration(milliseconds: 50));
@@ -73,7 +74,7 @@ void main() {
     });
 
     test(
-      'when refresh is already in progress and new call is made '
+      'when refresh is already in progress and new call is made, '
       'then it waits for existing refresh to complete and no new refresh is started.',
       () async {
         delegate.setRefresh(() async {
@@ -93,7 +94,7 @@ void main() {
     );
 
     test(
-      'when multiple refreshAuthKey calls are made concurrently and refresh fails '
+      'when multiple refreshAuthKey calls are made concurrently and refresh fails, '
       'then all calls return false and no new refresh is started.',
       () async {
         delegate.setRefresh(() async {
@@ -110,7 +111,7 @@ void main() {
     );
 
     test(
-      'when first refresh fails with unauthorized and auth header value does not change '
+      'when first refresh fails with unauthorized and auth header value does not change, '
       'then subsequent refresh calls with same auth header value are skipped.',
       () async {
         delegate.setRefresh(() => RefreshAuthKeyResult.failedUnauthorized);
@@ -125,7 +126,7 @@ void main() {
     );
 
     test(
-      'when first refresh fails with other error and auth header value does not change '
+      'when first refresh fails with other error and auth header value does not change, '
       'then subsequent refresh calls are allowed.',
       () async {
         delegate.setRefresh(() => RefreshAuthKeyResult.failedOther);
@@ -143,7 +144,7 @@ void main() {
     );
 
     test(
-      'when first refresh fails with unauthorized and auth header value changes '
+      'when first refresh fails with unauthorized and auth header value changes, '
       'then subsequent refresh calls are allowed.',
       () async {
         delegate.setRefresh(() => RefreshAuthKeyResult.failedUnauthorized);
@@ -162,7 +163,7 @@ void main() {
     );
 
     test(
-      'when refresh fails with unauthorized and auth header value changes to null '
+      'when refresh fails with unauthorized and auth header value changes to null, '
       'then subsequent refresh calls are allowed.',
       () async {
         delegate.setRefresh(() => RefreshAuthKeyResult.failedUnauthorized);
@@ -181,7 +182,7 @@ void main() {
     );
 
     test(
-      'when first refresh fails with unauthorized and auth header value does not change, but force parameter is true '
+      'when first refresh fails with unauthorized and auth header value does not change, but force parameter is true, '
       'then refresh is performed regardless of the previous refresh result.',
       () async {
         delegate.setRefresh(() => RefreshAuthKeyResult.failedUnauthorized);
@@ -196,7 +197,7 @@ void main() {
       },
     );
 
-    test('when refreshing throws an exception '
+    test('when refreshing throws an exception, '
         'then refreshAuthKey rethrows the exception.', () async {
       delegate.setRefresh(() => throw Exception('Refresh failed'));
 
@@ -205,7 +206,7 @@ void main() {
     });
 
     test(
-      'when multiple refreshAuthKey calls are made concurrently and refresh throws an exception '
+      'when multiple refreshAuthKey calls are made concurrently and refresh throws an exception, '
       'then refreshAuthKey rethrows the exception for all calls.',
       () async {
         delegate.setRefresh(() => throw Exception('Refresh failed'));
@@ -220,7 +221,7 @@ void main() {
       },
     );
 
-    test('when refreshing throws an exception '
+    test('when refreshing throws an exception, '
         'then authHeaderValue rethrows the exception.', () async {
       delegate.setRefresh(() => throw Exception('Refresh failed'));
 
@@ -229,7 +230,7 @@ void main() {
     });
 
     test(
-      'when multiple authHeaderValue calls are made concurrently and refresh throws an exception '
+      'when multiple authHeaderValue calls are made concurrently and refresh throws an exception, '
       'then authHeaderValue rethrows the exception for all calls.',
       () async {
         delegate.setRefresh(() => throw Exception('Refresh failed'));
@@ -244,7 +245,7 @@ void main() {
       },
     );
 
-    test('when calling refreshAuthKey without setting force parameter '
+    test('when calling refreshAuthKey without setting force parameter, '
         'then delegate is called with force set to false.', () async {
       delegate.setRefresh(() => RefreshAuthKeyResult.failedUnauthorized);
 
@@ -253,7 +254,7 @@ void main() {
       expect(delegate.refreshCallForced, [false]);
     });
 
-    test('when calling refreshAuthKey with force parameter set to true '
+    test('when calling refreshAuthKey with force parameter set to true, '
         'then delegate is also called with force set to true.', () async {
       delegate.setRefresh(() => RefreshAuthKeyResult.failedUnauthorized);
 

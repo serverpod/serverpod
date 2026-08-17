@@ -14,7 +14,7 @@ void main() {
 
   group(
     'Given a Serverpod configured without a database, '
-    'when a session accesses the database, ',
+    'when a session accesses the database,',
     () {
       late Serverpod pod;
       late InternalSession session;

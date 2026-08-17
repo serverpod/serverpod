@@ -55,7 +55,7 @@ void main() {
       authToken = const Uuid().v4();
       authKeyManager.put(authToken);
     });
-    group('connected to an authenticated streaming method', () {
+    group('connected to an authenticated streaming method,', () {
       late Completer<dynamic> streamClosedCompleter;
       late Completer<int> valueReceivedCompleter;
       late StreamController<int> inStream;
@@ -89,7 +89,8 @@ void main() {
       });
 
       test(
-        'when the authenticated user is revoked then the stream is closed with an error.',
+        'when the authenticated user is revoked, '
+        'then the stream is closed with an error.',
         () async {
           await expectLater(
             session.messages.authenticationRevoked(
@@ -106,7 +107,8 @@ void main() {
       );
 
       test(
-        'when the authentication id is revoked then the stream is closed with an error.',
+        'when the authentication id is revoked, '
+        'then the stream is closed with an error.',
         () async {
           await expectLater(
             session.messages.authenticationRevoked(
@@ -123,7 +125,8 @@ void main() {
       );
 
       test(
-        'when an unrelated authentication id is revoked then the stream can still be used.',
+        'when an unrelated authentication id is revoked, '
+        'then the stream can still be used.',
         () async {
           await expectLater(
             session.messages.authenticationRevoked(
@@ -145,7 +148,8 @@ void main() {
       );
 
       test(
-        'when the required scope for an endpoint is revoked then the stream is closed with an error.',
+        'when the required scope for an endpoint is revoked, '
+        'then the stream is closed with an error.',
         () async {
           await expectLater(
             session.messages.authenticationRevoked(
@@ -162,7 +166,8 @@ void main() {
       );
 
       test(
-        'when a scope not required for an endpoint is revoked then the stream can still be used.',
+        'when a scope not required for an endpoint is revoked, '
+        'then the stream can still be used.',
         () async {
           await expectLater(
             session.messages.authenticationRevoked(
@@ -182,7 +187,7 @@ void main() {
       );
     });
 
-    group('connected to two authenticated streaming methods', () {
+    group('connected to two authenticated streaming methods,', () {
       late Completer<dynamic> streamClosedCompleter1;
       late Completer<int> valueReceivedCompleter1;
       late StreamController<int> inStream1;
@@ -246,7 +251,8 @@ void main() {
       });
 
       test(
-        'when the authenticated user is revoked then streams are closed with errors.',
+        'when the authenticated user is revoked, '
+        'then streams are closed with errors.',
         () async {
           await expectLater(
             session.messages.authenticationRevoked(
@@ -267,7 +273,8 @@ void main() {
       );
 
       test(
-        'when the required scope for an endpoint is revoked then streams are closed with an error.',
+        'when the required scope for an endpoint is revoked, '
+        'then streams are closed with an error.',
         () async {
           await expectLater(
             session.messages.authenticationRevoked(
@@ -289,7 +296,7 @@ void main() {
     });
 
     group(
-      'connected to both an authenticated and an unauthenticated streaming method',
+      'connected to both an authenticated and an unauthenticated streaming method,',
       () {
         late Completer authenticatedStreamClosedCompleter;
         late Completer<int> unauthenticatedValueReceivedCompleter;
@@ -343,7 +350,8 @@ void main() {
         });
 
         test(
-          'when the authenticated user is revoked then the authenticated stream is closed',
+          'when the authenticated user is revoked, '
+          'then the authenticated stream is closed',
           () async {
             await expectLater(
               session.messages.authenticationRevoked(
@@ -361,7 +369,8 @@ void main() {
         );
 
         test(
-          'when the authenticated user is revoked then the unauthenticated stream can still be used',
+          'when the authenticated user is revoked, '
+          'then the unauthenticated stream can still be used',
           () async {
             await expectLater(
               session.messages.authenticationRevoked(

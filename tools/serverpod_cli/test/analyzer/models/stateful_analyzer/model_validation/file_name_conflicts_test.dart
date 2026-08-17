@@ -8,8 +8,9 @@ import '../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
-  group('Given two models with the same generated file path when analyzing', () {
-    var modelSources = [
+  group('Given two models with the same generated file path, '
+      'when analyzing,', () {
+    late var modelSources = [
       ModelSourceBuilder()
           .withFileName('example')
           .withYamlSourcePathParts(['lib', 'src'])
@@ -35,7 +36,7 @@ void main() {
           .build(),
     ];
 
-    var collector = CodeGenerationCollector();
+    late var collector = CodeGenerationCollector();
     StatefulAnalyzer(
       config,
       modelSources,
@@ -63,9 +64,10 @@ void main() {
   });
 
   group(
-    'Given a project model and a module model with the same generated file path when analyzing',
+    'Given a project model and a module model with the same generated file path, '
+    'when analyzing,',
     () {
-      var modelSources = [
+      late var modelSources = [
         ModelSourceBuilder()
             .withModuleAlias('my_module')
             .withFileName('example')
@@ -86,7 +88,7 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       StatefulAnalyzer(
         config,
         modelSources,
@@ -104,7 +106,7 @@ void main() {
 
   for (var fileName in ['client', 'endpoints', 'protocol']) {
     group(
-      'Given a model with the reserved file name "$fileName" when analyzing',
+      'Given a model with the reserved file name "$fileName", when analyzing,',
       () {
         late final modelSources = [
           ModelSourceBuilder().withFileName(fileName).withYaml(

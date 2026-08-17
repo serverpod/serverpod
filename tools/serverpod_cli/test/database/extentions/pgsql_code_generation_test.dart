@@ -11,14 +11,15 @@ import '../../test_util/builders/database/table_definition_builder.dart';
 import '../../test_util/builders/model_class_definition_builder.dart';
 
 void main() {
-  group('Given classes with a circular relation when generating migration', () {
+  group('Given classes with a circular relation, '
+      'when generating migration,', () {
     /**
      * Citizen -> Company -> Town -> Citizen
      */
     var citizen = 'citizen';
     var company = 'company';
     var town = 'town';
-    var models = [
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(citizen.sentenceCase)
           .withFileName(citizen)
@@ -42,7 +43,7 @@ void main() {
           .build(),
     ];
 
-    var databaseDefinition = createDatabaseDefinitionFromModels(
+    late var databaseDefinition = createDatabaseDefinitionFromModels(
       models,
       'example',
       [],
@@ -55,7 +56,7 @@ void main() {
     group(
       'then pgsql file for migration',
       () {
-        var pgsqlFile = databaseDefinition.toPgSql(installedModules: []);
+        late var pgsqlFile = databaseDefinition.toPgSql(installedModules: []);
         test(
           'has foreign key creation for citizen after company table is created.',
           () {
@@ -130,7 +131,8 @@ ALTER TABLE ONLY "town"
   });
 
   test(
-    'Given a database definition with only an un-managed table then no sql definition for that table is created.',
+    'Given a database definition with only an un-managed table, '
+    'then no sql definition for that table is created.',
     () {
       var databaseDefinition = DatabaseDefinitionBuilder()
           .withTable(
@@ -148,7 +150,8 @@ ALTER TABLE ONLY "town"
   );
 
   test(
-    'Given a database definition with no UUIDv7 default in any of the tables, then code for generating random UUIDv7 is not added.',
+    'Given a database definition with no UUIDv7 default in any of the tables, '
+    'then code for generating random UUIDv7 is not added.',
     () {
       var databaseDefinition = DatabaseDefinitionBuilder().build();
       var pgsql = databaseDefinition.toPgSql(installedModules: []);
@@ -161,7 +164,8 @@ ALTER TABLE ONLY "town"
   );
 
   test(
-    'Given a database definition with UUIDv7 default value in one of the tables, then the code for generating random UUIDv7 is added.',
+    'Given a database definition with UUIDv7 default value in one of the tables, '
+    'then the code for generating random UUIDv7 is added.',
     () {
       var citizen = 'citizen';
       var models = [
@@ -194,7 +198,8 @@ ALTER TABLE ONLY "town"
   );
 
   test(
-    'Given a database definition with UUIDv7 as id type in one of the tables, then the code for generating random UUIDv7 is added.',
+    'Given a database definition with UUIDv7 as id type in one of the tables, '
+    'then the code for generating random UUIDv7 is added.',
     () {
       var citizen = 'citizen';
       var models = [
@@ -235,7 +240,8 @@ END
 ''';
 
   test(
-    'Given a database definition with no Vector field in any of the tables, then code for creating vector extension is not generated.',
+    'Given a database definition with no Vector field in any of the tables, '
+    'then code for creating vector extension is not generated.',
     () {
       var databaseDefinition = DatabaseDefinitionBuilder().build();
       var pgsql = databaseDefinition.toPgSql(installedModules: []);
@@ -244,9 +250,9 @@ END
     },
   );
 
-  group('Given a table definition with a vector field', () {
+  group('Given a table definition with a vector field,', () {
     var modelName = 'vectorModel';
-    var models = [
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(modelName.sentenceCase)
           .withFileName(modelName)
@@ -255,7 +261,7 @@ END
           .build(),
     ];
 
-    var databaseDefinition = createDatabaseDefinitionFromModels(
+    late var databaseDefinition = createDatabaseDefinitionFromModels(
       models,
       'example',
       [],
@@ -269,7 +275,8 @@ END
     });
 
     test(
-      'when defining an HNSW index with no custom parameters, then the SQL should have no parameters.',
+      'when defining an HNSW index with no custom parameters, '
+      'then the SQL should have no parameters.',
       () {
         var indexName = '${modelName}_embedding_hnsw_idx';
         var index = IndexDefinitionBuilder()
@@ -297,7 +304,8 @@ END
     );
 
     test(
-      'when defining an IVFFlat index with custom parameters, then the SQL should have no parameters.',
+      'when defining an IVFFlat index with custom parameters, '
+      'then the SQL should have no parameters.',
       () {
         var indexName = '${modelName}_embedding_ivfflat_idx';
         var index = IndexDefinitionBuilder()
@@ -325,7 +333,8 @@ END
     );
 
     test(
-      'Given a table definition with an HNSW index with custom parameters on a vector field, then the SQL should include the correct HNSW parameters.',
+      'Given a table definition with an HNSW index with custom parameters on a vector field, '
+      'then the SQL should include the correct HNSW parameters.',
       () {
         var indexName = '${modelName}_embedding_hnsw_idx';
         var index = IndexDefinitionBuilder()
@@ -355,7 +364,8 @@ END
     );
 
     test(
-      'Given a table definition with an IVFFlat index with custom parameters on a vector field, then the SQL should include the correct IVFFlat parameters.',
+      'Given a table definition with an IVFFlat index with custom parameters on a vector field, '
+      'then the SQL should include the correct IVFFlat parameters.',
       () {
         var indexName = '${modelName}_embedding_ivfflat_idx';
         var index = IndexDefinitionBuilder()
@@ -385,7 +395,8 @@ END
     );
 
     test(
-      'when creating vector indexes with different distances, then they should generate SQL with correct ops parameters.',
+      'when creating vector indexes with different distances, '
+      'then they should generate SQL with correct ops parameters.',
       () {
         var distanceFunctions = {
           VectorDistanceFunction.l2: 'vector_l2_ops',
@@ -426,7 +437,8 @@ END
     );
 
     test(
-      'when defining a BTREE index on a vector field, then the SQL should not include any vector distance ops.',
+      'when defining a BTREE index on a vector field, '
+      'then the SQL should not include any vector distance ops.',
       () {
         var indexName = '${modelName}_embedding_btree_idx';
         var index = IndexDefinitionBuilder()
@@ -454,7 +466,8 @@ END
 
     for (var indexType in ['gist', 'spgist']) {
       test(
-        'when defining a $indexType index on a geography field, then the SQL should use $indexType with no operator class.',
+        'when defining a $indexType index on a geography field, '
+        'then the SQL should use $indexType with no operator class.',
         () {
           var indexName = '${modelName}_location_${indexType}_idx';
           var index = IndexDefinitionBuilder()
@@ -482,9 +495,9 @@ END
     }
   });
 
-  group('Given a table definition with a half vector field', () {
+  group('Given a table definition with a half vector field,', () {
     var modelName = 'halfVectorModel';
-    var models = [
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(modelName.sentenceCase)
           .withFileName(modelName)
@@ -497,7 +510,7 @@ END
           .build(),
     ];
 
-    var databaseDefinition = createDatabaseDefinitionFromModels(
+    late var databaseDefinition = createDatabaseDefinitionFromModels(
       models,
       'example',
       [],
@@ -511,7 +524,8 @@ END
     });
 
     test(
-      'when creating half vector indexes with different distances, then they should generate SQL with correct ops parameters.',
+      'when creating half vector indexes with different distances, '
+      'then they should generate SQL with correct ops parameters.',
       () {
         var distanceFunctions = {
           VectorDistanceFunction.l2: 'halfvec_l2_ops',
@@ -552,9 +566,9 @@ END
     );
   });
 
-  group('Given a table definition with a sparse vector field', () {
+  group('Given a table definition with a sparse vector field,', () {
     var modelName = 'sparseVectorModel';
-    var models = [
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(modelName.sentenceCase)
           .withFileName(modelName)
@@ -567,7 +581,7 @@ END
           .build(),
     ];
 
-    var databaseDefinition = createDatabaseDefinitionFromModels(
+    late var databaseDefinition = createDatabaseDefinitionFromModels(
       models,
       'example',
       [],
@@ -581,7 +595,8 @@ END
     });
 
     test(
-      'when creating sparse vector indexes with different distances, then they should generate SQL with correct ops parameters.',
+      'when creating sparse vector indexes with different distances, '
+      'then they should generate SQL with correct ops parameters.',
       () {
         var distanceFunctions = {
           VectorDistanceFunction.l2: 'sparsevec_l2_ops',
@@ -622,9 +637,9 @@ END
     );
   });
 
-  group('Given a table definition with a bit vector field', () {
+  group('Given a table definition with a bit vector field,', () {
     var modelName = 'bitModel';
-    var models = [
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(modelName.sentenceCase)
           .withFileName(modelName)
@@ -633,7 +648,7 @@ END
           .build(),
     ];
 
-    var databaseDefinition = createDatabaseDefinitionFromModels(
+    late var databaseDefinition = createDatabaseDefinitionFromModels(
       models,
       'example',
       [],
@@ -647,7 +662,8 @@ END
     });
 
     test(
-      'when creating bit vector indexes with different distances, then they should generate SQL with correct ops parameters.',
+      'when creating bit vector indexes with different distances, '
+      'then they should generate SQL with correct ops parameters.',
       () {
         var distanceFunctions = {
           VectorDistanceFunction.hamming: 'bit_hamming_ops',
@@ -686,10 +702,10 @@ END
     );
   });
 
-  group('Given a table definition with a gin index', () {
+  group('Given a table definition with a gin index,', () {
     var modelName = 'myModel';
     var fieldName = 'jdoc';
-    var models = [
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(modelName.sentenceCase)
           .withFileName(modelName)
@@ -701,7 +717,7 @@ END
           .build(),
     ];
 
-    var databaseDefinition = createDatabaseDefinitionFromModels(
+    late var databaseDefinition = createDatabaseDefinitionFromModels(
       models,
       'example',
       [],
@@ -709,7 +725,8 @@ END
     var tableDefinition = databaseDefinition.tables.first;
 
     test(
-      'when creating a gin index without an explicit operator class, then the SQL uses USING gin without an operator class suffix.',
+      'when creating a gin index without an explicit operator class, '
+      'then the SQL uses USING gin without an operator class suffix.',
       () {
         var indexName = '${modelName}_jsonb_idx';
         var index = IndexDefinitionBuilder()
@@ -812,7 +829,7 @@ END
     },
   );
 
-  group('Given a column migration with a type change', () {
+  group('Given a column migration with a type change,', () {
     test(
       'when changing from json to jsonb, '
       'then the SQL uses SET DATA TYPE jsonb with USING cast.',
@@ -948,7 +965,9 @@ END
 ''';
 
   test(
-    'Given a database definition with no geography field when toPgSql is called then PostGIS extension creation code is not included.',
+    'Given a database definition with no geography field, '
+    'when toPgSql is called, '
+    'then PostGIS extension creation code is not included.',
     () {
       var databaseDefinition = DatabaseDefinitionBuilder().build();
       var pgsql = databaseDefinition.toPgSql(installedModules: []);
@@ -957,9 +976,9 @@ END
     },
   );
 
-  group('Given a table definition with a GeographyPoint field', () {
+  group('Given a table definition with a GeographyPoint field,', () {
     var modelName = 'geoPointModel';
-    var models = [
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(modelName.sentenceCase)
           .withFileName(modelName)
@@ -968,14 +987,15 @@ END
           .build(),
     ];
 
-    var databaseDefinition = createDatabaseDefinitionFromModels(
+    late var databaseDefinition = createDatabaseDefinitionFromModels(
       models,
       'example',
       [],
     );
 
     test(
-      'when toPgSql is called then PostGIS extension creation code is included.',
+      'when toPgSql is called, '
+      'then PostGIS extension creation code is included.',
       () {
         var pgsql = databaseDefinition.toPgSql(installedModules: []);
         expect(pgsql, contains(createPostgisExtension));
@@ -983,7 +1003,8 @@ END
     );
 
     test(
-      'when toPgSql is called then the column uses geography(Point,4326) type.',
+      'when toPgSql is called, '
+      'then the column uses geography(Point,4326) type.',
       () {
         var pgsql = databaseDefinition.toPgSql(installedModules: []);
         expect(pgsql, contains('"location" geography(Point,4326) NOT NULL'));
@@ -991,9 +1012,9 @@ END
     );
   });
 
-  group('Given a table definition with a GeographyLineString field', () {
+  group('Given a table definition with a GeographyLineString field,', () {
     var modelName = 'geoLineStringModel';
-    var models = [
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(modelName.sentenceCase)
           .withFileName(modelName)
@@ -1002,14 +1023,15 @@ END
           .build(),
     ];
 
-    var databaseDefinition = createDatabaseDefinitionFromModels(
+    late var databaseDefinition = createDatabaseDefinitionFromModels(
       models,
       'example',
       [],
     );
 
     test(
-      'when toPgSql is called then PostGIS extension creation code is included.',
+      'when toPgSql is called, '
+      'then PostGIS extension creation code is included.',
       () {
         var pgsql = databaseDefinition.toPgSql(installedModules: []);
         expect(pgsql, contains(createPostgisExtension));
@@ -1017,7 +1039,8 @@ END
     );
 
     test(
-      'when toPgSql is called then the column uses geography(LineString,4326) type.',
+      'when toPgSql is called, '
+      'then the column uses geography(LineString,4326) type.',
       () {
         var pgsql = databaseDefinition.toPgSql(installedModules: []);
         expect(pgsql, contains('"route" geography(LineString,4326) NOT NULL'));
@@ -1025,9 +1048,9 @@ END
     );
   });
 
-  group('Given a table definition with a GeographyPolygon field', () {
+  group('Given a table definition with a GeographyPolygon field,', () {
     var modelName = 'geoPolygonModel';
-    var models = [
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(modelName.sentenceCase)
           .withFileName(modelName)
@@ -1036,14 +1059,15 @@ END
           .build(),
     ];
 
-    var databaseDefinition = createDatabaseDefinitionFromModels(
+    late var databaseDefinition = createDatabaseDefinitionFromModels(
       models,
       'example',
       [],
     );
 
     test(
-      'when toPgSql is called then PostGIS extension creation code is included.',
+      'when toPgSql is called, '
+      'then PostGIS extension creation code is included.',
       () {
         var pgsql = databaseDefinition.toPgSql(installedModules: []);
         expect(pgsql, contains(createPostgisExtension));
@@ -1051,7 +1075,8 @@ END
     );
 
     test(
-      'when toPgSql is called then the column uses geography(Polygon,4326) type.',
+      'when toPgSql is called, '
+      'then the column uses geography(Polygon,4326) type.',
       () {
         var pgsql = databaseDefinition.toPgSql(installedModules: []);
         expect(pgsql, contains('"region" geography(Polygon,4326) NOT NULL'));
@@ -1060,10 +1085,10 @@ END
   });
 
   group(
-    'Given a table definition with a GeographyGeometryCollection field',
+    'Given a table definition with a GeographyGeometryCollection field,',
     () {
       var modelName = 'geoCollectionModel';
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(modelName.sentenceCase)
             .withFileName(modelName)
@@ -1072,14 +1097,15 @@ END
             .build(),
       ];
 
-      var databaseDefinition = createDatabaseDefinitionFromModels(
+      late var databaseDefinition = createDatabaseDefinitionFromModels(
         models,
         'example',
         [],
       );
 
       test(
-        'when toPgSql is called then PostGIS extension creation code is included.',
+        'when toPgSql is called, '
+        'then PostGIS extension creation code is included.',
         () {
           var pgsql = databaseDefinition.toPgSql(installedModules: []);
           expect(pgsql, contains(createPostgisExtension));
@@ -1087,7 +1113,8 @@ END
       );
 
       test(
-        'when toPgSql is called then the column uses geography(GeometryCollection,4326) type.',
+        'when toPgSql is called, '
+        'then the column uses geography(GeometryCollection,4326) type.',
         () {
           var pgsql = databaseDefinition.toPgSql(installedModules: []);
           expect(

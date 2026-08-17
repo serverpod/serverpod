@@ -6,19 +6,20 @@ import '../test_utils/storage_delegate.dart';
 void main() {
   late TestCachedAuthSuccessStorage storage;
 
-  group('Given an uninitialized CachedClientAuthSuccessStorage', () {
+  group('Given an uninitialized CachedClientAuthSuccessStorage,', () {
     setUp(() {
       storage = TestCachedAuthSuccessStorage.create();
     });
 
-    test('when calling get then it returns null', () async {
+    test('when calling get, then it returns null', () async {
       final result = await storage.get();
 
       expect(result, isNull);
     });
 
     test(
-      'when calling get multiple times then null data is only retrieved from storage once.',
+      'when calling get multiple times, '
+      'then null data is only retrieved from storage once.',
       () async {
         await storage.get();
         await storage.get();
@@ -28,7 +29,8 @@ void main() {
     );
 
     test(
-      'when calling set with AuthSuccess data then stored data matches set data.',
+      'when calling set with AuthSuccess data, '
+      'then stored data matches set data.',
       () async {
         await storage.set(_authSuccess);
 
@@ -39,13 +41,13 @@ void main() {
     );
   });
 
-  group('Given a CachedClientAuthSuccessStorage with data in storage', () {
+  group('Given a CachedClientAuthSuccessStorage with data in storage,', () {
     setUp(() async {
       storage = TestCachedAuthSuccessStorage.create();
       await storage.delegate.set(_authSuccess);
     });
 
-    test('when calling get then data is retrieved from storage', () async {
+    test('when calling get, then data is retrieved from storage', () async {
       final result = await storage.get();
 
       expect(result, isNotNull);
@@ -53,7 +55,8 @@ void main() {
     });
 
     test(
-      'when calling get multiple times then data is only retrieved from storage once.',
+      'when calling get multiple times, '
+      'then data is only retrieved from storage once.',
       () async {
         final result = await storage.get();
         final resultCached = await storage.get();
@@ -64,7 +67,8 @@ void main() {
     );
 
     test(
-      'when calling clearCache before get then subsequent get retrieves from delegate storage.',
+      'when calling clearCache before get, '
+      'then subsequent get retrieves from delegate storage.',
       () async {
         await storage.get();
 
@@ -75,8 +79,10 @@ void main() {
       },
     );
 
-    group('when calling set with a new AuthSuccess data', () {
-      final authSuccessNew = _authSuccess.copyWith(token: 'different-token');
+    group('when calling set with a new AuthSuccess data,', () {
+      late final authSuccessNew = _authSuccess.copyWith(
+        token: 'different-token',
+      );
 
       setUp(() async {
         await storage.set(authSuccessNew);
@@ -95,7 +101,7 @@ void main() {
       });
     });
 
-    test('when calling set with null then stored data is null.', () async {
+    test('when calling set with null, then stored data is null.', () async {
       await storage.set(null);
 
       final cached = await storage.get();
@@ -104,12 +110,12 @@ void main() {
     });
   });
 
-  group('Given storage operations that throw exceptions', () {
+  group('Given storage operations that throw exceptions,', () {
     setUp(() {
       storage = TestCachedAuthSuccessStorage.create();
     });
 
-    test('when calling set then it propagates the exception.', () async {
+    test('when calling set, then it propagates the exception.', () async {
       storage.delegate.setOverride = () => throw Exception('Error on set');
 
       await expectLater(
@@ -124,7 +130,7 @@ void main() {
       );
     });
 
-    test('when calling get then it propagates the exception.', () async {
+    test('when calling get, then it propagates the exception.', () async {
       storage.delegate.getOverride = () => throw Exception('Error on get');
 
       await expectLater(

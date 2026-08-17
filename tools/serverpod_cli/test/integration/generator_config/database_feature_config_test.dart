@@ -26,7 +26,9 @@ void main() {
   });
 
   test(
-    'Given a generator.yaml without features key when loading GeneratorConfig then database feature is enabled by default.',
+    'Given a generator.yaml without features key, '
+    'when loading GeneratorConfig, '
+    'then database feature is enabled by default.',
     () async {
       var projectDir = createMockServerpodProject(
         projectName: 'my_project',
@@ -46,7 +48,9 @@ type: server
   );
 
   test(
-    'Given a generator.yaml with features database set to true when loading GeneratorConfig then database feature is enabled.',
+    'Given a generator.yaml with features database set to true, '
+    'when loading GeneratorConfig, '
+    'then database feature is enabled.',
     () async {
       var projectDir = createMockServerpodProject(
         projectName: 'my_project',
@@ -68,7 +72,9 @@ features:
   );
 
   test(
-    'Given a generator.yaml with features database set to false when loading GeneratorConfig then database feature is disabled.',
+    'Given a generator.yaml with features database set to false, '
+    'when loading GeneratorConfig, '
+    'then database feature is disabled.',
     () async {
       var projectDir = createMockServerpodProject(
         projectName: 'my_project',
@@ -90,7 +96,9 @@ features:
   );
 
   test(
-    'Given a generator.yaml with empty features map when loading GeneratorConfig then database feature is enabled by default.',
+    'Given a generator.yaml with empty features map, '
+    'when loading GeneratorConfig, '
+    'then database feature is enabled by default.',
     () async {
       var projectDir = createMockServerpodProject(
         projectName: 'my_project',
@@ -111,7 +119,9 @@ features: {}
   );
 
   test(
-    'Given a generator.yaml with features set to null when loading GeneratorConfig then database feature is enabled by default.',
+    'Given a generator.yaml with features set to null, '
+    'when loading GeneratorConfig, '
+    'then database feature is enabled by default.',
     () async {
       var projectDir = createMockServerpodProject(
         projectName: 'my_project',
@@ -132,7 +142,9 @@ features:
   );
 
   test(
-    'Given project without config directory when loading GeneratorConfig then database feature is disabled by default.',
+    'Given project without config directory, '
+    'when loading GeneratorConfig, '
+    'then database feature is disabled by default.',
     () async {
       var projectDir = createMockServerpodProject(
         projectName: 'my_project',
@@ -149,7 +161,8 @@ features:
   );
 
   group(
-    'Given a generator.yaml with invalid feature value when loading GeneratorConfig',
+    'Given a generator.yaml with invalid feature value, '
+    'when loading GeneratorConfig,',
     () {
       late GeneratorConfig config;
       setUp(() async {
@@ -178,7 +191,8 @@ features:
       );
 
       test(
-        'when loading GeneratorConfig then a warning is logged with source span.',
+        'when loading GeneratorConfig, '
+        'then a warning is logged with source span.',
         () async {
           expect(testLogger.output.warnings, hasLength(1));
           expect(
@@ -204,7 +218,8 @@ features:
   );
 
   group(
-    'Given a generator.yaml with null feature value when loading GeneratorConfig',
+    'Given a generator.yaml with null feature value, '
+    'when loading GeneratorConfig,',
     () {
       late GeneratorConfig config;
       setUp(() async {

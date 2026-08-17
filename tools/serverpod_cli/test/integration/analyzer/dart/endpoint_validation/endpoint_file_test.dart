@@ -20,9 +20,9 @@ void main() {
     testProjectDirectory.deleteSync(recursive: true);
   });
 
-  group('Given an endpoint file with nothing defined when analyzed', () {
-    var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
+  group('Given an endpoint file with nothing defined, when analyzed,', () {
+    late var collector = CodeGenerationCollector();
+    late var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
 
@@ -47,9 +47,9 @@ void main() {
     });
   });
 
-  group('Given multiple valid endpoint files when analyzed', () {
-    var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
+  group('Given multiple valid endpoint files, when analyzed,', () {
+    late var collector = CodeGenerationCollector();
+    late var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
 
@@ -95,9 +95,9 @@ class ExampleEndpointTwo extends Endpoint {
     });
   });
 
-  group('Given a valid endpoint stored in a subdirectory when analyzed', () {
-    var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
+  group('Given a valid endpoint stored in a subdirectory, when analyzed,', () {
+    late var collector = CodeGenerationCollector();
+    late var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
 
@@ -144,10 +144,11 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
-    'Given a valid endpoint file with name ending with _test.dart when analyzed',
+    'Given a valid endpoint file with name ending with _test.dart, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 

@@ -9,7 +9,7 @@ import '../test_utils/anonymous_idp_test_fixture.dart';
 
 void main() {
   withServerpod(
-    'Given login request with no previous attempts',
+    'Given login request with no previous attempts,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -34,7 +34,7 @@ void main() {
   );
 
   withServerpod(
-    'Given login request within configured rate limit with existing request attempt',
+    'Given login request within configured rate limit with existing request attempt,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -69,7 +69,7 @@ void main() {
   );
 
   withServerpod(
-    'Given login request exceeding configured rate limit',
+    'Given login request exceeding configured rate limit,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -106,7 +106,7 @@ void main() {
   );
 
   withServerpod(
-    'Given rate limit of 1 and an existing request attempt with a different IP address',
+    'Given rate limit of 1 and an existing request attempt with a different IP address,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -161,7 +161,7 @@ void main() {
   );
 
   withServerpod(
-    'Given onBeforeAnonymousAccountCreated callback configured to receive the token',
+    'Given onBeforeAnonymousAccountCreated callback configured to receive the token,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -201,7 +201,7 @@ void main() {
   );
 
   withServerpod(
-    'Given onBeforeAnonymousAccountCreated configured to block login attempts',
+    'Given onBeforeAnonymousAccountCreated configured to block login attempts,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -228,7 +228,8 @@ void main() {
       });
 
       test(
-        'when logging in, then it is blocked with AnonymousAccountBlockedException exception',
+        'when logging in, '
+        'then it is blocked with AnonymousAccountBlockedException exception',
         () async {
           await expectLater(
             () => fixture.anonymousIdp.login(session),
@@ -242,7 +243,7 @@ void main() {
 
   withServerpod(
     'Given login request with onAfterAuthUserCreated and '
-    'onBeforeAuthUserCreated callbacks configured',
+    'onBeforeAuthUserCreated callbacks configured,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;

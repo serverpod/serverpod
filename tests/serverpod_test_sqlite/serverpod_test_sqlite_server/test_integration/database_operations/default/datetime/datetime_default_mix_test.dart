@@ -14,7 +14,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "dateTimeDefaultAndDefaultModel" field value should match the default value',
+      'when creating a record in the database with an unsafe query, '
+      'then the "dateTimeDefaultAndDefaultModel" field value should match the default value',
       () async {
         await session.db.unsafeQuery(
           'INSERT INTO "${DateTimeDefaultMix.t.tableName}" DEFAULT VALUES',
@@ -28,7 +29,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "dateTimeDefaultAndDefaultPersist" field value should match the defaultPersist value',
+      'when creating a record in the database with an unsafe query, '
+      'then the "dateTimeDefaultAndDefaultPersist" field value should match the defaultPersist value',
       () async {
         await session.db.unsafeQuery(
           'INSERT INTO "${DateTimeDefaultMix.t.tableName}" DEFAULT VALUES',
@@ -42,7 +44,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "dateTimeDefaultModelAndDefaultPersist" field value should match the defaultPersist value',
+      'when creating a record in the database with an unsafe query, '
+      'then the "dateTimeDefaultModelAndDefaultPersist" field value should match the defaultPersist value',
       () async {
         await session.db.unsafeQuery(
           'INSERT INTO "${DateTimeDefaultMix.t.tableName}" DEFAULT VALUES',
@@ -56,7 +59,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with specific values, then the "dateTimeDefaultAndDefaultModel" field value should match the provided value',
+      'when creating a record in the database with specific values, '
+      'then the "dateTimeDefaultAndDefaultModel" field value should match the provided value',
       () async {
         var date = DateTime.parse('2024-05-10T22:00:00.000Z');
         var specificObject = DateTimeDefaultMix(
@@ -74,7 +78,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with specific values, then the "dateTimeDefaultAndDefaultPersist" field value should match the provided value',
+      'when creating a record in the database with specific values, '
+      'then the "dateTimeDefaultAndDefaultPersist" field value should match the provided value',
       () async {
         var date = DateTime.parse('2024-05-10T22:00:00.000Z');
         var specificObject = DateTimeDefaultMix(
@@ -92,7 +97,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with specific values, then the "dateTimeDefaultModelAndDefaultPersist" field value should match the provided value',
+      'when creating a record in the database with specific values, '
+      'then the "dateTimeDefaultModelAndDefaultPersist" field value should match the provided value',
       () async {
         var date = DateTime.parse('2024-05-10T22:00:00.000Z');
         var specificObject = DateTimeDefaultMix(

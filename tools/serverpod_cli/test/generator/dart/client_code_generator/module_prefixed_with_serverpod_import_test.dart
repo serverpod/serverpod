@@ -14,17 +14,20 @@ const projectName = 'example_project';
 const generator = DartClientCodeGenerator();
 
 void main() {
-  group('Given a model that references AuthUser from serverpod_auth_core', () {
-    var authCoreModule = ModuleConfigBuilder(
+  group('Given a model that references AuthUser from serverpod_auth_core,', () {
+    late var authCoreModule = ModuleConfigBuilder(
       'serverpod_auth_core',
       'serverpod_auth_core',
     ).build();
 
-    var config = GeneratorConfigBuilder().withName(projectName).withModules([
-      authCoreModule,
-    ]).build();
+    late var config = GeneratorConfigBuilder()
+        .withName(projectName)
+        .withModules([
+          authCoreModule,
+        ])
+        .build();
 
-    var myDomainData = ModelClassDefinitionBuilder()
+    late var myDomainData = ModelClassDefinitionBuilder()
         .withClassName('MyDomainData')
         .withFileName('my_domain_data')
         .withField(
@@ -44,7 +47,7 @@ void main() {
 
     var models = [myDomainData];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
@@ -58,8 +61,8 @@ void main() {
       '$fileName.dart',
     ]);
 
-    var myDomainDataCode = codeMap[getExpectedFilePath('my_domain_data')]!;
-    var compilationUnit = parseString(content: myDomainDataCode).unit;
+    late var myDomainDataCode = codeMap[getExpectedFilePath('my_domain_data')]!;
+    late var compilationUnit = parseString(content: myDomainDataCode).unit;
 
     test(
       'then the generated file does not have compilation errors',

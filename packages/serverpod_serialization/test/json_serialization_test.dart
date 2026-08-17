@@ -28,7 +28,9 @@ class _User implements SerializableModel, ProtocolSerialization {
 
 void main() {
   test(
-    'Given simple JSON data, when encoded using encode method, then output is stringified JSON',
+    'Given simple JSON data, '
+    'when encoded using encode method, '
+    'then output is stringified JSON',
     () {
       var jsonData = {'a': 1, 'b': 2};
       var stringifiedJson = SerializationManager.encode(jsonData);
@@ -37,7 +39,9 @@ void main() {
   );
 
   test(
-    'Given simple JSON data, when encoded using encode method with formatting, then output is formatted stringified JSON',
+    'Given simple JSON data, '
+    'when encoded using encode method with formatting, '
+    'then output is formatted stringified JSON',
     () {
       var jsonData = {'a': 1, 'b': 2};
       var stringifiedJson = SerializationManager.encode(
@@ -56,10 +60,11 @@ void main() {
   );
 
   group('Given user object with server only password field,', () {
-    _User user = _User(name: 'John', password: '123');
+    late _User user = _User(name: 'John', password: '123');
 
     test(
-      'when encoded using encodeForProtocol method, then password is excluded from the output',
+      'when encoded using encodeForProtocol method, '
+      'then password is excluded from the output',
       () {
         var stringifiedJson = SerializationManager.encodeForProtocol(user);
         expect(stringifiedJson, isNot(contains('password')));
@@ -67,7 +72,8 @@ void main() {
     );
 
     test(
-      'when a list of user objects is encoded using encodeForProtocol method, then passwords are excluded from the output',
+      'when a list of user objects is encoded using encodeForProtocol method, '
+      'then passwords are excluded from the output',
       () {
         var userList = [user];
         var stringifiedJson = SerializationManager.encodeForProtocol(userList);
@@ -76,7 +82,8 @@ void main() {
     );
 
     test(
-      'when a map containing a user object is encoded using encodeForProtocol method, then password is excluded from the output',
+      'when a map containing a user object is encoded using encodeForProtocol method, '
+      'then password is excluded from the output',
       () {
         var userMap = {'user': user};
         var stringifiedJson = SerializationManager.encodeForProtocol(userMap);
@@ -85,7 +92,8 @@ void main() {
     );
 
     test(
-      'when a map containing a list of user objects is encoded using encodeForProtocol method, then passwords are excluded from the output',
+      'when a map containing a list of user objects is encoded using encodeForProtocol method, '
+      'then passwords are excluded from the output',
       () {
         var userMap = {
           'users': [user],
@@ -100,7 +108,8 @@ void main() {
     var primitiveList = [1, 2.5, 'hello', true];
 
     test(
-      'when encoded using encodeForProtocol method, then output matches the input list',
+      'when encoded using encodeForProtocol method, '
+      'then output matches the input list',
       () {
         var stringifiedJson = SerializationManager.encodeForProtocol(
           primitiveList,
@@ -114,7 +123,8 @@ void main() {
     var primitiveMap = {'a': 1, 'b': 2.5, 'c': 'hello', 'd': true};
 
     test(
-      'when encoded using encodeForProtocol method, then output matches the input map',
+      'when encoded using encodeForProtocol method, '
+      'then output matches the input map',
       () {
         var stringifiedJson = SerializationManager.encodeForProtocol(
           primitiveMap,
@@ -127,10 +137,11 @@ void main() {
   group(
     'Given a map with complex nested structure containing object with server only password field,',
     () {
-      _User user = _User(name: 'John', password: '123');
+      late _User user = _User(name: 'John', password: '123');
 
       test(
-        'when encoded using encodeForProtocol method, then passwords are excluded from the output',
+        'when encoded using encodeForProtocol method, '
+        'then passwords are excluded from the output',
         () {
           var map = {
             'list': [user],
@@ -149,10 +160,11 @@ void main() {
   group(
     'Given a list with complex nested structure containing object with server only password field,',
     () {
-      _User user = _User(name: 'John', password: '123');
+      late _User user = _User(name: 'John', password: '123');
 
       test(
-        'when encoded using encodeForProtocol method, then passwords are excluded from the output',
+        'when encoded using encodeForProtocol method, '
+        'then passwords are excluded from the output',
         () {
           var list = [
             {'user': user},

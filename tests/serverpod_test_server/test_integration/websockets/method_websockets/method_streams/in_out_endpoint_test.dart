@@ -9,7 +9,7 @@ import '../../websocket_extensions.dart';
 
 void main() {
   group(
-    'Given a method stream connection to an endpoint that returns first stream value in',
+    'Given a method stream connection to an endpoint that returns first stream value in,',
     () {
       var endpoint = 'methodStreaming';
       var method = 'intReturnFromStream';
@@ -30,16 +30,16 @@ void main() {
         await webSocket.tryClose();
       });
 
-      group('when a value is passed in', () {
+      group('when a value is passed in,', () {
         late Completer<int> endpointResponse;
         late Completer<CloseMethodStreamCommand> closeMethodStreamCommand;
         late Completer<CloseMethodStreamCommand>
         closeMethodStreamParameterCommand;
-        TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
+        late TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
         var inputValue = 2;
 
         var inputParameter = 'stream';
-        var connectionId = const Uuid().v4obj();
+        late var connectionId = const Uuid().v4obj();
 
         setUp(() async {
           endpointResponse = Completer<int>();
@@ -165,7 +165,7 @@ void main() {
   );
 
   group(
-    'Given a method stream connection to an endpoint that streams list of ints based on input parameter',
+    'Given a method stream connection to an endpoint that streams list of ints based on input parameter,',
     () {
       var endpoint = 'methodStreaming';
       var method = 'intStreamFromValue';
@@ -186,13 +186,13 @@ void main() {
         await webSocket.tryClose();
       });
 
-      group('when input value 4 is passed in', () {
+      group('when input value 4 is passed in,', () {
         late List<int> endpointResponses;
         late Completer<CloseMethodStreamCommand> closeMethodStreamCommand;
-        TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
+        late TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
         var inputValue = 4;
 
-        var connectionId = const Uuid().v4obj();
+        late var connectionId = const Uuid().v4obj();
 
         setUp(() async {
           endpointResponses = [];
@@ -274,7 +274,7 @@ void main() {
   );
 
   group(
-    'Given a method stream connection to an endpoint that echoes the input int stream',
+    'Given a method stream connection to an endpoint that echoes the input int stream,',
     () {
       var endpoint = 'methodStreaming';
       var method = 'intEchoStream';
@@ -295,14 +295,14 @@ void main() {
         await webSocket.tryClose();
       });
 
-      group('when a stream of values are passed in', () {
+      group('when a stream of values are passed in,', () {
         late Completer<CloseMethodStreamCommand> closeMethodStreamCommand;
-        TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
-        var inputValues = List.generate(4, (index) => index);
+        late TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
+        late var inputValues = List.generate(4, (index) => index);
         late List<int> endpointResponses;
 
         var inputParameter = 'stream';
-        var connectionId = const Uuid().v4obj();
+        late var connectionId = const Uuid().v4obj();
 
         setUp(() async {
           endpointResponses = [];

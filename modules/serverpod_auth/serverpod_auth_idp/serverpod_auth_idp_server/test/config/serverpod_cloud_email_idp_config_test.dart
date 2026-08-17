@@ -31,11 +31,11 @@ void main() {
     );
   }
 
-  group('Given the emailSecretHashPepper password is missing', () {
+  group('Given the emailSecretHashPepper password is missing,', () {
     setUpAll(() => initServerpodWithPasswords('test:\n  database: "test"'));
 
     test(
-      'when constructing ServerpodCloudEmailIdpConfig '
+      'when constructing ServerpodCloudEmailIdpConfig, '
       'then it throws a PasswordNotFoundException for emailSecretHashPepper',
       () {
         expect(
@@ -53,7 +53,7 @@ void main() {
   });
 
   group(
-    'Given the emailSecretHashPepper password is present and development mode',
+    'Given the emailSecretHashPepper password is present and development mode,',
     () {
       setUpAll(
         () => initServerpodWithPasswords(
@@ -62,7 +62,7 @@ void main() {
       );
 
       test(
-        'when constructing ServerpodCloudEmailIdpConfig '
+        'when constructing ServerpodCloudEmailIdpConfig, '
         'then it succeeds without the cloud email key (codes are logged to the console)',
         () {
           final config = ServerpodCloudEmailIdpConfig(appDisplayName: 'My App');
@@ -73,7 +73,7 @@ void main() {
   );
 
   group(
-    'Given staging run mode and the scloudAuthEmailKey password is missing',
+    'Given staging run mode and the scloudAuthEmailKey password is missing,',
     () {
       setUpAll(
         () => initServerpodWithPasswords(
@@ -82,7 +82,7 @@ void main() {
       );
 
       test(
-        'when constructing ServerpodCloudEmailIdpConfig '
+        'when constructing ServerpodCloudEmailIdpConfig, '
         'then it still succeeds (the key is read lazily, so the server boots without it)',
         () {
           final config = ServerpodCloudEmailIdpConfig(
@@ -95,7 +95,7 @@ void main() {
     },
   );
 
-  group('Given staging run mode and all required passwords are present', () {
+  group('Given staging run mode and all required passwords are present,', () {
     setUpAll(
       () => initServerpodWithPasswords(
         "test:\n  database: 'test'\n  emailSecretHashPepper: 'a-pepper'\n"
@@ -104,7 +104,7 @@ void main() {
     );
 
     test(
-      'when constructing ServerpodCloudEmailIdpConfig then it succeeds',
+      'when constructing ServerpodCloudEmailIdpConfig, then it succeeds',
       () {
         final config = ServerpodCloudEmailIdpConfig(
           appDisplayName: 'My App',

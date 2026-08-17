@@ -35,9 +35,9 @@ void main() {
   final client = ServerpodCloudEmailClient(baseUrl: baseUrl);
   tearDownAll(client.close);
 
-  group('Given the Serverpod Cloud email service', () {
+  group('Given the Serverpod Cloud email service,', () {
     test(
-      'when sending with an invalid token '
+      'when sending with an invalid token, '
       'then it throws a ServerpodCloudEmailException with status 401',
       () async {
         await expectLater(
@@ -60,7 +60,7 @@ void main() {
     );
 
     test(
-      'when sending with an invalid auth code '
+      'when sending with an invalid auth code, '
       'then it throws a ServerpodCloudEmailException with status 400',
       () async {
         await expectLater(
@@ -85,9 +85,9 @@ void main() {
   });
 
   group(
-    'Given valid Serverpod Cloud email credentials',
+    'Given valid Serverpod Cloud email credentials,',
     () {
-      test('when sending a sign-up email then it succeeds', () async {
+      test('when sending a sign-up email, then it succeeds', () async {
         await client.sendEmail(
           token: token!,
           emailType: ServerpodCloudEmailType.signup,
@@ -97,7 +97,7 @@ void main() {
         );
       });
 
-      test('when sending a password-reset email then it succeeds', () async {
+      test('when sending a password-reset email, then it succeeds', () async {
         await client.sendEmail(
           token: token!,
           emailType: ServerpodCloudEmailType.lostpassword,

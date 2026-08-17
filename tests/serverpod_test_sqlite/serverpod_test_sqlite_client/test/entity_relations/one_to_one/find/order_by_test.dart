@@ -85,9 +85,10 @@ Future<int> deleteAll(DatabaseSession session) async {
 void main() {
   initTestClientSession();
 
-  group('Given models with one to one relation', () {
+  group('Given models with one to one relation,', () {
     test(
-      'when fetching models ordered by relation attributes then result is as expected.',
+      'when fetching models ordered by relation attributes, '
+      'then result is as expected.',
       () async {
         var towns = await Town.db.insert(session, [
           Town(name: 'Stockholm'),
@@ -118,9 +119,10 @@ void main() {
     );
   });
 
-  group('Given models with nested one to one relations', () {
+  group('Given models with nested one to one relations,', () {
     test(
-      'when fetching models ordered by nested relation attributes then result is as expected.',
+      'when fetching models ordered by nested relation attributes, '
+      'then result is as expected.',
       () async {
         var towns = await Town.db.insert(session, [
           Town(name: 'Stockholm'),
@@ -161,7 +163,8 @@ void main() {
     );
   });
 
-  group('Given models with relations when ordering on relation attributes', () {
+  group('Given models with relations, '
+      'when ordering on relation attributes,', () {
     late List<Citizen> citizensOrderedByCompanyName;
     setUpAll(() async {
       await _createTestDatabase(session);
@@ -178,7 +181,7 @@ void main() {
   });
 
   group(
-    'Given models with relations when ordering on nested relation attributes',
+    'Given models with relations, when ordering on nested relation attributes,',
     () {
       late List<Citizen> citizensOrderedByCompanyTownName;
       setUpAll(() async {

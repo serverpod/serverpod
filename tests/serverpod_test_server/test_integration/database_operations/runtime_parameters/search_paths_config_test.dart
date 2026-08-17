@@ -4,9 +4,9 @@ import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
 void main() async {
-  group('Given SearchPathsConfig runtime parameters', () {
+  group('Given SearchPathsConfig runtime parameters,', () {
     test(
-      'when setting parameters globally then options are applied globally.',
+      'when setting parameters globally, then options are applied globally.',
       () async {
         var session = await IntegrationTestServer(
           runtimeParametersBuilder: (params) => [
@@ -24,7 +24,8 @@ void main() async {
     );
 
     test(
-      'when setting parameters in transaction then they do not affect global settings.',
+      'when setting parameters in transaction, '
+      'then they do not affect global settings.',
       () async {
         var checkQuery = SearchPathsConfig().buildCheckValues();
 
@@ -56,8 +57,8 @@ void main() async {
       },
     );
 
-    group('when the server has search_paths configured in the config', () {
-      var config = ServerpodConfig(
+    group('when the server has search_paths configured in the config,', () {
+      late var config = ServerpodConfig(
         apiServer: ServerConfig(
           port: 8080,
           publicHost: 'localhost',
@@ -82,7 +83,8 @@ void main() async {
       );
 
       test(
-        'when no runtime parameters override config search paths then config search paths are used.',
+        'when no runtime parameters override config search paths, '
+        'then config search paths are used.',
         () async {
           var session = await IntegrationTestServer(
             config: config,
@@ -98,7 +100,8 @@ void main() async {
       );
 
       test(
-        'when runtime parameters override config search paths then runtime parameters take precedence.',
+        'when runtime parameters override config search paths, '
+        'then runtime parameters take precedence.',
         () async {
           var session = await IntegrationTestServer(
             config: config,
@@ -117,7 +120,8 @@ void main() async {
       );
 
       test(
-        'when setting search paths to null via runtime parameters then search paths are cleared.',
+        'when setting search paths to null via runtime parameters, '
+        'then search paths are cleared.',
         () async {
           var session = await IntegrationTestServer(
             config: config,

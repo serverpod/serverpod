@@ -10,7 +10,9 @@ void main() {
   var passwords = {'serviceSecret': 'longpasswordthatisrequired'};
 
   test(
-    'Given a Serverpod config with api server configuration when loading from Map then redis configuration is null.',
+    'Given a Serverpod config with api server configuration, '
+    'when loading from Map, '
+    'then redis configuration is null.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -36,7 +38,9 @@ apiServer:
   );
 
   test(
-    'Given a Serverpod config with redis configuration without password when loading from Map then exception is thrown.',
+    'Given a Serverpod config with redis configuration without password, '
+    'when loading from Map, '
+    'then exception is thrown.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -74,7 +78,9 @@ redis:
   );
 
   test(
-    'Given a Serverpod config with redis configuration missing required field when loading from Map then exception is thrown.',
+    'Given a Serverpod config with redis configuration missing required field, '
+    'when loading from Map, '
+    'then exception is thrown.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -107,7 +113,9 @@ redis:
   );
 
   test(
-    'Given a Serverpod config with redis configuration when loading from Map then redis configuration is set.',
+    'Given a Serverpod config with redis configuration, '
+    'when loading from Map, '
+    'then redis configuration is set.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -137,7 +145,9 @@ redis:
   );
 
   test(
-    'Given a Serverpod config with only the api server configuration but the environment variables containing the config for redis when loading from Map then the redis config is created.',
+    'Given a Serverpod config with only the api server configuration but the environment variables containing the config for redis, '
+    'when loading from Map, '
+    'then the redis config is created.',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -163,7 +173,9 @@ redis:
   );
 
   test(
-    'Given a Serverpod config map with half the values and the environment variables the other half for redis when loading from Map then configuration then the redis config is created',
+    'Given a Serverpod config map with half the values and the environment variables the other half for redis, '
+    'when loading from Map, '
+    'then configuration then the redis config is created',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -191,7 +203,9 @@ redis:
   );
 
   test(
-    'Given a Serverpod config map with all the values and the environment variables for redis when loading from Map then the config is overridden by the environment variables.',
+    'Given a Serverpod config map with all the values and the environment variables for redis, '
+    'when loading from Map, '
+    'then the config is overridden by the environment variables.',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -221,7 +235,8 @@ redis:
   );
 
   test(
-    'Given a Serverpod config with only the api server configuration but the environment variables containing the optional redis variable require ssl then the redis config takes the value from the env.',
+    'Given a Serverpod config with only the api server configuration but the environment variables containing the optional redis variable require ssl, '
+    'then the redis config takes the value from the env.',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -247,7 +262,8 @@ redis:
   );
 
   test(
-    'Given a Serverpod config with only the api server configuration but the environment variables containing the optional redis variable user then the redis config takes the value from the env.',
+    'Given a Serverpod config with only the api server configuration but the environment variables containing the optional redis variable user, '
+    'then the redis config takes the value from the env.',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -273,7 +289,8 @@ redis:
   );
 
   test(
-    'Given a Serverpod config with only the api server configuration but the environment variables containing the optional redis variable enabled then the redis config takes the value from the env.',
+    'Given a Serverpod config with only the api server configuration but the environment variables containing the optional redis variable enabled, '
+    'then the redis config takes the value from the env.',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -299,7 +316,9 @@ redis:
   );
 
   test(
-    'Given a Serverpod config with redis configuration including user when loading from Map then the redis config is set correctly.',
+    'Given a Serverpod config with redis configuration including user, '
+    'when loading from Map, '
+    'then the redis config is set correctly.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -325,7 +344,9 @@ redis:
   );
 
   test(
-    'Given a Serverpod config with redis configuration including requireSsl when loading from Map then the redis config is set correctly.',
+    'Given a Serverpod config with redis configuration including requireSsl, '
+    'when loading from Map, '
+    'then the redis config is set correctly.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -351,7 +372,9 @@ redis:
   );
 
   test(
-    'Given a Serverpod config with redis configuration including enabled when loading from Map then the redis config is set correctly.',
+    'Given a Serverpod config with redis configuration including enabled, '
+    'when loading from Map, '
+    'then the redis config is set correctly.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -377,7 +400,9 @@ redis:
   );
 
   test(
-    'Given a Serverpod config with both config file and environment variables for redis optional fields when loading from Map then the environment variable overrides the config file.',
+    'Given a Serverpod config with both config file and environment variables for redis optional fields, '
+    'when loading from Map, '
+    'then the environment variable overrides the config file.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -412,7 +437,9 @@ redis:
   );
 
   test(
-    'Given a Serverpod config with redis configuration where enabled=false when loading from Map then redis configuration is null.',
+    'Given a Serverpod config with redis configuration where enabled=false, '
+    'when loading from Map, '
+    'then redis configuration is null.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -438,7 +465,9 @@ redis:
   );
 
   test(
-    'Given a Serverpod config with redis configuration but SERVERPOD_REDIS_ENABLED=false in environment when loading from Map then redis configuration is null.',
+    'Given a Serverpod config with redis configuration but SERVERPOD_REDIS_ENABLED=false in environment, '
+    'when loading from Map, '
+    'then redis configuration is null.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -467,7 +496,9 @@ redis:
   );
 
   test(
-    'Given a Serverpod config with redis configuration without the enabled field when loading from Map then redis configuration defaults to enabled.',
+    'Given a Serverpod config with redis configuration without the enabled field, '
+    'when loading from Map, '
+    'then redis configuration defaults to enabled.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -493,7 +524,9 @@ redis:
   );
 
   test(
-    'Given a Serverpod config with redis configuration where enabled=false and no password provided when loading from Map then no PasswordMissingException is thrown and redis configuration is null.',
+    'Given a Serverpod config with redis configuration where enabled=false and no password provided, '
+    'when loading from Map, '
+    'then no PasswordMissingException is thrown and redis configuration is null.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -520,7 +553,9 @@ redis:
   );
 
   test(
-    'Given a Serverpod config with redis configuration where enabled=true explicitly when loading from Map then redis configuration is created normally.',
+    'Given a Serverpod config with redis configuration where enabled=true explicitly, '
+    'when loading from Map, '
+    'then redis configuration is created normally.',
     () {
       var serverpodConfig = '''
 apiServer:

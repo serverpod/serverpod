@@ -26,8 +26,8 @@ void main() {
     ),
   ]).build();
 
-  group('Given two columns whose truncated aliases collide', () {
-    var base = truncateIdentifier(
+  group('Given two columns whose truncated aliases collide,', () {
+    late var base = truncateIdentifier(
       firstRelation.id.fieldQueryAlias,
       DatabaseConstants.pgsqlMaxNameLimitation,
     );
@@ -43,7 +43,7 @@ void main() {
       );
     });
 
-    var resolver = ColumnAliasResolver.forColumns([
+    late var resolver = ColumnAliasResolver.forColumns([
       firstRelation.id,
       secondRelation.id,
     ]);
@@ -71,8 +71,8 @@ void main() {
     });
   });
 
-  group('Given columns that do not collide', () {
-    var resolver = ColumnAliasResolver.forColumns([
+  group('Given columns that do not collide,', () {
+    late var resolver = ColumnAliasResolver.forColumns([
       citizenTable.id,
       firstRelation.id,
     ]);

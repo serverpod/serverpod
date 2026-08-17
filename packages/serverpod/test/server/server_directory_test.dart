@@ -12,7 +12,7 @@ import 'test_helpers/empty_endpoints.dart';
 /// `config/<runMode>.yaml` and `config/passwords.yaml` from there
 /// regardless of where [Directory.current] points.
 void main() {
-  group('Given a server package laid out under a temp dir', () {
+  group('Given a server package laid out under a temp dir,', () {
     Directory? tempServerDir;
     Directory? cwdSentinel;
     late Directory originalCwd;

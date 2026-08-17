@@ -4,8 +4,8 @@ import 'package:test/test.dart';
 
 void main() {
   test(
-    'Given an S3Exception '
-    'when accessing response property '
+    'Given an S3Exception, '
+    'when accessing response property, '
     'then it contains the original response',
     () {
       final response = http.Response(
@@ -20,8 +20,8 @@ void main() {
   );
 
   test(
-    'Given an S3Exception '
-    'when calling toString '
+    'Given an S3Exception, '
+    'when calling toString, '
     'then it includes the status code',
     () {
       final response = http.Response('error', 404);
@@ -32,8 +32,8 @@ void main() {
   );
 
   test(
-    'Given an S3Exception '
-    'when calling toString '
+    'Given an S3Exception, '
+    'when calling toString, '
     'then it includes the response body',
     () {
       final response = http.Response(
@@ -47,8 +47,8 @@ void main() {
   );
 
   test(
-    'Given an S3Exception '
-    'when calling toString '
+    'Given an S3Exception, '
+    'when calling toString, '
     'then it includes a debug hint',
     () {
       final response = http.Response('error', 500);
@@ -62,8 +62,8 @@ void main() {
   );
 
   test(
-    'Given a NoPermissionsException '
-    'when checking its type '
+    'Given a NoPermissionsException, '
+    'when checking its type, '
     'then it is an S3Exception',
     () {
       final response = http.Response('Access Denied', 403);
@@ -74,8 +74,8 @@ void main() {
   );
 
   test(
-    'Given a NoPermissionsException '
-    'when calling toString '
+    'Given a NoPermissionsException, '
+    'when calling toString, '
     'then it includes 403 hint',
     () {
       final response = http.Response('Access Denied', 403);
@@ -89,8 +89,8 @@ void main() {
   );
 
   test(
-    'Given a NoPermissionsException '
-    'when calling toString '
+    'Given a NoPermissionsException, '
+    'when calling toString, '
     'then it mentions permissions',
     () {
       final response = http.Response('Access Denied', 403);

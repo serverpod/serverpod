@@ -26,13 +26,13 @@ void main() {
   );
 
   group(
-    'Given a class with a field with jsonKey set when generating client code',
+    'Given a class with a field with jsonKey set, when generating client code,',
     () {
       const fieldName = 'displayName';
       const jsonKeyValue = 'display_name';
       const fieldType = 'String';
 
-      final jsonKeyField = FieldDefinitionBuilder()
+      late final jsonKeyField = FieldDefinitionBuilder()
           .withName(fieldName)
           .withType(
             TypeDefinitionBuilder().withClassName(fieldType).build(),
@@ -41,14 +41,14 @@ void main() {
           .build();
 
       const noJsonKeyFieldName = 'email';
-      final noJsonKeyField = FieldDefinitionBuilder()
+      late final noJsonKeyField = FieldDefinitionBuilder()
           .withName(noJsonKeyFieldName)
           .withType(
             TypeDefinitionBuilder().withClassName(fieldType).build(),
           )
           .build();
 
-      final models = [
+      late final models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -57,16 +57,16 @@ void main() {
             .build(),
       ];
 
-      final codeMap = generator.generateSerializableModelsCode(
+      late final codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      final compilationUnit = parseString(
+      late final compilationUnit = parseString(
         content: codeMap[expectedFilePath]!,
       ).unit;
 
-      final maybeClassNamedExample =
+      late final maybeClassNamedExample =
           CompilationUnitHelpers.tryFindClassDeclaration(
             compilationUnit,
             name: testClassName,

@@ -5,8 +5,8 @@ import 'package:test/test.dart';
 
 void main() {
   test(
-    'Given a PresignedPutUploadStrategy '
-    'when reading uploadType '
+    'Given a PresignedPutUploadStrategy, '
+    'when reading uploadType, '
     'then it is binary',
     () {
       final strategy = PresignedPutUploadStrategy();
@@ -15,7 +15,7 @@ void main() {
     },
   );
 
-  group('Given a PresignedPutUploadStrategy with custom endpoints', () {
+  group('Given a PresignedPutUploadStrategy with custom endpoints,', () {
     late PresignedPutUploadStrategy strategy;
     late CustomEndpointConfig endpoints;
 
@@ -26,7 +26,7 @@ void main() {
       );
     });
 
-    group('when creating direct upload description', () {
+    group('when creating direct upload description,', () {
       late String? description;
 
       setUp(() async {
@@ -88,7 +88,7 @@ void main() {
       });
     });
 
-    group('when creating upload description for image file', () {
+    group('when creating upload description for image file,', () {
       late String? description;
 
       setUp(() async {
@@ -113,7 +113,7 @@ void main() {
       });
     });
 
-    group('when creating upload description for PNG file', () {
+    group('when creating upload description for PNG file,', () {
       late String? description;
 
       setUp(() async {
@@ -138,7 +138,7 @@ void main() {
       });
     });
 
-    group('when creating upload description for unknown file type', () {
+    group('when creating upload description for unknown file type,', () {
       late String? description;
 
       setUp(() async {
@@ -165,7 +165,7 @@ void main() {
   });
 
   group(
-    'Given a PresignedPutUploadStrategy with custom endpoints and contentLength',
+    'Given a PresignedPutUploadStrategy with custom endpoints and contentLength,',
     () {
       late PresignedPutUploadStrategy strategy;
       late CustomEndpointConfig endpoints;
@@ -177,7 +177,7 @@ void main() {
         );
       });
 
-      group('when creating upload description with contentLength', () {
+      group('when creating upload description with contentLength,', () {
         late String? description;
 
         setUp(() async {
@@ -210,7 +210,7 @@ void main() {
         });
       });
 
-      group('when creating upload description without contentLength', () {
+      group('when creating upload description without contentLength,', () {
         late String? description;
 
         setUp(() async {
@@ -245,7 +245,7 @@ void main() {
   );
 
   group(
-    'Given a PresignedPutUploadStrategy with custom endpoints and preventOverwrite',
+    'Given a PresignedPutUploadStrategy with custom endpoints and preventOverwrite,',
     () {
       late PresignedPutUploadStrategy strategy;
       late CustomEndpointConfig endpoints;
@@ -257,7 +257,7 @@ void main() {
         );
       });
 
-      group('when creating upload description with preventOverwrite', () {
+      group('when creating upload description with preventOverwrite,', () {
         late String? description;
 
         setUp(() async {
@@ -290,7 +290,7 @@ void main() {
         });
       });
 
-      group('when creating upload description without preventOverwrite', () {
+      group('when creating upload description without preventOverwrite,', () {
         late String? description;
 
         setUp(() async {
@@ -317,7 +317,7 @@ void main() {
     },
   );
 
-  group('Given a PresignedPutUploadStrategy with HTTP custom endpoints', () {
+  group('Given a PresignedPutUploadStrategy with HTTP custom endpoints,', () {
     late PresignedPutUploadStrategy strategy;
     late CustomEndpointConfig endpoints;
 
@@ -329,7 +329,7 @@ void main() {
       );
     });
 
-    group('when creating direct upload description', () {
+    group('when creating direct upload description,', () {
       late String? description;
 
       setUp(() async {

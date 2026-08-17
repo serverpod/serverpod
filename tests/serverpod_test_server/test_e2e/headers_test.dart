@@ -6,8 +6,8 @@ import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Calling the endpoint should return the expected default headers', () {
-    var uri = Uri.parse('${serverUrl}simple/hello');
+  group('Calling the endpoint should return the expected default headers,', () {
+    late var uri = Uri.parse('${serverUrl}simple/hello');
 
     test('When http method is POST', () async {
       var result = await http.post(

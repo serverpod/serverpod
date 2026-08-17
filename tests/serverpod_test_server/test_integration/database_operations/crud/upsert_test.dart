@@ -15,9 +15,9 @@ void main() async {
     );
   });
 
-  group('Given an empty database', () {
+  group('Given an empty database,', () {
     test(
-      'when batch upserting then all the entries are created in the database.',
+      'when batch upserting, then all the entries are created in the database.',
       () async {
         var data = <UniqueData>[
           UniqueData(number: 1, email: 'a@serverpod.dev'),
@@ -42,7 +42,8 @@ void main() async {
     );
 
     test(
-      'when batch upserting with one failing row then no entries are created in the database.',
+      'when batch upserting with one failing row, '
+      'then no entries are created in the database.',
       () async {
         var data = <UniqueData>[
           UniqueData(number: 2, email: 'info@serverpod.dev'),
@@ -80,7 +81,7 @@ void main() async {
     );
 
     test(
-      'when batch upserting with an id defined then the id is not ignored.',
+      'when batch upserting with an id defined, then the id is not ignored.',
       () async {
         const int id = 999;
 
@@ -99,7 +100,8 @@ void main() async {
     );
 
     test(
-      'when batch upserting with an id defined and other undefined then both are created in the database.',
+      'when batch upserting with an id defined and other undefined, '
+      'then both are created in the database.',
       () async {
         const int id = 1999;
 
@@ -131,7 +133,7 @@ void main() async {
     );
 
     test(
-      'when batch upserting with noReturn set to true '
+      'when batch upserting with noReturn set to true, '
       'then an empty list is returned but the rows are persisted.',
       () async {
         var result = await UniqueData.db.upsert(
@@ -147,7 +149,7 @@ void main() async {
     );
 
     test(
-      'when upserting a single row with upsertRow then the row is inserted.',
+      'when upserting a single row with upsertRow, then the row is inserted.',
       () async {
         var result = (await UniqueData.db.upsertRow(
           session,
@@ -165,7 +167,7 @@ void main() async {
     );
   });
 
-  group('Given a row with a unique constraint already exists', () {
+  group('Given a row with a unique constraint already exists,', () {
     late UniqueData existingRow;
 
     setUp(() async {
@@ -176,7 +178,8 @@ void main() async {
     });
 
     test(
-      'when upserting a row with the same unique value then the existing row is updated.',
+      'when upserting a row with the same unique value, '
+      'then the existing row is updated.',
       () async {
         var result = (await UniqueData.db.upsertRow(
           session,
@@ -195,7 +198,8 @@ void main() async {
     );
 
     test(
-      'when upserting a row with a new unique value then a new row is inserted.',
+      'when upserting a row with a new unique value, '
+      'then a new row is inserted.',
       () async {
         var result = (await UniqueData.db.upsertRow(
           session,
@@ -213,7 +217,7 @@ void main() async {
     );
 
     test(
-      'when upserting a row with an updateWhere clause that matches '
+      'when upserting a row with an updateWhere clause that matches, '
       'then the existing row is updated.',
       () async {
         var result = await UniqueData.db.upsertRow(
@@ -230,7 +234,7 @@ void main() async {
     );
 
     test(
-      'when upserting a row with an updateWhere clause that does not match '
+      'when upserting a row with an updateWhere clause that does not match, '
       'then returns null and existing row is unchanged.',
       () async {
         var result = await UniqueData.db.upsertRow(
@@ -250,7 +254,7 @@ void main() async {
     );
 
     test(
-      'when batch upserting with an updateWhere clause that filters out a conflicting row '
+      'when batch upserting with an updateWhere clause that filters out a conflicting row, '
       'then only the remaining rows are returned.',
       () async {
         var data = <UniqueData>[
@@ -279,7 +283,8 @@ void main() async {
     );
 
     test(
-      'when batch upserting a mix of new and conflicting rows then both inserts and updates happen.',
+      'when batch upserting a mix of new and conflicting rows, '
+      'then both inserts and updates happen.',
       () async {
         var data = <UniqueData>[
           UniqueData(number: 99, email: 'existing@serverpod.dev'),
@@ -311,7 +316,7 @@ void main() async {
     );
 
     test(
-      'when upserting within a transaction then the upsert is atomic.',
+      'when upserting within a transaction, then the upsert is atomic.',
       () async {
         final completer = Completer<void>();
 
@@ -343,7 +348,7 @@ void main() async {
   });
 
   group(
-    'Given a table model with non-persistent fields and a check constraint on the table',
+    'Given a table model with non-persistent fields and a check constraint on the table,',
     () {
       setUp(() async {
         await session.db.unsafeExecute(
@@ -364,7 +369,7 @@ void main() async {
       });
 
       test(
-        'when batch upserting without a transaction where one row violates the check constraint '
+        'when batch upserting without a transaction where one row violates the check constraint, '
         'then no rows are upserted (atomic rollback).',
         () async {
           var data = <UniqueDataWithNonPersist>[
@@ -414,7 +419,7 @@ void main() async {
     },
   );
 
-  group('Given a model with multiple unique indexes and an existing row', () {
+  group('Given a model with multiple unique indexes and an existing row,', () {
     late UpsertTestModel existingRow;
 
     setUp(() async {
@@ -432,7 +437,8 @@ void main() async {
     });
 
     test(
-      'when upserting with a single conflictColumn then uses single unique index.',
+      'when upserting with a single conflictColumn, '
+      'then uses single unique index.',
       () async {
         var updated = (await UpsertTestModel.db.upsertRow(
           session,
@@ -447,7 +453,8 @@ void main() async {
     );
 
     test(
-      'when upserting with multiple conflictColumns then uses composite unique index.',
+      'when upserting with multiple conflictColumns, '
+      'then uses composite unique index.',
       () async {
         var updated = (await UpsertTestModel.db.upsertRow(
           session,
@@ -461,7 +468,8 @@ void main() async {
     );
 
     test(
-      'when upserting with updateColumns then excluded columns are not modified.',
+      'when upserting with updateColumns, '
+      'then excluded columns are not modified.',
       () async {
         var updated = (await UpsertTestModel.db.upsertRow(
           session,
@@ -478,8 +486,8 @@ void main() async {
   });
 
   test(
-    'Given an upsert operation with a conflictColumn on a non-unique column '
-    'when executing it '
+    'Given an upsert operation with a conflictColumn on a non-unique column, '
+    'when executing it, '
     'then it throws a DatabaseQueryException.',
     () async {
       await expectLater(
@@ -494,8 +502,8 @@ void main() async {
   );
 
   test(
-    'Given an upsert operation with empty conflictColumns '
-    'when executing it '
+    'Given an upsert operation with empty conflictColumns, '
+    'when executing it, '
     'then it throws an ArgumentError.',
     () async {
       await expectLater(
@@ -509,7 +517,7 @@ void main() async {
     },
   );
 
-  group('Given an existing row', () {
+  group('Given an existing row,', () {
     late SimpleData existingRow;
 
     setUp(() async {
@@ -527,7 +535,8 @@ void main() async {
     });
 
     test(
-      'when upserting with id as conflictColumn then the existing row is updated.',
+      'when upserting with id as conflictColumn, '
+      'then the existing row is updated.',
       () async {
         var updated = (await SimpleData.db.upsertRow(
           session,
@@ -541,7 +550,7 @@ void main() async {
     );
 
     test(
-      'when batch upserting a mix of existing and new rows by id '
+      'when batch upserting a mix of existing and new rows by id, '
       'then existing rows are updated and new rows are inserted.',
       () async {
         var result = await SimpleData.db.upsert(
@@ -569,8 +578,8 @@ void main() async {
   });
 
   test(
-    'Given an upsert operation with column from different table '
-    'when executing it '
+    'Given an upsert operation with column from different table, '
+    'when executing it, '
     'then it throws an ArgumentError.',
     () async {
       await expectLater(

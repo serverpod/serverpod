@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 void main() async {
   var session = await IntegrationTestServer().session();
 
-  group('Given an empty database', () {
+  group('Given an empty database,', () {
     tearDown(() async {
       await RelatedUniqueData.db.deleteWhere(
         session,
@@ -19,7 +19,7 @@ void main() async {
       );
     });
     test(
-      'when batch inserting then all the entries are created in the database.',
+      'when batch inserting, then all the entries are created in the database.',
       () async {
         var data = <UniqueData>[
           UniqueData(number: 1, email: 'info@serverpod.dev'),
@@ -38,7 +38,8 @@ void main() async {
     );
 
     test(
-      'when batch inserting with one failing row then no entries are created in the database.',
+      'when batch inserting with one failing row, '
+      'then no entries are created in the database.',
       () async {
         var data = <UniqueData>[
           UniqueData(number: 2, email: 'info@serverpod.dev'),
@@ -72,7 +73,7 @@ void main() async {
     );
 
     test(
-      'when batch inserting with an id defined then the id is not ignored.',
+      'when batch inserting with an id defined, then the id is not ignored.',
       () async {
         const int id = 999;
 
@@ -87,7 +88,8 @@ void main() async {
     );
 
     test(
-      'when batch inserting with an id defined and other undefined then both are created in the database.',
+      'when batch inserting with an id defined and other undefined, '
+      'then both are created in the database.',
       () async {
         const int id = 1999;
 
@@ -115,7 +117,7 @@ void main() async {
     );
 
     test(
-      'when batch inserting with noReturn set to true '
+      'when batch inserting with noReturn set to true, '
       'then an empty list is returned but the rows are persisted.',
       () async {
         var result = await UniqueData.db.insert(
@@ -133,7 +135,7 @@ void main() async {
     );
 
     test(
-      'when batch inserting with mixed ids and noReturn set to true '
+      'when batch inserting with mixed ids and noReturn set to true, '
       'then an empty list is returned but all rows are persisted.',
       () async {
         var result = await UniqueData.db.insert(
@@ -151,7 +153,7 @@ void main() async {
     );
   });
 
-  group('Given an object data without an id when calling insertRow', () {
+  group('Given an object data without an id, when calling insertRow', () {
     late SimpleData inserted;
     setUp(() async {
       var simpleData = SimpleData(num: 1);
@@ -173,7 +175,7 @@ void main() async {
     });
   });
 
-  group('Given a model without fields when inserting it', () {
+  group('Given a model without fields, when inserting it,', () {
     late EmptyModelWithTable inserted;
     setUp(() async {
       var emptyModel = EmptyModelWithTable();
@@ -195,7 +197,7 @@ void main() async {
     });
   });
 
-  group('Given a model with required field', () {
+  group('Given a model with required field,', () {
     tearDown(() async {
       await ModelWithRequiredField.db.deleteWhere(
         session,
@@ -203,7 +205,7 @@ void main() async {
       );
     });
 
-    test('when inserting then it is created', () async {
+    test('when inserting, then it is created', () async {
       var model = ModelWithRequiredField(name: 'John', email: null);
       var inserted = await ModelWithRequiredField.db.insertRow(session, model);
 

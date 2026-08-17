@@ -4,7 +4,9 @@ import 'test_utils/test_serverpod_client.dart';
 
 void main() {
   test(
-    'Given a server address without trailing slash when initializing client then host should have trailing slash added.',
+    'Given a server address without trailing slash, '
+    'when initializing client, '
+    'then host should have trailing slash added.',
     () {
       var client = TestServerpodClient(
         host: Uri.parse('http://localhost:8080'),
@@ -14,7 +16,9 @@ void main() {
   );
 
   test(
-    'Given a server address with trailing slash when initializing client then host should remain unchanged.',
+    'Given a server address with trailing slash, '
+    'when initializing client, '
+    'then host should remain unchanged.',
     () {
       var client = TestServerpodClient(
         host: Uri.parse('http://localhost:8080/'),
@@ -24,7 +28,9 @@ void main() {
   );
 
   test(
-    'Given an HTTPS server address without trailing slash when initializing client then host should have trailing slash added.',
+    'Given an HTTPS server address without trailing slash, '
+    'when initializing client, '
+    'then host should have trailing slash added.',
     () {
       var client = TestServerpodClient(
         host: Uri.parse('https://example.com'),
@@ -34,7 +40,9 @@ void main() {
   );
 
   test(
-    'Given a server address with path and without trailing slash when initializing client then host should have trailing slash added.',
+    'Given a server address with path and without trailing slash, '
+    'when initializing client, '
+    'then host should have trailing slash added.',
     () {
       var client = TestServerpodClient(
         host: Uri.parse('http://localhost:8080/api'),
@@ -44,7 +52,9 @@ void main() {
   );
 
   test(
-    'Given a server address with path and with trailing slash when initializing client then host should remain unchanged.',
+    'Given a server address with path and with trailing slash, '
+    'when initializing client, '
+    'then host should remain unchanged.',
     () {
       var client = TestServerpodClient(
         host: Uri.parse('http://localhost:8080/api/'),

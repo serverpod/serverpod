@@ -17,9 +17,9 @@ import 'package:test/test.dart';
 /// Uses the production user cache so warm-up shared with normal package
 /// usage. The cache is intentionally persistent across runs.
 void main() {
-  group('Given the production Maven server and the host platform', () {
+  group('Given the production Maven server and the host platform,', () {
     test(
-      'when ensure runs to completion '
+      'when ensure runs to completion, '
       'then bin/postgres and bin/initdb exist, are executable, and a meta.json sentinel records the install.',
       () async {
         var store = BinaryStore();
@@ -64,7 +64,7 @@ void main() {
     );
 
     test(
-      'when ensure is called twice in a row '
+      'when ensure is called twice in a row, '
       'then the second call is fast (cache hit) and returns the same directory.',
       () async {
         var store = BinaryStore();

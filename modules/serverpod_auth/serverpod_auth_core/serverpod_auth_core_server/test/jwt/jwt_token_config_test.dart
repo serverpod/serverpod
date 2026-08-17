@@ -3,7 +3,9 @@ import 'package:test/test.dart';
 
 void main() {
   test(
-    'Given empty refresh token hash pepper when creating a JwtConfig then an error is thrown.',
+    'Given empty refresh token hash pepper, '
+    'when creating a JwtConfig, '
+    'then an error is thrown.',
     () {
       expect(
         () => JwtConfig(
@@ -18,7 +20,9 @@ void main() {
   );
 
   test(
-    'Given a refresh token hash pepper that is less than 10 characters when creating a JwtConfig then an error is thrown.',
+    'Given a refresh token hash pepper that is less than 10 characters, '
+    'when creating a JwtConfig, '
+    'then an error is thrown.',
     () {
       expect(
         () => JwtConfig(
@@ -33,7 +37,9 @@ void main() {
   );
 
   test(
-    'Given a valid refresh token hash pepper when creating a JwtConfig then the JwtConfig is created successfully.',
+    'Given a valid refresh token hash pepper, '
+    'when creating a JwtConfig, '
+    'then the JwtConfig is created successfully.',
     () {
       expect(
         () => JwtConfig(
@@ -48,7 +54,9 @@ void main() {
   );
 
   test(
-    'Given valid fallback refresh token hash peppers when creating a JwtConfig then the JwtConfig is created successfully.',
+    'Given valid fallback refresh token hash peppers, '
+    'when creating a JwtConfig, '
+    'then the JwtConfig is created successfully.',
     () {
       expect(
         () => JwtConfig(
@@ -64,7 +72,9 @@ void main() {
   );
 
   test(
-    'Given empty fallback refresh token hash peppers list when creating a JwtConfig then the JwtConfig is created successfully.',
+    'Given empty fallback refresh token hash peppers list, '
+    'when creating a JwtConfig, '
+    'then the JwtConfig is created successfully.',
     () {
       expect(
         () => JwtConfig(
@@ -80,7 +90,9 @@ void main() {
   );
 
   test(
-    'Given invalid fallback refresh token hash pepper when creating a JwtConfig then an error is thrown.',
+    'Given invalid fallback refresh token hash pepper, '
+    'when creating a JwtConfig, '
+    'then an error is thrown.',
     () {
       expect(
         () => JwtConfig(
@@ -96,7 +108,9 @@ void main() {
   );
 
   test(
-    'Given empty fallback refresh token hash pepper when creating a JwtConfig then an error is thrown.',
+    'Given empty fallback refresh token hash pepper, '
+    'when creating a JwtConfig, '
+    'then an error is thrown.',
     () {
       expect(
         () => JwtConfig(

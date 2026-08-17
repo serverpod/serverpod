@@ -7,9 +7,10 @@ import '../../../test_util/builders/database/database_definition_builder.dart';
 import '../../../test_util/builders/database/table_definition_builder.dart';
 
 void main() {
-  group('Given a database table definition with a Duration column', () {
+  group('Given a database table definition with a Duration column,', () {
     test(
-      'when generating SQL with a specific Duration default value (94230100ms), then the table should have the correct default value.',
+      'when generating SQL with a specific Duration default value (94230100ms), '
+      'then the table should have the correct default value.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -38,7 +39,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with a specific Duration default value (177640100ms), then the table should have the correct default value.',
+      'when generating SQL with a specific Duration default value (177640100ms), '
+      'then the table should have the correct default value.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -67,7 +69,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with no columnDefault, then the table should not have a default value for the Duration field.',
+      'when generating SQL with no columnDefault, '
+      'then the table should not have a default value for the Duration field.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -99,7 +102,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with nullable Duration field and columnDefault (94230100ms), then the table should be nullable with the correct default value.',
+      'when generating SQL with nullable Duration field and columnDefault (94230100ms), '
+      'then the table should be nullable with the correct default value.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -129,7 +133,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with nullable Duration field and no columnDefault, then the table should be nullable with no default value.',
+      'when generating SQL with nullable Duration field and no columnDefault, '
+      'then the table should be nullable with no default value.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -162,9 +167,10 @@ void main() {
     );
   });
 
-  group('Given a SQLite database table definition with a Duration column ', () {
+  group('Given a SQLite database table definition with a Duration column,', () {
     test(
-      'when generating SQL with a specific Duration default value (94230100ms), then INTEGER has numeric default.',
+      'when generating SQL with a specific Duration default value (94230100ms), '
+      'then INTEGER has numeric default.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withDefaultModules()
@@ -196,7 +202,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with a specific Duration default value (177640100ms), then INTEGER has numeric default.',
+      'when generating SQL with a specific Duration default value (177640100ms), '
+      'then INTEGER has numeric default.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withDefaultModules()
@@ -228,7 +235,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with no columnDefault, then the Duration column has no DEFAULT.',
+      'when generating SQL with no columnDefault, '
+      'then the Duration column has no DEFAULT.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withDefaultModules()
@@ -258,7 +266,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with nullable Duration field and columnDefault, then the column is nullable with default.',
+      'when generating SQL with nullable Duration field and columnDefault, '
+      'then the column is nullable with default.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withDefaultModules()
@@ -291,7 +300,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with nullable Duration field and no columnDefault, then the column has no DEFAULT.',
+      'when generating SQL with nullable Duration field and no columnDefault, '
+      'then the column has no DEFAULT.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withDefaultModules()

@@ -3,10 +3,11 @@ import 'package:test/test.dart';
 
 void main() async {
   group(
-    "Given a class with 'defaultModel' Uri fields",
+    "Given a class with 'defaultModel' Uri fields,",
     () {
       test(
-        'when an object of the class is created, then the "uriDefaultModel" field should match the default value',
+        'when an object of the class is created, '
+        'then the "uriDefaultModel" field should match the default value',
         () {
           var object = UriDefaultModel();
           var expectedUri = Uri.parse('https://serverpod.dev/defaultModel');
@@ -15,7 +16,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created, then the "uriDefaultModelNull" field should match the default value',
+        'when an object of the class is created, '
+        'then the "uriDefaultModelNull" field should match the default value',
         () {
           var object = UriDefaultModel();
           var expected = Uri.parse('https://serverpod.dev/defaultModel');
@@ -24,7 +26,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a specific value for "uriDefaultModel", then the field value should match the provided value',
+        'when an object of the class is created with a specific value for "uriDefaultModel", '
+        'then the field value should match the provided value',
         () {
           var uri = Uri.parse('https://serverpod.dev/overrideValue');
           var object = UriDefaultModel(uriDefaultModel: uri);
@@ -33,7 +36,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a specific value for "uriDefaultModelNull", then the field value should match the provided value',
+        'when an object of the class is created with a specific value for "uriDefaultModelNull", '
+        'then the field value should match the provided value',
         () {
           var uri = Uri.parse('https://serverpod.dev/overrideValue');
           var object = UriDefaultModel(uriDefaultModelNull: uri);

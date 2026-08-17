@@ -8,7 +8,7 @@ import 'package:test/test.dart';
 import '../../test_util/file_system_entity_helpers.dart';
 
 void main() {
-  group('Given a project with no packages that have build hooks', () {
+  group('Given a project with no packages that have build hooks,', () {
     late Directory tempDir;
     late NativeAssetsBuilder builder;
 
@@ -62,7 +62,7 @@ void main() {
     );
   });
 
-  group('Given a workspace with the server as a member package', () {
+  group('Given a workspace with the server as a member package,', () {
     late Directory tempDir;
     late String serverDir;
 
@@ -100,7 +100,7 @@ void main() {
   });
 
   group(
-    'Given a project with a build hook that emits no assets',
+    'Given a project with a build hook that emits no assets,',
     () {
       late Directory tempDir;
       late NativeAssetsBuilder builder;
@@ -165,7 +165,7 @@ void main() {
   );
 
   group(
-    'Given a build hook that emits a data asset',
+    'Given a build hook that emits a data asset,',
     () {
       late Directory tempDir;
       late NativeAssetsBuilder builder;
@@ -201,9 +201,8 @@ output.assets.data.add(
       });
 
       test(
-        'when the last build-hook package is removed after a manifest was '
-        'built, then the next build tears the manifest down and reports the '
-        'change',
+        'when the last build-hook package is removed after a manifest was built, '
+        'then the next build tears the manifest down and reports the change',
         () async {
           // First build produces a manifest from the emitted data asset.
           final first = await builder.build();

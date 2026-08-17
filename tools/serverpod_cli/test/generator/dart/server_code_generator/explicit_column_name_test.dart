@@ -23,25 +23,26 @@ void main() {
     '$testClassFileName.dart',
   );
 
-  group('Given a class with an explicit column name when generating code', () {
+  group('Given a class with an explicit column name, '
+      'when generating code,', () {
     const noColumnFieldName = 'name';
     const columnFieldName = 'userName';
     const columnName = 'user_name';
     const fieldType = 'String';
-    final columnField = FieldDefinitionBuilder()
+    late final columnField = FieldDefinitionBuilder()
         .withName(columnFieldName)
         .withType(
           TypeDefinitionBuilder().withClassName('String').build(),
         )
         .withColumnNameOverride(columnName)
         .build();
-    final noColumnField = FieldDefinitionBuilder()
+    late final noColumnField = FieldDefinitionBuilder()
         .withName(noColumnFieldName)
         .withType(
           TypeDefinitionBuilder().withClassName('String').build(),
         )
         .build();
-    var models = [
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -50,19 +51,22 @@ void main() {
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late var compilationUnit = parseString(
+      content: codeMap[expectedFilePath]!,
+    ).unit;
 
-    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
-      compilationUnit,
-      name: testClassName,
-    );
+    late var maybeClassNamedExample =
+        CompilationUnitHelpers.tryFindClassDeclaration(
+          compilationUnit,
+          name: testClassName,
+        );
 
-    group('then fromJson method should get ', () {
+    group('then fromJson method should get', () {
       test('field name from jsonSerialization for field with column set', () {
         var fromJsonConstructor =
             CompilationUnitHelpers.tryFindConstructorDeclaration(

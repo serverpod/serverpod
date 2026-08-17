@@ -12,7 +12,7 @@ import '../../test_util/endpoint_validation_helpers.dart';
 import '../../test_util/mtime_helpers.dart';
 
 void main() {
-  group('Given a generated project with a stamp', () {
+  group('Given a generated project with a stamp,', () {
     late Directory projectDir;
     late GeneratorConfig config;
     late File stampFile;
@@ -47,7 +47,7 @@ fields:
     });
 
     test(
-      'when performOneShotGenerate runs again with no changes '
+      'when performOneShotGenerate runs again with no changes, '
       'then it skips generation and leaves the stamp untouched',
       () async {
         final stampMtime = stampFile.statSync().modified;
@@ -62,7 +62,7 @@ fields:
     );
 
     test(
-      'when performOneShotGenerate runs with force and no changes '
+      'when performOneShotGenerate runs with force and no changes, '
       'then it regenerates and rewrites the stamp',
       () async {
         final stampMtime = stampFile.statSync().modified;
@@ -79,7 +79,7 @@ fields:
     );
 
     test(
-      'when a source file changes after the stamp '
+      'when a source file changes after the stamp, '
       'then performOneShotGenerate regenerates and updates the stamp',
       () async {
         final stampMtime = stampFile.statSync().modified;
@@ -102,7 +102,7 @@ fields:
     );
 
     test(
-      'when a model source file is deleted '
+      'when a model source file is deleted, '
       'then performOneShotGenerate regenerates and cleans up its output',
       () async {
         final orphanModel =
@@ -139,7 +139,7 @@ fields:
     );
 
     test(
-      'when a non-model source is touched without a relevant change '
+      'when a non-model source is touched without a relevant change, '
       'then the stamp is refreshed so it does not re-analyze every run',
       () async {
         // A plain Dart file: editing it does not require generation, but the

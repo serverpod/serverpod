@@ -38,8 +38,8 @@ void main() {
   ]);
 
   group(
-    'Given a server model with a shared package class field '
-    'when generating toJsonForProtocol',
+    'Given a server model with a shared package class field, '
+    'when generating toJsonForProtocol,',
     () {
       late ModelClassDefinition sharedModel;
       late ModelClassDefinition containerModel;
@@ -130,8 +130,8 @@ void main() {
   );
 
   group(
-    'Given a server model with a shared package table class field '
-    'when generating toJsonForProtocol',
+    'Given a server model with a shared package table class field, '
+    'when generating toJsonForProtocol,',
     () {
       late ModelClassDefinition sharedModel;
       late ModelClassDefinition containerModel;
@@ -224,8 +224,8 @@ void main() {
   );
 
   group(
-    'Given a server model with List<SharedModel> field '
-    'when generating toJsonForProtocol',
+    'Given a server model with List<SharedModel> field, '
+    'when generating toJsonForProtocol,',
     () {
       late ModelClassDefinition sharedModel;
       late ModelClassDefinition containerModel;
@@ -303,7 +303,7 @@ void main() {
     },
   );
   group(
-    'Given a server model with shared package class field where type has null url but projectModelDefinition is shared model',
+    'Given a server model with shared package class field where type has null url but projectModelDefinition is shared model,',
     () {
       late ModelClassDefinition sharedModel;
       late ModelClassDefinition containerModel;

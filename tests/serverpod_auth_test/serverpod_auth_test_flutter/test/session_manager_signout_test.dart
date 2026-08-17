@@ -6,7 +6,7 @@ import 'utils/test_storage.dart';
 
 void main() {
   group(
-    'Given two authenticated clients with separate session managers of different auth strategies',
+    'Given two authenticated clients with separate session managers of different auth strategies,',
     () {
       late Client jwtClient;
       late Client sasClient;
@@ -45,7 +45,7 @@ void main() {
         expect(await sasStatusEndpoint.isSignedIn(), isTrue);
       });
 
-      group('when calling the signOutDevice method on the JWT client', () {
+      group('when calling the signOutDevice method on the JWT client,', () {
         late bool signOutResult;
 
         setUp(() async {
@@ -81,7 +81,7 @@ void main() {
         );
       });
 
-      group('when calling the signOutDevice method on the SAS client', () {
+      group('when calling the signOutDevice method on the SAS client,', () {
         late bool signOutResult;
 
         setUp(() async {
@@ -117,7 +117,7 @@ void main() {
         );
       });
 
-      group('when calling the signOutAllDevices method on the JWT client', () {
+      group('when calling the signOutAllDevices method on the JWT client,', () {
         late bool signOutResult;
 
         setUp(() async {
@@ -161,7 +161,7 @@ void main() {
         );
       });
 
-      group('when calling the signOutAllDevices method on the SAS client', () {
+      group('when calling the signOutAllDevices method on the SAS client,', () {
         late bool signOutResult;
 
         setUp(() async {
@@ -206,7 +206,8 @@ void main() {
   );
 
   group(
-    'Given an authenticated client with an unreachable server when signing out',
+    'Given an authenticated client with an unreachable server, '
+    'when signing out,',
     () {
       late Client client;
       late TestStorage storage;
@@ -231,7 +232,7 @@ void main() {
         expect(client.auth.isAuthenticated, isTrue);
       });
 
-      group('when calling signOutDevice', () {
+      group('when calling signOutDevice,', () {
         late bool signOutResult;
 
         setUp(() async {
@@ -255,7 +256,7 @@ void main() {
         });
       });
 
-      group('when calling signOutAllDevices', () {
+      group('when calling signOutAllDevices,', () {
         late bool signOutResult;
 
         setUp(() async {

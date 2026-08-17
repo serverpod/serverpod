@@ -27,9 +27,9 @@ void main() async {
   );
 
   withServerpod(
-    'Given a custom non-hashing password hash generator and a create account request',
+    'Given a custom non-hashing password hash generator and a create account request,',
     (sessionBuilder, _) {
-      var session = sessionBuilder.build();
+      late var session = sessionBuilder.build();
       var userName = 'test';
       var email = 'test8@serverpod.dev';
       var password = 'password';
@@ -39,7 +39,7 @@ void main() async {
       });
 
       test(
-        'when inspecting password hash then password is not hashed',
+        'when inspecting password hash, then password is not hashed',
         () async {
           var emailAuth = await EmailCreateAccountRequest.db.findFirstRow(
             session,
@@ -64,9 +64,9 @@ void main() async {
   );
 
   withServerpod(
-    'Given a custom always true password hash validator and a created user',
+    'Given a custom always true password hash validator and a created user,',
     (sessionBuilder, _) {
-      var session = sessionBuilder.build();
+      late var session = sessionBuilder.build();
       var userName = 'test';
       var email = 'test8@serverpod.dev';
       var password = 'password';
@@ -76,7 +76,8 @@ void main() async {
       });
 
       test(
-        'when authenticating with incorrect password then user can authenticate',
+        'when authenticating with incorrect password, '
+        'then user can authenticate',
         () async {
           var incorrectPassword = '$password-incorrect';
           var authResponse = await Emails.authenticate(
@@ -95,9 +96,9 @@ void main() async {
   );
 
   withServerpod(
-    'Given custom hash generator and a stored legacy password in the database',
+    'Given custom hash generator and a stored legacy password in the database,',
     (sessionBuilder, _) {
-      var session = sessionBuilder.build();
+      late var session = sessionBuilder.build();
       var userName = 'test';
       var email = 'test@serverpod.dev';
       var password = 'hunter2';
@@ -119,7 +120,7 @@ void main() async {
         await EmailAuth.db.updateRow(session, withLegacyHash);
       });
 
-      test('when authenticating then hash is not migrated.', () async {
+      test('when authenticating, then hash is not migrated.', () async {
         await Emails.authenticate(session, email, password);
         var emailAuth = await EmailAuth.db.findFirstRow(
           session,

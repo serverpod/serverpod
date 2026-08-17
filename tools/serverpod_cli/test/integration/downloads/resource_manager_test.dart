@@ -9,7 +9,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('Latest Cli Version: ', () {
-    var testCacheFolderPath = p.join(
+    late var testCacheFolderPath = p.join(
       'test',
       'integration',
       'downloads',

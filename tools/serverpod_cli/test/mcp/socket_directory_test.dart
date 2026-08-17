@@ -3,7 +3,7 @@ import 'package:serverpod_cli/src/mcp/socket_directory.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given serverpodMcpSocketPath', () {
+  group('Given serverpodMcpSocketPath,', () {
     test(
       'when called with a server directory, '
       'then it returns .dart_tool/serverpod/mcp.sock under that directory',

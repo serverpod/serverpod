@@ -9,7 +9,7 @@ import 'package:web_socket/web_socket.dart';
 import '../websocket_extensions.dart';
 
 void main() {
-  group('Given method websocket connection', () {
+  group('Given method websocket connection,', () {
     late Serverpod server;
     late WebSocket webSocket;
 
@@ -26,13 +26,13 @@ void main() {
       await webSocket.tryClose();
     });
 
-    group('with a connected method stream has a delayed response', () {
+    group('with a connected method stream has a delayed response,', () {
       late Completer<void> delayedStreamIsCanceled;
       late Completer<void> delayedResponseClosed;
 
       var endpoint = 'methodStreaming';
       var method = 'delayedStreamResponse';
-      var connectionId = const Uuid().v4obj();
+      late var connectionId = const Uuid().v4obj();
 
       setUp(() async {
         var delayedResponseOpen = Completer<void>();
@@ -96,7 +96,8 @@ void main() {
       });
 
       test(
-        'when stream is closed by a CloseMethodStreamCommand then delayed stream is canceled.',
+        'when stream is closed by a CloseMethodStreamCommand, '
+        'then delayed stream is canceled.',
         () async {
           webSocket.sendText(
             CloseMethodStreamCommand.buildMessage(
@@ -118,7 +119,7 @@ void main() {
     });
 
     group(
-      'when connecting to an endpoint that ignores reading input stream and returns',
+      'when connecting to an endpoint that ignores reading input stream and returns,',
       () {
         var endpoint = 'methodStreaming';
         var method = 'directVoidReturnWithStreamInput';
@@ -126,10 +127,10 @@ void main() {
         late Completer<CloseMethodStreamCommand> closeMethodStreamCommand;
         late Completer<CloseMethodStreamCommand>
         closeMethodStreamParameterCommand;
-        TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
+        late TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
 
         var inputStreamParameter = 'stream';
-        var connectionId = const Uuid().v4obj();
+        late var connectionId = const Uuid().v4obj();
 
         setUp(() async {
           closeMethodStreamCommand = Completer<CloseMethodStreamCommand>();
@@ -227,14 +228,14 @@ void main() {
   });
 
   group(
-    'Given a single method stream connection to an endpoint that has delayed stream response',
+    'Given a single method stream connection to an endpoint that has delayed stream response,',
     () {
       late Completer<void> delayedStreamIsCanceled;
-      var server = IntegrationTestServer.create();
+      late var server = IntegrationTestServer.create();
       late WebSocket webSocket;
       var endpoint = 'methodStreaming';
       var method = 'delayedStreamResponse';
-      var connectionId = const Uuid().v4obj();
+      late var connectionId = const Uuid().v4obj();
 
       setUp(() async {
         delayedStreamIsCanceled = Completer<void>();
@@ -271,7 +272,8 @@ void main() {
       });
 
       test(
-        'when a CloseMethodStreamCommand is sent then endpoint stream is canceled',
+        'when a CloseMethodStreamCommand is sent, '
+        'then endpoint stream is canceled',
         () async {
           webSocket.textEvents.listen(
             (event) {
@@ -302,13 +304,13 @@ void main() {
   );
 
   group(
-    'Given a single method stream connection to an endpoint that has an input stream that is never listened to',
+    'Given a single method stream connection to an endpoint that has an input stream that is never listened to,',
     () {
-      var server = IntegrationTestServer.create();
+      late var server = IntegrationTestServer.create();
       late WebSocket webSocket;
       var endpoint = 'methodStreaming';
       var method = 'delayedNeverListenedInputStream';
-      var connectionId = const Uuid().v4obj();
+      late var connectionId = const Uuid().v4obj();
       late Completer endpointSessionIsClosed;
 
       setUp(() async {
@@ -345,7 +347,8 @@ void main() {
       });
 
       test(
-        'when a CloseMethodStreamCommand is sent then endpoint session is closed',
+        'when a CloseMethodStreamCommand is sent, '
+        'then endpoint session is closed',
         () async {
           webSocket.textEvents.listen((event) {
             // Listen to the to keep it open.
@@ -374,13 +377,13 @@ void main() {
   );
 
   group(
-    'Given a single method stream connection to an endpoint that has an input stream that is paused',
+    'Given a single method stream connection to an endpoint that has an input stream that is paused,',
     () {
-      var server = IntegrationTestServer.create();
+      late var server = IntegrationTestServer.create();
       late WebSocket webSocket;
       var endpoint = 'methodStreaming';
       var method = 'delayedPausedInputStream';
-      var connectionId = const Uuid().v4obj();
+      late var connectionId = const Uuid().v4obj();
       late Completer endpointSessionIsClosed;
 
       setUp(() async {
@@ -417,7 +420,8 @@ void main() {
       });
 
       test(
-        'when a CloseMethodStreamCommand is sent then endpoint session is closed',
+        'when a CloseMethodStreamCommand is sent, '
+        'then endpoint session is closed',
         () async {
           webSocket.textEvents.listen((event) {
             // Listen to the to keep it open.
@@ -446,7 +450,7 @@ void main() {
   );
 
   group(
-    'Given a method stream connection to an endpoint that returns true if input stream has error',
+    'Given a method stream connection to an endpoint that returns true if input stream has error,',
     () {
       var endpoint = 'methodStreaming';
       var method = 'didInputStreamHaveError';
@@ -467,13 +471,13 @@ void main() {
         await webSocket.tryClose();
       });
 
-      group('when input stream is closed with error close reason', () {
+      group('when input stream is closed with error close reason,', () {
         late Completer<bool> endpointResponse;
         late Completer<CloseMethodStreamCommand> closeMethodStreamCommand;
-        TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
+        late TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
 
         var inputParameter = 'stream';
-        var connectionId = const Uuid().v4obj();
+        late var connectionId = const Uuid().v4obj();
 
         setUp(() async {
           endpointResponse = Completer<bool>();

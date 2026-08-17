@@ -10,41 +10,41 @@ void main() {
   var protocol = Protocol();
   var serverProtocol = server.Protocol();
 
-  group('Given SerializationManager.toEncodable', () {
+  group('Given SerializationManager.toEncodable,', () {
     final toEncodable = SerializationManager.toEncodable;
 
-    test('when calling on null '
+    test('when calling on null, '
         'then returns null', () {
       expect(toEncodable(null), null);
     });
 
-    test('when calling on a bool true '
+    test('when calling on a bool true, '
         'then returns true', () {
       expect(toEncodable(true), true);
     });
 
-    test('when calling on a bool false '
+    test('when calling on a bool false, '
         'then returns false', () {
       expect(toEncodable(false), false);
     });
 
-    test('when calling on a int '
+    test('when calling on a int, '
         'then returns int', () {
       expect(toEncodable(42), 42);
     });
 
-    test('when calling on a double '
+    test('when calling on a double, '
         'then returns double', () {
       expect(toEncodable(3.14), 3.14);
     });
 
-    test('when calling on a String '
+    test('when calling on a String, '
         'then returns String', () {
       expect(toEncodable('hello'), 'hello');
     });
 
     test(
-      'when calling on a List<dynamic> '
+      'when calling on a List<dynamic>, '
       'then recursively encodes elements',
       () {
         expect(
@@ -67,7 +67,7 @@ void main() {
     );
 
     test(
-      'when calling on a Map<String, dynamic> '
+      'when calling on a Map<String, dynamic>, '
       'then recursively encodes values',
       () {
         expect(
@@ -90,7 +90,7 @@ void main() {
     );
 
     test(
-      'when calling on a Map<DateTime, DateTime> '
+      'when calling on a Map<DateTime, DateTime>, '
       'then returns list of encoded k/v pairs',
       () {
         expect(
@@ -103,7 +103,7 @@ void main() {
     );
 
     test(
-      'when calling on a DateTime '
+      'when calling on a DateTime, '
       'then returns ISO8601 UTC string',
       () {
         expect(
@@ -114,14 +114,14 @@ void main() {
     );
 
     test(
-      'when calling on a Duration '
+      'when calling on a Duration, '
       'then returns milliseconds',
       () {
         expect(toEncodable(Duration(seconds: 5)), 5000);
       },
     );
 
-    test('when calling on a UuidValue '
+    test('when calling on a UuidValue, '
         'then returns string', () {
       expect(
         toEncodable(UuidValue.nil), // ignore: deprecated_member_use
@@ -129,7 +129,7 @@ void main() {
       );
     });
 
-    test('when calling on a Uri '
+    test('when calling on a Uri, '
         'then returns string', () {
       expect(
         toEncodable(Uri.parse('https://serverpod.dev')),
@@ -137,23 +137,23 @@ void main() {
       );
     });
 
-    test('when calling on a BigInt '
+    test('when calling on a BigInt, '
         'then returns string', () {
       expect(toEncodable(BigInt.from(123456789)), '123456789');
     });
 
-    test('when calling on a Vector '
+    test('when calling on a Vector, '
         'then returns list', () {
       expect(toEncodable(Vector([1.0, 2.0, 3.0])), [1.0, 2.0, 3.0]);
     });
 
-    test('when calling on a HalfVector '
+    test('when calling on a HalfVector, '
         'then returns list', () {
       expect(toEncodable(HalfVector([1.0, 2.0, 3.0])), [1.0, 2.0, 3.0]);
     });
 
     test(
-      'when calling on a Set<dynamic> '
+      'when calling on a Set<dynamic>, '
       'then recursively encodes to list',
       () {
         expect(
@@ -176,7 +176,7 @@ void main() {
     );
 
     test(
-      'when calling on a ByteData '
+      'when calling on a ByteData, '
       'then returns base64 encoded string',
       () {
         final bytes = Uint8List.fromList([0, 1, 2, 3]);
@@ -189,7 +189,7 @@ void main() {
     );
 
     test(
-      'when calling on a SparseVector '
+      'when calling on a SparseVector, '
       'then returns list representation',
       () {
         final vector = SparseVector.fromMap({1: 1.0, 3: 2.0}, 5);
@@ -200,7 +200,7 @@ void main() {
     );
 
     test(
-      'when calling on a Bit '
+      'when calling on a Bit, '
       'then returns list representation',
       () {
         final bit = Bit.fromString('10101');
@@ -211,7 +211,7 @@ void main() {
     );
 
     test(
-      'when calling on a Map with non-String keys '
+      'when calling on a Map with non-String keys, '
       'then returns list of k/v pairs',
       () {
         final map = {1: 'one', 2: 'two'};
@@ -225,7 +225,7 @@ void main() {
     );
 
     test(
-      'when calling on a SerializableModel '
+      'when calling on a SerializableModel, '
       'then calls toJson',
       () {
         final model = SimpleData(num: 42);
@@ -236,7 +236,7 @@ void main() {
       },
     );
 
-    test('when calling on a Record '
+    test('when calling on a Record, '
         'then throws Exception', () {
       final record = (1, 'two');
 
@@ -253,7 +253,7 @@ void main() {
     });
 
     test(
-      'when calling on an object with toJson (not SerializableModel) '
+      'when calling on an object with toJson (not SerializableModel), '
       'then calls toJson',
       () {
         final obj = _ObjectWithToJson(42);
@@ -264,7 +264,7 @@ void main() {
     );
 
     test(
-      'when calling on a no-encodable object without toJson '
+      'when calling on a no-encodable object without toJson, '
       'then returns object unchanged',
       () {
         final obj = _ObjectWithoutToJson(42);
@@ -275,9 +275,9 @@ void main() {
     );
   });
 
-  group('Given SerializationManager.toEncodableForProtocol', () {
+  group('Given SerializationManager.toEncodableForProtocol,', () {
     test(
-      'when calling it on an instance of a class implementing ProtocolSerialization '
+      'when calling it on an instance of a class implementing ProtocolSerialization, '
       'then calls toJsonForProtocol and correctly excludes server-only fields',
       () {
         final model = server.ScopeServerOnlyField(
@@ -295,7 +295,7 @@ void main() {
   });
 
   test(
-    'Given an enum serialized as string with a null value when serializing '
+    'Given an enum serialized as string with a null value, when serializing, '
     'then the value is null',
     () {
       var types = Types();
@@ -308,7 +308,7 @@ void main() {
   );
 
   test(
-    'Given a server-side enum serialized as string value when serializing '
+    'Given a server-side enum serialized as string value, when serializing, '
     'then the value is unpacked correctly',
     () {
       var types = server.Types(
@@ -323,7 +323,8 @@ void main() {
   );
 
   test(
-    'Given a server-side enum serialized as string with a null value when serializing '
+    'Given a server-side enum serialized as string with a null value, '
+    'when serializing, '
     'then the value is null',
     () {
       var types = server.Types();
@@ -336,7 +337,7 @@ void main() {
   );
 
   test(
-    'Given an enum serialized as string value when serializing '
+    'Given an enum serialized as string value, when serializing, '
     'then the value is unpacked correctly',
     () {
       var types = Types(aStringifiedEnum: TestEnumStringified.one);
@@ -349,7 +350,8 @@ void main() {
   );
 
   test(
-    'Given a serializable object as a key in a map when serializing and unpacking the original object remains unchanged.',
+    'Given a serializable object as a key in a map, '
+    'when serializing and unpacking the original object remains unchanged.',
     () {
       var type = Types(anInt: 123);
       var object = TypesMap(anObjectKey: {type: 'value'});
@@ -362,7 +364,8 @@ void main() {
   );
 
   test(
-    'Given a DateTime as a key in a map when serializing and unpacking the original object remains unchanged.',
+    'Given a DateTime as a key in a map, '
+    'when serializing and unpacking the original object remains unchanged.',
     () {
       var object = TypesMap(
         aDateTimeKey: {DateTime.parse('2024-01-01T00:00:00.000Z'): 'value'},
@@ -379,7 +382,8 @@ void main() {
   );
 
   test(
-    'Given a UuidValue as a key in a map when serializing and unpacking the original object remains unchanged.',
+    'Given a UuidValue as a key in a map, '
+    'when serializing and unpacking the original object remains unchanged.',
     () {
       // ignore: deprecated_member_use
       var object = TypesMap(aUuidKey: {UuidValue.nil: 'value'});
@@ -396,7 +400,8 @@ void main() {
   );
 
   test(
-    'Given a Uri as a key in a map when serializing and unpacking the original object remains unchanged.',
+    'Given a Uri as a key in a map, '
+    'when serializing and unpacking the original object remains unchanged.',
     () {
       var object = TypesMap(
         aUriKey: {Uri.parse('https://serverpod.dev'): 'value'},
@@ -413,7 +418,8 @@ void main() {
   );
 
   test(
-    'Given a BigInt as a key in a map when serializing and unpacking the original object remains unchanged.',
+    'Given a BigInt as a key in a map, '
+    'when serializing and unpacking the original object remains unchanged.',
     () {
       var object = TypesMap(aBigIntKey: {BigInt.two: 'value'});
 
@@ -428,7 +434,8 @@ void main() {
   );
 
   test(
-    'Given a BigInt as a value in a map when serializing and unpacking the original object remains unchanged.',
+    'Given a BigInt as a value in a map, '
+    'when serializing and unpacking the original object remains unchanged.',
     () {
       var object = TypesMap(aBigIntValue: {'2': BigInt.two});
 
@@ -443,7 +450,8 @@ void main() {
   );
 
   test(
-    'Given a ByteData as a key in a map when serializing and unpacking the original object remains unchanged.',
+    'Given a ByteData as a key in a map, '
+    'when serializing and unpacking the original object remains unchanged.',
     () {
       var intList = Uint8List(8);
       for (var i = 0; i < intList.length; i++) {
@@ -465,7 +473,8 @@ void main() {
   );
 
   test(
-    'Given a Duration as a key in a map when serializing and unpacking the original object remains unchanged.',
+    'Given a Duration as a key in a map, '
+    'when serializing and unpacking the original object remains unchanged.',
     () {
       var object = TypesMap(
         aDurationKey: {Duration(seconds: 1): 'value'},
@@ -482,7 +491,8 @@ void main() {
   );
 
   test(
-    'Given a index serialized Enum as a key in a map when serializing and unpacking the original object remains unchanged.',
+    'Given a index serialized Enum as a key in a map, '
+    'when serializing and unpacking the original object remains unchanged.',
     () {
       var object = TypesMap(
         anEnumKey: {TestEnum.one: 'value'},
@@ -499,7 +509,8 @@ void main() {
   );
 
   test(
-    'Given a name serialized Enum as a key in a map when serializing and unpacking the original object remains unchanged.',
+    'Given a name serialized Enum as a key in a map, '
+    'when serializing and unpacking the original object remains unchanged.',
     () {
       var object = TypesMap(
         aStringifiedEnumKey: {TestEnumStringified.one: 'value'},
@@ -516,7 +527,8 @@ void main() {
   );
 
   test(
-    'Given a Map as a key in a map when serializing and unpacking the original object remains unchanged.',
+    'Given a Map as a key in a map, '
+    'when serializing and unpacking the original object remains unchanged.',
     () {
       var object = TypesMap(
         aMapKey: {
@@ -535,7 +547,8 @@ void main() {
   );
 
   test(
-    'Given a List as a key in a map when serializing and unpacking the original object remains unchanged.',
+    'Given a List as a key in a map, '
+    'when serializing and unpacking the original object remains unchanged.',
     () {
       var type = Types(anInt: 1);
       var object = TypesMap(
@@ -555,7 +568,8 @@ void main() {
   );
 
   test(
-    'Given an empty map with an int key when serializing and unpacking the empty map is preserved.',
+    'Given an empty map with an int key, '
+    'when serializing and unpacking the empty map is preserved.',
     () {
       var object = TypesMap(anIntKey: {});
 
@@ -567,7 +581,8 @@ void main() {
   );
 
   test(
-    'Given an empty map with an SerializableModel key when serializing and unpacking the empty map is preserved.',
+    'Given an empty map with an SerializableModel key, '
+    'when serializing and unpacking the empty map is preserved.',
     () {
       var object = TypesMap(anObjectKey: {});
 
@@ -579,7 +594,7 @@ void main() {
   );
 
   test(
-    'Given a Serverpod defined model when encoding it with type '
+    'Given a Serverpod defined model, when encoding it with type, '
     'then it is encoded',
     () {
       var serverProtocol = server.Protocol();
@@ -593,7 +608,8 @@ void main() {
   );
 
   test(
-    'Given a project-defined Record type, when encoding it using `mapRecordToJson` '
+    'Given a project-defined Record type, '
+    'when encoding it using `mapRecordToJson`, '
     'then it is encoded',
     () {
       var recordAsJSON = Protocol().mapRecordToJson(
@@ -625,7 +641,8 @@ void main() {
   );
 
   test(
-    'Given a Map with String keys and optional project-defined Record value type, when encoding it using `mapRecordContainingContainerToJson` '
+    'Given a Map with String keys and optional project-defined Record value type, '
+    'when encoding it using `mapRecordContainingContainerToJson`, '
     'then it is converted to a JSON map without records',
     () {
       var jsonMap = Protocol().mapContainerToJson(
@@ -662,7 +679,8 @@ void main() {
   );
 
   test(
-    'Given a List with optional project-defined Record value type, when encoding it using `mapRecordContainingContainerToJson` '
+    'Given a List with optional project-defined Record value type, '
+    'when encoding it using `mapRecordContainingContainerToJson`, '
     'then it is converted to a JSON map without records',
     () {
       var jsonList = Protocol().mapContainerToJson([
@@ -697,7 +715,8 @@ void main() {
   );
 
   test(
-    'Given a Set with optional project-defined Record value type, when encoding it using `mapRecordContainingContainerToJson` '
+    'Given a Set with optional project-defined Record value type, '
+    'when encoding it using `mapRecordContainingContainerToJson`, '
     'then it is converted to a JSON map without records',
     () {
       var jsonList = Protocol().mapContainerToJson({
@@ -732,7 +751,8 @@ void main() {
   );
 
   test(
-    'Given a List containing Sets with optional project-defined Record value type, when encoding it using `mapRecordContainingContainerToJson` '
+    'Given a List containing Sets with optional project-defined Record value type, '
+    'when encoding it using `mapRecordContainingContainerToJson`, '
     'then it is converted to a JSON map without records',
     () {
       var jsonList = Protocol().mapContainerToJson([

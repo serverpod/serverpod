@@ -40,7 +40,7 @@ void main() {
   });
 
   group(
-    'Given a directory with valid conditional template directives in its name',
+    'Given a directory with valid conditional template directives in its name,',
     () {
       late Directory dir;
 
@@ -110,7 +110,7 @@ void main() {
   );
 
   group(
-    'Given a directory with invalid template directives in its name',
+    'Given a directory with invalid template directives in its name,',
     () {
       late Directory dir;
 
@@ -211,7 +211,7 @@ void main() {
   );
 
   group(
-    'Given nested directories with template directives in their names, ',
+    'Given nested directories with template directives in their names,',
     () {
       late Directory nestedDir;
 
@@ -246,7 +246,7 @@ void main() {
       );
 
       test(
-        'when rendering templates with a false context value for the parent directory '
+        'when rendering templates with a false context value for the parent directory, '
         'then the nested directories are deleted',
         () async {
           await renderTestDir(

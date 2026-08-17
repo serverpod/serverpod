@@ -18,7 +18,7 @@ void main() async {
   late Serverpod server;
   late Session session;
 
-  group('Database logger -', () {
+  group('Database logger -,', () {
     setUp(() async {
       server = IntegrationTestServer.create();
       await server.startWithDatabase();
@@ -34,7 +34,9 @@ void main() async {
     });
 
     test(
-      'Given a log settings that enables all logging when calling a noop method then a single log entry is created.',
+      'Given a log settings that enables all logging, '
+      'when calling a noop method, '
+      'then a single log entry is created.',
       () async {
         var settings = RuntimeSettingsBuilder().build();
         await server.updateRuntimeSettings(settings);
@@ -51,7 +53,9 @@ void main() async {
     );
 
     test(
-      'Given a restricted log setting when calling a noop method then no log entries are created.',
+      'Given a restricted log setting, '
+      'when calling a noop method, '
+      'then no log entries are created.',
       () async {
         var settings = RuntimeSettingsBuilder()
             .withLogSettings(
@@ -70,7 +74,9 @@ void main() async {
     );
 
     test(
-      'Given a log setting that enables slow session logging when calling a slow method then a single log entry is created.',
+      'Given a log setting that enables slow session logging, '
+      'when calling a slow method, '
+      'then a single log entry is created.',
       () async {
         var settings = RuntimeSettingsBuilder()
             .withLogSettings(
@@ -97,7 +103,9 @@ void main() async {
     );
 
     test(
-      'Given a log setting that enables failed session logging when calling a method that throws then a single log entry is created.',
+      'Given a log setting that enables failed session logging, '
+      'when calling a method that throws, '
+      'then a single log entry is created.',
       () async {
         var settings = RuntimeSettingsBuilder()
             .withLogSettings(
@@ -126,7 +134,9 @@ void main() async {
     );
 
     test(
-      'Given a log setting that enables slow query logging when calling a slow query method then a single log entry is created.',
+      'Given a log setting that enables slow query logging, '
+      'when calling a slow query method, '
+      'then a single log entry is created.',
       () async {
         var settings = RuntimeSettingsBuilder()
             .withLogSettings(
@@ -153,7 +163,9 @@ void main() async {
     );
 
     test(
-      'Given a log setting that enables all logs when calling a method executing a query then a query log is created',
+      'Given a log setting that enables all logs, '
+      'when calling a method executing a query, '
+      'then a query log is created',
       () async {
         var settings = RuntimeSettingsBuilder()
             .withLogSettings(
@@ -175,7 +187,9 @@ void main() async {
     );
 
     test(
-      'Given a log setting that enables all logs when calling a method executing several queries then a log for each query is created',
+      'Given a log setting that enables all logs, '
+      'when calling a method executing several queries, '
+      'then a log for each query is created',
       () async {
         var settings = RuntimeSettingsBuilder()
             .withLogSettings(
@@ -197,7 +211,9 @@ void main() async {
     );
 
     test(
-      'Given a log setting that turns off all database query logging when calling a method executing several queries then the number of queries are still counted.',
+      'Given a log setting that turns off all database query logging, '
+      'when calling a method executing several queries, '
+      'then the number of queries are still counted.',
       () async {
         var settings = RuntimeSettingsBuilder()
             .withLogSettings(
@@ -222,7 +238,9 @@ void main() async {
     );
 
     test(
-      'Given a log setting that enables failed query logging when calling a method executing an invalid query then a single log entry is created.',
+      'Given a log setting that enables failed query logging, '
+      'when calling a method executing an invalid query, '
+      'then a single log entry is created.',
       () async {
         var settings = RuntimeSettingsBuilder()
             .withLogSettings(
@@ -253,7 +271,9 @@ void main() async {
     );
 
     test(
-      'Given a log setting with everything turned on when calling a method logging a message then the log including the message log is written.',
+      'Given a log setting with everything turned on, '
+      'when calling a method logging a message, '
+      'then the log including the message log is written.',
       () async {
         var settings = RuntimeSettingsBuilder().build();
 
@@ -273,7 +293,9 @@ void main() async {
     );
 
     test(
-      'Given a log setting with everything turned on when calling a method logging a message then the logs messageId is null.',
+      'Given a log setting with everything turned on, '
+      'when calling a method logging a message, '
+      'then the logs messageId is null.',
       () async {
         var settings = RuntimeSettingsBuilder().build();
 
@@ -291,7 +313,9 @@ void main() async {
     );
 
     test(
-      'Given a log setting with everything turned on but only accepting info level and below when calling a method logging a message then the log is written but only includes the info level message.',
+      'Given a log setting with everything turned on but only accepting info level and below, '
+      'when calling a method logging a message, '
+      'then the log is written but only includes the info level message.',
       () async {
         var settings = RuntimeSettingsBuilder()
             .withLogSettings(
@@ -319,7 +343,9 @@ void main() async {
     );
 
     test(
-      'Given a log setting with everything turned on but only accepting warning level and below when calling a method logging a message then the log is written but only includes the warning level message.',
+      'Given a log setting with everything turned on but only accepting warning level and below, '
+      'when calling a method logging a message, '
+      'then the log is written but only includes the warning level message.',
       () async {
         var settings = RuntimeSettingsBuilder()
             .withLogSettings(
@@ -351,7 +377,9 @@ void main() async {
     );
 
     test(
-      'Given a log setting with everything turned on but only accepting error level and below when calling a method logging a message then the log is written but only includes the error level message.',
+      'Given a log setting with everything turned on but only accepting error level and below, '
+      'when calling a method logging a message, '
+      'then the log is written but only includes the error level message.',
       () async {
         var settings = RuntimeSettingsBuilder()
             .withLogSettings(
@@ -384,7 +412,9 @@ void main() async {
     );
 
     test(
-      'Given a log setting with everything turned on but only accepting fatal level and below when calling a method logging a message then the log is written but only includes the fatal level message.',
+      'Given a log setting with everything turned on but only accepting fatal level and below, '
+      'when calling a method logging a message, '
+      'then the log is written but only includes the fatal level message.',
       () async {
         var settings = RuntimeSettingsBuilder()
             .withLogSettings(
@@ -418,7 +448,7 @@ void main() async {
     );
   });
 
-  group('JSON Stdout logger -', () {
+  group('JSON Stdout logger -,', () {
     late MockStdout record;
 
     setUp(() async {
@@ -454,7 +484,8 @@ void main() async {
     });
 
     group(
-      'Given a log settings that enable all logging and the serverpod config does not have a database config when calling a noop method ',
+      'Given a log settings that enable all logging and the serverpod config does not have a database config, '
+      'when calling a noop method,',
       () {
         setUp(() async {
           var settings = RuntimeSettingsBuilder().build();
@@ -482,7 +513,7 @@ void main() async {
     );
   });
 
-  group('Text Stdout logger -', () {
+  group('Text Stdout logger -,', () {
     late MockStdout record;
 
     setUp(() async {
@@ -518,7 +549,8 @@ void main() async {
     });
 
     group(
-      'Given a log settings that enable all logging to the text logger when calling a noop method ',
+      'Given a log settings that enable all logging to the text logger, '
+      'when calling a noop method,',
       () {
         setUp(() async {
           var settings = RuntimeSettingsBuilder().build();

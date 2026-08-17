@@ -36,9 +36,10 @@ void main() {
   ]);
 
   group(
-    'Given a class named $testClassName with two primitive vars when generating code',
+    'Given a class named $testClassName with two primitive vars, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -197,9 +198,10 @@ void main() {
   );
 
   group(
-    'Given a class named $testClassName with a var with none scope when generating code',
+    'Given a class named $testClassName with a var with none scope, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -279,9 +281,10 @@ void main() {
   );
 
   group(
-    'Given a class named $testClassName with a var with serverOnly scope when generating code',
+    'Given a class named $testClassName with a var with serverOnly scope, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -371,8 +374,8 @@ void main() {
     },
   );
 
-  group('Given a class named $testClassName with a list of strings', () {
-    var models = [
+  group('Given a class named $testClassName with a list of strings,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -418,8 +421,8 @@ void main() {
     );
   });
 
-  group('Given a class named $testClassName with a map of strings', () {
-    var models = [
+  group('Given a class named $testClassName with a map of strings,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -467,8 +470,8 @@ void main() {
     );
   });
 
-  group('Given a class named $testClassName with a ByteData field', () {
-    var models = [
+  group('Given a class named $testClassName with a ByteData field,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -514,8 +517,8 @@ void main() {
     );
   });
 
-  group('Given a class named $testClassName with a nested object', () {
-    var models = [
+  group('Given a class named $testClassName with a nested object,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -562,9 +565,9 @@ void main() {
   });
 
   group(
-    'Given a class with only dynamic fields when generating code',
+    'Given a class with only dynamic fields, when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)

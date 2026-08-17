@@ -4,15 +4,15 @@ import 'package:test/test.dart';
 void main() {
   var client = Client('http://localhost:8080/');
 
-  group('Given a client with multiple endpoints', () {
-    test('when getEndpointOfType is called with a unique endpoint type '
+  group('Given a client with multiple endpoints,', () {
+    test('when getEndpointOfType is called with a unique endpoint type, '
         'then it returns the correct endpoint.', () {
       var endpoint = client.getEndpointOfType<EndpointIndependent>();
       expect(endpoint, isA<EndpointIndependent>());
       expect(endpoint.name, 'independent');
     });
 
-    test('when getEndpointOfType is called with EndpointRef type '
+    test('when getEndpointOfType is called with EndpointRef type, '
         'then it throws StateError due to multiple matches.', () {
       expect(
         () => client.getEndpointOfType<EndpointRef>(),
@@ -20,7 +20,7 @@ void main() {
       );
     });
 
-    test('when getEndpointOfType is called with a non-existent endpoint type '
+    test('when getEndpointOfType is called with a non-existent endpoint type, '
         'then it throws StateError due to no matches.', () {
       expect(
         () => client.getEndpointOfType<NonExistentEndpoint>(),
@@ -34,7 +34,7 @@ void main() {
       );
     });
 
-    test('when getEndpointOfType is called with a name that is not found '
+    test('when getEndpointOfType is called with a name that is not found, '
         'then it throws endpoint not found exception due to no matches', () {
       expect(
         () => client.getEndpointOfType('wrong-name'),
@@ -49,9 +49,9 @@ void main() {
     });
   });
 
-  group('Given a client with endpoints that share a common base type', () {
+  group('Given a client with endpoints that share a common base type,', () {
     test(
-      'when getEndpointOfType is called with an abstract base type that has a single subclass '
+      'when getEndpointOfType is called with an abstract base type that has a single subclass, '
       'then it returns the correct endpoint.',
       () {
         var endpoint = client.getEndpointOfType<EndpointAbstractSubClass>();
@@ -61,7 +61,7 @@ void main() {
     );
 
     test(
-      'when getEndpointOfType is called with a concrete subclass type that has no subclasses '
+      'when getEndpointOfType is called with a concrete subclass type that has no subclasses, '
       'then it returns the correct endpoint.',
       () {
         var endpoint = client.getEndpointOfType<EndpointConcreteSubClass>();
@@ -71,7 +71,7 @@ void main() {
     );
 
     test(
-      'when getEndpointOfType is called with an abstract base type that has multiple subclasses '
+      'when getEndpointOfType is called with an abstract base type that has multiple subclasses, '
       'then it throws StateError due to multiple matches.',
       () {
         expect(
@@ -89,7 +89,7 @@ void main() {
     );
 
     test(
-      'when getEndpointOfType is called with a valid name and an abstract base type that has multiple subclasses '
+      'when getEndpointOfType is called with a valid name and an abstract base type that has multiple subclasses, '
       'then it returns the correct endpoint.',
       () {
         var endpoint = client.getEndpointOfType<EndpointAbstractBase>(
@@ -101,7 +101,7 @@ void main() {
     );
 
     test(
-      'when getEndpointOfType is called with valid name and a concrete base type that has multiple subclasses '
+      'when getEndpointOfType is called with valid name and a concrete base type that has multiple subclasses, '
       'then it returns the correct endpoint.',
       () {
         var endpoint = client.getEndpointOfType<EndpointConcreteBase>(

@@ -43,9 +43,9 @@ void main() {
   withServerpod(
     'Given a table model with dynamic fields,',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late var session = sessionBuilder.build();
 
-      group('when inserting the model with all dynamic fields ', () {
+      group('when inserting the model with all dynamic fields,', () {
         late Future<ObjectWithDynamic> insert;
 
         setUp(() async {
@@ -67,7 +67,7 @@ void main() {
   withServerpod(
     'Given a table model with dynamic fields and an entry that has been inserted,',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late var session = sessionBuilder.build();
 
       setUp(() async {
         await ObjectWithDynamic.db.insertRow(session, object);

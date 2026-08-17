@@ -10,9 +10,10 @@ import '../../../../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
-  group('Given a class with fields with a "defaultModel" keyword', () {
+  group('Given a class with fields with a "defaultModel" keyword,', () {
     test(
-      'when the field is of type double and the defaultModel is set to "10.5", then the field should have a "default model" value',
+      'when the field is of type double and the defaultModel is set to "10.5", '
+      'then the field should have a "default model" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -40,7 +41,8 @@ void main() {
     );
 
     test(
-      'when the field is of type double and the defaultModel is set to "20.5", then the field should have a "default model" value',
+      'when the field is of type double and the defaultModel is set to "20.5", '
+      'then the field should have a "default model" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -69,7 +71,8 @@ void main() {
     );
 
     test(
-      'when the field is of type double and the defaultModel is set to an integer "10", then the field should have a "default model" value',
+      'when the field is of type double and the defaultModel is set to an integer "10", '
+      'then the field should have a "default model" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -97,7 +100,8 @@ void main() {
     );
 
     test(
-      'when the field is of type double and the defaultModel is empty, then an error is generated',
+      'when the field is of type double and the defaultModel is empty, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -128,7 +132,8 @@ void main() {
     );
 
     test(
-      'when the field is of type double with an invalid defaultModel value "TEN.POINT_FIVE", then an error is generated',
+      'when the field is of type double with an invalid defaultModel value "TEN.POINT_FIVE", '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -159,7 +164,8 @@ void main() {
     );
 
     test(
-      'when the field is of type double with an invalid defaultModel value containing non-numeric characters, then an error is generated',
+      'when the field is of type double with an invalid defaultModel value containing non-numeric characters, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -190,7 +196,8 @@ void main() {
     );
 
     test(
-      'when the field is of type double with an invalid defaultModel value, then an error is generated',
+      'when the field is of type double with an invalid defaultModel value, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(

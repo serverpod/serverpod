@@ -13,7 +13,9 @@ void main() async {
   });
 
   test(
-    'Given an object relation to a module model when querying for the object then the module model is included.',
+    'Given an object relation to a module model, '
+    'when querying for the object, '
+    'then the module model is included.',
     () async {
       var expectedName = 'John Doe';
 

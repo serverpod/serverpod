@@ -12,7 +12,7 @@ void main() {
   ValueEncoder.set(const PostgresValueEncoder());
 
   test(
-    'Given empty list when trying to construct TableRelation then throws',
+    'Given empty list, when trying to construct TableRelation, then throws',
     () {
       expect(
         () => TableRelation([]),
@@ -29,22 +29,23 @@ void main() {
     },
   );
 
-  group('Given table relation with relation definition', () {
-    var table = Table<int?>(tableName: 'company');
-    var foreignTable = Table<int?>(tableName: 'citizen');
-    var lastJoiningColumn = ColumnInt('ceoId', table);
-    var lastJoiningForeignColumn = ColumnInt('id', foreignTable);
-    var tableRelationEntries = [
+  group('Given table relation with relation definition,', () {
+    late var table = Table<int?>(tableName: 'company');
+    late var foreignTable = Table<int?>(tableName: 'citizen');
+    late var lastJoiningColumn = ColumnInt('ceoId', table);
+    late var lastJoiningForeignColumn = ColumnInt('id', foreignTable);
+    late var tableRelationEntries = [
       TableRelationEntry(
         relationAlias: 'ceo',
         field: lastJoiningColumn,
         foreignField: lastJoiningForeignColumn,
       ),
     ];
-    TableRelation tableRelation = TableRelation(tableRelationEntries);
+    late TableRelation tableRelation = TableRelation(tableRelationEntries);
 
     test(
-      'when buildRelationQueryAlias is called then query prefix is built correctly.',
+      'when buildRelationQueryAlias is called, '
+      'then query prefix is built correctly.',
       () {
         expect(
           tableRelation.relationQueryAlias,
@@ -53,7 +54,7 @@ void main() {
       },
     );
 
-    test('when fieldTable is called then last field table is returned.', () {
+    test('when fieldTable is called, then last field table is returned.', () {
       expect(
         tableRelation.fieldTable,
         table,
@@ -61,7 +62,7 @@ void main() {
     });
 
     test(
-      'when fieldColumn is called then last joining column is returned.',
+      'when fieldColumn is called, then last joining column is returned.',
       () {
         expect(
           tableRelation.fieldColumn,
@@ -70,7 +71,7 @@ void main() {
       },
     );
 
-    group('when getRelations is called', () {
+    group('when getRelations is called,', () {
       test('then returns list with one element.', () {
         expect(tableRelation.getRelations.length, 1);
       });
@@ -87,42 +88,47 @@ void main() {
     });
 
     test(
-      'when foreignTableName is called then last foreign table is returned.',
+      'when foreignTableName is called, then last foreign table is returned.',
       () {
         expect(tableRelation.foreignTableName, 'citizen');
       },
     );
 
     test(
-      'when fieldNameWithJoins is called then last joining field name is returned.',
+      'when fieldNameWithJoins is called, '
+      'then last joining field name is returned.',
       () {
         expect(tableRelation.fieldNameWithJoins, '"company"."ceoId"');
       },
     );
 
     test(
-      'when fieldQueryAliasWithJoins is called then last field query alias with joins is returned.',
+      'when fieldQueryAliasWithJoins is called, '
+      'then last field query alias with joins is returned.',
       () {
         expect(tableRelation.fieldQueryAliasWithJoins, 'company.ceoId');
       },
     );
 
     test(
-      'when foreignFieldBaseQuery is called then the base query for the citizen is created.',
+      'when foreignFieldBaseQuery is called, '
+      'then the base query for the citizen is created.',
       () {
         expect(tableRelation.foreignFieldBaseQuery, '"citizen"."id"');
       },
     );
 
     test(
-      'when foreignFieldQueryAlias is called then the unescaped version of the base query for foreign field is created.',
+      'when foreignFieldQueryAlias is called, '
+      'then the unescaped version of the base query for foreign field is created.',
       () {
         expect(tableRelation.foreignFieldQueryAlias, 'citizen.id');
       },
     );
 
     test(
-      'when fieldQueryAlias is called then the unescaped version of the base query for field is created.',
+      'when fieldQueryAlias is called, '
+      'then the unescaped version of the base query for field is created.',
       () {
         expect(
           tableRelation.fieldQueryAlias,
@@ -132,7 +138,8 @@ void main() {
     );
 
     test(
-      'when foreignFieldNameWithJoins is called then last foreign field name with joins is returned.',
+      'when foreignFieldNameWithJoins is called, '
+      'then last foreign field name with joins is returned.',
       () {
         expect(
           tableRelation.foreignFieldNameWithJoins,
@@ -142,7 +149,7 @@ void main() {
     );
 
     test(
-      'when fieldColumn is called then last joining column is returned.',
+      'when fieldColumn is called, then last joining column is returned.',
       () {
         expect(
           tableRelation.fieldColumn,
@@ -151,10 +158,10 @@ void main() {
       },
     );
 
-    group('when using copyAndAppend to create new table relation ', () {
-      var table = Table<int?>(tableName: 'citizen');
-      var foreignTable = Table<int?>(tableName: 'restaurant');
-      var newTableRelation = tableRelation.copyAndAppend(
+    group('when using copyAndAppend to create new table relation,', () {
+      late var table = Table<int?>(tableName: 'citizen');
+      late var foreignTable = Table<int?>(tableName: 'restaurant');
+      late var newTableRelation = tableRelation.copyAndAppend(
         TableRelationEntry(
           relationAlias: 'favoriteRestaurant',
           field: ColumnInt('favoriteRestaurantId', table),
@@ -177,11 +184,11 @@ void main() {
     });
   });
 
-  group('Given table relation with multiple relation definitions', () {
-    var companyTable = Table<int?>(tableName: 'company');
-    var citizenTable = Table<int?>(tableName: 'citizen');
-    var restaurantTable = Table<int?>(tableName: 'restaurant');
-    var tableRelationEntries = [
+  group('Given table relation with multiple relation definitions,', () {
+    late var companyTable = Table<int?>(tableName: 'company');
+    late var citizenTable = Table<int?>(tableName: 'citizen');
+    late var restaurantTable = Table<int?>(tableName: 'restaurant');
+    late var tableRelationEntries = [
       TableRelationEntry(
         relationAlias: 'ceo',
         field: ColumnInt('ceoId', companyTable),
@@ -193,10 +200,11 @@ void main() {
         foreignField: ColumnInt('id', restaurantTable),
       ),
     ];
-    TableRelation tableRelation = TableRelation(tableRelationEntries);
+    late TableRelation tableRelation = TableRelation(tableRelationEntries);
 
     test(
-      'when buildRelationQueryAlias is called then query prefix is built correctly.',
+      'when buildRelationQueryAlias is called, '
+      'then query prefix is built correctly.',
       () {
         expect(
           tableRelation.relationQueryAlias,
@@ -205,7 +213,7 @@ void main() {
       },
     );
 
-    group('when getRelations is called', () {
+    group('when getRelations is called,', () {
       test(
         'then returns list with one entry for each table relation definition.',
         () {
@@ -227,14 +235,16 @@ void main() {
       );
     });
     test(
-      'when foreignTableName is called then last foreign table name is returned.',
+      'when foreignTableName is called, '
+      'then last foreign table name is returned.',
       () {
         expect(tableRelation.foreignTableName, 'restaurant');
       },
     );
 
     test(
-      'when fieldNameWithJoins is called then last joining field name is returned.',
+      'when fieldNameWithJoins is called, '
+      'then last joining field name is returned.',
       () {
         expect(
           tableRelation.fieldNameWithJoins,
@@ -244,7 +254,7 @@ void main() {
     );
 
     test(
-      'when foreignFieldNameWithJoins is called then last foreign field name.',
+      'when foreignFieldNameWithJoins is called, then last foreign field name.',
       () {
         expect(
           tableRelation.foreignFieldNameWithJoins,
@@ -254,7 +264,8 @@ void main() {
     );
 
     test(
-      'when fieldQueryAliasWithJoins is called then last field query alias with joins is returned.',
+      'when fieldQueryAliasWithJoins is called, '
+      'then last field query alias with joins is returned.',
       () {
         expect(
           tableRelation.fieldQueryAliasWithJoins,
@@ -264,21 +275,24 @@ void main() {
     );
 
     test(
-      'when foreignFieldQuery is called then the base query for the citizen is created.',
+      'when foreignFieldQuery is called, '
+      'then the base query for the citizen is created.',
       () {
         expect(tableRelation.foreignFieldBaseQuery, '"restaurant"."id"');
       },
     );
 
     test(
-      'when foreignFieldQueryAlias is called then the unescaped version of the base query for foreign field is created.',
+      'when foreignFieldQueryAlias is called, '
+      'then the unescaped version of the base query for foreign field is created.',
       () {
         expect(tableRelation.foreignFieldQueryAlias, 'restaurant.id');
       },
     );
 
     test(
-      'when fieldQueryAlias is called then the unescaped version of the base query for field is created.',
+      'when fieldQueryAlias is called, '
+      'then the unescaped version of the base query for field is created.',
       () {
         expect(
           tableRelation.fieldQueryAlias,
@@ -288,7 +302,9 @@ void main() {
     );
 
     test(
-      'that we fetch last relation from when getting last joining foreign field then field field only contain last table join.',
+      'that we fetch last relation from, '
+      'when getting last joining foreign field, '
+      'then field field only contain last table join.',
       () {
         var lastRelation = tableRelation.lastRelation;
 
@@ -301,25 +317,25 @@ void main() {
   });
 
   group(
-    'Given a table relation between two tables with long table and relation field names',
+    'Given a table relation between two tables with long table and relation field names,',
     () {
       var companyTableName =
           'company_company_company_company_company_company_company';
-      var companyTable = Table<int?>(
+      late var companyTable = Table<int?>(
         tableName: companyTableName,
       );
-      var citizenTable = Table<int?>(
+      late var citizenTable = Table<int?>(
         tableName: 'citizen_citizen_citizen_citizen_citizen_citizen_citizen',
       );
-      var joiningColumn = ColumnInt(
+      late var joiningColumn = ColumnInt(
         'id_id_id_id_id_id_id_id_id_id_id_id_id_id_id_id_id_id_id_id',
         companyTable,
       );
-      var joiningForeignColumn = ColumnInt(
+      late var joiningForeignColumn = ColumnInt(
         'employer_employer_employer_employer_employer_employer',
         citizenTable,
       );
-      var relationTable = createRelationTable(
+      late var relationTable = createRelationTable(
         relationFieldName:
             'ceo_ceo_ceo_ceo_ceo_ceo_ceo_ceo_ceo_ceo_ceo_ceo_ceo_ceo',
         field: joiningColumn,
@@ -332,7 +348,7 @@ void main() {
 
       var tableRelation = relationTable.tableRelation;
 
-      group('when getting field query alias', () {
+      group('when getting field query alias,', () {
         test('then alias is truncated', () {
           expect(
             tableRelation?.fieldQueryAlias,
@@ -354,7 +370,8 @@ void main() {
         );
       });
 
-      group('when getting foreign field query alias then alias is truncated', () {
+      group('when getting foreign field query alias, '
+          'then alias is truncated,', () {
         test('then alias is truncated', () {
           expect(
             tableRelation?.foreignFieldQueryAlias,
@@ -378,25 +395,27 @@ void main() {
     },
   );
 
-  group('Given a table relation between three tables with long table names', () {
-    var citizenTable = Table<int?>(
+  group('Given a table relation between three tables with long table names,', () {
+    late var citizenTable = Table<int?>(
       tableName: 'citizen_citizen_citizen_citizen_citizen_citizen_citizen',
     );
-    var companyTable = Table<int?>(
+    late var companyTable = Table<int?>(
       tableName: 'company_company_company_company_company_company_company',
     );
-    var addressTable = Table<int?>(
+    late var addressTable = Table<int?>(
       tableName: 'address_address_address_address_address_address_address',
     );
-    Table relationTable = TableRelationBuilder(companyTable).withRelationsFrom([
-      BuilderRelation(citizenTable, 'customer'),
-      BuilderRelation(addressTable, 'billing_address'),
-    ]).build();
+    late Table relationTable = TableRelationBuilder(companyTable)
+        .withRelationsFrom([
+          BuilderRelation(citizenTable, 'customer'),
+          BuilderRelation(addressTable, 'billing_address'),
+        ])
+        .build();
 
     var tableRelation = relationTable.tableRelation;
 
     test(
-      'when getting field query alias with joins then alias is truncated',
+      'when getting field query alias with joins, then alias is truncated',
       () {
         expect(
           tableRelation?.fieldQueryAliasWithJoins,
@@ -405,7 +424,7 @@ void main() {
       },
     );
 
-    test('when getting field name with joins then alias is truncated', () {
+    test('when getting field name with joins, then alias is truncated', () {
       expect(
         tableRelation?.fieldNameWithJoins,
         '"citizen_citizen_citizen_citizen_citizen_citizen_citizen_cusa803"."id"',
@@ -413,7 +432,7 @@ void main() {
     });
 
     test(
-      'when getting foreign field name with joins then alias is truncated',
+      'when getting foreign field name with joins, then alias is truncated',
       () {
         expect(
           tableRelation?.foreignFieldNameWithJoins,
@@ -422,7 +441,7 @@ void main() {
       },
     );
 
-    test('when getting relation query alias then alias is truncated', () {
+    test('when getting relation query alias, then alias is truncated', () {
       expect(
         tableRelation?.relationQueryAlias,
         'citizen_citizen_citizen_citizen_citizen_citizen_citizen_cusa968',

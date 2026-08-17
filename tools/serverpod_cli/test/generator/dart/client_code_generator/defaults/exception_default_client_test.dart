@@ -15,7 +15,8 @@ const generator = DartClientCodeGenerator();
 
 void main() {
   group(
-    'Given an exception class named DefaultException with string fields having defaultModelValue when generating code',
+    'Given an exception class named DefaultException with string fields having defaultModelValue, '
+    'when generating code,',
     () {
       ClassDeclaration? baseClass;
       ConstructorDeclaration? privateConstructor;

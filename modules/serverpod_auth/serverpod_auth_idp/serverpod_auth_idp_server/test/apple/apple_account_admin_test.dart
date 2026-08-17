@@ -45,7 +45,8 @@ void main() {
       });
 
       test(
-        'when calling `AppleAccountsAdmin.checkAccountStatus`, then the callback is invoked for the expired one.',
+        'when calling `AppleAccountsAdmin.checkAccountStatus`, '
+        'then the callback is invoked for the expired one.',
         () async {
           final expiredUsers = <UuidValue>{};
 
@@ -59,7 +60,8 @@ void main() {
       );
 
       test(
-        'when calling `AppleAccountsAdmin.checkAccountStatus`, then all `lastRefreshedAt` timestamps are updated.',
+        'when calling `AppleAccountsAdmin.checkAccountStatus`, '
+        'then all `lastRefreshedAt` timestamps are updated.',
         () async {
           final timeBeforeUpdate = DateTime.now();
 

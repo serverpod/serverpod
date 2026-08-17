@@ -20,7 +20,7 @@ void main() async {
   });
 
   group(
-    'Given a clean state',
+    'Given a clean state,',
     () {
       Directory? tempDirectory;
       late final String tempPath;
@@ -37,7 +37,7 @@ void main() async {
       });
 
       group(
-        'when creating a new project with the server template',
+        'when creating a new project with the server template,',
         () {
           late final String projectName;
           late final String serverDir;
@@ -787,7 +787,7 @@ void main() async {
   );
 
   group(
-    'Given a created project with the server template and a running pod',
+    'Given a created project with the server template and a running pod,',
     () {
       Directory? tempDirectory;
       Process? startProjectProcess;
@@ -834,7 +834,7 @@ void main() async {
       });
 
       test(
-        'when requesting the static website under / then it is is served',
+        'when requesting the static website under /, then it is is served',
         () async {
           final response = await http.get(Uri.parse('http://localhost:8082'));
           expect(response.statusCode, equals(200));

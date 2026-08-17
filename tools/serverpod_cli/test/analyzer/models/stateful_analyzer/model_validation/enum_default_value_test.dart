@@ -10,7 +10,8 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   group(
-    'Given a valid enum definition with default value set to valid value when validating',
+    'Given a valid enum definition with default value set to valid value, '
+    'when validating,',
     () {
       late CodeGenerationCollector collector;
       late EnumDefinition definition;
@@ -50,7 +51,8 @@ void main() {
   );
 
   group(
-    'Given a valid enum definition with default value set to an invalid String value when validating',
+    'Given a valid enum definition with default value set to an invalid String value, '
+    'when validating,',
     () {
       late CodeGenerationCollector collector;
 
@@ -89,7 +91,8 @@ void main() {
   );
 
   group(
-    'Given a valid enum definition with default value set to and invalid int value when validating',
+    'Given a valid enum definition with default value set to and invalid int value, '
+    'when validating,',
     () {
       late CodeGenerationCollector collector;
 

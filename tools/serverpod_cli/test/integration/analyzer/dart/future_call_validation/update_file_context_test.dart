@@ -24,9 +24,9 @@ void main() {
   });
 
   group(
-    'Given a tracked and analyzed directory with a persistently invalid dart future call file',
+    'Given a tracked and analyzed directory with a persistently invalid dart future call file,',
     () {
-      var trackedDirectory = Directory(
+      late var trackedDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -53,7 +53,7 @@ class ExampleFutureCall extends FutureCall {
       });
 
       test(
-        'when the file context is updated with an unrelated non-future-call file while the error persists '
+        'when the file context is updated with an unrelated non-future-call file while the error persists, '
         'then false is returned.',
         () async {
           // Regression: a persistent error must not turn every unrelated change
@@ -77,9 +77,9 @@ class HelperClass {}
   );
 
   group(
-    'Given a tracked and analyzed directory with an invalid dart future call file',
+    'Given a tracked and analyzed directory with an invalid dart future call file,',
     () {
-      var trackedDirectory = Directory(
+      late var trackedDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -107,7 +107,7 @@ class ExampleFutureCall extends FutureCall {
       });
 
       test(
-        'when the file context is updated with a fix for the invalid future call file '
+        'when the file context is updated with a fix for the invalid future call file, '
         'then true is returned.',
         () async {
           futureCallFile.writeAsStringSync('''
@@ -130,9 +130,9 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a tracked directory with a valid future call file analyzed before any models were provided',
+    'Given a tracked directory with a valid future call file analyzed before any models were provided,',
     () {
-      var trackedDirectory = Directory(
+      late var trackedDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -160,7 +160,7 @@ class ExampleFutureCall extends FutureCall {
       });
 
       test(
-        'when the file context is updated with an unrelated non-future-call file '
+        'when the file context is updated with an unrelated non-future-call file, '
         'then false is returned.',
         () async {
           // Regression: the pending-analysis state is indistinguishable from an
@@ -182,7 +182,7 @@ class HelperClass {}
       );
 
       test(
-        'when the file context is updated with the future call file itself '
+        'when the file context is updated with the future call file itself, '
         'then true is returned.',
         () async {
           await expectLater(

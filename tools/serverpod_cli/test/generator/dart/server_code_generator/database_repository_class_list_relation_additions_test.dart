@@ -21,21 +21,23 @@ void main() {
     '$testClassFileName.dart',
   );
 
-  group('Given a class with table name when generating code', () {
+  group('Given a class with table name, when generating code,', () {
     var tableName = 'example_table';
-    var models = [
+    late var models = [
       ModelClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withTableName(tableName)
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late var compilationUnit = parseString(
+      content: codeMap[expectedFilePath]!,
+    ).unit;
 
     test(
       'then a class named ${testClassName}AttachRepository is NOT generated',
@@ -69,9 +71,10 @@ void main() {
   });
 
   group(
-    'Given a class with table name and explicit list relation field when generating code',
+    'Given a class with table name and explicit list relation field, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -85,16 +88,16 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var compilationUnit = parseString(
+      late var compilationUnit = parseString(
         content: codeMap[expectedFilePath]!,
       ).unit;
 
-      var repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      late var repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
         compilationUnit,
         name: '${testClassName}Repository',
       );
@@ -172,14 +175,14 @@ void main() {
         },
       );
 
-      var repositoryAttachRowClass =
+      late var repositoryAttachRowClass =
           CompilationUnitHelpers.tryFindClassDeclaration(
             compilationUnit,
             name: '${testClassName}AttachRowRepository',
           );
 
       group('then the ${testClassName}AttachRowRepository', () {
-        var peopleMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        late var peopleMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
           repositoryAttachRowClass!,
           name: 'people',
         );
@@ -217,7 +220,7 @@ void main() {
         },
       );
 
-      var repositoryAttachClass =
+      late var repositoryAttachClass =
           CompilationUnitHelpers.tryFindClassDeclaration(
             compilationUnit,
             name: '${testClassName}AttachRepository',
@@ -239,10 +242,11 @@ void main() {
             );
           });
 
-          var peopleMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            repositoryAttachClass!,
-            name: 'people',
-          );
+          late var peopleMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                repositoryAttachClass!,
+                name: 'people',
+              );
 
           test('has a people method defined.', () {
             expect(peopleMethod, isNotNull, reason: 'Missing people method.');
@@ -279,7 +283,7 @@ void main() {
         },
       );
 
-      var repositoryDetachRowClass =
+      late var repositoryDetachRowClass =
           CompilationUnitHelpers.tryFindClassDeclaration(
             compilationUnit,
             name: '${testClassName}DetachRowRepository',
@@ -287,10 +291,11 @@ void main() {
       group(
         'then the ${testClassName}DetachRowRepository',
         () {
-          var peopleMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            repositoryDetachRowClass!,
-            name: 'people',
-          );
+          late var peopleMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                repositoryDetachRowClass!,
+                name: 'people',
+              );
 
           test('has a people method defined.', () {
             expect(peopleMethod, isNotNull, reason: 'Missing people method.');
@@ -327,7 +332,7 @@ void main() {
         },
       );
 
-      var repositoryDetachClass =
+      late var repositoryDetachClass =
           CompilationUnitHelpers.tryFindClassDeclaration(
             compilationUnit,
             name: '${testClassName}DetachRepository',
@@ -349,10 +354,11 @@ void main() {
             );
           });
 
-          var peopleMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            repositoryDetachClass!,
-            name: 'people',
-          );
+          late var peopleMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                repositoryDetachClass!,
+                name: 'people',
+              );
 
           test('has a people method defined.', () {
             expect(peopleMethod, isNotNull, reason: 'Missing people method.');
@@ -377,9 +383,10 @@ void main() {
   );
 
   group(
-    'Given a class with table name and implicit list relation field when generating code',
+    'Given a class with table name and implicit list relation field, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -388,16 +395,16 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var compilationUnit = parseString(
+      late var compilationUnit = parseString(
         content: codeMap[expectedFilePath]!,
       ).unit;
 
-      var repositoryAttachClass =
+      late var repositoryAttachClass =
           CompilationUnitHelpers.tryFindClassDeclaration(
             compilationUnit,
             name: '${testClassName}AttachRepository',
@@ -419,10 +426,11 @@ void main() {
             );
           });
 
-          var citizensMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            repositoryAttachClass!,
-            name: 'citizens',
-          );
+          late var citizensMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                repositoryAttachClass!,
+                name: 'citizens',
+              );
 
           test('has a citizens method defined.', () {
             expect(
@@ -448,17 +456,18 @@ void main() {
         skip: repositoryAttachClass == null,
       );
 
-      var repositoryAttachRowClass =
+      late var repositoryAttachRowClass =
           CompilationUnitHelpers.tryFindClassDeclaration(
             compilationUnit,
             name: '${testClassName}AttachRowRepository',
           );
 
       group('then the ${testClassName}AttachRowRepository', () {
-        var citizenMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-          repositoryAttachRowClass!,
-          name: 'citizens',
-        );
+        late var citizenMethod =
+            CompilationUnitHelpers.tryFindMethodDeclaration(
+              repositoryAttachRowClass!,
+              name: 'citizens',
+            );
 
         test('has a citizens method defined.', () {
           expect(citizenMethod, isNotNull, reason: 'Missing citizens method.');
@@ -478,7 +487,7 @@ void main() {
         );
       });
 
-      var repositoryDetachClass =
+      late var repositoryDetachClass =
           CompilationUnitHelpers.tryFindClassDeclaration(
             compilationUnit,
             name: '${testClassName}DetachRepository',
@@ -500,10 +509,11 @@ void main() {
             );
           });
 
-          var citizensMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            repositoryDetachClass!,
-            name: 'citizens',
-          );
+          late var citizensMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                repositoryDetachClass!,
+                name: 'citizens',
+              );
 
           test('has a citizens method defined.', () {
             expect(
@@ -529,17 +539,18 @@ void main() {
         skip: repositoryAttachClass == null,
       );
 
-      var repositoryDetachRowClass =
+      late var repositoryDetachRowClass =
           CompilationUnitHelpers.tryFindClassDeclaration(
             compilationUnit,
             name: '${testClassName}DetachRowRepository',
           );
 
       group('then the ${testClassName}DetachRowRepository', () {
-        var citizenMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-          repositoryDetachRowClass!,
-          name: 'citizens',
-        );
+        late var citizenMethod =
+            CompilationUnitHelpers.tryFindMethodDeclaration(
+              repositoryDetachRowClass!,
+              name: 'citizens',
+            );
 
         test('has a citizens method defined.', () {
           expect(citizenMethod, isNotNull, reason: 'Missing citizens method.');
@@ -563,9 +574,9 @@ void main() {
 
   group(
     'Given a class with table name and explicit non-nullable list relation field, '
-    'when generating code',
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -579,16 +590,16 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var compilationUnit = parseString(
+      late var compilationUnit = parseString(
         content: codeMap[expectedFilePath]!,
       ).unit;
 
-      var repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      late var repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
         compilationUnit,
         name: '${testClassName}Repository',
       );

@@ -87,7 +87,8 @@ class _CounterAppState extends State<_CounterApp> {
 void main() {
   testWidgets(
     'Given a Flutter web app with a client-side database, '
-    'when it starts, then the database is opened, migrated and persists data across restarts',
+    'when it starts, '
+    'then the database is opened, migrated and persists data across restarts',
     (tester) async {
       // Web databases are named, not file paths; the browser profile is new for
       // every run, so a name unique to this test is enough.

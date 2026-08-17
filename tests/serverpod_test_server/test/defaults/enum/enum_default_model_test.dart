@@ -3,10 +3,11 @@ import 'package:test/test.dart';
 
 void main() async {
   group(
-    "Given a class with 'defaultModel' enum fields",
+    "Given a class with 'defaultModel' enum fields,",
     () {
       test(
-        'when an object of the class is created, then the "byNameEnumDefaultModel" field should match the default enum value',
+        'when an object of the class is created, '
+        'then the "byNameEnumDefaultModel" field should match the default enum value',
         () {
           var object = EnumDefaultModel();
           expect(
@@ -17,7 +18,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created, then the "byNameEnumDefaultModelNull" field should match the default enum value',
+        'when an object of the class is created, '
+        'then the "byNameEnumDefaultModelNull" field should match the default enum value',
         () {
           var object = EnumDefaultModel();
           expect(
@@ -28,7 +30,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created, then the "byIndexEnumDefaultModel" field should match the default enum value',
+        'when an object of the class is created, '
+        'then the "byIndexEnumDefaultModel" field should match the default enum value',
         () {
           var object = EnumDefaultModel();
           expect(
@@ -39,7 +42,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created, then the "byIndexEnumDefaultModelNull" field should match the default enum value',
+        'when an object of the class is created, '
+        'then the "byIndexEnumDefaultModelNull" field should match the default enum value',
         () {
           var object = EnumDefaultModel();
           expect(
@@ -50,7 +54,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a specific value for "byNameEnumDefaultModel", then the field value should match the provided enum value',
+        'when an object of the class is created with a specific value for "byNameEnumDefaultModel", '
+        'then the field value should match the provided enum value',
         () {
           var object = EnumDefaultModel(
             byNameEnumDefaultModel: ByNameEnum.byName2,
@@ -63,7 +68,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a specific value for "byNameEnumDefaultModelNull", then the field value should match the provided enum value',
+        'when an object of the class is created with a specific value for "byNameEnumDefaultModelNull", '
+        'then the field value should match the provided enum value',
         () {
           var object = EnumDefaultModel(
             byNameEnumDefaultModelNull: ByNameEnum.byName1,
@@ -76,7 +82,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a specific value for "byIndexEnumDefaultModel", then the field value should match the provided enum value',
+        'when an object of the class is created with a specific value for "byIndexEnumDefaultModel", '
+        'then the field value should match the provided enum value',
         () {
           var object = EnumDefaultModel(
             byIndexEnumDefaultModel: ByIndexEnum.byIndex2,
@@ -89,7 +96,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a specific value for "byIndexEnumDefaultModelNull", then the field value should match the provided enum value',
+        'when an object of the class is created with a specific value for "byIndexEnumDefaultModelNull", '
+        'then the field value should match the provided enum value',
         () {
           var object = EnumDefaultModel(
             byIndexEnumDefaultModelNull: ByIndexEnum.byIndex1,

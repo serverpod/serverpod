@@ -43,9 +43,10 @@ void main() {
       ]);
 
   group(
-    'Given a hierarchy with a sealed parent that has a model and a normal child, when generating code',
+    'Given a hierarchy with a sealed parent that has a model and a normal child, '
+    'when generating code,',
     () {
-      var parent = ModelClassDefinitionBuilder()
+      late var parent = ModelClassDefinitionBuilder()
           .withSubDirParts(['subdir'])
           .withClassName('Example')
           .withFileName('example')
@@ -64,7 +65,7 @@ void main() {
           .withSharedPackageName(sharedPackageName)
           .build();
 
-      var child = ModelClassDefinitionBuilder()
+      late var child = ModelClassDefinitionBuilder()
           .withSubDirParts(['subdir'])
           .withClassName('ExampleChild')
           .withFileName('example_child')
@@ -73,7 +74,7 @@ void main() {
           .withSharedPackageName(sharedPackageName)
           .build();
 
-      var user = ModelClassDefinitionBuilder()
+      late var user = ModelClassDefinitionBuilder()
           .withSubDirParts(['subdir'])
           .withClassName('User')
           .withFileName('user')
@@ -117,9 +118,10 @@ void main() {
   );
 
   group(
-    'Given a hierarchy with a sealed parent exception that has a model and a normal child, when generating code',
+    'Given a hierarchy with a sealed parent exception that has a model and a normal child, '
+    'when generating code,',
     () {
-      var parent = ExceptionClassDefinitionBuilder()
+      late var parent = ExceptionClassDefinitionBuilder()
           .withSubDirParts(['subdir'])
           .withClassName('AppException')
           .withFileName('app_exception')
@@ -138,7 +140,7 @@ void main() {
           .withSharedPackageName(sharedPackageName)
           .build();
 
-      var child = ExceptionClassDefinitionBuilder()
+      late var child = ExceptionClassDefinitionBuilder()
           .withSubDirParts(['subdir'])
           .withClassName('NotFoundException')
           .withFileName('not_found_exception')
@@ -147,7 +149,7 @@ void main() {
           .withSharedPackageName(sharedPackageName)
           .build();
 
-      var user = ModelClassDefinitionBuilder()
+      late var user = ModelClassDefinitionBuilder()
           .withSubDirParts(['subdir'])
           .withClassName('User')
           .withFileName('user')
@@ -191,9 +193,10 @@ void main() {
   );
 
   group(
-    'Given an endpoint that has a UuidValue parameter imported from Serverpod when generating shared code',
+    'Given an endpoint that has a UuidValue parameter imported from Serverpod, '
+    'when generating shared code,',
     () {
-      var endpoint = EndpointDefinitionBuilder()
+      late var endpoint = EndpointDefinitionBuilder()
           .withClassName('ExampleEndpoint')
           .withName('example')
           .withMethods([
@@ -211,7 +214,7 @@ void main() {
           ])
           .build();
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [endpoint],
         models: [],
         futureCalls: [],
@@ -229,7 +232,7 @@ void main() {
   );
 
   group(
-    'Given a shared model when generating code,',
+    'Given a shared model, when generating code,',
     () {
       const modelFileName = 'shared_example';
 
@@ -279,7 +282,7 @@ void main() {
   );
 
   group(
-    'Given a shared package protocol when generating code,',
+    'Given a shared package protocol, when generating code,',
     () {
       late final protocolDefinition = ProtocolDefinition(
         endpoints: [],
@@ -333,7 +336,7 @@ void main() {
   );
 
   group(
-    'Given a shared model with a database table when generating code,',
+    'Given a shared model with a database table, when generating code,',
     () {
       const tableModelFileName = 'shared_table_record';
 
@@ -438,7 +441,8 @@ void main() {
   );
 
   group(
-    'Given a shared package protocol for a project whose Dart client depends on serverpod_service_client when generating code,',
+    'Given a shared package protocol for a project whose Dart client depends on serverpod_service_client, '
+    'when generating code,',
     () {
       const serviceClientProjectName = 'serverpod_test_sqlite';
       const serviceClientSharedPackageName = 'serverpod_test_shared';

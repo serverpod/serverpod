@@ -26,18 +26,18 @@ void main() {
     'test_assets',
   );
 
-  group('Given a latest version migration folder that is empty', () {
-    var projectDirectory = Directory(
+  group('Given a latest version migration folder that is empty,', () {
+    late var projectDirectory = Directory(
       path.join(testAssetsPath, 'empty_migration'),
     );
     var projectName = 'test_project';
-    var generator = MigrationGenerator(
+    late var generator = MigrationGenerator(
       directory: projectDirectory,
       projectName: projectName,
     );
 
     test(
-      'when creating migration then MigrationVersionLoadException is thrown.',
+      'when creating migration, then MigrationVersionLoadException is thrown.',
       () async {
         expect(
           generator.createMigration(force: false, config: config),
@@ -64,7 +64,8 @@ void main() {
     );
 
     test(
-      'when creating repair migration then MigrationVersionLoadException exception is thrown.',
+      'when creating repair migration, '
+      'then MigrationVersionLoadException exception is thrown.',
       () async {
         expect(
           generator.repairMigration(
@@ -96,7 +97,7 @@ void main() {
     );
   });
 
-  group('Given a migration that produces warnings due to column removal', () {
+  group('Given a migration that produces warnings due to column removal,', () {
     late Directory testDirectory;
     late GeneratorConfig config;
     late MigrationGenerator generator;
@@ -178,7 +179,8 @@ fields:
     });
 
     test(
-      'when creating migration with force `false` then MigrationAbortedException is thrown.',
+      'when creating migration with force `false`, '
+      'then MigrationAbortedException is thrown.',
       () async {
         await expectLater(
           generator.createMigration(force: false, config: config),
@@ -188,7 +190,7 @@ fields:
     );
 
     test(
-      'when creating migration with force `true` then migration is created.',
+      'when creating migration with force `true`, then migration is created.',
       () async {
         var result = await generator.createMigration(
           force: true,
@@ -200,7 +202,7 @@ fields:
     );
   });
 
-  group('Given a project with no database changes', () {
+  group('Given a project with no database changes,', () {
     late Directory testDirectory;
     late GeneratorConfig config;
     late MigrationGenerator generator;
@@ -274,7 +276,7 @@ fields:
       }
     });
 
-    test('when creating migration then `null` is returned.', () async {
+    test('when creating migration, then `null` is returned.', () async {
       var result = await generator.createMigration(
         force: false,
         config: config,
@@ -283,7 +285,8 @@ fields:
     });
 
     test(
-      'when creating migration with empty `true` then an empty migration is returned.',
+      'when creating migration with empty `true`, '
+      'then an empty migration is returned.',
       () async {
         var result = await generator.createMigration(
           empty: true,

@@ -25,8 +25,8 @@ void main() {
     '$testClassFileName.dart',
   );
 
-  group('Given a table class with id type "int" when generating code', () {
-    var models = [
+  group('Given a table class with id type "int", when generating code,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withTableName('example_table')
@@ -76,8 +76,8 @@ void main() {
     });
   });
 
-  group('Given a table class with id type "UUIDv4" when generating code', () {
-    var models = [
+  group('Given a table class with id type "UUIDv4", when generating code,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withTableName('example_table')

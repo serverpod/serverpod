@@ -3,14 +3,15 @@ import 'package:test/test.dart';
 import '../../compilation_unit_matcher.dart';
 
 void main() {
-  group('Given compilation unit with class and no fields ', () {
+  group('Given compilation unit with class and no fields,', () {
     late final compilationUnit = parseCode(
       '''
       class User {}
       ''',
     );
     test(
-      'when negate matching with non-existent field of the class then test passes',
+      'when negate matching with non-existent field of the class, '
+      'then test passes',
       () {
         expect(
           compilationUnit,
@@ -21,7 +22,7 @@ void main() {
   });
 
   group(
-    'Given compilation unit with class and non-nullable non-late non-override final String field',
+    'Given compilation unit with class and non-nullable non-late non-override final String field,',
     () {
       late final compilationUnit = parseCode(
         '''
@@ -31,28 +32,28 @@ void main() {
     ''',
       );
 
-      test('when matching class and field then test passes', () {
+      test('when matching class and field, then test passes', () {
         expect(
           compilationUnit,
           containsClass('User').withField('name'),
         );
       });
 
-      test('when matching class and non-nullable field then test passes', () {
+      test('when matching class and non-nullable field, then test passes', () {
         expect(
           compilationUnit,
           containsClass('User').withField('name', isNullable: false),
         );
       });
 
-      test('when matching class and final field then test passes', () {
+      test('when matching class and final field, then test passes', () {
         expect(
           compilationUnit,
           containsClass('User').withField('name', isFinal: true),
         );
       });
 
-      test('when matching class and non-late field then test passes', () {
+      test('when matching class and non-late field, then test passes', () {
         expect(
           compilationUnit,
           containsClass('User').withField('name', isLate: false),
@@ -60,7 +61,8 @@ void main() {
       });
 
       test(
-        'when matching class and non-nullable non-late non-override final String field then test passes',
+        'when matching class and non-nullable non-late non-override final String field, '
+        'then test passes',
         () {
           expect(
             compilationUnit,
@@ -76,14 +78,14 @@ void main() {
         },
       );
 
-      test('when matching class and non-override field then test passes', () {
+      test('when matching class and non-override field, then test passes', () {
         expect(
           compilationUnit,
           containsClass('User').withField('name', isOverride: false),
         );
       });
 
-      test('when matching class and String field then test passes', () {
+      test('when matching class and String field, then test passes', () {
         expect(
           compilationUnit,
           containsClass('User').withField('name', type: 'String'),
@@ -91,7 +93,7 @@ void main() {
       });
 
       test(
-        'when negate matching class and nullable field then test passes',
+        'when negate matching class and nullable field, then test passes',
         () {
           expect(
             compilationUnit,
@@ -101,7 +103,7 @@ void main() {
       );
 
       test(
-        'when negate matching class and non-final field then test passes',
+        'when negate matching class and non-final field, then test passes',
         () {
           expect(
             compilationUnit,
@@ -110,7 +112,7 @@ void main() {
         },
       );
 
-      test('when negate matching class and late field then test passes', () {
+      test('when negate matching class and late field, then test passes', () {
         expect(
           compilationUnit,
           isNot(containsClass('User').withField('name', isLate: true)),
@@ -118,7 +120,7 @@ void main() {
       });
 
       test(
-        'when negate matching class and override field then test passes',
+        'when negate matching class and override field, then test passes',
         () {
           expect(
             compilationUnit,
@@ -127,7 +129,7 @@ void main() {
         },
       );
 
-      test('when matching class and int field then test passes', () {
+      test('when matching class and int field, then test passes', () {
         expect(
           compilationUnit,
           isNot(containsClass('User').withField('name', type: 'int')),
@@ -135,7 +137,8 @@ void main() {
       });
 
       test(
-        'when negate matching with non-existent class and field then test passes',
+        'when negate matching with non-existent class and field, '
+        'then test passes',
         () {
           expect(
             compilationUnit,
@@ -146,7 +149,7 @@ void main() {
     },
   );
 
-  group('Given compilation unit with class and nullable field', () {
+  group('Given compilation unit with class and nullable field,', () {
     late final compilationUnit = parseCode(
       '''
       class User {
@@ -155,14 +158,14 @@ void main() {
     ''',
     );
 
-    test('when matching class and field then test passes', () {
+    test('when matching class and field, then test passes', () {
       expect(
         compilationUnit,
         containsClass('User').withField('name'),
       );
     });
 
-    test('when matching class and nullable field then test passes', () {
+    test('when matching class and nullable field, then test passes', () {
       expect(
         compilationUnit,
         containsClass('User').withField('name', isNullable: true),
@@ -170,7 +173,7 @@ void main() {
     });
 
     test(
-      'when negate matching class and non-nullable field then test passes',
+      'when negate matching class and non-nullable field, then test passes',
       () {
         expect(
           compilationUnit,
@@ -180,7 +183,7 @@ void main() {
     );
   });
 
-  group('Given compilation unit with class and non-final field', () {
+  group('Given compilation unit with class and non-final field,', () {
     late final compilationUnit = parseCode(
       '''
       class User {
@@ -189,14 +192,14 @@ void main() {
     ''',
     );
 
-    test('when matching class and non-final field then test passes', () {
+    test('when matching class and non-final field, then test passes', () {
       expect(
         compilationUnit,
         containsClass('User').withField('name', isFinal: false),
       );
     });
 
-    test('when negate matching class and final field then test passes', () {
+    test('when negate matching class and final field, then test passes', () {
       expect(
         compilationUnit,
         isNot(containsClass('User').withField('name', isFinal: true)),
@@ -204,7 +207,7 @@ void main() {
     });
   });
 
-  group('Given compilation unit with class and late final field', () {
+  group('Given compilation unit with class and late final field,', () {
     late final compilationUnit = parseCode(
       '''
       class User {
@@ -213,7 +216,7 @@ void main() {
     ''',
     );
 
-    test('when matching class and late final field then test passes', () {
+    test('when matching class and late final field, then test passes', () {
       expect(
         compilationUnit,
         containsClass('User').withField('name', isLate: true),
@@ -221,7 +224,7 @@ void main() {
     });
 
     test(
-      'when negate matching class and non-late final field then test passes',
+      'when negate matching class and non-late final field, then test passes',
       () {
         expect(
           compilationUnit,

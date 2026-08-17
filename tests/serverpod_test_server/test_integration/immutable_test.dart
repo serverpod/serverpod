@@ -6,7 +6,8 @@ import 'test_tools/serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given a database storable immutable model when inserted into the database',
+    'Given a database storable immutable model, '
+    'when inserted into the database,',
     (sessionBuilder, _) {
       late Session session;
       late ImmutableObjectWithTable object;
@@ -48,7 +49,7 @@ void main() {
     },
   );
 
-  withServerpod('Given an immutable model stored in the database', (
+  withServerpod('Given an immutable model stored in the database,', (
     sessionBuilder,
     _,
   ) {
@@ -77,9 +78,9 @@ void main() {
       expect(fetchedObject1, equals(fetchedObject2));
     });
 
-    group('when updated', () {
+    group('when updated,', () {
       late Future<ImmutableObjectWithTable> updateFuture;
-      final updateHash = const Uuid().v4();
+      late final updateHash = const Uuid().v4();
       setUp(() async {
         updateFuture = ImmutableObjectWithTable.db.updateRow(
           session,

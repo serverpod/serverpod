@@ -13,7 +13,7 @@ void main() {
   late Session session;
 
   group(
-    'Given log cleanup is configured with only retention period for a database with both old and recent log entries',
+    'Given log cleanup is configured with only retention period for a database with both old and recent log entries,',
     () {
       const numOldEntries = 50;
       const numRecentEntries = 3;
@@ -57,7 +57,7 @@ void main() {
         await SessionLogEntry.db.insert(session, recentEntries);
       });
 
-      group('when cleanup is triggered', () {
+      group('when cleanup is triggered,', () {
         late MockStdout record;
 
         setUp(() async {
@@ -112,7 +112,7 @@ void main() {
   );
 
   group(
-    'Given log cleanup is configured with only retention count for a database with more entries than the retention count',
+    'Given log cleanup is configured with only retention count for a database with more entries than the retention count,',
     () {
       const numEntries = 50;
       const retentionCount = 10;
@@ -144,7 +144,7 @@ void main() {
         await SessionLogEntry.db.insert(session, entries);
       });
 
-      group('when cleanup is triggered', () {
+      group('when cleanup is triggered,', () {
         late MockStdout record;
 
         setUp(() async {
@@ -197,7 +197,7 @@ void main() {
   );
 
   group(
-    'Given log cleanup is configured with both retention period and retention count for a database with more recent entries than the retention count',
+    'Given log cleanup is configured with both retention period and retention count for a database with more recent entries than the retention count,',
     () {
       const numRecentEntries = 50;
       const retentionCount = 10;
@@ -229,7 +229,7 @@ void main() {
         await SessionLogEntry.db.insert(session, recentEntries);
       });
 
-      group('when cleanup is triggered', () {
+      group('when cleanup is triggered,', () {
         setUp(() async {
           final testSession = await server.createSession(enableLogging: true);
           testSession.log('Trigger cleanup');
@@ -262,7 +262,7 @@ void main() {
   );
 
   group(
-    'Given log cleanup is configured with both retention period and retention count for a database with more entries than the retention count but less recent entries than the retention count',
+    'Given log cleanup is configured with both retention period and retention count for a database with more entries than the retention count but less recent entries than the retention count,',
     () {
       const numOldEntries = 50;
       const numRecentEntries = 3;
@@ -307,7 +307,7 @@ void main() {
         await SessionLogEntry.db.insert(session, recentEntries);
       });
 
-      group('when cleanup is triggered', () {
+      group('when cleanup is triggered,', () {
         setUp(() async {
           final testSession = await server.createSession(enableLogging: true);
           testSession.log('Trigger cleanup');
@@ -332,7 +332,7 @@ void main() {
   );
 
   group(
-    'Given log cleanup is configured to a cleanup interval that has not yet passed and more entries were added after last cleanup',
+    'Given log cleanup is configured to a cleanup interval that has not yet passed and more entries were added after last cleanup,',
     () {
       const numFirstEntries = 5;
       const numSecondEntries = 50;
@@ -398,7 +398,7 @@ void main() {
         await SessionLogEntry.db.insert(session, secondEntries);
       });
 
-      group('when a log entry is added', () {
+      group('when a log entry is added,', () {
         setUp(() async {
           final testSession = await server.createSession(enableLogging: true);
           testSession.log('Do not trigger cleanup');
@@ -421,7 +421,7 @@ void main() {
   );
 
   group(
-    'Given log cleanup is configured with persistent logging disabled and the database has more entries than the retention count',
+    'Given log cleanup is configured with persistent logging disabled and the database has more entries than the retention count,',
     () {
       const numEntries = 50;
       const retentionCount = 10;
@@ -453,7 +453,7 @@ void main() {
         await SessionLogEntry.db.insert(session, recentEntries);
       });
 
-      group('when a log entry is added', () {
+      group('when a log entry is added,', () {
         setUp(() async {
           final testSession = await server.createSession(enableLogging: true);
           testSession.log('Trigger cleanup');
@@ -476,7 +476,7 @@ void main() {
   );
 
   group(
-    'Given log cleanup is configured with no cleanup interval and the database has more entries than the retention count',
+    'Given log cleanup is configured with no cleanup interval and the database has more entries than the retention count,',
     () {
       const numEntries = 50;
       const retentionCount = 10;
@@ -508,7 +508,7 @@ void main() {
         await SessionLogEntry.db.insert(session, recentEntries);
       });
 
-      group('when a log entry is added', () {
+      group('when a log entry is added,', () {
         setUp(() async {
           final testSession = await server.createSession(enableLogging: true);
           testSession.log('Trigger cleanup');

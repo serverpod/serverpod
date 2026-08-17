@@ -89,7 +89,9 @@ class _TestSerializableException
 
 void main() {
   test(
-    'Given message that has no data when building websocket message then data keyword is not included',
+    'Given message that has no data, '
+    'when building websocket message, '
+    'then data keyword is not included',
     () {
       var message = PingCommand.buildMessage();
       expect(message, isNot(contains(WebSocketMessageKey.data)));
@@ -97,7 +99,9 @@ void main() {
   );
 
   test(
-    'Given a Ping command message when building websocket message from string then PingCommand is returned.',
+    'Given a Ping command message, '
+    'when building websocket message from string, '
+    'then PingCommand is returned.',
     () {
       var message = PingCommand.buildMessage();
       var result = WebSocketMessage.fromJsonString(
@@ -109,7 +113,9 @@ void main() {
   );
 
   test(
-    'Given a Pong command message when building websocket message from string then PongCommand is returned.',
+    'Given a Pong command message, '
+    'when building websocket message from string, '
+    'then PongCommand is returned.',
     () {
       var message = PongCommand.buildMessage();
       var result = WebSocketMessage.fromJsonString(
@@ -121,7 +127,9 @@ void main() {
   );
 
   test(
-    'Given a bad request message when building websocket message from string then BadRequestMessage is returned.',
+    'Given a bad request message, '
+    'when building websocket message from string, '
+    'then BadRequestMessage is returned.',
     () {
       var message = BadRequestMessage.buildMessage('This is a bad request');
       var result = WebSocketMessage.fromJsonString(
@@ -133,7 +141,8 @@ void main() {
   );
 
   test(
-    'Given a bad request message without mandatory field building websocket message from string then UnknownMessageException is thrown having TypeError error type.',
+    'Given a bad request message without mandatory field building websocket message from string, '
+    'then UnknownMessageException is thrown having TypeError error type.',
     () {
       var message = BadRequestMessage.buildMessage('testRequest');
 
@@ -159,7 +168,9 @@ void main() {
   );
 
   test(
-    'Given a upper cased command message when building websocket message from string then UnknownMessageException is thrown.',
+    'Given a upper cased command message, '
+    'when building websocket message from string, '
+    'then UnknownMessageException is thrown.',
     () {
       var message = PingCommand.buildMessage().toUpperCase();
       expect(
@@ -173,7 +184,9 @@ void main() {
   );
 
   test(
-    'Given an unknown command json String when building websocket message from string then UnknownMessageException is thrown.',
+    'Given an unknown command json String, '
+    'when building websocket message from string, '
+    'then UnknownMessageException is thrown.',
     () {
       var message =
           '{"${WebSocketMessageKey.type}": "this is not a known message type"}';
@@ -194,7 +207,9 @@ void main() {
   );
 
   test(
-    'Given an invalid json String when building websocket message from string then UnknownMessageException is thrown having FormatException error type.',
+    'Given an invalid json String, '
+    'when building websocket message from string, '
+    'then UnknownMessageException is thrown having FormatException error type.',
     () {
       var message = 'This is not a valid json string';
       expect(
@@ -214,7 +229,9 @@ void main() {
   );
 
   test(
-    'Given a null messageType when building websocket message from string then UnknownMessageException is thrown.',
+    'Given a null messageType, '
+    'when building websocket message from string, '
+    'then UnknownMessageException is thrown.',
     () {
       var message = '{"${WebSocketMessageKey.type}": null}';
       expect(
@@ -228,7 +245,9 @@ void main() {
   );
 
   test(
-    'Given an open method stream command when building websocket message from string then OpenMethodStreamCommand is returned.',
+    'Given an open method stream command, '
+    'when building websocket message from string, '
+    'then OpenMethodStreamCommand is returned.',
     () {
       var message = OpenMethodStreamCommand.buildMessage(
         endpoint: 'endpoint',
@@ -247,7 +266,9 @@ void main() {
   );
 
   test(
-    'Given an invalid open method stream command json String that has int for input stream when building websocket message from string then UnknownMessageException is thrown having TypeError error type.',
+    'Given an invalid open method stream command json String that has int for input stream, '
+    'when building websocket message from string, '
+    'then UnknownMessageException is thrown having TypeError error type.',
     () {
       var message = OpenMethodStreamCommand.buildMessage(
         endpoint: 'endpoint',
@@ -278,7 +299,9 @@ void main() {
   );
 
   test(
-    'Given an invalid open method stream command json String that is missing mandatory endpoint field when building websocket message from string then UnknownMessageException is thrown having TypeError error type.',
+    'Given an invalid open method stream command json String that is missing mandatory endpoint field, '
+    'when building websocket message from string, '
+    'then UnknownMessageException is thrown having TypeError error type.',
     () {
       var message = OpenMethodStreamCommand.buildMessage(
         endpoint: 'endpoint',
@@ -312,7 +335,9 @@ void main() {
   );
 
   test(
-    'Given an open method stream response when building websocket message from string then OpenMethodStreamResponse is returned.',
+    'Given an open method stream response, '
+    'when building websocket message from string, '
+    'then OpenMethodStreamResponse is returned.',
     () {
       var message = OpenMethodStreamResponse.buildMessage(
         endpoint: 'endpoint',
@@ -329,7 +354,9 @@ void main() {
   );
 
   test(
-    'Given an open method stream response with an invalid response type when building websocket message from string then UnknownMessageException is thrown.',
+    'Given an open method stream response with an invalid response type, '
+    'when building websocket message from string, '
+    'then UnknownMessageException is thrown.',
     () {
       var message = OpenMethodStreamResponse.buildMessage(
         endpoint: 'endpoint',
@@ -354,7 +381,9 @@ void main() {
   );
 
   test(
-    'Given a close method stream command when building websocket message from string then CloseMethodStreamCommand is returned.',
+    'Given a close method stream command, '
+    'when building websocket message from string, '
+    'then CloseMethodStreamCommand is returned.',
     () {
       var message = CloseMethodStreamCommand.buildMessage(
         connectionId: const Uuid().v4obj(),
@@ -372,7 +401,9 @@ void main() {
   );
 
   test(
-    'Given an invalid close method stream command json String that is missing mandatory connectionId field when building websocket message from string then UnknownMessageException is thrown having TypeError error type.',
+    'Given an invalid close method stream command json String that is missing mandatory connectionId field, '
+    'when building websocket message from string, '
+    'then UnknownMessageException is thrown having TypeError error type.',
     () {
       var connectionId = const Uuid().v4obj();
       var message = CloseMethodStreamCommand.buildMessage(
@@ -406,7 +437,9 @@ void main() {
   );
 
   test(
-    'Given an close method stream command with an invalid reason when building websocket message from string then UnknownMessageException is thrown.',
+    'Given an close method stream command with an invalid reason, '
+    'when building websocket message from string, '
+    'then UnknownMessageException is thrown.',
     () {
       var message = CloseMethodStreamCommand.buildMessage(
         connectionId: const Uuid().v4obj(),
@@ -432,7 +465,9 @@ void main() {
   );
 
   test(
-    'Given a method stream message when building websocket message from string then MethodStreamMessage is returned.',
+    'Given a method stream message, '
+    'when building websocket message from string, '
+    'then MethodStreamMessage is returned.',
     () {
       var serializationManager = _TestSerializationManager();
       var message = MethodStreamMessage.buildMessage(
@@ -451,7 +486,9 @@ void main() {
   );
 
   test(
-    'Given serializable model with server only field when building MethodStreamMessage then server only field is not included in serialization.',
+    'Given serializable model with server only field, '
+    'when building MethodStreamMessage, '
+    'then server only field is not included in serialization.',
     () {
       var serializationManager = _TestSerializationManager();
       var message = MethodStreamMessage.buildMessage(
@@ -467,7 +504,9 @@ void main() {
   );
 
   test(
-    'Given an invalid method stream message json String that is missing mandatory endpoint field when building websocket message from string then UnknownMessageException is thrown having TypeError error type.',
+    'Given an invalid method stream message json String that is missing mandatory endpoint field, '
+    'when building websocket message from string, '
+    'then UnknownMessageException is thrown having TypeError error type.',
     () {
       var serializationManager = _TestSerializationManager();
       var message = MethodStreamMessage.buildMessage(
@@ -501,7 +540,9 @@ void main() {
   );
 
   test(
-    'Given method stream serializable exception when building websocket message from string then MethodStreamSerializableException is returned.',
+    'Given method stream serializable exception, '
+    'when building websocket message from string, '
+    'then MethodStreamSerializableException is returned.',
     () {
       var serializationManager = _TestSerializationManager();
       var message = MethodStreamSerializableException.buildMessage(
@@ -520,7 +561,9 @@ void main() {
   );
 
   test(
-    'Given serializable exception with server only field when building MethodStreamSerializableException message then server only field is not included in serialization',
+    'Given serializable exception with server only field, '
+    'when building MethodStreamSerializableException message, '
+    'then server only field is not included in serialization',
     () {
       var serializationManager = _TestSerializationManager();
       var message = MethodStreamSerializableException.buildMessage(
@@ -536,7 +579,9 @@ void main() {
   );
 
   test(
-    'Given invalid method stream serializable exception json String when building websocket message from string then UnknownMessageException is thrown having TypeError error type.',
+    'Given invalid method stream serializable exception json String, '
+    'when building websocket message from string, '
+    'then UnknownMessageException is thrown having TypeError error type.',
     () {
       var serializationManager = _TestSerializationManager();
       var message = MethodStreamSerializableException.buildMessage(

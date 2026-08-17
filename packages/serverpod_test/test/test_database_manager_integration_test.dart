@@ -14,7 +14,7 @@ import 'package:test/test.dart';
 /// Exercises the PostgreSQL and SQLite test-database lifecycles with real file
 /// system and database resources.
 void main() {
-  group('Given a freshly resolved embedded postmaster', () {
+  group('Given a freshly resolved embedded postmaster,', () {
     late Directory tmpRoot;
     late ResolvedEmbeddedPostgres resolved;
     late TestDatabaseManager manager;
@@ -49,7 +49,7 @@ void main() {
     );
 
     test(
-      'when createEmptyDatabase runs twice '
+      'when createEmptyDatabase runs twice, '
       'then each database is empty and isolated from the other.',
       () async {
         var dbA = TestDatabaseManager.generateDatabaseName();
@@ -79,7 +79,7 @@ void main() {
     );
 
     test(
-      'when a database is dropped then it no longer exists.',
+      'when a database is dropped, then it no longer exists.',
       () async {
         var db = TestDatabaseManager.generateDatabaseName();
         await manager.createEmptyDatabase(db);

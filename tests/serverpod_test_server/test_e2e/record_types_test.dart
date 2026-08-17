@@ -6,9 +6,11 @@ import 'package:test/test.dart';
 void main() {
   var client = Client(serverUrl);
 
-  group('Record with single positional field', () {
+  group('Record with single positional field,', () {
     test(
-      'Given the test server, when a simple int record is sent to the server, then it is returned verbatim',
+      'Given the test server, '
+      'when a simple int record is sent to the server, '
+      'then it is returned verbatim',
       () async {
         const record = (1,);
 
@@ -19,7 +21,9 @@ void main() {
     );
 
     test(
-      'Given the test server, when a nullable simple int record is sent to the server, then it is returned verbatim',
+      'Given the test server, '
+      'when a nullable simple int record is sent to the server, '
+      'then it is returned verbatim',
       () async {
         const record = (1,);
 
@@ -32,7 +36,9 @@ void main() {
     );
 
     test(
-      'Given the test server, when a `null` simple int record is sent to the server, then it is returned verbatim',
+      'Given the test server, '
+      'when a `null` simple int record is sent to the server, '
+      'then it is returned verbatim',
       () async {
         (int?,) record = (null,);
 
@@ -45,7 +51,9 @@ void main() {
     );
 
     test(
-      'Given the test server, when a nullable simple int? record containing `null` is sent to the server, then it is returned verbatim',
+      'Given the test server, '
+      'when a nullable simple int? record containing `null` is sent to the server, '
+      'then it is returned verbatim',
       () async {
         const (int?,)? record = (null,);
 
@@ -57,7 +65,9 @@ void main() {
     );
 
     test(
-      'Given the test server, when a `null` simple int? record is sent to the server, then it is returned verbatim',
+      'Given the test server, '
+      'when a `null` simple int? record is sent to the server, '
+      'then it is returned verbatim',
       () async {
         var result = await client.recordParameters
             .returnNullableRecordOfNullableInt(null);
@@ -66,7 +76,9 @@ void main() {
       },
     );
     test(
-      'Given the test server, when a `null` simple int? record is sent to the server, then it is returned verbatim',
+      'Given the test server, '
+      'when a `null` simple int? record is sent to the server, '
+      'then it is returned verbatim',
       () async {
         var values = <(int?,)?>[
           null,
@@ -84,9 +96,11 @@ void main() {
     );
   });
 
-  group('Record with multiple positional fields', () {
+  group('Record with multiple positional fields,', () {
     test(
-      'Given the test server, when a simple (int, String) record is sent to the server, then it is returned verbatim',
+      'Given the test server, '
+      'when a simple (int, String) record is sent to the server, '
+      'then it is returned verbatim',
       () async {
         const record = (1, 'hello');
 
@@ -99,7 +113,9 @@ void main() {
     );
 
     test(
-      'Given the test server, when a non-`null` simple (int, String)? record is sent to the server, then it is returned verbatim',
+      'Given the test server, '
+      'when a non-`null` simple (int, String)? record is sent to the server, '
+      'then it is returned verbatim',
       () async {
         const record = (1, 'hello');
 
@@ -111,7 +127,9 @@ void main() {
     );
 
     test(
-      'Given the test server, when a `null` simple (int, String)? record is sent to the server, then it is returned verbatim',
+      'Given the test server, '
+      'when a `null` simple (int, String)? record is sent to the server, '
+      'then it is returned verbatim',
       () async {
         var result = await client.recordParameters
             .returnNullableIntStringRecord(null);
@@ -121,7 +139,9 @@ void main() {
     );
 
     test(
-      'Given the test server, when a simple (int, SimpleData) record is sent to the server, then it is returned verbatim',
+      'Given the test server, '
+      'when a simple (int, SimpleData) record is sent to the server, '
+      'then it is returned verbatim',
       () async {
         var record = (1, SimpleData(num: 1000));
 
@@ -135,7 +155,9 @@ void main() {
     );
 
     test(
-      'Given the test server, when a non-`null` simple (int, String)? record is sent to the server, then it is returned verbatim',
+      'Given the test server, '
+      'when a non-`null` simple (int, String)? record is sent to the server, '
+      'then it is returned verbatim',
       () async {
         var record = (1, SimpleData(num: 1000));
 
@@ -148,7 +170,9 @@ void main() {
     );
 
     test(
-      'Given the test server, when a `null` simple (int, SimpleData)? record is sent to the server, then it is returned verbatim',
+      'Given the test server, '
+      'when a `null` simple (int, SimpleData)? record is sent to the server, '
+      'then it is returned verbatim',
       () async {
         var result = await client.recordParameters
             .returnNullableIntSimpleDataRecord(null);
@@ -158,7 +182,9 @@ void main() {
     );
 
     test(
-      'Given the test server, when an empty (Map<String, int>,) record is sent to the server, then it is returned verbatim.',
+      'Given the test server, '
+      'when an empty (Map<String, int>,) record is sent to the server, '
+      'then it is returned verbatim.',
       () async {
         var result = await client.recordParameters.returnStringKeyedMapRecord(
           ({},),
@@ -169,7 +195,9 @@ void main() {
     );
 
     test(
-      'Given the test server, when a (Map<String, int>,) record is sent to the server, then it is returned verbatim.',
+      'Given the test server, '
+      'when a (Map<String, int>,) record is sent to the server, '
+      'then it is returned verbatim.',
       () async {
         var result = await client.recordParameters.returnStringKeyedMapRecord(
           ({'test': 1},),
@@ -180,7 +208,9 @@ void main() {
     );
 
     test(
-      'Given the test server, when an empty (Map<int, int>,) record is sent to the server, then it is returned verbatim.',
+      'Given the test server, '
+      'when an empty (Map<int, int>,) record is sent to the server, '
+      'then it is returned verbatim.',
       () async {
         var result = await client.recordParameters
             .returnNonStringKeyedMapRecord(
@@ -192,7 +222,9 @@ void main() {
     );
 
     test(
-      'Given the test server, when a (Map<int, int>,) record is sent to the server, then it is returned verbatim.',
+      'Given the test server, '
+      'when a (Map<int, int>,) record is sent to the server, '
+      'then it is returned verbatim.',
       () async {
         var result = await client.recordParameters
             .returnNonStringKeyedMapRecord(
@@ -204,7 +236,9 @@ void main() {
     );
 
     test(
-      'Given the test server, when an empty (Map<(Map<int, String>, String), String>,) is sent to the server, then it is returned verbatim.',
+      'Given the test server, '
+      'when an empty (Map<(Map<int, String>, String), String>,) is sent to the server, '
+      'then it is returned verbatim.',
       () async {
         var result = await client.recordParameters
             .returnNestedNonStringKeyedMapInsideRecordInsideMapInsideRecord(
@@ -216,7 +250,9 @@ void main() {
     );
 
     test(
-      'Given the test server, when an inner empty (Map<(Map<int, String>, String), String>,) is sent to the server, then it is returned verbatim.',
+      'Given the test server, '
+      'when an inner empty (Map<(Map<int, String>, String), String>,) is sent to the server, '
+      'then it is returned verbatim.',
       () async {
         var result = await client.recordParameters
             .returnNestedNonStringKeyedMapInsideRecordInsideMapInsideRecord(
@@ -233,9 +269,11 @@ void main() {
     );
   });
 
-  group('Record with multiple named fields', () {
+  group('Record with multiple named fields,', () {
     test(
-      'Given the test server, when a simple record with named fields is sent to the server, then it is returned verbatim',
+      'Given the test server, '
+      'when a simple record with named fields is sent to the server, '
+      'then it is returned verbatim',
       () async {
         var record = (number: 1, text: 'test');
 
@@ -248,7 +286,9 @@ void main() {
     );
 
     test(
-      'Given the test server, when a simple nullable record with named fields is sent to the server, then it is returned verbatim',
+      'Given the test server, '
+      'when a simple nullable record with named fields is sent to the server, '
+      'then it is returned verbatim',
       () async {
         const ({int number, String text})? record = (number: 1, text: 'test');
 
@@ -260,7 +300,9 @@ void main() {
     );
 
     test(
-      'Given the test server, when a simple `null` record with named fields is sent to the server, then it is returned verbatim',
+      'Given the test server, '
+      'when a simple `null` record with named fields is sent to the server, '
+      'then it is returned verbatim',
       () async {
         var result = await client.recordParameters
             .returnNamedNullableIntStringRecord(null);
@@ -270,7 +312,9 @@ void main() {
     );
 
     test(
-      'Given the test server, when a record with named fields including an object is sent to the server, then it is returned verbatim',
+      'Given the test server, '
+      'when a record with named fields including an object is sent to the server, '
+      'then it is returned verbatim',
       () async {
         var record = (number: 1, data: SimpleData(num: 1000));
 
@@ -286,7 +330,9 @@ void main() {
     );
 
     test(
-      'Given the test server, when a nullable record with named fields including an object is sent to the server, then it is returned verbatim',
+      'Given the test server, '
+      'when a nullable record with named fields including an object is sent to the server, '
+      'then it is returned verbatim',
       () async {
         var record = (number: 1, data: SimpleData(num: 1000));
 
@@ -302,7 +348,9 @@ void main() {
     );
 
     test(
-      'Given the test server, when a  `null` record with named fields including an object is sent to the server, then it is returned verbatim',
+      'Given the test server, '
+      'when a  `null` record with named fields including an object is sent to the server, '
+      'then it is returned verbatim',
       () async {
         var result = await client.recordParameters
             .returnNullableRecordOfNamedIntAndObject(null);
@@ -312,7 +360,9 @@ void main() {
     );
 
     test(
-      'Given the test server, when a record with nullable named fields including an object is sent to the server, then it is returned verbatim',
+      'Given the test server, '
+      'when a record with nullable named fields including an object is sent to the server, '
+      'then it is returned verbatim',
       () async {
         var record = (number: 1, data: SimpleData(num: 1000));
 
@@ -328,7 +378,9 @@ void main() {
     );
 
     test(
-      'Given the test server, when a record with nullable named fields including an object is sent to the server, then it is returned verbatim',
+      'Given the test server, '
+      'when a record with nullable named fields including an object is sent to the server, '
+      'then it is returned verbatim',
       () async {
         const ({int? number, SimpleData? data}) record = (
           number: null,
@@ -343,7 +395,9 @@ void main() {
     );
 
     test(
-      'Given an empty `Map<int, int>` inside a record, when sending a request to the server, then it is returned empty.',
+      'Given an empty `Map<int, int>` inside a record, '
+      'when sending a request to the server, '
+      'then it is returned empty.',
       () async {
         var result = await client.recordParameters
             .returnNamedNonStringKeyedMapRecord(
@@ -355,7 +409,9 @@ void main() {
     );
 
     test(
-      'Given the test server, when a record with a nested Set containing records is send to the server, then it is returned verbatim.',
+      'Given the test server, '
+      'when a record with a nested Set containing records is send to the server, '
+      'then it is returned verbatim.',
       () async {
         var result = await client.recordParameters
             .returnNamedSetWithNestedRecordRecord(
@@ -370,10 +426,12 @@ void main() {
   });
 
   group(
-    'Record with mixed positional and named parameters defined via a `typedef`',
+    'Record with mixed positional and named parameters defined via a `typedef`,',
     () {
       test(
-        'Given the test server, when a record is sent to the server, then it is returned verbatim',
+        'Given the test server, '
+        'when a record is sent to the server, '
+        'then it is returned verbatim',
         () async {
           var record = (1, data: SimpleData(num: 1000));
 
@@ -390,7 +448,9 @@ void main() {
       );
 
       test(
-        'Given the test server, when a nullable record is sent to the server, then it is returned verbatim',
+        'Given the test server, '
+        'when a nullable record is sent to the server, '
+        'then it is returned verbatim',
         () async {
           var record = (1, data: SimpleData(num: 1000));
 
@@ -406,7 +466,9 @@ void main() {
       );
 
       test(
-        'Given the test server, when a `null` record is sent to the server, then it is returned verbatim',
+        'Given the test server, '
+        'when a `null` record is sent to the server, '
+        'then it is returned verbatim',
         () async {
           var result = await client.recordParameters
               .returnNullableRecordTypedef(null);
@@ -417,9 +479,11 @@ void main() {
     },
   );
 
-  group('List of records', () {
+  group('List of records,', () {
     test(
-      'Given the test server, when a list of records is sent to the server, then it is returned verbatim',
+      'Given the test server, '
+      'when a list of records is sent to the server, '
+      'then it is returned verbatim',
       () async {
         var result = await client.recordParameters
             .returnListOfIntSimpleDataRecord([
@@ -443,7 +507,9 @@ void main() {
     );
 
     test(
-      'Given the test server, when a list of nullable records is sent to the server, then it is returned verbatim',
+      'Given the test server, '
+      'when a list of nullable records is sent to the server, '
+      'then it is returned verbatim',
       () async {
         var result = await client.recordParameters
             .returnListOfNullableIntSimpleDataRecord([
@@ -477,9 +543,11 @@ void main() {
     );
   });
 
-  group('Set of records', () {
+  group('Set of records,', () {
     test(
-      'Given the test server, when a set of records sent to the server, then it is returned verbatim',
+      'Given the test server, '
+      'when a set of records sent to the server, '
+      'then it is returned verbatim',
       () async {
         var result = await client.recordParameters
             .returnSetOfIntSimpleDataRecord({
@@ -503,7 +571,9 @@ void main() {
     );
 
     test(
-      'Given the test server, when a set of nullable records sent to the server, then it is returned verbatim',
+      'Given the test server, '
+      'when a set of nullable records sent to the server, '
+      'then it is returned verbatim',
       () async {
         var result = await client.recordParameters
             .returnSetOfNullableIntSimpleDataRecord({
@@ -529,7 +599,9 @@ void main() {
     );
 
     test(
-      'Given the test server, when a set of records sent to the server, then it is returned verbatim',
+      'Given the test server, '
+      'when a set of records sent to the server, '
+      'then it is returned verbatim',
       () async {
         var result = await client.recordParameters
             .returnNullableSetOfIntSimpleDataRecord({
@@ -553,7 +625,9 @@ void main() {
     );
 
     test(
-      'Given the test server, when a `null` Set of records sent to the server, then it is returned verbatim',
+      'Given the test server, '
+      'when a `null` Set of records sent to the server, '
+      'then it is returned verbatim',
       () async {
         var result = await client.recordParameters
             .returnNullableSetOfIntSimpleDataRecord(null);
@@ -566,9 +640,11 @@ void main() {
     );
   });
 
-  group('Map of records', () {
+  group('Map of records,', () {
     test(
-      'Given the test server, when a `Map<String, Record>` is sent to the server, then it is returned verbatim',
+      'Given the test server, '
+      'when a `Map<String, Record>` is sent to the server, '
+      'then it is returned verbatim',
       () async {
         var result = await client.recordParameters
             .returnStringMapOfIntSimpleDataRecord({
@@ -593,7 +669,9 @@ void main() {
     );
 
     test(
-      'Given the test server, when a `Map<String, Record?>` is sent to the server, then it is returned verbatim',
+      'Given the test server, '
+      'when a `Map<String, Record?>` is sent to the server, '
+      'then it is returned verbatim',
       () async {
         var result = await client.recordParameters
             .returnStringMapOfNullableIntSimpleDataRecord({
@@ -615,7 +693,9 @@ void main() {
   });
 
   test(
-    'Given the test server, when a `Map<Record, Record>` is sent to the server, then it is returned verbatim',
+    'Given the test server, '
+    'when a `Map<Record, Record>` is sent to the server, '
+    'then it is returned verbatim',
     () async {
       var result = await client.recordParameters
           .returnRecordMapOfIntSimpleDataRecord({
@@ -639,9 +719,11 @@ void main() {
     },
   );
 
-  group('Records inside multiple levels of containers', () {
+  group('Records inside multiple levels of containers,', () {
     test(
-      'Given the test server, when a complex nested structure with records is sent to the server, then it is returned in the expected transformation',
+      'Given the test server, '
+      'when a complex nested structure with records is sent to the server, '
+      'then it is returned in the expected transformation',
       () async {
         var result = await client.recordParameters
             .returnStringMapOfListOfRecord({
@@ -656,9 +738,11 @@ void main() {
     );
   });
 
-  group('Record nested inside another record', () {
+  group('Record nested inside another record,', () {
     test(
-      'Given the test server, when a complex nested named record is sent to the server, then it is returned verbatim',
+      'Given the test server, '
+      'when a complex nested named record is sent to the server, '
+      'then it is returned verbatim',
       () async {
         var record = (namedSubRecord: (SimpleData(num: 1), 1.234));
 
@@ -675,7 +759,9 @@ void main() {
     );
 
     test(
-      'Given the test server, when a `null` complex nested named record is sent to the server, then it is returned verbatim',
+      'Given the test server, '
+      'when a `null` complex nested named record is sent to the server, '
+      'then it is returned verbatim',
       () async {
         var result = await client.recordParameters
             .returnNestedNullableNamedRecord((
@@ -687,7 +773,9 @@ void main() {
     );
 
     test(
-      'Given the test server, when a complex nested positioned and named record is sent to the server, then it is returned verbatim',
+      'Given the test server, '
+      'when a complex nested positioned and named record is sent to the server, '
+      'then it is returned verbatim',
       () async {
         var record = (
           (1, '2'),
@@ -713,7 +801,9 @@ void main() {
     );
 
     test(
-      'Given the test server, when a `null` complex nested positioned record is sent to the server, then it is returned verbatim',
+      'Given the test server, '
+      'when a `null` complex nested positioned record is sent to the server, '
+      'then it is returned verbatim',
       () async {
         var record = (
           (1, '2'),
@@ -741,7 +831,9 @@ void main() {
   });
 
   test(
-    'Given the test server, when a model class with a record field is sent to the server, then it is returned verbatim',
+    'Given the test server, '
+    'when a model class with a record field is sent to the server, '
+    'then it is returned verbatim',
     () async {
       var model = TypesRecord(
         aNestedRecord: ((1, 'hello'), namedNestedRecord: (2, 'world')),
@@ -759,7 +851,9 @@ void main() {
   );
 
   test(
-    'Given the test server, when a nullable model class with a record field is sent to the server, then it is returned verbatim',
+    'Given the test server, '
+    'when a nullable model class with a record field is sent to the server, '
+    'then it is returned verbatim',
     () async {
       var model = TypesRecord(
         aNestedRecord: ((1, 'hello'), namedNestedRecord: (2, 'world')),
@@ -776,7 +870,9 @@ void main() {
   );
 
   test(
-    'Given the test server, when a nullable model class defined in another module with a record field is sent to the server, then it is returned verbatim',
+    'Given the test server, '
+    'when a nullable model class defined in another module with a record field is sent to the server, '
+    'then it is returned verbatim',
     () async {
       var model = ModuleClass(
         data: 1,
@@ -795,7 +891,9 @@ void main() {
   );
 
   test(
-    'Given the test server, when a `null` complex nested positioned record stream is sent to the server, then it is returned verbatim',
+    'Given the test server, '
+    'when a `null` complex nested positioned record stream is sent to the server, '
+    'then it is returned verbatim',
     () async {
       var records =
           <List<((int, String), {(SimpleData, double) namedSubRecord})?>?>[
@@ -821,7 +919,9 @@ void main() {
   );
 
   test(
-    'Given the test server, when a complex nested positioned record stream is sent to the server, then it is returned verbatim',
+    'Given the test server, '
+    'when a complex nested positioned record stream is sent to the server, '
+    'then it is returned verbatim',
     () async {
       var records =
           <List<((int, String), {(SimpleData, double) namedSubRecord})?>?>[
@@ -881,7 +981,9 @@ void main() {
   );
 
   test(
-    'Given the test server, when a model class with record fields stream is sent to the server, then it is returned verbatim',
+    'Given the test server, '
+    'when a model class with record fields stream is sent to the server, '
+    'then it is returned verbatim',
     () async {
       var models = <TypesRecord>[
         TypesRecord(anInt: (1,)),
@@ -908,7 +1010,9 @@ void main() {
   );
 
   test(
-    'Given the test server, when a nullable model class with record fields stream is sent to the server, then it is returned verbatim',
+    'Given the test server, '
+    'when a nullable model class with record fields stream is sent to the server, '
+    'then it is returned verbatim',
     () async {
       var models = <TypesRecord?>[
         null,
@@ -948,7 +1052,9 @@ void main() {
   );
 
   test(
-    'Given the test server, when a nullable model class from another module with record fields stream is sent to the server, then it is returned verbatim',
+    'Given the test server, '
+    'when a nullable model class from another module with record fields stream is sent to the server, '
+    'then it is returned verbatim',
     () async {
       var models = [
         null,
@@ -1022,7 +1128,9 @@ void main() {
   );
 
   test(
-    'Given the test server, when calling the `recordParametersWithCustomNames`, then the sum of both input values is returned',
+    'Given the test server, '
+    'when calling the `recordParametersWithCustomNames`, '
+    'then the sum of both input values is returned',
     () async {
       var result = await client.recordParameters
           .recordParametersWithCustomNames(

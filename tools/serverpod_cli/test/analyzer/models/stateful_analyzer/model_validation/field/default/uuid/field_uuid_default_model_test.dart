@@ -10,9 +10,10 @@ import '../../../../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
-  group('Given a class with fields with a "defaultModel" keyword', () {
+  group('Given a class with fields with a "defaultModel" keyword,', () {
     test(
-      'when the field is of type UUID and the defaultModel is set to "random", then the field\'s default model value is "random".',
+      'when the field is of type UUID and the defaultModel is set to "random", '
+      'then the field\'s default model value is "random".',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -40,7 +41,8 @@ void main() {
     );
 
     test(
-      'when the field is of type UUID and the defaultModel is set to "random_v7", then the field\'s default model value is "random_v7".',
+      'when the field is of type UUID and the defaultModel is set to "random_v7", '
+      'then the field\'s default model value is "random_v7".',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -68,7 +70,8 @@ void main() {
     );
 
     test(
-      'when the field is of type UUID and the defaultModel is set to a valid UUID string with single quotes, then the field\'s default model value is the provided UUID string.',
+      'when the field is of type UUID and the defaultModel is set to a valid UUID string with single quotes, '
+      'then the field\'s default model value is the provided UUID string.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -100,7 +103,8 @@ void main() {
     );
 
     test(
-      'when the field is of type UUID and the defaultModel is set to a valid UUID string with double quotes, then the field\'s default model value is the provided UUID string converted to single quotes.',
+      'when the field is of type UUID and the defaultModel is set to a valid UUID string with double quotes, '
+      'then the field\'s default model value is the provided UUID string converted to single quotes.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -132,7 +136,8 @@ void main() {
     );
 
     test(
-      'when the field is of type UUID and the defaultModel is empty, then an error is generated.',
+      'when the field is of type UUID and the defaultModel is empty, '
+      'then an error is generated.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -163,7 +168,8 @@ void main() {
     );
 
     test(
-      'when the field is of type UUID with an invalid defaultModel value, then an error is generated.',
+      'when the field is of type UUID with an invalid defaultModel value, '
+      'then an error is generated.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -194,7 +200,8 @@ void main() {
     );
 
     test(
-      'when the field is of type UUID with a malformed UUID in single quotes, then an error is generated.',
+      'when the field is of type UUID with a malformed UUID in single quotes, '
+      'then an error is generated.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -225,7 +232,8 @@ void main() {
     );
 
     test(
-      'when the field is of type UUID with a malformed UUID in double quotes, then an error is generated.',
+      'when the field is of type UUID with a malformed UUID in double quotes, '
+      'then an error is generated.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -256,7 +264,8 @@ void main() {
     );
 
     test(
-      'when the field is of type UUID with an invalid character in the defaultModel value, then an error is generated.',
+      'when the field is of type UUID with an invalid character in the defaultModel value, '
+      'then an error is generated.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -287,11 +296,11 @@ void main() {
     );
   });
 
-  group('Given a class with a declared id field with a "defaultModel" keyword', () {
+  group('Given a class with a declared id field with a "defaultModel" keyword,', () {
     group(
-      'when the field is of type UUID and the defaultModel is set to "random"',
+      'when the field is of type UUID and the defaultModel is set to "random",',
       () {
-        var models = [
+        late var models = [
           ModelSourceBuilder().withYaml(
             '''
             class: Example
@@ -302,7 +311,7 @@ void main() {
           ).build(),
         ];
 
-        var collector = CodeGenerationCollector();
+        late var collector = CodeGenerationCollector();
         late final definitions = StatefulAnalyzer(
           config,
           models,
@@ -325,9 +334,9 @@ void main() {
     );
 
     group(
-      'when the field is of type UUID and the defaultModel is set to "random_v7"',
+      'when the field is of type UUID and the defaultModel is set to "random_v7",',
       () {
-        var models = [
+        late var models = [
           ModelSourceBuilder().withYaml(
             '''
             class: Example
@@ -338,7 +347,7 @@ void main() {
           ).build(),
         ];
 
-        var collector = CodeGenerationCollector();
+        late var collector = CodeGenerationCollector();
         late final definitions = StatefulAnalyzer(
           config,
           models,
@@ -364,7 +373,8 @@ void main() {
     );
 
     test(
-      'when the field is of type UUID and the defaultModel is empty, then an error is generated',
+      'when the field is of type UUID and the defaultModel is empty, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -396,7 +406,8 @@ void main() {
     );
 
     test(
-      'when the field is of type UUID and the defaultModel is set to a constant value, then an error is generated',
+      'when the field is of type UUID and the defaultModel is set to a constant value, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -429,7 +440,8 @@ void main() {
     );
 
     test(
-      'when the field is of type UUID and the defaultModel is set to an invalid value, then an error is generated',
+      'when the field is of type UUID and the defaultModel is set to an invalid value, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -461,9 +473,9 @@ void main() {
     );
 
     group(
-      'when the field is of type UUID and the type is not-nullable',
+      'when the field is of type UUID and the type is not-nullable,',
       () {
-        var models = [
+        late var models = [
           ModelSourceBuilder().withYaml(
             '''
             class: Example
@@ -474,7 +486,7 @@ void main() {
           ).build(),
         ];
 
-        var collector = CodeGenerationCollector();
+        late var collector = CodeGenerationCollector();
         late final definitions = StatefulAnalyzer(
           config,
           models,
@@ -493,7 +505,8 @@ void main() {
     );
 
     test(
-      'when the field is of nullable type UUID and the defaultModel is set to "random", then a hint message is reported.',
+      'when the field is of nullable type UUID and the defaultModel is set to "random", '
+      'then a hint message is reported.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(

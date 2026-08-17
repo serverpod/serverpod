@@ -24,7 +24,7 @@ void testSuite<T extends TokenManager>(
   }
 
   withServerpod(
-    'Given a TokenManager and an authId',
+    'Given a TokenManager and an authId,',
     (final sessionBuilder, final endpoints) {
       late Session session;
       late UuidValue authId;
@@ -42,7 +42,7 @@ void testSuite<T extends TokenManager>(
         await teardownFunction?.call(tokenManager);
       });
 
-      group('when issuing a token without scopes', () {
+      group('when issuing a token without scopes,', () {
         late Future<AuthSuccess> authSuccessFuture;
         late AuthSuccess authSuccess;
 
@@ -84,7 +84,7 @@ void testSuite<T extends TokenManager>(
       });
 
       test(
-        'when issuing a token with scopes then scopes matches supplied value',
+        'when issuing a token with scopes, then scopes matches supplied value',
         () async {
           final authSuccess = await tokenManager.issueToken(
             session,
@@ -99,7 +99,7 @@ void testSuite<T extends TokenManager>(
       );
 
       test(
-        'when issuing a token with a transaction that succeeds '
+        'when issuing a token with a transaction that succeeds, '
         'then issuing the token completes',
         () async {
           final authSuccessFuture = session.db.transaction((
@@ -148,7 +148,7 @@ void testSuite<T extends TokenManager>(
   );
 
   withServerpod(
-    'Given a TokenManager and an issued token for an authId',
+    'Given a TokenManager and an issued token for an authId,',
     (final sessionBuilder, final endpoints) {
       late Session session;
       late UuidValue authId;
@@ -179,7 +179,7 @@ void testSuite<T extends TokenManager>(
         await teardownFunction?.call(tokenManager);
       });
 
-      group('when validating the token', () {
+      group('when validating the token,', () {
         late AuthenticationInfo? authInfo;
 
         setUp(() async {
@@ -212,7 +212,8 @@ void testSuite<T extends TokenManager>(
       });
 
       test(
-        'when validating an invalid token, then AuthenticationInfo should be null',
+        'when validating an invalid token, '
+        'then AuthenticationInfo should be null',
         () async {
           final invalidToken = 'INVALID${authSuccess.token}';
           final authInfo = await tokenManager.validateToken(
@@ -225,7 +226,8 @@ void testSuite<T extends TokenManager>(
       );
 
       test(
-        'when revoking the token with a transaction that succeeds then token is removed',
+        'when revoking the token with a transaction that succeeds, '
+        'then token is removed',
         () async {
           await session.db.transaction((final transaction) async {
             await tokenManager.revokeToken(
@@ -277,7 +279,7 @@ void testSuite<T extends TokenManager>(
       );
 
       test(
-        'when revoking the token with an invalid tokenIssuer filter '
+        'when revoking the token with an invalid tokenIssuer filter, '
         'then token is not removed',
         () async {
           await tokenManager.revokeToken(
@@ -302,7 +304,7 @@ void testSuite<T extends TokenManager>(
   );
 
   withServerpod(
-    'Given a TokenManager and multiple issued tokens for the same authId',
+    'Given a TokenManager and multiple issued tokens for the same authId,',
     (final sessionBuilder, final endpoints) {
       late Session session;
       late UuidValue authId;
@@ -345,7 +347,7 @@ void testSuite<T extends TokenManager>(
         await teardownFunction?.call(tokenManager);
       });
 
-      group('when revoking a token with a non-existent tokenId', () {
+      group('when revoking a token with a non-existent tokenId,', () {
         late Future<void> revokeTokenFuture;
         late List<TokenInfo> tokensAfterRevocation;
 
@@ -371,7 +373,8 @@ void testSuite<T extends TokenManager>(
       });
 
       test(
-        'when listing tokens with an invalid token issuer filter, then tokens should be empty',
+        'when listing tokens with an invalid token issuer filter, '
+        'then tokens should be empty',
         () async {
           final tokens = await tokenManager.listTokens(
             session,
@@ -384,7 +387,7 @@ void testSuite<T extends TokenManager>(
       );
 
       test(
-        'when listing tokens '
+        'when listing tokens, '
         'then all tokens should be returned',
         () async {
           final tokens = await tokenManager.listTokens(
@@ -396,7 +399,7 @@ void testSuite<T extends TokenManager>(
         },
       );
 
-      group('when listing tokens with a valid token issuer filter', () {
+      group('when listing tokens with a valid token issuer filter,', () {
         late List<TokenInfo> tokens;
 
         setUp(() async {
@@ -419,7 +422,7 @@ void testSuite<T extends TokenManager>(
         });
       });
 
-      group('when revoking a specific token by tokenId', () {
+      group('when revoking a specific token by tokenId,', () {
         late String channelName;
         late List<SerializableModel> revocationMessages;
 
@@ -497,7 +500,7 @@ void testSuite<T extends TokenManager>(
         );
       });
 
-      group('when revoking a token with a valid tokenIssuer filter', () {
+      group('when revoking a token with a valid tokenIssuer filter,', () {
         late String tokenIdToRevoke;
         late List<TokenInfo> beforeRevocationTokens;
         late List<TokenInfo> afterRevocationTokens;
@@ -540,7 +543,7 @@ void testSuite<T extends TokenManager>(
       });
 
       test(
-        'when revoking a token with an invalid tokenIssuer filter '
+        'when revoking a token with an invalid tokenIssuer filter, '
         'then token is not removed',
         () async {
           final beforeRevocationTokens = await tokenManager.listTokens(
@@ -572,7 +575,7 @@ void testSuite<T extends TokenManager>(
       );
 
       test(
-        'when revoking all tokens with a transaction that succeeds '
+        'when revoking all tokens with a transaction that succeeds, '
         'then tokens are removed',
         () async {
           await session.db.transaction((final transaction) async {
@@ -629,7 +632,7 @@ void testSuite<T extends TokenManager>(
   );
 
   withServerpod(
-    'Given a TokenManager with tokens issued using different methods for the same authId',
+    'Given a TokenManager with tokens issued using different methods for the same authId,',
     (final sessionBuilder, final endpoints) {
       late Session session;
       late UuidValue authId;
@@ -671,7 +674,7 @@ void testSuite<T extends TokenManager>(
       });
 
       test(
-        'when listing tokens with a method filter '
+        'when listing tokens with a method filter, '
         'then only tokens with the specified method should be returned',
         () async {
           final tokens = await tokenManager.listTokens(
@@ -688,7 +691,7 @@ void testSuite<T extends TokenManager>(
         },
       );
 
-      group('when revoking all tokens globally with a method filter', () {
+      group('when revoking all tokens globally with a method filter,', () {
         late List<TokenInfo> tokensAfterRevocation;
 
         setUp(() async {
@@ -722,7 +725,7 @@ void testSuite<T extends TokenManager>(
   );
 
   withServerpod(
-    'Given a TokenManager with tokens for multiple authIds',
+    'Given a TokenManager with tokens for multiple authIds,',
     (final sessionBuilder, final endpoints) {
       late Session session;
       late T tokenManager;
@@ -778,7 +781,7 @@ void testSuite<T extends TokenManager>(
       });
 
       test(
-        'when listing tokens for a specific authId '
+        'when listing tokens for a specific authId, '
         'then only tokens for the specified authId should be returned',
         () async {
           final tokens = await tokenManager.listTokens(
@@ -794,7 +797,7 @@ void testSuite<T extends TokenManager>(
         },
       );
 
-      group('when revoking all tokens for a specific authId', () {
+      group('when revoking all tokens for a specific authId,', () {
         late List<TokenInfo> tokensAfterRevocation;
         late Future<void> revokeAllTokensFuture;
 
@@ -833,7 +836,7 @@ void testSuite<T extends TokenManager>(
         });
       });
 
-      group('when revoking all tokens for a non-existent authId', () {
+      group('when revoking all tokens for a non-existent authId,', () {
         late List<TokenInfo> tokensBeforeRevocation;
         late List<TokenInfo> tokensAfterRevocation;
         late Future<void> revokeAllTokensFuture;
@@ -872,7 +875,7 @@ void testSuite<T extends TokenManager>(
   );
 
   withServerpod(
-    'Given a TokenManager with tokens for multiple authIds and methods',
+    'Given a TokenManager with tokens for multiple authIds and methods,',
     (final sessionBuilder, final endpoints) {
       late Session session;
       late T tokenManager;
@@ -922,7 +925,7 @@ void testSuite<T extends TokenManager>(
       });
 
       group(
-        'when revoking all tokens for a specific authId with combined filters',
+        'when revoking all tokens for a specific authId with combined filters,',
         () {
           late List<TokenInfo> tokensAfterRevocation;
 
@@ -981,7 +984,7 @@ void testSuite<T extends TokenManager>(
       );
 
       test(
-        'when revoking all tokens without any filters '
+        'when revoking all tokens without any filters, '
         'then all tokens are removed',
         () async {
           await tokenManager.revokeAllTokens(

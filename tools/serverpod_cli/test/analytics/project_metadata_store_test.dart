@@ -7,7 +7,7 @@ import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 
 void main() {
-  group('Given a server directory without metadata, ', () {
+  group('Given a server directory without metadata,', () {
     late String serverDir;
 
     setUp(() async {
@@ -55,7 +55,7 @@ void main() {
     );
   });
 
-  group('Given a server directory, ', () {
+  group('Given a server directory,', () {
     late String serverDir;
 
     setUp(() async {
@@ -94,7 +94,7 @@ void main() {
     );
   });
 
-  group('Given a server directory with corrupt project metadata, ', () {
+  group('Given a server directory with corrupt project metadata,', () {
     late String serverDir;
 
     setUp(() async {
@@ -132,7 +132,7 @@ void main() {
     );
   });
 
-  group('Given metadata already accumulated in a checkout, ', () {
+  group('Given metadata already accumulated in a checkout,', () {
     late String serverDir;
     late ProjectMetadata before;
 

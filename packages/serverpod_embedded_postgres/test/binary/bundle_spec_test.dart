@@ -43,7 +43,7 @@ void main() {
     },
   );
 
-  group('Given the canonical versions.env of the build scripts, ', () {
+  group('Given the canonical versions.env of the build scripts,', () {
     late Map<String, String> env;
 
     setUp(() {

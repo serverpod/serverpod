@@ -8,15 +8,15 @@ import 'package:serverpod_auth_core_server/src/session/util/auth_success_extensi
 import 'package:test/test.dart';
 
 void main() {
-  group('Given an `AuthSuccess` with a valid server side session token', () {
-    final serverSideSessionId = const Uuid().v4obj();
+  group('Given an `AuthSuccess` with a valid server side session token,', () {
+    late final serverSideSessionId = const Uuid().v4obj();
 
-    final sessionToken = buildServerSideSessionToken(
+    late final sessionToken = buildServerSideSessionToken(
       serverSideSessionId: serverSideSessionId,
       secret: Uint8List.fromList([1, 2, 3, 4, 5]),
     );
 
-    final authSuccess = AuthSuccess(
+    late final authSuccess = AuthSuccess(
       authStrategy: 'session',
       token: sessionToken,
       authUserId: const Uuid().v4obj(),
@@ -24,15 +24,16 @@ void main() {
     );
 
     test(
-      'when reading the `serverSideSessionId` field, then the session ID is returned.',
+      'when reading the `serverSideSessionId` field, '
+      'then the session ID is returned.',
       () {
         expect(authSuccess.serverSideSessionId, serverSideSessionId);
       },
     );
   });
 
-  group('Given an `AuthSuccess` with an empty token', () {
-    final authSuccess = AuthSuccess(
+  group('Given an `AuthSuccess` with an empty token,', () {
+    late final authSuccess = AuthSuccess(
       authStrategy: 'session',
       token: '',
       authUserId: const Uuid().v4obj(),
@@ -40,7 +41,8 @@ void main() {
     );
 
     test(
-      'when reading the `serverSideSessionId` field, then it throws a FormatException.',
+      'when reading the `serverSideSessionId` field, '
+      'then it throws a FormatException.',
       () {
         expect(
           () => authSuccess.serverSideSessionId,
@@ -50,8 +52,8 @@ void main() {
     );
   });
 
-  group('Given an `AuthSuccess` with an invalid token format', () {
-    final authSuccess = AuthSuccess(
+  group('Given an `AuthSuccess` with an invalid token format,', () {
+    late final authSuccess = AuthSuccess(
       authStrategy: 'session',
       token: 'invalid-token-format',
       authUserId: const Uuid().v4obj(),
@@ -59,7 +61,8 @@ void main() {
     );
 
     test(
-      'when reading the `serverSideSessionId` field, then it throws a FormatException.',
+      'when reading the `serverSideSessionId` field, '
+      'then it throws a FormatException.',
       () {
         expect(
           () => authSuccess.serverSideSessionId,
@@ -69,8 +72,8 @@ void main() {
     );
   });
 
-  group('Given an `AuthSuccess` with a token missing the prefix', () {
-    final authSuccess = AuthSuccess(
+  group('Given an `AuthSuccess` with a token missing the prefix,', () {
+    late final authSuccess = AuthSuccess(
       authStrategy: 'session',
       token: 'not-a-valid-session-token',
       authUserId: const Uuid().v4obj(),
@@ -78,7 +81,8 @@ void main() {
     );
 
     test(
-      'when reading the `serverSideSessionId` field, then it throws a FormatException.',
+      'when reading the `serverSideSessionId` field, '
+      'then it throws a FormatException.',
       () {
         expect(
           () => authSuccess.serverSideSessionId,
@@ -88,8 +92,8 @@ void main() {
     );
   });
 
-  group('Given an `AuthSuccess` with a token with invalid base64', () {
-    final authSuccess = AuthSuccess(
+  group('Given an `AuthSuccess` with a token with invalid base64,', () {
+    late final authSuccess = AuthSuccess(
       authStrategy: 'session',
       token: 'c2Fz!!!invalid-base64',
       authUserId: const Uuid().v4obj(),
@@ -97,7 +101,8 @@ void main() {
     );
 
     test(
-      'when reading the `serverSideSessionId` field, then it throws a FormatException.',
+      'when reading the `serverSideSessionId` field, '
+      'then it throws a FormatException.',
       () {
         expect(
           () => authSuccess.serverSideSessionId,
@@ -107,15 +112,15 @@ void main() {
     );
   });
 
-  group('Given an `AuthSuccess` with a token with invalid UUID', () {
+  group('Given an `AuthSuccess` with a token with invalid UUID,', () {
     // Create a token with valid prefix but invalid UUID bytes
-    final invalidUuidBytes = Uint8List.fromList([1, 2, 3]); // Too short
-    final invalidToken = base64Url.encode([
+    late final invalidUuidBytes = Uint8List.fromList([1, 2, 3]); // Too short
+    late final invalidToken = base64Url.encode([
       ...utf8.encode('sas'),
       ...invalidUuidBytes,
     ]);
 
-    final authSuccess = AuthSuccess(
+    late final authSuccess = AuthSuccess(
       authStrategy: 'session',
       token: invalidToken,
       authUserId: const Uuid().v4obj(),
@@ -123,7 +128,8 @@ void main() {
     );
 
     test(
-      'when reading the `serverSideSessionId` field, then it throws a FormatException.',
+      'when reading the `serverSideSessionId` field, '
+      'then it throws a FormatException.',
       () {
         expect(
           () => authSuccess.serverSideSessionId,

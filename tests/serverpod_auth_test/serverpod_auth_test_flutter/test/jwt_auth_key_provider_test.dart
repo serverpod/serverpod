@@ -36,18 +36,18 @@ void main() {
     jwtAuthSuccess = await client.authTest.createJwtToken(testUserId);
   });
 
-  group('Given a JwtAuthKeyProvider with no auth info available', () {
+  group('Given a JwtAuthKeyProvider with no auth info available,', () {
     setUp(() {
       storedAuthInfo = null;
     });
 
-    test('when getting auth header value then it returns null.', () async {
+    test('when getting auth header value, then it returns null.', () async {
       final result = await provider.authHeaderValue;
 
       expect(result, isNull);
     });
 
-    group('when refreshing auth key', () {
+    group('when refreshing auth key,', () {
       setUp(() async {
         result = await provider.refreshAuthKey();
       });
@@ -66,8 +66,8 @@ void main() {
     });
   });
 
-  test('Given a JwtAuthKeyProvider with valid auth info available '
-      'when getting auth header value '
+  test('Given a JwtAuthKeyProvider with valid auth info available, '
+      'when getting auth header value, '
       'then it returns Bearer token format.', () async {
     storedAuthInfo = jwtAuthSuccess;
 
@@ -76,34 +76,37 @@ void main() {
     expect(result, 'Bearer ${jwtAuthSuccess.token}');
   });
 
-  group('Given a JwtAuthKeyProvider with auth info that has no expiration time '
-      'when refreshing auth key ', () {
-    setUp(() async {
-      storedAuthInfo = jwtAuthSuccess.copyWith()..tokenExpiresAt = null;
-      result = await provider.refreshAuthKey();
-    });
+  group(
+    'Given a JwtAuthKeyProvider with auth info that has no expiration time, '
+    'when refreshing auth key,',
+    () {
+      setUp(() async {
+        storedAuthInfo = jwtAuthSuccess.copyWith()..tokenExpiresAt = null;
+        result = await provider.refreshAuthKey();
+      });
 
-    test('then it does not call the refresh function.', () async {
-      expect(refreshEndpoint.callCount, 0);
-    });
+      test('then it does not call the refresh function.', () async {
+        expect(refreshEndpoint.callCount, 0);
+      });
 
-    test('then it returns skipped as it does not expire.', () async {
-      expect(result, RefreshAuthKeyResult.skipped);
-    });
+      test('then it returns skipped as it does not expire.', () async {
+        expect(result, RefreshAuthKeyResult.skipped);
+      });
 
-    test('then it does not update auth info.', () async {
-      expect(storedAuthInfo?.token, jwtAuthSuccess.token);
-    });
-  });
+      test('then it does not update auth info.', () async {
+        expect(storedAuthInfo?.token, jwtAuthSuccess.token);
+      });
+    },
+  );
 
   group(
-    'Given a JwtAuthKeyProvider with auth info that has distant future expiration time',
+    'Given a JwtAuthKeyProvider with auth info that has distant future expiration time,',
     () {
       setUp(() async {
         storedAuthInfo = jwtAuthSuccess.expiringIn(const Duration(minutes: 5));
       });
 
-      group('when refreshing auth key without setting force parameter', () {
+      group('when refreshing auth key without setting force parameter,', () {
         setUp(() async {
           result = await provider.refreshAuthKey();
         });
@@ -121,7 +124,7 @@ void main() {
         });
       });
 
-      group('when refreshing auth key with force parameter set to true', () {
+      group('when refreshing auth key with force parameter set to true,', () {
         setUp(() async {
           result = await provider.refreshAuthKey(force: true);
         });
@@ -142,8 +145,8 @@ void main() {
     },
   );
 
-  group('Given a JwtAuthKeyProvider with auth info that is about to expire '
-      'when refreshing auth key', () {
+  group('Given a JwtAuthKeyProvider with auth info that is about to expire, '
+      'when refreshing auth key,', () {
     setUp(() async {
       storedAuthInfo = jwtAuthSuccess.expiringIn(const Duration(seconds: 15));
 
@@ -170,8 +173,8 @@ void main() {
   });
 
   group(
-    'Given a JwtAuthKeyProvider with auth info that has a past expiration time '
-    'when refreshing auth key',
+    'Given a JwtAuthKeyProvider with auth info that has a past expiration time, '
+    'when refreshing auth key,',
     () {
       setUp(() async {
         storedAuthInfo = jwtAuthSuccess.expiringIn(-const Duration(minutes: 5));
@@ -203,8 +206,8 @@ void main() {
   );
 
   group(
-    'Given a JwtAuthKeyProvider with auth info containing a malformed refresh token '
-    'when refreshing auth key',
+    'Given a JwtAuthKeyProvider with auth info containing a malformed refresh token, '
+    'when refreshing auth key,',
     () {
       setUp(() async {
         storedAuthInfo = jwtAuthSuccess.expiring.copyWith(
@@ -233,8 +236,8 @@ void main() {
   );
 
   group(
-    'Given a JwtAuthKeyProvider with auth info containing a non-existing refresh token '
-    'when refreshing auth key',
+    'Given a JwtAuthKeyProvider with auth info containing a non-existing refresh token, '
+    'when refreshing auth key,',
     () {
       setUp(() async {
         await client.authTest.deleteJwtRefreshTokens(jwtAuthSuccess.authUserId);
@@ -262,8 +265,8 @@ void main() {
   );
 
   group(
-    'Given a JwtAuthKeyProvider with auth info that contains an expired refresh token '
-    'when refreshing auth key',
+    'Given a JwtAuthKeyProvider with auth info that contains an expired refresh token, '
+    'when refreshing auth key,',
     () {
       setUp(() async {
         storedAuthInfo = jwtAuthSuccess.expiring;
@@ -287,8 +290,8 @@ void main() {
   );
 
   group(
-    'Given a JwtAuthKeyProvider with auth info containing a refresh token with an invalid secret '
-    'when refreshing auth key',
+    'Given a JwtAuthKeyProvider with auth info containing a refresh token with an invalid secret, '
+    'when refreshing auth key,',
     () {
       setUp(() async {
         var refreshToken = jwtAuthSuccess.refreshToken!;
@@ -323,8 +326,8 @@ void main() {
   );
 
   group(
-    'Given a JwtAuthKeyProvider with auth info that contains a valid refresh token, but refresh endpoint throws an unrelated exception '
-    'when refreshing auth key',
+    'Given a JwtAuthKeyProvider with auth info that contains a valid refresh token, but refresh endpoint throws an unrelated exception, '
+    'when refreshing auth key,',
     () {
       setUp(() async {
         storedAuthInfo = jwtAuthSuccess.expiring;

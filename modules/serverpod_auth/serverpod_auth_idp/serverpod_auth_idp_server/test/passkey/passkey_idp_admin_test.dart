@@ -17,7 +17,7 @@ void main() {
     'Given a pending challenge,',
     (final sessionBuilder, final _) {
       late Session session;
-      final passKeyIdp = PasskeyIdp(
+      late final passKeyIdp = PasskeyIdp(
         const PasskeyIdpConfig(
           hostname: 'localhost',
         ),
@@ -31,7 +31,8 @@ void main() {
       });
 
       test(
-        'when calling `PasskeyAccounts.admin.deleteExpiredChallenges` immediately, then the challenge is kept.',
+        'when calling `PasskeyAccounts.admin.deleteExpiredChallenges` immediately, '
+        'then the challenge is kept.',
         () async {
           await passKeyIdp.admin.deleteExpiredChallenges(session);
 
@@ -43,7 +44,8 @@ void main() {
       );
 
       test(
-        'when calling `PasskeyAccounts.admin.deleteExpiredChallenges` after the expiration time, then the challenge is removed.',
+        'when calling `PasskeyAccounts.admin.deleteExpiredChallenges` after the expiration time, '
+        'then the challenge is removed.',
         () async {
           await withClock(
             Clock.fixed(

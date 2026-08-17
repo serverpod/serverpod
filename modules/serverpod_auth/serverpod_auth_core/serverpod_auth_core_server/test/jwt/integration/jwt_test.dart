@@ -68,7 +68,8 @@ void main() {
     );
 
     test(
-      'when requesting a new token pair with scopes, then those are visible on the initial access token.',
+      'when requesting a new token pair with scopes, '
+      'then those are visible on the initial access token.',
       () async {
         final authSuccess = await jwt.createTokens(
           session,
@@ -86,7 +87,8 @@ void main() {
     );
 
     test(
-      'when requesting a new token pair with extra claims, then those are visible on the initial access token.',
+      'when requesting a new token pair with extra claims, '
+      'then those are visible on the initial access token.',
       () async {
         final authSuccess = await jwt.createTokens(
           session,
@@ -103,7 +105,8 @@ void main() {
     );
 
     test(
-      'when requesting a new token pair with extra claims that conflict with registered claims, then it will throw.',
+      'when requesting a new token pair with extra claims that conflict with registered claims, '
+      'then it will throw.',
       () async {
         expect(
           () => jwt.createTokens(
@@ -164,7 +167,8 @@ void main() {
       });
 
       test(
-        'when refreshing the tokens, then a new AuthSuccess is returned with new tokens, but same auth info.',
+        'when refreshing the tokens, '
+        'then a new AuthSuccess is returned with new tokens, but same auth info.',
         () async {
           final newAuthSuccess = await jwt.refreshAccessToken(
             session,
@@ -180,7 +184,8 @@ void main() {
       );
 
       test(
-        'when calling `destroyRefreshToken` with a valid refresh token ID, then it returns true.',
+        'when calling `destroyRefreshToken` with a valid refresh token ID, '
+        'then it returns true.',
         () async {
           final deleted = await jwt.revokeRefreshToken(
             session,
@@ -192,7 +197,8 @@ void main() {
       );
 
       test(
-        'when calling `destroyRefreshToken` with an invalid refresh token ID, then it returns false.',
+        'when calling `destroyRefreshToken` with an invalid refresh token ID, '
+        'then it returns false.',
         () async {
           final deleted = await jwt.revokeRefreshToken(
             session,
@@ -204,7 +210,8 @@ void main() {
       );
 
       test(
-        'when calling `destroyAllRefreshTokens`, then it returns the list of deleted token IDs.',
+        'when calling `destroyAllRefreshTokens`, '
+        'then it returns the list of deleted token IDs.',
         () async {
           final newAuthSuccesses = await List.generate(
             3,
@@ -229,7 +236,8 @@ void main() {
       );
 
       test(
-        'when calling destroyRefreshToken, then authenticationRevoked message is published with correct authId',
+        'when calling destroyRefreshToken, '
+        'then authenticationRevoked message is published with correct authId',
         () async {
           final refreshTokenId = jwt.jwtUtil
               .verifyJwt(authSuccess.token)
@@ -267,7 +275,8 @@ void main() {
       );
 
       test(
-        'when calling destroyAllRefreshTokens, then authenticationRevoked message is published for the user',
+        'when calling destroyAllRefreshTokens, '
+        'then authenticationRevoked message is published for the user',
         () async {
           final channelName =
               MessageCentralServerpodChannels.revokedAuthentication(
@@ -413,7 +422,8 @@ void main() {
     });
 
     test(
-      'when listing the tokens for one user, then only their tokens are returned.',
+      'when listing the tokens for one user, '
+      'then only their tokens are returned.',
       () async {
         final tokenInfos = await jwt.listJwtTokens(
           session,
@@ -458,7 +468,8 @@ void main() {
       });
 
       test(
-        'when listing tokens, then it returns the first 100 tokens in order of creation date ASC.',
+        'when listing tokens, '
+        'then it returns the first 100 tokens in order of creation date ASC.',
         () async {
           final tokens = await jwt.listJwtTokens(
             session,
@@ -473,7 +484,8 @@ void main() {
       );
 
       test(
-        'when listing tokens with offset 50, then it returns the next 100 tokens in order of creation date ASC.',
+        'when listing tokens with offset 50, '
+        'then it returns the next 100 tokens in order of creation date ASC.',
         () async {
           final tokens = await jwt.listJwtTokens(
             session,
@@ -639,7 +651,8 @@ void main() {
     );
 
     test(
-      'when creating token with skipUserBlockedChecked as true, then the token should be created successfully.',
+      'when creating token with skipUserBlockedChecked as true, '
+      'then the token should be created successfully.',
       () async {
         final authSuccess = await jwt.createTokens(
           session,
@@ -756,7 +769,8 @@ void main() {
     });
 
     test(
-      'when requesting a new token pair with the provider configured, then provider claims are included in the access token.',
+      'when requesting a new token pair with the provider configured, '
+      'then provider claims are included in the access token.',
       () async {
         final jwtWithHook = Jwt(
           config: JwtConfig(
@@ -786,7 +800,8 @@ void main() {
     );
 
     test(
-      'when requesting a new token pair with both provider and extraClaims, then provider can control how claims are merged.',
+      'when requesting a new token pair with both provider and extraClaims, '
+      'then provider can control how claims are merged.',
       () async {
         final jwtWithHook = Jwt(
           config: JwtConfig(
@@ -823,7 +838,8 @@ void main() {
     );
 
     test(
-      'when provider returns null, then no extra claims are added from the provider.',
+      'when provider returns null, '
+      'then no extra claims are added from the provider.',
       () async {
         final jwtWithHook = Jwt(
           config: JwtConfig(
@@ -853,7 +869,8 @@ void main() {
     );
 
     test(
-      'when provider accesses session context, then it can fetch additional data.',
+      'when provider accesses session context, '
+      'then it can fetch additional data.',
       () async {
         const authUsers = AuthUsers();
         final jwtWithHook = Jwt(
@@ -892,7 +909,8 @@ void main() {
     );
 
     test(
-      'when provider uses method and scopes parameters, then it can customize claims based on them.',
+      'when provider uses method and scopes parameters, '
+      'then it can customize claims based on them.',
       () async {
         final jwtWithHook = Jwt(
           config: JwtConfig(
@@ -931,7 +949,7 @@ void main() {
   });
 
   withServerpod(
-    'Given a JwtConfig with onRefreshTokenCreated callback',
+    'Given a JwtConfig with onRefreshTokenCreated callback,',
     (final sessionBuilder, final endpoints) {
       late Session session;
       late UuidValue authUserId;
@@ -945,7 +963,8 @@ void main() {
       });
 
       test(
-        'when createTokens is called, then onRefreshTokenCreated is invoked with session, refreshTokenId and transaction.',
+        'when createTokens is called, '
+        'then onRefreshTokenCreated is invoked with session, refreshTokenId and transaction.',
         () async {
           Session? capturedSession;
           UuidValue? capturedAuthUserId;
@@ -1037,7 +1056,8 @@ void main() {
     });
 
     test(
-      'when calling refreshAccessToken with the expired token, then authenticationRevoked message is published with correct authId.',
+      'when calling refreshAccessToken with the expired token, '
+      'then authenticationRevoked message is published with correct authId.',
       () async {
         final channelName =
             MessageCentralServerpodChannels.revokedAuthentication(
@@ -1116,7 +1136,8 @@ void main() {
       });
 
       test(
-        'when calling refreshAccessToken with an invalid secret, then authenticationRevoked message is published with correct authId.',
+        'when calling refreshAccessToken with an invalid secret, '
+        'then authenticationRevoked message is published with correct authId.',
         () async {
           final tokenParts = authSuccess.refreshToken!.split(':');
           tokenParts[3] = 'dGVzdA==';

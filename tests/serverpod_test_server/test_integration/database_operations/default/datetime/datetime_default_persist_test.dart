@@ -14,7 +14,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "defaultPersist=now" field should be in UTC',
+      'when creating a record in the database, '
+      'then the "defaultPersist=now" field should be in UTC',
       () async {
         var object = DateTimeDefaultPersist();
         var databaseObject = await DateTimeDefaultPersist.db.insertRow(
@@ -26,7 +27,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "defaultPersist" field with UTC string should be in UTC',
+      'when creating a record in the database, '
+      'then the "defaultPersist" field with UTC string should be in UTC',
       () async {
         var object = DateTimeDefaultPersist();
         var databaseObject = await DateTimeDefaultPersist.db.insertRow(
@@ -38,7 +40,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "defaultPersist=now" field value should match the current time',
+      'when creating a record in the database, '
+      'then the "defaultPersist=now" field value should match the current time',
       () async {
         var object = DateTimeDefaultPersist();
         var databaseObject = await DateTimeDefaultPersist.db.insertRow(
@@ -56,7 +59,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "defaultPersist" field value should match the default',
+      'when creating a record in the database, '
+      'then the "defaultPersist" field value should match the default',
       () async {
         var object = DateTimeDefaultPersist();
         var databaseObject = await DateTimeDefaultPersist.db.insertRow(
@@ -71,7 +75,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "defaultPersist=now" field should be in UTC',
+      'when creating a record in the database with an unsafe query, '
+      'then the "defaultPersist=now" field should be in UTC',
       () async {
         await session.db.unsafeQuery(
           '''
@@ -87,7 +92,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "defaultPersist" field with UTC string should be in UTC',
+      'when creating a record in the database with an unsafe query, '
+      'then the "defaultPersist" field with UTC string should be in UTC',
       () async {
         await session.db.unsafeQuery(
           '''
@@ -103,7 +109,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "defaultPersist=now" field value should match the current time',
+      'when creating a record in the database with an unsafe query, '
+      'then the "defaultPersist=now" field value should match the current time',
       () async {
         await session.db.unsafeQuery(
           '''
@@ -125,7 +132,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "defaultPersist" field value should match the default',
+      'when creating a record in the database with an unsafe query, '
+      'then the "defaultPersist" field value should match the default',
       () async {
         await session.db.unsafeQuery(
           '''
@@ -144,7 +152,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "dateTimeDefaultPersistNow" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "dateTimeDefaultPersistNow" field value should match the provided value',
       () async {
         var date = DateTime.parse('2024-05-05T22:00:00.000Z');
         var specificObject = DateTimeDefaultPersist(
@@ -162,7 +171,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "dateTimeDefaultPersistStr" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "dateTimeDefaultPersistStr" field value should match the provided value',
       () async {
         var date = DateTime.parse('2024-05-05T22:00:00.000Z');
         var specificObject = DateTimeDefaultPersist(

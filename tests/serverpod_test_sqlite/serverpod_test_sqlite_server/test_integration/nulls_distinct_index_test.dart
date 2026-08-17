@@ -9,7 +9,7 @@ void main() {
     sessionBuilder,
     endpoints,
   ) {
-    var session = sessionBuilder.build();
+    late var session = sessionBuilder.build();
 
     test(
       'when rows with the same indexed values and a null are inserted, '
@@ -77,7 +77,7 @@ void main() {
     sessionBuilder,
     endpoints,
   ) {
-    var session = sessionBuilder.build();
+    late var session = sessionBuilder.build();
 
     test(
       'when the SQLite schema is analyzed, '

@@ -39,16 +39,17 @@ void main() {
   ]);
 
   group(
-    'Given a shared package model referencing another shared package model when generating code',
+    'Given a shared package model referencing another shared package model, '
+    'when generating code,',
     () {
-      var sharedUser = ModelClassDefinitionBuilder()
+      late var sharedUser = ModelClassDefinitionBuilder()
           .withClassName('User')
           .withFileName('user')
           .withSimpleField('name', 'String')
           .withSharedPackageName(sharedPackageName)
           .build();
 
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -109,9 +110,10 @@ void main() {
   );
 
   group(
-    'Given a shared package model referencing an enum in a shared package when generating code',
+    'Given a shared package model referencing an enum in a shared package, '
+    'when generating code,',
     () {
-      var sharedEnum = EnumDefinitionBuilder()
+      late var sharedEnum = EnumDefinitionBuilder()
           .withClassName('SharedEnum')
           .withFileName('shared_enum')
           .withValues([
@@ -121,7 +123,7 @@ void main() {
           .withSharedPackageName(sharedPackageName)
           .build();
 
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -175,16 +177,17 @@ void main() {
   );
 
   group(
-    'Given a shared exception class referencing another shared model when generating code',
+    'Given a shared exception class referencing another shared model, '
+    'when generating code,',
     () {
-      var sharedUser = ModelClassDefinitionBuilder()
+      late var sharedUser = ModelClassDefinitionBuilder()
           .withClassName('User')
           .withFileName('user')
           .withSimpleField('name', 'String')
           .withSharedPackageName(sharedPackageName)
           .build();
 
-      var models = [
+      late var models = [
         ExceptionClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)

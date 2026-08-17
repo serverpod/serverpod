@@ -43,7 +43,7 @@ void main() {
   });
 
   group(
-    'Given a log event flagged as an alert with copy markup when recorded,',
+    'Given a log event flagged as an alert with copy markup, when recorded,',
     () {
       String? previousClipboard;
 
@@ -81,7 +81,7 @@ void main() {
   );
 
   group(
-    'Given a log event flagged as an alert without copy markup when recorded,',
+    'Given a log event flagged as an alert without copy markup, when recorded,',
     () {
       setUp(() {
         history.recordServerLogEvent(
@@ -105,7 +105,7 @@ void main() {
   );
 
   group(
-    'Given an ordinary log event containing angle brackets when recorded,',
+    'Given an ordinary log event containing angle brackets, when recorded,',
     () {
       setUp(() {
         history.recordServerLogEvent(
@@ -129,7 +129,7 @@ void main() {
   );
 
   group(
-    'Given a log event whose metadata does not flag an alert when recorded,',
+    'Given a log event whose metadata does not flag an alert, when recorded,',
     () {
       setUp(() {
         history.recordServerLogEvent(
@@ -341,12 +341,12 @@ void main() {
     );
   });
 
-  group('Given runTrackedAction with server ready', () {
+  group('Given runTrackedAction with server ready,', () {
     setUp(() {
       state.serverReady = true;
     });
 
-    test('when server not ready then ignores action', () {
+    test('when server not ready, then ignores action', () {
       state.serverReady = false;
       var called = false;
 
@@ -358,7 +358,7 @@ void main() {
       expect(state.activeOperations, isEmpty);
     });
 
-    test('when already busy then ignores action', () {
+    test('when already busy, then ignores action', () {
       state.actionBusy = true;
       var called = false;
 
@@ -369,7 +369,7 @@ void main() {
       expect(called, isFalse);
     });
 
-    test('when action starts then sets busy and creates operation', () {
+    test('when action starts, then sets busy and creates operation', () {
       final completer = Completer<void>();
 
       runTrackedAction(holder, 'Reload', () => completer.future);
@@ -381,7 +381,7 @@ void main() {
       completer.complete();
     });
 
-    test('when action succeeds then clears busy and adds completed', () async {
+    test('when action succeeds, then clears busy and adds completed', () async {
       runTrackedAction(holder, 'Reload', () async {});
 
       await Future<void>.delayed(Duration.zero);
@@ -394,7 +394,7 @@ void main() {
       expect(op.success, isTrue);
     });
 
-    test('when action fails then clears busy and marks failed', () async {
+    test('when action fails, then clears busy and marks failed', () async {
       runTrackedAction(
         holder,
         'Migrate',

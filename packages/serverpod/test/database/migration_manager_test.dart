@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 void main() {
   ValueEncoder.set(const PostgresValueEncoder());
 
-  group('Given MigrationManager with available versions', () {
+  group('Given MigrationManager with available versions,', () {
     late MigrationManager migrationManager;
     late Directory tempDir;
 
@@ -26,7 +26,9 @@ void main() {
     });
 
     test(
-      'Given DB version not in project files when calling _getVersionsToApply then throws clear error message.',
+      'Given DB version not in project files, '
+      'when calling _getVersionsToApply, '
+      'then throws clear error message.',
       () {
         // This version is not in the available versions list
         const nonExistentVersion = '20251110140000000';
@@ -51,7 +53,9 @@ void main() {
     );
 
     test(
-      'Given DB version exists in project files when checking indexOf then returns valid index.',
+      'Given DB version exists in project files, '
+      'when checking indexOf, '
+      'then returns valid index.',
       () {
         const existingVersion = '20251111155452875';
 
@@ -63,7 +67,7 @@ void main() {
     );
 
     test(
-      'Given empty available versions when checking indexOf then returns -1.',
+      'Given empty available versions, when checking indexOf, then returns -1.',
       () {
         final emptyMigrationManager = MigrationManager.fromDirectory(tempDir);
         const anyVersion = '20251111155452875';

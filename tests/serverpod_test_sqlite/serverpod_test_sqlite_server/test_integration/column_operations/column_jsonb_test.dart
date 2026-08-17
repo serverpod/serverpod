@@ -56,8 +56,8 @@ void main() async {
   setUpAll(() async => await _createTestDatabase(session));
   tearDownAll(() async => await _deleteAll(session));
 
-  group('Given jsonb column in SQLite database', () {
-    test('when fetching all then all rows are returned.', () async {
+  group('Given jsonb column in SQLite database,', () {
+    test('when fetching all, then all rows are returned.', () async {
       var result = await ObjectWithJsonb.db.find(
         session,
         where: (_) => Constant.bool(true),
@@ -67,7 +67,7 @@ void main() async {
     });
 
     test(
-      'when fetching the row inserted with a non-empty list '
+      'when fetching the row inserted with a non-empty list, '
       'then the jsonb column value is returned unchanged.',
       () async {
         var result = await ObjectWithJsonb.db.findById(
@@ -80,7 +80,7 @@ void main() async {
     );
 
     test(
-      'when fetching the row inserted with an empty list '
+      'when fetching the row inserted with an empty list, '
       'then the jsonb column value is returned as an empty list.',
       () async {
         var result = await ObjectWithJsonb.db.findById(
@@ -93,7 +93,7 @@ void main() async {
     );
 
     test(
-      'when fetching the row inserted with special characters '
+      'when fetching the row inserted with special characters, '
       'then every value in the list round-trips unchanged.',
       () async {
         var result = await ObjectWithJsonb.db.findById(
@@ -106,9 +106,9 @@ void main() async {
     );
   });
 
-  group('Given nullable jsonb column in SQLite database', () {
+  group('Given nullable jsonb column in SQLite database,', () {
     test(
-      'when fetching the row inserted with Dart null '
+      'when fetching the row inserted with Dart null, '
       'then the column value is null.',
       () async {
         var result = await ObjectWithJsonb.db.findById(
@@ -121,7 +121,7 @@ void main() async {
     );
 
     test(
-      'when fetching the row inserted with an empty list '
+      'when fetching the row inserted with an empty list, '
       'then the column value is a non-null empty list.',
       () async {
         var result = await ObjectWithJsonb.db.findById(
@@ -135,7 +135,7 @@ void main() async {
     );
 
     test(
-      'when fetching the row inserted with a non-empty list '
+      'when fetching the row inserted with a non-empty list, '
       'then the column value is returned unchanged.',
       () async {
         var result = await ObjectWithJsonb.db.findById(

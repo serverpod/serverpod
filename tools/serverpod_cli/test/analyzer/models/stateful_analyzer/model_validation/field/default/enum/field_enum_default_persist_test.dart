@@ -29,9 +29,10 @@ void main() {
     ];
   });
 
-  group('Given a class with fields with a "defaultPersist" keyword', () {
+  group('Given a class with fields with a "defaultPersist" keyword,', () {
     test(
-      'when the field is of enum type and the defaultPersist is set to "byName1", then the field should have a "default persist" value',
+      'when the field is of enum type and the defaultPersist is set to "byName1", '
+      'then the field should have a "default persist" value',
       () {
         var localModels = List<ModelSource>.from(models);
         localModels.add(
@@ -60,7 +61,8 @@ void main() {
     );
 
     test(
-      'when the field is of enum type and the defaultPersist is set to "byName2", then the field should have a "default persist" value',
+      'when the field is of enum type and the defaultPersist is set to "byName2", '
+      'then the field should have a "default persist" value',
       () {
         var localModels = List<ModelSource>.from(models);
         localModels.add(
@@ -89,7 +91,8 @@ void main() {
     );
 
     test(
-      'when the field is of enum type and the defaultPersist is empty, then an error is generated',
+      'when the field is of enum type and the defaultPersist is empty, '
+      'then an error is generated',
       () {
         var localModels = List<ModelSource>.from(models);
         localModels.add(
@@ -121,7 +124,8 @@ void main() {
     );
 
     test(
-      'when the field is of enum type with an invalid defaultPersist value "INVALID", then an error is generated',
+      'when the field is of enum type with an invalid defaultPersist value "INVALID", '
+      'then an error is generated',
       () {
         var localModels = List<ModelSource>.from(models);
         localModels.add(
@@ -153,7 +157,8 @@ void main() {
     );
 
     test(
-      'when the field is of enum type with an invalid defaultPersist value, then an error is generated',
+      'when the field is of enum type with an invalid defaultPersist value, '
+      'then an error is generated',
       () {
         var localModels = List<ModelSource>.from(models);
         localModels.add(

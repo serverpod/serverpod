@@ -3,7 +3,9 @@ import 'package:test/test.dart';
 
 void main() {
   test(
-    'Given SparseVector with non-zero values when created then properties are correctly set',
+    'Given SparseVector with non-zero values, '
+    'when created, '
+    'then properties are correctly set',
     () {
       var vec = SparseVector([1, 0, 2, 0, 3, 0]);
       expect(vec.toString(), equals('{1:1.0,3:2.0,5:3.0}/6'));
@@ -15,7 +17,9 @@ void main() {
   );
 
   test(
-    'Given map of indices to values when creating SparseVector then properties are correctly set',
+    'Given map of indices to values, '
+    'when creating SparseVector, '
+    'then properties are correctly set',
     () {
       var vec = SparseVector.fromMap({3: 2.0, 5: 3.0, 1: 1.0, 4: 0.0}, 6);
       expect(vec.toString(), equals('{1:1.0,3:2.0,5:3.0}/6'));
@@ -27,14 +31,16 @@ void main() {
   );
 
   test(
-    'Given map with index 0 when creating SparseVector then ArgumentError is thrown',
+    'Given map with index 0, '
+    'when creating SparseVector, '
+    'then ArgumentError is thrown',
     () {
       expect(() => SparseVector.fromMap({0: 1.0}, 1), throwsArgumentError);
     },
   );
 
   test(
-    'Given two SparseVectors when comparing then equality works correctly',
+    'Given two SparseVectors, when comparing, then equality works correctly',
     () {
       var a = SparseVector([1, 2, 3]);
       var b = SparseVector([1, 2, 3]);
@@ -46,7 +52,9 @@ void main() {
   );
 
   test(
-    'Given SparseVector when converting to string then returns correct representation.',
+    'Given SparseVector, '
+    'when converting to string, '
+    'then returns correct representation.',
     () {
       var vec1 = SparseVector([1, 0, 2, 0, 3]);
       var vec2 = SparseVector([0, 0, 0, 4]);
@@ -59,7 +67,9 @@ void main() {
   );
 
   test(
-    'Given valid string when creating SparseVector from string then creates correct SparseVector.',
+    'Given valid string, '
+    'when creating SparseVector from string, '
+    'then creates correct SparseVector.',
     () {
       var vec1 = SparseVector.fromString('{1:1.0,3:2.0,5:3.0}/5');
       var vec2 = SparseVector.fromString('{4:4.0}/4');
@@ -74,7 +84,9 @@ void main() {
   );
 
   test(
-    'Given invalid string when creating SparseVector from string then throws FormatException.',
+    'Given invalid string, '
+    'when creating SparseVector from string, '
+    'then throws FormatException.',
     () {
       final invalidStrings = [
         '',
@@ -94,7 +106,9 @@ void main() {
   );
 
   test(
-    'Given SparseVector with all zeros when created then properties are correctly set',
+    'Given SparseVector with all zeros, '
+    'when created, '
+    'then properties are correctly set',
     () {
       var vec = SparseVector([0, 0, 0, 0]);
       expect(vec.toString(), equals('{}/4'));
@@ -106,7 +120,9 @@ void main() {
   );
 
   test(
-    'Given SparseVector with known dimensions when accessing length then returns dimension count.',
+    'Given SparseVector with known dimensions, '
+    'when accessing length, '
+    'then returns dimension count.',
     () {
       expect(SparseVector([]).length, equals(0));
       expect(SparseVector([1.0]).length, equals(1));
@@ -115,7 +131,9 @@ void main() {
   );
 
   test(
-    'Given SparseVector when accessing a stored non-zero index then returns the value.',
+    'Given SparseVector, '
+    'when accessing a stored non-zero index, '
+    'then returns the value.',
     () {
       final vec = SparseVector([1.0, 0.0, 2.0, 0.0, 3.0]);
       expect(vec[0], equals(1.0));
@@ -125,7 +143,7 @@ void main() {
   );
 
   test(
-    'Given SparseVector when accessing a zero-valued index then returns 0.0.',
+    'Given SparseVector, when accessing a zero-valued index, then returns 0.0.',
     () {
       final vec = SparseVector([1.0, 0.0, 2.0, 0.0, 3.0]);
       expect(vec[1], equals(0.0));
@@ -134,7 +152,9 @@ void main() {
   );
 
   test(
-    'Given SparseVector when accessing all indices then agrees with toList().',
+    'Given SparseVector, '
+    'when accessing all indices, '
+    'then agrees with toList().',
     () {
       final vec = SparseVector([1.0, 0.0, 2.0, 0.0, 3.0]);
       final list = vec.toList();
@@ -145,7 +165,9 @@ void main() {
   );
 
   test(
-    'Given SparseVector when accessing negative index then throws RangeError.',
+    'Given SparseVector, '
+    'when accessing negative index, '
+    'then throws RangeError.',
     () {
       expect(
         () => SparseVector([1.0, 2.0, 3.0])[-1],
@@ -155,7 +177,9 @@ void main() {
   );
 
   test(
-    'Given SparseVector when accessing index equal to dimensions then throws RangeError.',
+    'Given SparseVector, '
+    'when accessing index equal to dimensions, '
+    'then throws RangeError.',
     () {
       expect(
         () => SparseVector([1.0, 2.0, 3.0])[3],
@@ -165,7 +189,9 @@ void main() {
   );
 
   test(
-    'Given SparseVector when iterating with for-in then yields all elements in order.',
+    'Given SparseVector, '
+    'when iterating with for-in, '
+    'then yields all elements in order.',
     () {
       final vec = SparseVector([1.0, 0.0, 2.0]);
       expect(vec.toList(), equals([1.0, 0.0, 2.0]));
@@ -173,14 +199,18 @@ void main() {
   );
 
   test(
-    'Given SparseVector with a matching element when calling any then returns true.',
+    'Given SparseVector with a matching element, '
+    'when calling any, '
+    'then returns true.',
     () {
       expect(SparseVector([0.0, 0.0, 3.0]).any((v) => v > 0), isTrue);
     },
   );
 
   test(
-    'Given SparseVector with all non-negative values when calling every then returns true.',
+    'Given SparseVector with all non-negative values, '
+    'when calling every, '
+    'then returns true.',
     () {
       expect(SparseVector([1.0, 0.0, 2.0]).every((v) => v >= 0), isTrue);
     },

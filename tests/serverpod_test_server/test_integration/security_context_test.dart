@@ -10,7 +10,7 @@ import 'ssl/ssl_cert.dart';
 
 void main() {
   group('Given an api server', () {
-    group('with a security context', () {
+    group('with a security context,', () {
       late SecurityContext securityContext;
       late Serverpod serverpod;
 
@@ -53,7 +53,7 @@ void main() {
       });
     });
 
-    group('without a security context', () {
+    group('without a security context,', () {
       late Serverpod serverpod;
 
       setUpAll(() async {
@@ -90,7 +90,7 @@ void main() {
   });
 
   group('Given a insights server', () {
-    group('with a security context', () {
+    group('with a security context,', () {
       late SecurityContext securityContext;
       late Serverpod serverpod;
 
@@ -133,7 +133,7 @@ void main() {
       });
     });
 
-    group('without a security context', () {
+    group('without a security context,', () {
       late Serverpod serverpod;
 
       setUpAll(() async {
@@ -168,7 +168,7 @@ void main() {
   });
 
   group('Given a web server', () {
-    group('with a security context', () {
+    group('with a security context,', () {
       late SecurityContext securityContext;
       late Serverpod serverpod;
 
@@ -211,7 +211,7 @@ void main() {
       });
     });
 
-    group('without a security context', () {
+    group('without a security context,', () {
       late SecurityContext securityContext;
       late Serverpod serverpod;
 

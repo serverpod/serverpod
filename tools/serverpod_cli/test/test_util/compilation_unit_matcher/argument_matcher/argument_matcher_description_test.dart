@@ -4,7 +4,9 @@ import '../../compilation_unit_matcher.dart';
 
 void main() {
   test(
-    'Given argument matcher when describing matcher then description is correct',
+    'Given argument matcher, '
+    'when describing matcher, '
+    'then description is correct',
     () {
       final matcher =
           containsClass('User')
@@ -25,7 +27,9 @@ void main() {
   );
 
   test(
-    'Given positional argument matcher when describing matcher then description is adapted for positional arguments',
+    'Given positional argument matcher, '
+    'when describing matcher, '
+    'then description is adapted for positional arguments',
     () {
       final matcher =
           containsClass('User')
@@ -44,7 +48,9 @@ void main() {
   );
 
   test(
-    'Given named argument matcher when describing matcher then description is adapted for positional arguments',
+    'Given named argument matcher, '
+    'when describing matcher, '
+    'then description is adapted for positional arguments',
     () {
       final matcher =
           containsClass('User')

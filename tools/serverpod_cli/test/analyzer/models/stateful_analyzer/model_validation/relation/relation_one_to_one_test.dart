@@ -10,9 +10,9 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   group(
-    'Given a class with a only a foreign key field defined for the relation',
+    'Given a class with a only a foreign key field defined for the relation,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withFileName('user').withYaml(
           '''
         class: User
@@ -35,13 +35,13 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       var userDefinition = definitions.first as ClassDefinition;
 
@@ -52,7 +52,7 @@ void main() {
       });
 
       group('then a relation is defined on the addressId', () {
-        var relation = userDefinition.findField('addressId')?.relation;
+        late var relation = userDefinition.findField('addressId')?.relation;
 
         test('and has the relation type ForeignRelation', () {
           expect(
@@ -117,9 +117,9 @@ void main() {
   );
 
   group(
-    'Given a class with a only a foreign key field defined for the relation',
+    'Given a class with a only a foreign key field defined for the relation,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withFileName('user').withYaml(
           '''
         class: User
@@ -142,13 +142,13 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       var userDefinition = definitions.first as ClassDefinition;
 
@@ -159,7 +159,7 @@ void main() {
       });
 
       group('then a relation is defined on the addressId', () {
-        var relation = userDefinition.findField('addressId')?.relation;
+        late var relation = userDefinition.findField('addressId')?.relation;
 
         test('and has the relation type ForeignRelation', () {
           expect(
@@ -222,7 +222,7 @@ void main() {
       });
 
       group('then the address field has a relation', () {
-        var relation = userDefinition.findField('address')?.relation;
+        late var relation = userDefinition.findField('address')?.relation;
         test('of ObjectRelation type', () {
           expect(
             relation.runtimeType,
@@ -263,9 +263,9 @@ void main() {
   );
 
   group(
-    'Given a class with a foreign key and object relation field defined for the relation',
+    'Given a class with a foreign key and object relation field defined for the relation,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withFileName('user').withYaml(
           '''
         class: User
@@ -289,13 +289,13 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       var userDefinition = definitions.first as ClassDefinition;
 
@@ -306,7 +306,7 @@ void main() {
       });
 
       group('then a relation is defined on the addressId', () {
-        var relation = userDefinition.findField('addressId')?.relation;
+        late var relation = userDefinition.findField('addressId')?.relation;
 
         test('and has the relation type ForeignRelation', () {
           expect(
@@ -370,7 +370,7 @@ void main() {
       });
 
       group('then the address field has a relation', () {
-        var relation = userDefinition.findField('address')?.relation;
+        late var relation = userDefinition.findField('address')?.relation;
         test('of ObjectRelation type', () {
           expect(
             relation.runtimeType,
@@ -411,9 +411,9 @@ void main() {
   );
 
   group(
-    'Given a class with a foreign key field and named object relation on the other side',
+    'Given a class with a foreign key field and named object relation on the other side,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withFileName('user').withYaml(
           '''
         class: User
@@ -436,13 +436,13 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       var userDefinition = definitions.first as ClassDefinition;
       var addressDefinition = definitions.last as ClassDefinition;
@@ -454,7 +454,7 @@ void main() {
       });
 
       group('then a relation is defined on the addressId', () {
-        var relation = userDefinition.findField('addressId')?.relation;
+        late var relation = userDefinition.findField('addressId')?.relation;
 
         test('and has the relation type ForeignRelation', () {
           expect(
@@ -518,7 +518,7 @@ void main() {
       });
 
       group('then the user relation', () {
-        var relation = addressDefinition.findField('user')?.relation;
+        late var relation = addressDefinition.findField('user')?.relation;
 
         test('has the relation name set', () {
           expect(relation?.name, 'user_address');
@@ -582,9 +582,9 @@ void main() {
     },
   );
   group(
-    'Given a class with a named object relation on both sides with a field references',
+    'Given a class with a named object relation on both sides with a field references,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withFileName('user').withYaml(
           '''
         class: User
@@ -608,13 +608,13 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       var userDefinition = definitions.first as ClassDefinition;
       var addressDefinition = definitions.last as ClassDefinition;
@@ -638,7 +638,7 @@ void main() {
       );
 
       group('then the user relation', () {
-        var relation = addressDefinition.findField('user')?.relation;
+        late var relation = addressDefinition.findField('user')?.relation;
 
         test('has the relation name set', () {
           expect(relation?.name, 'user_address');
@@ -708,7 +708,7 @@ void main() {
       }, skip: errors.isNotEmpty);
 
       group('then a relation is defined on the addressId', () {
-        var relation = userDefinition.findField('addressId')?.relation;
+        late var relation = userDefinition.findField('addressId')?.relation;
 
         test('and has the relation type ForeignRelation', () {
           expect(
@@ -786,7 +786,7 @@ void main() {
       });
 
       group('then the address field has a relation', () {
-        var relation = userDefinition.findField('address')?.relation;
+        late var relation = userDefinition.findField('address')?.relation;
         test('of ObjectRelation type', () {
           expect(
             relation.runtimeType,
@@ -827,9 +827,9 @@ void main() {
   );
 
   group(
-    'Given a class with a named object relation on both sides without a field references',
+    'Given a class with a named object relation on both sides without a field references,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withFileName('user').withYaml(
           '''
         class: User
@@ -848,8 +848,8 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
@@ -881,7 +881,8 @@ void main() {
   );
 
   test(
-    'Given a class with a one to one relation where the relationship is ambiguous then an error is collected that the reference cannot be resolved.',
+    'Given a class with a one to one relation where the relationship is ambiguous, '
+    'then an error is collected that the reference cannot be resolved.',
     () {
       var models = [
         ModelSourceBuilder().withFileName('company').withYaml(
@@ -936,7 +937,8 @@ void main() {
   );
 
   test(
-    'Given a class with a one to one relation where the id column is manually defined on both sides of the relation, then give an error that the field only can be defined on one side.',
+    'Given a class with a one to one relation where the id column is manually defined on both sides of the relation, '
+    'then give an error that the field only can be defined on one side.',
     () {
       var models = [
         ModelSourceBuilder().withFileName('company').withYaml(
@@ -994,9 +996,9 @@ void main() {
   );
 
   group(
-    'Given a class with a one to one relation where the relationship is only named on one side',
+    'Given a class with a one to one relation where the relationship is only named on one side,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withFileName('user').withYaml(
           '''
         class: User
@@ -1020,8 +1022,8 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
@@ -1047,9 +1049,9 @@ void main() {
   );
 
   group(
-    'Given a class with a named object relation to a foreign id relation field that has unique index',
+    'Given a class with a named object relation to a foreign id relation field that has unique index,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withFileName('user').withYaml(
           '''
         class: User
@@ -1073,8 +1075,8 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
@@ -1090,9 +1092,9 @@ void main() {
   );
 
   group(
-    'Given a class with a named object relation to a foreign id relation field that does not have unique index',
+    'Given a class with a named object relation to a foreign id relation field that does not have unique index,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withFileName('user').withYaml(
           '''
         class: User
@@ -1112,8 +1114,8 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
@@ -1139,404 +1141,412 @@ void main() {
     },
   );
 
-  test('Given I have an object relation'
-      ' and the child is serverOnly'
-      ' and the relation is optional '
-      'when analyzing '
-      'then no errors are collected', () {
-    var models = [
-      (ModelSourceBuilder().withFileName('parent').withYaml(
-        '''
+  test(
+    'Given I have an object relation and the child is serverOnly and the relation is optional, '
+    'when analyzing, '
+    'then no errors are collected',
+    () {
+      var models = [
+        (ModelSourceBuilder().withFileName('parent').withYaml(
+          '''
         class: Parent
         table: parent
         ''',
-      ).build()),
-      ModelSourceBuilder().withFileName('child').withYaml(
-        '''
+        ).build()),
+        ModelSourceBuilder().withFileName('child').withYaml(
+          '''
         class: Child
         table: child
         serverOnly: true
         fields:
           parent: Parent?, relation(optional)
         ''',
-      ).build(),
-    ];
-    var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    analyzer.validateAll();
-    var errors = collector.errors;
-    expect(errors, isEmpty);
-  });
+        ).build(),
+      ];
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+      var errors = collector.errors;
+      expect(errors, isEmpty);
+    },
+  );
 
-  test('Given I have an object relation'
-      ' and the child is serverOnly'
-      ' and the relation is not optional '
-      'when analyzing '
-      'then no errors are collected', () {
-    var models = [
-      (ModelSourceBuilder().withFileName('parent').withYaml(
-        '''
+  test(
+    'Given I have an object relation and the child is serverOnly and the relation is not optional, '
+    'when analyzing, '
+    'then no errors are collected',
+    () {
+      var models = [
+        (ModelSourceBuilder().withFileName('parent').withYaml(
+          '''
         class: Parent
         table: parent
         ''',
-      ).build()),
-      ModelSourceBuilder().withFileName('child').withYaml(
-        '''
+        ).build()),
+        ModelSourceBuilder().withFileName('child').withYaml(
+          '''
         class: Child
         table: child
         serverOnly: true
         fields:
           parent: Parent?, relation
         ''',
-      ).build(),
-    ];
-    var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    analyzer.validateAll();
-    var errors = collector.errors;
+        ).build(),
+      ];
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+      var errors = collector.errors;
 
-    expect(errors, isEmpty);
-  });
+      expect(errors, isEmpty);
+    },
+  );
 
-  test('Given I have an object relation'
-      ' and the child is not serverOnly'
-      ' and the relation is optional '
-      'when analyzing '
-      'then no errors are collected', () {
-    var models = [
-      (ModelSourceBuilder().withFileName('parent').withYaml(
-        '''
+  test(
+    'Given I have an object relation and the child is not serverOnly and the relation is optional, '
+    'when analyzing, '
+    'then no errors are collected',
+    () {
+      var models = [
+        (ModelSourceBuilder().withFileName('parent').withYaml(
+          '''
         class: Parent
         table: parent
         ''',
-      ).build()),
-      ModelSourceBuilder().withFileName('child').withYaml(
-        '''
+        ).build()),
+        ModelSourceBuilder().withFileName('child').withYaml(
+          '''
         class: Child
         table: child
         fields:
           parent: Parent?, relation(optional)
         ''',
-      ).build(),
-    ];
-    var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    analyzer.validateAll();
-    var errors = collector.errors;
+        ).build(),
+      ];
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+      var errors = collector.errors;
 
-    expect(errors, isEmpty);
-  });
+      expect(errors, isEmpty);
+    },
+  );
 
-  test('Given I have an object relation'
-      ' and the child is not serverOnly'
-      ' and the relation is optional '
-      ' and the field scope is serverOnly '
-      'when analyzing '
-      'then no errors are collected', () {
-    var models = [
-      (ModelSourceBuilder().withFileName('parent').withYaml(
-        '''
+  test(
+    'Given I have an object relation and the child is not serverOnly and the relation is optional  and the field scope is serverOnly, '
+    'when analyzing, '
+    'then no errors are collected',
+    () {
+      var models = [
+        (ModelSourceBuilder().withFileName('parent').withYaml(
+          '''
         class: Parent
         table: parent
         ''',
-      ).build()),
-      ModelSourceBuilder().withFileName('child').withYaml(
-        '''
+        ).build()),
+        ModelSourceBuilder().withFileName('child').withYaml(
+          '''
         class: Child
         table: child
         fields:
           parent: Parent?, relation(optional), scope=serverOnly
         ''',
-      ).build(),
-    ];
-    var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    analyzer.validateAll();
-    var errors = collector.errors;
+        ).build(),
+      ];
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+      var errors = collector.errors;
 
-    expect(errors, isEmpty);
-  });
+      expect(errors, isEmpty);
+    },
+  );
 
-  test('Given I have an object relation'
-      ' and the child is not serverOnly'
-      ' and the relation is not optional '
-      'when analyzing '
-      'then no errors are collected', () {
-    var models = [
-      (ModelSourceBuilder().withFileName('parent').withYaml(
-        '''
+  test(
+    'Given I have an object relation and the child is not serverOnly and the relation is not optional, '
+    'when analyzing, '
+    'then no errors are collected',
+    () {
+      var models = [
+        (ModelSourceBuilder().withFileName('parent').withYaml(
+          '''
         class: Parent
         table: parent
         ''',
-      ).build()),
-      ModelSourceBuilder().withFileName('child').withYaml(
-        '''
+        ).build()),
+        ModelSourceBuilder().withFileName('child').withYaml(
+          '''
         class: Child
         table: child
         fields:
           parent: Parent?, relation
         ''',
-      ).build(),
-    ];
-    var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    analyzer.validateAll();
-    var errors = collector.errors;
+        ).build(),
+      ];
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+      var errors = collector.errors;
 
-    expect(errors, isEmpty);
-  });
+      expect(errors, isEmpty);
+    },
+  );
 
-  test('Given I have an object relation'
-      ' and the child is not serverOnly'
-      ' and the relation is not optional '
-      ' and the field scope is serverOnly '
-      'when analyzing '
-      'then an error is collected', () {
-    var models = [
-      (ModelSourceBuilder().withFileName('parent').withYaml(
-        '''
+  test(
+    'Given I have an object relation and the child is not serverOnly and the relation is not optional  and the field scope is serverOnly, '
+    'when analyzing, '
+    'then an error is collected',
+    () {
+      var models = [
+        (ModelSourceBuilder().withFileName('parent').withYaml(
+          '''
         class: Parent
         table: parent
         ''',
-      ).build()),
-      ModelSourceBuilder().withFileName('child').withYaml(
-        '''
+        ).build()),
+        ModelSourceBuilder().withFileName('child').withYaml(
+          '''
         class: Child
         table: child
         fields:
           parent: Parent?, relation, scope=serverOnly
         ''',
-      ).build(),
-    ];
-    var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    analyzer.validateAll();
-    var errors = collector.errors;
+        ).build(),
+      ];
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+      var errors = collector.errors;
 
-    expect(errors.map((e) => e.message), [
-      'The relation with scope "serverOnly" requires the relation to be optional.',
-    ]);
-  });
+      expect(errors.map((e) => e.message), [
+        'The relation with scope "serverOnly" requires the relation to be optional.',
+      ]);
+    },
+  );
 
-  test('Given I have an id relation'
-      ' and the child is serverOnly'
-      ' and the relation is nullable '
-      'when analyzing '
-      'then no errors are collected', () {
-    var models = [
-      (ModelSourceBuilder().withFileName('parent').withYaml(
-        '''
+  test(
+    'Given I have an id relation and the child is serverOnly and the relation is nullable, '
+    'when analyzing, '
+    'then no errors are collected',
+    () {
+      var models = [
+        (ModelSourceBuilder().withFileName('parent').withYaml(
+          '''
         class: Parent
         table: parent
         ''',
-      ).build()),
-      ModelSourceBuilder().withFileName('child').withYaml(
-        '''
+        ).build()),
+        ModelSourceBuilder().withFileName('child').withYaml(
+          '''
         class: Child
         table: child
         serverOnly: true
         fields:
           parentId: int?, relation(parent=parent)
         ''',
-      ).build(),
-    ];
-    var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    analyzer.validateAll();
-    var errors = collector.errors;
-    expect(errors, isEmpty);
-  });
+        ).build(),
+      ];
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+      var errors = collector.errors;
+      expect(errors, isEmpty);
+    },
+  );
 
-  test('Given I have an id relation'
-      ' and the child is serverOnly'
-      ' and the relation is not nullable '
-      'when analyzing '
-      'then no errors are collected', () {
-    var models = [
-      (ModelSourceBuilder().withFileName('parent').withYaml(
-        '''
+  test(
+    'Given I have an id relation and the child is serverOnly and the relation is not nullable, '
+    'when analyzing, '
+    'then no errors are collected',
+    () {
+      var models = [
+        (ModelSourceBuilder().withFileName('parent').withYaml(
+          '''
         class: Parent
         table: parent
         ''',
-      ).build()),
-      ModelSourceBuilder().withFileName('child').withYaml(
-        '''
+        ).build()),
+        ModelSourceBuilder().withFileName('child').withYaml(
+          '''
         class: Child
         table: child
         serverOnly: true
         fields:
           parentId: int, relation(parent=parent)
         ''',
-      ).build(),
-    ];
-    var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    analyzer.validateAll();
-    var errors = collector.errors;
-    expect(errors, isEmpty);
-  });
+        ).build(),
+      ];
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+      var errors = collector.errors;
+      expect(errors, isEmpty);
+    },
+  );
 
-  test('Given I have an id relation'
-      ' and the child is not serverOnly'
-      ' and the relation is nullable '
-      'when analyzing '
-      'then no errors are collected', () {
-    var models = [
-      (ModelSourceBuilder().withFileName('parent').withYaml(
-        '''
+  test(
+    'Given I have an id relation and the child is not serverOnly and the relation is nullable, '
+    'when analyzing, '
+    'then no errors are collected',
+    () {
+      var models = [
+        (ModelSourceBuilder().withFileName('parent').withYaml(
+          '''
         class: Parent
         table: parent
         ''',
-      ).build()),
-      ModelSourceBuilder().withFileName('child').withYaml(
-        '''
+        ).build()),
+        ModelSourceBuilder().withFileName('child').withYaml(
+          '''
         class: Child
         table: child
         fields:
           parentId: int?, relation(parent=parent)
         ''',
-      ).build(),
-    ];
-    var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    analyzer.validateAll();
-    var errors = collector.errors;
-    expect(errors, isEmpty);
-  });
+        ).build(),
+      ];
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+      var errors = collector.errors;
+      expect(errors, isEmpty);
+    },
+  );
 
-  test('Given I have an id relation'
-      ' and the child is not serverOnly'
-      ' and the relation is nullable '
-      ' and the field scope is serverOnly '
-      'when analyzing '
-      'then no errors are collected', () {
-    var models = [
-      (ModelSourceBuilder().withFileName('parent').withYaml(
-        '''
+  test(
+    'Given I have an id relation and the child is not serverOnly and the relation is nullable  and the field scope is serverOnly, '
+    'when analyzing, '
+    'then no errors are collected',
+    () {
+      var models = [
+        (ModelSourceBuilder().withFileName('parent').withYaml(
+          '''
         class: Parent
         table: parent
         ''',
-      ).build()),
-      ModelSourceBuilder().withFileName('child').withYaml(
-        '''
+        ).build()),
+        ModelSourceBuilder().withFileName('child').withYaml(
+          '''
         class: Child
         table: child
         fields:
           parentId: int?, relation(parent=parent), scope=serverOnly
         ''',
-      ).build(),
-    ];
-    var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    analyzer.validateAll();
-    var errors = collector.errors;
-    expect(errors, isEmpty);
-  });
+        ).build(),
+      ];
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+      var errors = collector.errors;
+      expect(errors, isEmpty);
+    },
+  );
 
-  test('Given I have an id relation'
-      ' and the child is not serverOnly'
-      ' and the relation not is nullable '
-      'when analyzing '
-      'then no errors are collected', () {
-    var models = [
-      (ModelSourceBuilder().withFileName('parent').withYaml(
-        '''
+  test(
+    'Given I have an id relation and the child is not serverOnly and the relation not is nullable, '
+    'when analyzing, '
+    'then no errors are collected',
+    () {
+      var models = [
+        (ModelSourceBuilder().withFileName('parent').withYaml(
+          '''
         class: Parent
         table: parent
         ''',
-      ).build()),
-      ModelSourceBuilder().withFileName('child').withYaml(
-        '''
+        ).build()),
+        ModelSourceBuilder().withFileName('child').withYaml(
+          '''
         class: Child
         table: child
         fields:
           parentId: int, relation(parent=parent)
         ''',
-      ).build(),
-    ];
-    var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    analyzer.validateAll();
-    var errors = collector.errors;
-    expect(errors, isEmpty);
-  });
+        ).build(),
+      ];
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+      var errors = collector.errors;
+      expect(errors, isEmpty);
+    },
+  );
 
-  test('Given I have an id relation'
-      ' and the child is not serverOnly'
-      ' and the relation is not nullable '
-      ' and the field scope is serverOnly '
-      'when analyzing '
-      'then an error is collected', () {
-    var models = [
-      (ModelSourceBuilder().withFileName('parent').withYaml(
-        '''
+  test(
+    'Given I have an id relation and the child is not serverOnly and the relation is not nullable  and the field scope is serverOnly, '
+    'when analyzing, '
+    'then an error is collected',
+    () {
+      var models = [
+        (ModelSourceBuilder().withFileName('parent').withYaml(
+          '''
         class: Parent
         table: parent
         ''',
-      ).build()),
-      ModelSourceBuilder().withFileName('child').withYaml(
-        '''
+        ).build()),
+        ModelSourceBuilder().withFileName('child').withYaml(
+          '''
         class: Child
         table: child
         fields:
           parentId: int, relation(parent=parent), scope=serverOnly
         ''',
-      ).build(),
-    ];
-    var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    analyzer.validateAll();
-    var errors = collector.errors;
-    expect(errors.map((e) => e.message), [
-      'The field "parentId" must be nullable when the "scope" property is set to "serverOnly".',
-    ]);
-  });
+        ).build(),
+      ];
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+      var errors = collector.errors;
+      expect(errors.map((e) => e.message), [
+        'The field "parentId" must be nullable when the "scope" property is set to "serverOnly".',
+      ]);
+    },
+  );
 }

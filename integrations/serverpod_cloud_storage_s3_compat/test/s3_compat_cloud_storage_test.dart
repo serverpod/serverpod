@@ -6,7 +6,7 @@ import 'package:serverpod_cloud_storage_s3_compat/serverpod_cloud_storage_s3_com
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a TestableS3CompatCloudStorage', () {
+  group('Given a TestableS3CompatCloudStorage,', () {
     late TestableS3CompatCloudStorage storage;
     late MockS3Client mockClient;
     late MockUploadStrategy mockUploadStrategy;
@@ -22,16 +22,16 @@ void main() {
     });
 
     test(
-      'when accessing storageId '
+      'when accessing storageId, '
       'then it returns the configured value',
       () {
         expect(storage.storageId, 'test-storage');
       },
     );
 
-    group('Given a file to store', () {
+    group('Given a file to store,', () {
       test(
-        'when storing it '
+        'when storing it, '
         'then it delegates to the upload strategy',
         () async {
           final data = ByteData(10);
@@ -45,7 +45,7 @@ void main() {
       );
 
       test(
-        'when storing it with preventOverwrite '
+        'when storing it with preventOverwrite, '
         'then it forwards preventOverwrite to the upload strategy',
         () async {
           final data = ByteData(10);
@@ -61,9 +61,9 @@ void main() {
       );
     });
 
-    group('Given an existing file', () {
+    group('Given an existing file,', () {
       test(
-        'when retrieving it '
+        'when retrieving it, '
         'then it returns the file data',
         () async {
           final fileContent = [1, 2, 3, 4, 5];
@@ -78,7 +78,7 @@ void main() {
       );
 
       test(
-        'when checking if it exists '
+        'when checking if it exists, '
         'then it returns true',
         () async {
           mockClient.headObjectResponse = http.Response('', 200);
@@ -91,7 +91,7 @@ void main() {
       );
 
       test(
-        'when getting its public URL '
+        'when getting its public URL, '
         'then it returns the URL',
         () async {
           mockClient.headObjectResponse = http.Response('', 200);
@@ -105,7 +105,7 @@ void main() {
       );
 
       test(
-        'when deleting it '
+        'when deleting it, '
         'then it calls deleteObject on the client',
         () async {
           mockClient.deleteObjectResponse = http.Response('', 204);
@@ -117,7 +117,7 @@ void main() {
       );
 
       test(
-        'when verifying direct file upload '
+        'when verifying direct file upload, '
         'then it returns true',
         () async {
           mockClient.headObjectResponse = http.Response('', 200);
@@ -132,9 +132,9 @@ void main() {
       );
     });
 
-    group('Given a missing file', () {
+    group('Given a missing file,', () {
       test(
-        'when retrieving it '
+        'when retrieving it, '
         'then it returns null',
         () async {
           mockClient.getObjectResponse = http.Response('Not Found', 404);
@@ -146,7 +146,7 @@ void main() {
       );
 
       test(
-        'when checking if it exists '
+        'when checking if it exists, '
         'then it returns false',
         () async {
           mockClient.headObjectResponse = http.Response('', 404);
@@ -158,7 +158,7 @@ void main() {
       );
 
       test(
-        'when getting its public URL '
+        'when getting its public URL, '
         'then it returns null',
         () async {
           mockClient.headObjectResponse = http.Response('', 404);
@@ -170,7 +170,7 @@ void main() {
       );
 
       test(
-        'when verifying direct file upload '
+        'when verifying direct file upload, '
         'then it returns false',
         () async {
           mockClient.headObjectResponse = http.Response('', 404);
@@ -184,9 +184,9 @@ void main() {
       );
     });
 
-    group('Given a direct upload description request', () {
+    group('Given a direct upload description request,', () {
       test(
-        'when creating it '
+        'when creating it, '
         'then it delegates to the upload strategy',
         () async {
           mockUploadStrategy.directUploadDescriptionResult =
@@ -209,7 +209,7 @@ void main() {
       );
 
       test(
-        'when contentLength is within limit '
+        'when contentLength is within limit, '
         'then it forwards contentLength to the upload strategy',
         () async {
           mockUploadStrategy.directUploadDescriptionResult =
@@ -226,7 +226,7 @@ void main() {
       );
 
       test(
-        'when contentLength is not provided '
+        'when contentLength is not provided, '
         'then it forwards null contentLength to the upload strategy',
         () async {
           mockUploadStrategy.directUploadDescriptionResult =
@@ -241,7 +241,7 @@ void main() {
       );
 
       test(
-        'when contentLength exceeds maxFileSize '
+        'when contentLength exceeds maxFileSize, '
         'then it throws CloudStorageException',
         () async {
           expect(
@@ -256,7 +256,7 @@ void main() {
       );
 
       test(
-        'when contentLength equals maxFileSize '
+        'when contentLength equals maxFileSize, '
         'then it succeeds',
         () async {
           mockUploadStrategy.directUploadDescriptionResult =
@@ -276,8 +276,8 @@ void main() {
   });
 
   test(
-    'Given a TestableS3CompatCloudStorage with custom endpoints '
-    'when getting public URL '
+    'Given a TestableS3CompatCloudStorage with custom endpoints, '
+    'when getting public URL, '
     'then it produces correct custom URL format',
     () async {
       final mockClient = MockS3Client();

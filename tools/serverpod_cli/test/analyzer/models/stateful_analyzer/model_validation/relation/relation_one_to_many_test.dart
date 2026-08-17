@@ -9,8 +9,8 @@ import '../../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
-  group('Given a class with a one to many relation', () {
-    var models = [
+  group('Given a class with a one to many relation,', () {
+    late var models = [
       ModelSourceBuilder().withFileName('employee').withYaml(
         '''
         class: Employee
@@ -29,18 +29,20 @@ void main() {
       ).build(),
     ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
+    late var collector = CodeGenerationCollector();
+    late StatefulAnalyzer analyzer = StatefulAnalyzer(
       config,
       models,
       onErrorsCollector(collector),
     );
-    var definitions = analyzer.validateAll();
-    var companyDefinition = definitions.whereType<ClassDefinition>().firstWhere(
-      (d) => d.className == 'Company',
-    );
+    late var definitions = analyzer.validateAll();
+    late var companyDefinition = definitions
+        .whereType<ClassDefinition>()
+        .firstWhere(
+          (d) => d.className == 'Company',
+        );
 
-    var employeeDefinition = definitions
+    late var employeeDefinition = definitions
         .whereType<ClassDefinition>()
         .firstWhere((d) => d.className == 'Employee');
 
@@ -58,7 +60,7 @@ void main() {
       );
     }, skip: errors.isNotEmpty);
 
-    var relation = companyDefinition.findField('employees')?.relation;
+    late var relation = companyDefinition.findField('employees')?.relation;
     test(
       'then the reference field is set on the list relation.',
       () {
@@ -155,9 +157,9 @@ void main() {
   });
 
   group(
-    'Given two classes with one to many relations defined without specifying a name',
+    'Given two classes with one to many relations defined without specifying a name,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withFileName('employee').withYaml(
           '''
         class: Employee
@@ -176,13 +178,13 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       var employeeDefinition = definitions.first as ClassDefinition;
       var companyDefinition = definitions.last as ClassDefinition;
@@ -282,7 +284,8 @@ void main() {
   );
 
   test(
-    'Given a class with a one to many relation where the relation ship is ambiguous then an error is collected that the reference cannot be resolved.',
+    'Given a class with a one to many relation where the relation ship is ambiguous, '
+    'then an error is collected that the reference cannot be resolved.',
     () {
       var models = [
         ModelSourceBuilder().withFileName('employee').withYaml(
@@ -328,9 +331,9 @@ void main() {
   );
 
   group(
-    'Given a class with a one to many relation where the relationship is only named on one side',
+    'Given a class with a one to many relation where the relationship is only named on one side,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withFileName('employee').withYaml(
           '''
         class: Employee
@@ -349,8 +352,8 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
@@ -377,9 +380,9 @@ void main() {
   );
 
   group(
-    'Given a class with a one to many relation where the relationship is named with a none string value',
+    'Given a class with a one to many relation where the relationship is named with a none string value,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withFileName('employee').withYaml(
           '''
         class: Employee
@@ -404,8 +407,8 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
@@ -431,8 +434,8 @@ void main() {
     },
   );
 
-  group('Given an implicit one to many relation', () {
-    var models = [
+  group('Given an implicit one to many relation,', () {
+    late var models = [
       ModelSourceBuilder().withFileName('employee').withYaml(
         '''
         class: Employee
@@ -451,13 +454,13 @@ void main() {
       ).build(),
     ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(
+    late var collector = CodeGenerationCollector();
+    late var analyzer = StatefulAnalyzer(
       config,
       models,
       onErrorsCollector(collector),
     );
-    var definitions = analyzer.validateAll();
+    late var definitions = analyzer.validateAll();
 
     var employeeDefinition = definitions.first as ClassDefinition;
     var companyDefinition = definitions.last as ClassDefinition;
@@ -466,7 +469,7 @@ void main() {
       expect(collector.errors, isEmpty);
     });
 
-    var relation = companyDefinition.findField('employees')?.relation;
+    late var relation = companyDefinition.findField('employees')?.relation;
     test('then the reference field is set on the list relation.', () {
       expect(relation.runtimeType, ListRelationDefinition);
       expect(
@@ -490,7 +493,7 @@ void main() {
       expect(field, isNotNull);
     });
 
-    var foreignKeyRelation = employeeDefinition
+    late var foreignKeyRelation = employeeDefinition
         .findField('_companyEmployeesCompanyId')
         ?.relation;
     test('then the employee relation is set', () {
@@ -529,9 +532,9 @@ void main() {
   });
 
   group(
-    'Given an implicit one to many relation with many table including underscores',
+    'Given an implicit one to many relation with many table including underscores,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withFileName('employee').withYaml(
           '''
         class: Employee
@@ -550,13 +553,13 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       var employeeDefinition = definitions.first as ClassDefinition;
       var companyDefinition = definitions.last as ClassDefinition;
@@ -565,7 +568,7 @@ void main() {
         expect(collector.errors, isEmpty);
       });
 
-      var relation = companyDefinition.findField('employees')?.relation;
+      late var relation = companyDefinition.findField('employees')?.relation;
       test(
         'then the table name in the reference field on the list relation is converted to camel case.',
         () {
@@ -604,9 +607,10 @@ void main() {
   );
 
   group(
-    'Given a named list relation model ordered before the primary key model, when parsing the models',
+    'Given a named list relation model ordered before the primary key model, '
+    'when parsing the models,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withFileName('customer').withYaml(
           '''
         class: Customer
@@ -628,20 +632,22 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late StatefulAnalyzer analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
-      var customerDefinition = definitions
+      late var definitions = analyzer.validateAll();
+      late var customerDefinition = definitions
           .whereType<ClassDefinition>()
           .firstWhere((d) => d.className == 'Customer');
 
-      var orderDefinition = definitions.whereType<ClassDefinition>().firstWhere(
-        (d) => d.className == 'Order',
-      );
+      late var orderDefinition = definitions
+          .whereType<ClassDefinition>()
+          .firstWhere(
+            (d) => d.className == 'Order',
+          );
 
       var errors = collector.errors;
 
@@ -653,7 +659,7 @@ void main() {
         expect(customerDefinition.findField('orders'), isNotNull);
       });
 
-      var relation = customerDefinition.findField('orders')?.relation;
+      late var relation = customerDefinition.findField('orders')?.relation;
 
       test('then orders is list relation', () {
         expect(relation.runtimeType, ListRelationDefinition);
@@ -713,9 +719,10 @@ void main() {
   );
 
   group(
-    'Given an unnamed list relation model linked to another model with an unname object relation, when parsing the models',
+    'Given an unnamed list relation model linked to another model with an unname object relation, '
+    'when parsing the models,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withFileName('customer').withYaml(
           '''
         class: Customer
@@ -737,16 +744,18 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late StatefulAnalyzer analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
-      var classDefinition = definitions.whereType<ClassDefinition>().firstWhere(
-        (d) => d.className == 'Customer',
-      );
+      late var definitions = analyzer.validateAll();
+      late var classDefinition = definitions
+          .whereType<ClassDefinition>()
+          .firstWhere(
+            (d) => d.className == 'Customer',
+          );
 
       var errors = collector.errors;
 
@@ -778,8 +787,8 @@ void main() {
     },
   );
 
-  group('Given a class with a one to many relation on a foreign key field', () {
-    var models = [
+  group('Given a class with a one to many relation on a foreign key field,', () {
+    late var models = [
       ModelSourceBuilder().withFileName('employee').withYaml(
         '''
         class: Employee
@@ -798,19 +807,21 @@ void main() {
       ).build(),
     ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
+    late var collector = CodeGenerationCollector();
+    late StatefulAnalyzer analyzer = StatefulAnalyzer(
       config,
       models,
       onErrorsCollector(collector),
     );
-    var definitions = analyzer.validateAll();
-    var employeeDefinition = definitions
+    late var definitions = analyzer.validateAll();
+    late var employeeDefinition = definitions
         .whereType<ClassDefinition>()
         .firstWhere((d) => d.className == 'Employee');
-    var companyDefinition = definitions.whereType<ClassDefinition>().firstWhere(
-      (d) => d.className == 'Company',
-    );
+    late var companyDefinition = definitions
+        .whereType<ClassDefinition>()
+        .firstWhere(
+          (d) => d.className == 'Company',
+        );
 
     var errors = collector.errors;
 
@@ -847,7 +858,7 @@ void main() {
       },
     );
 
-    var relation = companyDefinition.findField('employees')?.relation;
+    late var relation = companyDefinition.findField('employees')?.relation;
 
     test('then the company relation is set', () {
       expect(relation?.name, 'company_employees');

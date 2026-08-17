@@ -3,7 +3,7 @@ import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given nested relations when building shallow include sql query', () {
+  group('Given nested relations, when building shallow include sql query,', () {
     test('then query only joins what is included.', () {
       var query = SelectQueryBuilder(table: Citizen.t)
           .withSelectFields(Citizen.t.columns)

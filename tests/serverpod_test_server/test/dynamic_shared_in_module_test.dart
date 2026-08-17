@@ -13,8 +13,8 @@ void main() {
   group(
     'Given a module model with a dynamic field and a shared model as data,',
     () {
-      final sharedModel = shared.SharedModel(name: 'test', data: 42);
-      final model = module.DynamicOnModule(
+      late final sharedModel = shared.SharedModel(name: 'test', data: 42);
+      late final model = module.DynamicOnModule(
         name: 'test',
         data: sharedModel,
       );

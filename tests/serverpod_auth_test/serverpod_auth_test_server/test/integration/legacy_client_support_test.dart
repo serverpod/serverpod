@@ -61,7 +61,8 @@ void main() {
       });
 
       test(
-        'when authenticating with correct credentials then returns success with session key.',
+        'when authenticating with correct credentials, '
+        'then returns success with session key.',
         () async {
           final legacyClient = _createLegacyClient(sessionBuilder);
           final result =
@@ -82,7 +83,8 @@ void main() {
       );
 
       test(
-        'when authenticating with wrong password then returns invalidCredentials.',
+        'when authenticating with wrong password, '
+        'then returns invalidCredentials.',
         () async {
           final legacyClient = _createLegacyClient(sessionBuilder);
           final result =
@@ -104,7 +106,8 @@ void main() {
       );
 
       test(
-        'when authenticating with non-existent email then returns invalidCredentials.',
+        'when authenticating with non-existent email, '
+        'then returns invalidCredentials.',
         () async {
           final legacyClient = _createLegacyClient(sessionBuilder);
           final result =
@@ -172,7 +175,7 @@ void main() {
       });
 
       test(
-        'when validating the legacy session token then it is valid.',
+        'when validating the legacy session token, then it is valid.',
         () async {
           final authKeyProvider = MutableAuthKeyProvider();
           final legacyClient = _createLegacyClient(
@@ -193,7 +196,7 @@ void main() {
       );
 
       test(
-        'when validating the token then the user identifier matches.',
+        'when validating the token, then the user identifier matches.',
         () async {
           final authKeyProvider = MutableAuthKeyProvider();
           final legacyClient = _createLegacyClient(
@@ -214,7 +217,7 @@ void main() {
       );
 
       test(
-        'when changing full name via legacy user endpoint then it is updated.',
+        'when changing full name via legacy user endpoint, then it is updated.',
         () async {
           final authKeyProvider = MutableAuthKeyProvider();
           final legacyClient = _createLegacyClient(
@@ -240,7 +243,7 @@ void main() {
       );
 
       test(
-        'when revoking the token then it becomes invalid.',
+        'when revoking the token, then it becomes invalid.',
         () async {
           final authKeyProvider = MutableAuthKeyProvider();
           final legacyClient = _createLegacyClient(
@@ -336,7 +339,7 @@ void main() {
       });
 
       test(
-        'when revoking all tokens then all become invalid.',
+        'when revoking all tokens, then all become invalid.',
         () async {
           await legacy_auth.Caller(legacyClient1).status.signOutAllDevices();
 
@@ -410,7 +413,7 @@ void main() {
       });
 
       test(
-        'when authenticating via legacy endpoint then returns internalError.',
+        'when authenticating via legacy endpoint, then returns internalError.',
         () async {
           final legacyClient = _createLegacyClient(sessionBuilder);
           final result =
@@ -438,7 +441,7 @@ void main() {
       _configurePublicLegacySupport(sessionBuilder);
 
       test(
-        'when calling createAccountRequest then returns false.',
+        'when calling createAccountRequest, then returns false.',
         () async {
           final legacyClient = _createLegacyClient(sessionBuilder);
           final result = await legacy_auth.Caller(legacyClient).email
@@ -453,7 +456,7 @@ void main() {
       );
 
       test(
-        'when calling changePassword then returns false.',
+        'when calling changePassword, then returns false.',
         () async {
           final legacyClient = _createLegacyClient(sessionBuilder);
           final result = await legacyClient.modules.auth.email.changePassword(
@@ -466,7 +469,7 @@ void main() {
       );
 
       test(
-        'when calling initiatePasswordReset then returns false.',
+        'when calling initiatePasswordReset, then returns false.',
         () async {
           final legacyClient = _createLegacyClient(sessionBuilder);
           final result = await legacy_auth.Caller(legacyClient).email
@@ -487,7 +490,8 @@ void main() {
       _configurePublicLegacySupport(sessionBuilder);
 
       test(
-        'when calling Google authenticate then it is handled by non-legacy endpoint.',
+        'when calling Google authenticate, '
+        'then it is handled by non-legacy endpoint.',
         () async {
           final legacyClient = _createLegacyClient(sessionBuilder);
           await expectLater(
@@ -500,7 +504,8 @@ void main() {
       );
 
       test(
-        'when calling Firebase authenticate then it is handled by non-legacy endpoint.',
+        'when calling Firebase authenticate, '
+        'then it is handled by non-legacy endpoint.',
         () async {
           final legacyClient = _createLegacyClient(sessionBuilder);
           final result = await legacyClient.modules.auth.firebase.authenticate(
@@ -516,7 +521,8 @@ void main() {
       );
 
       test(
-        'when calling Admin getUserInfo then it is handled by non-legacy endpoint.',
+        'when calling Admin getUserInfo, '
+        'then it is handled by non-legacy endpoint.',
         () async {
           final legacyClient = _createLegacyClient(sessionBuilder);
           await expectLater(
@@ -614,7 +620,7 @@ void main() {
       });
 
       test(
-        'when calling getUserInfo then it returns mapped user data.',
+        'when calling getUserInfo, then it returns mapped user data.',
         () async {
           final userInfo = await adminClient
               .modules
@@ -630,7 +636,7 @@ void main() {
       );
 
       test(
-        'when blocking a user then authentication fails with blocked.',
+        'when blocking a user, then authentication fails with blocked.',
         () async {
           await adminClient.modules.serverpod_auth_bridge.legacyAdmin.blockUser(
             targetLegacyUserId,
@@ -659,7 +665,7 @@ void main() {
       );
 
       test(
-        'when unblocking a user then authentication succeeds again.',
+        'when unblocking a user, then authentication succeeds again.',
         () async {
           await adminClient.modules.serverpod_auth_bridge.legacyAdmin.blockUser(
             targetLegacyUserId,

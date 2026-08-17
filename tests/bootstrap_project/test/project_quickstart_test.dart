@@ -26,7 +26,7 @@ void main() async {
   });
 
   group(
-    'Given a clean state',
+    'Given a clean state,',
     () {
       var (commandRoot: _, :projectName) = createRandomProjectName(tempPath);
       final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
@@ -34,7 +34,7 @@ void main() async {
       );
 
       group(
-        'when creating a new project with quickstart command',
+        'when creating a new project with quickstart command,',
         () {
           setUpAll(() async {
             var process = await startServerpodCli(
@@ -68,7 +68,7 @@ void main() async {
           });
 
           group(
-            'then the server project',
+            'then the server project,',
             () {
               test('folder is created', () {
                 expect(
@@ -721,7 +721,7 @@ void main() async {
           });
 
           group(
-            'then the .vscode directory',
+            'then the .vscode directory,',
             () {
               test('has launch.json', () {
                 expect(

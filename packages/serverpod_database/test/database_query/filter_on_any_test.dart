@@ -16,9 +16,9 @@ void main() {
   ]).build();
   var manyRelation = ManyRelationBuilder(relationTable).build();
 
-  group('Given SelectQueryBuilder', () {
-    group('when filtering on any many relation', () {
-      var query = SelectQueryBuilder(
+  group('Given SelectQueryBuilder,', () {
+    group('when filtering on any many relation,', () {
+      late var query = SelectQueryBuilder(
         table: citizenTable,
       ).withWhere(manyRelation.any()).build();
       test('then a sub query is created for the filter.', () {
@@ -39,8 +39,8 @@ void main() {
       });
     });
 
-    group('when filtering on NOT any many relation', () {
-      var query = SelectQueryBuilder(
+    group('when filtering on NOT any many relation,', () {
+      late var query = SelectQueryBuilder(
         table: citizenTable,
       ).withWhere(~manyRelation.any()).build();
 
@@ -57,8 +57,8 @@ void main() {
       });
     });
 
-    group('when filtering on filtered any many relation', () {
-      var query = SelectQueryBuilder(
+    group('when filtering on filtered any many relation,', () {
+      late var query = SelectQueryBuilder(
         table: citizenTable,
       ).withWhere(manyRelation.any((t) => t.id.equals(1))).build();
 
@@ -72,9 +72,10 @@ void main() {
       });
     });
 
-    group('when filtering on multiple any many relation', () {
-      var where = manyRelation.any((t) => t.id.equals(1)) & manyRelation.any();
-      var query = SelectQueryBuilder(
+    group('when filtering on multiple any many relation,', () {
+      late var where =
+          manyRelation.any((t) => t.id.equals(1)) & manyRelation.any();
+      late var query = SelectQueryBuilder(
         table: citizenTable,
       ).withWhere(where).build();
 
@@ -119,9 +120,9 @@ void main() {
     });
   });
 
-  group('Given DeleteQueryBuilder', () {
-    group('when filtering on any many relation', () {
-      var query = DeleteQueryBuilder(
+  group('Given DeleteQueryBuilder,', () {
+    group('when filtering on any many relation,', () {
+      late var query = DeleteQueryBuilder(
         table: citizenTable,
       ).withWhere(manyRelation.any()).build();
       test('then a sub query is created for the filter.', () {
@@ -142,8 +143,8 @@ void main() {
       });
     });
 
-    group('when filtering on filtered any many relation', () {
-      var query = DeleteQueryBuilder(
+    group('when filtering on filtered any many relation,', () {
+      late var query = DeleteQueryBuilder(
         table: citizenTable,
       ).withWhere(manyRelation.any((t) => t.id.equals(1))).build();
 
@@ -157,9 +158,10 @@ void main() {
       });
     });
 
-    group('when filtering on multiple any many relation', () {
-      var where = manyRelation.any((t) => t.id.equals(1)) & manyRelation.any();
-      var query = DeleteQueryBuilder(
+    group('when filtering on multiple any many relation,', () {
+      late var where =
+          manyRelation.any((t) => t.id.equals(1)) & manyRelation.any();
+      late var query = DeleteQueryBuilder(
         table: citizenTable,
       ).withWhere(where).build();
 

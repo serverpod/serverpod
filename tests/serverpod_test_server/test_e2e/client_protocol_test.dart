@@ -9,7 +9,7 @@ void main() {
   var client = Client(serverUrl)..authKeyProvider = TestAuthKeyManager();
 
   test(
-    'when calling method with positional arg then echoes the value',
+    'when calling method with positional arg, then echoes the value',
     () async {
       final result = await client.methodSignaturePermutations.echoPositionalArg(
         'PositionalArg',
@@ -18,7 +18,7 @@ void main() {
     },
   );
 
-  test('when calling method with named arg then echoes the value', () async {
+  test('when calling method with named arg, then echoes the value', () async {
     final result = await client.methodSignaturePermutations.echoNamedArg(
       string: 'NamedArg',
     );
@@ -26,7 +26,8 @@ void main() {
   });
 
   test(
-    'when calling method with a nullable named arg with value then echoes value',
+    'when calling method with a nullable named arg with value, '
+    'then echoes value',
     () async {
       final result = await client.methodSignaturePermutations
           .echoNullableNamedArg(string: 'NamedArg');
@@ -35,7 +36,8 @@ void main() {
   );
 
   test(
-    'when calling method with a nullable named arg without passing value then echoes null',
+    'when calling method with a nullable named arg without passing value, '
+    'then echoes null',
     () async {
       final result = await client.methodSignaturePermutations
           .echoNullableNamedArg();
@@ -43,7 +45,8 @@ void main() {
     },
   );
 
-  test('when calling method with optional arg then echoes the value', () async {
+  test('when calling method with optional arg, '
+      'then echoes the value', () async {
     final result = await client.methodSignaturePermutations.echoOptionalArg(
       'OptionalArg',
     );
@@ -51,7 +54,7 @@ void main() {
   });
 
   test(
-    'when calling method with optional arg without value then echoes null',
+    'when calling method with optional arg without value, then echoes null',
     () async {
       final result = await client.methodSignaturePermutations.echoOptionalArg();
       expect(result, isNull);
@@ -59,7 +62,7 @@ void main() {
   );
 
   test(
-    'when calling method with positional and named args then echoes args',
+    'when calling method with positional and named args, then echoes args',
     () async {
       final result = await client.methodSignaturePermutations
           .echoPositionalAndNamedArgs(
@@ -72,7 +75,8 @@ void main() {
   );
 
   test(
-    'when calling method with positional and nullable named args with named arg then echoes args',
+    'when calling method with positional and nullable named args with named arg, '
+    'then echoes args',
     () async {
       final result = await client.methodSignaturePermutations
           .echoPositionalAndNullableNamedArgs(
@@ -85,7 +89,8 @@ void main() {
   );
 
   test(
-    'when calling method with positional and named args without passing named arg then echoes null',
+    'when calling method with positional and named args without passing named arg, '
+    'then echoes null',
     () async {
       final result = await client.methodSignaturePermutations
           .echoPositionalAndNullableNamedArgs(
@@ -97,7 +102,8 @@ void main() {
   );
 
   test(
-    'when calling method with positional and optional args then echoes both args',
+    'when calling method with positional and optional args, '
+    'then echoes both args',
     () async {
       final result = await client.methodSignaturePermutations
           .echoPositionalAndOptionalArgs(
@@ -110,7 +116,8 @@ void main() {
   );
 
   test(
-    'when calling method with positional and optional args without passing value then echoes null',
+    'when calling method with positional and optional args without passing value, '
+    'then echoes null',
     () async {
       final result = await client.methodSignaturePermutations
           .echoPositionalAndOptionalArgs(
@@ -122,7 +129,7 @@ void main() {
   );
 
   test(
-    'when calling method with named stream arg then echoes stream',
+    'when calling method with named stream arg, then echoes stream',
     () async {
       final result = await client.methodSignaturePermutations
           .echoNamedArgStream(
@@ -135,7 +142,7 @@ void main() {
   );
 
   test(
-    'when calling method with named stream arg then echoes list future',
+    'when calling method with named stream arg, then echoes list future',
     () async {
       final result = await client.methodSignaturePermutations
           .echoNamedArgStreamAsFuture(
@@ -147,7 +154,7 @@ void main() {
   );
 
   test(
-    'when calling method with positional stream arg then echoes stream',
+    'when calling method with positional stream arg, then echoes stream',
     () async {
       final result = await client.methodSignaturePermutations
           .echoPositionalArgStream(
@@ -160,7 +167,7 @@ void main() {
   );
 
   test(
-    'when calling method with named stream arg then echoes list future',
+    'when calling method with named stream arg, then echoes list future',
     () async {
       final result = await client.methodSignaturePermutations
           .echoPositionalArgStreamAsFuture(

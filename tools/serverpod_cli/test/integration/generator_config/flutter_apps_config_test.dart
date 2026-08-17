@@ -21,7 +21,7 @@ List<FlutterAppConfig> _loadApps() {
 }
 
 void main() {
-  group('Given a server pubspec with two serverpod/flutter_apps entries', () {
+  group('Given a server pubspec with two serverpod/flutter_apps entries,', () {
     setUpAll(() async {
       var projectDir = _createProject(
         pubspecServerpodSection: '''
@@ -38,7 +38,7 @@ serverpod:
     });
 
     test(
-      'when loading flutter apps '
+      'when loading flutter apps, '
       'then two FlutterAppConfigs are returned in order',
       () {
         final apps = _loadApps();
@@ -60,7 +60,7 @@ serverpod:
     );
   });
 
-  group('Given a server pubspec with flutter_apps and auto_launch flags', () {
+  group('Given a server pubspec with flutter_apps and auto_launch flags,', () {
     setUpAll(() async {
       var projectDir = _createProject(
         pubspecServerpodSection: '''
@@ -78,7 +78,7 @@ serverpod:
     });
 
     test(
-      'when loading flutter apps '
+      'when loading flutter apps, '
       'then auto_launch is read per app and defaults to false',
       () {
         final apps = _loadApps();
@@ -91,7 +91,7 @@ serverpod:
     );
   });
 
-  group('Given a server pubspec with flutter_apps displayName', () {
+  group('Given a server pubspec with flutter_apps displayName,', () {
     setUpAll(() async {
       var projectDir = _createProject(
         pubspecServerpodSection: '''
@@ -107,7 +107,7 @@ serverpod:
     });
 
     test(
-      'when loading flutter apps '
+      'when loading flutter apps, '
       'then displayName is used as the app name',
       () {
         final apps = _loadApps();
@@ -119,7 +119,7 @@ serverpod:
     );
   });
 
-  group('Given a server pubspec without flutter_apps displayName', () {
+  group('Given a server pubspec without flutter_apps displayName,', () {
     setUpAll(() async {
       var projectDir = _createProject(
         pubspecServerpodSection: '''
@@ -134,7 +134,7 @@ serverpod:
     });
 
     test(
-      'when loading flutter apps '
+      'when loading flutter apps, '
       'then the app id is used as the app name',
       () {
         final apps = _loadApps();
@@ -145,7 +145,7 @@ serverpod:
     );
   });
 
-  group('Given a server pubspec with an empty displayName', () {
+  group('Given a server pubspec with an empty displayName,', () {
     setUpAll(() async {
       var projectDir = _createProject(
         pubspecServerpodSection: '''
@@ -160,7 +160,7 @@ serverpod:
     });
 
     test(
-      'when loading flutter apps '
+      'when loading flutter apps, '
       'then SourceSpanFormatException is thrown',
       () {
         expect(
@@ -179,7 +179,7 @@ serverpod:
     );
   });
 
-  group('Given a server pubspec with a non-string displayName', () {
+  group('Given a server pubspec with a non-string displayName,', () {
     setUpAll(() async {
       var projectDir = _createProject(
         pubspecServerpodSection: '''
@@ -194,7 +194,7 @@ serverpod:
     });
 
     test(
-      'when loading flutter apps '
+      'when loading flutter apps, '
       'then SourceSpanFormatException is thrown',
       () {
         expect(
@@ -214,7 +214,7 @@ serverpod:
   });
 
   group(
-    'Given a server pubspec with flutter_apps device and forwarded options',
+    'Given a server pubspec with flutter_apps device and forwarded options,',
     () {
       setUpAll(() async {
         var projectDir = _createProject(
@@ -240,7 +240,7 @@ serverpod:
       });
 
       test(
-        'when loading flutter apps '
+        'when loading flutter apps, '
         'then device is read and non-reserved properties are forwarded to flutter run',
         () {
           final apps = _loadApps();
@@ -266,7 +266,7 @@ serverpod:
     },
   );
 
-  group('Given a server pubspec with flutter_apps dart-define as a map', () {
+  group('Given a server pubspec with flutter_apps dart-define as a map,', () {
     setUpAll(() async {
       var projectDir = _createProject(
         pubspecServerpodSection: '''
@@ -284,7 +284,7 @@ serverpod:
     });
 
     test(
-      'when loading flutter apps '
+      'when loading flutter apps, '
       'then map values are forwarded like list items',
       () {
         final apps = _loadApps();
@@ -297,7 +297,7 @@ serverpod:
     );
   });
 
-  group('Given a server pubspec with a non-string device', () {
+  group('Given a server pubspec with a non-string device,', () {
     setUpAll(() async {
       var projectDir = _createProject(
         pubspecServerpodSection: '''
@@ -312,7 +312,7 @@ serverpod:
     });
 
     test(
-      'when loading flutter apps '
+      'when loading flutter apps, '
       'then SourceSpanFormatException is thrown',
       () {
         expect(
@@ -330,7 +330,7 @@ serverpod:
     );
   });
 
-  group('Given a server pubspec with a non-boolean auto_launch', () {
+  group('Given a server pubspec with a non-boolean auto_launch,', () {
     setUpAll(() async {
       var projectDir = _createProject(
         pubspecServerpodSection: '''
@@ -345,7 +345,7 @@ serverpod:
     });
 
     test(
-      'when loading flutter apps '
+      'when loading flutter apps, '
       'then SourceSpanFormatException is thrown',
       () {
         expect(
@@ -364,7 +364,7 @@ serverpod:
   });
 
   group(
-    'Given a server pubspec without flutter_apps and an existing default Flutter package',
+    'Given a server pubspec without flutter_apps and an existing default Flutter package,',
     () {
       setUpAll(() async {
         var projectDir = _createProject(includeDefaultFlutterApp: true);
@@ -372,7 +372,7 @@ serverpod:
       });
 
       test(
-        'when loading flutter apps '
+        'when loading flutter apps, '
         'then one synthesized FlutterAppConfig is returned',
         () {
           final apps = _loadApps();
@@ -387,7 +387,7 @@ serverpod:
       );
 
       test(
-        'when loading flutter apps '
+        'when loading flutter apps, '
         'then synthesized app pathParts resolve correctly',
         () {
           final apps = _loadApps();
@@ -403,7 +403,7 @@ serverpod:
   );
 
   group(
-    'Given a server pubspec without flutter_apps and no sibling Flutter package',
+    'Given a server pubspec without flutter_apps and no sibling Flutter package,',
     () {
       setUpAll(() async {
         var projectDir = _createProject(includeDefaultFlutterApp: false);
@@ -411,7 +411,7 @@ serverpod:
       });
 
       test(
-        'when loading flutter apps '
+        'when loading flutter apps, '
         'then the list is empty',
         () {
           expect(_loadApps(), isEmpty);
@@ -420,7 +420,7 @@ serverpod:
     },
   );
 
-  group('Given a server pubspec with a flutter_apps entry missing path', () {
+  group('Given a server pubspec with a flutter_apps entry missing path,', () {
     setUpAll(() async {
       var projectDir = _createProject(
         pubspecServerpodSection: '''
@@ -434,7 +434,7 @@ serverpod:
     });
 
     test(
-      'when loading flutter apps '
+      'when loading flutter apps, '
       'then SourceSpanFormatException is thrown',
       () {
         expect(
@@ -451,7 +451,7 @@ serverpod:
     );
   });
 
-  group('Given a server pubspec with flutter_apps that is not a map', () {
+  group('Given a server pubspec with flutter_apps that is not a map,', () {
     setUpAll(() async {
       var projectDir = _createProject(
         pubspecServerpodSection: '''
@@ -463,7 +463,7 @@ serverpod:
     });
 
     test(
-      'when loading flutter apps '
+      'when loading flutter apps, '
       'then SourceSpanFormatException is thrown',
       () {
         expect(
@@ -483,7 +483,7 @@ serverpod:
 
   test(
     'Given a simple flutter app id, '
-    'when formatFlutterAppDisplayName is called '
+    'when formatFlutterAppDisplayName is called, '
     'then the name is capitalized with " app" appended',
     () {
       expect(formatFlutterAppDisplayName('todo'), 'Todo app');
@@ -492,7 +492,7 @@ serverpod:
 
   test(
     'Given a flutter app id with underscores, '
-    'when formatFlutterAppDisplayName is called '
+    'when formatFlutterAppDisplayName is called, '
     'then underscores are replaced with spaces',
     () {
       expect(formatFlutterAppDisplayName('my_project'), 'My project app');
@@ -501,7 +501,7 @@ serverpod:
 
   test(
     'Given a flutter app id with mixed casing, '
-    'when formatFlutterAppDisplayName is called '
+    'when formatFlutterAppDisplayName is called, '
     'then only the first letter is capitalized',
     () {
       expect(formatFlutterAppDisplayName('adminPortal'), 'AdminPortal app');
@@ -510,7 +510,7 @@ serverpod:
 
   test(
     'Given a flutter app id that already ends with "_app", '
-    'when formatFlutterAppDisplayName is called '
+    'when formatFlutterAppDisplayName is called, '
     'then " app" is not appended again',
     () {
       expect(formatFlutterAppDisplayName('todo_app'), 'Todo app');
@@ -519,7 +519,7 @@ serverpod:
 
   test(
     'Given a flutter app id that already ends with "app", '
-    'when formatFlutterAppDisplayName is called '
+    'when formatFlutterAppDisplayName is called, '
     'then " app" is not appended again',
     () {
       expect(formatFlutterAppDisplayName('todoapp'), 'Todoapp');

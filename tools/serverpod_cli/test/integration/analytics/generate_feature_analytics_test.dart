@@ -8,7 +8,7 @@ import '../../test_util/analytics_helpers.dart';
 
 void main() {
   group(
-    'Given a project generated with every non-SQLite, non-future-call tag, ',
+    'Given a project generated with every non-SQLite, non-future-call tag,',
     () {
       late GenerateAnalyticsFixture fixture;
       late RecordingAnalytics recording;

@@ -12,7 +12,7 @@ final config = GeneratorConfigBuilder().withName(projectName).build();
 const generator = DartServerCodeGenerator();
 
 void main() {
-  group('Given a model with required nullable fields', () {
+  group('Given a model with required nullable fields,', () {
     test(
       'then constructor parameters are marked as required for nullable required fields',
       () {
@@ -77,7 +77,7 @@ void main() {
     );
   });
 
-  group('Given a exception with required nullable fields', () {
+  group('Given a exception with required nullable fields,', () {
     test(
       'then constructor parameters are marked as required for nullable required fields',
       () {

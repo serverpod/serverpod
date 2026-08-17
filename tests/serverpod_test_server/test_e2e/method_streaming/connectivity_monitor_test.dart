@@ -13,17 +13,18 @@ class TestConnectivityMonitor extends ConnectivityMonitor {
 
 void main() {
   group(
-    'Given client that disconnects on lost internet connection with an open streaming method connection',
+    'Given client that disconnects on lost internet connection with an open streaming method connection,',
     () {
-      var testConnectivityMonitor = TestConnectivityMonitor();
-      var client = Client(
+      late var testConnectivityMonitor = TestConnectivityMonitor();
+      late var client = Client(
         serverUrl,
         disconnectStreamsOnLostInternetConnection: true,
       )..authKeyProvider = TestAuthKeyManager();
 
       client.connectivityMonitor = testConnectivityMonitor;
       test(
-        'when connectivity monitor reports connection is lost then stream is closed with exception.',
+        'when connectivity monitor reports connection is lost, '
+        'then stream is closed with exception.',
         () async {
           var messageReceived = Completer();
           var streamErrorCompleter = Completer<Object>();
@@ -52,10 +53,10 @@ void main() {
   );
 
   group(
-    'Given client that does not disconnects on lost internet connection with an open streaming method connection',
+    'Given client that does not disconnects on lost internet connection with an open streaming method connection,',
     () {
-      var testConnectivityMonitor = TestConnectivityMonitor();
-      var client = Client(
+      late var testConnectivityMonitor = TestConnectivityMonitor();
+      late var client = Client(
         serverUrl,
         disconnectStreamsOnLostInternetConnection: false,
       )..authKeyProvider = TestAuthKeyManager();
@@ -64,7 +65,8 @@ void main() {
       tearDown(() => client.closeStreamingMethodConnections(exception: null));
 
       test(
-        'when connectivity monitor reports connection is lost then stream can still be used.',
+        'when connectivity monitor reports connection is lost, '
+        'then stream can still be used.',
         () async {
           var messageReceived = Completer();
           var inputStream = StreamController<int>();

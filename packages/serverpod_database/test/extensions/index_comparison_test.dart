@@ -6,9 +6,10 @@ import 'package:test/test.dart';
 void main() {
   ValueEncoder.set(const PostgresValueEncoder());
 
-  group('Given tables with different indexes', () {
+  group('Given tables with different indexes,', () {
     test(
-      'when an index is missing in the target table then mismatches include missing index',
+      'when an index is missing in the target table, '
+      'then mismatches include missing index',
       () {
         var tableA = TableDefinition(
           name: 'test_table',
@@ -99,7 +100,8 @@ void main() {
     );
 
     test(
-      'when indexes have different types then mismatches include index type mismatch',
+      'when indexes have different types, '
+      'then mismatches include index type mismatch',
       () {
         var tableA = TableDefinition(
           name: 'test_table',
@@ -171,7 +173,8 @@ void main() {
     );
 
     test(
-      'when indexes have different uniqueness then mismatches include index uniqueness mismatch',
+      'when indexes have different uniqueness, '
+      'then mismatches include index uniqueness mismatch',
       () {
         var tableA = TableDefinition(
           name: 'test_table',
@@ -243,7 +246,8 @@ void main() {
     );
 
     test(
-      'when indexes have different predicates then mismatches include index predicate mismatch',
+      'when indexes have different predicates, '
+      'then mismatches include index predicate mismatch',
       () {
         var tableA = TableDefinition(
           name: 'test_table',
@@ -317,7 +321,8 @@ void main() {
     );
 
     test(
-      'when indexes have different tablespaces then mismatches include index tablespace mismatch',
+      'when indexes have different tablespaces, '
+      'then mismatches include index tablespace mismatch',
       () {
         var tableA = TableDefinition(
           name: 'test_table',
@@ -391,9 +396,10 @@ void main() {
     );
   });
 
-  group('Given tables with vector indexes', () {
+  group('Given tables with vector indexes,', () {
     test(
-      'when vector indexes have different distance functions then mismatches include distance function mismatch.',
+      'when vector indexes have different distance functions, '
+      'then mismatches include distance function mismatch.',
       () {
         var tableA = TableDefinition(
           name: 'vector_table',
@@ -469,7 +475,8 @@ void main() {
     );
 
     test(
-      'when vector indexes have different parameters then mismatches include parameters mismatch.',
+      'when vector indexes have different parameters, '
+      'then mismatches include parameters mismatch.',
       () {
         var tableA = TableDefinition(
           name: 'vector_table',
@@ -550,7 +557,8 @@ void main() {
     );
 
     test(
-      'when vector indexes have missing parameters then mismatches include parameters mismatch.',
+      'when vector indexes have missing parameters, '
+      'then mismatches include parameters mismatch.',
       () {
         var tableA = TableDefinition(
           name: 'vector_table',
@@ -630,7 +638,8 @@ void main() {
     );
 
     test(
-      'when one index is vector type and the other is not then mismatches include type mismatch.',
+      'when one index is vector type and the other is not, '
+      'then mismatches include type mismatch.',
       () {
         var tableA = TableDefinition(
           name: 'vector_table',
@@ -708,7 +717,7 @@ void main() {
     );
 
     test(
-      'when vector indexes are identical then no mismatches are reported.',
+      'when vector indexes are identical, then no mismatches are reported.',
       () {
         var tableA = TableDefinition(
           name: 'vector_table',
@@ -781,7 +790,8 @@ void main() {
     );
 
     test(
-      'when vector indexes have additional parameters then mismatches include parameters mismatch.',
+      'when vector indexes have additional parameters, '
+      'then mismatches include parameters mismatch.',
       () {
         var tableA = TableDefinition(
           name: 'vector_table',
@@ -858,7 +868,8 @@ void main() {
     );
 
     test(
-      'when vector indexes have different types but same distance function then mismatches include type mismatch.',
+      'when vector indexes have different types but same distance function, '
+      'then mismatches include type mismatch.',
       () {
         var tableA = TableDefinition(
           name: 'vector_table',
@@ -934,7 +945,8 @@ void main() {
     );
 
     test(
-      'when vector indexes have different distance functions then mismatches include vector distance function mismatch.',
+      'when vector indexes have different distance functions, '
+      'then mismatches include vector distance function mismatch.',
       () {
         var tableA = TableDefinition(
           name: 'vector_table',
@@ -1010,9 +1022,10 @@ void main() {
     );
   });
 
-  group('Given tables with half vector indexes', () {
+  group('Given tables with half vector indexes,', () {
     test(
-      'when half vector indexes have different distance functions then mismatches include distance function mismatch.',
+      'when half vector indexes have different distance functions, '
+      'then mismatches include distance function mismatch.',
       () {
         var tableA = TableDefinition(
           name: 'half_vector_table',
@@ -1088,7 +1101,8 @@ void main() {
     );
 
     test(
-      'when half vector indexes have different parameters then mismatches include parameters mismatch.',
+      'when half vector indexes have different parameters, '
+      'then mismatches include parameters mismatch.',
       () {
         var tableA = TableDefinition(
           name: 'half_vector_table',
@@ -1169,7 +1183,8 @@ void main() {
     );
 
     test(
-      'when half vector indexes are identical then no mismatches are reported.',
+      'when half vector indexes are identical, '
+      'then no mismatches are reported.',
       () {
         var tableA = TableDefinition(
           name: 'half_vector_table',
@@ -1242,9 +1257,10 @@ void main() {
     );
   });
 
-  group('Given tables with sparse vector indexes', () {
+  group('Given tables with sparse vector indexes,', () {
     test(
-      'when sparse vector indexes have different distance functions then mismatches include distance function mismatch.',
+      'when sparse vector indexes have different distance functions, '
+      'then mismatches include distance function mismatch.',
       () {
         var tableA = TableDefinition(
           name: 'sparse_vector_table',
@@ -1320,7 +1336,8 @@ void main() {
     );
 
     test(
-      'when sparse vector indexes have different parameters then mismatches include parameters mismatch.',
+      'when sparse vector indexes have different parameters, '
+      'then mismatches include parameters mismatch.',
       () {
         var tableA = TableDefinition(
           name: 'sparse_vector_table',
@@ -1401,7 +1418,8 @@ void main() {
     );
 
     test(
-      'when sparse vector indexes are identical then no mismatches are reported.',
+      'when sparse vector indexes are identical, '
+      'then no mismatches are reported.',
       () {
         var tableA = TableDefinition(
           name: 'sparse_vector_table',
@@ -1474,9 +1492,10 @@ void main() {
     );
   });
 
-  group('Given tables with bit vector indexes', () {
+  group('Given tables with bit vector indexes,', () {
     test(
-      'when bit vector indexes have different distance functions then mismatches include distance function mismatch.',
+      'when bit vector indexes have different distance functions, '
+      'then mismatches include distance function mismatch.',
       () {
         var tableA = TableDefinition(
           name: 'bit_table',
@@ -1552,7 +1571,8 @@ void main() {
     );
 
     test(
-      'when bit vector indexes have different parameters then mismatches include parameters mismatch.',
+      'when bit vector indexes have different parameters, '
+      'then mismatches include parameters mismatch.',
       () {
         var tableA = TableDefinition(
           name: 'bit_table',
@@ -1633,7 +1653,7 @@ void main() {
     );
 
     test(
-      'when bit vector indexes are identical then no mismatches are reported.',
+      'when bit vector indexes are identical, then no mismatches are reported.',
       () {
         var tableA = TableDefinition(
           name: 'bit_table',
@@ -1706,9 +1726,10 @@ void main() {
     );
   });
 
-  group('Given tables with gin indexes', () {
+  group('Given tables with gin indexes,', () {
     test(
-      'when gin indexes have different operator classes then mismatches include operator class mismatch.',
+      'when gin indexes have different operator classes, '
+      'then mismatches include operator class mismatch.',
       () {
         var tableA = TableDefinition(
           name: 'gin_table',
@@ -1782,7 +1803,8 @@ void main() {
     );
 
     test(
-      'when one index is gin type and the other is not then mismatches include type mismatch.',
+      'when one index is gin type and the other is not, '
+      'then mismatches include type mismatch.',
       () {
         var tableA = TableDefinition(
           name: 'gin_table',
@@ -1858,7 +1880,7 @@ void main() {
     );
 
     test(
-      'when gin indexes are identical then no mismatches are reported.',
+      'when gin indexes are identical, then no mismatches are reported.',
       () {
         var tableA = TableDefinition(
           name: 'gin_table',

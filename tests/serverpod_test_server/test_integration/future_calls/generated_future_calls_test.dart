@@ -10,7 +10,7 @@ import '../utils/future_call_manager_builder.dart';
 
 void main() {
   withServerpod(
-    'Given the generated futureCalls is initialized',
+    'Given the generated futureCalls is initialized,',
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, _) {
       late FutureCallManager futureCallManager;
@@ -44,7 +44,7 @@ void main() {
       });
 
       test(
-        'when scheduling a future call at specified time'
+        'when scheduling a future call at specified time, '
         'then a FutureCallEntry is added to the database with expected time',
         () async {
           final time = DateTime.now().toUtc();
@@ -64,7 +64,7 @@ void main() {
       );
 
       test(
-        'when scheduling a future call with a delay'
+        'when scheduling a future call with a delay, '
         'then a FutureCallEntry is added to the database with expected time',
         () async {
           final delay = Duration(milliseconds: 100);
@@ -86,7 +86,7 @@ void main() {
       );
 
       test(
-        'when scheduling a future call with an identifier at speficied time'
+        'when scheduling a future call with an identifier at speficied time, '
         'then a FutureCallEntry with same identifier is added to the database',
         () async {
           final identifier = 'lucky-id';
@@ -107,7 +107,7 @@ void main() {
       );
 
       test(
-        'when scheduling a future call with an identifier after a delay'
+        'when scheduling a future call with an identifier after a delay, '
         'then a FutureCallEntry with same identifier is added to the database',
         () async {
           final identifier = 'lucky-id';
@@ -128,7 +128,7 @@ void main() {
       );
 
       test(
-        'when a scheduled future call with an identifier is cancelled'
+        'when a scheduled future call with an identifier is cancelled, '
         'then the FutureCallEntry for that identifier is removed from the database',
         () async {
           final identifier = 'lucky-id';
@@ -157,7 +157,7 @@ void main() {
       );
 
       test(
-        'when scheduling a future call that does not require any parameter'
+        'when scheduling a future call that does not require any parameter, '
         'then a FutureCallEntry is added to the database',
         () async {
           final time = DateTime.now().toUtc();
@@ -174,7 +174,7 @@ void main() {
       );
 
       test(
-        'when scheduling a future call from a method named invoke '
+        'when scheduling a future call from a method named invoke, '
         'then a FutureCallEntry is added to the database',
         () async {
           final time = DateTime.now().toUtc();
@@ -196,7 +196,7 @@ void main() {
       );
 
       group(
-        'when scheduling a recurring future call with a valid cron expression',
+        'when scheduling a recurring future call with a valid cron expression,',
         () {
           final cronExpression = '0 0 1 1 *';
 
@@ -279,10 +279,10 @@ void main() {
       );
 
       group(
-        'when scheduling a recurring future call with interval',
+        'when scheduling a recurring future call with interval,',
         () {
-          final now = DateTime.now().toUtc();
-          final interval = Duration(minutes: 5);
+          late final now = DateTime.now().toUtc();
+          late final interval = Duration(minutes: 5);
           late List<FutureCallEntry> futureCallEntries;
 
           setUp(() async {

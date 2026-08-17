@@ -29,7 +29,7 @@ HealthCheckResult _fail({
 }
 
 void main() {
-  group('Given HealthResponse when alive() is called', () {
+  group('Given HealthResponse, when alive() is called,', () {
     late HealthResponse response;
 
     setUp(() {
@@ -65,7 +65,7 @@ void main() {
   });
 
   group(
-    'Given all passing results when HealthResponse.fromResults is called',
+    'Given all passing results, when HealthResponse.fromResults is called,',
     () {
       late List<HealthCheckResult> results;
       late HealthResponse response;
@@ -112,7 +112,7 @@ void main() {
   );
 
   group(
-    'Given one failing result when HealthResponse.fromResults is called',
+    'Given one failing result, when HealthResponse.fromResults is called,',
     () {
       late List<HealthCheckResult> results;
       late HealthResponse response;
@@ -148,7 +148,8 @@ void main() {
   );
 
   group(
-    'Given multiple failing results when HealthResponse.fromResults is called',
+    'Given multiple failing results, '
+    'when HealthResponse.fromResults is called,',
     () {
       late HealthResponse response;
 
@@ -179,7 +180,7 @@ void main() {
   );
 
   group(
-    'Given empty results when HealthResponse.fromResults is called',
+    'Given empty results, when HealthResponse.fromResults is called,',
     () {
       late HealthResponse response;
 
@@ -198,8 +199,8 @@ void main() {
   );
 
   group(
-    'Given multiple results with same name '
-    'when HealthResponse.fromResults is called',
+    'Given multiple results with same name, '
+    'when HealthResponse.fromResults is called,',
     () {
       test('then results are grouped in same list', () {
         final results = [
@@ -221,8 +222,8 @@ void main() {
   );
 
   group(
-    'Given failing result without output '
-    'when HealthResponse.fromResults is called',
+    'Given failing result without output, '
+    'when HealthResponse.fromResults is called,',
     () {
       test('then output is null', () {
         final results = [

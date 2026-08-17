@@ -7,7 +7,7 @@ void main() {
   var client = Client(serverUrl);
 
   group(
-    'Given an endpoint which extends the base class without any overrides, ',
+    'Given an endpoint which extends the base class without any overrides,',
     () {
       test(
         'when calling `echoString`, then the input value is returned verbatim.',
@@ -33,7 +33,8 @@ void main() {
       );
 
       test(
-        'when calling `echoContainer`, then the input value is returned verbatim.',
+        'when calling `echoContainer`, '
+        'then the input value is returned verbatim.',
         () async {
           var response = await client.moduleEndpointSubclass.echoContainer({
             1,
@@ -62,7 +63,8 @@ void main() {
       );
 
       test(
-        'when trying to call `ignoredMethod`, then this fails because the method is ignored in the base class and not generated.',
+        'when trying to call `ignoredMethod`, '
+        'then this fails because the method is ignored in the base class and not generated.',
         () async {
           expect(
             () => (client.moduleEndpointSubclass as dynamic).ignoredMethod(),
@@ -73,9 +75,10 @@ void main() {
     },
   );
 
-  group('Given an endpoint which overrides a few methods of the base class, ', () {
+  group('Given an endpoint which overrides a few methods of the base class,', () {
     test(
-      'when calling `echoString`, then the input value is returned verbatim (re-using the `super` implementation).',
+      'when calling `echoString`, '
+      'then the input value is returned verbatim (re-using the `super` implementation).',
       () async {
         var response = await client.moduleEndpointAdaptation.echoString(
           'hello',
@@ -86,7 +89,8 @@ void main() {
     );
 
     test(
-      'when calling `echoRecord`, then the request supports the optional parameter and returns the modified value.',
+      'when calling `echoRecord`, '
+      'then the request supports the optional parameter and returns the modified value.',
       () async {
         var response = await client.moduleEndpointAdaptation.echoRecord(
           (5, BigInt.from(100)),
@@ -98,7 +102,8 @@ void main() {
     );
 
     test(
-      'when calling `echoContainer`, then the input value is returned verbatim (re-using the `super` implementation).',
+      'when calling `echoContainer`, '
+      'then the input value is returned verbatim (re-using the `super` implementation).',
       () async {
         var response = await client.moduleEndpointAdaptation.echoContainer({
           1,
@@ -111,7 +116,8 @@ void main() {
     );
 
     test(
-      'when calling `echoModel`, then the input value is returned verbatim (re-using the `super` implementation).',
+      'when calling `echoModel`, '
+      'then the input value is returned verbatim (re-using the `super` implementation).',
       () async {
         var response = await client.moduleEndpointAdaptation.echoModel(
           ModuleClass(name: 'test', data: 1),
@@ -127,9 +133,10 @@ void main() {
     );
   });
 
-  group('Given an endpoint which a further method of the base class, ', () {
+  group('Given an endpoint which a further method of the base class,', () {
     test(
-      'when calling the ignored `echoString`, then this fails because the method is ignored in the sub-class and not generated.',
+      'when calling the ignored `echoString`, '
+      'then this fails because the method is ignored in the sub-class and not generated.',
       () async {
         expect(
           () => (client.moduleEndpointReduction as dynamic).echoString('hello'),
@@ -140,7 +147,7 @@ void main() {
   });
 
   group(
-    'Given an endpoint which extends the subclass with a new method and unhides an existing one, ',
+    'Given an endpoint which extends the subclass with a new method and unhides an existing one,',
     () {
       test(
         'when calling `greet`, then the input is returned as expected.',
@@ -154,7 +161,8 @@ void main() {
       );
 
       test(
-        'when calling the unhidden `ignoredMethod`, then the client exists and the call succeeds.',
+        'when calling the unhidden `ignoredMethod`, '
+        'then the client exists and the call succeeds.',
         () async {
           await client.moduleEndpointExtension.ignoredMethod();
         },

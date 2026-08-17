@@ -6,7 +6,7 @@ import '../../test_tools/serverpod_test_tools.dart';
 
 void main() async {
   withServerpod(
-    'Given `withServerpod` with rollback after each test,`',
+    'Given `withServerpod` with rollback after each test,`,',
     (final sessionBuilder, final endpoints) {
       late Session session;
 
@@ -188,7 +188,7 @@ void main() async {
   );
 
   withServerpod(
-    'Given `withServerpod` with rollback disabled,`',
+    'Given `withServerpod` with rollback disabled,`,',
     (final sessionBuilder, final endpoints) {
       late Session session;
 

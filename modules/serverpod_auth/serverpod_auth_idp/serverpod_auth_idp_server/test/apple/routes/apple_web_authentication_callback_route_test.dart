@@ -51,7 +51,7 @@ void main() {
   }
 
   group(
-    'Given AppleWebAuthenticationCallbackRoute with redirection parameters configured',
+    'Given AppleWebAuthenticationCallbackRoute with redirection parameters configured,',
     () {
       late AppleWebAuthenticationCallbackRoute route;
 
@@ -63,7 +63,7 @@ void main() {
       });
 
       test(
-        'when calling endpoint with Android User-Agent and POST with form body '
+        'when calling endpoint with Android User-Agent and POST with form body, '
         'then it returns 307 with correct intent URI.',
         () async {
           final response = await callRoute(
@@ -84,7 +84,7 @@ void main() {
       );
 
       test(
-        'when calling endpoint with Android User-Agent and params have special characters '
+        'when calling endpoint with Android User-Agent and params have special characters, '
         'then it URL encodes correctly.',
         () async {
           final response = await callRoute(
@@ -106,7 +106,7 @@ void main() {
       );
 
       test(
-        'when calling endpoint with Android User-Agent and empty body '
+        'when calling endpoint with Android User-Agent and empty body, '
         'then it returns 307 with empty params.',
         () async {
           final response = await callRoute(
@@ -127,7 +127,7 @@ void main() {
       );
 
       test(
-        'when calling endpoint with Web User-Agent '
+        'when calling endpoint with Web User-Agent, '
         'then it returns 303 with web redirection URI.',
         () async {
           final response = await callRoute(
@@ -145,7 +145,7 @@ void main() {
       );
 
       test(
-        'when calling endpoint with Web User-Agent and empty body '
+        'when calling endpoint with Web User-Agent and empty body, '
         'then it returns 303 redirect to webRedirectUri without query params.',
         () async {
           final response = await callRoute(
@@ -163,7 +163,7 @@ void main() {
       );
 
       test(
-        'when calling endpoint with Web User-Agent and params have special characters '
+        'when calling endpoint with Web User-Agent and params have special characters, '
         'then it URL encodes correctly.',
         () async {
           final response = await callRoute(
@@ -184,7 +184,7 @@ void main() {
       );
 
       test(
-        'when calling endpoint with no User-Agent then it redirects as Web.',
+        'when calling endpoint with no User-Agent, then it redirects as Web.',
         () async {
           final response = await callRoute(
             route,
@@ -203,7 +203,7 @@ void main() {
   );
 
   group(
-    'Given AppleWebAuthenticationCallbackRoute without androidPackageIdentifier configured',
+    'Given AppleWebAuthenticationCallbackRoute without androidPackageIdentifier configured,',
     () {
       late AppleWebAuthenticationCallbackRoute route;
 
@@ -215,7 +215,7 @@ void main() {
       });
 
       test(
-        'when calling endpoint with Android User-Agent then it returns 500.',
+        'when calling endpoint with Android User-Agent, then it returns 500.',
         () async {
           final response = await callRoute(
             route,
@@ -235,7 +235,7 @@ void main() {
   );
 
   group(
-    'Given AppleWebAuthenticationCallbackRoute without webRedirectUri configured',
+    'Given AppleWebAuthenticationCallbackRoute without webRedirectUri configured,',
     () {
       late AppleWebAuthenticationCallbackRoute route;
 
@@ -247,7 +247,7 @@ void main() {
       });
 
       test(
-        'when calling endpoint with Web User-Agent then it returns 500.',
+        'when calling endpoint with Web User-Agent, then it returns 500.',
         () async {
           final response = await callRoute(
             route,

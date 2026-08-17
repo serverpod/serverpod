@@ -5,8 +5,8 @@ import 'package:test/test.dart';
 
 void main() {
   group('Given Double column definition', () {
-    group('with no default value', () {
-      ColumnDefinition defaultColumn = ColumnDefinition(
+    group('with no default value,', () {
+      late ColumnDefinition defaultColumn = ColumnDefinition(
         name: 'doubleDefault',
         columnType: ColumnType.doublePrecision,
         isNullable: false,
@@ -14,7 +14,8 @@ void main() {
       );
 
       test(
-        'when converting to PostgreSQL SQL code, then it should not have the default value',
+        'when converting to PostgreSQL SQL code, '
+        'then it should not have the default value',
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
@@ -24,7 +25,8 @@ void main() {
       );
 
       test(
-        'when converting to SQLite SQL code, then it should not have the default value',
+        'when converting to SQLite SQL code, '
+        'then it should not have the default value',
         () {
           expect(
             defaultColumn.toSqlFragment(),
@@ -34,8 +36,8 @@ void main() {
       );
     });
 
-    group('with 10.5 as default value', () {
-      ColumnDefinition defaultColumn = ColumnDefinition(
+    group('with 10.5 as default value,', () {
+      late ColumnDefinition defaultColumn = ColumnDefinition(
         name: 'doubleDefault',
         columnType: ColumnType.doublePrecision,
         isNullable: false,
@@ -44,7 +46,8 @@ void main() {
       );
 
       test(
-        'when converting to PostgreSQL SQL code, then it should have the default value',
+        'when converting to PostgreSQL SQL code, '
+        'then it should have the default value',
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
@@ -54,7 +57,8 @@ void main() {
       );
 
       test(
-        'when converting to SQLite SQL code, then it should have the default value',
+        'when converting to SQLite SQL code, '
+        'then it should have the default value',
         () {
           expect(
             defaultColumn.toSqlFragment(),
@@ -64,8 +68,8 @@ void main() {
       );
     });
 
-    group('with 20.5 as default value', () {
-      ColumnDefinition defaultColumn = ColumnDefinition(
+    group('with 20.5 as default value,', () {
+      late ColumnDefinition defaultColumn = ColumnDefinition(
         name: 'doubleDefault',
         columnType: ColumnType.doublePrecision,
         isNullable: false,
@@ -74,7 +78,8 @@ void main() {
       );
 
       test(
-        'when converting to PostgreSQL SQL code, then it should have the default value',
+        'when converting to PostgreSQL SQL code, '
+        'then it should have the default value',
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
@@ -84,7 +89,8 @@ void main() {
       );
 
       test(
-        'when converting to SQLite SQL code, then it should have the default value',
+        'when converting to SQLite SQL code, '
+        'then it should have the default value',
         () {
           expect(
             defaultColumn.toSqlFragment(),
@@ -94,8 +100,8 @@ void main() {
       );
     });
 
-    group('with nullable column and no default value', () {
-      ColumnDefinition defaultColumn = ColumnDefinition(
+    group('with nullable column and no default value,', () {
+      late ColumnDefinition defaultColumn = ColumnDefinition(
         name: 'doubleDefault',
         columnType: ColumnType.doublePrecision,
         isNullable: true,
@@ -103,7 +109,8 @@ void main() {
       );
 
       test(
-        'when converting to PostgreSQL SQL code, then it should be nullable with no default value',
+        'when converting to PostgreSQL SQL code, '
+        'then it should be nullable with no default value',
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
@@ -113,7 +120,8 @@ void main() {
       );
 
       test(
-        'when converting to SQLite SQL code, then it should be nullable with no default value',
+        'when converting to SQLite SQL code, '
+        'then it should be nullable with no default value',
         () {
           expect(
             defaultColumn.toSqlFragment(),
@@ -123,8 +131,8 @@ void main() {
       );
     });
 
-    group('with nullable column and 10.5 as default value', () {
-      ColumnDefinition defaultColumn = ColumnDefinition(
+    group('with nullable column and 10.5 as default value,', () {
+      late ColumnDefinition defaultColumn = ColumnDefinition(
         name: 'doubleDefault',
         columnType: ColumnType.doublePrecision,
         isNullable: true,
@@ -133,7 +141,8 @@ void main() {
       );
 
       test(
-        'when converting to PostgreSQL SQL code, then it should be nullable with the default value',
+        'when converting to PostgreSQL SQL code, '
+        'then it should be nullable with the default value',
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
@@ -143,7 +152,8 @@ void main() {
       );
 
       test(
-        'when converting to SQLite SQL code, then it should be nullable with the default value',
+        'when converting to SQLite SQL code, '
+        'then it should be nullable with the default value',
         () {
           expect(
             defaultColumn.toSqlFragment(),
@@ -153,8 +163,8 @@ void main() {
       );
     });
 
-    group('with nullable column and 20.5 as default value', () {
-      ColumnDefinition defaultColumn = ColumnDefinition(
+    group('with nullable column and 20.5 as default value,', () {
+      late ColumnDefinition defaultColumn = ColumnDefinition(
         name: 'doubleDefault',
         columnType: ColumnType.doublePrecision,
         isNullable: true,
@@ -163,7 +173,8 @@ void main() {
       );
 
       test(
-        'when converting to PostgreSQL SQL code, then it should be nullable with the default value',
+        'when converting to PostgreSQL SQL code, '
+        'then it should be nullable with the default value',
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
@@ -173,7 +184,8 @@ void main() {
       );
 
       test(
-        'when converting to SQLite SQL code, then it should be nullable with the default value',
+        'when converting to SQLite SQL code, '
+        'then it should be nullable with the default value',
         () {
           expect(
             defaultColumn.toSqlFragment(),

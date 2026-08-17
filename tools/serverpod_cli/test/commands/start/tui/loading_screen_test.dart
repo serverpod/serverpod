@@ -14,7 +14,7 @@ Future<void> _sendCtrlC(NoctermTester tester) {
 }
 
 void main() {
-  group('Given a loading screen mounted hidden', () {
+  group('Given a loading screen mounted hidden,', () {
     late NoctermTester tester;
 
     setUp(() async {
@@ -29,14 +29,14 @@ void main() {
     // Ancestors that change their tree shape (e.g. the Ctrl-C hint row
     // appearing) remount the loading screen. A fresh mount never observes
     // the visible true->false transition, so it must hide on its own.
-    test('when rendered then the splash is not shown', () {
+    test('when rendered, then the splash is not shown', () {
       final screen = tester.renderToString(showBorders: false);
 
       expect(screen.trim(), isEmpty);
     });
   });
 
-  group('Given a running TUI start app whose splash has been dismissed', () {
+  group('Given a running TUI start app whose splash has been dismissed,', () {
     late NoctermTester tester;
     late ServerWatchState state;
     late StartAppStateHolder holder;
@@ -56,13 +56,13 @@ void main() {
       await holder.dispose();
     });
 
-    test('when rendered then the splash is not shown', () {
+    test('when rendered, then the splash is not shown', () {
       final screen = tester.renderToString(showBorders: false);
 
       expect(screen, isNot(contains('Serverpod')));
     });
 
-    test('when Ctrl-C arms exit then the splash does not reappear', () async {
+    test('when Ctrl-C arms exit, then the splash does not reappear', () async {
       await _sendCtrlC(tester);
       await tester.pump();
 

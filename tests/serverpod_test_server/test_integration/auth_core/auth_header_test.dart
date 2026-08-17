@@ -16,8 +16,8 @@ void main() async {
     return Future.value(AuthenticationInfo('1', {}, authId: '1'));
   }
 
-  group('Given auth key in valid HTTP header format', () {
-    var authKeyManager = TestBasicAuthenticationKeyManager();
+  group('Given auth key in valid HTTP header format,', () {
+    late var authKeyManager = TestBasicAuthenticationKeyManager();
     late Client client;
     late Serverpod server;
 
@@ -38,7 +38,7 @@ void main() async {
     });
 
     test(
-      'when calling an endpoint method without parameters '
+      'when calling an endpoint method without parameters, '
       'then it should receive plain auth key (i.e. in original format)',
       () async {
         var key = 'username-4711:password-4711';
@@ -53,7 +53,7 @@ void main() async {
     );
 
     test(
-      'when calling an endpoint method with a parameter '
+      'when calling an endpoint method with a parameter, '
       'then the authentication handler receives the raw key without the schema prefix',
       () async {
         var key = 'username-4711:password-4711';
@@ -67,7 +67,7 @@ void main() async {
     );
 
     test(
-      'when calling an endpoint method '
+      'when calling an endpoint method, '
       'then endpoint method request should contain properly formatted "authorization" header with Basic scheme',
       () async {
         var key = 'username-4712:password-4712';
@@ -87,7 +87,7 @@ void main() async {
     );
 
     test(
-      'when calling an endpoint method '
+      'when calling an endpoint method, '
       'then endpoint method request\'s "authorization" should when unwrapped contain the original key',
       () async {
         var key = 'username-4713:password-4713';
@@ -103,8 +103,8 @@ void main() async {
     );
   });
 
-  group('Given auth key in invalid Basic HTTP header format', () {
-    var incorrectAuthKeyManager = TestIncorrectAuthKeyManager();
+  group('Given auth key in invalid Basic HTTP header format,', () {
+    late var incorrectAuthKeyManager = TestIncorrectAuthKeyManager();
     late Client client;
     late Serverpod server;
 
@@ -125,7 +125,7 @@ void main() async {
     });
 
     test(
-      'when calling an endpoint method '
+      'when calling an endpoint method, '
       'then endpoint method should return error corresponding to HTTP invalid request error (400)',
       () async {
         var key = 'username-4711:password-4711';
@@ -147,8 +147,8 @@ void main() async {
     );
   });
 
-  group('Given auth key with Bearer HTTP header format', () {
-    var authKeyManager = TestAuthKeyManager();
+  group('Given auth key with Bearer HTTP header format,', () {
+    late var authKeyManager = TestAuthKeyManager();
     late Client client;
     late Serverpod server;
 
@@ -169,7 +169,7 @@ void main() async {
     });
 
     test(
-      'when calling an endpoint method without parameters '
+      'when calling an endpoint method without parameters, '
       'then it should receive plain auth key (i.e. in original format)',
       () async {
         var key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9';
@@ -184,7 +184,7 @@ void main() async {
     );
 
     test(
-      'when calling an endpoint method with a parameter '
+      'when calling an endpoint method with a parameter, '
       'then the authentication handler receives the raw token without the schema prefix',
       () async {
         var key = 'abc123-bearer-token';
@@ -198,7 +198,7 @@ void main() async {
     );
 
     test(
-      'when calling an endpoint method '
+      'when calling an endpoint method, '
       'then endpoint method request should contain properly formatted "authorization" header with Bearer scheme',
       () async {
         var key = 'jwt-token-4712';
@@ -218,7 +218,7 @@ void main() async {
     );
 
     test(
-      'when calling an endpoint method with invalid token '
+      'when calling an endpoint method with invalid token, '
       'then endpoint method should return error corresponding to HTTP invalid request error (400)',
       () async {
         var key = 'doubled-bearer jwt-token-4712';
@@ -240,7 +240,7 @@ void main() async {
     );
 
     test(
-      'when calling an endpoint method '
+      'when calling an endpoint method, '
       'then endpoint method request\'s "authorization" should when unwrapped contain the original key',
       () async {
         var key = 'bearer-token-4713';

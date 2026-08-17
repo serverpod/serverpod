@@ -44,9 +44,9 @@ void main() {
   );
 
   group(
-    'Given a client database table when generating protocol files',
+    'Given a client database table, when generating protocol files,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName('Example')
             .withFileName('example')
@@ -55,13 +55,13 @@ void main() {
             .build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [],
         models: models,
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );
@@ -133,12 +133,12 @@ void main() {
     'Given a client database table and a Dart module dependency that also has client database tables, '
     'when generating protocol files,',
     () {
-      var moduleAwareConfig = GeneratorConfigBuilder()
+      late var moduleAwareConfig = GeneratorConfigBuilder()
           .withName(projectName)
           .withAuthModule()
           .build();
 
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName('Example')
             .withFileName('example')
@@ -147,13 +147,13 @@ void main() {
             .build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [],
         models: models,
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: moduleAwareConfig,
       );
@@ -251,14 +251,14 @@ void main() {
     'when generating protocol files,',
     () {
       const sharedPackageName = 'example_shared';
-      var sharedAwareConfig = GeneratorConfigBuilder()
+      late var sharedAwareConfig = GeneratorConfigBuilder()
           .withName(projectName)
           .withSharedModelsSourcePathsParts({
             sharedPackageName: ['..', sharedPackageName],
           })
           .build();
 
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName('Example')
             .withFileName('example')
@@ -274,13 +274,13 @@ void main() {
             .build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [],
         models: models,
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: sharedAwareConfig,
       );
@@ -337,7 +337,7 @@ void main() {
     'Given only a shared-package client database table, '
     'when generating protocol files,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName('SharedTableRecord')
             .withFileName('shared_table_record')
@@ -347,13 +347,13 @@ void main() {
             .build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [],
         models: models,
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );
@@ -392,7 +392,7 @@ void main() {
     'Given only a module client database table, '
     'when generating protocol files,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName('UserInfo')
             .withFileName('user_info')
@@ -402,13 +402,13 @@ void main() {
             .build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [],
         models: models,
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );
@@ -447,12 +447,12 @@ void main() {
     'Given a client database table and module dependencies, '
     'when generating protocol files,',
     () {
-      var authModulesConfig = GeneratorConfigBuilder()
+      late var authModulesConfig = GeneratorConfigBuilder()
           .withName(projectName)
           .withAuthModule()
           .build();
 
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName('Example')
             .withFileName('example')
@@ -461,13 +461,13 @@ void main() {
             .build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [],
         models: models,
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: authModulesConfig,
       );
@@ -552,11 +552,12 @@ void main() {
   );
 
   group(
-    'Given model with server only field with list of server only model when generating protocol files',
+    'Given model with server only field with list of server only model, '
+    'when generating protocol files,',
     () {
       var serverOnlyModel = 'server_only_model';
       var modelWithServerOnlyListField = 'model_with_server_only_list_field';
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(serverOnlyModel.pascalCase)
             .withFileName(serverOnlyModel)
@@ -573,13 +574,13 @@ void main() {
             .build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [],
         models: models,
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );
@@ -604,11 +605,12 @@ void main() {
   );
 
   group(
-    'Given model with server only field with map of server only model when generating protocol files',
+    'Given model with server only field with map of server only model, '
+    'when generating protocol files,',
     () {
       var serverOnlyModel = 'server_only_model';
       var modelWithServerOnlyListField = 'model_with_server_only_list_field';
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(serverOnlyModel.pascalCase)
             .withFileName(serverOnlyModel)
@@ -626,13 +628,13 @@ void main() {
             .build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [],
         models: models,
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );
@@ -657,16 +659,17 @@ void main() {
   );
 
   group(
-    'Given an endpoint with Stream with model generic return type when generating protocol files',
+    'Given an endpoint with Stream with model generic return type, '
+    'when generating protocol files,',
     () {
       var modelName = 'example_model';
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(modelName.pascalCase)
             .withFileName(modelName)
             .build(),
       ];
-      var endpoints = [
+      late var endpoints = [
         EndpointDefinitionBuilder().withMethods([
           MethodDefinitionBuilder()
               .withName('streamingMethod')
@@ -679,13 +682,13 @@ void main() {
         ]).build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: models,
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );
@@ -710,17 +713,18 @@ void main() {
   );
 
   group(
-    'Given a model with a field with list of other model when generating protocol files',
+    'Given a model with a field with list of other model, '
+    'when generating protocol files,',
     () {
       var testModelName = 'TestModel';
       var testModelFileName = 'test_model.dart';
       var modelWithListName = 'modelWithList';
       var modelWithListFileName = 'model_with_list.dart';
-      var testModel = ModelClassDefinitionBuilder()
+      late var testModel = ModelClassDefinitionBuilder()
           .withClassName(testModelName)
           .withFileName(testModelFileName)
           .build();
-      var models = [
+      late var models = [
         testModel,
         ModelClassDefinitionBuilder()
             .withClassName(modelWithListName)
@@ -742,13 +746,13 @@ void main() {
             .build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [],
         models: models,
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );
@@ -773,18 +777,19 @@ void main() {
   );
 
   group(
-    'Given an endpoint that takes a list of models as a parameter when generating protocol files',
+    'Given an endpoint that takes a list of models as a parameter, '
+    'when generating protocol files,',
     () {
       var testModelName = 'TestModel';
       var testModelFileName = 'test_model.dart';
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testModelName)
             .withFileName(testModelFileName)
             .build(),
       ];
 
-      var endpoints = [
+      late var endpoints = [
         EndpointDefinitionBuilder().withMethods([
           MethodDefinitionBuilder().withName('myEndpoint').withParameters([
             ParameterDefinitionBuilder()
@@ -803,13 +808,13 @@ void main() {
         ]).build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: models,
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );
@@ -834,18 +839,19 @@ void main() {
   );
 
   group(
-    'Given an endpoint that takes a list of models as a named parameter when generating protocol files',
+    'Given an endpoint that takes a list of models as a named parameter, '
+    'when generating protocol files,',
     () {
       var testModelName = 'TestModel';
       var testModelFileName = 'test_model.dart';
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testModelName)
             .withFileName(testModelFileName)
             .build(),
       ];
 
-      var endpoints = [
+      late var endpoints = [
         EndpointDefinitionBuilder().withMethods([
           MethodDefinitionBuilder().withName('myEndpoint').withParametersNamed([
             ParameterDefinitionBuilder()
@@ -864,13 +870,13 @@ void main() {
         ]).build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: models,
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );
@@ -895,18 +901,19 @@ void main() {
   );
 
   group(
-    'Given an endpoint that takes a list of models as a named parameter when generating protocol files',
+    'Given an endpoint that takes a list of models as a named parameter, '
+    'when generating protocol files,',
     () {
       var testModelName = 'TestModel';
       var testModelFileName = 'test_model.dart';
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testModelName)
             .withFileName(testModelFileName)
             .build(),
       ];
 
-      var endpoints = [
+      late var endpoints = [
         EndpointDefinitionBuilder().withMethods([
           MethodDefinitionBuilder()
               .withName('myEndpoint')
@@ -931,13 +938,13 @@ void main() {
         ]).build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: models,
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );
@@ -962,11 +969,12 @@ void main() {
   );
 
   group(
-    'Given serverOnly models with List field of another serverOnly model when generating protocol files',
+    'Given serverOnly models with List field of another serverOnly model, '
+    'when generating protocol files,',
     () {
       var serverOnlyModel = 'Article';
       var serverOnlyModelWithList = 'ArticleList';
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(serverOnlyModel)
             .withFileName('article')
@@ -986,13 +994,13 @@ void main() {
             .build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [],
         models: models,
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );

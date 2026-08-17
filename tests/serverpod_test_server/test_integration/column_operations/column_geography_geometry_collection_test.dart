@@ -53,8 +53,8 @@ void main() async {
   setUpAll(() async => await _createTestDatabase(session));
   tearDownAll(() async => await _deleteAll(session));
 
-  group('Given geography geometry collection column in database', () {
-    test('when fetching all then all rows are returned.', () async {
+  group('Given geography geometry collection column in database,', () {
+    test('when fetching all, then all rows are returned.', () async {
       var result = await Types.db.find(
         session,
         where: (_) => Constant.bool(true),
@@ -64,7 +64,8 @@ void main() async {
     });
 
     test(
-      'when filtering with intersects then collections overlapping the polygon are returned.',
+      'when filtering with intersects, '
+      'then collections overlapping the polygon are returned.',
       () async {
         var result = await Types.db.find(
           session,
@@ -81,7 +82,8 @@ void main() async {
     );
 
     test(
-      'when filtering with distanceWithin then collections within the distance are returned.',
+      'when filtering with distanceWithin, '
+      'then collections within the distance are returned.',
       () async {
         var result = await Types.db.find(
           session,

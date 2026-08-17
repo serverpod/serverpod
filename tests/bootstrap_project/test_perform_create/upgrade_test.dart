@@ -25,7 +25,7 @@ void main() {
 
   group(
     'Given a project without a database, '
-    'when creating CreateConfigState in the upgrade path for the TUI',
+    'when creating CreateConfigState in the upgrade path for the TUI,',
     () {
       late CreateConfigStateResult result;
 
@@ -80,7 +80,7 @@ void main() {
 
   group(
     'Given a server project without IDE configurations, '
-    'when creating CreateConfigState in the upgrade path for the TUI',
+    'when creating CreateConfigState in the upgrade path for the TUI,',
     () {
       late CreateConfigStateResult result;
 

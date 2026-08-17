@@ -68,7 +68,7 @@ void main() {
     return parseString(content: codeMap[companyFilePath]!).unit;
   }
 
-  group('Given a named one to many relation with a required foreign key', () {
+  group('Given a named one to many relation with a required foreign key,', () {
     const requiredForeignKeyEmployeeYaml = '''
         class: Employee
         table: employee
@@ -76,7 +76,7 @@ void main() {
           company: Company?, relation(name=company_employees)
         ''';
 
-    group('when the foreign class is analyzed before the list owner', () {
+    group('when the foreign class is analyzed before the list owner,', () {
       late CompilationUnit compilationUnit;
 
       setUp(() {
@@ -124,7 +124,7 @@ void main() {
       });
     });
 
-    group('when the list owner is analyzed before the foreign class', () {
+    group('when the list owner is analyzed before the foreign class,', () {
       late CompilationUnit compilationUnit;
 
       setUp(() {
@@ -173,7 +173,7 @@ void main() {
     });
   });
 
-  group('Given a named one to many relation with an optional foreign key', () {
+  group('Given a named one to many relation with an optional foreign key,', () {
     const optionalForeignKeyEmployeeYaml = '''
         class: Employee
         table: employee
@@ -181,7 +181,7 @@ void main() {
           company: Company?, relation(name=company_employees, optional)
         ''';
 
-    group('when the foreign class is analyzed before the list owner', () {
+    group('when the foreign class is analyzed before the list owner,', () {
       late CompilationUnit compilationUnit;
 
       setUp(() {
@@ -215,7 +215,7 @@ void main() {
       });
     });
 
-    group('when the list owner is analyzed before the foreign class', () {
+    group('when the list owner is analyzed before the foreign class,', () {
       late CompilationUnit compilationUnit;
 
       setUp(() {

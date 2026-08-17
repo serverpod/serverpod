@@ -64,7 +64,7 @@ void main() {
     oauth2Util = OAuth2PkceUtil(config: config.oauth2Config);
   });
 
-  group('Given OAuth2PkceUtil receiving valid authorization code', () {
+  group('Given OAuth2PkceUtil receiving valid authorization code,', () {
     late MockHttpClient mockClient;
 
     setUp(() {
@@ -79,7 +79,7 @@ void main() {
       );
     });
 
-    group('when exchanging code for token', () {
+    group('when exchanging code for token,', () {
       late OAuth2PkceTokenResponse result;
 
       setUp(() async {
@@ -108,7 +108,7 @@ void main() {
     });
   });
 
-  group('Given OAuth2PkceUtil with credentials in header mode', () {
+  group('Given OAuth2PkceUtil with credentials in header mode,', () {
     late MockHttpClient mockClient;
 
     setUp(() {
@@ -126,7 +126,7 @@ void main() {
       );
     });
 
-    group('when exchanging code for token', () {
+    group('when exchanging code for token,', () {
       setUp(() async {
         await oauth2Util.exchangeCodeForToken(
           code: 'auth_code',
@@ -150,7 +150,7 @@ void main() {
     });
   });
 
-  group('Given OAuth2PkceUtil with credentials in body mode', () {
+  group('Given OAuth2PkceUtil with credentials in body mode,', () {
     late MockHttpClient mockClient;
 
     setUp(() {
@@ -168,7 +168,7 @@ void main() {
       );
     });
 
-    group('when exchanging code for token', () {
+    group('when exchanging code for token,', () {
       setUp(() async {
         await oauth2Util.exchangeCodeForToken(
           code: 'auth_code',
@@ -192,7 +192,7 @@ void main() {
     });
   });
 
-  group('Given OAuth2PkceUtil receiving 400 Bad Request response', () {
+  group('Given OAuth2PkceUtil receiving 400 Bad Request response,', () {
     late MockHttpClient mockClient;
 
     setUp(() {
@@ -206,7 +206,8 @@ void main() {
     });
 
     test(
-      'when exchanging code for token then it throws OAuth2InvalidResponseException',
+      'when exchanging code for token, '
+      'then it throws OAuth2InvalidResponseException',
       () {
         expect(
           () => oauth2Util.exchangeCodeForToken(
@@ -221,7 +222,7 @@ void main() {
     );
   });
 
-  group('Given OAuth2PkceUtil receiving 401 Unauthorized response', () {
+  group('Given OAuth2PkceUtil receiving 401 Unauthorized response,', () {
     late MockHttpClient mockClient;
 
     setUp(() {
@@ -235,7 +236,8 @@ void main() {
     });
 
     test(
-      'when exchanging code for token then it throws OAuth2InvalidResponseException',
+      'when exchanging code for token, '
+      'then it throws OAuth2InvalidResponseException',
       () {
         expect(
           () => oauth2Util.exchangeCodeForToken(
@@ -251,7 +253,7 @@ void main() {
   });
 
   group(
-    'Given OAuth2PkceUtil encountering a network failure',
+    'Given OAuth2PkceUtil encountering a network failure,',
     () {
       late MockHttpClient mockClient;
 
@@ -264,7 +266,8 @@ void main() {
       });
 
       test(
-        'when exchanging code for token then it throws OAuth2NetworkErrorException',
+        'when exchanging code for token, '
+        'then it throws OAuth2NetworkErrorException',
         () async {
           expect(
             () => oauth2Util.exchangeCodeForToken(
@@ -280,7 +283,7 @@ void main() {
     },
   );
 
-  group('Given OAuth2PkceUtil receiving invalid JSON response', () {
+  group('Given OAuth2PkceUtil receiving invalid JSON response,', () {
     late MockHttpClient mockClient;
 
     setUp(() {
@@ -291,7 +294,8 @@ void main() {
     });
 
     test(
-      'when exchanging code for token then it throws OAuth2InvalidResponseException',
+      'when exchanging code for token, '
+      'then it throws OAuth2InvalidResponseException',
       () {
         expect(
           () => oauth2Util.exchangeCodeForToken(
@@ -306,7 +310,7 @@ void main() {
     );
   });
 
-  group('Given OAuth2PkceUtil receiving response missing access token', () {
+  group('Given OAuth2PkceUtil receiving response missing access token,', () {
     late MockHttpClient mockClient;
 
     setUp(() {
@@ -321,7 +325,8 @@ void main() {
     });
 
     test(
-      'when exchanging code for token then it throws OAuth2MissingAccessTokenException',
+      'when exchanging code for token, '
+      'then it throws OAuth2MissingAccessTokenException',
       () {
         expect(
           () => oauth2Util.exchangeCodeForToken(
@@ -337,7 +342,7 @@ void main() {
   });
 
   group(
-    'Given OAuth2PkceUtil with includeClientSecret set to false in header mode',
+    'Given OAuth2PkceUtil with includeClientSecret set to false in header mode,',
     () {
       late MockHttpClient mockClient;
 
@@ -356,7 +361,7 @@ void main() {
         );
       });
 
-      group('when exchanging code for token', () {
+      group('when exchanging code for token,', () {
         setUp(() async {
           await oauth2Util.exchangeCodeForToken(
             code: 'auth_code',
@@ -386,7 +391,7 @@ void main() {
   );
 
   group(
-    'Given OAuth2PkceUtil with includeClientSecret set to false in body mode',
+    'Given OAuth2PkceUtil with includeClientSecret set to false in body mode,',
     () {
       late MockHttpClient mockClient;
 
@@ -405,7 +410,7 @@ void main() {
         );
       });
 
-      group('when exchanging code for token', () {
+      group('when exchanging code for token,', () {
         setUp(() async {
           await oauth2Util.exchangeCodeForToken(
             code: 'auth_code',

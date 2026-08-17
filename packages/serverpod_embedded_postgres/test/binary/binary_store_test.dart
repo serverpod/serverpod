@@ -35,9 +35,9 @@ void main() {
     if (cache.existsSync()) cache.deleteSync(recursive: true);
   });
 
-  group('Given installDirFor', () {
+  group('Given installDirFor,', () {
     test(
-      'when called for a (version, platform) tuple '
+      'when called for a (version, platform) tuple, '
       'then the path layers cache root / BOM / platform.',
       () {
         var store = BinaryStore(cacheRoot: cache);
@@ -54,9 +54,9 @@ void main() {
     );
   });
 
-  group('Given a populated cache', () {
+  group('Given a populated cache,', () {
     test(
-      'when ensure is called and meta.json exists '
+      'when ensure is called and meta.json exists, '
       'then no HTTP requests are issued and the install dir is returned.',
       () async {
         var requests = 0;
@@ -85,9 +85,9 @@ void main() {
   // genuine Maven artifact. Per "test our code, trust upstream", we don't
   // pad here with a synthetic-pipeline test.
 
-  group('Given a server delivering a JAR with a sha mismatch', () {
+  group('Given a server delivering a JAR with a sha mismatch,', () {
     test(
-      'when ensure runs '
+      'when ensure runs, '
       'then BinaryVerificationException is thrown and the install dir is left absent (caller can retry).',
       () async {
         var jarBytes = _buildSyntheticJar();
@@ -108,9 +108,9 @@ void main() {
     );
   });
 
-  group('Given a malformed sha256 sidecar', () {
+  group('Given a malformed sha256 sidecar,', () {
     test(
-      'when the body is not a 64-char hex string '
+      'when the body is not a 64-char hex string, '
       'then BinaryFetchException is thrown.',
       () async {
         var jarBytes = _buildSyntheticJar();
@@ -166,9 +166,9 @@ void main() {
     },
   );
 
-  group('Given an empty cache and 4 concurrent isolates', () {
+  group('Given an empty cache and 4 concurrent isolates,', () {
     test(
-      'when each isolate calls ensure '
+      'when each isolate calls ensure, '
       'then exactly one fetches the JAR and all four return the same install dir.',
       () async {
         var jarBytes = _buildSyntheticJar();
@@ -227,9 +227,9 @@ void main() {
     );
   });
 
-  group('Given a stale claim file (mtime older than staleAfter)', () {
+  group('Given a stale claim file (mtime older than staleAfter),', () {
     test(
-      'when ensure runs '
+      'when ensure runs, '
       'then the claim is stolen and the extract proceeds to write meta.',
       () async {
         var jarBytes = _buildSyntheticJar();
@@ -267,10 +267,10 @@ void main() {
   });
 
   group(
-    'Given a fresh claim file (not yet stale) and a short hard timeout',
+    'Given a fresh claim file (not yet stale) and a short hard timeout,',
     () {
       test(
-        'when ensure runs '
+        'when ensure runs, '
         'then it throws BinaryFetchException citing the claim, without fetching.',
         () async {
           var requests = 0;
@@ -311,10 +311,10 @@ void main() {
   );
 
   group(
-    'Given an installDir from a prior winner that crashed before writing meta',
+    'Given an installDir from a prior winner that crashed before writing meta,',
     () {
       test(
-        'when ensure runs again '
+        'when ensure runs again, '
         'then it re-extracts cleanly (installDir is replaced, meta is written).',
         () async {
           var installDir = Directory(
@@ -354,7 +354,7 @@ void main() {
     },
   );
 
-  group('Given two revisions of the same PG version, ', () {
+  group('Given two revisions of the same PG version,', () {
     late _FakeBundleArtifact r1;
     late _FakeBundleArtifact r2;
 

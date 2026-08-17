@@ -25,8 +25,8 @@ void main() async {
     await server.shutdown(exitProcess: false);
   });
 
-  test('Given no listeners on channel '
-      'when a message is posted to channel '
+  test('Given no listeners on channel, '
+      'when a message is posted to channel, '
       'then true is returned.', () async {
     final result = await messageCentral.postMessage(
       channelName,
@@ -35,7 +35,7 @@ void main() async {
     expect(result, isTrue);
   });
 
-  group('Given listener on channel in message central', () {
+  group('Given listener on channel in message central,', () {
     late Completer<SimpleData> messageReceivedCompleter;
     var listenerMethod = (message) {
       messageReceivedCompleter.complete(message as SimpleData);
@@ -50,7 +50,7 @@ void main() async {
       messageCentral.removeListener(channelName, listenerMethod);
     });
 
-    test('when message is posted then it returns true', () async {
+    test('when message is posted, then it returns true', () async {
       final result = await messageCentral.postMessage(
         channelName,
         SimpleData(num: 42),
@@ -58,7 +58,7 @@ void main() async {
       expect(result, isTrue);
     });
 
-    test('when message is posted then listener is notified', () async {
+    test('when message is posted, then listener is notified', () async {
       await messageCentral.postMessage(channelName, SimpleData(num: 42));
 
       await expectLater(messageReceivedCompleter.future, completes);
@@ -67,7 +67,7 @@ void main() async {
     });
   });
 
-  group('Given stream listening on channel in message central', () {
+  group('Given stream listening on channel in message central,', () {
     late Completer<SimpleData> messageReceivedCompleter;
     late Completer streamDoneCompleter;
     late Completer streamErrorCompleter;
@@ -97,7 +97,7 @@ void main() async {
       await subscription.cancel();
     });
 
-    test('when message is posted then it returns true', () async {
+    test('when message is posted, then it returns true', () async {
       final result = await messageCentral.postMessage(
         channelName,
         SimpleData(num: 42),
@@ -106,7 +106,7 @@ void main() async {
     });
 
     test(
-      'when message is posted then message is delivered on stream',
+      'when message is posted, then message is delivered on stream',
       () async {
         await messageCentral.postMessage(channelName, SimpleData(num: 42));
 
@@ -117,7 +117,8 @@ void main() async {
     );
 
     test(
-      'when message of incompatible type is posted then stream error is delivered',
+      'when message of incompatible type is posted, '
+      'then stream error is delivered',
       () async {
         await messageCentral.postMessage(channelName, Types());
 
@@ -127,14 +128,14 @@ void main() async {
       },
     );
 
-    test('when session is closed then stream is closed', () async {
+    test('when session is closed, then stream is closed', () async {
       await session.close();
 
       await expectLater(streamDoneCompleter.future, completes);
     });
   });
 
-  group('Given multiple streams listening to the same channel ', () {
+  group('Given multiple streams listening to the same channel,', () {
     late Completer<SimpleData> messageReceivedCompleter1;
     late Completer<SimpleData> messageReceivedCompleter2;
     late StreamSubscription<SimpleData> subscription1;
@@ -174,7 +175,7 @@ void main() async {
     });
 
     test(
-      'when message is posted then all streams receive the message',
+      'when message is posted, then all streams receive the message',
       () async {
         await messageCentral.postMessage(channelName, SimpleData(num: 42));
 
@@ -188,7 +189,8 @@ void main() async {
     );
 
     test(
-      'when one subscription is canceled then messages posted are still delivered to the other stream',
+      'when one subscription is canceled, '
+      'then messages posted are still delivered to the other stream',
       () async {
         await subscription2.cancel();
         await messageCentral.postMessage(channelName, SimpleData(num: 42));
@@ -199,7 +201,7 @@ void main() async {
       },
     );
 
-    test('when session is closed then all streams are done', () async {
+    test('when session is closed, then all streams are done', () async {
       await session.close();
 
       await expectLater(stream1DoneCompleter.future, completes);

@@ -10,7 +10,8 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   test(
-    'Given two models with the same class name, then an error is collected that there is a collision in the class names.',
+    'Given two models with the same class name, '
+    'then an error is collected that there is a collision in the class names.',
     () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -51,7 +52,8 @@ void main() {
   );
 
   test(
-    'Given a model and a custom class with the same class name, then an error is collected that there is a collision in the class names.',
+    'Given a model and a custom class with the same class name, '
+    'then an error is collected that there is a collision in the class names.',
     () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -93,7 +95,8 @@ void main() {
   );
 
   test(
-    'Given a single valid model, then there is no error collected for the class name.',
+    'Given a single valid model, '
+    'then there is no error collected for the class name.',
     () {
       var modelSources = [
         ModelSourceBuilder().withYaml(

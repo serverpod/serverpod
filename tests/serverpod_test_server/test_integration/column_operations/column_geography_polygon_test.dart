@@ -34,8 +34,8 @@ void main() async {
   setUpAll(() async => await _createTestDatabase(session));
   tearDownAll(() async => await _deleteAll(session));
 
-  group('Given geography polygon column in database', () {
-    test('when fetching all then all rows are returned.', () async {
+  group('Given geography polygon column in database,', () {
+    test('when fetching all, then all rows are returned.', () async {
       var result = await Types.db.find(
         session,
         where: (_) => Constant.bool(true),
@@ -45,7 +45,8 @@ void main() async {
     });
 
     test(
-      'when filtering with contains for a point inside then the polygon row is returned.',
+      'when filtering with contains for a point inside, '
+      'then the polygon row is returned.',
       () async {
         var result = await Types.db.find(
           session,
@@ -58,7 +59,8 @@ void main() async {
     );
 
     test(
-      'when filtering with contains for a point outside then no rows are returned.',
+      'when filtering with contains for a point outside, '
+      'then no rows are returned.',
       () async {
         var result = await Types.db.find(
           session,

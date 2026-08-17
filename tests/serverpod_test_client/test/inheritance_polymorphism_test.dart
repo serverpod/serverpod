@@ -5,8 +5,8 @@ import 'package:test/test.dart';
 
 void main() {
   test(
-    'Given a PolymorphicParent object '
-    'when serialized '
+    'Given a PolymorphicParent object, '
+    'when serialized, '
     'then it produces the JSON with the className key containing only the class name.',
     () {
       final parent = PolymorphicParent(
@@ -21,8 +21,8 @@ void main() {
   );
 
   test(
-    'Given a PolymorphicChild object '
-    'when serialized '
+    'Given a PolymorphicChild object, '
+    'when serialized, '
     'then it produces the JSON with the className key containing only the class name.',
     () {
       final child = PolymorphicChild(
@@ -39,8 +39,8 @@ void main() {
   );
 
   test(
-    'Given a PolymorphicGrandChild object '
-    'when serialized '
+    'Given a PolymorphicGrandChild object, '
+    'when serialized, '
     'then it produces the JSON with the className key containing only the class name.',
     () {
       final grandPolymorphicChild = PolymorphicGrandChild(
@@ -59,8 +59,8 @@ void main() {
   );
 
   test(
-    'Given a ModulePolymorphicParent object '
-    'when serialized '
+    'Given a ModulePolymorphicParent object, '
+    'when serialized, '
     'then it produces the JSON with the className key containing the class name prefixed with the module namespace.',
     () {
       final moduleParent = ModulePolymorphicParent(
@@ -78,8 +78,8 @@ void main() {
   );
 
   test(
-    'Given a ModulePolymorphicChild object '
-    'when serialized '
+    'Given a ModulePolymorphicChild object, '
+    'when serialized, '
     'then it produces the JSON with the className key containing the class name prefixed with the module namespace.',
     () {
       final moduleChild = ModulePolymorphicChild(
@@ -99,8 +99,8 @@ void main() {
   );
 
   test(
-    'Given a ModulePolymorphicGrandChild object '
-    'when serialized '
+    'Given a ModulePolymorphicGrandChild object, '
+    'when serialized, '
     'then it produces the JSON with the className key containing the class name prefixed with the module namespace.',
     () {
       final moduleGrandChild = ModulePolymorphicGrandChild(
@@ -122,8 +122,8 @@ void main() {
   );
 
   test(
-    'Given a backwards-compatible PolymorphicParent JSON without className field '
-    'when deserialized '
+    'Given a backwards-compatible PolymorphicParent JSON without className field, '
+    'when deserialized, '
     'then it deserializes as PolymorphicParent.',
     () {
       final json = {
@@ -138,8 +138,8 @@ void main() {
   );
 
   test(
-    'Given a backwards-compatible PolymorphicChild JSON without className field '
-    'when deserialized '
+    'Given a backwards-compatible PolymorphicChild JSON without className field, '
+    'when deserialized, '
     'then it deserializes as PolymorphicChild.',
     () {
       final json = {
@@ -156,8 +156,8 @@ void main() {
   );
 
   test(
-    'Given a backwards-compatible PolymorphicGrandChild JSON without className field '
-    'when deserialized '
+    'Given a backwards-compatible PolymorphicGrandChild JSON without className field, '
+    'when deserialized, '
     'then it deserializes as PolymorphicGrandChild.',
     () {
       final json = {
@@ -175,8 +175,8 @@ void main() {
     },
   );
 
-  test('Given a PolymorphicChild object '
-      'when deserialized as PolymorphicParent '
+  test('Given a PolymorphicChild object, '
+      'when deserialized as PolymorphicParent, '
       'then it maintains the runtimeType as PolymorphicChild.', () {
     final child = PolymorphicChild(
       parent: 'This is a parent',
@@ -192,8 +192,8 @@ void main() {
     expect(deserialized.child, 'This is a child');
   });
 
-  test('Given a PolymorphicGrandChild object '
-      'when deserialized as PolymorphicParent '
+  test('Given a PolymorphicGrandChild object, '
+      'when deserialized as PolymorphicParent, '
       'then it maintains the runtimeType as PolymorphicGrandChild.', () {
     final grandPolymorphicChild = PolymorphicGrandChild(
       parent: 'This is a parent',
@@ -211,8 +211,8 @@ void main() {
     expect(deserialized.grandchild, 'This is a grandchild');
   });
 
-  test('Given a class that holds PolymorphicChild objects in a container '
-      'when deserialized '
+  test('Given a class that holds PolymorphicChild objects in a container, '
+      'when deserialized, '
       'then PolymorphicGrandChild objects maintain their runtime type.', () {
     final container = PolymorphicChildContainer(
       child: PolymorphicGrandChild(
@@ -285,8 +285,8 @@ void main() {
   });
 
   test(
-    'Given a class that holds ModulePolymorphicChild objects defined in a module in a container '
-    'when deserialized '
+    'Given a class that holds ModulePolymorphicChild objects defined in a module in a container, '
+    'when deserialized, '
     'then ModulePolymorphicChild objects maintain their runtime type.',
     () {
       final container = ModulePolymorphicChildContainer(
@@ -347,8 +347,8 @@ void main() {
   // NOTE: This test would not fail before the changes to support polymorphism.
   // If a class was a subset of another with same types on all common fields,
   // it would deserialize as the other class.
-  test('Given an object that has all fields of PolymorphicParent '
-      'when deserialized as PolymorphicParent '
+  test('Given an object that has all fields of PolymorphicParent, '
+      'when deserialized as PolymorphicParent, '
       'then it raises an exception.', () {
     final other = SimilarButNotParent(parent: 'This is not a parent');
 
@@ -360,8 +360,8 @@ void main() {
     );
   });
 
-  test('Given an unrelated object that does not have PolymorphicParent fields '
-      'when deserialized as PolymorphicParent '
+  test('Given an unrelated object that does not have PolymorphicParent fields, '
+      'when deserialized as PolymorphicParent, '
       'then it raises an exception.', () {
     final unrelated = UnrelatedToPolymorphism(
       unrelated: 'An unrelated message',
@@ -376,8 +376,8 @@ void main() {
   });
 
   test(
-    'Given a PolymorphicChild object wrapped with the parent className '
-    'when deserialized using deserializeByClassName '
+    'Given a PolymorphicChild object wrapped with the parent className, '
+    'when deserialized using deserializeByClassName, '
     'then it deserializes correctly as the object type.',
     () {
       final child = PolymorphicChild(
@@ -399,8 +399,8 @@ void main() {
   );
 
   test(
-    'Given a ModulePolymorphicGrandChild object wrapped with the parent className '
-    'when deserialized using deserializeByClassName '
+    'Given a ModulePolymorphicGrandChild object wrapped with the parent className, '
+    'when deserialized using deserializeByClassName, '
     'then it deserializes correctly as the object type.',
     () {
       final moduleGrandChild = ModulePolymorphicGrandChild(
@@ -424,8 +424,8 @@ void main() {
   );
 
   test(
-    'Given a SealedChild object '
-    'when using copyWith through parent reference '
+    'Given a SealedChild object, '
+    'when using copyWith through parent reference, '
     'then it correctly creates a copy with updated values.',
     () {
       final child = SealedChild(
@@ -444,8 +444,8 @@ void main() {
   );
 
   test(
-    'Given an ObjectWithSealedClass '
-    'when created with a sealed class field '
+    'Given an ObjectWithSealedClass, '
+    'when created with a sealed class field, '
     'then it serializes and deserializes correctly.',
     () {
       final sealedChild = SealedChild(
@@ -469,7 +469,9 @@ void main() {
   );
 
   test(
-    'Given JSON with an unknown __className__ when deserializing as PolymorphicParent then it falls back to deserialize as PolymorphicParent.',
+    'Given JSON with an unknown __className__, '
+    'when deserializing as PolymorphicParent, '
+    'then it falls back to deserialize as PolymorphicParent.',
     () {
       // Simulate an older client receiving data with a new subtype className
       final json = {
@@ -486,7 +488,9 @@ void main() {
   );
 
   test(
-    'Given JSON with an unknown __className__ when deserializing as PolymorphicChild then it falls back to deserialize as PolymorphicChild.',
+    'Given JSON with an unknown __className__, '
+    'when deserializing as PolymorphicChild, '
+    'then it falls back to deserialize as PolymorphicChild.',
     () {
       // Simulate an older client receiving data with a new grandchild className
       final json = {
@@ -505,7 +509,9 @@ void main() {
   );
 
   test(
-    'Given JSON with known __className__ when deserializing then it still uses the specific type.',
+    'Given JSON with known __className__, '
+    'when deserializing, '
+    'then it still uses the specific type.',
     () {
       // Verify that known classNames still work correctly
       final json = {

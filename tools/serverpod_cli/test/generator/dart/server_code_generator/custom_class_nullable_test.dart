@@ -24,9 +24,10 @@ void main() {
   );
 
   group(
-    'Given class $testClassName with nullable custom class field when generating code',
+    'Given class $testClassName with nullable custom class field, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -45,16 +46,16 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var compilationUnit = parseString(
+      late var compilationUnit = parseString(
         content: codeMap[expectedFilePath]!,
       ).unit;
 
-      var maybeClassNamedExample =
+      late var maybeClassNamedExample =
           CompilationUnitHelpers.tryFindClassDeclaration(
             compilationUnit,
             name: testClassName,

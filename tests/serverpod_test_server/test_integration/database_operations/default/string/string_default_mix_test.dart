@@ -15,7 +15,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "stringDefaultAndDefaultModel" field value should match the default value',
+      'when creating a record in the database with an unsafe query, '
+      'then the "stringDefaultAndDefaultModel" field value should match the default value',
       () async {
         await session.db.unsafeQuery(
           '''
@@ -32,7 +33,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "stringDefaultAndDefaultPersist" field value should match the defaultPersist value',
+      'when creating a record in the database with an unsafe query, '
+      'then the "stringDefaultAndDefaultPersist" field value should match the defaultPersist value',
       () async {
         await session.db.unsafeQuery(
           '''
@@ -49,7 +51,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "stringDefaultModelAndDefaultPersist" field value should match the defaultPersist value',
+      'when creating a record in the database with an unsafe query, '
+      'then the "stringDefaultModelAndDefaultPersist" field value should match the defaultPersist value',
       () async {
         await session.db.unsafeQuery(
           '''
@@ -66,7 +69,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with specific values, then the "stringDefaultAndDefaultModel" field value should match the provided value',
+      'when creating a record in the database with specific values, '
+      'then the "stringDefaultAndDefaultModel" field value should match the provided value',
       () async {
         var specificObject = StringDefaultMix(
           stringDefaultAndDefaultModel: 'A specific default model value',
@@ -83,7 +87,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with specific values, then the "stringDefaultAndDefaultPersist" field value should match the provided value',
+      'when creating a record in the database with specific values, '
+      'then the "stringDefaultAndDefaultPersist" field value should match the provided value',
       () async {
         var specificObject = StringDefaultMix(
           stringDefaultAndDefaultPersist: 'A specific default persist value',
@@ -100,7 +105,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with specific values, then the "stringDefaultModelAndDefaultPersist" field value should match the provided value',
+      'when creating a record in the database with specific values, '
+      'then the "stringDefaultModelAndDefaultPersist" field value should match the provided value',
       () async {
         var specificObject = StringDefaultMix(
           stringDefaultModelAndDefaultPersist:

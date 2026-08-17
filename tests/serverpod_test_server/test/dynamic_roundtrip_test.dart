@@ -15,7 +15,7 @@ void main() {
     'Given a model with a dynamic field, '
     'when serializing the model,',
     () {
-      final serialized = object.toJson();
+      late final serialized = object.toJson();
 
       test(
         'then the basic fields are encoded with their type.',

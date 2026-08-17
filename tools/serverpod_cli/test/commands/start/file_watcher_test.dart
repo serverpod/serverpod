@@ -18,7 +18,7 @@ void main() {
     await tempDir.delete(recursive: true);
   });
 
-  group('Given a FileWatcher watching a directory', () {
+  group('Given a FileWatcher watching a directory,', () {
     late FileWatcher watcher;
 
     setUp(() {
@@ -69,7 +69,7 @@ void main() {
   });
 
   group(
-    'Given a FileWatcher watching a directory with generated subdirectory',
+    'Given a FileWatcher watching a directory with generated subdirectory,',
     () {
       late FileWatcher watcher;
       late String generatedDir;
@@ -189,7 +189,7 @@ void main() {
     );
   });
 
-  group('Given a FileWatcher watching a .dart_tool directory', () {
+  group('Given a FileWatcher watching a .dart_tool directory,', () {
     late FileWatcher watcher;
     late String dartToolDir;
 
@@ -271,7 +271,7 @@ void main() {
     );
   });
 
-  group('Given separate server and Flutter .dart_tool directories', () {
+  group('Given separate server and Flutter .dart_tool directories,', () {
     late FileWatcher watcher;
     late String serverDartTool;
     late String flutterDartTool;
@@ -342,7 +342,7 @@ void main() {
     );
   });
 
-  group('Given multiple Flutter app resolutions (non-workspace layout)', () {
+  group('Given multiple Flutter app resolutions (non-workspace layout),', () {
     late FileWatcher watcher;
     late String serverDartTool;
     late String appADartTool;
@@ -386,7 +386,7 @@ void main() {
     );
   });
 
-  group('Given a list of FileChangeEvents', () {
+  group('Given a list of FileChangeEvents,', () {
     test(
       'when merge is called on a single event, '
       'then it returns it unchanged',
@@ -458,7 +458,7 @@ void main() {
   });
 
   group(
-    'Given a FileWatcher watching a pubspec.yaml file',
+    'Given a FileWatcher watching a pubspec.yaml file,',
     () {
       late FileWatcher watcher;
       late File pubspec;

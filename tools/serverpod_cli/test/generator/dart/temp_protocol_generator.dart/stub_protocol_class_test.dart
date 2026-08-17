@@ -9,8 +9,8 @@ final config = GeneratorConfigBuilder().withName(projectName).build();
 const generator = DartTemporaryProtocolGenerator();
 
 void main() {
-  group('Given no models when generating the temporary protocol', () {
-    final codeMap = generator.generateSerializableModelsCode(
+  group('Given no models, when generating the temporary protocol,', () {
+    late final codeMap = generator.generateSerializableModelsCode(
       models: const [],
       config: config,
     );

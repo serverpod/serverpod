@@ -25,13 +25,13 @@ void main() {
     } catch (e) {}
   });
 
-  group('Given a clean state', () {
+  group('Given a clean state,', () {
     var (commandRoot: _, :projectName) = createRandomProjectName(tempPath);
     final (:serverDir, flutterDir: _, :clientDir) = createProjectFolderPaths(
       projectName,
     );
 
-    group('when creating a new module project with quickstart command', () {
+    group('when creating a new module project with quickstart command,', () {
       setUpAll(() async {
         var process = await startServerpodCli(
           [

@@ -20,7 +20,9 @@ void main() async {
   });
 
   test(
-    'Given a session with a will close listener when the session is closed then listener is called.',
+    'Given a session with a will close listener, '
+    'when the session is closed, '
+    'then listener is called.',
     () async {
       var listenerCalledCompleter = Completer();
       session.addWillCloseListener((Session session) {
@@ -33,7 +35,9 @@ void main() async {
   );
 
   test(
-    'Given a session with a will close listener when the session is closed multiple times then listener is only called once.',
+    'Given a session with a will close listener, '
+    'when the session is closed multiple times, '
+    'then listener is only called once.',
     () async {
       var callCount = 0;
       session.addWillCloseListener((Session session) {
@@ -48,7 +52,9 @@ void main() async {
   );
 
   test(
-    'Given a session with a will close when listener is removed and the session is closed then the listener is not called.',
+    'Given a session with a will close, '
+    'when listener is removed and the session is closed, '
+    'then the listener is not called.',
     () async {
       var listenerCalledCompleter = Completer();
       var listener = (Session session) {
@@ -63,7 +69,9 @@ void main() async {
   );
 
   test(
-    'Given a session with multiple will close listeners when the session is closed then listener are called in order.',
+    'Given a session with multiple will close listeners, '
+    'when the session is closed, '
+    'then listener are called in order.',
     () async {
       var completeOrder = <int>[];
       var listener1CalledCompleter = Completer();
@@ -91,7 +99,9 @@ void main() async {
   );
 
   test(
-    'Given a session with multiple will close listeners when one is removed and the session is closed then remaining listener are called in order.',
+    'Given a session with multiple will close listeners, '
+    'when one is removed and the session is closed, '
+    'then remaining listener are called in order.',
     () async {
       var completeOrder = <int>[];
       var listener1CalledCompleter = Completer();

@@ -3,8 +3,8 @@ import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('Given a registered shutdown task '
-      'when the server is shutdown '
+  test('Given a registered shutdown task, '
+      'when the server is shutdown, '
       'then the task is executed.', () async {
     var called = false;
 
@@ -21,28 +21,30 @@ void main() {
     expect(called, isTrue);
   });
 
-  test('Given added and then removed shutdown task '
-      'when the server is shutdown '
-      'then the task is not executed.', () async {
-    var called = false;
+  test(
+    'Given added and, '
+    'then removed shutdown task when the server is shutdown then the task is not executed.',
+    () async {
+      var called = false;
 
-    const id = #testTask;
-    var serverpod = IntegrationTestServer.create();
-    serverpod.experimental.shutdownTasks.addTask(
-      id,
-      () async {
-        called = true;
-      },
-    );
-    serverpod.experimental.shutdownTasks.removeTask(id);
+      const id = #testTask;
+      var serverpod = IntegrationTestServer.create();
+      serverpod.experimental.shutdownTasks.addTask(
+        id,
+        () async {
+          called = true;
+        },
+      );
+      serverpod.experimental.shutdownTasks.removeTask(id);
 
-    await serverpod.shutdown(exitProcess: false);
+      await serverpod.shutdown(exitProcess: false);
 
-    expect(called, isFalse);
-  });
+      expect(called, isFalse);
+    },
+  );
 
-  test('Given shutdown task that records number of calls '
-      'when the server is shutdown multiple times '
+  test('Given shutdown task that records number of calls, '
+      'when the server is shutdown multiple times, '
       'then the task is executed once for each shutdown.', () async {
     var callCount = 0;
 
@@ -60,8 +62,8 @@ void main() {
     expect(callCount, equals(2));
   });
 
-  test('Given a shutdown task that throws an error '
-      'when the server is shutdown '
+  test('Given a shutdown task that throws an error, '
+      'when the server is shutdown, '
       'then the error is thrown from shutdown.', () async {
     var serverpod = IntegrationTestServer.create();
     serverpod.experimental.shutdownTasks.addTask(
@@ -77,8 +79,8 @@ void main() {
     );
   });
 
-  test('Given multiple shutdown tasks that throw errors '
-      'when the server is shutdown '
+  test('Given multiple shutdown tasks that throw errors, '
+      'when the server is shutdown, '
       'then last thrown exception is thrown from shutdown method.', () async {
     var exception1 = #firstException;
     var exception2 = #secondException;
@@ -104,8 +106,8 @@ void main() {
     );
   });
 
-  test('Given multiple shutdown tasks '
-      'when the server is shutdown '
+  test('Given multiple shutdown tasks, '
+      'when the server is shutdown, '
       'then tasks are executed concurrently.', () async {
     final completer1 = Completer<void>();
     final completer2 = Completer<void>();
@@ -133,8 +135,8 @@ void main() {
   });
 
   test(
-    'Given a registered shutdown task '
-    'when the server is shutdown '
+    'Given a registered shutdown task, '
+    'when the server is shutdown, '
     'then the task is executed after all request receiving services are shutdown.',
     () async {
       var serverStopped = false;

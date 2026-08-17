@@ -6,7 +6,7 @@ import '../../test_utils/email_idp_test_fixture.dart';
 
 void main() {
   withServerpod(
-    'Given multiple email accounts',
+    'Given multiple email accounts,',
     (final sessionBuilder, final endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
@@ -53,7 +53,8 @@ void main() {
       });
 
       test(
-        'when deleteAccount is called with email then only that email account is deleted',
+        'when deleteAccount is called with email, '
+        'then only that email account is deleted',
         () async {
           final deletedAccounts = await session.db.transaction(
             (final transaction) => fixture.emailIdp.utils.account.deleteAccount(
@@ -81,7 +82,8 @@ void main() {
       );
 
       test(
-        'when deleteAccount is called with authUserId then all accounts for that user are deleted',
+        'when deleteAccount is called with authUserId, '
+        'then all accounts for that user are deleted',
         () async {
           final deletedAccounts = await session.db.transaction(
             (final transaction) => fixture.emailIdp.utils.account.deleteAccount(
@@ -112,7 +114,8 @@ void main() {
       );
 
       test(
-        'when deleteAccount is called with both email and authUserId then only matching account is deleted',
+        'when deleteAccount is called with both email and authUserId, '
+        'then only matching account is deleted',
         () async {
           final deletedAccounts = await session.db.transaction(
             (final transaction) => fixture.emailIdp.utils.account.deleteAccount(
@@ -141,7 +144,8 @@ void main() {
       );
 
       test(
-        'when deleteAccount is called with non-matching filters then no accounts are deleted',
+        'when deleteAccount is called with non-matching filters, '
+        'then no accounts are deleted',
         () async {
           final deletedAccounts = await session.db.transaction(
             (final transaction) => fixture.emailIdp.utils.account.deleteAccount(
@@ -165,7 +169,8 @@ void main() {
       );
 
       test(
-        'when deleteAccount is called with neither email nor authUserId then all accounts are deleted',
+        'when deleteAccount is called with neither email nor authUserId, '
+        'then all accounts are deleted',
         () async {
           final deletedAccounts = await session.db.transaction(
             (final transaction) => fixture.emailIdp.utils.account.deleteAccount(

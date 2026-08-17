@@ -27,8 +27,8 @@ void main() async {
   setUpAll(() async => await _createTestDatabase(session));
   tearDownAll(() async => await _deleteAll(session));
 
-  group('Given vector column in database', () {
-    test('when fetching all then all rows are returned.', () async {
+  group('Given vector column in database,', () {
+    test('when fetching all, then all rows are returned.', () async {
       var result = await Types.db.find(
         session,
         where: (_) => Constant.bool(true),
@@ -38,7 +38,7 @@ void main() async {
     });
 
     test(
-      'when ordering by L2 distance then an exception is thrown.',
+      'when ordering by L2 distance, then an exception is thrown.',
       () async {
         await expectLater(
           Types.db.find(
@@ -51,7 +51,7 @@ void main() async {
     );
 
     test(
-      'when ordering by cosine distance then an exception is thrown.',
+      'when ordering by cosine distance, then an exception is thrown.',
       () async {
         await expectLater(
           Types.db.find(
@@ -64,7 +64,8 @@ void main() async {
     );
 
     test(
-      'when filtering using closer than with cosine distance then an exception is thrown.',
+      'when filtering using closer than with cosine distance, '
+      'then an exception is thrown.',
       () async {
         await expectLater(
           Types.db.find(
@@ -77,7 +78,7 @@ void main() async {
     );
 
     test(
-      'when ordering by inner product distance then an exception is thrown.',
+      'when ordering by inner product distance, then an exception is thrown.',
       () async {
         await expectLater(
           Types.db.find(
@@ -90,7 +91,8 @@ void main() async {
     );
 
     test(
-      'when filtering using closer than with inner product distance then an exception is thrown.',
+      'when filtering using closer than with inner product distance, '
+      'then an exception is thrown.',
       () async {
         await expectLater(
           Types.db.find(
@@ -103,7 +105,7 @@ void main() async {
     );
 
     test(
-      'when ordering by L1 distance then an exception is thrown.',
+      'when ordering by L1 distance, then an exception is thrown.',
       () async {
         await expectLater(
           Types.db.find(
@@ -116,7 +118,8 @@ void main() async {
     );
 
     test(
-      'when filtering using closer than with L1 distance then an exception is thrown.',
+      'when filtering using closer than with L1 distance, '
+      'then an exception is thrown.',
       () async {
         await expectLater(
           Types.db.find(

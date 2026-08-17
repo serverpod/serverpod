@@ -16,7 +16,7 @@ void main() {
     publicPort: 0,
   );
 
-  group('Given a web server', () {
+  group('Given a web server,', () {
     late Directory tempDir;
     late Serverpod pod;
 

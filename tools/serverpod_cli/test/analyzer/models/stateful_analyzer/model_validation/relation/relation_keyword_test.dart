@@ -10,8 +10,8 @@ import '../../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
-  group('Given a class with a self relation on a field with the class datatype', () {
-    var models = [
+  group('Given a class with a self relation on a field with the class datatype,', () {
+    late var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -22,13 +22,13 @@ void main() {
       ).build(),
     ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
+    late var collector = CodeGenerationCollector();
+    late StatefulAnalyzer analyzer = StatefulAnalyzer(
       config,
       models,
       onErrorsCollector(collector),
     );
-    var definitions = analyzer.validateAll();
+    late var definitions = analyzer.validateAll();
     var classDefinition = definitions.first as ClassDefinition;
 
     test('then no errors are collected.', () {
@@ -60,7 +60,7 @@ void main() {
       expect((relation as ObjectRelationDefinition).nullableRelation, false);
     });
 
-    var parentId = classDefinition.findField('parentId');
+    late var parentId = classDefinition.findField('parentId');
 
     test('then the class has a relation field for the id.', () {
       expect(
@@ -126,9 +126,9 @@ void main() {
   });
 
   group(
-    'Given a class with a self relation on a field with the class datatype where the relation is optional',
+    'Given a class with a self relation on a field with the class datatype where the relation is optional,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -139,13 +139,13 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late StatefulAnalyzer analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
       var classDefinition = definitions.first as ClassDefinition;
 
       test('then no errors are collected.', () {
@@ -171,9 +171,9 @@ void main() {
   );
 
   group(
-    'Given a class with a self relation on a field with the class datatype where the relation is not optional',
+    'Given a class with a self relation on a field with the class datatype where the relation is not optional,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -184,13 +184,13 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late StatefulAnalyzer analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
       var classDefinition = definitions.first as ClassDefinition;
 
       test('then no errors are collected.', () {
@@ -216,7 +216,8 @@ void main() {
   );
 
   test(
-    'Given a class with a self relation without any nested rules, then no errors are collected.',
+    'Given a class with a self relation without any nested rules, '
+    'then no errors are collected.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -270,7 +271,8 @@ void main() {
   );
 
   test(
-    'Given a class with a field with a self reference without a relation, then no relation is set.',
+    'Given a class with a field with a self reference without a relation, '
+    'then no relation is set.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -297,8 +299,8 @@ void main() {
     },
   );
 
-  group('Given a class with a field with a self relation', () {
-    var models = [
+  group('Given a class with a field with a self relation,', () {
+    late var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -309,13 +311,13 @@ void main() {
       ).build(),
     ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
+    late var collector = CodeGenerationCollector();
+    late StatefulAnalyzer analyzer = StatefulAnalyzer(
       config,
       models,
       onErrorsCollector(collector),
     );
-    var definitions = analyzer.validateAll();
+    late var definitions = analyzer.validateAll();
     var classDefinition = definitions.first as ClassDefinition;
 
     test('then no errors are collected.', () {
@@ -340,7 +342,8 @@ void main() {
   });
 
   test(
-    'Given a class with a field with a relation, but the parent keyword defined twice, then an error is collected that there is a duplicated key.',
+    'Given a class with a field with a relation, but the parent keyword defined twice, '
+    'then an error is collected that there is a duplicated key.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -375,7 +378,8 @@ void main() {
   );
 
   test(
-    'Given a class with a field with a relation, but the parent keyword defined twice, then an error is collected that locates the second parent key.',
+    'Given a class with a field with a relation, but the parent keyword defined twice, '
+    'then an error is collected that locates the second parent key.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -419,7 +423,8 @@ fields:
   );
 
   test(
-    'Given a class with a self relation but without a table defined, then collect an error that the relation keyword cannot be used unless the class has a table.',
+    'Given a class with a self relation but without a table defined, '
+    'then collect an error that the relation keyword cannot be used unless the class has a table.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -451,7 +456,8 @@ fields:
   );
 
   test(
-    'Given a class with a field with a relation on a complex datatype that is not nullable, then an error is collected that the datatype must be nullable.',
+    'Given a class with a field with a relation on a complex datatype that is not nullable, '
+    'then an error is collected that the datatype must be nullable.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -484,7 +490,8 @@ fields:
   );
 
   test(
-    'Given a class with a field with a relation on a complex datatype and the parent table is defined, then an error is collected that the parent table is redundant.',
+    'Given a class with a field with a relation on a complex datatype and the parent table is defined, '
+    'then an error is collected that the parent table is redundant.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -517,7 +524,8 @@ fields:
   );
 
   test(
-    'Given a class with a field with a relation on an id field and the relation is defined as optional, then collect a warning that the optional keyword should not be used.',
+    'Given a class with a field with a relation on an id field and the relation is defined as optional, '
+    'then collect a warning that the optional keyword should not be used.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -550,7 +558,8 @@ fields:
   );
 
   test(
-    'Given a class with a field with a relation on an id field but is missing a parent table definition, then collect an error that the parent table is required.',
+    'Given a class with a field with a relation on an id field but is missing a parent table definition, '
+    'then collect an error that the parent table is required.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -579,9 +588,9 @@ fields:
   );
 
   group(
-    'Given a class with a relation to a model class with a table defined',
+    'Given a class with a relation to a model class with a table defined,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -600,13 +609,13 @@ fields:
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late StatefulAnalyzer analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
       var classDefinition = definitions.first as ClassDefinition;
 
       test('then no errors were detected.', () {
@@ -641,8 +650,8 @@ fields:
     },
   );
 
-  group('Given a class with a json field without a relation', () {
-    var models = [
+  group('Given a class with a json field without a relation,', () {
+    late var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -660,13 +669,13 @@ fields:
       ).build(),
     ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
+    late var collector = CodeGenerationCollector();
+    late StatefulAnalyzer analyzer = StatefulAnalyzer(
       config,
       models,
       onErrorsCollector(collector),
     );
-    var definitions = analyzer.validateAll();
+    late var definitions = analyzer.validateAll();
     var classDefinition = definitions.first as ClassDefinition;
 
     test('then no errors were detected.', () {
@@ -685,7 +694,9 @@ fields:
   });
 
   test(
-    'Given a class with a `List` relation missing the target type, when the analyzer is invoked, then it will return an error pointing to the false definition and not generate any classes',
+    'Given a class with a `List` relation missing the target type, '
+    'when the analyzer is invoked, '
+    'then it will return an error pointing to the false definition and not generate any classes',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -714,8 +725,8 @@ fields:
     },
   );
 
-  group('Given a class with a List json field without a relation', () {
-    var models = [
+  group('Given a class with a List json field without a relation,', () {
+    late var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -733,13 +744,13 @@ fields:
       ).build(),
     ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
+    late var collector = CodeGenerationCollector();
+    late StatefulAnalyzer analyzer = StatefulAnalyzer(
       config,
       models,
       onErrorsCollector(collector),
     );
-    var definitions = analyzer.validateAll();
+    late var definitions = analyzer.validateAll();
     var classDefinition = definitions.first as ClassDefinition;
 
     test('then no errors were detected.', () {
@@ -758,7 +769,8 @@ fields:
   });
 
   test(
-    'Given a class with a relation referencing a non-existent class then collect an error that the class was not found',
+    'Given a class with a relation referencing a non-existent class, '
+    'then collect an error that the class was not found',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -787,7 +799,8 @@ fields:
   );
 
   test(
-    'Given a class with a relation to a model enum, then collect an error that the class does not exist.',
+    'Given a class with a relation to a model enum, '
+    'then collect an error that the class does not exist.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -824,7 +837,8 @@ fields:
   );
 
   test(
-    'Given a class with a relation to a model class without a table defined, then collect an error that the class does not have a table.',
+    'Given a class with a relation to a model class without a table defined, '
+    'then collect an error that the class does not have a table.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -859,9 +873,10 @@ fields:
   );
 
   group(
-    'Given a class with an implicit self relation field name with 61 chars when analyzing model',
+    'Given a class with an implicit self relation field name with 61 chars, '
+    'when analyzing model,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -872,13 +887,13 @@ fields:
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late StatefulAnalyzer analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
       var classDefinition = definitions.firstOrNull as ClassDefinition?;
 
       test('then no errors are collected.', () {
@@ -914,9 +929,10 @@ fields:
   );
 
   group(
-    'Given a class with an implicit list relation that creates a foreign key field with more than 63 chars when analyzing model',
+    'Given a class with an implicit list relation that creates a foreign key field with more than 63 chars, '
+    'when analyzing model,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withFileName('employee').withYaml(
           '''
         class: Employee
@@ -935,20 +951,20 @@ fields:
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late StatefulAnalyzer analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
 
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       test('then no errors are collected.', () {
         expect(collector.errors, isEmpty);
       });
 
-      var employeeDefinition =
+      late var employeeDefinition =
           definitions
                   .where(
                     (classes) => classes.className == 'Employee',
@@ -985,9 +1001,9 @@ fields:
   );
 
   group(
-    'Given a class with an implicit named list relation when analyzing model',
+    'Given a class with an implicit named list relation, when analyzing model,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withFileName('employee').withYaml(
           '''
         class: Employee
@@ -1007,20 +1023,20 @@ fields:
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late StatefulAnalyzer analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
 
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       test('then no errors are collected.', () {
         expect(collector.errors, isEmpty);
       });
 
-      var employeeDefinition =
+      late var employeeDefinition =
           definitions
                   .where(
                     (classes) => classes.className == 'Employee',

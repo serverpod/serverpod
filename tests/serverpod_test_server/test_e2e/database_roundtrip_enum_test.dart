@@ -8,7 +8,9 @@ void main() {
   var client = Client(serverUrl);
 
   test(
-    'Given an enum when sending and writing it to the database then the returned value is contains an ID',
+    'Given an enum, '
+    'when sending and writing it to the database, '
+    'then the returned value is contains an ID',
     () async {
       var object = ObjectWithEnumBuilder().withTestEnum(TestEnum.two).build();
 
@@ -19,7 +21,9 @@ void main() {
   );
 
   test(
-    'Given an enum when sending and writing it to the database then the returned value is unmodified',
+    'Given an enum, '
+    'when sending and writing it to the database, '
+    'then the returned value is unmodified',
     () async {
       var object = ObjectWithEnumBuilder().withTestEnum(TestEnum.two).build();
 
@@ -30,7 +34,9 @@ void main() {
   );
 
   test(
-    'Given a `null` nullable enum when sending and writing it to the database then the returned value is unmodified',
+    'Given a `null` nullable enum, '
+    'when sending and writing it to the database, '
+    'then the returned value is unmodified',
     () async {
       var object = ObjectWithEnumBuilder().build();
 
@@ -41,7 +47,9 @@ void main() {
   );
 
   test(
-    'Given an enum list when sending and writing it to the database then the returned value is unmodified',
+    'Given an enum list, '
+    'when sending and writing it to the database, '
+    'then the returned value is unmodified',
     () async {
       var object = ObjectWithEnumBuilder().witheEumList(
         [TestEnum.one, TestEnum.two, TestEnum.three],
@@ -57,7 +65,9 @@ void main() {
   );
 
   test(
-    'Given a nullable enum list when sending and writing it to the database then the returned value is unmodified',
+    'Given a nullable enum list, '
+    'when sending and writing it to the database, '
+    'then the returned value is unmodified',
     () async {
       var object = ObjectWithEnumBuilder().withNullableEnumList(
         [TestEnum.one, null, TestEnum.three],
@@ -73,7 +83,9 @@ void main() {
   );
 
   test(
-    'Given a nested enum list list when sending and writing it to the database then the returned value is unmodified',
+    'Given a nested enum list list, '
+    'when sending and writing it to the database, '
+    'then the returned value is unmodified',
     () async {
       var object = ObjectWithEnumBuilder().withEnumListList(
         [

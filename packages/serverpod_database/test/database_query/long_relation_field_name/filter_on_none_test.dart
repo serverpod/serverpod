@@ -21,9 +21,9 @@ void main() {
   var expectedTruncatedName =
       'where_none_citizen_thisFieldIsExactly61CharactersLongAndIsTf5fb';
 
-  group('Given SelectQueryBuilder', () {
-    group('when "none" filtering on relation with a long field name', () {
-      var query = SelectQueryBuilder(
+  group('Given SelectQueryBuilder,', () {
+    group('when "none" filtering on relation with a long field name,', () {
+      late var query = SelectQueryBuilder(
         table: citizenTable,
       ).withWhere(manyRelation.none()).build();
 
@@ -41,9 +41,9 @@ void main() {
       });
     });
   });
-  group('Given CountQueryBuilder', () {
-    group('when "none" filtering on relation with a long field name', () {
-      var query = CountQueryBuilder(
+  group('Given CountQueryBuilder,', () {
+    group('when "none" filtering on relation with a long field name,', () {
+      late var query = CountQueryBuilder(
         table: citizenTable,
       ).withWhere(manyRelation.none()).build();
 
@@ -61,9 +61,9 @@ void main() {
       });
     });
   });
-  group('Given DeleteQueryBuilder', () {
-    group('when "none" filtering on relation with a long field name', () {
-      var query = DeleteQueryBuilder(
+  group('Given DeleteQueryBuilder,', () {
+    group('when "none" filtering on relation with a long field name,', () {
+      late var query = DeleteQueryBuilder(
         table: citizenTable,
       ).withWhere(manyRelation.none()).build();
 

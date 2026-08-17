@@ -10,7 +10,7 @@ import '../../websocket_extensions.dart';
 
 void main() {
   group(
-    'Given a method stream connection to an endpoint that continuously yields values with a small delay',
+    'Given a method stream connection to an endpoint that continuously yields values with a small delay,',
     () {
       var endpoint = 'methodStreaming';
       var method = 'neverEndingStreamWithDelay';
@@ -18,9 +18,9 @@ void main() {
       late Serverpod server;
       late WebSocket webSocket;
       late Completer neverEndingStreamIsCanceled;
-      TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
+      late TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
 
-      var connectionId = const Uuid().v4obj();
+      late var connectionId = const Uuid().v4obj();
 
       setUp(() async {
         var neverEndingStreamControllerCompleter =
@@ -82,7 +82,7 @@ void main() {
       });
 
       test(
-        'when method stream is closed then never ending stream is canceled.',
+        'when method stream is closed, then never ending stream is canceled.',
         () async {
           webSocket.sendText(
             CloseMethodStreamCommand.buildMessage(

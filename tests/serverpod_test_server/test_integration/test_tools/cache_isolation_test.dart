@@ -5,9 +5,9 @@ import 'serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given withServerpod with cache operations',
+    'Given withServerpod with cache operations,',
     (sessionBuilder, endpoints) {
-      group('when tests store data in local cache', () {
+      group('when tests store data in local cache,', () {
         test('then the value is retrieved.', () async {
           // First test stores data
           final testData = SimpleData(num: 42);
@@ -40,7 +40,7 @@ void main() {
         });
       });
 
-      group('when tests store data in localPrio cache', () {
+      group('when tests store data in localPrio cache,', () {
         test('then the value is retrieved.', () async {
           // First test stores data
           final testData = SimpleData(num: 84);
@@ -76,7 +76,7 @@ void main() {
         );
       });
 
-      group('when tests store data in query cache', () {
+      group('when tests store data in query cache,', () {
         test('then the value is retrieved.', () async {
           // First test stores data
           final testData = SimpleData(num: 168);
@@ -109,7 +109,7 @@ void main() {
         });
       });
 
-      group('when tests store data with cache groups', () {
+      group('when tests store data with cache groups,', () {
         test('then the value is retrieved.', () async {
           // Store data with group
           final testData1 = SimpleData(num: 100);
@@ -164,7 +164,7 @@ void main() {
         });
       });
 
-      group('when tests store data with different keys', () {
+      group('when tests store data with different keys,', () {
         test('then the value is retrieved.', () async {
           // Store multiple entries
           await endpoints.testTools.putInLocalCache(
@@ -235,7 +235,7 @@ void main() {
         });
       });
 
-      group('when cache data is set in setUp', () {
+      group('when cache data is set in setUp,', () {
         setUp(() async {
           final sharedData = SimpleData(num: 999);
           await endpoints.testTools.putInLocalCache(

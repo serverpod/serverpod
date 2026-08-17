@@ -8,7 +8,7 @@ void main() {
     rollbackDatabase: RollbackDatabase.disabled,
     'Given a table model declared in the shared package of a module,',
     (sessionBuilder, _) {
-      final session = sessionBuilder.build();
+      late final session = sessionBuilder.build();
 
       test(
         'when inserting the table through the module server package, '

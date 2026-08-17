@@ -26,8 +26,8 @@ void main() {
     }
   });
 
-  group('Given a valid future call with a method when analyzed', () {
-    var collector = CodeGenerationCollector();
+  group('Given a valid future call with a method, when analyzed,', () {
+    late var collector = CodeGenerationCollector();
     late Directory testDirectory;
 
     late List<FutureCallDefinition> futureCallDefinitions;
@@ -91,9 +91,10 @@ class ExampleFutureCall extends FutureCall {
   });
 
   group(
-    'Given a valid future call method with a first positional nullable `Session` parameter when analyzed',
+    'Given a valid future call method with a first positional nullable `Session` parameter, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -170,10 +171,10 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a future call with a method that has a second positional parameter'
-    'of type `Session` when analyzed',
+    'Given a future call with a method that has a second positional parameter of type `Session`, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -211,9 +212,10 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a future call with a method that has a `Session` as required named parameter when analyzed',
+    'Given a future call with a method that has a `Session` as required named parameter, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -253,9 +255,9 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a future call method without a first positional `Session` parameter',
+    'Given a future call method without a first positional `Session` parameter,',
     () {
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -304,10 +306,10 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a future call method without a first positional `Session` parameter'
-    'and the first parameter instead contains a named `Session` parameter when analyzed',
+    'Given a future call method without a first positional `Session` parameter and the first parameter instead contains a named `Session` parameter, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -356,10 +358,10 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a future call method without a first positional `Session` parameter'
-    'and the first parameter instead contains an optional `Session` parameter when analyzed',
+    'Given a future call method without a first positional `Session` parameter and the first parameter instead contains an optional `Session` parameter, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -408,9 +410,10 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a future call method that without a Future<void> return type when analyzed',
+    'Given a future call method that without a Future<void> return type, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -465,9 +468,10 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a future call method that returns a Future with non void type when analyzed',
+    'Given a future call method that returns a Future with non void type, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -521,8 +525,8 @@ class ExampleFutureCall extends FutureCall {
     },
   );
 
-  group('Given a valid future call with private method when analyzed', () {
-    var collector = CodeGenerationCollector();
+  group('Given a valid future call with private method, when analyzed,', () {
+    late var collector = CodeGenerationCollector();
     late Directory testDirectory;
 
     late List<FutureCallDefinition> futureCallDefinitions;
@@ -567,9 +571,9 @@ class ExampleFutureCall extends FutureCall {
   });
 
   group(
-    'Given a valid future call with multiple methods defined when analyzed',
+    'Given a valid future call with multiple methods defined, when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -624,9 +628,9 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a valid future call method with documentation when analyzed',
+    'Given a valid future call method with documentation, when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -679,9 +683,9 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a valid future call method with "@Deprecated(<string literal>)" annotation',
+    'Given a valid future call method with "@Deprecated(<string literal>)" annotation,',
     () {
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -734,9 +738,9 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a valid future call method with "@Deprecated(<string const expr>)" annotation',
+    'Given a valid future call method with "@Deprecated(<string const expr>)" annotation,',
     () {
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -790,8 +794,8 @@ class ExampleFutureCall extends FutureCall {
     },
   );
 
-  group('Given a valid future call method with "@deprecated" annotation', () {
-    var collector = CodeGenerationCollector();
+  group('Given a valid future call method with "@deprecated" annotation,', () {
+    late var collector = CodeGenerationCollector();
     late Directory testDirectory;
 
     late List<FutureCallDefinition> futureCallDefinitions;
@@ -844,9 +848,9 @@ class ExampleFutureCall extends FutureCall {
   });
 
   group(
-    'Given a valid future call with a method that has serializable parameters after the first positional Session parameter',
+    'Given a valid future call with a method that has serializable parameters after the first positional Session parameter,',
     () {
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -925,9 +929,9 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a valid future call with a method that has a SerializableModel parameter after the Session parameter',
+    'Given a valid future call with a method that has a SerializableModel parameter after the Session parameter,',
     () {
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -994,7 +998,7 @@ fields:
     'Given a future call method with a direct registered custom model parameter, '
     'when analyzing,',
     () {
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -1070,7 +1074,7 @@ class ExampleFutureCall extends FutureCall {
     'Given a future call method with a parameter whose generic type argument is a registered custom model, '
     'when analyzing,',
     () {
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -1174,7 +1178,7 @@ class ExampleFutureCall extends FutureCall {
     'Given a future call method with a map parameter whose value type is a registered custom model, '
     'when analyzing,',
     () {
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -1286,9 +1290,9 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a valid future call with a method that has non serializable parameters after the first positional Session parameter',
+    'Given a valid future call with a method that has non serializable parameters after the first positional Session parameter,',
     () {
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -1343,9 +1347,9 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a future call with a method that has a positional `Session` parameter only',
+    'Given a future call with a method that has a positional `Session` parameter only,',
     () {
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;

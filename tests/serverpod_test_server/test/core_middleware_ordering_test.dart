@@ -18,7 +18,7 @@ void main() {
     publicPort: 0,
   );
 
-  group('Given user middleware that returns early without calling next', () {
+  group('Given user middleware that returns early without calling next,', () {
     setUp(() async {
       // Middleware that returns early without calling next
       final earlyReturnMiddleware = (Handler innerHandler) {
@@ -50,7 +50,7 @@ void main() {
     });
 
     test(
-      'when request is made '
+      'when request is made, '
       'then core _headers middleware still applies CORS headers',
       () async {
         final response = await http.get(
@@ -71,7 +71,7 @@ void main() {
     );
   });
 
-  group('Given user middleware that throws an exception', () {
+  group('Given user middleware that throws an exception,', () {
     setUp(() async {
       // Middleware that throws an exception
       final throwingMiddleware = (Handler innerHandler) {
@@ -102,7 +102,7 @@ void main() {
     });
 
     test(
-      'when request is made '
+      'when request is made, '
       'then core _reportException middleware catches it and returns 500 error',
       () async {
         final response = await http.get(
@@ -120,7 +120,7 @@ void main() {
     );
 
     test(
-      'when request is made '
+      'when request is made, '
       'then response still has CORS headers from _headers middleware',
       () async {
         final response = await http.get(
@@ -138,7 +138,7 @@ void main() {
     );
   });
 
-  group('Given user middleware that throws SerializableException', () {
+  group('Given user middleware that throws SerializableException,', () {
     setUp(() async {
       // Middleware that throws a SerializableException
       final serializableExceptionMiddleware = (Handler innerHandler) {
@@ -173,7 +173,7 @@ void main() {
     });
 
     test(
-      'when request is made '
+      'when request is made, '
       'then core _reportException middleware converts it to 400 bad request',
       () async {
         final response = await http.get(
@@ -191,7 +191,7 @@ void main() {
     );
   });
 
-  group('Given multiple user middleware returning early', () {
+  group('Given multiple user middleware returning early,', () {
     setUp(() async {
       // First middleware that returns early
       final firstMiddleware = (Handler innerHandler) {
@@ -236,7 +236,7 @@ void main() {
     });
 
     test(
-      'when requests are made '
+      'when requests are made, '
       'then all early returns still have core headers applied',
       () async {
         // Test first middleware

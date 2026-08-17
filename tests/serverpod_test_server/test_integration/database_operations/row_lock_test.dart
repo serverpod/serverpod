@@ -8,7 +8,7 @@ import '../test_tools/serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given a table with existing data',
+    'Given a table with existing data,',
     (sessionBuilder, _) {
       late Session session;
       late SimpleData insertedRow;
@@ -21,7 +21,7 @@ void main() {
         );
       });
 
-      test('when finding rows with lock mode forUpdate '
+      test('when finding rows with lock mode forUpdate, '
           'then the query succeeds and returns the locked rows.', () async {
         await session.db.transaction((transaction) async {
           final rows = await SimpleData.db.find(
@@ -36,7 +36,7 @@ void main() {
         });
       });
 
-      test('when finding rows with lock mode forShare '
+      test('when finding rows with lock mode forShare, '
           'then the query succeeds and returns the locked rows.', () async {
         await session.db.transaction((transaction) async {
           final rows = await SimpleData.db.find(
@@ -51,7 +51,7 @@ void main() {
         });
       });
 
-      test('when finding a row by id with lock mode forUpdate '
+      test('when finding a row by id with lock mode forUpdate, '
           'then the query succeeds and returns the locked row.', () async {
         await session.db.transaction((transaction) async {
           final row = await SimpleData.db.findById(
@@ -66,7 +66,7 @@ void main() {
         });
       });
 
-      test('when finding first row with lock mode forUpdate '
+      test('when finding first row with lock mode forUpdate, '
           'then the query succeeds and returns the locked row.', () async {
         await session.db.transaction((transaction) async {
           final row = await SimpleData.db.findFirstRow(
@@ -81,7 +81,7 @@ void main() {
         });
       });
 
-      test('when locking rows without returning data '
+      test('when locking rows without returning data, '
           'then the query succeeds and the row is still accessible.', () async {
         await session.db.transaction((transaction) async {
           await SimpleData.db.lockRows(
@@ -105,7 +105,7 @@ void main() {
   );
 
   withServerpod(
-    'Given tables with existing data for related models',
+    'Given tables with existing data for related models,',
     (sessionBuilder, _) {
       late Session session;
       late Town town;
@@ -133,7 +133,7 @@ void main() {
       });
 
       test(
-        'when finding by id with forUpdate and object include '
+        'when finding by id with forUpdate and object include, '
         'then the row and relation are returned.',
         () async {
           await session.db.transaction((transaction) async {
@@ -155,7 +155,7 @@ void main() {
       );
 
       test(
-        'when finding rows with forUpdate and object include '
+        'when finding rows with forUpdate and object include, '
         'then the row and relation are returned.',
         () async {
           await session.db.transaction((transaction) async {
@@ -175,7 +175,7 @@ void main() {
       );
 
       test(
-        'when finding first row with forUpdate and object include '
+        'when finding first row with forUpdate and object include, '
         'then the row and relation are returned.',
         () async {
           await session.db.transaction((transaction) async {
@@ -195,7 +195,7 @@ void main() {
       );
 
       test(
-        'when finding by id with forUpdate and both object and list includes '
+        'when finding by id with forUpdate and both object and list includes, '
         'then the row and the related objects are returned.',
         () async {
           await session.db.transaction((transaction) async {
@@ -225,7 +225,7 @@ void main() {
   );
 
   withServerpod(
-    'Given a table with existing data and a forUpdate lock in place that holds all rows acquired using find method',
+    'Given a table with existing data and a forUpdate lock in place that holds all rows acquired using find method,',
     // Concurrency tests require real parallel transactions, which are not
     // compatible with the test framework's database rollback mechanism.
     rollbackDatabase: RollbackDatabase.disabled,
@@ -269,7 +269,7 @@ void main() {
         );
       });
 
-      test('when finding matching rows with no lock '
+      test('when finding matching rows with no lock, '
           'then all rows are returned.', () async {
         final t2 = session.db.transaction((transaction) async {
           return await SimpleData.db.find(
@@ -287,7 +287,7 @@ void main() {
         expect(rows.last.num, 2);
       });
 
-      test('when finding matching rows with noWait '
+      test('when finding matching rows with noWait, '
           'then the operation throws due to rows being locked.', () async {
         final t2 = session.db.transaction((transaction) async {
           await SimpleData.db.find(
@@ -302,7 +302,7 @@ void main() {
         await expectLater(t2, throwsA(isA<Exception>()));
       });
 
-      test('when finding matching rows with skipLocked '
+      test('when finding matching rows with skipLocked, '
           'then all rows are skipped.', () async {
         final t2 = session.db.transaction((transaction) async {
           return await SimpleData.db.find(
@@ -323,7 +323,7 @@ void main() {
   );
 
   withServerpod(
-    'Given a table with existing data and a forUpdate lock in place that holds part of the rows acquired using find method',
+    'Given a table with existing data and a forUpdate lock in place that holds part of the rows acquired using find method,',
     // Concurrency tests require real parallel transactions, which are not
     // compatible with the test framework's database rollback mechanism.
     rollbackDatabase: RollbackDatabase.disabled,
@@ -367,7 +367,7 @@ void main() {
         );
       });
 
-      test('when finding matching rows with noWait '
+      test('when finding matching rows with noWait, '
           'then the operation throws due to rows being locked.', () async {
         final t2 = session.db.transaction((transaction) async {
           await SimpleData.db.find(
@@ -382,7 +382,7 @@ void main() {
         await expectLater(t2, throwsA(isA<Exception>()));
       });
 
-      test('when finding not matching rows with noWait '
+      test('when finding not matching rows with noWait, '
           'then the rows are returned.', () async {
         final t2 = session.db.transaction((transaction) async {
           return await SimpleData.db.find(
@@ -401,7 +401,7 @@ void main() {
         expect(rows.first.num, 2);
       });
 
-      test('when finding all rows with skipLocked '
+      test('when finding all rows with skipLocked, '
           'then only matching rows are skipped.', () async {
         final t2 = session.db.transaction((transaction) async {
           return await SimpleData.db.find(
@@ -423,7 +423,7 @@ void main() {
   );
 
   withServerpod(
-    'Given related tables and a forUpdate lock in place on one company row acquired using find with includes',
+    'Given related tables and a forUpdate lock in place on one company row acquired using find with includes,',
     // Concurrency tests require real parallel transactions, which are not
     // compatible with the test framework's database rollback mechanism.
     rollbackDatabase: RollbackDatabase.disabled,
@@ -479,7 +479,7 @@ void main() {
         );
       });
 
-      test('when finding matching company rows with noWait '
+      test('when finding matching company rows with noWait, '
           'then the operation throws due to rows being locked.', () async {
         final t2 = session.db.transaction((transaction) async {
           await Company.db.find(
@@ -495,7 +495,7 @@ void main() {
       });
 
       test(
-        'when finding the included town row with noWait '
+        'when finding the included town row with noWait, '
         'then the operation succeeds since related rows are not locked.',
         () async {
           final t2 = session.db.transaction((transaction) async {
@@ -516,7 +516,7 @@ void main() {
         },
       );
 
-      test('when finding another company sharing the town with noWait '
+      test('when finding another company sharing the town with noWait, '
           'then the rows are returned.', () async {
         final t2 = session.db.transaction((transaction) async {
           return await Company.db.find(
@@ -538,7 +538,7 @@ void main() {
   );
 
   withServerpod(
-    'Given a table with existing data and a forUpdate lock in place that holds part of the rows acquired using findById method',
+    'Given a table with existing data and a forUpdate lock in place that holds part of the rows acquired using findById method,',
     // Concurrency tests require real parallel transactions, which are not
     // compatible with the test framework's database rollback mechanism.
     rollbackDatabase: RollbackDatabase.disabled,
@@ -582,7 +582,7 @@ void main() {
         );
       });
 
-      test('when finding matching rows with noWait '
+      test('when finding matching rows with noWait, '
           'then the operation throws due to rows being locked.', () async {
         final t2 = session.db.transaction((transaction) async {
           await SimpleData.db.find(
@@ -597,7 +597,7 @@ void main() {
         await expectLater(t2, throwsA(isA<Exception>()));
       });
 
-      test('when finding not matching rows with noWait '
+      test('when finding not matching rows with noWait, '
           'then the rows are returned.', () async {
         final t2 = session.db.transaction((transaction) async {
           return await SimpleData.db.find(
@@ -616,7 +616,7 @@ void main() {
         expect(rows.first.num, 2);
       });
 
-      test('when finding all rows with skipLocked '
+      test('when finding all rows with skipLocked, '
           'then only matching rows are skipped.', () async {
         final t2 = session.db.transaction((transaction) async {
           return await SimpleData.db.find(
@@ -638,7 +638,7 @@ void main() {
   );
 
   withServerpod(
-    'Given a table with existing data and a forUpdate lock in place that holds part of the rows acquired using findFirstRow method',
+    'Given a table with existing data and a forUpdate lock in place that holds part of the rows acquired using findFirstRow method,',
     // Concurrency tests require real parallel transactions, which are not
     // compatible with the test framework's database rollback mechanism.
     rollbackDatabase: RollbackDatabase.disabled,
@@ -682,7 +682,7 @@ void main() {
         );
       });
 
-      test('when finding matching rows with noWait '
+      test('when finding matching rows with noWait, '
           'then the operation throws due to rows being locked.', () async {
         final t2 = session.db.transaction((transaction) async {
           await SimpleData.db.find(
@@ -697,7 +697,7 @@ void main() {
         await expectLater(t2, throwsA(isA<Exception>()));
       });
 
-      test('when finding not matching rows with noWait '
+      test('when finding not matching rows with noWait, '
           'then the rows are returned.', () async {
         final t2 = session.db.transaction((transaction) async {
           return await SimpleData.db.find(
@@ -716,7 +716,7 @@ void main() {
         expect(rows.first.num, 2);
       });
 
-      test('when finding all rows with skipLocked '
+      test('when finding all rows with skipLocked, '
           'then only matching rows are skipped.', () async {
         final t2 = session.db.transaction((transaction) async {
           return await SimpleData.db.find(
@@ -738,7 +738,7 @@ void main() {
   );
 
   withServerpod(
-    'Given a table with existing data and a forUpdate lock in place that holds part of the rows acquired using lockRows method',
+    'Given a table with existing data and a forUpdate lock in place that holds part of the rows acquired using lockRows method,',
     // Concurrency tests require real parallel transactions, which are not
     // compatible with the test framework's database rollback mechanism.
     rollbackDatabase: RollbackDatabase.disabled,
@@ -782,7 +782,7 @@ void main() {
         );
       });
 
-      test('when finding matching rows with noWait '
+      test('when finding matching rows with noWait, '
           'then the operation throws due to rows being locked.', () async {
         final t2 = session.db.transaction((transaction) async {
           await SimpleData.db.find(
@@ -797,7 +797,7 @@ void main() {
         await expectLater(t2, throwsA(isA<Exception>()));
       });
 
-      test('when finding not matching rows with noWait '
+      test('when finding not matching rows with noWait, '
           'then the rows are returned.', () async {
         final t2 = session.db.transaction((transaction) async {
           return await SimpleData.db.find(
@@ -816,7 +816,7 @@ void main() {
         expect(rows.first.num, 2);
       });
 
-      test('when finding all rows with skipLocked '
+      test('when finding all rows with skipLocked, '
           'then only matching rows are skipped.', () async {
         final t2 = session.db.transaction((transaction) async {
           return await SimpleData.db.find(
@@ -838,7 +838,7 @@ void main() {
   );
 
   withServerpod(
-    'Given a table with existing data and a lock attempt with no transaction',
+    'Given a table with existing data and a lock attempt with no transaction,',
     // Testing that lockMode without a transaction throws requires rollback to
     // be disabled since the test framework wraps calls in a transaction.
     rollbackDatabase: RollbackDatabase.disabled,
@@ -857,7 +857,7 @@ void main() {
         );
       });
 
-      test('when using find with lockMode '
+      test('when using find with lockMode, '
           'then throws ArgumentError.', () async {
         expect(
           () => SimpleData.db.find(
@@ -869,7 +869,7 @@ void main() {
         );
       });
 
-      test('when using findById with lockMode '
+      test('when using findById with lockMode, '
           'then throws ArgumentError.', () async {
         expect(
           () => SimpleData.db.findById(
@@ -881,7 +881,7 @@ void main() {
         );
       });
 
-      test('when using findFirstRow with lockMode '
+      test('when using findFirstRow with lockMode, '
           'then throws ArgumentError.', () async {
         expect(
           () => SimpleData.db.findFirstRow(

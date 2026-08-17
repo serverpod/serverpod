@@ -2,3 +2,12 @@ include: package:serverpod_lints/public_flutter.yaml
 
 formatter:
   trailing_commas: preserve
+analyzer:
+  exclude:
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**

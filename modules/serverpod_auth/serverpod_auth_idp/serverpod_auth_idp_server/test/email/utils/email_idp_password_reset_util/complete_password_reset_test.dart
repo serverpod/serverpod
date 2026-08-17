@@ -10,7 +10,7 @@ import '../../test_utils/email_idp_test_fixture.dart';
 /// logged outside of the passed in transaction.
 void main() {
   withServerpod(
-    'Given password reset request exists',
+    'Given password reset request exists,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -72,7 +72,7 @@ void main() {
       });
 
       group(
-        'when complete password reset is called with valid complete password reset token and password',
+        'when complete password reset is called with valid complete password reset token and password,',
         () {
           late Future<UuidValue> completePasswordResetResult;
 
@@ -113,7 +113,8 @@ void main() {
       );
 
       test(
-        'when called with password incompatible with password policy then throws password policy violation exception',
+        'when called with password incompatible with password policy, '
+        'then throws password policy violation exception',
         () async {
           final result = session.db.transaction(
             (final transaction) =>
@@ -133,7 +134,8 @@ void main() {
       );
 
       test(
-        'when called with invalid complete password reset token then throws invalid complete password reset token exception',
+        'when called with invalid complete password reset token, '
+        'then throws invalid complete password reset token exception',
         () async {
           final result = session.db.transaction(
             (final transaction) =>
@@ -154,7 +156,8 @@ void main() {
       );
 
       test(
-        'when complete password reset is called with valid complete password reset token after expiration then throws request expired exception',
+        'when complete password reset is called with valid complete password reset token after expiration, '
+        'then throws request expired exception',
         () async {
           await withClock(
             Clock.fixed(
@@ -186,7 +189,7 @@ void main() {
   );
 
   withServerpod(
-    'Given password reset request exists that has not been verified by calling verifyPasswordResetCode',
+    'Given password reset request exists that has not been verified by calling verifyPasswordResetCode,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -232,7 +235,8 @@ void main() {
       });
 
       test(
-        'when complete password reset is called with invalid complete password reset token then throws set password token not found exception',
+        'when complete password reset is called with invalid complete password reset token, '
+        'then throws set password token not found exception',
         () async {
           final result = session.db.transaction(
             (final transaction) =>
@@ -254,7 +258,8 @@ void main() {
   );
 
   withServerpod(
-    'Given successful password complete request when capturing output from onPasswordResetCompleted callback',
+    'Given successful password complete request, '
+    'when capturing output from onPasswordResetCompleted callback,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -340,7 +345,7 @@ void main() {
   );
 
   withServerpod(
-    'Given already completed password reset request',
+    'Given already completed password reset request,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -404,7 +409,8 @@ void main() {
       });
 
       test(
-        'when complete password reset is called with valid verification code and password then it throws request not found exception',
+        'when complete password reset is called with valid verification code and password, '
+        'then it throws request not found exception',
         () async {
           final result = session.db.transaction(
             (final transaction) =>
@@ -426,7 +432,7 @@ void main() {
   );
 
   withServerpod(
-    'Given password reset request was validated with expired credentials',
+    'Given password reset request was validated with expired credentials,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -507,7 +513,8 @@ void main() {
       });
 
       test(
-        'when complete password reset is called with valid credentials then it throws request not found exception',
+        'when complete password reset is called with valid credentials, '
+        'then it throws request not found exception',
         () async {
           final result = session.db.transaction(
             (final transaction) =>

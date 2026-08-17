@@ -58,7 +58,7 @@ INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
       });
 
       test(
-        'when calling the applyMigrations endpoint '
+        'when calling the applyMigrations endpoint, '
         'then the new migration is applied and integrity is verified.',
         () async {
           final endpoint = InsightsEndpoint();
@@ -82,7 +82,7 @@ INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
     'Given a pending repair migration',
     (sessionBuilder, _) async {
       const tableName = 'endpoint_destructive_test_repair_table';
-      final migrationName = MigrationGenerator.createVersionName(null);
+      late final migrationName = MigrationGenerator.createVersionName(null);
       final repairSql =
           '''
 BEGIN;
@@ -127,7 +127,7 @@ COMMIT;
       });
 
       test(
-        'when calling the applyMigrations endpoint '
+        'when calling the applyMigrations endpoint, '
         'then the repair migration is applied and integrity is verified.',
         () async {
           final endpoint = InsightsEndpoint();

@@ -15,7 +15,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "boolDefaultAndDefaultModel" field value should match the default value',
+      'when creating a record in the database with an unsafe query, '
+      'then the "boolDefaultAndDefaultModel" field value should match the default value',
       () async {
         await session.db.unsafeQuery(
           '''
@@ -29,7 +30,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "boolDefaultAndDefaultPersist" field value should match the defaultPersist value',
+      'when creating a record in the database with an unsafe query, '
+      'then the "boolDefaultAndDefaultPersist" field value should match the defaultPersist value',
       () async {
         await session.db.unsafeQuery(
           '''
@@ -43,7 +45,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "boolDefaultModelAndDefaultPersist" field value should match the defaultPersist value',
+      'when creating a record in the database with an unsafe query, '
+      'then the "boolDefaultModelAndDefaultPersist" field value should match the defaultPersist value',
       () async {
         await session.db.unsafeQuery(
           '''
@@ -57,7 +60,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with specific values, then the "boolDefaultAndDefaultModel" field value should match the provided value',
+      'when creating a record in the database with specific values, '
+      'then the "boolDefaultAndDefaultModel" field value should match the provided value',
       () async {
         var specificObject = BoolDefaultMix(
           boolDefaultAndDefaultModel: false,
@@ -71,7 +75,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with specific values, then the "boolDefaultAndDefaultPersist" field value should match the provided value',
+      'when creating a record in the database with specific values, '
+      'then the "boolDefaultAndDefaultPersist" field value should match the provided value',
       () async {
         var specificObject = BoolDefaultMix(
           boolDefaultAndDefaultPersist: true,
@@ -85,7 +90,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with specific values, then the "boolDefaultModelAndDefaultPersist" field value should match the provided value',
+      'when creating a record in the database with specific values, '
+      'then the "boolDefaultModelAndDefaultPersist" field value should match the provided value',
       () async {
         var specificObject = BoolDefaultMix(
           boolDefaultModelAndDefaultPersist: false,

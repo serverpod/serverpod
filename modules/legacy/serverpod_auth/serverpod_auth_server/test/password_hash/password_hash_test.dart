@@ -3,7 +3,9 @@ import 'package:test/test.dart';
 
 void main() {
   test(
-    'Given invalid password hash when instantiating password hash then argument error is thrown.',
+    'Given invalid password hash, '
+    'when instantiating password hash, '
+    'then argument error is thrown.',
     () {
       var passwordHash = r'$invalid$password$hash';
       expect(

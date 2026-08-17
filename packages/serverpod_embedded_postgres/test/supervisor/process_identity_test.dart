@@ -17,9 +17,9 @@ void main() {
     if (tmp.existsSync()) tmp.deleteSync(recursive: true);
   });
 
-  group('Given a ProcessIdentity', () {
+  group('Given a ProcessIdentity,', () {
     test(
-      'when written via writeAtomic then read returns an equal record.',
+      'when written via writeAtomic, then read returns an equal record.',
       () {
         var written = ProcessIdentity(
           pid: 1234,
@@ -42,12 +42,12 @@ void main() {
       },
     );
 
-    test('when read on a missing file then null is returned.', () {
+    test('when read on a missing file, then null is returned.', () {
       expect(ProcessIdentity.read(pidFile), isNull);
     });
 
     test(
-      'when read on a corrupt JSON pidfile then null is returned (no throw).',
+      'when read on a corrupt JSON pidfile, then null is returned (no throw).',
       () {
         pidFile.writeAsStringSync('not-json');
 
@@ -56,7 +56,7 @@ void main() {
     );
 
     test(
-      'when read on a JSON pidfile missing required fields '
+      'when read on a JSON pidfile missing required fields, '
       'then null is returned.',
       () {
         pidFile.writeAsStringSync('{"pid": 1234}');
@@ -66,9 +66,9 @@ void main() {
     );
   });
 
-  group('Given verifyIdentity', () {
+  group('Given verifyIdentity,', () {
     test(
-      'when the recorded pid is not running then notRunning is returned.',
+      'when the recorded pid is not running, then notRunning is returned.',
       () {
         // PID 999999 is virtually certain to not be a live process.
         var dead = ProcessIdentity(
@@ -85,7 +85,7 @@ void main() {
     );
 
     test(
-      'when the recorded pid is alive but the running process is not our postgres '
+      'when the recorded pid is alive but the running process is not our postgres, '
       'then foreign is returned.',
       () {
         // Use the current Dart process - it's alive but its identity does

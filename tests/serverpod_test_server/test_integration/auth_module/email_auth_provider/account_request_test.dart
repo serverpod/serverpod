@@ -5,11 +5,11 @@ import 'package:test/test.dart';
 import '../../test_tools/serverpod_test_tools.dart';
 
 void main() async {
-  withServerpod('Given no account request when trying to create account ', (
+  withServerpod('Given no account request, when trying to create account,', (
     sessionBuilder,
     _,
   ) {
-    var session = sessionBuilder.build();
+    late var session = sessionBuilder.build();
 
     late UserInfo? response;
     setUp(
@@ -36,11 +36,11 @@ void main() async {
     });
   });
 
-  withServerpod('Given existing account request', (
+  withServerpod('Given existing account request,', (
     sessionBuilder,
     _,
   ) {
-    var session = sessionBuilder.build();
+    late var session = sessionBuilder.build();
     var username = 'test';
     var password = 'password';
     var email = 'test@serverpod.dev';
@@ -60,7 +60,7 @@ void main() async {
       },
     );
 
-    group('when creating account with incorrect validation code', () {
+    group('when creating account with incorrect validation code,', () {
       late UserInfo? response;
       setUp(
         () async {
@@ -96,7 +96,8 @@ void main() async {
       });
     });
     group(
-      'when creating account with incorrect email then null is returned and no account is created',
+      'when creating account with incorrect email, '
+      'then null is returned and no account is created,',
       () {
         late UserInfo? response;
         setUp(
@@ -134,7 +135,7 @@ void main() async {
       },
     );
 
-    group('when creating account with correct email and validation code', () {
+    group('when creating account with correct email and validation code,', () {
       late UserInfo? response;
       setUp(
         () async {

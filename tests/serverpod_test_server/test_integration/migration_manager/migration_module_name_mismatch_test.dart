@@ -13,7 +13,7 @@ void main() {
     rollbackDatabase: RollbackDatabase.disabled,
     'Given migration definition.json with wrong module name',
     (sessionBuilder, _) async {
-      final migrationName = MigrationGenerator.createVersionName(null);
+      late final migrationName = MigrationGenerator.createVersionName(null);
       late List<String> existingMigrations;
 
       // Use 'serverpod' (the package module name) as the wrong module -
@@ -87,7 +87,8 @@ void main() {
       });
 
       test(
-        'when migrateToLatest is called then logs warning about module name mismatch.',
+        'when migrateToLatest is called, '
+        'then logs warning about module name mismatch.',
         () async {
           var testWriter = TestLogWriter();
           logWriter.add(testWriter);

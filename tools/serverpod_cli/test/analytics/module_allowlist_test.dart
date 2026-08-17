@@ -5,15 +5,15 @@ import 'package:test/test.dart';
 import '../test_util/builders/generator_config_builder.dart';
 import '../test_util/builders/module_config_builder.dart';
 
-/// Module naming is pure configuration mapping — there is no generated data to
-/// drive — so it is covered here rather than in the generate integration test.
+/// Module naming is pure configuration mapping - there is no generated data to
+/// drive - so it is covered here rather than in the generate integration test.
 /// Everything the analyzer derives from models and endpoints is asserted
 /// against real parsed sources in
 /// `test/integration/analytics/generate_feature_analytics_test.dart`.
 void main() {
   group(
     'Given a project depending on official and custom modules, '
-    'when its protocol features are analyzed, ',
+    'when its protocol features are analyzed,',
     () {
       late List<String> officialModules;
       late ProtocolAnalyticsSnapshot snapshot;

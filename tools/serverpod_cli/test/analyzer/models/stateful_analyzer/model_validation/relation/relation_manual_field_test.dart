@@ -9,9 +9,9 @@ import '../../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
   group(
-    'Given a class with a relation with a defined field name that holds the relation',
+    'Given a class with a relation with a defined field name that holds the relation,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -35,13 +35,13 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       var exampleClass = definitions.first as ClassDefinition;
 
@@ -74,9 +74,9 @@ void main() {
   );
 
   group(
-    'Given a class with a relation pointing to a field that does not exist',
+    'Given a class with a relation pointing to a field that does not exist,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withYaml(
           '''
 class: Example
@@ -87,8 +87,8 @@ fields:
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late StatefulAnalyzer analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
@@ -129,8 +129,8 @@ fields:
     },
   );
 
-  group('Given a class with a List relation with a field pointer defined', () {
-    var models = [
+  group('Given a class with a List relation with a field pointer defined,', () {
+    late var models = [
       ModelSourceBuilder().withYaml(
         '''
 class: Example
@@ -151,8 +151,8 @@ fields:
       ).build(),
     ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
+    late var collector = CodeGenerationCollector();
+    late StatefulAnalyzer analyzer = StatefulAnalyzer(
       config,
       models,
       onErrorsCollector(collector),
@@ -192,8 +192,8 @@ fields:
     );
   });
 
-  group('Given a class with an id relation with a field pointer defined', () {
-    var models = [
+  group('Given a class with an id relation with a field pointer defined,', () {
+    late var models = [
       ModelSourceBuilder().withYaml(
         '''
 class: Example
@@ -213,7 +213,7 @@ fields:
       ).build(),
     ];
 
-    var collector = CodeGenerationCollector();
+    late var collector = CodeGenerationCollector();
     StatefulAnalyzer(
       config,
       models,
@@ -251,9 +251,9 @@ fields:
   });
 
   group(
-    'Given a class with a relation pointing to a field with a mismatching type to the reference',
+    'Given a class with a relation pointing to a field with a mismatching type to the reference,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withYaml(
           '''
 class: Example
@@ -265,7 +265,7 @@ fields:
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       StatefulAnalyzer(
         config,
         models,
@@ -304,9 +304,9 @@ fields:
   );
 
   group(
-    'Given a class with a relation pointing to a field that is set to not persist',
+    'Given a class with a relation pointing to a field that is set to not persist,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withYaml(
           '''
 class: Example
@@ -318,7 +318,7 @@ fields:
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       StatefulAnalyzer(
         config,
         models,
@@ -357,9 +357,9 @@ fields:
   );
 
   group(
-    'Given a class with an optional relation pointing to a field ',
+    'Given a class with an optional relation pointing to a field,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder()
             .withYaml(
               '''
@@ -374,7 +374,7 @@ fields:
             .build(),
       ];
 
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       StatefulAnalyzer(
         config,
         models,
@@ -400,9 +400,9 @@ fields:
   );
 
   group(
-    'Given two classes with a named relation with a defined field name that holds the relation',
+    'Given two classes with a named relation with a defined field name that holds the relation,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -428,13 +428,13 @@ fields:
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       var exampleClass = definitions.first as ClassDefinition;
       var exampleParentClass = definitions.last as ClassDefinition;
@@ -455,7 +455,7 @@ fields:
       });
 
       group('then the foreign side', () {
-        var field = exampleParentClass.findField('example');
+        late var field = exampleParentClass.findField('example');
         var relation = field!.relation;
 
         test('has an object relation', () {
@@ -473,9 +473,9 @@ fields:
   );
 
   group(
-    'Given a class with a relation pointing to a field that already has a relation',
+    'Given a class with a relation pointing to a field that already has a relation,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -496,7 +496,7 @@ fields:
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       StatefulAnalyzer(
         config,
         models,
@@ -536,9 +536,9 @@ fields:
   );
 
   group(
-    'Given a class with a named object relation on both sides with foreign key field without unique index',
+    'Given a class with a named object relation on both sides with foreign key field without unique index,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withFileName('user').withYaml(
           '''
         class: User
@@ -558,8 +558,8 @@ fields:
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
@@ -586,9 +586,9 @@ fields:
   );
 
   group(
-    'Given a class with a named object relation on both sides with foreign key field in not unique index',
+    'Given a class with a named object relation on both sides with foreign key field in not unique index,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withFileName('user').withYaml(
           '''
         class: User
@@ -611,8 +611,8 @@ fields:
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
@@ -639,9 +639,9 @@ fields:
   );
 
   group(
-    'Given a class with a named object relation on both sides with foreign key field in unique index with multiple fields',
+    'Given a class with a named object relation on both sides with foreign key field in unique index with multiple fields,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withFileName('user').withYaml(
           '''
         class: User
@@ -666,8 +666,8 @@ fields:
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),

@@ -10,8 +10,8 @@ void main() async {
     await SimpleData.db.deleteWhere(session, where: (_) => Constant.bool(true));
   });
 
-  test('Given a transaction with data inserted after savepoint '
-      'when rolling back to savepoint '
+  test('Given a transaction with data inserted after savepoint, '
+      'when rolling back to savepoint, '
       'then no data is persisted in the database', () async {
     await session.db.transaction<void>(
       (transaction) async {
@@ -30,8 +30,8 @@ void main() async {
     expect(fetchedData, isEmpty);
   });
 
-  test('Given a transaction with data inserted after savepoint '
-      'when rolling back multiple times to same savepoint '
+  test('Given a transaction with data inserted after savepoint, '
+      'when rolling back multiple times to same savepoint, '
       'then no data is persisted in the database', () async {
     await session.db.transaction<void>(
       (transaction) async {
@@ -51,8 +51,8 @@ void main() async {
     expect(fetchedData, isEmpty);
   });
 
-  test('Given a transaction with data inserted after savepoint '
-      'when adding new savepoint with data and rolling back to it after rolling back to the first savepoint '
+  test('Given a transaction with data inserted after savepoint, '
+      'when adding new savepoint with data and rolling back to it after rolling back to the first savepoint, '
       'then no data is persisted in the database', () async {
     await session.db.transaction<void>(
       (transaction) async {
@@ -79,8 +79,8 @@ void main() async {
     expect(fetchedData, isEmpty);
   });
 
-  test('Given a transaction with data inserted after savepoint '
-      'when releasing savepoint '
+  test('Given a transaction with data inserted after savepoint, '
+      'when releasing savepoint, '
       'then data is persisted in the database', () async {
     await session.db.transaction<void>(
       (transaction) async {
@@ -100,8 +100,8 @@ void main() async {
     expect(fetchedData.first.num, 1);
   });
 
-  group('Given a transaction with data inserted after savepoint '
-      'when rolling back to savepoint after it has been released ', () {
+  group('Given a transaction with data inserted after savepoint, '
+      'when rolling back to savepoint after it has been released,', () {
     late Future<void> transactionFuture;
     setUp(() async {
       transactionFuture = session.db.transaction<void>(
@@ -141,8 +141,8 @@ void main() async {
   });
 
   group(
-    'Given a transaction with two savepoints with data insertion in between '
-    'when rolling back to first second savepoint after first has been released ',
+    'Given a transaction with two savepoints with data insertion in between, '
+    'when rolling back to first second savepoint after first has been released,',
     () {
       late Future<void> transactionFuture;
       setUp(() async {
@@ -190,8 +190,8 @@ void main() async {
   );
 
   test(
-    'Given a transaction with data inserted before and after savepoint '
-    'when rolling back to savepoint '
+    'Given a transaction with data inserted before and after savepoint, '
+    'when rolling back to savepoint, '
     'then data inserted before savepoint is persisted in the database',
     () async {
       var data1 = SimpleData(num: 1);

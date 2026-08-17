@@ -3,10 +3,11 @@ import 'package:test/test.dart';
 
 void main() async {
   group(
-    "Given a class with 'default' enum fields",
+    "Given a class with 'default' enum fields,",
     () {
       test(
-        'when an object of the class is created, then the "byNameEnumDefault" field should match the default enum value',
+        'when an object of the class is created, '
+        'then the "byNameEnumDefault" field should match the default enum value',
         () {
           var object = EnumDefault();
           expect(
@@ -17,7 +18,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created, then the "byNameEnumDefaultNull" field should match the default enum value',
+        'when an object of the class is created, '
+        'then the "byNameEnumDefaultNull" field should match the default enum value',
         () {
           var object = EnumDefault();
           expect(
@@ -28,7 +30,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created, then the "byIndexEnumDefault" field should match the default enum value',
+        'when an object of the class is created, '
+        'then the "byIndexEnumDefault" field should match the default enum value',
         () {
           var object = EnumDefault();
           expect(
@@ -39,7 +42,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created, then the "byIndexEnumDefaultNull" field should match the default enum value',
+        'when an object of the class is created, '
+        'then the "byIndexEnumDefaultNull" field should match the default enum value',
         () {
           var object = EnumDefault();
           expect(
@@ -50,7 +54,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a specific value for "byNameEnumDefault", then the field value should match the provided enum value',
+        'when an object of the class is created with a specific value for "byNameEnumDefault", '
+        'then the field value should match the provided enum value',
         () {
           var object = EnumDefault(
             byNameEnumDefault: ByNameEnum.byName2,
@@ -63,7 +68,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a specific value for "byNameEnumDefaultNull", then the field value should match the provided enum value',
+        'when an object of the class is created with a specific value for "byNameEnumDefaultNull", '
+        'then the field value should match the provided enum value',
         () {
           var object = EnumDefault(
             byNameEnumDefaultNull: ByNameEnum.byName1,
@@ -76,7 +82,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a specific value for "byIndexEnumDefault", then the field value should match the provided enum value',
+        'when an object of the class is created with a specific value for "byIndexEnumDefault", '
+        'then the field value should match the provided enum value',
         () {
           var object = EnumDefault(
             byIndexEnumDefault: ByIndexEnum.byIndex2,
@@ -89,7 +96,8 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a specific value for "byIndexEnumDefaultNull", then the field value should match the provided enum value',
+        'when an object of the class is created with a specific value for "byIndexEnumDefaultNull", '
+        'then the field value should match the provided enum value',
         () {
           var object = EnumDefault(
             byIndexEnumDefaultNull: ByIndexEnum.byIndex1,
@@ -102,7 +110,8 @@ void main() async {
       );
 
       test(
-        'when an object is created from JSON with missing "byNameEnumDefault" key, then the field should have the default value.',
+        'when an object is created from JSON with missing "byNameEnumDefault" key, '
+        'then the field should have the default value.',
         () {
           var object = EnumDefault.fromJson({});
           expect(
@@ -113,7 +122,8 @@ void main() async {
       );
 
       test(
-        'when an object is created from JSON with missing "byIndexEnumDefault" key, then the field should have the default value.',
+        'when an object is created from JSON with missing "byIndexEnumDefault" key, '
+        'then the field should have the default value.',
         () {
           var object = EnumDefault.fromJson({});
           expect(
@@ -124,7 +134,8 @@ void main() async {
       );
 
       test(
-        'when an object is created from JSON with missing "byNameEnumDefaultNull" key, then the field should have the default value.',
+        'when an object is created from JSON with missing "byNameEnumDefaultNull" key, '
+        'then the field should have the default value.',
         () {
           var object = EnumDefault.fromJson({});
           expect(
@@ -135,7 +146,8 @@ void main() async {
       );
 
       test(
-        'when an object is created from JSON with missing "byIndexEnumDefaultNull" key, then the field should have the default value.',
+        'when an object is created from JSON with missing "byIndexEnumDefaultNull" key, '
+        'then the field should have the default value.',
         () {
           var object = EnumDefault.fromJson({});
           expect(
@@ -146,7 +158,8 @@ void main() async {
       );
 
       test(
-        'when an object is created from JSON with explicit values, then the fields should match the provided values.',
+        'when an object is created from JSON with explicit values, '
+        'then the fields should match the provided values.',
         () {
           var object = EnumDefault.fromJson({
             'byNameEnumDefault': 'byName2',

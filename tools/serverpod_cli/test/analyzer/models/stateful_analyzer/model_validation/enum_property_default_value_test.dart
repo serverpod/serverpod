@@ -10,7 +10,7 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   group(
-    'Given an enum with a property that has a default value when parsing',
+    'Given an enum with a property that has a default value, when parsing,',
     () {
       late CodeGenerationCollector collector;
       late List<SerializableModelDefinition> definitions;
@@ -70,7 +70,8 @@ void main() {
   );
 
   group(
-    'Given an enum value that does not declare a property that has a default when parsing',
+    'Given an enum value that does not declare a property that has a default, '
+    'when parsing,',
     () {
       late EnumDefinition definition;
 
@@ -108,7 +109,8 @@ void main() {
   );
 
   group(
-    'Given an enum value that declares a property that has a default when parsing',
+    'Given an enum value that declares a property that has a default, '
+    'when parsing,',
     () {
       late EnumDefinition definition;
 

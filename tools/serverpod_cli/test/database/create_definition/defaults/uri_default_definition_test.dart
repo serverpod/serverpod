@@ -5,9 +5,9 @@ import '../../../test_util/builders/model_class_definition_builder.dart';
 import '../../../test_util/builders/serializable_entity_field_definition_builder.dart';
 
 void main() {
-  group('Given a class definition with a Uri field', () {
-    group('when "defaultPersist" is set', () {
-      var field = FieldDefinitionBuilder()
+  group('Given a class definition with a Uri field,', () {
+    group('when "defaultPersist" is set,', () {
+      late var field = FieldDefinitionBuilder()
           .withName('uri')
           .withTypeDefinition('Uri', false)
           .withDefaults(
@@ -15,12 +15,12 @@ void main() {
           )
           .build();
 
-      var model = ModelClassDefinitionBuilder()
+      late var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
 
-      var databaseDefinition = createDatabaseDefinitionFromModels(
+      late var databaseDefinition = createDatabaseDefinitionFromModels(
         [model],
         'example',
         [],
@@ -59,18 +59,18 @@ void main() {
       });
     });
 
-    group('when no "defaultPersist" is set', () {
-      var field = FieldDefinitionBuilder()
+    group('when no "defaultPersist" is set,', () {
+      late var field = FieldDefinitionBuilder()
           .withName('uri')
           .withTypeDefinition('Uri', false)
           .build();
 
-      var model = ModelClassDefinitionBuilder()
+      late var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
 
-      var databaseDefinition = createDatabaseDefinitionFromModels(
+      late var databaseDefinition = createDatabaseDefinitionFromModels(
         [model],
         'example',
         [],
@@ -86,8 +86,8 @@ void main() {
       });
     });
 
-    group('when the field is nullable and has a "defaultPersist" value', () {
-      var field = FieldDefinitionBuilder()
+    group('when the field is nullable and has a "defaultPersist" value,', () {
+      late var field = FieldDefinitionBuilder()
           .withName('uri')
           .withTypeDefinition('Uri', true)
           .withDefaults(
@@ -95,12 +95,12 @@ void main() {
           )
           .build();
 
-      var model = ModelClassDefinitionBuilder()
+      late var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
 
-      var databaseDefinition = createDatabaseDefinitionFromModels(
+      late var databaseDefinition = createDatabaseDefinitionFromModels(
         [model],
         'example',
         [],
@@ -125,18 +125,18 @@ void main() {
       });
     });
 
-    group('when the field is nullable and has no "defaultPersist" value', () {
-      var field = FieldDefinitionBuilder()
+    group('when the field is nullable and has no "defaultPersist" value,', () {
+      late var field = FieldDefinitionBuilder()
           .withName('uri')
           .withTypeDefinition('Uri', true)
           .build();
 
-      var model = ModelClassDefinitionBuilder()
+      late var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
 
-      var databaseDefinition = createDatabaseDefinitionFromModels(
+      late var databaseDefinition = createDatabaseDefinitionFromModels(
         [model],
         'example',
         [],
@@ -161,8 +161,8 @@ void main() {
       });
     });
 
-    group('when "defaultModelValue" is set', () {
-      var field = FieldDefinitionBuilder()
+    group('when "defaultModelValue" is set,', () {
+      late var field = FieldDefinitionBuilder()
           .withName('uri')
           .withTypeDefinition('Uri', false)
           .withDefaults(
@@ -170,12 +170,12 @@ void main() {
           )
           .build();
 
-      var model = ModelClassDefinitionBuilder()
+      late var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
 
-      var databaseDefinition = createDatabaseDefinitionFromModels(
+      late var databaseDefinition = createDatabaseDefinitionFromModels(
         [model],
         'example',
         [],
@@ -191,8 +191,8 @@ void main() {
       });
     });
 
-    group('when the field is nullable and "defaultModelValue" is set', () {
-      var field = FieldDefinitionBuilder()
+    group('when the field is nullable and "defaultModelValue" is set,', () {
+      late var field = FieldDefinitionBuilder()
           .withName('uri')
           .withTypeDefinition('Uri', true)
           .withDefaults(
@@ -200,12 +200,12 @@ void main() {
           )
           .build();
 
-      var model = ModelClassDefinitionBuilder()
+      late var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
 
-      var databaseDefinition = createDatabaseDefinitionFromModels(
+      late var databaseDefinition = createDatabaseDefinitionFromModels(
         [model],
         'example',
         [],

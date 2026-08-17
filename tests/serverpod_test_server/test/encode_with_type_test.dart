@@ -6,7 +6,9 @@ void main() {
   var protocol = Protocol();
 
   test(
-    'Given a  integer when encoding then output is the type name and value as a JSON string',
+    'Given a  integer, '
+    'when encoding, '
+    'then output is the type name and value as a JSON string',
     () {
       int number = 1;
       var typeName = protocol.encodeWithType(number);
@@ -15,7 +17,9 @@ void main() {
   );
 
   test(
-    'Given a non-null nullable integer when encoding then output is the type name and value as a JSON string',
+    'Given a non-null nullable integer, '
+    'when encoding, '
+    'then output is the type name and value as a JSON string',
     () {
       int? number = 1;
       var typeName = protocol.encodeWithType(number);
@@ -24,7 +28,9 @@ void main() {
   );
 
   test(
-    'Given a null nullable integer when encoding then output is \'null\' for both the type name and data as a JSON string',
+    'Given a null nullable integer, '
+    'when encoding, '
+    'then output is \'null\' for both the type name and data as a JSON string',
     () {
       int? number = null;
       var typeName = protocol.encodeWithType(number);
@@ -33,7 +39,9 @@ void main() {
   );
 
   test(
-    'Given a non-null SimpleData object when encoding then output is the type name and value as a JSON string',
+    'Given a non-null SimpleData object, '
+    'when encoding, '
+    'then output is the type name and value as a JSON string',
     () {
       SimpleData simpleData = SimpleData.fromJson({'num': 1});
       var typeName = protocol.encodeWithType(simpleData);
@@ -45,7 +53,9 @@ void main() {
   );
 
   test(
-    'Given a non-null nullable SimpleData object when encoding then output is the type name and value as a JSON string',
+    'Given a non-null nullable SimpleData object, '
+    'when encoding, '
+    'then output is the type name and value as a JSON string',
     () {
       SimpleData? simpleData = SimpleData.fromJson({'num': 1});
       var typeName = protocol.encodeWithType(simpleData);
@@ -57,7 +67,9 @@ void main() {
   );
 
   test(
-    'Given a nullable SimpleData object with a null value when encoding then output is \'null\' for both the type name and data as a JSON string',
+    'Given a nullable SimpleData object with a null value, '
+    'when encoding, '
+    'then output is \'null\' for both the type name and data as a JSON string',
     () {
       SimpleData? simpleData = null;
       var typeName = protocol.encodeWithType(simpleData);
@@ -66,7 +78,9 @@ void main() {
   );
 
   test(
-    'Given a Serverpod defined model when encoding with type then output is the type name and value as a JSON string',
+    'Given a Serverpod defined model, '
+    'when encoding with type, '
+    'then output is the type name and value as a JSON string',
     () {
       var serverpodDefinedModel = serverpod.ClusterServerInfo(
         serverId: 'Hello World',

@@ -9,20 +9,20 @@ import 'package:test/test.dart';
 void main() {
   var client = Client(serverUrl);
 
-  group('Given a module', () {
-    test('when calling a non-module endpoint that uses a module object '
+  group('Given a module,', () {
+    test('when calling a non-module endpoint that uses a module object, '
         'then should return true to indicate nothing went wrong', () async {
       var success = await client.moduleSerialization.serializeModuleObject();
       expect(success, equals(true));
     });
 
-    test('when calling endpoint method hello'
+    test('when calling endpoint method hello, '
         'then returns greeting', () async {
       var result = await client.modules.module.module.hello('World');
       expect(result, equals('Hello World'));
     });
 
-    test('when calling a non-module endpoint that modifies a module object '
+    test('when calling a non-module endpoint that modifies a module object, '
         'then should return modified object', () async {
       var moduleClass = module.ModuleClass(
         name: 'foo',
@@ -34,7 +34,7 @@ void main() {
       expect(result.data, equals(42));
     });
 
-    test('when calling endpoint method that modifies object '
+    test('when calling endpoint method that modifies object, '
         'then returns modified object', () async {
       var moduleClass = module.ModuleClass(
         name: 'foo',
@@ -47,7 +47,7 @@ void main() {
     });
 
     test(
-      'when calling stream-returning method that takes stream as a parameter '
+      'when calling stream-returning method that takes stream as a parameter, '
       'then should return a stream',
       () async {
         var streamComplete = Completer();
@@ -72,7 +72,7 @@ void main() {
     );
 
     test(
-      'when calling future-returning method that takes stream as a parameter '
+      'when calling future-returning method that takes stream as a parameter, '
       'then should return a future value',
       () async {
         var inputStream = Stream<int>.fromIterable([1]);
@@ -86,7 +86,8 @@ void main() {
 
   group('Nested modules classes.', () {
     test(
-      'Given a generated protocol class with a custom class, then serialize the internal data.',
+      'Given a generated protocol class with a custom class, '
+      'then serialize the internal data.',
       () async {
         var result = await client.moduleSerialization
             .serializeNestedModuleObject();

@@ -27,8 +27,8 @@ void main() async {
   setUpAll(() async => await _createTestDatabase(session));
   tearDownAll(() async => await _deleteAll(session));
 
-  group('Given bit column in database', () {
-    test('when fetching all then all rows are returned.', () async {
+  group('Given bit column in database,', () {
+    test('when fetching all, then all rows are returned.', () async {
       var result = await Types.db.find(
         session,
         where: (_) => Constant.bool(true),
@@ -38,7 +38,8 @@ void main() async {
     });
 
     test(
-      'when ordering by Hamming distance then closest rows are returned first.',
+      'when ordering by Hamming distance, '
+      'then closest rows are returned first.',
       () async {
         var result = await Types.db.find(
           session,
@@ -52,7 +53,8 @@ void main() async {
     );
 
     test(
-      'when filtering using closer than with Hamming distance then matching rows are returned.',
+      'when filtering using closer than with Hamming distance, '
+      'then matching rows are returned.',
       () async {
         var result = await Types.db.find(
           session,
@@ -64,7 +66,8 @@ void main() async {
     );
 
     test(
-      'when ordering by Jaccard distance then closest rows are returned first.',
+      'when ordering by Jaccard distance, '
+      'then closest rows are returned first.',
       () async {
         var result = await Types.db.find(
           session,
@@ -78,7 +81,8 @@ void main() async {
     );
 
     test(
-      'when filtering using closer than with Jaccard distance then matching rows are returned.',
+      'when filtering using closer than with Jaccard distance, '
+      'then matching rows are returned.',
       () async {
         var result = await Types.db.find(
           session,
@@ -90,7 +94,8 @@ void main() async {
     );
 
     test(
-      'when inserting and retrieving a bit vector then the same values are returned.',
+      'when inserting and retrieving a bit vector, '
+      'then the same values are returned.',
       () async {
         await Types.db.insert(session, [Types(aBit: thirdBit)]);
 

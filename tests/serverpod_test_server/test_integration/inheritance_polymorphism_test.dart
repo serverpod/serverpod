@@ -8,13 +8,13 @@ import 'package:test/test.dart';
 import 'test_tools/serverpod_test_tools.dart';
 
 void main() async {
-  withServerpod('Polymorphism Integration Tests', (sessionBuilder, endpoints) {
+  withServerpod('Polymorphism Integration Tests,', (sessionBuilder, endpoints) {
     late String runtimeType;
     late PolymorphicParent returned;
 
-    group('Given a PolymorphicParent object '
-        'when sent through polymorphicRoundtrip', () {
-      final original = PolymorphicParent(parent: 'This is a parent');
+    group('Given a PolymorphicParent object, '
+        'when sent through polymorphicRoundtrip,', () {
+      late final original = PolymorphicParent(parent: 'This is a parent');
 
       setUpAll(() async {
         (runtimeType, returned) = await endpoints.inheritancePolymorphismTest
@@ -37,9 +37,9 @@ void main() async {
       });
     });
 
-    group('Given a PolymorphicChild object '
-        'when sent through polymorphicRoundtrip', () {
-      final original = PolymorphicChild(
+    group('Given a PolymorphicChild object, '
+        'when sent through polymorphicRoundtrip,', () {
+      late final original = PolymorphicChild(
         parent: 'This is a parent',
         child: 'This is a child',
       );
@@ -65,9 +65,9 @@ void main() async {
       });
     });
 
-    group('Given a PolymorphicGrandChild object '
-        'when sent through polymorphicRoundtrip', () {
-      final original = PolymorphicGrandChild(
+    group('Given a PolymorphicGrandChild object, '
+        'when sent through polymorphicRoundtrip,', () {
+      late final original = PolymorphicGrandChild(
         parent: 'This is a parent',
         child: 'This is a child',
         grandchild: 'This is a grandchild',
@@ -94,9 +94,9 @@ void main() async {
       });
     });
 
-    group('Given a PolymorphicChildContainer object '
-        'when sent through polymorphicContainerRoundtrip', () {
-      var original = PolymorphicChildContainer(
+    group('Given a PolymorphicChildContainer object, '
+        'when sent through polymorphicContainerRoundtrip,', () {
+      late var original = PolymorphicChildContainer(
         child: PolymorphicGrandChild(
           parent: 'PolymorphicParent 1',
           child: 'PolymorphicChild 1',
@@ -170,9 +170,9 @@ void main() async {
       });
     });
 
-    group('Given a ModulePolymorphicChildContainer object '
-        'when sent through polymorphicContainerRoundtrip', () {
-      var original = ModulePolymorphicChildContainer(
+    group('Given a ModulePolymorphicChildContainer object, '
+        'when sent through polymorphicContainerRoundtrip,', () {
+      late var original = ModulePolymorphicChildContainer(
         moduleObject: ModulePolymorphicGrandChild(
           parent: 'ModulePolymorphicParent 1',
           child: 'ModulePolymorphicChild 1',
@@ -238,9 +238,9 @@ void main() async {
 
     // NOTE: This already worked before the polymorphism fix due to the usage
     // of `deserializeByClassName` on the streaming endpoint.
-    group('Given a PolymorphicChild object '
-        'when sent through polymorphicStreamingRoundtrip', () {
-      final original = PolymorphicChild(
+    group('Given a PolymorphicChild object, '
+        'when sent through polymorphicStreamingRoundtrip,', () {
+      late final original = PolymorphicChild(
         parent: 'This is a parent',
         child: 'This is a child',
       );

@@ -28,20 +28,20 @@ void main() {
       ])
       .build();
 
-  group('Given a class definition with an enum field', () {
+  group('Given a class definition with an enum field,', () {
     group('when the enum is serialized by name', () {
-      group('and no "defaultPersist" is set', () {
-        var field = FieldDefinitionBuilder()
+      group('and no "defaultPersist" is set,', () {
+        late var field = FieldDefinitionBuilder()
             .withName('enumDefault')
             .withEnumDefinition(byNameEnumDefinition, true)
             .build();
 
-        var model = ModelClassDefinitionBuilder()
+        late var model = ModelClassDefinitionBuilder()
             .withTableName('example')
             .withField(field)
             .build();
 
-        var databaseDefinition = createDatabaseDefinitionFromModels(
+        late var databaseDefinition = createDatabaseDefinitionFromModels(
           [model],
           'example',
           [],
@@ -83,19 +83,19 @@ void main() {
         });
       });
 
-      group('and a "defaultPersist" value is set', () {
-        var field = FieldDefinitionBuilder()
+      group('and a "defaultPersist" value is set,', () {
+        late var field = FieldDefinitionBuilder()
             .withName('enumDefault')
             .withEnumDefinition(byNameEnumDefinition, true)
             .withDefaults(defaultPersistValue: 'byName2')
             .build();
 
-        var model = ModelClassDefinitionBuilder()
+        late var model = ModelClassDefinitionBuilder()
             .withTableName('example')
             .withField(field)
             .build();
 
-        var databaseDefinition = createDatabaseDefinitionFromModels(
+        late var databaseDefinition = createDatabaseDefinitionFromModels(
           [model],
           'example',
           [],
@@ -149,19 +149,19 @@ void main() {
         });
       });
 
-      group('and "defaultModelValue" is set', () {
-        var field = FieldDefinitionBuilder()
+      group('and "defaultModelValue" is set,', () {
+        late var field = FieldDefinitionBuilder()
             .withName('enumDefault')
             .withEnumDefinition(byNameEnumDefinition, true)
             .withDefaults(defaultModelValue: 'byName1')
             .build();
 
-        var model = ModelClassDefinitionBuilder()
+        late var model = ModelClassDefinitionBuilder()
             .withTableName('example')
             .withField(field)
             .build();
 
-        var databaseDefinition = createDatabaseDefinitionFromModels(
+        late var databaseDefinition = createDatabaseDefinitionFromModels(
           [model],
           'example',
           [],
@@ -217,19 +217,19 @@ void main() {
     });
 
     group('when the enum is serialized by index', () {
-      group('and a "defaultPersist" value is set', () {
-        var field = FieldDefinitionBuilder()
+      group('and a "defaultPersist" value is set,', () {
+        late var field = FieldDefinitionBuilder()
             .withName('enumDefault')
             .withEnumDefinition(byIndexEnumDefinition, true)
             .withDefaults(defaultPersistValue: 'byIndex2')
             .build();
 
-        var model = ModelClassDefinitionBuilder()
+        late var model = ModelClassDefinitionBuilder()
             .withTableName('example')
             .withField(field)
             .build();
 
-        var databaseDefinition = createDatabaseDefinitionFromModels(
+        late var databaseDefinition = createDatabaseDefinitionFromModels(
           [model],
           'example',
           [],

@@ -10,9 +10,10 @@ import '../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
-  group('serverOnly property tests', () {
+  group('serverOnly property tests,', () {
     test(
-      'Given a class defined to serverOnly, then the serverOnly property is set to true.',
+      'Given a class defined to serverOnly, '
+      'then the serverOnly property is set to true.',
       () {
         var modelSources = [
           ModelSourceBuilder().withYaml(
@@ -32,7 +33,8 @@ void main() {
     );
 
     test(
-      'Given a class explicitly setting serverOnly to false, then the serverOnly property is set to false.',
+      'Given a class explicitly setting serverOnly to false, '
+      'then the serverOnly property is set to false.',
       () {
         var modelSources = [
           ModelSourceBuilder().withYaml(
@@ -52,7 +54,8 @@ void main() {
     );
 
     test(
-      'Given a class without the serverOnly property, then the default "false" value is used.',
+      'Given a class without the serverOnly property, '
+      'then the default "false" value is used.',
       () {
         var modelSources = [
           ModelSourceBuilder().withYaml(
@@ -71,7 +74,8 @@ void main() {
     );
 
     test(
-      'Given a class with the serverOnly property set to another datatype than bool, then an error is collected notifying that the serverOnly must be a bool.',
+      'Given a class with the serverOnly property set to another datatype than bool, '
+      'then an error is collected notifying that the serverOnly must be a bool.',
       () {
         var modelSources = [
           ModelSourceBuilder().withYaml(
@@ -103,7 +107,8 @@ void main() {
     );
 
     test(
-      'Given an exception with the serverOnly property set to another datatype than bool, then an error is collected notifying that the serverOnly must be a bool.',
+      'Given an exception with the serverOnly property set to another datatype than bool, '
+      'then an error is collected notifying that the serverOnly must be a bool.',
       () {
         var modelSources = [
           ModelSourceBuilder().withYaml(
@@ -135,9 +140,9 @@ void main() {
     );
   });
 
-  group('table property tests', () {
-    group('Given an empty class with a table defined', () {
-      var modelSources = [
+  group('table property tests,', () {
+    group('Given an empty class with a table defined,', () {
+      late var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -146,8 +151,8 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var models = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var models = StatefulAnalyzer(
         config,
         modelSources,
         onErrorsCollector(collector),
@@ -163,7 +168,8 @@ void main() {
       });
     });
     test(
-      'Given a class with a table defined, then the tableName is set in the definition.',
+      'Given a class with a table defined, '
+      'then the tableName is set in the definition.',
       () {
         var modelSources = [
           ModelSourceBuilder().withYaml(
@@ -189,7 +195,8 @@ void main() {
     );
 
     test(
-      'Given a class with a table name in a none snake_case_format, then collect an error that snake_case must be used.',
+      'Given a class with a table name in a none snake_case_format, '
+      'then collect an error that snake_case must be used.',
       () {
         var modelSources = [
           ModelSourceBuilder().withYaml(
@@ -296,7 +303,8 @@ void main() {
     );
 
     test(
-      'Given two classes with the same table name defined, then collect an error',
+      'Given two classes with the same table name defined, '
+      'then collect an error',
       () {
         var modelSources = [
           ModelSourceBuilder().withYaml(
@@ -339,7 +347,8 @@ void main() {
     );
 
     test(
-      'Given a class with a table defined but without the database feature enabled then an error is given.',
+      'Given a class with a table defined but without the database feature enabled, '
+      'then an error is given.',
       () {
         var config = GeneratorConfigBuilder().withEnabledFeatures([]).build();
         var modelSources = [
@@ -379,9 +388,10 @@ void main() {
     );
   });
 
-  group('Invalid properties', () {
+  group('Invalid properties,', () {
     test(
-      'Given a class with an invalid property, then collect an error that such a property is not allowed.',
+      'Given a class with an invalid property, '
+      'then collect an error that such a property is not allowed.',
       () {
         var modelSources = [
           ModelSourceBuilder().withYaml(
@@ -418,7 +428,8 @@ void main() {
     );
 
     test(
-      'Given an exception with indexes defined, then collect an error that indexes cannot be used together with exceptions.',
+      'Given an exception with indexes defined, '
+      'then collect an error that indexes cannot be used together with exceptions.',
       () {
         var modelSources = [
           ModelSourceBuilder().withYaml(
@@ -457,7 +468,8 @@ void main() {
     );
 
     test(
-      'Given an enum with a table defined, then collect an error that table cannot be used together with enums.',
+      'Given an enum with a table defined, '
+      'then collect an error that table cannot be used together with enums.',
       () {
         var modelSources = [
           ModelSourceBuilder().withYaml(

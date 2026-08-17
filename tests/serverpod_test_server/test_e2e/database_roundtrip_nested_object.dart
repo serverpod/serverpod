@@ -7,9 +7,10 @@ import 'object_with_object_builder.dart';
 void main() {
   var client = Client(serverUrl);
 
-  group('Given the database-roundtrip/echo server', () {
+  group('Given the database-roundtrip/echo server,', () {
     test(
-      'When a type with a nested data object is sent to in the server, then it is returned',
+      'When a type with a nested data object is sent to in the server, '
+      'then it is returned',
       () async {
         var object = ObjectWithObjectBuilder()
             .withData(SimpleData(num: 42))
@@ -24,7 +25,8 @@ void main() {
     );
 
     test(
-      'When a type with a `null` nested data object is sent to the server, then it is returned',
+      'When a type with a `null` nested data object is sent to the server, '
+      'then it is returned',
       () async {
         var object = ObjectWithObjectBuilder().build();
 
@@ -35,7 +37,8 @@ void main() {
     );
 
     test(
-      'When a type with a nested object list is sent to the server, then it is returned',
+      'When a type with a nested object list is sent to the server, '
+      'then it is returned',
       () async {
         var object = ObjectWithObjectBuilder().withDataList([
           SimpleData(num: 10),
@@ -51,7 +54,8 @@ void main() {
     );
 
     test(
-      'When a type with a nested nullable list is sent to the server, then it is returned',
+      'When a type with a nested nullable list is sent to the server, '
+      'then it is returned',
       () async {
         var object = ObjectWithObjectBuilder().withListWithNullableData(
           [SimpleData(num: 10), null],
@@ -66,7 +70,8 @@ void main() {
     );
 
     test(
-      'When a type with a `null` nested list is sent to the server, then it is returned',
+      'When a type with a `null` nested list is sent to the server, '
+      'then it is returned',
       () async {
         var object = ObjectWithObjectBuilder().withListWithNullableData(
           [SimpleData(num: 10), null],

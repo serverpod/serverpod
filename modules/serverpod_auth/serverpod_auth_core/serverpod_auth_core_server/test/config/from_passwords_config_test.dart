@@ -13,7 +13,7 @@ void main() {
     publicPort: 0,
   );
 
-  group('Given missing core passwords', () {
+  group('Given missing core passwords,', () {
     setUpAll(() async {
       await d.dir('config', [
         d.file('passwords.yaml', 'test:\n  database: "test"'),
@@ -31,7 +31,8 @@ void main() {
     });
 
     test(
-      'when constructing JwtConfigFromPasswords then throws PasswordNotFoundException.',
+      'when constructing JwtConfigFromPasswords, '
+      'then throws PasswordNotFoundException.',
       () {
         expect(
           () => JwtConfigFromPasswords(),
@@ -47,7 +48,8 @@ void main() {
     );
 
     test(
-      'when constructing ServerSideSessionsConfigFromPasswords then throws PasswordNotFoundException.',
+      'when constructing ServerSideSessionsConfigFromPasswords, '
+      'then throws PasswordNotFoundException.',
       () {
         expect(
           () => ServerSideSessionsConfigFromPasswords(),
@@ -64,7 +66,7 @@ void main() {
   });
 
   group(
-    'Given JWT passwords are present',
+    'Given JWT passwords are present,',
     () {
       setUpAll(() async {
         await d.dir('config', [
@@ -89,7 +91,7 @@ test:
       });
 
       test(
-        'when constructing JwtConfigFromPasswords then succeeds.',
+        'when constructing JwtConfigFromPasswords, then succeeds.',
         () {
           final config = JwtConfigFromPasswords();
           expect(config, isA<JwtConfig>());
@@ -97,7 +99,8 @@ test:
       );
 
       test(
-        'when constructing JwtConfigFromPasswords with onRefreshTokenCreated then callback is stored correctly.',
+        'when constructing JwtConfigFromPasswords with onRefreshTokenCreated, '
+        'then callback is stored correctly.',
         () {
           Future<void> onRefreshTokenCreated(
             final Session session, {
@@ -116,7 +119,7 @@ test:
   );
 
   group(
-    'Given serverSideSessionKeyHashPepper password is present',
+    'Given serverSideSessionKeyHashPepper password is present,',
     () {
       setUpAll(() async {
         await d.dir('config', [
@@ -140,7 +143,8 @@ test:
       });
 
       test(
-        'when constructing ServerSideSessionsConfigFromPasswords then succeeds.',
+        'when constructing ServerSideSessionsConfigFromPasswords, '
+        'then succeeds.',
         () {
           final config = ServerSideSessionsConfigFromPasswords();
           expect(config, isA<ServerSideSessionsConfig>());
@@ -148,7 +152,8 @@ test:
       );
 
       test(
-        'when constructing ServerSideSessionsConfigFromPasswords with onSessionCreated then callback is stored correctly.',
+        'when constructing ServerSideSessionsConfigFromPasswords with onSessionCreated, '
+        'then callback is stored correctly.',
         () {
           Future<void> onSessionCreated(
             final Session session, {

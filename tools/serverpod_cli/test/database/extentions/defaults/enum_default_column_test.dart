@@ -6,8 +6,8 @@ import 'package:test/test.dart';
 void main() {
   group('Given Enum column definition', () {
     group('with byName (text) representation', () {
-      group('with no default value', () {
-        ColumnDefinition defaultColumn = ColumnDefinition(
+      group('with no default value,', () {
+        late ColumnDefinition defaultColumn = ColumnDefinition(
           name: 'byNameEnumDefault',
           columnType: ColumnType.text,
           isNullable: false,
@@ -15,7 +15,8 @@ void main() {
         );
 
         test(
-          'when converting to PostgreSQL SQL code, then it should not have the default value',
+          'when converting to PostgreSQL SQL code, '
+          'then it should not have the default value',
           () {
             expect(
               defaultColumn.toPgSqlFragment(),
@@ -25,7 +26,8 @@ void main() {
         );
 
         test(
-          'when converting to SQLite SQL code, then it should not have the default value',
+          'when converting to SQLite SQL code, '
+          'then it should not have the default value',
           () {
             expect(
               defaultColumn.toSqlFragment(),
@@ -35,9 +37,10 @@ void main() {
         );
       });
 
-      group('with a specific default value', () {
+      group('with a specific default value,', () {
         test(
-          'when "byName1" is set as default, then it should be correctly reflected in the SQL code',
+          'when "byName1" is set as default, '
+          'then it should be correctly reflected in the SQL code',
           () {
             ColumnDefinition defaultColumn = ColumnDefinition(
               name: 'byNameEnumDefault',
@@ -60,9 +63,10 @@ void main() {
         );
       });
 
-      group('with nullable column and specific default values', () {
+      group('with nullable column and specific default values,', () {
         test(
-          'when nullable with no default value, then it should not have any default in the SQL code',
+          'when nullable with no default value, '
+          'then it should not have any default in the SQL code',
           () {
             ColumnDefinition defaultColumn = ColumnDefinition(
               name: 'byNameEnumDefaultNull',
@@ -84,7 +88,8 @@ void main() {
         );
 
         test(
-          'when nullable with "byName1" as default, then it should be correctly reflected in the SQL code',
+          'when nullable with "byName1" as default, '
+          'then it should be correctly reflected in the SQL code',
           () {
             ColumnDefinition defaultColumn = ColumnDefinition(
               name: 'byNameEnumDefaultNull',
@@ -109,8 +114,8 @@ void main() {
     });
 
     group('with byIndex (integer) representation', () {
-      group('with no default value', () {
-        ColumnDefinition defaultColumn = ColumnDefinition(
+      group('with no default value,', () {
+        late ColumnDefinition defaultColumn = ColumnDefinition(
           name: 'byIndexEnumDefault',
           columnType: ColumnType.bigint,
           isNullable: false,
@@ -118,7 +123,8 @@ void main() {
         );
 
         test(
-          'when converting to PostgreSQL SQL code, then it should not have the default value',
+          'when converting to PostgreSQL SQL code, '
+          'then it should not have the default value',
           () {
             expect(
               defaultColumn.toPgSqlFragment(),
@@ -128,7 +134,8 @@ void main() {
         );
 
         test(
-          'when converting to SQLite SQL code, then it should not have the default value',
+          'when converting to SQLite SQL code, '
+          'then it should not have the default value',
           () {
             expect(
               defaultColumn.toSqlFragment(),
@@ -138,8 +145,8 @@ void main() {
         );
       });
 
-      group('with 0 as default value', () {
-        ColumnDefinition defaultColumn = ColumnDefinition(
+      group('with 0 as default value,', () {
+        late ColumnDefinition defaultColumn = ColumnDefinition(
           name: 'byIndexEnumDefault',
           columnType: ColumnType.bigint,
           isNullable: false,
@@ -148,7 +155,8 @@ void main() {
         );
 
         test(
-          'when converting to PostgreSQL SQL code, then it should have the correct default value',
+          'when converting to PostgreSQL SQL code, '
+          'then it should have the correct default value',
           () {
             expect(
               defaultColumn.toPgSqlFragment(),
@@ -158,7 +166,8 @@ void main() {
         );
 
         test(
-          'when converting to SQLite SQL code, then it should have the correct default value',
+          'when converting to SQLite SQL code, '
+          'then it should have the correct default value',
           () {
             expect(
               defaultColumn.toSqlFragment(),

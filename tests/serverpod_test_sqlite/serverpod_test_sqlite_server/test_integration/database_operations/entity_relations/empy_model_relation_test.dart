@@ -14,7 +14,7 @@ void main() async {
   );
 
   group(
-    'Given a model that only has id column when inserted to the database',
+    'Given a model that only has id column, when inserted to the database,',
     () {
       RelationEmptyModel? data;
       setUp(() async {

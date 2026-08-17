@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 void main() async {
   var session = await IntegrationTestServer().session();
 
-  group('Given models with one to many relation', () {
+  group('Given models with one to many relation,', () {
     tearDown(() async {
       await OrderUuid.db.deleteWhere(
         session,
@@ -19,7 +19,8 @@ void main() async {
     });
 
     test(
-      'when fetching models filtered by none many relation then result is as expected.',
+      'when fetching models filtered by none many relation, '
+      'then result is as expected.',
       () async {
         var customers = await CustomerInt.db.insert(session, [
           CustomerInt(name: 'Alex'),
@@ -48,7 +49,8 @@ void main() async {
     );
 
     test(
-      'when fetching models filtered by filtered none many relation then result is as expected',
+      'when fetching models filtered by filtered none many relation, '
+      'then result is as expected',
       () async {
         var customers = await CustomerInt.db.insert(session, [
           CustomerInt(name: 'Alex'),
@@ -84,7 +86,8 @@ void main() async {
     );
 
     test(
-      'when fetching models filtered on none many relation in combination with other filter then result is as expected.',
+      'when fetching models filtered on none many relation in combination with other filter, '
+      'then result is as expected.',
       () async {
         var customers = await CustomerInt.db.insert(session, [
           CustomerInt(name: 'Alex'),
@@ -114,7 +117,8 @@ void main() async {
     );
 
     test(
-      'when fetching models filtered on OR filtered none many relation then result is as expected.',
+      'when fetching models filtered on OR filtered none many relation, '
+      'then result is as expected.',
       () async {
         var customers = await CustomerInt.db.insert(session, [
           CustomerInt(name: 'Alex'),
@@ -152,7 +156,8 @@ void main() async {
     );
 
     test(
-      'when fetching models filtered on multiple filtered none many relation then result is as expected.',
+      'when fetching models filtered on multiple filtered none many relation, '
+      'then result is as expected.',
       () async {
         var customers = await CustomerInt.db.insert(session, [
           CustomerInt(name: 'Alex'),
@@ -204,7 +209,7 @@ void main() async {
     );
   });
 
-  group('Given models with nested one to many relation', () {
+  group('Given models with nested one to many relation,', () {
     tearDown(() async {
       await CommentInt.db.deleteWhere(
         session,
@@ -221,7 +226,7 @@ void main() async {
     });
 
     test(
-      'when filtering on nested none many relation then result is as expected',
+      'when filtering on nested none many relation, then result is as expected',
       () async {
         var customers = await CustomerInt.db.insert(session, [
           CustomerInt(name: 'Alex'),
@@ -263,7 +268,8 @@ void main() async {
     );
 
     test(
-      'when fetching models filtered on filtered nested none many relation then result is as expected',
+      'when fetching models filtered on filtered nested none many relation, '
+      'then result is as expected',
       () async {
         var customers = await CustomerInt.db.insert(session, [
           CustomerInt(name: 'Alex'),

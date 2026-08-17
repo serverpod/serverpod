@@ -24,9 +24,9 @@ void main() {
     if (tmpRoot.existsSync()) tmpRoot.deleteSync(recursive: true);
   });
 
-  group('Given a fresh project layout', () {
+  group('Given a fresh project layout,', () {
     test(
-      'when EmbeddedPostgres.start runs with transport defaults '
+      'when EmbeddedPostgres.start runs with transport defaults, '
       'then endpoint connects, SELECT 1 returns 1, and stop() releases the pidfile.',
       () async {
         var pgDataDir = Directory(p.join(tmpRoot.path, '.serverpod', 'pgdata'));
@@ -76,7 +76,7 @@ void main() {
     );
 
     test(
-      'when a default cluster is restarted with TcpTransport '
+      'when a default cluster is restarted with TcpTransport, '
       'then TCP auth succeeds using its generated password.',
       () async {
         var pgDataDir = Directory(p.join(tmpRoot.path, '.serverpod', 'pgdata'));
@@ -111,7 +111,7 @@ void main() {
     );
 
     test(
-      'when a cluster created with a configured password is restarted with TcpTransport '
+      'when a cluster created with a configured password is restarted with TcpTransport, '
       'then TCP auth succeeds using the configured password.',
       () async {
         var pgDataDir = Directory(p.join(tmpRoot.path, '.serverpod', 'pgdata'));
@@ -158,7 +158,7 @@ void main() {
     );
 
     test(
-      'when start runs twice in a row (no-op data dir) '
+      'when start runs twice in a row (no-op data dir), '
       'then the second start re-uses the same cluster (warm initdb skip) and reaches ready in <5s.',
       () async {
         var pgDataDir = Directory(p.join(tmpRoot.path, '.serverpod', 'pgdata'));
@@ -195,7 +195,7 @@ void main() {
     );
 
     test(
-      'when reset() runs then a subsequent start initdbs a fresh cluster.',
+      'when reset() runs, then a subsequent start initdbs a fresh cluster.',
       () async {
         var pgDataDir = Directory(p.join(tmpRoot.path, '.serverpod', 'pgdata'));
 

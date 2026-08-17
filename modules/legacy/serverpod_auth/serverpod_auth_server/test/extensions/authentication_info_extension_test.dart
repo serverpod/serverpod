@@ -3,8 +3,8 @@ import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given an `AuthenticationInfo` with an integer `userIdentifier`', () {
-    final authInfo = AuthenticationInfo(
+  group('Given an `AuthenticationInfo` with an integer `userIdentifier`,', () {
+    late final authInfo = AuthenticationInfo(
       '123',
       {},
       authId: const Uuid().v4obj().uuid,
@@ -16,9 +16,9 @@ void main() {
   });
 
   group(
-    'Given an `AuthenticationInfo` with a non-integer `userIdentifier`',
+    'Given an `AuthenticationInfo` with a non-integer `userIdentifier`,',
     () {
-      final authInfo = AuthenticationInfo(
+      late final authInfo = AuthenticationInfo(
         'abc-123',
         {},
         authId: const Uuid().v4obj().uuid,

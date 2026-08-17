@@ -10,7 +10,7 @@ void main() {
     });
   });
 
-  group('Given declared ObjectWithVector class', () {
+  group('Given declared ObjectWithVector class,', () {
     test('then vector fields are generated correctly.', () {
       expect(ObjectWithVector.t.vector, isA<ColumnVector>());
       expect(ObjectWithVector.t.vectorNullable, isA<ColumnVector>());
@@ -22,7 +22,7 @@ void main() {
     });
   });
 
-  group('Given declared ObjectWithHalfVector class', () {
+  group('Given declared ObjectWithHalfVector class,', () {
     test('then half vector fields are generated correctly.', () {
       expect(ObjectWithHalfVector.t.halfVector, isA<ColumnHalfVector>());
       expect(
@@ -37,7 +37,7 @@ void main() {
     });
   });
 
-  group('Given declared ObjectWithSparseVector class', () {
+  group('Given declared ObjectWithSparseVector class,', () {
     test('then sparse vector fields are generated correctly.', () {
       expect(ObjectWithSparseVector.t.sparseVector, isA<ColumnSparseVector>());
       expect(
@@ -52,7 +52,7 @@ void main() {
     });
   });
 
-  group('Given declared ObjectWithBit class', () {
+  group('Given declared ObjectWithBit class,', () {
     test('then bit fields are generated correctly.', () {
       expect(ObjectWithBit.t.bit, isA<ColumnBit>());
       expect(ObjectWithBit.t.bitNullable, isA<ColumnBit>());
@@ -64,7 +64,7 @@ void main() {
     });
   });
 
-  group('Given declared ObjectWithObject class', () {
+  group('Given declared ObjectWithObject class,', () {
     test('then custom class fields are generated as ColumnSerializable.', () {
       expect(ObjectWithObject.t.data, isA<ColumnSerializable<SimpleData>>());
       expect(
@@ -113,7 +113,7 @@ void main() {
     );
   });
 
-  group('Given declared Types class', () {
+  group('Given declared Types class,', () {
     test('then record field is generated as ColumnSerializable.', () {
       expect(
         Types.t.aRecord,

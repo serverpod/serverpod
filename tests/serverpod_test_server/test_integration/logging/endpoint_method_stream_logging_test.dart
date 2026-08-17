@@ -37,7 +37,7 @@ void main() async {
     await server.shutdown(exitProcess: false);
   });
 
-  group('Given that continuous logging is turned on', () {
+  group('Given that continuous logging is turned on,', () {
     setUp(() async {
       var settings = RuntimeSettingsBuilder()
           .withLogSettings(
@@ -50,7 +50,8 @@ void main() async {
     });
 
     test(
-      'when sending a stream message without closing the connection then the log is created.',
+      'when sending a stream message without closing the connection, '
+      'then the log is created.',
       () async {
         var controller = StreamController<int>();
         var outputStream = client.logging.streamEmpty(controller.stream);
@@ -69,7 +70,8 @@ void main() async {
     );
 
     test(
-      'when sending a stream message and closing the connection then the log is created.',
+      'when sending a stream message and closing the connection, '
+      'then the log is created.',
       () async {
         var controller = StreamController<int>();
         var outputStream = client.logging.streamEmpty(controller.stream);
@@ -88,7 +90,8 @@ void main() async {
     );
 
     test(
-      'when sending a stream message and writing a log without closing then the log is attached to the log session.',
+      'when sending a stream message and writing a log without closing, '
+      'then the log is attached to the log session.',
       () async {
         var controller = StreamController<int>();
         var outputStream = await client.logging.streamLogging(
@@ -109,7 +112,8 @@ void main() async {
     );
 
     test(
-      'when sending a stream message triggering a query without closing the stream then a query log is written.',
+      'when sending a stream message triggering a query without closing the stream, '
+      'then a query log is written.',
       () async {
         var controller = StreamController<int>();
         var outputStream = client.logging.streamQueryLogging(controller.stream);
@@ -128,7 +132,8 @@ void main() async {
     );
 
     test(
-      'but logging all sessions is turned off when sending a stream message without closing the connection no log entries are created.',
+      'but logging all sessions is turned off, '
+      'when sending a stream message without closing the connection no log entries are created.',
       () async {
         var settings = RuntimeSettingsBuilder()
             .withLogSettings(
@@ -156,7 +161,8 @@ void main() async {
     );
 
     test(
-      'when connecting to a stream method that throws an exception then session logs error.',
+      'when connecting to a stream method that throws an exception, '
+      'then session logs error.',
       () async {
         var stream = client.logging.streamException();
 
@@ -176,7 +182,7 @@ void main() async {
     );
   });
 
-  group('Given that continuous logging is turned off', () {
+  group('Given that continuous logging is turned off,', () {
     setUp(() async {
       var settings = RuntimeSettingsBuilder()
           .withLogSettings(
@@ -207,7 +213,8 @@ void main() async {
     );
 
     test(
-      'when sending a stream message and then closing the connection a log entry is created.',
+      'when sending a stream message and, '
+      'then closing the connection a log entry is created.',
       () async {
         var settings = RuntimeSettingsBuilder()
             .withLogSettings(
@@ -236,7 +243,8 @@ void main() async {
     );
 
     test(
-      'and logging all sessions is turned off when sending a stream message and closing the connection no log entries are created.',
+      'and logging all sessions is turned off, '
+      'when sending a stream message and closing the connection no log entries are created.',
       () async {
         var settings = RuntimeSettingsBuilder()
             .withLogSettings(
@@ -265,7 +273,9 @@ void main() async {
   });
 
   test(
-    'Given that all logging is turned down when sending a stream message and then closing the connection no logs are written.',
+    'Given that all logging is turned down, '
+    'when sending a stream message and, '
+    'then closing the connection no logs are written.',
     () async {
       var settings = RuntimeSettingsBuilder()
           .withLogSettings(LogSettingsBuilder().withLoggingTurnedDown().build())
@@ -289,7 +299,9 @@ void main() async {
   );
 
   test(
-    'Given that all logging is turned down but an override for the endpoint when sending a stream message to that endpoint and then closing the connection the logs are written.',
+    'Given that all logging is turned down but an override for the endpoint, '
+    'when sending a stream message to that endpoint and, '
+    'then closing the connection the logs are written.',
     () async {
       var settings = RuntimeSettingsBuilder()
           .withLogSettings(LogSettingsBuilder().withLoggingTurnedDown().build())
@@ -318,7 +330,9 @@ void main() async {
   );
 
   test(
-    'Given that all logging is turned down but an override for the endpoint when sending a stream message to another endpoint and then closing the connection no logs are written.',
+    'Given that all logging is turned down but an override for the endpoint, '
+    'when sending a stream message to another endpoint and, '
+    'then closing the connection no logs are written.',
     () async {
       var settings = RuntimeSettingsBuilder()
           .withLogSettings(LogSettingsBuilder().withLoggingTurnedDown().build())
@@ -346,7 +360,9 @@ void main() async {
   );
 
   test(
-    'Given that all logging is turned down but an override for the endpoint and method is present when sending a stream message to that endpoint and method and then closing the connection the logs are written.',
+    'Given that all logging is turned down but an override for the endpoint and method is present, '
+    'when sending a stream message to that endpoint and method and, '
+    'then closing the connection the logs are written.',
     () async {
       var settings = RuntimeSettingsBuilder()
           .withLogSettings(LogSettingsBuilder().withLoggingTurnedDown().build())
@@ -376,7 +392,9 @@ void main() async {
   );
 
   test(
-    'Given that all logging is turned down but an override for another method is present when sending a stream message and then closing the connection no logs are written.',
+    'Given that all logging is turned down but an override for another method is present, '
+    'when sending a stream message and, '
+    'then closing the connection no logs are written.',
     () async {
       var settings = RuntimeSettingsBuilder()
           .withLogSettings(LogSettingsBuilder().withLoggingTurnedDown().build())

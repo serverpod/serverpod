@@ -9,12 +9,13 @@ import 'package:uuid/uuid.dart';
 
 void main() async {
   group(
-    'Given a serverpod project when generate is called with -d option from a different directory',
+    'Given a serverpod project, '
+    'when generate is called with -d option from a different directory,',
     () {
-      var projectName =
+      late var projectName =
           'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
-      var serverDir = path.join(projectName, '${projectName}_server');
-      var clientDir = path.join(projectName, '${projectName}_client');
+      late var serverDir = path.join(projectName, '${projectName}_server');
+      late var clientDir = path.join(projectName, '${projectName}_client');
 
       setUp(() async {
         var result = await runServerpod(

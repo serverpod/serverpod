@@ -8,10 +8,11 @@ class DeserializationTestClass {}
 
 void main() {
   group(
-    "Given an unknown type for protocol, ",
+    "Given an unknown type for protocol,",
     () {
       test(
-        'when trying to deserialize using server protocol, then a DeserializationTypeNotFoundException exception is thrown',
+        'when trying to deserialize using server protocol, '
+        'then a DeserializationTypeNotFoundException exception is thrown',
         () {
           expect(
             () => server.Protocol().deserialize<DeserializationTestClass>({}),
@@ -20,7 +21,8 @@ void main() {
         },
       );
       test(
-        'when trying to deserialize using client protocol, then a DeserializationTypeNotFoundException exception is thrown',
+        'when trying to deserialize using client protocol, '
+        'then a DeserializationTypeNotFoundException exception is thrown',
         () {
           expect(
             () => Protocol().deserialize<DeserializationTestClass>({}),
@@ -32,10 +34,11 @@ void main() {
   );
 
   group(
-    "Given an known type for 'server' protocol but unknown type for 'auth' module, ",
+    "Given an known type for 'server' protocol but unknown type for 'auth' module,",
     () {
       test(
-        'when trying to deserialize with valid data, then no DeserializationTypeNotFoundException exception is thrown',
+        'when trying to deserialize with valid data, '
+        'then no DeserializationTypeNotFoundException exception is thrown',
         () {
           expect(
             server.Protocol().deserialize<module.ModuleClass>({
@@ -48,7 +51,8 @@ void main() {
       );
 
       test(
-        'when trying to deserialize with invalid data, then TypeError exception is thrown and not DeserializationTypeNotFoundException',
+        'when trying to deserialize with invalid data, '
+        'then TypeError exception is thrown and not DeserializationTypeNotFoundException',
         () {
           expect(
             () => server.Protocol().deserialize<module.ModuleClass>({

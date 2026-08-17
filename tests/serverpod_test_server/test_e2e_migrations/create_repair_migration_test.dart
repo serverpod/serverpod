@@ -4,7 +4,7 @@ import 'package:serverpod_test_server/test_util/service_client.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given database matching latest migration', () {
+  group('Given database matching latest migration,', () {
     tearDownAll(() async {
       await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -34,7 +34,7 @@ fields:
     });
 
     test(
-      'when creating repair migration then no migration is created.',
+      'when creating repair migration, then no migration is created.',
       () async {
         var exitCode = await MigrationTestUtils.runCreateRepairMigration();
         expect(
@@ -54,98 +54,10 @@ fields:
     );
 
     test(
-      'when creating repair migration with --force then a migration is created.',
+      'when creating repair migration with --force, '
+      'then a migration is created.',
       () async {
         var exitCode = await MigrationTestUtils.runCreateRepairMigration(
-          force: true,
-        );
-        expect(
-          exitCode,
-          0,
-          reason: 'Should create a repair migration.',
-        );
-
-        var maybeRepairMigration =
-            MigrationTestUtils.tryLoadRepairMigrationFile();
-        expect(
-          maybeRepairMigration,
-          isNotNull,
-          reason: 'Should find repair migration on disk.',
-        );
-      },
-    );
-  });
-
-  group('Given database with migrations that would be destructive if reverted', () {
-    tearDownAll(() async {
-      await MigrationTestUtils.migrationTestCleanup(
-        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
-        serviceClient: serviceClient,
-      );
-    });
-
-    setUpAll(() async {
-      var firstMigrationProtocols = {
-        'migrated_table': '''
-class: MigratedTable
-table: migrated_table
-fields:
-  anInt: int
-''',
-      };
-
-      var secondMigrationProtocols = {
-        'migrated_table': '''
-class: MigratedTable
-table: migrated_table
-fields:
-  anInt: int
-  aString: String?
-''',
-      };
-
-      await MigrationTestUtils.createInitialState(
-        migrationProtocols: [
-          firstMigrationProtocols,
-          secondMigrationProtocols,
-        ],
-      );
-    });
-
-    tearDown(() {
-      MigrationTestUtils.removeRepairMigration();
-    });
-
-    test(
-      'when creating repair migration towards older migration then a migration is not created.',
-      () async {
-        var migrationVersions =
-            await MigrationTestUtils.loadMigrationRegistry();
-        var previousMigrationIndex = migrationVersions.length - 2;
-        var previousMigrationName = migrationVersions[previousMigrationIndex];
-
-        var exitCode = await MigrationTestUtils.runCreateRepairMigration(
-          targetVersion: previousMigrationName,
-        );
-
-        expect(
-          exitCode,
-          isNot(0),
-          reason: 'Should not create a repair migration but exit code was 0.',
-        );
-      },
-    );
-
-    test(
-      'when creating repair migration towards older migration with --force then migration is created.',
-      () async {
-        var migrationVersions =
-            await MigrationTestUtils.loadMigrationRegistry();
-        var previousMigrationIndex = migrationVersions.length - 2;
-        var previousMigrationName = migrationVersions[previousMigrationIndex];
-
-        var exitCode = await MigrationTestUtils.runCreateRepairMigration(
-          targetVersion: previousMigrationName,
           force: true,
         );
         expect(
@@ -166,7 +78,101 @@ fields:
   });
 
   group(
-    'Given database with migrations that are non destructive if reverted',
+    'Given database with migrations that would be destructive if reverted,',
+    () {
+      tearDownAll(() async {
+        await MigrationTestUtils.migrationTestCleanup(
+          resetSql: 'DROP TABLE IF EXISTS migrated_table;',
+          serviceClient: serviceClient,
+        );
+      });
+
+      setUpAll(() async {
+        var firstMigrationProtocols = {
+          'migrated_table': '''
+class: MigratedTable
+table: migrated_table
+fields:
+  anInt: int
+''',
+        };
+
+        var secondMigrationProtocols = {
+          'migrated_table': '''
+class: MigratedTable
+table: migrated_table
+fields:
+  anInt: int
+  aString: String?
+''',
+        };
+
+        await MigrationTestUtils.createInitialState(
+          migrationProtocols: [
+            firstMigrationProtocols,
+            secondMigrationProtocols,
+          ],
+        );
+      });
+
+      tearDown(() {
+        MigrationTestUtils.removeRepairMigration();
+      });
+
+      test(
+        'when creating repair migration towards older migration, '
+        'then a migration is not created.',
+        () async {
+          var migrationVersions =
+              await MigrationTestUtils.loadMigrationRegistry();
+          var previousMigrationIndex = migrationVersions.length - 2;
+          var previousMigrationName = migrationVersions[previousMigrationIndex];
+
+          var exitCode = await MigrationTestUtils.runCreateRepairMigration(
+            targetVersion: previousMigrationName,
+          );
+
+          expect(
+            exitCode,
+            isNot(0),
+            reason: 'Should not create a repair migration but exit code was 0.',
+          );
+        },
+      );
+
+      test(
+        'when creating repair migration towards older migration with --force, '
+        'then migration is created.',
+        () async {
+          var migrationVersions =
+              await MigrationTestUtils.loadMigrationRegistry();
+          var previousMigrationIndex = migrationVersions.length - 2;
+          var previousMigrationName = migrationVersions[previousMigrationIndex];
+
+          var exitCode = await MigrationTestUtils.runCreateRepairMigration(
+            targetVersion: previousMigrationName,
+            force: true,
+          );
+          expect(
+            exitCode,
+            0,
+            reason: 'Should create a repair migration.',
+          );
+
+          var maybeRepairMigration =
+              MigrationTestUtils.tryLoadRepairMigrationFile();
+          expect(
+            maybeRepairMigration,
+            isNotNull,
+            reason: 'Should find repair migration on disk.',
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given database with migrations that are non destructive if reverted,',
     () {
       tearDown(() async {
         await MigrationTestUtils.migrationTestCleanup(
@@ -206,7 +212,8 @@ indexes:
       });
 
       test(
-        'when creating repair migration towards older migration then a migration is created.',
+        'when creating repair migration towards older migration, '
+        'then a migration is created.',
         () async {
           var migrationVersions =
               await MigrationTestUtils.loadMigrationRegistry();
@@ -235,7 +242,7 @@ indexes:
   );
 
   group(
-    'Given database definition matching latest migration but without recording migrations in database',
+    'Given database definition matching latest migration but without recording migrations in database,',
     () {
       tearDown(() async {
         await MigrationTestUtils.migrationTestCleanup(
@@ -266,7 +273,7 @@ fields:
       });
 
       test(
-        'when creating repair migration then a migration is created.',
+        'when creating repair migration, then a migration is created.',
         () async {
           var exitCode = await MigrationTestUtils.runCreateRepairMigration();
           expect(
@@ -287,7 +294,7 @@ fields:
     },
   );
 
-  group('Given database not matching latest migration', () {
+  group('Given database not matching latest migration,', () {
     tearDownAll(() async {
       await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -333,7 +340,7 @@ fields:
       MigrationTestUtils.removeRepairMigration();
     });
     test(
-      'when creating repair migration then repair migration is created.',
+      'when creating repair migration, then repair migration is created.',
       () async {
         var exitCode = await MigrationTestUtils.runCreateRepairMigration();
         expect(

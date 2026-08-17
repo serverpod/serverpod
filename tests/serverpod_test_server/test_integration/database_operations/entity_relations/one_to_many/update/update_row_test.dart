@@ -4,9 +4,9 @@ import 'package:test/test.dart';
 
 void main() async {
   withServerpod(
-    'Given an entity with an implicit one-to-many relation',
+    'Given an entity with an implicit one-to-many relation,',
     (sessionBuilder, _) {
-      var session = sessionBuilder.build();
+      late var session = sessionBuilder.build();
 
       setUp(() async {
         var book = await Book.db.insertRow(
@@ -23,7 +23,8 @@ void main() async {
       });
 
       test(
-        'when fetching "many" side, then implicit fields are included in toJson',
+        'when fetching "many" side, '
+        'then implicit fields are included in toJson',
         () async {
           var chapter = await Chapter.db.findFirstRow(session);
 
@@ -33,7 +34,8 @@ void main() async {
       );
 
       test(
-        'when copying many side entity, then implicit fields are included in toJson',
+        'when copying many side entity, '
+        'then implicit fields are included in toJson',
         () async {
           var chapter = await Chapter.db.findFirstRow(session);
 
@@ -47,7 +49,7 @@ void main() async {
       );
 
       test(
-        'when updating field on "many" side then relation is still preserved',
+        'when updating field on "many" side, then relation is still preserved',
         () async {
           var chapter = await Chapter.db.findFirstRow(session);
 
@@ -68,7 +70,8 @@ void main() async {
       );
 
       test(
-        'when creating a object to update entity with implicit relation, then relation is preserved',
+        'when creating a object to update entity with implicit relation, '
+        'then relation is preserved',
         () async {
           var storedChapter = await Chapter.db.findFirstRow(session);
           expect(storedChapter, isNotNull);

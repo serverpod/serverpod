@@ -12,7 +12,9 @@ void main() {
   var clientProtocol = client.Protocol();
 
   test(
-    'Given a Set with `int`s, when "getClassNameForObject" is called, then both server and client generate the same identifier',
+    'Given a Set with `int`s, '
+    'when "getClassNameForObject" is called, '
+    'then both server and client generate the same identifier',
     () {
       var serverName = serverProtocol.getClassNameForObject(
         <int>{1},
@@ -27,7 +29,9 @@ void main() {
   );
 
   test(
-    'Given a serialized `Set<int>`, when "deserializeByClassName" is called, then both server and client can decode the data',
+    'Given a serialized `Set<int>`, '
+    'when "deserializeByClassName" is called, '
+    'then both server and client can decode the data',
     () {
       var serialized = {
         'className': 'Set<int>',
@@ -45,7 +49,9 @@ void main() {
   );
 
   test(
-    'Given a serialized record `(int?,)?`, when "deserializeByClassName" is called, then both server and client can decode the data',
+    'Given a serialized record `(int?,)?`, '
+    'when "deserializeByClassName" is called, '
+    'then both server and client can decode the data',
     () {
       var serialized = {
         'className': '(int?,)?',
@@ -65,7 +71,9 @@ void main() {
   );
 
   test(
-    'Given a list with a type from another module, when "getClassNameForObject" is called, then both server and client generate the same string with the module name included',
+    'Given a list with a type from another module, '
+    'when "getClassNameForObject" is called, '
+    'then both server and client generate the same string with the module name included',
     () {
       var serverName = serverProtocol.getClassNameForObject(
         <auth_server.UserInfo>[],
@@ -80,7 +88,9 @@ void main() {
   );
 
   test(
-    'Given a hierarchy of model classes, when "getClassNameForObject" is called, then both server and client generate the same string for each class.',
+    'Given a hierarchy of model classes, '
+    'when "getClassNameForObject" is called, '
+    'then both server and client generate the same string for each class.',
     () {
       final modelClassesWithname =
           <
@@ -121,7 +131,9 @@ void main() {
   );
 
   test(
-    'Given a serialized data from another module, when "deserializeByClassName" is called, then both server and client can decode the data`',
+    'Given a serialized data from another module, '
+    'when "deserializeByClassName" is called, '
+    'then both server and client can decode the data`',
     () {
       var serialized = {
         'className': 'List<serverpod_auth.UserInfo>',

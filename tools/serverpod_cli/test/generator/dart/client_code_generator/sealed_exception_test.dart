@@ -31,16 +31,17 @@ void main() {
   var serverpodImportPath = 'package:serverpod_client/serverpod_client.dart';
 
   group(
-    'Given a hierarchy with a sealed parent exception and a normal child, when generating code',
+    'Given a hierarchy with a sealed parent exception and a normal child, '
+    'when generating code,',
     () {
-      var parent = ExceptionClassDefinitionBuilder()
+      late var parent = ExceptionClassDefinitionBuilder()
           .withClassName('AppException')
           .withFileName('app_exception')
           .withSimpleField('message', 'String')
           .withIsSealed(true)
           .build();
 
-      var child = ExceptionClassDefinitionBuilder()
+      late var child = ExceptionClassDefinitionBuilder()
           .withClassName('NotFoundException')
           .withFileName('not_found_exception')
           .withSimpleField('code', 'int')
@@ -54,20 +55,20 @@ void main() {
         child,
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var parentCompilationUnit = parseString(
+      late var parentCompilationUnit = parseString(
         content: codeMap[getExpectedFilePath(parent.fileName)]!,
       ).unit;
-      var childCompilationUnit = parseString(
+      late var childCompilationUnit = parseString(
         content: codeMap[getExpectedFilePath(child.fileName)]!,
       ).unit;
 
       group('then the ${parent.className}', () {
-        var parentClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        late var parentClass = CompilationUnitHelpers.tryFindClassDeclaration(
           parentCompilationUnit,
           name: parent.className,
         );
@@ -136,7 +137,7 @@ void main() {
       });
 
       group('then the ${child.className}', () {
-        var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        late var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
           childCompilationUnit,
           name: child.className,
         );
@@ -219,22 +220,23 @@ void main() {
     },
   );
   group(
-    'Given a hierarchy with a sealed parent exception and two normal children with nullable fields when generating code',
+    'Given a hierarchy with a sealed parent exception and two normal children with nullable fields, '
+    'when generating code,',
     () {
-      var parent = ExceptionClassDefinitionBuilder()
+      late var parent = ExceptionClassDefinitionBuilder()
           .withClassName('TransportException')
           .withFileName('transport_exception')
           .withSimpleField('message', 'String')
           .withIsSealed(true)
           .build();
 
-      var child1 = ExceptionClassDefinitionBuilder()
+      late var child1 = ExceptionClassDefinitionBuilder()
           .withClassName('NetworkException')
           .withFileName('network_exception')
           .withExtendsClass(parent)
           .build();
 
-      var child2 = ExceptionClassDefinitionBuilder()
+      late var child2 = ExceptionClassDefinitionBuilder()
           .withClassName('TimeoutException')
           .withFileName('timeout_exception')
           .withSimpleField('code', 'String', nullable: true)
@@ -250,18 +252,18 @@ void main() {
         child2,
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var parentCompilationUnit = parseString(
+      late var parentCompilationUnit = parseString(
         content: codeMap[getExpectedFilePath(parent.fileName)]!,
       ).unit;
-      var child1CompilationUnit = parseString(
+      late var child1CompilationUnit = parseString(
         content: codeMap[getExpectedFilePath(child1.fileName)]!,
       ).unit;
-      var child2CompilationUnit = parseString(
+      late var child2CompilationUnit = parseString(
         content: codeMap[getExpectedFilePath(child2.fileName)]!,
       ).unit;
 
@@ -307,16 +309,17 @@ void main() {
   );
 
   group(
-    'Given a hierarchy with a sealed parent exception with a nullable field and a child with no nullable fields when generating code',
+    'Given a hierarchy with a sealed parent exception with a nullable field and a child with no nullable fields, '
+    'when generating code,',
     () {
-      var parent = ExceptionClassDefinitionBuilder()
+      late var parent = ExceptionClassDefinitionBuilder()
           .withClassName('BaseException')
           .withFileName('base_exception')
           .withSimpleField('message', 'String', nullable: true)
           .withIsSealed(true)
           .build();
 
-      var child = ExceptionClassDefinitionBuilder()
+      late var child = ExceptionClassDefinitionBuilder()
           .withClassName('SpecificException')
           .withFileName('specific_exception')
           .withExtendsClass(parent)
@@ -329,15 +332,15 @@ void main() {
         child,
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var parentCompilationUnit = parseString(
+      late var parentCompilationUnit = parseString(
         content: codeMap[getExpectedFilePath(parent.fileName)]!,
       ).unit;
-      var childCompilationUnit = parseString(
+      late var childCompilationUnit = parseString(
         content: codeMap[getExpectedFilePath(child.fileName)]!,
       ).unit;
 
@@ -374,16 +377,17 @@ void main() {
   );
 
   group(
-    'Given a hierarchy with a sealed parent with a nullable field and a child with no nullable fields when generating code',
+    'Given a hierarchy with a sealed parent with a nullable field and a child with no nullable fields, '
+    'when generating code,',
     () {
-      var parent = ExceptionClassDefinitionBuilder()
+      late var parent = ExceptionClassDefinitionBuilder()
           .withClassName('Event')
           .withFileName('event')
           .withSimpleField('description', 'String', nullable: true)
           .withIsSealed(true)
           .build();
 
-      var child = ExceptionClassDefinitionBuilder()
+      late var child = ExceptionClassDefinitionBuilder()
           .withClassName('ClickEvent')
           .withFileName('click_event')
           .withSimpleField('elementId', 'String')
@@ -397,15 +401,15 @@ void main() {
         child,
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var parentCompilationUnit = parseString(
+      late var parentCompilationUnit = parseString(
         content: codeMap[getExpectedFilePath(parent.fileName)]!,
       ).unit;
-      var childCompilationUnit = parseString(
+      late var childCompilationUnit = parseString(
         content: codeMap[getExpectedFilePath(child.fileName)]!,
       ).unit;
 
@@ -442,21 +446,22 @@ void main() {
   );
 
   group(
-    'Given a hierarchy with a normal parent exception, a sealed child and a normal grandchild when generating code',
+    'Given a hierarchy with a normal parent exception, a sealed child and a normal grandchild, '
+    'when generating code,',
     () {
-      var grandparent = ExceptionClassDefinitionBuilder()
+      late var grandparent = ExceptionClassDefinitionBuilder()
           .withClassName('ExampleGrandparentException')
           .withFileName('example_grandparent_exception')
           .withSimpleField('name', 'String')
           .build();
-      var parent = ExceptionClassDefinitionBuilder()
+      late var parent = ExceptionClassDefinitionBuilder()
           .withClassName('ExampleParentException')
           .withFileName('example_parent_exception')
           .withSimpleField('name', 'String')
           .withExtendsClass(grandparent)
           .withIsSealed(true)
           .build();
-      var child = ExceptionClassDefinitionBuilder()
+      late var child = ExceptionClassDefinitionBuilder()
           .withClassName('ExampleChildException')
           .withFileName('example_child_exception')
           .withSimpleField('age', 'int', nullable: true)
@@ -472,27 +477,28 @@ void main() {
         child,
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var grandparentCompilationUnit = parseString(
+      late var grandparentCompilationUnit = parseString(
         content: codeMap[getExpectedFilePath(grandparent.fileName)]!,
       ).unit;
-      var parentCompilationUnit = parseString(
+      late var parentCompilationUnit = parseString(
         content: codeMap[getExpectedFilePath(parent.fileName)]!,
       ).unit;
 
-      var childCompilationUnit = parseString(
+      late var childCompilationUnit = parseString(
         content: codeMap[getExpectedFilePath(child.fileName)]!,
       ).unit;
 
       group('then ${grandparent.className}', () {
-        var grandparentClass = CompilationUnitHelpers.tryFindClassDeclaration(
-          grandparentCompilationUnit,
-          name: grandparent.className,
-        );
+        late var grandparentClass =
+            CompilationUnitHelpers.tryFindClassDeclaration(
+              grandparentCompilationUnit,
+              name: grandparent.className,
+            );
 
         test('has a copyWith method', () {
           var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
@@ -512,8 +518,8 @@ void main() {
         });
       });
 
-      group('then ${parent.className} ', () {
-        var parentClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      group('then ${parent.className}', () {
+        late var parentClass = CompilationUnitHelpers.tryFindClassDeclaration(
           parentCompilationUnit,
           name: parent.className,
         );
@@ -550,15 +556,16 @@ void main() {
       });
 
       group('then ${child.className} has a copyWith method', () {
-        var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        late var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
           childCompilationUnit,
           name: child.className,
         );
 
-        var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-          childClass!,
-          name: 'copyWith',
-        );
+        late var copyWithMethod =
+            CompilationUnitHelpers.tryFindMethodDeclaration(
+              childClass!,
+              name: 'copyWith',
+            );
 
         test('defined', () {
           expect(copyWithMethod, isNotNull);
@@ -577,27 +584,28 @@ void main() {
   );
 
   group(
-    'Given a hierarchy: sealed > normal > sealed > normal when generating code',
+    'Given a hierarchy: sealed > normal > sealed > normal, '
+    'when generating code,',
     () {
-      var greatGrandparent = ExceptionClassDefinitionBuilder()
+      late var greatGrandparent = ExceptionClassDefinitionBuilder()
           .withClassName('ExampleGreatGrandparentException')
           .withFileName('example_great_grandparent_exception')
           .withSimpleField('name', 'String')
           .withIsSealed(true)
           .build();
-      var grandparent = ExceptionClassDefinitionBuilder()
+      late var grandparent = ExceptionClassDefinitionBuilder()
           .withClassName('ExampleGrandparentException')
           .withFileName('example_grandparent_exception')
           .withSimpleField('name', 'String')
           .withExtendsClass(greatGrandparent)
           .build();
-      var parent = ExceptionClassDefinitionBuilder()
+      late var parent = ExceptionClassDefinitionBuilder()
           .withClassName('ExampleParentException')
           .withFileName('example_parent_exception')
           .withSimpleField('name', 'String')
           .withExtendsClass(grandparent)
           .build();
-      var child = ExceptionClassDefinitionBuilder()
+      late var child = ExceptionClassDefinitionBuilder()
           .withClassName('ExampleChildException')
           .withFileName('example_child_exception')
           .withSimpleField('age', 'int', nullable: true)
@@ -617,24 +625,24 @@ void main() {
         child,
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var greatGrandparentCompilationUnit = parseString(
+      late var greatGrandparentCompilationUnit = parseString(
         content: codeMap[getExpectedFilePath(greatGrandparent.fileName)]!,
       ).unit;
 
-      var grandparentCompilationUnit = parseString(
+      late var grandparentCompilationUnit = parseString(
         content: codeMap[getExpectedFilePath(grandparent.fileName)]!,
       ).unit;
 
-      var parentCompilationUnit = parseString(
+      late var parentCompilationUnit = parseString(
         content: codeMap[getExpectedFilePath(parent.fileName)]!,
       ).unit;
 
-      var childCompilationUnit = parseString(
+      late var childCompilationUnit = parseString(
         content: codeMap[getExpectedFilePath(child.fileName)]!,
       ).unit;
 
@@ -673,15 +681,17 @@ void main() {
       });
 
       group('then ${grandparent.className} has a copyWith method', () {
-        var grandparentClass = CompilationUnitHelpers.tryFindClassDeclaration(
-          grandparentCompilationUnit,
-          name: grandparent.className,
-        );
+        late var grandparentClass =
+            CompilationUnitHelpers.tryFindClassDeclaration(
+              grandparentCompilationUnit,
+              name: grandparent.className,
+            );
 
-        var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-          grandparentClass!,
-          name: 'copyWith',
-        );
+        late var copyWithMethod =
+            CompilationUnitHelpers.tryFindMethodDeclaration(
+              grandparentClass!,
+              name: 'copyWith',
+            );
 
         test('defined', () {
           expect(copyWithMethod, isNotNull);
@@ -712,16 +722,17 @@ void main() {
         },
       );
 
-      group('then ${child.className} ', () {
-        var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      group('then ${child.className}', () {
+        late var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
           childCompilationUnit,
           name: child.className,
         );
 
-        var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-          childClass!,
-          name: 'copyWith',
-        );
+        late var copyWithMethod =
+            CompilationUnitHelpers.tryFindMethodDeclaration(
+              childClass!,
+              name: 'copyWith',
+            );
 
         group('has a copyWith method', () {
           test('defined', () {
@@ -756,21 +767,22 @@ void main() {
     },
   );
 
-  group('Given a hierarchy: sealed > sealed > normal when generating code', () {
-    var grandparent = ExceptionClassDefinitionBuilder()
+  group('Given a hierarchy: sealed > sealed > normal, '
+      'when generating code,', () {
+    late var grandparent = ExceptionClassDefinitionBuilder()
         .withClassName('ExampleGrandparentException')
         .withFileName('example_grandparent_exception')
         .withSimpleField('message', 'String')
         .withIsSealed(true)
         .build();
-    var parent = ExceptionClassDefinitionBuilder()
+    late var parent = ExceptionClassDefinitionBuilder()
         .withClassName('ExampleParentException')
         .withFileName('example_parent_exception')
         .withSimpleField('name', 'String')
         .withExtendsClass(grandparent)
         .withIsSealed(true)
         .build();
-    var child = ExceptionClassDefinitionBuilder()
+    late var child = ExceptionClassDefinitionBuilder()
         .withClassName('ExampleChildException')
         .withFileName('example_child_exception')
         .withSimpleField('code', 'int', nullable: true)
@@ -786,22 +798,22 @@ void main() {
       child,
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var childCompilationUnit = parseString(
+    late var childCompilationUnit = parseString(
       content: codeMap[getExpectedFilePath(child.fileName)]!,
     ).unit;
 
     group('then ${child.className}', () {
-      var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      late var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
         childCompilationUnit,
         name: child.className,
       );
 
-      var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+      late var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
         childClass!,
         name: 'copyWith',
       );
@@ -821,8 +833,8 @@ void main() {
     });
   });
 
-  group('Given a sealed class with no children when generating code', () {
-    var parent = ExceptionClassDefinitionBuilder()
+  group('Given a sealed class with no children, when generating code,', () {
+    late var parent = ExceptionClassDefinitionBuilder()
         .withClassName('ExampleParentException')
         .withFileName('example_parent_exception')
         .withSimpleField('message', 'String')
@@ -833,17 +845,17 @@ void main() {
       parent,
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var parentCompilationUnit = parseString(
+    late var parentCompilationUnit = parseString(
       content: codeMap[getExpectedFilePath(parent.fileName)]!,
     ).unit;
 
     group('then ${parent.className}', () {
-      var parentClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      late var parentClass = CompilationUnitHelpers.tryFindClassDeclaration(
         parentCompilationUnit,
         name: parent.className,
       );
@@ -876,22 +888,23 @@ void main() {
   });
 
   group(
-    'Given a hierarchy: sealed > normal > normal, when the sealed top node is in another directory',
+    'Given a hierarchy: sealed > normal > normal, '
+    'when the sealed top node is in another directory,',
     () {
-      var grandparent = ExceptionClassDefinitionBuilder()
+      late var grandparent = ExceptionClassDefinitionBuilder()
           .withClassName('ExampleGrandparentException')
           .withSubDirParts(['sub_dir'])
           .withFileName('example_grandparent_exception')
           .withSimpleField('name', 'String')
           .withIsSealed(true)
           .build();
-      var parent = ExceptionClassDefinitionBuilder()
+      late var parent = ExceptionClassDefinitionBuilder()
           .withClassName('ExampleParentException')
           .withFileName('example_parent_exception')
           .withSimpleField('name', 'String')
           .withExtendsClass(grandparent)
           .build();
-      var child = ExceptionClassDefinitionBuilder()
+      late var child = ExceptionClassDefinitionBuilder()
           .withClassName('ExampleChildException')
           .withFileName('example_child_exception')
           .withSimpleField('code', 'int', nullable: true)
@@ -907,25 +920,27 @@ void main() {
         child,
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var grandparentPath = getExpectedFilePath(
+      late var grandparentPath = getExpectedFilePath(
         grandparent.fileName,
         subDirParts: ['sub_dir'],
       );
-      var parentPath = getExpectedFilePath(parent.fileName);
-      var childPath = getExpectedFilePath(child.fileName);
+      late var parentPath = getExpectedFilePath(parent.fileName);
+      late var childPath = getExpectedFilePath(child.fileName);
 
-      var grandparentCompilationUnit = parseString(
+      late var grandparentCompilationUnit = parseString(
         content: codeMap[grandparentPath]!,
       ).unit;
-      var parentCompilationUnit = parseString(
+      late var parentCompilationUnit = parseString(
         content: codeMap[parentPath]!,
       ).unit;
-      var childCompilationUnit = parseString(content: codeMap[childPath]!).unit;
+      late var childCompilationUnit = parseString(
+        content: codeMap[childPath]!,
+      ).unit;
 
       group('then ${grandparent.className}', () {
         test('has a part directive with ${parent.className} uri', () {
@@ -981,22 +996,23 @@ void main() {
   );
 
   group(
-    'Given a hierarchy: sealed > normal > normal when the middle node is in another directory',
+    'Given a hierarchy: sealed > normal > normal, '
+    'when the middle node is in another directory,',
     () {
-      var grandparent = ExceptionClassDefinitionBuilder()
+      late var grandparent = ExceptionClassDefinitionBuilder()
           .withClassName('ExampleGrandparentException')
           .withFileName('example_grandparent_exception')
           .withSimpleField('message', 'String')
           .withIsSealed(true)
           .build();
-      var parent = ExceptionClassDefinitionBuilder()
+      late var parent = ExceptionClassDefinitionBuilder()
           .withClassName('ExampleParentException')
           .withFileName('example_parent_exception')
           .withSubDirParts(['sub_dir'])
           .withSimpleField('name', 'String')
           .withExtendsClass(grandparent)
           .build();
-      var child = ExceptionClassDefinitionBuilder()
+      late var child = ExceptionClassDefinitionBuilder()
           .withClassName('ExampleChildException')
           .withFileName('example_child_exception')
           .withSimpleField('code', 'int', nullable: true)
@@ -1012,25 +1028,27 @@ void main() {
         child,
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var grandparentPath = getExpectedFilePath(grandparent.fileName);
-      var parentPath = getExpectedFilePath(
+      late var grandparentPath = getExpectedFilePath(grandparent.fileName);
+      late var parentPath = getExpectedFilePath(
         parent.fileName,
         subDirParts: ['sub_dir'],
       );
-      var childPath = getExpectedFilePath(child.fileName);
+      late var childPath = getExpectedFilePath(child.fileName);
 
-      var grandparentCompilationUnit = parseString(
+      late var grandparentCompilationUnit = parseString(
         content: codeMap[grandparentPath]!,
       ).unit;
-      var parentCompilationUnit = parseString(
+      late var parentCompilationUnit = parseString(
         content: codeMap[parentPath]!,
       ).unit;
-      var childCompilationUnit = parseString(content: codeMap[childPath]!).unit;
+      late var childCompilationUnit = parseString(
+        content: codeMap[childPath]!,
+      ).unit;
 
       group('then ${grandparent.className}', () {
         test('has a part directive with ${parent.className} uri', () {
@@ -1085,21 +1103,22 @@ void main() {
   );
 
   group(
-    'Given a hierarchy: sealed > normal > normal when the bottom node is in another directory',
+    'Given a hierarchy: sealed > normal > normal, '
+    'when the bottom node is in another directory,',
     () {
-      var grandparent = ExceptionClassDefinitionBuilder()
+      late var grandparent = ExceptionClassDefinitionBuilder()
           .withClassName('ExampleGrandparentException')
           .withFileName('example_grandparent_exception')
           .withSimpleField('message', 'String')
           .withIsSealed(true)
           .build();
-      var parent = ExceptionClassDefinitionBuilder()
+      late var parent = ExceptionClassDefinitionBuilder()
           .withClassName('ExampleParentException')
           .withFileName('example_parent_exception')
           .withSimpleField('name', 'String')
           .withExtendsClass(grandparent)
           .build();
-      var child = ExceptionClassDefinitionBuilder()
+      late var child = ExceptionClassDefinitionBuilder()
           .withClassName('ExampleChildException')
           .withFileName('example_child_exception')
           .withSubDirParts(['sub_dir'])
@@ -1116,25 +1135,27 @@ void main() {
         child,
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var grandparentPath = getExpectedFilePath(grandparent.fileName);
-      var parentPath = getExpectedFilePath(parent.fileName);
-      var childPath = getExpectedFilePath(
+      late var grandparentPath = getExpectedFilePath(grandparent.fileName);
+      late var parentPath = getExpectedFilePath(parent.fileName);
+      late var childPath = getExpectedFilePath(
         child.fileName,
         subDirParts: ['sub_dir'],
       );
 
-      var grandparentCompilationUnit = parseString(
+      late var grandparentCompilationUnit = parseString(
         content: codeMap[grandparentPath]!,
       ).unit;
-      var parentCompilationUnit = parseString(
+      late var parentCompilationUnit = parseString(
         content: codeMap[parentPath]!,
       ).unit;
-      var childCompilationUnit = parseString(content: codeMap[childPath]!).unit;
+      late var childCompilationUnit = parseString(
+        content: codeMap[childPath]!,
+      ).unit;
 
       group('then ${grandparent.className}', () {
         test('has a part directive with ${parent.className} uri', () {
@@ -1189,21 +1210,21 @@ void main() {
   );
 
   group(
-    'Given a sealed parent exception when generating code',
+    'Given a sealed parent exception, when generating code,',
     () {
-      var parent = ExceptionClassDefinitionBuilder()
+      late var parent = ExceptionClassDefinitionBuilder()
           .withClassName('AppException')
           .withFileName('app_exception')
           .withSimpleField('message', 'String')
           .withIsSealed(true)
           .build();
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: [parent],
         config: config,
       );
 
-      var parentCompilationUnit = parseString(
+      late var parentCompilationUnit = parseString(
         content: codeMap[getExpectedFilePath(parent.fileName)]!,
       ).unit;
 
@@ -1222,16 +1243,17 @@ void main() {
   );
 
   group(
-    'Given a model with a sealed exception as a field type when generating code',
+    'Given a model with a sealed exception as a field type, '
+    'when generating code,',
     () {
-      var sealedParent = ExceptionClassDefinitionBuilder()
+      late var sealedParent = ExceptionClassDefinitionBuilder()
           .withClassName('SealedParentException')
           .withFileName('sealed_parent_exception')
           .withSimpleField('message', 'String')
           .withIsSealed(true)
           .build();
 
-      var sealedChild = ExceptionClassDefinitionBuilder()
+      late var sealedChild = ExceptionClassDefinitionBuilder()
           .withClassName('SealedChildException')
           .withFileName('sealed_child_exception')
           .withSimpleField('code', 'int')
@@ -1240,7 +1262,7 @@ void main() {
 
       sealedParent.childClasses.add(ResolvedInheritanceDefinition(sealedChild));
 
-      var modelWithSealedField = ModelClassDefinitionBuilder()
+      late var modelWithSealedField = ModelClassDefinitionBuilder()
           .withClassName('ModelWithSealedField')
           .withFileName('model_with_sealed_field')
           .withField(
@@ -1278,7 +1300,7 @@ void main() {
         config: config,
       );
 
-      final expectedFileName = p.joinAll([
+      late final expectedFileName = p.joinAll([
         '..',
         '${projectName}_client',
         'lib',

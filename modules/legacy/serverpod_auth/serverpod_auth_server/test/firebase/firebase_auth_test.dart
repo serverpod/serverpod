@@ -8,7 +8,7 @@ import 'firebase_auth_mock.dart';
 void main() {
   var uid = 'abcdefghijklmnopqrstuvwxyz';
   group(
-    'Given a Firebase Auth class with a valid UserRecord, ',
+    'Given a Firebase Auth class with a valid UserRecord,',
     () {
       late FirebaseAuthManager auth;
 
@@ -30,7 +30,8 @@ void main() {
       });
 
       test(
-        'when calling verifyIdToken with an valid idToken, then the returned idToken matches the valid idToken',
+        'when calling verifyIdToken with an valid idToken, '
+        'then the returned idToken matches the valid idToken',
         () async {
           var idToken = generateMockIdToken(
             uid: uid,
@@ -46,7 +47,8 @@ void main() {
       );
 
       test(
-        'when calling verifyIdToken with an invalid idToken uid, then a FirebaseInvalidUIIDException is thrown',
+        'when calling verifyIdToken with an invalid idToken uid, '
+        'then a FirebaseInvalidUIIDException is thrown',
         () async {
           var idToken = generateMockIdToken(
             uid: '${uid}testttt',
@@ -62,7 +64,8 @@ void main() {
       );
 
       test(
-        'when calling verifyIdToken with an invalid idToken format, then a FirebaseJWTFormatException is thrown',
+        'when calling verifyIdToken with an invalid idToken format, '
+        'then a FirebaseJWTFormatException is thrown',
         () async {
           var idToken = 'blablabla.test.test';
 
@@ -74,7 +77,8 @@ void main() {
       );
 
       test(
-        'when calling verifyIdToken with an malformated idToken, then a FirebaseJWTFormatException is thrown',
+        'when calling verifyIdToken with an malformated idToken, '
+        'then a FirebaseJWTFormatException is thrown',
         () async {
           var idToken = 'blablabla';
 
@@ -88,7 +92,8 @@ void main() {
   );
 
   test(
-    'When initializing FirebaseAuthManager with an invalid service JSON, then a FirebaseInitException is thrown',
+    'When initializing FirebaseAuthManager with an invalid service JSON, '
+    'then a FirebaseInitException is thrown',
     () async {
       expect(
         () => FirebaseAuthManager({}),
@@ -99,7 +104,8 @@ void main() {
   );
 
   test(
-    'When initializing FirebaseAuthManager with an invalid "project_id", then a FirebaseInitException is thrown',
+    'When initializing FirebaseAuthManager with an invalid "project_id", '
+    'then a FirebaseInitException is thrown',
     () async {
       expect(
         () => FirebaseAuthManager({'project_id': ''}),
@@ -110,7 +116,8 @@ void main() {
   );
 
   test(
-    'When initializing FirebaseAuthManager with an valid "project_id" but missing account JSON data, then a FirebaseInitException is thrown',
+    'When initializing FirebaseAuthManager with an valid "project_id" but missing account JSON data, '
+    'then a FirebaseInitException is thrown',
     () async {
       expect(
         () => FirebaseAuthManager({'project_id': 'test-test'}),
@@ -120,7 +127,7 @@ void main() {
   );
 
   group(
-    'Given a Firebase Auth class with UserRecord valid since today, ',
+    'Given a Firebase Auth class with UserRecord valid since today,',
     () {
       late FirebaseAuthManager auth;
       setUp(() async {
@@ -141,7 +148,8 @@ void main() {
       });
 
       test(
-        'when calling verifyIdToken with an ID token that was signed before the user\'s "validSince" time, then a FirebaseJWTException is thrown',
+        'when calling verifyIdToken with an ID token that was signed before the user\'s "validSince" time, '
+        'then a FirebaseJWTException is thrown',
         () async {
           var idToken = generateMockIdToken(
             uid: uid,

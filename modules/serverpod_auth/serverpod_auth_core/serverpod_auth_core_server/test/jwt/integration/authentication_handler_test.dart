@@ -25,7 +25,8 @@ void main() {
     });
 
     test(
-      'when calling the authentication handler with an non-JWT String, then it returns `null`.',
+      'when calling the authentication handler with an non-JWT String, '
+      'then it returns `null`.',
       () async {
         final authInfo = await jwt.authenticationHandler(
           session,
@@ -37,7 +38,8 @@ void main() {
     );
 
     test(
-      'when calling the authentication handler with an invalid JWT String, then it returns `null`.',
+      'when calling the authentication handler with an invalid JWT String, '
+      'then it returns `null`.',
       () async {
         final authInfo = await jwt.authenticationHandler(
           session,
@@ -76,7 +78,8 @@ void main() {
       });
 
       test(
-        'when calling the authentication handler, then it returns the user and scopes.',
+        'when calling the authentication handler, '
+        'then it returns the user and scopes.',
         () async {
           final authInfo = await jwt.authenticationHandler(
             session,
@@ -90,7 +93,8 @@ void main() {
       );
 
       test(
-        'when calling the authentication handler, then the extra claims are available on the auth info.',
+        'when calling the authentication handler, '
+        'then the extra claims are available on the auth info.',
         () async {
           final authInfo = await jwt.authenticationHandler(
             session,
@@ -102,7 +106,8 @@ void main() {
       );
 
       test(
-        'when calling the authentication handler after the expiration time has elapsed, then it returns `null`.',
+        'when calling the authentication handler after the expiration time has elapsed, '
+        'then it returns `null`.',
         () async {
           final authInfo = await withClock(
             Clock.fixed(DateTime.now().add(const Duration(minutes: 11))),
@@ -117,7 +122,8 @@ void main() {
       );
 
       test(
-        'when calling the authentication handler after the secret key has been changed, then it returns `null`.',
+        'when calling the authentication handler after the secret key has been changed, '
+        'then it returns `null`.',
         () async {
           final differentJwt = Jwt(
             config: JwtConfig(
@@ -165,7 +171,8 @@ void main() {
       });
 
       test(
-        'when rotating the tokens, then both the old (non-expired) and new access token are valid.',
+        'when rotating the tokens, '
+        'then both the old (non-expired) and new access token are valid.',
         () async {
           final newTokenPair = await jwt.admin.rotateRefreshToken(
             session,
@@ -191,7 +198,8 @@ void main() {
       );
 
       test(
-        'when deleting all refresh tokens for the user, then the access token is still valid until it expires.',
+        'when deleting all refresh tokens for the user, '
+        'then the access token is still valid until it expires.',
         () async {
           await jwt.revokeAllRefreshTokens(
             session,

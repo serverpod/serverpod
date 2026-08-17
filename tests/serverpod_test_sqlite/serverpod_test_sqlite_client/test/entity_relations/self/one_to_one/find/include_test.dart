@@ -6,9 +6,10 @@ import '../../../../test_util.dart';
 void main() {
   initTestClientSession();
 
-  group('Given models with one to one relation', () {
+  group('Given models with one to one relation,', () {
     test(
-      'when fetching models including relation then result includes relation data.',
+      'when fetching models including relation, '
+      'then result includes relation data.',
       () async {
         var post = await Post.db.insert(
           session,
@@ -34,9 +35,10 @@ void main() {
     );
   });
 
-  group('Given models with nested one to one relations', () {
+  group('Given models with nested one to one relations,', () {
     test(
-      'when fetching models including nested relation then result includes nested relation data.',
+      'when fetching models including nested relation, '
+      'then result includes nested relation data.',
       () async {
         var post = await Post.db.insert(
           session,

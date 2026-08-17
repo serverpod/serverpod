@@ -20,9 +20,9 @@ void main() {
     testProjectDirectory.deleteSync(recursive: true);
   });
 
-  group('Given endpoint with @doNotGenerate annotation when analyzed', () {
-    var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
+  group('Given endpoint with @doNotGenerate annotation, when analyzed,', () {
+    late var collector = CodeGenerationCollector();
+    late var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
 
@@ -56,9 +56,9 @@ class ExampleEndpoint extends Endpoint {
     });
   });
 
-  group('Given endpoint with a random annotation when analyzed', () {
-    var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
+  group('Given endpoint with a random annotation, when analyzed,', () {
+    late var collector = CodeGenerationCollector();
+    late var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
 
@@ -95,10 +95,11 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
-    'Given two endpoints in the same file where one has `@doNotGenerate` annotation when analyzed',
+    'Given two endpoints in the same file where one has `@doNotGenerate` annotation, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 

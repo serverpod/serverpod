@@ -25,7 +25,8 @@ void main() {
   );
 
   group(
-    'Given a hierarchy with a sealed parent exception, a normal child and a normal grandchild when generating protocol files',
+    'Given a hierarchy with a sealed parent exception, a normal child and a normal grandchild, '
+    'when generating protocol files,',
     () {
       var parentClassName = 'AppException';
       var parentClassFileName = 'app_exception';
@@ -36,21 +37,21 @@ void main() {
       var grandchildClassName = 'UserNotFoundException';
       var grandchildClassFileName = 'user_not_found_exception';
 
-      var parent = ExceptionClassDefinitionBuilder()
+      late var parent = ExceptionClassDefinitionBuilder()
           .withClassName(parentClassName)
           .withFileName(parentClassFileName)
           .withSimpleField('message', 'String')
           .withIsSealed(true)
           .build();
 
-      var child = ExceptionClassDefinitionBuilder()
+      late var child = ExceptionClassDefinitionBuilder()
           .withClassName(childClassName)
           .withFileName(childClassFileName)
           .withSimpleField('code', 'int', nullable: true)
           .withExtendsClass(parent)
           .build();
 
-      var grandChild = ExceptionClassDefinitionBuilder()
+      late var grandChild = ExceptionClassDefinitionBuilder()
           .withClassName(grandchildClassName)
           .withFileName(grandchildClassFileName)
           .withSimpleField('userId', 'int', nullable: true)
@@ -66,26 +67,26 @@ void main() {
         grandChild,
       ];
 
-      var endpoints = [
+      late var endpoints = [
         EndpointDefinitionBuilder().build(),
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: models,
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );
 
-      var protocolCompilationUnit = parseString(
+      late var protocolCompilationUnit = parseString(
         content: codeMap[expectedFileName]!,
       ).unit;
 
-      var protocolClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      late var protocolClass = CompilationUnitHelpers.tryFindClassDeclaration(
         protocolCompilationUnit,
         name: 'Protocol',
       );
@@ -155,7 +156,7 @@ void main() {
         });
 
         group('with a deserialize method', () {
-          var deserializeMethod =
+          late var deserializeMethod =
               CompilationUnitHelpers.tryFindMethodDeclaration(
                 protocolClass!,
                 name: 'deserialize',
@@ -197,7 +198,7 @@ void main() {
         });
 
         group('with a getClassNameForObject method', () {
-          var getClassNameForObjectMethod =
+          late var getClassNameForObjectMethod =
               CompilationUnitHelpers.tryFindMethodDeclaration(
                 protocolClass!,
                 name: 'getClassNameForObject',
@@ -236,7 +237,7 @@ void main() {
         });
 
         group('with a deserializeByClassName method', () {
-          var deserializeByClassNameMethod =
+          late var deserializeByClassNameMethod =
               CompilationUnitHelpers.tryFindMethodDeclaration(
                 protocolClass!,
                 name: 'deserializeByClassName',

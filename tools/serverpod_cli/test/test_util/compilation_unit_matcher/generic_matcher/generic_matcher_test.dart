@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 import '../../compilation_unit_matcher.dart';
 
 void main() {
-  group('Given a class with an extends clause that has no generics', () {
+  group('Given a class with an extends clause that has no generics,', () {
     late final compilationUnit = parseCode(
       '''
       class User extends Parent {}
@@ -11,7 +11,8 @@ void main() {
     );
 
     test(
-      'when negate matching with non-existent generic on the extended class then test passes',
+      'when negate matching with non-existent generic on the extended class, '
+      'then test passes',
       () {
         expect(
           compilationUnit,
@@ -21,7 +22,8 @@ void main() {
     );
 
     test(
-      'when matching with non-existent generic on the extended class then mismatch description is correct',
+      'when matching with non-existent generic on the extended class, '
+      'then mismatch description is correct',
       () {
         final matcher =
             containsClass('User').thatExtends('Parent').withGeneric('T')
@@ -37,14 +39,14 @@ void main() {
     );
   });
 
-  group('Given a class with an extends clause that has generics', () {
+  group('Given a class with an extends clause that has generics,', () {
     late final compilationUnit = parseCode(
       '''
       class User extends Parent<T> {}
       ''',
     );
 
-    test('when matching generic on the extended class then test passes', () {
+    test('when matching generic on the extended class, then test passes', () {
       expect(
         compilationUnit,
         containsClass('User').thatExtends('Parent').withGeneric('T'),
@@ -52,7 +54,8 @@ void main() {
     });
 
     test(
-      'when negate matching non-existent generic on the extended class then test passes',
+      'when negate matching non-existent generic on the extended class, '
+      'then test passes',
       () {
         expect(
           compilationUnit,
@@ -62,7 +65,7 @@ void main() {
     );
 
     test(
-      'when matching incorrect generic on the extended class then test fails',
+      'when matching incorrect generic on the extended class, then test fails',
       () {
         final matcher =
             containsClass('User').thatExtends('Parent').withGeneric('X')
@@ -80,14 +83,14 @@ void main() {
     );
   });
 
-  group('Given a class with an extends clause that with multiple generics', () {
+  group('Given a class with an extends clause that with multiple generics,', () {
     late final compilationUnit = parseCode(
       '''
       class User extends Parent<T, V> {}
       ''',
     );
 
-    test('when matching generic on the extended class then test passes', () {
+    test('when matching generic on the extended class, then test passes', () {
       expect(
         compilationUnit,
         containsClass('User').thatExtends('Parent').withGeneric('V'),
@@ -95,7 +98,8 @@ void main() {
     });
 
     test(
-      'when negate matching non-existent generic on the extended class then test passes',
+      'when negate matching non-existent generic on the extended class, '
+      'then test passes',
       () {
         expect(
           compilationUnit,
@@ -105,7 +109,7 @@ void main() {
     );
 
     test(
-      'when matching incorrect generic on the extended class then test fails',
+      'when matching incorrect generic on the extended class, then test fails',
       () {
         final matcher =
             containsClass('User').thatExtends('Parent').withGeneric('X')
@@ -124,7 +128,9 @@ void main() {
   });
 
   test(
-    'Given generics matcher with when describing matcher then description is correct',
+    'Given generics matcher with, '
+    'when describing matcher, '
+    'then description is correct',
     () {
       final matcher =
           containsClass('User').thatExtends('Parent').withGeneric('T')

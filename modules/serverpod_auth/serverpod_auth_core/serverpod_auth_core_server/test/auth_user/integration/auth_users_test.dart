@@ -120,7 +120,8 @@ void main() {
       });
 
       test(
-        'when creating an auth user with empty scopes, then the created auth user has admin scope and is blocked.',
+        'when creating an auth user with empty scopes, '
+        'then the created auth user has admin scope and is blocked.',
         () async {
           final createdAuthUser = await authUsers.create(
             session,
@@ -134,7 +135,8 @@ void main() {
       );
 
       test(
-        'when creating an auth user with a custom scope, then the created auth user has the custom scope and is blocked.',
+        'when creating an auth user with a custom scope, '
+        'then the created auth user has the custom scope and is blocked.',
         () async {
           const customScope = Scope('test');
           final createdAuthUser = await authUsers.create(
@@ -176,7 +178,8 @@ void main() {
       });
 
       test(
-        'when creating an auth user, then the hook is invoked with the created auth user.',
+        'when creating an auth user, '
+        'then the hook is invoked with the created auth user.',
         () async {
           final createdAuthUser = await authUsers.create(
             session,

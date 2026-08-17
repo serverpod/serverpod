@@ -6,9 +6,11 @@ import 'package:test/test.dart';
 void main() {
   ValueEncoder.set(const PostgresValueEncoder());
 
-  group('ComparisonWarning toString output', () {
+  group('ComparisonWarning toString output,', () {
     test(
-      'Given a column with no subs when toString is called then the correct output is returned',
+      'Given a column with no subs, '
+      'when toString is called, '
+      'then the correct output is returned',
       () {
         var warning = ColumnComparisonWarning(
           name: 'age',
@@ -26,7 +28,9 @@ void main() {
     );
 
     test(
-      'Given a column with one sub when toString is called then the correct output is returned',
+      'Given a column with one sub, '
+      'when toString is called, '
+      'then the correct output is returned',
       () {
         var subWarning = ColumnComparisonWarning(
           name: 'firstname',
@@ -49,7 +53,9 @@ void main() {
     );
 
     test(
-      'Given a column with multiple subs when toString is called then the correct output is returned',
+      'Given a column with multiple subs, '
+      'when toString is called, '
+      'then the correct output is returned',
       () {
         var subWarning1 = ColumnComparisonWarning(
           name: 'firstname',
@@ -79,7 +85,9 @@ void main() {
     );
 
     test(
-      'Given a foreign key with no subs when toString is called then the correct output is returned',
+      'Given a foreign key with no subs, '
+      'when toString is called, '
+      'then the correct output is returned',
       () {
         var warning = ForeignKeyComparisonWarning(
           name: 'fk_user',
@@ -97,7 +105,9 @@ void main() {
     );
 
     test(
-      'Given a foreign key with one sub when toString is called then the correct output is returned',
+      'Given a foreign key with one sub, '
+      'when toString is called, '
+      'then the correct output is returned',
       () {
         var subWarning = ForeignKeyComparisonWarning(
           name: 'onUpdate',
@@ -120,7 +130,9 @@ void main() {
     );
 
     test(
-      'Given a foreign key with multiple subs when toString is called then the correct output is returned',
+      'Given a foreign key with multiple subs, '
+      'when toString is called, '
+      'then the correct output is returned',
       () {
         var subWarning1 = ForeignKeyComparisonWarning(
           name: 'onUpdate',

@@ -10,9 +10,10 @@ import '../../../../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
-  group('Given an exception with fields with a "default" keyword', () {
+  group('Given an exception with fields with a "default" keyword,', () {
     test(
-      'when the field is of type String and the default is set to "Default error message", then the field should have a "default model" value',
+      'when the field is of type String and the default is set to "Default error message", '
+      'then the field should have a "default model" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -42,7 +43,8 @@ void main() {
     );
 
     test(
-      'when the field is of type Enum serialized by string, then the field should have a "default model" value',
+      'when the field is of type Enum serialized by string, '
+      'then the field should have a "default model" value',
       () {
         var models = [
           ModelSourceBuilder().withFileName('by_name_enum').withYaml(
@@ -81,7 +83,8 @@ void main() {
     );
 
     test(
-      'when the field is of type String and the defaultModel is set to "Default model error message", then the field should have a "default model" value',
+      'when the field is of type String and the defaultModel is set to "Default model error message", '
+      'then the field should have a "default model" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -111,7 +114,8 @@ void main() {
     );
 
     test(
-      'when the field is of type String and the default is empty, then an error is generated',
+      'when the field is of type String and the default is empty, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -141,7 +145,8 @@ void main() {
     );
 
     test(
-      'when the field is of type bool and the default is set to true, then the field should have a "default model" value',
+      'when the field is of type bool and the default is set to true, '
+      'then the field should have a "default model" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -171,7 +176,8 @@ void main() {
     );
 
     test(
-      'when the field is of type bool and an invalid default is set, then an error is generated',
+      'when the field is of type bool and an invalid default is set, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -201,7 +207,8 @@ void main() {
     );
 
     test(
-      'when the field is of type int and the default is set to 10, then the field should have a "default model" value',
+      'when the field is of type int and the default is set to 10, '
+      'then the field should have a "default model" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -231,7 +238,8 @@ void main() {
     );
 
     test(
-      'when the field is of type int and an invalid default is set, then an error is generated',
+      'when the field is of type int and an invalid default is set, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -261,7 +269,8 @@ void main() {
     );
 
     test(
-      'when the field is of type double and the default is set to 20.5, then the field should have a "default model" value',
+      'when the field is of type double and the default is set to 20.5, '
+      'then the field should have a "default model" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -291,7 +300,8 @@ void main() {
     );
 
     test(
-      'when the field is of type double and an invalid default is set, then an error is generated',
+      'when the field is of type double and an invalid default is set, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -321,7 +331,8 @@ void main() {
     );
 
     test(
-      'when the field is of type UuidValue and the default is set to a specific UUID, then the field should have a "default model" value',
+      'when the field is of type UuidValue and the default is set to a specific UUID, '
+      'then the field should have a "default model" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -351,7 +362,8 @@ void main() {
     );
 
     test(
-      'when the field is of type UuidValue and an invalid UUID is set as default, then an error is generated',
+      'when the field is of type UuidValue and an invalid UUID is set as default, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -381,7 +393,8 @@ void main() {
     );
 
     test(
-      'when the field is of type Duration and the default is set to "1d 2h 30min", then the field should have a "default model" value',
+      'when the field is of type Duration and the default is set to "1d 2h 30min", '
+      'then the field should have a "default model" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -411,7 +424,8 @@ void main() {
     );
 
     test(
-      'when the field is of type Duration and an invalid duration is set as default, then an error is generated',
+      'when the field is of type Duration and an invalid duration is set as default, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -441,7 +455,8 @@ void main() {
     );
 
     test(
-      'when the field is of type String and the defaultPersist is set, then an error is generated indicating that defaultPersist is not supported for exceptions',
+      'when the field is of type String and the defaultPersist is set, '
+      'then an error is generated indicating that defaultPersist is not supported for exceptions',
       () {
         var models = [
           ModelSourceBuilder().withYaml(

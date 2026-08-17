@@ -6,7 +6,7 @@ import '../../test_util/analytics_helpers.dart';
 
 void main() {
   group(
-    'Given a feature-rich project and a worker-isolate analyzer, ',
+    'Given a feature-rich project and a worker-isolate analyzer,',
     () {
       late GenerateAnalyticsFixture fixture;
       late IsolatedAnalyzers analyzers;

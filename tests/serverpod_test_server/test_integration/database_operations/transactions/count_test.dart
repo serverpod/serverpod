@@ -29,10 +29,10 @@ void main() async {
   });
 
   group(
-    'Given a transaction that does not match required database transaction',
+    'Given a transaction that does not match required database transaction,',
     () {
-      var invalidTransactionType = MockTransaction();
-      test('when calling `count` then an error is thrown.', () async {
+      late var invalidTransactionType = MockTransaction();
+      test('when calling `count`, then an error is thrown.', () async {
         expect(
           session.db.transaction<void>((transaction) async {
             await UniqueData.db.count(
@@ -48,8 +48,9 @@ void main() async {
   );
 
   test(
-    'Given inserting an object inside a transaction that is cancelled when calling `count`'
-    'inside the transaction then should return 1 but outside the transaction should return 0.',
+    'Given inserting an object inside a transaction that is cancelled, '
+    'when calling `count` inside the transaction, '
+    'then should return 1 but outside the transaction should return 0.',
     () async {
       await session.db.transaction(
         (transaction) async {

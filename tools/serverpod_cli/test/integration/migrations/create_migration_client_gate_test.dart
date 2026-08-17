@@ -122,7 +122,7 @@ fields:
 
   test(
     'Given a project whose only client database table comes from a shared package, '
-    'when creating a migration,'
+    'when creating a migration, '
     'then no client migration is generated.',
     () async {
       writeSharedTableModel();
@@ -159,7 +159,7 @@ fields:
 
   test(
     'Given a project with a host client database table, '
-    'when creating a migration,'
+    'when creating a migration, '
     'then a client migration is generated.',
     () async {
       writeHostClientTableModel();
@@ -239,7 +239,7 @@ formatter:
 
   test(
     'Given a project whose only client database table comes from a module dependency, '
-    'when creating a migration,'
+    'when creating a migration, '
     'then no client migration is generated.',
     () async {
       var moduleConfig = writeModuleClientTableModel();

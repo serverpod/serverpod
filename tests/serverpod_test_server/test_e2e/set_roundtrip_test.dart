@@ -16,7 +16,8 @@ void main() {
   var client = Client(serverUrl);
 
   test(
-    'Given a Set<int>, when sending it to the echo server, it is returned unmodified',
+    'Given a Set<int>, '
+    'when sending it to the echo server, it is returned unmodified',
     () async {
       var set = {0, 1, 2};
       var result = await client.setParameters.returnIntSet(set);
@@ -26,7 +27,8 @@ void main() {
   );
 
   test(
-    'Given a Set<Set<int>>, when sending it to the echo server, it is returned unmodified',
+    'Given a Set<Set<int>>, '
+    'when sending it to the echo server, it is returned unmodified',
     () async {
       var set = {
         {0},
@@ -39,7 +41,8 @@ void main() {
   );
 
   test(
-    'Given a Set<List<int>>, when sending it to the echo server, it is returned unmodified',
+    'Given a Set<List<int>>, '
+    'when sending it to the echo server, it is returned unmodified',
     () async {
       var set = {
         [0],
@@ -52,7 +55,8 @@ void main() {
   );
 
   test(
-    'Given a non-null Set<int>?, when sending it to the echo server, it is returned unmodified',
+    'Given a non-null Set<int>?, '
+    'when sending it to the echo server, it is returned unmodified',
     () async {
       Set<int>? set = {1, 2};
       var result = await client.setParameters.returnIntSetNullable(set);
@@ -62,7 +66,8 @@ void main() {
   );
 
   test(
-    'Given a `null` Set<int>?, when sending it to the echo server, it is returned unmodified',
+    'Given a `null` Set<int>?, '
+    'when sending it to the echo server, it is returned unmodified',
     () async {
       var result = await client.setParameters.returnIntSetNullable(null);
 
@@ -71,7 +76,8 @@ void main() {
   );
 
   test(
-    'Given a Set<Set<int>?>, when sending it to the echo server, it is returned unmodified',
+    'Given a Set<Set<int>?>, '
+    'when sending it to the echo server, it is returned unmodified',
     () async {
       var set = {
         {0},
@@ -85,7 +91,8 @@ void main() {
   );
 
   test(
-    'Given a Set<Set<int>>?, when sending it to the echo server, it is returned unmodified',
+    'Given a Set<Set<int>>?, '
+    'when sending it to the echo server, it is returned unmodified',
     () async {
       var set = {
         {0},
@@ -98,7 +105,8 @@ void main() {
   );
 
   test(
-    'Given a `null` Set<Set<int>>?, when sending it to the echo server, it is returned unmodified',
+    'Given a `null` Set<Set<int>>?, '
+    'when sending it to the echo server, it is returned unmodified',
     () async {
       var result = await client.setParameters.returnIntSetSetNullable(null);
 
@@ -107,7 +115,8 @@ void main() {
   );
 
   test(
-    'Given a Set<int?>, when sending it to the echo server, it is returned unmodified',
+    'Given a Set<int?>, '
+    'when sending it to the echo server, it is returned unmodified',
     () async {
       var set = {0, null, 1, 2};
       var result = await client.setParameters.returnIntSetNullableInts(set);
@@ -117,7 +126,8 @@ void main() {
   );
 
   test(
-    'Given a `null` Set<int?>?, when sending it to the echo server, it is returned unmodified',
+    'Given a `null` Set<int?>?, '
+    'when sending it to the echo server, it is returned unmodified',
     () async {
       var result = await client.setParameters.returnNullableIntSetNullableInts(
         null,
@@ -128,7 +138,8 @@ void main() {
   );
 
   test(
-    'Given a Set<double>, when sending it to the echo server, it is returned unmodified',
+    'Given a Set<double>, '
+    'when sending it to the echo server, it is returned unmodified',
     () async {
       var set = {1.2, 3.4};
       var result = await client.setParameters.returnDoubleSet(set);
@@ -138,7 +149,8 @@ void main() {
   );
 
   test(
-    'Given a Set<double?>, when sending it to the echo server, it is returned unmodified',
+    'Given a Set<double?>, '
+    'when sending it to the echo server, it is returned unmodified',
     () async {
       var set = {1.2, null, 3.4};
       var result = await client.setParameters.returnDoubleSetNullableDoubles(
@@ -150,7 +162,8 @@ void main() {
   );
 
   test(
-    'Given a Set<bool>, when sending it to the echo server, it is returned unmodified',
+    'Given a Set<bool>, '
+    'when sending it to the echo server, it is returned unmodified',
     () async {
       var set = {
         true,
@@ -163,7 +176,8 @@ void main() {
   );
 
   test(
-    'Given a Set<bool?>, when sending it to the echo server, it is returned unmodified',
+    'Given a Set<bool?>, '
+    'when sending it to the echo server, it is returned unmodified',
     () async {
       var set = {
         true,
@@ -177,7 +191,8 @@ void main() {
   );
 
   test(
-    'Given a Set<String>, when sending it to the echo server, it is returned unmodified',
+    'Given a Set<String>, '
+    'when sending it to the echo server, it is returned unmodified',
     () async {
       var set = {'hello', 'world'};
       var result = await client.setParameters.returnStringSet(set);
@@ -187,7 +202,8 @@ void main() {
   );
 
   test(
-    'Given a Set<String?>, when sending it to the echo server, it is returned unmodified',
+    'Given a Set<String?>, '
+    'when sending it to the echo server, it is returned unmodified',
     () async {
       var set = {'hello', null, 'null', 'world'};
       var result = await client.setParameters.returnStringSetNullableStrings(
@@ -199,7 +215,8 @@ void main() {
   );
 
   test(
-    'Given a Set<DateTime>, when sending it to the echo server, it is returned unmodified',
+    'Given a Set<DateTime>, '
+    'when sending it to the echo server, it is returned unmodified',
     () async {
       var set = {DateTime.utc(2022), DateTime.now().toUtc()};
       var result = await client.setParameters.returnDateTimeSet(set);
@@ -209,7 +226,8 @@ void main() {
   );
 
   test(
-    'Given a Set<DateTime?>, when sending it to the echo server, it is returned unmodified',
+    'Given a Set<DateTime?>, '
+    'when sending it to the echo server, it is returned unmodified',
     () async {
       var set = {DateTime.utc(2022), null, DateTime.now().toUtc()};
       var result = await client.setParameters
@@ -220,7 +238,8 @@ void main() {
   );
 
   test(
-    'Given a Set<ByteData>, when sending it to the echo server, it is returned unmodified',
+    'Given a Set<ByteData>, '
+    'when sending it to the echo server, it is returned unmodified',
     () async {
       var set = {createByteData(), createByteData()};
       var result = await client.setParameters.returnByteDataSet(set);
@@ -232,7 +251,8 @@ void main() {
   );
 
   test(
-    'Given a Set<ByteData?>, when sending it to the echo server, it is returned unmodified',
+    'Given a Set<ByteData?>, '
+    'when sending it to the echo server, it is returned unmodified',
     () async {
       var set = {createByteData(), null};
       var result = await client.setParameters
@@ -245,7 +265,8 @@ void main() {
   );
 
   test(
-    'Given a Set<SimpleData>, when sending it to the echo server, it is returned unmodified',
+    'Given a Set<SimpleData>, '
+    'when sending it to the echo server, it is returned unmodified',
     () async {
       var set = {SimpleData(num: 1), SimpleData(num: 2)};
       var result = await client.setParameters.returnSimpleDataSet(set);
@@ -257,7 +278,8 @@ void main() {
   );
 
   test(
-    'Given a Set<SimpleData?>, when sending it to the echo server, it is returned unmodified',
+    'Given a Set<SimpleData?>, '
+    'when sending it to the echo server, it is returned unmodified',
     () async {
       var set = {SimpleData(num: 1), null, SimpleData(num: 3)};
       var result = await client.setParameters
@@ -271,7 +293,8 @@ void main() {
   );
 
   test(
-    'Given a Set<Duration>, when sending it to the echo server, it is returned unmodified',
+    'Given a Set<Duration>, '
+    'when sending it to the echo server, it is returned unmodified',
     () async {
       var set = {Duration.zero, Duration(milliseconds: 1000)};
       var result = await client.setParameters.returnDurationSet(set);
@@ -281,7 +304,8 @@ void main() {
   );
 
   test(
-    'Given a Set<Duration?>, when sending it to the echo server, it is returned unmodified',
+    'Given a Set<Duration?>, '
+    'when sending it to the echo server, it is returned unmodified',
     () async {
       var set = {Duration.zero, null, Duration(milliseconds: 1000)};
       var result = await client.setParameters

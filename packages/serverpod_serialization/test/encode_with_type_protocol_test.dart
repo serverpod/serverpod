@@ -38,7 +38,9 @@ void main() {
   var protocol = _TestProtocol();
 
   test(
-    'Given a user object with a server-only password field, when encoded using encodeWithTypeForProtocol method, then the password field is excluded from the output',
+    'Given a user object with a server-only password field, '
+    'when encoded using encodeWithTypeForProtocol method, '
+    'then the password field is excluded from the output',
     () {
       _User user = _User(name: 'John', password: '123');
       var stringifiedJson = protocol.encodeWithTypeForProtocol(user);

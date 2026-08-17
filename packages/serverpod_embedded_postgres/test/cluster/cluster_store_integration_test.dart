@@ -38,7 +38,7 @@ void main() {
     if (dataRoot.existsSync()) dataRoot.deleteSync(recursive: true);
   });
 
-  group('Given a fresh data directory and a real PG install', () {
+  group('Given a fresh data directory and a real PG install,', () {
     test(
       'when ensureInitialized runs '
       "then PG_VERSION is written and matches the install's major.",
@@ -54,7 +54,7 @@ void main() {
     );
 
     test(
-      'when ensureInitialized runs twice '
+      'when ensureInitialized runs twice, '
       'then the second call is a no-op (idempotent).',
       () async {
         var cluster = ClusterStore(installDir: installDir, dataDir: pgDataDir);
@@ -80,7 +80,7 @@ void main() {
     );
   });
 
-  group('Given an initialized cluster', () {
+  group('Given an initialized cluster,', () {
     late ClusterStore cluster;
 
     setUp(() async {
@@ -89,7 +89,7 @@ void main() {
     });
 
     test(
-      'when reconcilePostgresConf is called for UnixTransport '
+      'when reconcilePostgresConf is called for UnixTransport, '
       'then our managed block is present and unix_socket_directories is "../run".',
       () async {
         cluster.reconcilePostgresConf(transport: const UnixTransport());
@@ -105,7 +105,7 @@ void main() {
     );
 
     test(
-      'when reconcilePostgresConf is called twice with different transports '
+      'when reconcilePostgresConf is called twice with different transports, '
       'then the second call replaces the block (not duplicates it).',
       () async {
         cluster.reconcilePostgresConf(transport: const UnixTransport());
@@ -128,7 +128,7 @@ void main() {
     );
 
     test(
-      'when requireMajorMatch is called with a different major '
+      'when requireMajorMatch is called with a different major, '
       'then StaleClusterException is thrown.',
       () async {
         expect(
@@ -140,7 +140,7 @@ void main() {
     );
 
     test(
-      'when requireMajorMatch is called with a matching major '
+      'when requireMajorMatch is called with a matching major, '
       'then it returns without throwing.',
       () async {
         expect(() => cluster.requireMajorMatch(16), returnsNormally);

@@ -25,7 +25,7 @@ void main() async {
     } catch (e) {}
   });
 
-  group('Given a serverpod project with invalid environment variables', () {
+  group('Given a serverpod project with invalid environment variables,', () {
     final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
     setUpAll(() async {
@@ -54,7 +54,7 @@ void main() async {
     });
 
     test(
-      'when starting server with negative websocketPingInterval '
+      'when starting server with negative websocketPingInterval, '
       'then server exits with code 1 and displays error message',
       () async {
         final result = await runProcess(
@@ -78,7 +78,7 @@ void main() async {
     );
 
     test(
-      'when starting server with zero websocketPingInterval '
+      'when starting server with zero websocketPingInterval, '
       'then server exits with code 1 and displays error message',
       () async {
         final result = await runProcess(
@@ -102,7 +102,7 @@ void main() async {
     );
 
     test(
-      'when starting server with non-numeric websocketPingInterval '
+      'when starting server with non-numeric websocketPingInterval, '
       'then server exits with code 1 and displays error message',
       () async {
         final result = await runProcess(
@@ -126,7 +126,7 @@ void main() async {
     );
 
     test(
-      'when starting server with valid websocketPingInterval '
+      'when starting server with valid websocketPingInterval, '
       'then server starts successfully in maintenance mode',
       () async {
         final result = await runProcess(

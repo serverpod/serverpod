@@ -10,7 +10,9 @@ void main() {
   var client = Client(serverUrl)..authKeyProvider = TestAuthKeyManager();
 
   test(
-    'Given an integer stream when calling a streaming method that echoes input stream then values are returned from the server.',
+    'Given an integer stream, '
+    'when calling a streaming method that echoes input stream, '
+    'then values are returned from the server.',
     () async {
       var streamComplete = Completer();
       var numberGenerator = List.generate(10, (index) => index++);
@@ -33,7 +35,9 @@ void main() {
   );
 
   test(
-    'Given a stream with mixed value types when calling a streaming method that echoes input stream then values are returned from the server.',
+    'Given a stream with mixed value types, '
+    'when calling a streaming method that echoes input stream, '
+    'then values are returned from the server.',
     () async {
       var streamComplete = Completer();
       var simpleData = SimpleData(num: 42);
@@ -63,7 +67,9 @@ void main() {
   );
 
   test(
-    'Given a stream with nullable integer values when calling a streaming method that echoes input stream then values are echoed from the server.',
+    'Given a stream with nullable integer values, '
+    'when calling a streaming method that echoes input stream, '
+    'then values are echoed from the server.',
     () async {
       var streamComplete = Completer();
       var numberGenerator = List.generate(10, (index) {
@@ -92,7 +98,9 @@ void main() {
   );
 
   test(
-    'Given multiple integer streams when calling a streaming method that echoes multiple input streams then values are echoed from the server.',
+    'Given multiple integer streams, '
+    'when calling a streaming method that echoes multiple input streams, '
+    'then values are echoed from the server.',
     () async {
       var streamComplete = Completer();
       var sequence = List.generate(4, (index) => index++);
@@ -131,7 +139,9 @@ void main() {
   );
 
   test(
-    'Given multiple integer streams when one stream is finished when calling a streaming method that echoes multiple input streams then values are still echoed from open stream.',
+    'Given multiple integer streams, '
+    'when one stream is finished when calling a streaming method that echoes multiple input streams, '
+    'then values are still echoed from open stream.',
     () async {
       var streamComplete = Completer();
       var sequence = List.generate(4, (index) => index++);
@@ -161,7 +171,9 @@ void main() {
   );
 
   test(
-    'Given an input stream that throws an exception when calling a streaming method that returns true if exception is thrown on input stream then server responds with true,',
+    'Given an input stream that throws an exception, '
+    'when calling a streaming method that returns true if exception is thrown on input stream, '
+    'then server responds with true,',
     () async {
       var inputStream = StreamController<int>();
       var responseFuture = client.methodStreaming.didInputStreamHaveError(
@@ -176,7 +188,9 @@ void main() {
   );
 
   test(
-    'Given an input stream that throws a serializable exception when calling a streaming method that returns true if exception is thrown on input stream then server responds with true,',
+    'Given an input stream that throws a serializable exception, '
+    'when calling a streaming method that returns true if exception is thrown on input stream, '
+    'then server responds with true,',
     () async {
       var inputStream = StreamController<int>();
       var responseFuture = client.methodStreaming

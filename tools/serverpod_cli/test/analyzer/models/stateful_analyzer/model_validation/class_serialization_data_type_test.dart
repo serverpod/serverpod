@@ -11,7 +11,9 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   test(
-    'Given a class with no `serializationDataType` key, when validating, then the class `serializationDataType` is null.',
+    'Given a class with no `serializationDataType` key, '
+    'when validating, '
+    'then the class `serializationDataType` is null.',
     () {
       var models = [
         ModelSourceBuilder().withYaml('''
@@ -38,7 +40,9 @@ void main() {
   );
 
   test(
-    'Given a class with `serializationDataType` set to jsonb, when validating, then the class `serializationDataType` is jsonb.',
+    'Given a class with `serializationDataType` set to jsonb, '
+    'when validating, '
+    'then the class `serializationDataType` is jsonb.',
     () {
       var models = [
         ModelSourceBuilder().withYaml('''
@@ -66,7 +70,9 @@ void main() {
   );
 
   test(
-    'Given a class with `serializationDataType` set to json, when validating, then the class `serializationDataType` is json.',
+    'Given a class with `serializationDataType` set to json, '
+    'when validating, '
+    'then the class `serializationDataType` is json.',
     () {
       var models = [
         ModelSourceBuilder().withYaml('''
@@ -94,7 +100,9 @@ void main() {
   );
 
   test(
-    'Given a class with `serializationDataType` set to an invalid value, when validating, then an error about the invalid value is reported.',
+    'Given a class with `serializationDataType` set to an invalid value, '
+    'when validating, '
+    'then an error about the invalid value is reported.',
     () {
       var models = [
         ModelSourceBuilder().withYaml('''
@@ -122,7 +130,9 @@ void main() {
   );
 
   test(
-    'Given a class with `serializationDataType` set to jsonb and a field without `serializationDataType`, when validating, then the field `serializationDataType` is jsonb.',
+    'Given a class with `serializationDataType` set to jsonb and a field without `serializationDataType`, '
+    'when validating, '
+    'then the field `serializationDataType` is jsonb.',
     () {
       var models = [
         ModelSourceBuilder().withYaml('''
@@ -153,7 +163,9 @@ void main() {
   );
 
   test(
-    'Given a class with `serializationDataType` set to jsonb and a field with `serializationDataType` set to json, when validating, then the field `serializationDataType` is json.',
+    'Given a class with `serializationDataType` set to jsonb and a field with `serializationDataType` set to json, '
+    'when validating, '
+    'then the field `serializationDataType` is json.',
     () {
       var models = [
         ModelSourceBuilder().withYaml('''

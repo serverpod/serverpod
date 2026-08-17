@@ -47,16 +47,17 @@ void main() {
   ]);
 
   group(
-    'Given a child exception named $childClassName extending a parent exception named $parentClassName when generating shared code',
+    'Given a child exception named $childClassName extending a parent exception named $parentClassName, '
+    'when generating shared code,',
     () {
-      var parent = ExceptionClassDefinitionBuilder()
+      late var parent = ExceptionClassDefinitionBuilder()
           .withClassName(parentClassName)
           .withFileName(parentClassFileName)
           .withSimpleField('message', 'String')
           .withSharedPackageName(sharedPackageName)
           .build();
 
-      var child = ExceptionClassDefinitionBuilder()
+      late var child = ExceptionClassDefinitionBuilder()
           .withClassName(childClassName)
           .withFileName(childClassFileName)
           .withSimpleField('code', 'int', nullable: true)

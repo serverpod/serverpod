@@ -31,7 +31,7 @@ void main() {
   });
 
   group(
-    'Given a file with valid conditional template directives in its name',
+    'Given a file with valid conditional template directives in its name,',
     () {
       late File file;
       setUp(() async {
@@ -84,7 +84,7 @@ void main() {
   );
 
   group(
-    'Given a file with invalid conditional template directives in its name',
+    'Given a file with invalid conditional template directives in its name,',
     () {
       late File file;
       setUp(() async {
@@ -137,7 +137,7 @@ void main() {
   );
 
   group(
-    'Given a YAML file with template directives in its content, ',
+    'Given a YAML file with template directives in its content,',
     () {
       late File file;
 
@@ -190,7 +190,7 @@ development:
   );
 
   group(
-    'Given a dart file with template directives in its content',
+    'Given a dart file with template directives in its content,',
     () {
       late File file;
 
@@ -278,7 +278,7 @@ void main() {
   );
 
   test(
-    'Given a dart file with template directives in its content'
+    'Given a dart file with template directives in its content, '
     'when rendering the template, '
     'then the file is formatted',
     () async {
@@ -320,7 +320,7 @@ void main() {
   );
 
   test(
-    'Given a file with all its contents enclosed in conditional directives'
+    'Given a file with all its contents enclosed in conditional directives, '
     'when rendering the template with empty context, '
     'then the file is deleted',
     () async {
@@ -340,7 +340,7 @@ import 'auth.web';
   );
 
   group(
-    'Given a HTML file with template directives in its content',
+    'Given a HTML file with template directives in its content,',
     () {
       late File file;
 

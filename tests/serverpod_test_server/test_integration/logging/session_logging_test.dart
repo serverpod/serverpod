@@ -11,7 +11,7 @@ void main() async {
   var runMode = 'production';
 
   group(
-    'Given persistent logging is enabled and console logging is disabled',
+    'Given persistent logging is enabled and console logging is disabled,',
     () {
       late Serverpod server;
       late Session session;
@@ -233,7 +233,9 @@ void main() async {
   });
 
   test(
-    'Given persistent logging is enabled and database support is not available when the server is created then a StateError should be thrown due to lack of database support',
+    'Given persistent logging is enabled and database support is not available, '
+    'when the server is created, '
+    'then a StateError should be thrown due to lack of database support',
     () async {
       expect(
         () => IntegrationTestServer.create(

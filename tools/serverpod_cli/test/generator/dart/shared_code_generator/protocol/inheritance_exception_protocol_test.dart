@@ -33,7 +33,8 @@ void main() {
   ]);
 
   group(
-    'Given a hierarchy with a sealed parent exception, a normal child and a normal grandchild when generating shared protocol files',
+    'Given a hierarchy with a sealed parent exception, a normal child and a normal grandchild, '
+    'when generating shared protocol files,',
     () {
       var parentClassName = 'AppException';
       var parentClassFileName = 'app_exception';
@@ -44,7 +45,7 @@ void main() {
       var grandchildClassName = 'UserNotFoundException';
       var grandchildClassFileName = 'user_not_found_exception';
 
-      var parent = ExceptionClassDefinitionBuilder()
+      late var parent = ExceptionClassDefinitionBuilder()
           .withClassName(parentClassName)
           .withFileName(parentClassFileName)
           .withSimpleField('message', 'String')
@@ -52,7 +53,7 @@ void main() {
           .withSharedPackageName(sharedPackageName)
           .build();
 
-      var child = ExceptionClassDefinitionBuilder()
+      late var child = ExceptionClassDefinitionBuilder()
           .withClassName(childClassName)
           .withFileName(childClassFileName)
           .withSimpleField('code', 'int', nullable: true)
@@ -60,7 +61,7 @@ void main() {
           .withSharedPackageName(sharedPackageName)
           .build();
 
-      var grandChild = ExceptionClassDefinitionBuilder()
+      late var grandChild = ExceptionClassDefinitionBuilder()
           .withClassName(grandchildClassName)
           .withFileName(grandchildClassFileName)
           .withSimpleField('userId', 'int', nullable: true)
@@ -77,7 +78,7 @@ void main() {
         grandChild,
       ];
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [],
         models: models,
         futureCalls: [],

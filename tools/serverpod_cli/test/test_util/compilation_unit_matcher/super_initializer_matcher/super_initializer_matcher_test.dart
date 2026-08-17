@@ -4,7 +4,7 @@ import '../../compilation_unit_matcher.dart';
 
 void main() {
   group(
-    'Given compilation unit with class with constructor without initializer',
+    'Given compilation unit with class with constructor without initializer,',
     () {
       late final compilationUnit = parseCode(
         '''
@@ -14,7 +14,7 @@ void main() {
     ''',
       );
 
-      test('when negate matching class and initializer then test passes', () {
+      test('when negate matching class and initializer, then test passes', () {
         expect(
           compilationUnit,
           isNot(
@@ -28,7 +28,7 @@ void main() {
   );
 
   group(
-    'Given compilation unit with class with constructor with super initializer',
+    'Given compilation unit with class with constructor with super initializer,',
     () {
       late final compilationUnit = parseCode(
         '''
@@ -43,7 +43,8 @@ void main() {
       );
 
       test(
-        'when matching class, constructor and super initializer then test passes',
+        'when matching class, constructor and super initializer, '
+        'then test passes',
         () {
           expect(
             compilationUnit,
@@ -57,7 +58,7 @@ void main() {
   );
 
   group(
-    'Given compilation unit with class with constructor with local initializer',
+    'Given compilation unit with class with constructor with local initializer,',
     () {
       late final compilationUnit = parseCode(
         '''
@@ -69,7 +70,8 @@ void main() {
       );
 
       test(
-        'when negate matching class, constructor and super initializer then test passes',
+        'when negate matching class, constructor and super initializer, '
+        'then test passes',
         () {
           expect(
             compilationUnit,
@@ -83,7 +85,8 @@ void main() {
       );
 
       test(
-        'when matching class, constructor and super initializer then mismatch description is correct',
+        'when matching class, constructor and super initializer, '
+        'then mismatch description is correct',
         () {
           final matcher =
               containsClass(
@@ -103,7 +106,9 @@ void main() {
   );
 
   test(
-    'Given super initializer matcher when describing matcher then description is correct',
+    'Given super initializer matcher, '
+    'when describing matcher, '
+    'then description is correct',
     () {
       final matcher =
           containsClass('User').withUnnamedConstructor().withSuperInitializer()

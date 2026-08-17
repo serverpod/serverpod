@@ -103,10 +103,11 @@ void main() {
     'table',
   ];
 
-  group('Classes with table', () {
+  group('Classes with table,', () {
     for (var keyword in restrictedFieldNames) {
       test(
-        'Given a class with the restricted field name "$keyword" then collect an error',
+        'Given a class with the restricted field name "$keyword", '
+        'then collect an error',
         () {
           var collector = CodeGenerationCollector();
 
@@ -142,7 +143,8 @@ void main() {
 
     for (var keyword in restrictedDatabaseClassFieldNames) {
       test(
-        'Given a class with the restricted field name "$keyword" then collect an error',
+        'Given a class with the restricted field name "$keyword", '
+        'then collect an error',
         () {
           var collector = CodeGenerationCollector();
 
@@ -177,10 +179,11 @@ void main() {
     }
   });
 
-  group('Classes without table', () {
+  group('Classes without table,', () {
     for (var keyword in restrictedFieldNames) {
       test(
-        'Given a class with the restricted field name "$keyword" then collect an error',
+        'Given a class with the restricted field name "$keyword", '
+        'then collect an error',
         () {
           var collector = CodeGenerationCollector();
 
@@ -213,10 +216,11 @@ void main() {
       );
     }
   });
-  group('Exceptions', () {
+  group('Exceptions,', () {
     for (var keyword in restrictedFieldNames) {
       test(
-        'Given a class with the restricted field name "$keyword" then collect an error',
+        'Given a class with the restricted field name "$keyword", '
+        'then collect an error',
         () {
           var collector = CodeGenerationCollector();
 
@@ -249,10 +253,11 @@ void main() {
       );
     }
   });
-  group('Enums', () {
+  group('Enums,', () {
     for (var keyword in restrictedFieldNames) {
       test(
-        'Given a class with the restricted field name "$keyword" then collect an error',
+        'Given a class with the restricted field name "$keyword", '
+        'then collect an error',
         () {
           var collector = CodeGenerationCollector();
 

@@ -19,7 +19,9 @@ void main() {
     'protocol.yaml',
   );
   test(
-    'Given an empty protocol definition when generating protocol files then an empty protocol.yaml file is created.',
+    'Given an empty protocol definition, '
+    'when generating protocol files, '
+    'then an empty protocol.yaml file is created.',
     () {
       var protocolDefinition = const ProtocolDefinition(
         endpoints: [],
@@ -38,7 +40,9 @@ void main() {
   );
 
   test(
-    'Given an endpoint without any methods when generating protocol files then the protocol.yaml has only the endpoint defined',
+    'Given an endpoint without any methods, '
+    'when generating protocol files, '
+    'then the protocol.yaml has only the endpoint defined',
     () {
       var protocolDefinition = ProtocolDefinition(
         endpoints: [
@@ -62,7 +66,9 @@ void main() {
   );
 
   test(
-    'Given two endpoint without any methods when generating protocol files then the protocol.yaml has both the endpoints defined',
+    'Given two endpoint without any methods, '
+    'when generating protocol files, '
+    'then the protocol.yaml has both the endpoints defined',
     () {
       var protocolDefinition = ProtocolDefinition(
         endpoints: [
@@ -97,7 +103,9 @@ example2:
   );
 
   test(
-    'Given one endpoint with a method when generating protocol files then the protocol.yaml has the endpoint defined with the method as a list entry',
+    'Given one endpoint with a method, '
+    'when generating protocol files, '
+    'then the protocol.yaml has the endpoint defined with the method as a list entry',
     () {
       var protocolDefinition = ProtocolDefinition(
         endpoints: [
@@ -131,7 +139,9 @@ example:
   );
 
   test(
-    'Given one endpoint with two methods when generating protocol files then the protocol.yaml has the endpoint defined with the methods as list entry',
+    'Given one endpoint with two methods, '
+    'when generating protocol files, '
+    'then the protocol.yaml has the endpoint defined with the methods as list entry',
     () {
       var protocolDefinition = ProtocolDefinition(
         endpoints: [
@@ -169,7 +179,9 @@ example:
   );
 
   test(
-    'Given multiple endpoints with multiple methods when generating protocol files then the protocol.yaml has all endpoints and methods defined',
+    'Given multiple endpoints with multiple methods, '
+    'when generating protocol files, '
+    'then the protocol.yaml has all endpoints and methods defined',
     () {
       var protocolDefinition = ProtocolDefinition(
         endpoints: [
@@ -224,7 +236,9 @@ example3:
   );
 
   test(
-    'Given protocol definition with abstract endpoint when generating protocol files then the protocol.yaml does not contain the abstract endpoint',
+    'Given protocol definition with abstract endpoint, '
+    'when generating protocol files, '
+    'then the protocol.yaml does not contain the abstract endpoint',
     () {
       var protocolDefinition = ProtocolDefinition(
         endpoints: [
@@ -253,7 +267,9 @@ example3:
   );
 
   test(
-    'Given protocol definition with abstract endpoint and concrete implementation when generating protocol files then the protocol.yaml only contains concrete endpoint',
+    'Given protocol definition with abstract endpoint and concrete implementation, '
+    'when generating protocol files, '
+    'then the protocol.yaml only contains concrete endpoint',
     () {
       var abstractEndpoint = EndpointDefinitionBuilder()
           .withClassName('BaseAbstractEndpoint')
@@ -300,7 +316,9 @@ concrete:
   );
 
   test(
-    'Given protocol definition with concrete endpoint that extends another concrete endpoint when generating protocol files then the protocol.yaml contains both endpoints',
+    'Given protocol definition with concrete endpoint that extends another concrete endpoint, '
+    'when generating protocol files, '
+    'then the protocol.yaml contains both endpoints',
     () {
       var baseEndpoint = EndpointDefinitionBuilder()
           .withClassName('BaseEndpoint')
@@ -348,7 +366,9 @@ subclass:
   );
 
   test(
-    'Given protocol definition with abstract > concrete > abstract subclass > concrete subclass endpoint hierarchy when generating protocol files then the protocol.yaml contains only concrete endpoints and methods',
+    'Given protocol definition with abstract > concrete > abstract subclass > concrete subclass endpoint hierarchy, '
+    'when generating protocol files, '
+    'then the protocol.yaml contains only concrete endpoints and methods',
     () {
       var abstractBaseEndpoint = EndpointDefinitionBuilder()
           .withClassName('BaseAbstractEndpoint')

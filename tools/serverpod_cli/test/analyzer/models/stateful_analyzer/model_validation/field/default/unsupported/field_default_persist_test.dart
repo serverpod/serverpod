@@ -8,9 +8,10 @@ import '../../../../../../../test_util/builders/model_source_builder.dart';
 
 void main() {
   var config = GeneratorConfigBuilder().build();
-  group('Given a class with fields with a "defaultPersist" keyword', () {
+  group('Given a class with fields with a "defaultPersist" keyword,', () {
     test(
-      'when the field is of an unsupported type ByteData with a defaultPersist value, then an error is generated',
+      'when the field is of an unsupported type ByteData with a defaultPersist value, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -41,7 +42,8 @@ void main() {
     );
 
     test(
-      'when the field is of an unsupported type Map with a defaultPersist value, then an error is generated',
+      'when the field is of an unsupported type Map with a defaultPersist value, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -72,7 +74,8 @@ void main() {
     );
 
     test(
-      'when the field is of an unsupported type List with a defaultPersist value, then an error is generated',
+      'when the field is of an unsupported type List with a defaultPersist value, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -103,7 +106,8 @@ void main() {
     );
 
     test(
-      'when the field is of an unsupported type Example with a defaultPersist value, then an error is generated',
+      'when the field is of an unsupported type Example with a defaultPersist value, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(

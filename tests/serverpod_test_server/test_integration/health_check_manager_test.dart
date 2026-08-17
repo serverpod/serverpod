@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 
 void main() {
   group(
-    'Given a running server',
+    'Given a running server,',
     () {
       late Client client;
       late Serverpod server;
@@ -53,7 +53,7 @@ void main() {
       });
 
       test(
-        'when server starts then one health check is recorded.',
+        'when server starts, then one health check is recorded.',
         () async {
           final healthChecks = await server.countHealthChecks(session);
           expect(healthChecks, equals(1));
@@ -62,7 +62,8 @@ void main() {
       );
 
       test(
-        'while no endpoint calls are made then only the first health check exists.',
+        'while no endpoint calls are made, '
+        'then only the first health check exists.',
         () async {
           await Future.delayed(const Duration(seconds: 3));
           final healthChecks = await server.countHealthChecks(session);
@@ -72,7 +73,8 @@ void main() {
       );
 
       test(
-        'when an endpoint call is made after the first health check then another health check is recorded.',
+        'when an endpoint call is made after the first health check, '
+        'then another health check is recorded.',
         () async {
           await client.listParameters.returnStringList(['a', 'b', 'c']);
           await Future.delayed(const Duration(seconds: 3));
@@ -83,7 +85,8 @@ void main() {
       );
 
       test(
-        'when a streaming endpoint is called after the first health check then another health check is recorded.',
+        'when a streaming endpoint is called after the first health check, '
+        'then another health check is recorded.',
         () async {
           await client.logging.streamEmpty(Stream.fromIterable([1, 2, 3]));
           await Future.delayed(const Duration(seconds: 3));
@@ -95,7 +98,7 @@ void main() {
     },
   );
 
-  group('Given a running server with health check interval set to zero', () {
+  group('Given a running server with health check interval set to zero,', () {
     late Serverpod server;
     late Session session;
 
@@ -139,7 +142,7 @@ void main() {
     });
 
     test(
-      'when server starts then no health check is recorded.',
+      'when server starts, then no health check is recorded.',
       () async {
         await Future.delayed(const Duration(seconds: 3));
         final healthChecks = await server.countHealthChecks(session);

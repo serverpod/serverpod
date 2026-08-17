@@ -6,7 +6,9 @@ void main() {
   tearDown(() => debugDefaultTargetPlatformOverride = null);
 
   test(
-    'Given target platform is android when reading localhost then 10.0.2.2 is returned',
+    'Given target platform is android, '
+    'when reading localhost, '
+    'then 10.0.2.2 is returned',
     () {
       debugDefaultTargetPlatformOverride = TargetPlatform.android;
 
@@ -19,7 +21,9 @@ void main() {
 
   for (final testPlatform in nonAndroidPlatforms) {
     test(
-      'Given non-android target platform "${testPlatform.name}" when reading localhost then localhost is returned',
+      'Given non-android target platform "${testPlatform.name}", '
+      'when reading localhost, '
+      'then localhost is returned',
       () {
         debugDefaultTargetPlatformOverride = testPlatform;
 

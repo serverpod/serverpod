@@ -8,7 +8,8 @@ import '../../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
   test(
-    'Given a class with a field with an invalid key, then collect an error that locates the invalid key in the comma separated string.',
+    'Given a class with a field with an invalid key, '
+    'then collect an error that locates the invalid key in the comma separated string.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -43,7 +44,8 @@ fields:
   );
 
   test(
-    'Given a class with a field with a relation, but without parent keyword value, then collect an error that locates the parent keyword in the comma separated string.',
+    'Given a class with a field with a relation, but without parent keyword value, '
+    'then collect an error that locates the parent keyword in the comma separated string.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -79,7 +81,8 @@ fields:
   );
 
   test(
-    'Given a class with a field with a relation, but an invalid table name for parent keyword, then collect an error that locates the value in the comma separated string.',
+    'Given a class with a field with a relation, but an invalid table name for parent keyword, '
+    'then collect an error that locates the value in the comma separated string.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -115,7 +118,8 @@ fields:
   );
 
   test(
-    'Given a class with a field with database and api defined, then collect an error that locates the api keyword in the comma separated string.',
+    'Given a class with a field with database and api defined, '
+    'then collect an error that locates the api keyword in the comma separated string.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -151,7 +155,8 @@ fields:
   );
 
   test(
-    'Given a class with a field with an empty string entry at the end, then no errors was generated.',
+    'Given a class with a field with an empty string entry at the end, '
+    'then no errors was generated.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -179,7 +184,8 @@ fields:
   );
 
   test(
-    'Given a class with a field with a duplicated key value, then collect an error that locates the duplicated key in the comma separated string.',
+    'Given a class with a field with a duplicated key value, '
+    'then collect an error that locates the duplicated key in the comma separated string.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -215,7 +221,8 @@ fields:
   );
 
   test(
-    'Given a class with a field with an invalid dart syntax for the type, then collect an error that locates the invalid type in the comma separated string.',
+    'Given a class with a field with an invalid dart syntax for the type, '
+    'then collect an error that locates the invalid type in the comma separated string.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(

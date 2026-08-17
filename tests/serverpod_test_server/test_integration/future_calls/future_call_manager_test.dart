@@ -52,7 +52,7 @@ class DelayedListTestCall extends FutureCall<SimpleData>
 }
 
 void main() async {
-  withServerpod('Given FutureCallManager', (sessionBuilder, _) {
+  withServerpod('Given FutureCallManager,', (sessionBuilder, _) {
     late FutureCallManager futureCallManager;
     late Session session;
     var testCallName = 'test-db-entry-call';
@@ -70,7 +70,7 @@ void main() async {
       );
     });
 
-    group('when scheduling a FutureCall', () {
+    group('when scheduling a FutureCall,', () {
       setUp(() async {
         await futureCallManager.scheduleFutureCall(
           testCallName,
@@ -92,7 +92,7 @@ void main() async {
     });
   });
 
-  withServerpod('Given FutureCallManager with a scheduled FutureCall', (
+  withServerpod('Given FutureCallManager with a scheduled FutureCall,', (
     sessionBuilder,
     _,
   ) {
@@ -117,7 +117,7 @@ void main() async {
       );
     });
 
-    group('when cancelling the scheduled FutureCall', () {
+    group('when cancelling the scheduled FutureCall,', () {
       setUp(() async {
         await futureCallManager.cancelFutureCall(identifier);
       });
@@ -133,7 +133,7 @@ void main() async {
     });
   });
 
-  withServerpod('Given FutureCallManager with a scheduled FutureCall', (
+  withServerpod('Given FutureCallManager with a scheduled FutureCall,', (
     sessionBuilder,
     _,
   ) {
@@ -158,7 +158,7 @@ void main() async {
       );
     });
 
-    test('when cancelling a non-scheduled FutureCall'
+    test('when cancelling a non-scheduled FutureCall, '
         'then scheduled FutureCall is not removed', () async {
       await futureCallManager.cancelFutureCall('non-existing-identifier');
 
@@ -172,7 +172,7 @@ void main() async {
   });
 
   withServerpod(
-    'Given FutureCallManager with a scheduled not-registered FutureCall',
+    'Given FutureCallManager with a scheduled not-registered FutureCall,',
     (sessionBuilder, _) {
       late FutureCallManager futureCallManager;
       late Session session;
@@ -196,7 +196,7 @@ void main() async {
       });
 
       test(
-        'when executing all scheduled FutureCalls '
+        'when executing all scheduled FutureCalls, '
         'then FutureCall entry is not removed from the database because no calls are registered',
         () async {
           await futureCallManager.runScheduledFutureCalls();
@@ -213,7 +213,7 @@ void main() async {
   );
 
   withServerpod(
-    'Given FutureCallManager with scheduled FutureCall that is due',
+    'Given FutureCallManager with scheduled FutureCall that is due,',
     (sessionBuilder, _) {
       late FutureCallManager futureCallManager;
       late CompleterTestCall testCall;
@@ -241,7 +241,7 @@ void main() async {
         );
       });
 
-      group('when running scheduled FutureCalls', () {
+      group('when running scheduled FutureCalls,', () {
         setUp(() async {
           await futureCallManager.runScheduledFutureCalls();
         });
@@ -263,7 +263,7 @@ void main() async {
   );
 
   withServerpod(
-    'Given FutureCallManager with registered future call that is not due',
+    'Given FutureCallManager with registered future call that is not due,',
     (sessionBuilder, _) {
       late FutureCallManager futureCallManager;
       late CompleterTestCall testCall;
@@ -293,7 +293,7 @@ void main() async {
         );
       });
 
-      group('when start is called', () {
+      group('when start is called,', () {
         setUp(() async {
           await futureCallManager.start();
           // Wait briefly to allow processing to occur (or not occur)
@@ -311,7 +311,7 @@ void main() async {
     },
   );
 
-  withServerpod('Given FutureCallManager in continuous mode', (
+  withServerpod('Given FutureCallManager in continuous mode,', (
     sessionBuilder,
     _,
   ) {
@@ -341,7 +341,7 @@ void main() async {
       await futureCallManager.stop();
     });
 
-    group('when a new future call becomes due', () {
+    group('when a new future call becomes due,', () {
       setUp(() async {
         await futureCallManager.scheduleFutureCall(
           testCallName,
@@ -359,7 +359,7 @@ void main() async {
   });
 
   withServerpod(
-    'Given FutureCallManager that has been stopped from continuous mode',
+    'Given FutureCallManager that has been stopped from continuous mode,',
     (sessionBuilder, _) {
       late FutureCallManager futureCallManager;
       late CompleterTestCall testCall;
@@ -407,7 +407,7 @@ void main() async {
       });
 
       test(
-        'when scheduling a new future call then future call is not processed',
+        'when scheduling a new future call, then future call is not processed',
         () async {
           await futureCallManager.scheduleFutureCall(
             testCallName,
@@ -429,7 +429,7 @@ void main() async {
   );
 
   withServerpod(
-    'Given FutureCallManager with due FutureCall scheduled multiple times',
+    'Given FutureCallManager with due FutureCall scheduled multiple times,',
     (sessionBuilder, _) {
       late FutureCallManager futureCallManager;
       late CounterTestCall testCall;
@@ -465,7 +465,7 @@ void main() async {
         );
       });
 
-      group('when running all scheduled FutureCalls', () {
+      group('when running all scheduled FutureCalls,', () {
         setUp(() async {
           await futureCallManager.runScheduledFutureCalls();
         });
@@ -490,12 +490,12 @@ void main() async {
   );
 
   withServerpod(
-    'Given FutureCallManager with due FutureCall scheduled multiple times with different passed due dates',
+    'Given FutureCallManager with due FutureCall scheduled multiple times with different passed due dates,',
     (sessionBuilder, _) {
       late FutureCallManager futureCallManager;
       late ListTestCall testCall;
-      var oldestSimpleData = SimpleData(num: 1);
-      var newestSimpleData = SimpleData(num: 2);
+      late var oldestSimpleData = SimpleData(num: 1);
+      late var newestSimpleData = SimpleData(num: 2);
       var testCallName = 'test-multiple-scheduled-call-with-diff-date';
       var identifier = 'alex';
 
@@ -532,7 +532,7 @@ void main() async {
         );
       });
 
-      group('when running all scheduled FutureCalls', () {
+      group('when running all scheduled FutureCalls,', () {
         setUp(() async {
           await futureCallManager.runScheduledFutureCalls();
         });
@@ -553,14 +553,14 @@ void main() async {
   );
 
   withServerpod(
-    'Given FutureCallManager with concurrency limit 2 and 2 FutureCalls are scheduled',
+    'Given FutureCallManager with concurrency limit 2 and 2 FutureCalls are scheduled,',
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, _) {
       late Session session;
       late FutureCallManager futureCallManager;
       late ListTestCall testCall;
-      var firstButSlowest = SimpleData(num: 1000);
-      var lastButFastest = SimpleData(num: 20);
+      late var firstButSlowest = SimpleData(num: 1000);
+      late var lastButFastest = SimpleData(num: 20);
       var testCallName = 'concurrent-test-call';
       var identifier = 'alex';
 
@@ -606,7 +606,7 @@ void main() async {
         await session.close();
       });
 
-      group('when running all scheduled FutureCalls', () {
+      group('when running all scheduled FutureCalls,', () {
         setUp(() async {
           await futureCallManager.runScheduledFutureCalls();
         });
@@ -627,7 +627,7 @@ void main() async {
   );
 
   withServerpod(
-    'Given FutureCallManager with no registered future calls',
+    'Given FutureCallManager with no registered future calls,',
     (sessionBuilder, _) {
       late FutureCallManager futureCallManager;
       var testCallName = 'deferred-registration-call';
@@ -645,7 +645,7 @@ void main() async {
                 .build();
       });
 
-      group('when start is called and then a future call is registered', () {
+      group('when start is called and, then a future call is registered,', () {
         late CompleterTestCall testCall;
 
         setUp(() async {
@@ -678,7 +678,7 @@ void main() async {
   );
 
   withServerpod(
-    'Given FutureCallManager with no registered future calls',
+    'Given FutureCallManager with no registered future calls,',
     (sessionBuilder, _) {
       late FutureCallManager futureCallManager;
       late Session session;
@@ -708,7 +708,7 @@ void main() async {
         );
       });
 
-      group('when start is called without registering any future calls', () {
+      group('when start is called without registering any future calls,', () {
         setUp(() async {
           await futureCallManager.start();
           // Wait briefly to allow any potential scanning to occur
@@ -735,7 +735,7 @@ void main() async {
   );
 
   group(
-    'Given FutureCallManager with registered FutureCalls and a scheduled but unregistered FutureCall',
+    'Given FutureCallManager with registered FutureCalls and a scheduled but unregistered FutureCall,',
     () {
       late Serverpod server;
       late Session session;
@@ -780,7 +780,7 @@ void main() async {
       });
 
       test(
-        'when executing all scheduled FutureCalls '
+        'when executing all scheduled FutureCalls, '
         'then a message is logged for the unregistered FutureCall with error level',
         () async {
           await futureCallManager.runScheduledFutureCalls();

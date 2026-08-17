@@ -7,7 +7,7 @@ import 'package:web_socket/web_socket.dart';
 import '../websocket_extensions.dart';
 
 void main() {
-  group('Given method websocket connection', () {
+  group('Given method websocket connection,', () {
     late Serverpod server;
     late WebSocket webSocket;
 
@@ -25,7 +25,7 @@ void main() {
     });
 
     group(
-      'when a stream is opened to an endpoint with a Future return that throws an exception',
+      'when a stream is opened to an endpoint with a Future return that throws an exception,',
       () {
         late Completer<void> streamOpened;
         late Completer<CloseMethodStreamCommand> closeMethodStreamCommand;
@@ -35,7 +35,7 @@ void main() {
         var endpoint = 'methodStreaming';
         var method = 'inStreamThrowsException';
         var parameter = 'stream';
-        var connectionId = const Uuid().v4obj();
+        late var connectionId = const Uuid().v4obj();
 
         setUp(() async {
           streamOpened = Completer<void>();
@@ -120,14 +120,14 @@ void main() {
     );
 
     group(
-      'when a stream is opened to an endpoint with a Stream return that throws an exception then',
+      'when a stream is opened to an endpoint with a Stream return that throws an exception, then,',
       () {
-        var streamOpened = Completer<void>();
+        late var streamOpened = Completer<void>();
         late Completer<CloseMethodStreamCommand> closeMethodStreamCommand;
 
         var endpoint = 'methodStreaming';
         var method = 'outStreamThrowsException';
-        var connectionId = const Uuid().v4obj();
+        late var connectionId = const Uuid().v4obj();
 
         setUp(() async {
           closeMethodStreamCommand = Completer<CloseMethodStreamCommand>();
@@ -184,7 +184,7 @@ void main() {
     );
 
     group(
-      'when a stream is opened to an endpoint with a Future return that throws a serializable exception',
+      'when a stream is opened to an endpoint with a Future return that throws a serializable exception,',
       () {
         late Completer<MethodStreamSerializableException>
         methodStreamSerializableException;
@@ -196,7 +196,7 @@ void main() {
         var endpoint = 'methodStreaming';
         var method = 'inStreamThrowsSerializableException';
         var parameter = 'stream';
-        var connectionId = const Uuid().v4obj();
+        late var connectionId = const Uuid().v4obj();
 
         setUp(() async {
           streamOpened = Completer<void>();
@@ -309,7 +309,7 @@ void main() {
     );
 
     group(
-      'when a stream is opened to an endpoint with a Stream return that throws a serializable exception',
+      'when a stream is opened to an endpoint with a Stream return that throws a serializable exception,',
       () {
         late Completer<MethodStreamSerializableException>
         methodStreamSerializableException;
@@ -317,7 +317,7 @@ void main() {
 
         var endpoint = 'methodStreaming';
         var method = 'outStreamThrowsSerializableException';
-        var connectionId = const Uuid().v4obj();
+        late var connectionId = const Uuid().v4obj();
 
         setUp(() async {
           var streamOpened = Completer<void>();

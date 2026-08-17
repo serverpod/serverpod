@@ -33,8 +33,8 @@ void main() {
     }
   });
 
-  test('Given a serverpod server with db '
-      'when run in maintenance mode '
+  test('Given a serverpod server with db, '
+      'when run in maintenance mode, '
       'then it automatically exits with exit code 0', () async {
     final processOutput = await startProcess(
       'dart',
@@ -66,8 +66,8 @@ void main() {
     expect(exitCode, 0);
   }, timeout: const Timeout(Duration(seconds: 120)));
 
-  group('Given a running serverpod server', () {
-    test('when it is sent SIGINT '
+  group('Given a running serverpod server,', () {
+    test('when it is sent SIGINT, '
         'then it exits with exit code 130', () async {
       final processOutput = await startProcess(
         'dart',
@@ -105,7 +105,7 @@ void main() {
     });
 
     test(
-      'when it is sent SIGTERM '
+      'when it is sent SIGTERM, '
       'then it exits with exit code 0',
       () async {
         final processOutput = await startProcess(
@@ -147,8 +147,8 @@ void main() {
       },
     );
 
-    test('with shutdown test auditor enabled '
-        'when it is sent SIGINT '
+    test('with shutdown test auditor enabled, '
+        'when it is sent SIGINT, '
         'then it exits with exit code 1', () async {
       final processOutput = await startProcess(
         'dart',
@@ -193,8 +193,8 @@ void main() {
       expect(exitCode, 1);
     });
 
-    test('with an ongoing http request '
-        'when it is sent SIGINT '
+    test('with an ongoing http request, '
+        'when it is sent SIGINT, '
         'then it exits with exit code 130', () async {
       final processOutput = await startProcess(
         'dart',

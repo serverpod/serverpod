@@ -54,7 +54,7 @@ void main() {
       },
     );
 
-    group('when calling `deleteRefreshTokens` with that refreshTokenId', () {
+    group('when calling `deleteRefreshTokens` with that refreshTokenId,', () {
       late List<DeletedRefreshToken> deletedTokens;
       setUp(() async {
         deletedTokens = await jwtAdmin.deleteRefreshTokens(
@@ -80,7 +80,8 @@ void main() {
     });
 
     test(
-      'when calling `deleteRefreshTokens` with refreshTokenId, authUserId, and method all matching, then that token is deleted.',
+      'when calling `deleteRefreshTokens` with refreshTokenId, authUserId, and method all matching, '
+      'then that token is deleted.',
       () async {
         await jwtAdmin.deleteRefreshTokens(
           session,
@@ -99,7 +100,8 @@ void main() {
     );
 
     test(
-      'when calling `deleteRefreshTokens` with a non-existent refreshTokenId then no tokens are deleted.',
+      'when calling `deleteRefreshTokens` with a non-existent refreshTokenId, '
+      'then no tokens are deleted.',
       () async {
         final nonExistentId = const Uuid().v4obj();
         final deletedTokens = await jwtAdmin.deleteRefreshTokens(
@@ -118,7 +120,8 @@ void main() {
     );
 
     test(
-      'when calling `deleteRefreshTokens` with a non-matching authUserId, then no tokens are deleted.',
+      'when calling `deleteRefreshTokens` with a non-matching authUserId, '
+      'then no tokens are deleted.',
       () async {
         final nonExistentUserId = const Uuid().v4obj();
 
@@ -138,7 +141,8 @@ void main() {
     );
 
     test(
-      'when calling `deleteRefreshTokens` with a non-matching method, then no tokens are deleted.',
+      'when calling `deleteRefreshTokens` with a non-matching method, '
+      'then no tokens are deleted.',
       () async {
         final deletedTokens = await jwtAdmin.deleteRefreshTokens(
           session,
@@ -156,7 +160,8 @@ void main() {
     );
 
     test(
-      'when deleting all refresh tokens for the user, then it can not be rotated anymore.',
+      'when deleting all refresh tokens for the user, '
+      'then it can not be rotated anymore.',
       () async {
         await jwtAdmin.deleteRefreshTokens(
           session,
@@ -222,7 +227,8 @@ void main() {
     );
 
     test(
-      'when calling `rotateRefreshToken` with the expired token, then it throws RefreshTokenExpiredServerException with correct refreshTokenId.',
+      'when calling `rotateRefreshToken` with the expired token, '
+      'then it throws RefreshTokenExpiredServerException with correct refreshTokenId.',
       () async {
         await expectLater(
           () => jwtAdmin.rotateRefreshToken(
@@ -280,7 +286,8 @@ void main() {
       });
 
       test(
-        'when calling `deleteRefreshTokens` with a specific refreshTokenId, then only that token is deleted.',
+        'when calling `deleteRefreshTokens` with a specific refreshTokenId, '
+        'then only that token is deleted.',
         () async {
           await jwtAdmin.deleteRefreshTokens(
             session,
@@ -298,7 +305,7 @@ void main() {
         },
       );
 
-      group('when calling `deleteRefreshTokens` with method "test"', () {
+      group('when calling `deleteRefreshTokens` with method "test",', () {
         late List<DeletedRefreshToken> deletedTokens;
         setUp(() async {
           deletedTokens = await jwtAdmin.deleteRefreshTokens(
@@ -419,7 +426,8 @@ void main() {
       );
 
       test(
-        'when calling `deleteRefreshTokens` with no filters, then all tokens are deleted.',
+        'when calling `deleteRefreshTokens` with no filters, '
+        'then all tokens are deleted.',
         () async {
           await jwtAdmin.deleteRefreshTokens(
             session,
@@ -460,7 +468,8 @@ void main() {
       });
 
       test(
-        'when rotating the tokens, then a new refresh and access token is returned.',
+        'when rotating the tokens, '
+        'then a new refresh and access token is returned.',
         () async {
           final newTokenPair = await jwtAdmin.rotateRefreshToken(
             session,
@@ -473,7 +482,8 @@ void main() {
       );
 
       test(
-        'when rotating tokens multiple times within the same second, then new tokens are returned.',
+        'when rotating tokens multiple times within the same second, '
+        'then new tokens are returned.',
         () async {
           final newTokenPairs = await withClock(
             Clock.fixed(DateTime.now()),
@@ -501,7 +511,8 @@ void main() {
       );
 
       test(
-        'when rotating the tokens, then the new access token refers to the same refresh token ID.',
+        'when rotating the tokens, '
+        'then the new access token refers to the same refresh token ID.',
         () async {
           final newTokenPair = await jwtAdmin.rotateRefreshToken(
             session,
@@ -516,7 +527,8 @@ void main() {
       );
 
       test(
-        'when rotating the tokens, then the new access token has a different `jwtId`.',
+        'when rotating the tokens, '
+        'then the new access token has a different `jwtId`.',
         () async {
           final newTokenPair = await jwtAdmin.rotateRefreshToken(
             session,
@@ -532,7 +544,8 @@ void main() {
       );
 
       test(
-        'when rotating the tokens, then the new access token contains the extra claims in the `payload` on the top-level.',
+        'when rotating the tokens, '
+        'then the new access token contains the extra claims in the `payload` on the top-level.',
         () async {
           final newTokenPair = await jwtAdmin.rotateRefreshToken(
             session,
@@ -547,7 +560,8 @@ void main() {
       );
 
       test(
-        'when changing the configured pepper, then attempting to rotate the token throws an error.',
+        'when changing the configured pepper, '
+        'then attempting to rotate the token throws an error.',
         () async {
           final differentPepperJwt = Jwt(
             config: JwtConfig(
@@ -568,7 +582,8 @@ void main() {
       );
 
       test(
-        'when trying to rotate the token with a wrong fixed secret, then it throws a "not found" error.',
+        'when trying to rotate the token with a wrong fixed secret, '
+        'then it throws a "not found" error.',
         () async {
           final tokenParts = authSuccess.refreshToken!.split(':');
           tokenParts[2] = 'dGVzdA==';
@@ -586,7 +601,8 @@ void main() {
       );
 
       test(
-        'when trying to rotate the token with a wrong variable secret, then it throws an error.',
+        'when trying to rotate the token with a wrong variable secret, '
+        'then it throws an error.',
         () async {
           final tokenParts = authSuccess.refreshToken!.split(':');
           tokenParts[3] = 'dGVzdA==';
@@ -620,7 +636,8 @@ void main() {
       });
 
       test(
-        'when rotating tokens created with a provider, then provider claims are preserved.',
+        'when rotating tokens created with a provider, '
+        'then provider claims are preserved.',
         () async {
           final jwtWithHook = Jwt(
             config: JwtConfig(
@@ -682,7 +699,8 @@ void main() {
     });
 
     test(
-      'when requesting a rotation with the previous (initial) pair, then the current (refreshed) one becomes unusable as well.',
+      'when requesting a rotation with the previous (initial) pair, '
+      'then the current (refreshed) one becomes unusable as well.',
       () async {
         await expectLater(
           () => jwtAdmin.rotateRefreshToken(

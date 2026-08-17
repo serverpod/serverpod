@@ -5,9 +5,9 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given shortestPath', () {
+  group('Given shortestPath,', () {
     test(
-      'when called with a path inside cwd then a relative form is returned.',
+      'when called with a path inside cwd, then a relative form is returned.',
       () {
         var here = Directory.current.path;
         var nested = p.join(here, 'a', 'b', 'c.txt');
@@ -20,7 +20,8 @@ void main() {
     );
 
     test(
-      'when called with a path far from cwd then the absolute form is returned.',
+      'when called with a path far from cwd, '
+      'then the absolute form is returned.',
       () {
         // /tmp is typically very short and likely shorter than the relative
         // form from a deep cwd. On systems where /tmp is symlinked elsewhere,
@@ -36,9 +37,9 @@ void main() {
     );
   });
 
-  group('Given shortestPathRelativeTo', () {
+  group('Given shortestPathRelativeTo,', () {
     test(
-      'when target is a sibling of [from] then "../sibling" is returned.',
+      'when target is a sibling of [from], then "../sibling" is returned.',
       () {
         var tmp = Directory.systemTemp.createTempSync('shortest_test_');
         try {
@@ -55,7 +56,7 @@ void main() {
     );
 
     test(
-      'when [from] equals target then "." is returned.',
+      'when [from] equals target, then "." is returned.',
       () {
         var tmp = Directory.systemTemp.createTempSync('shortest_test_');
         try {
@@ -74,9 +75,9 @@ void main() {
     );
   });
 
-  group('Given maxUnixSocketPathBytes', () {
+  group('Given maxUnixSocketPathBytes,', () {
     test(
-      'when called on macOS then 104 is returned.',
+      'when called on macOS, then 104 is returned.',
       () {
         if (!Platform.isMacOS && !Platform.isIOS) return;
 
@@ -85,16 +86,16 @@ void main() {
       skip: !(Platform.isMacOS || Platform.isIOS),
     );
 
-    test('when called on Linux then 108 is returned.', () {
+    test('when called on Linux, then 108 is returned.', () {
       if (!Platform.isLinux) return;
 
       expect(maxUnixSocketPathBytes(), 108);
     }, skip: !Platform.isLinux);
   });
 
-  group('Given requireUnixSocketPathFits', () {
+  group('Given requireUnixSocketPathFits,', () {
     test(
-      'when path fits the platform cap then it returns without throwing.',
+      'when path fits the platform cap, then it returns without throwing.',
       () {
         var tmp = Directory.systemTemp.createTempSync('uds_short_');
         try {
@@ -108,7 +109,7 @@ void main() {
     );
 
     test(
-      'when shortened path exceeds the cap then SocketException is thrown.',
+      'when shortened path exceeds the cap, then SocketException is thrown.',
       () {
         // Build a deeply nested absolute path under /tmp until it's longer
         // than 108 bytes even after canonicalization. Avoid relying on cwd

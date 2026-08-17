@@ -10,7 +10,9 @@ void main() {
   var client = Client(serverUrl)..authKeyProvider = TestAuthKeyManager();
 
   test(
-    'Given multiple streaming method connections when one is finished then the open method stream can still transmit messages.',
+    'Given multiple streaming method connections, '
+    'when one is finished, '
+    'then the open method stream can still transmit messages.',
     () async {
       var keepAliveStreamComplete = Completer();
       var closeStreamComplete = Completer();

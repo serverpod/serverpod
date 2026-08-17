@@ -9,7 +9,7 @@ import '../../test_util/server_directory_finder_helpers.dart';
 
 void main() {
   group(
-    'ServerDirectoryFinder.search hierarchical order and early returns',
+    'ServerDirectoryFinder.search hierarchical order and early returns,',
     () {
       test(
         'Given server in both child and parent directories, '

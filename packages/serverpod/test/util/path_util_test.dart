@@ -3,8 +3,8 @@ import 'package:test/test.dart';
 import 'package:path/path.dart' as p;
 
 void main() {
-  group('For PathUtil.isFileWhitelisted', () {
-    group('given a correct path', () {
+  group('For PathUtil.isFileWhitelisted,', () {
+    group('given a correct path,', () {
       test('when in a matching directory return true.', () {
         var result = PathUtil.isFileWhitelisted(
           'mydirectory/myfile.xxx',
@@ -28,7 +28,7 @@ void main() {
         expect(result, equals(true));
       });
     });
-    group('given an incorrect path', () {
+    group('given an incorrect path,', () {
       test('when there is no matching directory return false.', () {
         var result = PathUtil.isFileWhitelisted(
           'mydirectory/myfile.xxx',
@@ -52,7 +52,7 @@ void main() {
       );
     });
   });
-  group('For PathUtil.relativePathToPlatformPath', () {
+  group('For PathUtil.relativePathToPlatformPath,', () {
     group('given a unix path', () {
       test('a correct platform specific path is returned.', () {
         var result = PathUtil.relativePathToPlatformPath(

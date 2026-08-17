@@ -10,9 +10,10 @@ import '../../../../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
-  group('Given a class with fields with a "defaultPersist" keyword', () {
+  group('Given a class with fields with a "defaultPersist" keyword,', () {
     test(
-      'when the field is of type String and the defaultPersist is set to "This is a default persist value", then the field should have a "default persist" value',
+      'when the field is of type String and the defaultPersist is set to "This is a default persist value", '
+      'then the field should have a "default persist" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -43,7 +44,8 @@ void main() {
     );
 
     test(
-      'when the field is of type String and the defaultPersist is set to "Another default persist value", then the field should have a "default persist" value',
+      'when the field is of type String and the defaultPersist is set to "Another default persist value", '
+      'then the field should have a "default persist" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -75,7 +77,8 @@ void main() {
     );
 
     test(
-      'when the field is of type String and the defaultPersist is set to \'This \\\'is\\\' a default persist value\', then the field should have a "default persist" value',
+      'when the field is of type String and the defaultPersist is set to \'This \\\'is\\\' a default persist value\', '
+      'then the field should have a "default persist" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -106,7 +109,8 @@ void main() {
     );
 
     test(
-      'when the field is of type String and the defaultPersist is set to \'This "is" a default persist value\', then the field should have a "default persist" value',
+      'when the field is of type String and the defaultPersist is set to \'This "is" a default persist value\', '
+      'then the field should have a "default persist" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -137,7 +141,8 @@ void main() {
     );
 
     test(
-      'when the field is of type String and the defaultPersist is set to \'This \\\'is\\\' a default persist value\', then the field should have a "default persist" value',
+      'when the field is of type String and the defaultPersist is set to \'This \\\'is\\\' a default persist value\', '
+      'then the field should have a "default persist" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -168,7 +173,8 @@ void main() {
     );
 
     test(
-      'when the field is of type String and the defaultPersist is set to \'This \\"is\\" a default persist value\', then the field should have a "default persist" value',
+      'when the field is of type String and the defaultPersist is set to \'This \\"is\\" a default persist value\', '
+      'then the field should have a "default persist" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -199,7 +205,8 @@ void main() {
     );
 
     test(
-      'when the field is of type String and the defaultPersist is set to \'This, is a default persist value\', then the field should have a "default persist" value',
+      'when the field is of type String and the defaultPersist is set to \'This, is a default persist value\', '
+      'then the field should have a "default persist" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -230,7 +237,8 @@ void main() {
     );
 
     test(
-      'when the field is of type String and the defaultPersist is set to \'This \\"is\\", a default persist value\', then the field should have a "default persist" value',
+      'when the field is of type String and the defaultPersist is set to \'This \\"is\\", a default persist value\', '
+      'then the field should have a "default persist" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -261,7 +269,8 @@ void main() {
     );
 
     test(
-      'when the field is of type String with an invalid defaultPersist value without quotes, then an error is generated',
+      'when the field is of type String with an invalid defaultPersist value without quotes, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -292,7 +301,8 @@ void main() {
     );
 
     test(
-      'when the field is of type String with an invalid defaultPersist value, then an error is generated',
+      'when the field is of type String with an invalid defaultPersist value, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -323,7 +333,8 @@ void main() {
     );
 
     test(
-      'when the field is of type String with an invalid defaultPersist value, then an error is generated',
+      'when the field is of type String with an invalid defaultPersist value, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -354,7 +365,8 @@ void main() {
     );
 
     test(
-      'when the field is of type String with an invalid defaultPersist value containing unescaped single quotes, then an error is generated',
+      'when the field is of type String with an invalid defaultPersist value containing unescaped single quotes, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -385,7 +397,8 @@ void main() {
     );
 
     test(
-      'when the field is of type String with an invalid defaultPersist value containing unescaped double quotes, then an error is generated',
+      'when the field is of type String with an invalid defaultPersist value containing unescaped double quotes, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -416,7 +429,8 @@ void main() {
     );
 
     test(
-      'when the field is of type String and the defaultPersist is empty, then an error is generated',
+      'when the field is of type String and the defaultPersist is empty, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -447,7 +461,8 @@ void main() {
     );
 
     test(
-      'when the field is of type String non-nullable type, then an error is generated',
+      'when the field is of type String non-nullable type, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(

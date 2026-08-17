@@ -26,13 +26,13 @@ void main() {
     } catch (e) {}
   });
 
-  group('Given a clean state', () {
+  group('Given a clean state,', () {
     var (commandRoot: _, :projectName) = createRandomProjectName(tempPath);
     final (:serverDir, flutterDir: _, :clientDir) = createProjectFolderPaths(
       projectName,
     );
 
-    group('when creating a new project', () {
+    group('when creating a new project,', () {
       setUpAll(() async {
         var process = await startServerpodCli(
           [
@@ -477,7 +477,7 @@ void main() {
   });
 
   group(
-    'Given a created module project',
+    'Given a created module project,',
     () {
       final (:projectName, commandRoot: _) = createRandomProjectName(tempPath);
 
@@ -508,7 +508,7 @@ void main() {
       });
 
       test(
-        'when running tests then example unit and integration tests passes',
+        'when running tests, then example unit and integration tests passes',
         () async {
           var testProcess = await startProcess(
             'dart',

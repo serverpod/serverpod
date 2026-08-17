@@ -2,7 +2,7 @@ import 'package:serverpod_cloud_storage_s3/src/config/aws_endpoint_config.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given an AwsEndpointConfig with default settings', () {
+  group('Given an AwsEndpointConfig with default settings,', () {
     late AwsEndpointConfig config;
 
     setUp(() {
@@ -10,7 +10,7 @@ void main() {
     });
 
     test(
-      'when building bucket URI '
+      'when building bucket URI, '
       'then it returns virtual-hosted style URL with bucket in hostname',
       () {
         final uri = config.buildBucketUri('my-bucket', 'us-east-1');
@@ -21,7 +21,7 @@ void main() {
     );
 
     test(
-      'when building bucket URI with different region '
+      'when building bucket URI with different region, '
       'then it uses that region in the hostname',
       () {
         final uri = config.buildBucketUri('my-bucket', 'eu-west-2');
@@ -31,7 +31,7 @@ void main() {
     );
 
     test(
-      'when building public URI '
+      'when building public URI, '
       'then it returns the correct public URL for the file',
       () {
         final uri = config.buildPublicUri(
@@ -48,7 +48,7 @@ void main() {
     );
 
     test(
-      'when building public URI with path without leading slash '
+      'when building public URI with path without leading slash, '
       'then it handles the path correctly',
       () {
         final uri = config.buildPublicUri('my-bucket', 'us-east-1', 'file.txt');
@@ -58,7 +58,7 @@ void main() {
     );
 
     test(
-      'when getting service name '
+      'when getting service name, '
       'then it returns AWS S3',
       () {
         expect(config.serviceName, 'AWS S3');
@@ -66,7 +66,7 @@ void main() {
     );
   });
 
-  group('Given an AwsEndpointConfig with custom public host', () {
+  group('Given an AwsEndpointConfig with custom public host,', () {
     late AwsEndpointConfig config;
 
     setUp(() {
@@ -76,7 +76,7 @@ void main() {
     });
 
     test(
-      'when building public URI '
+      'when building public URI, '
       'then it uses the custom public host',
       () {
         final uri = config.buildPublicUri('my-bucket', 'us-east-1', 'file.txt');
@@ -88,7 +88,7 @@ void main() {
     );
 
     test(
-      'when building public URI with override host '
+      'when building public URI with override host, '
       'then the override takes precedence',
       () {
         final overrideHost = Uri.https('override.example.com', '/');
@@ -106,8 +106,8 @@ void main() {
   });
 
   test(
-    'Given an AwsEndpointConfig with custom public host with trailing slash '
-    'when building public URI '
+    'Given an AwsEndpointConfig with custom public host with trailing slash, '
+    'when building public URI, '
     'then it correctly joins paths',
     () {
       final config = AwsEndpointConfig(

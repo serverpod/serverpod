@@ -2,9 +2,10 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given SessionLogConfig with retention settings', () {
+  group('Given SessionLogConfig with retention settings,', () {
     test(
-      'when buildDefault is called then retention settings should have default values.',
+      'when buildDefault is called, '
+      'then retention settings should have default values.',
       () {
         final config = SessionLogConfig.buildDefault(
           databaseEnabled: true,
@@ -18,7 +19,8 @@ void main() {
     );
 
     test(
-      'when custom retention settings are provided then they should be preserved.',
+      'when custom retention settings are provided, '
+      'then they should be preserved.',
       () {
         final config = SessionLogConfig(
           persistentEnabled: true,
@@ -35,7 +37,7 @@ void main() {
     );
 
     test(
-      'when retention settings are null then they should remain null.',
+      'when retention settings are null, then they should remain null.',
       () {
         final config = SessionLogConfig(
           persistentEnabled: true,

@@ -6,9 +6,10 @@ import '../../../test_util.dart';
 void main() {
   initTestClientSession();
 
-  group('Given models with one to many relation ', () {
+  group('Given models with one to many relation,', () {
     test(
-      'when counting models filtered on none many relation then result is as expected.',
+      'when counting models filtered on none many relation, '
+      'then result is as expected.',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Alex'),
@@ -37,7 +38,8 @@ void main() {
     );
 
     test(
-      'when counting models filtered on filtered none many relation then result is as expected',
+      'when counting models filtered on filtered none many relation, '
+      'then result is as expected',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Alex'),
@@ -68,7 +70,8 @@ void main() {
     );
 
     test(
-      'when counting models filtered on multiple none many relation then result is as expected.',
+      'when counting models filtered on multiple none many relation, '
+      'then result is as expected.',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Alex'),
@@ -101,9 +104,10 @@ void main() {
     );
   });
 
-  group('Given models with nested one to many relation', () {
+  group('Given models with nested one to many relation,', () {
     test(
-      'when counting models filtered on nested none many relation then result is as expected',
+      'when counting models filtered on nested none many relation, '
+      'then result is as expected',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Alex'),
@@ -149,7 +153,8 @@ void main() {
     );
 
     test(
-      'when counting models filtered on filtered nested none many relation then result is as expected',
+      'when counting models filtered on filtered nested none many relation, '
+      'then result is as expected',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Alex'),

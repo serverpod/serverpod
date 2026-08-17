@@ -26,15 +26,15 @@ final config = GeneratorConfigBuilder()
 
 void main() {
   group(
-    'Given a shared parent exception and a shared child that extends the parent '
-    'when generating the shared package code',
+    'Given a shared parent exception and a shared child that extends the parent, '
+    'when generating the shared package code,',
     () {
       const parentClassName = 'SharedAppException';
       const parentClassFileName = 'shared_app_exception';
       const childClassName = 'SharedNotFoundException';
       const childClassFileName = 'shared_not_found_exception';
 
-      var childExpectedFilePath = path.joinAll([
+      late var childExpectedFilePath = path.joinAll([
         ...serverPathParts,
         'packages',
         'shared',
@@ -91,15 +91,15 @@ void main() {
   );
 
   group(
-    'Given a shared parent exception and a project child that extends the parent '
-    'when generating the server package code',
+    'Given a shared parent exception and a project child that extends the parent, '
+    'when generating the server package code,',
     () {
       const parentClassName = 'SharedAppException';
       const parentClassFileName = 'shared_app_exception';
       const childClassName = 'ProjectNotFoundException';
       const childClassFileName = 'project_not_found_exception';
 
-      var childExpectedFilePath = path.joinAll([
+      late var childExpectedFilePath = path.joinAll([
         ...serverPathParts,
         'lib',
         'src',
@@ -156,8 +156,8 @@ void main() {
   );
 
   group(
-    'Given a shared parent exception and a project child that extends the parent '
-    'when generating the client package code',
+    'Given a shared parent exception and a project child that extends the parent, '
+    'when generating the client package code,',
     () {
       const parentClassName = 'SharedAppException';
       const parentClassFileName = 'shared_app_exception';
@@ -218,7 +218,7 @@ void main() {
   );
 
   group(
-    'Given a project model with a field that references a shared exception',
+    'Given a project model with a field that references a shared exception,',
     () {
       const sharedExceptionClassName = 'SharedAppException';
       const sharedExceptionFileName = 'shared_app_exception';
@@ -258,7 +258,7 @@ void main() {
             .build();
       });
 
-      group('when generating the client package code', () {
+      group('when generating the client package code,', () {
         setUpAll(() {
           codeMap = const DartClientCodeGenerator()
               .generateSerializableModelsCode(
@@ -292,7 +292,7 @@ void main() {
         );
       });
 
-      group('when generating the server package code', () {
+      group('when generating the server package code,', () {
         setUpAll(() {
           codeMap = const DartServerCodeGenerator()
               .generateSerializableModelsCode(

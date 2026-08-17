@@ -9,7 +9,7 @@ import '../test_tools/serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given future call execution is enabled and a scheduled recurring future call, ',
+    'Given future call execution is enabled and a scheduled recurring future call,',
     rollbackDatabase: RollbackDatabase.disabled,
     configOverride: (config) => config.copyWith(
       futureCallExecutionEnabled: true,

@@ -4,7 +4,7 @@ import 'package:serverpod_test_sqlite_server/test_util/service_client.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given database not matching latest migration', () {
+  group('Given database not matching latest migration,', () {
     tearDownAll(() async {
       await MigrationTestUtils.migrationTestCleanup(
         resetSql:
@@ -54,7 +54,8 @@ fields:
     });
 
     test(
-      'when creating and applying repair migration then database matches latest migration',
+      'when creating and applying repair migration, '
+      'then database matches latest migration',
       () async {
         var createRepairMigrationExitCode =
             await MigrationTestUtils.runCreateRepairMigration();
@@ -84,7 +85,7 @@ fields:
     );
   });
 
-  group('Given database matching latest migration', () {
+  group('Given database matching latest migration,', () {
     tearDownAll(() async {
       await MigrationTestUtils.migrationTestCleanup(
         resetSql:
@@ -128,7 +129,8 @@ fields:
     });
 
     test(
-      'when creating and applying destructive repair migration to older migration then database matches older migration',
+      'when creating and applying destructive repair migration to older migration, '
+      'then database matches older migration',
       () async {
         var migrationVersions =
             await MigrationTestUtils.loadMigrationRegistry();
@@ -168,7 +170,7 @@ fields:
   });
 
   group(
-    'Given database not matching latest migration and unapplied migrations',
+    'Given database not matching latest migration and unapplied migrations,',
     () {
       tearDownAll(() async {
         await MigrationTestUtils.migrationTestCleanup(
@@ -217,7 +219,8 @@ fields:
         );
       });
       test(
-        'when creating and applying repair migration targeting older migration and applying migrations then database matches latest migration',
+        'when creating and applying repair migration targeting older migration and applying migrations, '
+        'then database matches latest migration',
         () async {
           var migrationVersions =
               await MigrationTestUtils.loadMigrationRegistry();

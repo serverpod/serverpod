@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 
 void main() {
   group(
-    'Given an empty database and new protocol model with table and fields with "defaultModel" and "defaultPersist" value',
+    'Given an empty database and new protocol model with table and fields with "defaultModel" and "defaultPersist" value,',
     () {
       tearDown(() async {
         await MigrationTestUtils.migrationTestCleanup(
@@ -15,7 +15,8 @@ void main() {
       });
 
       test(
-        'when creating and applying migration, then the database contains the new table with the correct "defaultModel" and "defaultPersist" values for "dateTimeDefaultNow".',
+        'when creating and applying migration, '
+        'then the database contains the new table with the correct "defaultModel" and "defaultPersist" values for "dateTimeDefaultNow".',
         () async {
           var tableName = 'migrated_table';
           var tag = 'add-table';
@@ -80,7 +81,8 @@ void main() {
       );
 
       test(
-        'when creating and applying migration, then the database contains the new table with the correct "defaultModel" and "defaultPersist" values for "dateTimeDefaultStr".',
+        'when creating and applying migration, '
+        'then the database contains the new table with the correct "defaultModel" and "defaultPersist" values for "dateTimeDefaultStr".',
         () async {
           var tableName = 'migrated_table';
           var tag = 'add-table';

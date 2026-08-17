@@ -3,37 +3,39 @@ import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given int and big int column definition', () {
-    ColumnDefinition intColumn = ColumnDefinition(
+  group('Given int and big int column definition,', () {
+    late ColumnDefinition intColumn = ColumnDefinition(
       name: 'id',
       columnType: ColumnType.integer,
       isNullable: false,
       dartType: 'int',
     );
 
-    ColumnDefinition bigIntColumn = ColumnDefinition(
+    late ColumnDefinition bigIntColumn = ColumnDefinition(
       name: 'id',
       columnType: ColumnType.bigint,
       isNullable: false,
       dartType: 'int',
     );
     test(
-      'when like checking int column to big int column then check returns true.',
+      'when like checking int column to big int column, '
+      'then check returns true.',
       () {
         expect(intColumn.like(bigIntColumn), isTrue);
       },
     );
 
     test(
-      'when like checking big int column to int column then check returns true.',
+      'when like checking big int column to int column, '
+      'then check returns true.',
       () {
         expect(bigIntColumn.like(intColumn), isTrue);
       },
     );
   });
 
-  group('Given vector column definition', () {
-    ColumnDefinition vectorColumn = ColumnDefinition(
+  group('Given vector column definition,', () {
+    late ColumnDefinition vectorColumn = ColumnDefinition(
       name: 'vector_field',
       columnType: ColumnType.vector,
       isNullable: false,
@@ -42,7 +44,8 @@ void main() {
     );
 
     test(
-      'when like checking vector column with same properties then check returns true.',
+      'when like checking vector column with same properties, '
+      'then check returns true.',
       () {
         ColumnDefinition sameVectorColumn = ColumnDefinition(
           name: 'vector_field',
@@ -57,7 +60,8 @@ void main() {
     );
 
     test(
-      'when like checking vector column with different dimension then check returns false.',
+      'when like checking vector column with different dimension, '
+      'then check returns false.',
       () {
         ColumnDefinition differentDimensionColumn = ColumnDefinition(
           name: 'vector_field',
@@ -72,8 +76,8 @@ void main() {
     );
   });
 
-  group('Given half vector column definition', () {
-    ColumnDefinition halfVectorColumn = ColumnDefinition(
+  group('Given half vector column definition,', () {
+    late ColumnDefinition halfVectorColumn = ColumnDefinition(
       name: 'half_vector_field',
       columnType: ColumnType.halfvec,
       isNullable: false,
@@ -82,7 +86,8 @@ void main() {
     );
 
     test(
-      'when like checking half vector column with same properties then check returns true.',
+      'when like checking half vector column with same properties, '
+      'then check returns true.',
       () {
         ColumnDefinition sameHalfVectorColumn = ColumnDefinition(
           name: 'half_vector_field',
@@ -97,7 +102,8 @@ void main() {
     );
 
     test(
-      'when like checking half vector column with different dimension then check returns false.',
+      'when like checking half vector column with different dimension, '
+      'then check returns false.',
       () {
         ColumnDefinition differentDimensionColumn = ColumnDefinition(
           name: 'half_vector_field',
@@ -112,8 +118,8 @@ void main() {
     );
   });
 
-  group('Given sparse vector column definition', () {
-    ColumnDefinition sparseVectorColumn = ColumnDefinition(
+  group('Given sparse vector column definition,', () {
+    late ColumnDefinition sparseVectorColumn = ColumnDefinition(
       name: 'sparse_vector_field',
       columnType: ColumnType.sparsevec,
       isNullable: false,
@@ -122,7 +128,8 @@ void main() {
     );
 
     test(
-      'when like checking sparse vector column with same properties then check returns true.',
+      'when like checking sparse vector column with same properties, '
+      'then check returns true.',
       () {
         ColumnDefinition sameSparseVectorColumn = ColumnDefinition(
           name: 'sparse_vector_field',
@@ -137,7 +144,8 @@ void main() {
     );
 
     test(
-      'when like checking sparse vector column with different dimension then check returns false.',
+      'when like checking sparse vector column with different dimension, '
+      'then check returns false.',
       () {
         ColumnDefinition differentDimensionColumn = ColumnDefinition(
           name: 'sparse_vector_field',
@@ -152,8 +160,8 @@ void main() {
     );
   });
 
-  group('Given bit vector column definition', () {
-    ColumnDefinition bitColumn = ColumnDefinition(
+  group('Given bit vector column definition,', () {
+    late ColumnDefinition bitColumn = ColumnDefinition(
       name: 'bit_field',
       columnType: ColumnType.bit,
       isNullable: false,
@@ -162,7 +170,8 @@ void main() {
     );
 
     test(
-      'when like checking bit vector column with same properties then check returns true.',
+      'when like checking bit vector column with same properties, '
+      'then check returns true.',
       () {
         ColumnDefinition sameBitColumn = ColumnDefinition(
           name: 'bit_field',
@@ -177,7 +186,8 @@ void main() {
     );
 
     test(
-      'when like checking bit vector column with different dimension then check returns false.',
+      'when like checking bit vector column with different dimension, '
+      'then check returns false.',
       () {
         ColumnDefinition differentDimensionColumn = ColumnDefinition(
           name: 'bit_field',

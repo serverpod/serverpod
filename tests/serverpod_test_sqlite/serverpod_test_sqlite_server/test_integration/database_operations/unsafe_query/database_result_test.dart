@@ -7,7 +7,7 @@ void main() async {
   var session = await IntegrationTestServer().session();
 
   group(
-    'Given a simple data object in database when fetching with unsafe query',
+    'Given a simple data object in database, when fetching with unsafe query,',
     () {
       late SimpleData data;
       late DatabaseResult result;
@@ -43,7 +43,8 @@ void main() async {
   );
 
   group(
-    'Given an object with a relation in database when fetching with unsafe join query',
+    'Given an object with a relation in database, '
+    'when fetching with unsafe join query,',
     () {
       late Town town;
       late Company company;

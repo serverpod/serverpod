@@ -9,9 +9,10 @@ import '../../../../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
-  group('Given a class with fields with a "defaultModel" keyword', () {
+  group('Given a class with fields with a "defaultModel" keyword,', () {
     test(
-      'when the field is of an unsupported type ByteData with a defaultModel value, then an error is generated',
+      'when the field is of an unsupported type ByteData with a defaultModel value, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -42,7 +43,8 @@ void main() {
     );
 
     test(
-      'when the field is of an unsupported type Map with a defaultModel value, then an error is generated',
+      'when the field is of an unsupported type Map with a defaultModel value, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -73,7 +75,8 @@ void main() {
     );
 
     test(
-      'when the field is of an unsupported type List with a defaultModel value, then an error is generated',
+      'when the field is of an unsupported type List with a defaultModel value, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -104,7 +107,8 @@ void main() {
     );
 
     test(
-      'when the field is of an unsupported type Example with a defaultModel value, then an error is generated',
+      'when the field is of an unsupported type Example with a defaultModel value, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(

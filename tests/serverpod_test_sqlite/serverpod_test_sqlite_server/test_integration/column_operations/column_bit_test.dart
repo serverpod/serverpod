@@ -27,8 +27,8 @@ void main() async {
   setUpAll(() async => await _createTestDatabase(session));
   tearDownAll(() async => await _deleteAll(session));
 
-  group('Given bit column in database', () {
-    test('when fetching all then all rows are returned.', () async {
+  group('Given bit column in database,', () {
+    test('when fetching all, then all rows are returned.', () async {
       var result = await Types.db.find(
         session,
         where: (_) => Constant.bool(true),
@@ -38,7 +38,7 @@ void main() async {
     });
 
     test(
-      'when ordering by Hamming distance then an exception is thrown.',
+      'when ordering by Hamming distance, then an exception is thrown.',
       () async {
         await expectLater(
           Types.db.find(
@@ -51,7 +51,8 @@ void main() async {
     );
 
     test(
-      'when filtering using closer than with Hamming distance then an exception is thrown.',
+      'when filtering using closer than with Hamming distance, '
+      'then an exception is thrown.',
       () async {
         await expectLater(
           Types.db.find(
@@ -64,7 +65,7 @@ void main() async {
     );
 
     test(
-      'when ordering by Jaccard distance then an exception is thrown.',
+      'when ordering by Jaccard distance, then an exception is thrown.',
       () async {
         await expectLater(
           Types.db.find(
@@ -77,7 +78,8 @@ void main() async {
     );
 
     test(
-      'when filtering using closer than with Jaccard distance then an exception is thrown.',
+      'when filtering using closer than with Jaccard distance, '
+      'then an exception is thrown.',
       () async {
         await expectLater(
           Types.db.find(

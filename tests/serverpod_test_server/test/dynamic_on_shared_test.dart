@@ -13,8 +13,8 @@ void main() {
   group(
     'Given a shared model with a dynamic field and a project model as data,',
     () {
-      final simpleData = server.SimpleData(num: 1);
-      final model = shared.DynamicOnShared(
+      late final simpleData = server.SimpleData(num: 1);
+      late final model = shared.DynamicOnShared(
         name: 'test',
         data: simpleData,
       );
@@ -60,9 +60,9 @@ void main() {
   group(
     'Given a serialized shared model with a dynamic field and a project model as data,',
     () {
-      final simpleData = server.SimpleData(num: 1);
+      late final simpleData = server.SimpleData(num: 1);
 
-      final payload = {
+      late final payload = {
         '__className__': 'DynamicOnShared',
         'name': 'test',
         'data': {
@@ -90,9 +90,9 @@ void main() {
   group(
     'Given a serialized shared model with a dynamic field and a project model as data wrapped with className,',
     () {
-      final simpleData = server.SimpleData(num: 1);
+      late final simpleData = server.SimpleData(num: 1);
 
-      final payload = {
+      late final payload = {
         'className': 'DynamicOnShared',
         'data': {
           'name': 'test',

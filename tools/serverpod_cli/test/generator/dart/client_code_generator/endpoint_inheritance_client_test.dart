@@ -26,7 +26,8 @@ void main() {
   );
 
   group(
-    'Given protocol definition with an endpoint that extends another endpoint when generating client file',
+    'Given protocol definition with an endpoint that extends another endpoint, '
+    'when generating client file,',
     () {
       var baseEndpointName = 'base';
       var subclassEndpointName = 'subclass';
@@ -34,7 +35,7 @@ void main() {
       var subclassMethodName = 'subclassMethod';
 
       // Create base endpoint
-      var baseEndpoint = EndpointDefinitionBuilder()
+      late var baseEndpoint = EndpointDefinitionBuilder()
           .withClassName('${baseEndpointName.pascalCase}Endpoint')
           .withName(baseEndpointName)
           .withMethods([
@@ -45,7 +46,7 @@ void main() {
           .build();
 
       // Create endpoint that extends base endpoint
-      var subclassEndpoint = EndpointDefinitionBuilder()
+      late var subclassEndpoint = EndpointDefinitionBuilder()
           .withClassName('${subclassEndpointName.pascalCase}Endpoint')
           .withName(subclassEndpointName)
           .withExtends(baseEndpoint)
@@ -59,7 +60,7 @@ void main() {
           ])
           .build();
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [baseEndpoint, subclassEndpoint],
         models: [],
         futureCalls: [],
@@ -157,7 +158,8 @@ void main() {
   );
 
   group(
-    'Given protocol definition with an endpoint that extends an endpoint from other module when generating client file',
+    'Given protocol definition with an endpoint that extends an endpoint from other module, '
+    'when generating client file,',
     () {
       var baseEndpointName = 'base';
       var subclassEndpointName = 'subclass';
@@ -165,7 +167,7 @@ void main() {
       var baseStreamMethodName = 'baseStreamMethod';
       var subclassMethodName = 'subclassMethod';
 
-      var externalModule = ModuleConfigBuilder('serverpod_test_module')
+      late var externalModule = ModuleConfigBuilder('serverpod_test_module')
           .withServerPackageDirectoryPathParts([
             'tests',
             'serverpod_test_module',
@@ -174,7 +176,7 @@ void main() {
           .build();
 
       // Create base endpoint
-      var baseEndpoint = EndpointDefinitionBuilder()
+      late var baseEndpoint = EndpointDefinitionBuilder()
           .withClassName('${baseEndpointName.pascalCase}Endpoint')
           .withName(baseEndpointName)
           .withFilePath(
@@ -192,7 +194,7 @@ void main() {
           .build();
 
       // Create endpoint that extends base endpoint
-      var subclassEndpoint = EndpointDefinitionBuilder()
+      late var subclassEndpoint = EndpointDefinitionBuilder()
           .withClassName('${subclassEndpointName.pascalCase}Endpoint')
           .withName(subclassEndpointName)
           .withExtends(baseEndpoint)
@@ -209,13 +211,13 @@ void main() {
           ])
           .build();
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [subclassEndpoint],
         models: [],
         futureCalls: [],
       );
 
-      final customConfig = GeneratorConfigBuilder()
+      late final customConfig = GeneratorConfigBuilder()
           .withName(projectName)
           .withModules([externalModule])
           .build();

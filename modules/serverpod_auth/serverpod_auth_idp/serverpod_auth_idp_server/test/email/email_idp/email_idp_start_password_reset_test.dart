@@ -7,7 +7,7 @@ import '../test_utils/email_idp_test_fixture.dart';
 
 void main() {
   withServerpod(
-    'Given an existing email account',
+    'Given an existing email account,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -41,7 +41,7 @@ void main() {
         await fixture.tearDown(session);
       });
 
-      group('when startPasswordReset is called', () {
+      group('when startPasswordReset is called,', () {
         late Future<UuidValue> passwordResetRequestIdFuture;
         setUp(() async {
           passwordResetRequestIdFuture = fixture.emailIdp.startPasswordReset(
@@ -77,7 +77,7 @@ void main() {
   );
 
   withServerpod(
-    'Given existing email account with maximum allowed password reset requests',
+    'Given existing email account with maximum allowed password reset requests,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -118,7 +118,8 @@ void main() {
       });
 
       test(
-        'when requesting password reset with same email then it throws EmailAccountPasswordResetException with reason "tooManyAttempts"',
+        'when requesting password reset with same email, '
+        'then it throws EmailAccountPasswordResetException with reason "tooManyAttempts"',
         () async {
           final result = fixture.emailIdp.startPasswordReset(
             session,
@@ -141,7 +142,7 @@ void main() {
   );
 
   withServerpod(
-    'Given no email account',
+    'Given no email account,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -156,7 +157,7 @@ void main() {
         await fixture.tearDown(session);
       });
 
-      group('when startPasswordReset is called', () {
+      group('when startPasswordReset is called,', () {
         late Future<UuidValue> passwordResetRequestIdFuture;
 
         setUp(() async {
@@ -201,7 +202,7 @@ void main() {
   );
 
   withServerpod(
-    'Given pending password reset request that was not verified',
+    'Given pending password reset request that was not verified,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -232,7 +233,7 @@ void main() {
         await fixture.tearDown(session);
       });
 
-      group('when startPasswordReset is called again with the same email', () {
+      group('when startPasswordReset is called again with the same email,', () {
         late UuidValue newPasswordResetRequestId;
         setUp(() async {
           newPasswordResetRequestId = await fixture.emailIdp.startPasswordReset(
@@ -276,7 +277,7 @@ void main() {
   );
 
   withServerpod(
-    'Given maximum allowed password reset requests for non-existing email account',
+    'Given maximum allowed password reset requests for non-existing email account,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -308,7 +309,8 @@ void main() {
       });
 
       test(
-        'when requesting password reset with same email then it throws EmailAccountPasswordResetException with reason "tooManyAttempts"',
+        'when requesting password reset with same email, '
+        'then it throws EmailAccountPasswordResetException with reason "tooManyAttempts"',
         () async {
           final result = fixture.emailIdp.startPasswordReset(
             session,

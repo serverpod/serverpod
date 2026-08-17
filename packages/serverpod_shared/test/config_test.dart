@@ -13,7 +13,9 @@ void main() {
   var passwords = {'serviceSecret': 'longpasswordthatisrequired'};
 
   test(
-    'Given a Serverpod config missing api server configuration when loading from Map then default api server configuration is used.',
+    'Given a Serverpod config missing api server configuration, '
+    'when loading from Map, '
+    'then default api server configuration is used.',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -30,7 +32,9 @@ void main() {
   );
 
   test(
-    'Given a Serverpod config with api server configuration missing required port when loading from Map then exception is thrown.',
+    'Given a Serverpod config with api server configuration missing required port, '
+    'when loading from Map, '
+    'then exception is thrown.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -60,7 +64,9 @@ apiServer:
   );
 
   test(
-    'Given a Serverpod config with api server with wrong port type when loading from Map then exception is thrown.',
+    'Given a Serverpod config with api server with wrong port type, '
+    'when loading from Map, '
+    'then exception is thrown.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -91,7 +97,9 @@ apiServer:
   );
 
   group(
-    'Given a Serverpod config with api server configuration when loading from Map then',
+    'Given a Serverpod config with api server configuration, '
+    'when loading from Map, '
+    'then',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -105,7 +113,7 @@ apiServer:
       const serverId = 'myServerId';
       const passwords = {'serviceSecret': 'LONG_PASSWORD_THAT_IS_REQUIRED'};
 
-      var config = ServerpodConfig.loadFromMap(
+      late var config = ServerpodConfig.loadFromMap(
         runMode,
         serverId,
         passwords,
@@ -150,7 +158,9 @@ apiServer:
   );
 
   test(
-    'Given a Serverpod config with insights server configuration when loading from Map then insights server configuration is set.',
+    'Given a Serverpod config with insights server configuration, '
+    'when loading from Map, '
+    'then insights server configuration is set.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -180,7 +190,9 @@ insightsServer:
   );
 
   test(
-    'Given a Serverpod config with web server configuration when loading from Map then web server configuration is set.',
+    'Given a Serverpod config with web server configuration, '
+    'when loading from Map, '
+    'then web server configuration is set.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -210,7 +222,9 @@ webServer:
   );
 
   test(
-    'Given a Serverpod config with max request size when loading from Map then max request size configuration matches supplied value.',
+    'Given a Serverpod config with max request size, '
+    'when loading from Map, '
+    'then max request size configuration matches supplied value.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -233,7 +247,9 @@ maxRequestSize: 1048576
   );
 
   test(
-    'Given a Serverpod config with redis configuration missing required field when loading from Map then exception is thrown.',
+    'Given a Serverpod config with redis configuration missing required field, '
+    'when loading from Map, '
+    'then exception is thrown.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -266,7 +282,9 @@ redis:
   );
 
   test(
-    'Given a Serverpod config with redis configuration when loading from Map then redis configuration is set.',
+    'Given a Serverpod config with redis configuration, '
+    'when loading from Map, '
+    'then redis configuration is set.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -296,7 +314,9 @@ redis:
   );
 
   test(
-    'Given an empty Serverpod config map but with the environment variables set for the api server when loading from Map then the configuration is created.',
+    'Given an empty Serverpod config map but with the environment variables set for the api server, '
+    'when loading from Map, '
+    'then the configuration is created.',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -319,7 +339,9 @@ redis:
   );
 
   test(
-    'Given a Serverpod config map that is empty but the environment variables are set to the wrong type for the api server when loading from Map then an exception is thrown.',
+    'Given a Serverpod config map that is empty but the environment variables are set to the wrong type for the api server, '
+    'when loading from Map, '
+    'then an exception is thrown.',
     () {
       expect(
         () => ServerpodConfig.loadFromMap(
@@ -348,7 +370,9 @@ redis:
   );
 
   test(
-    'Given a Serverpod config map with half the values and the environment variables the other half for the api server when loading from Map then configuration then the config is created.',
+    'Given a Serverpod config map with half the values and the environment variables the other half for the api server, '
+    'when loading from Map, '
+    'then configuration then the config is created.',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -374,7 +398,9 @@ redis:
   );
 
   test(
-    'Given a Serverpod config map with all the values and the environment variables for the api server when loading from Map then the config is overridden by the environment variables.',
+    'Given a Serverpod config map with all the values and the environment variables for the api server, '
+    'when loading from Map, '
+    'then the config is overridden by the environment variables.',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -404,7 +430,9 @@ redis:
   );
 
   test(
-    'Given a Serverpod config with only the api server configuration but the environment variables containing the max request size when loading from Map then the max request size is set.',
+    'Given a Serverpod config with only the api server configuration but the environment variables containing the max request size, '
+    'when loading from Map, '
+    'then the max request size is set.',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -428,7 +456,9 @@ redis:
   );
 
   test(
-    'Given a Serverpod config with only the api server configuration but the environment variables containing the config for the web server when loading from Map then the web server config is created.',
+    'Given a Serverpod config with only the api server configuration but the environment variables containing the config for the web server, '
+    'when loading from Map, '
+    'then the web server config is created.',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -458,7 +488,9 @@ redis:
   );
 
   test(
-    'Given a Serverpod config map with half the values and the environment variables the other half for the web server when loading from Map then configuration then the web config is created',
+    'Given a Serverpod config map with half the values and the environment variables the other half for the web server, '
+    'when loading from Map, '
+    'then configuration then the web config is created',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -490,7 +522,9 @@ redis:
   );
 
   test(
-    'Given a Serverpod config map with all the values and the environment variables for the api server when loading from Map then the config is overridden by the environment variables.',
+    'Given a Serverpod config map with all the values and the environment variables for the api server, '
+    'when loading from Map, '
+    'then the config is overridden by the environment variables.',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -526,7 +560,9 @@ redis:
   );
 
   test(
-    'Given a Serverpod config with only the api server configuration but the environment variables containing the config for the insights server when loading from Map then the insights server config is created.',
+    'Given a Serverpod config with only the api server configuration but the environment variables containing the config for the insights server, '
+    'when loading from Map, '
+    'then the insights server config is created.',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -556,7 +592,9 @@ redis:
   );
 
   test(
-    'Given a Serverpod config map with half the values and the environment variables the other half for the insights server when loading from Map then configuration then the insights config is created',
+    'Given a Serverpod config map with half the values and the environment variables the other half for the insights server, '
+    'when loading from Map, '
+    'then configuration then the insights config is created',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -588,7 +626,9 @@ redis:
   );
 
   test(
-    'Given a Serverpod config map with all the values and the environment variables for the insights server when loading from Map then the config is overridden by the environment variables.',
+    'Given a Serverpod config map with all the values and the environment variables for the insights server, '
+    'when loading from Map, '
+    'then the config is overridden by the environment variables.',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -624,7 +664,8 @@ redis:
   );
 
   test(
-    'Given a Serverpod config with only the api server configuration but the environment variables containing the optional database variable require ssl set to an invalid value then an exception is thrown.',
+    'Given a Serverpod config with only the api server configuration but the environment variables containing the optional database variable require ssl set to an invalid value, '
+    'then an exception is thrown.',
     () {
       expect(
         () => ServerpodConfig.loadFromMap(
@@ -661,7 +702,9 @@ redis:
   );
 
   test(
-    'Given a Serverpod config with only the api server configuration but the environment variables containing the config for the redis when loading from Map then the redis config is created.',
+    'Given a Serverpod config with only the api server configuration but the environment variables containing the config for the redis, '
+    'when loading from Map, '
+    'then the redis config is created.',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -690,7 +733,9 @@ redis:
   );
 
   test(
-    'Given a Serverpod config with only the api server configuration but the environment variables containing the config for the redis with a required tls connection when loading from Map then the redis config is created.',
+    'Given a Serverpod config with only the api server configuration but the environment variables containing the config for the redis with a required tls connection, '
+    'when loading from Map, '
+    'then the redis config is created.',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -719,7 +764,9 @@ redis:
     },
   );
   test(
-    'Given a Serverpod config with only the api server configuration but the environment variables containing the config for the redis with a invalid value for require ssl when loading from Map then an exception is thrown',
+    'Given a Serverpod config with only the api server configuration but the environment variables containing the config for the redis with a invalid value for require ssl, '
+    'when loading from Map, '
+    'then an exception is thrown',
     () {
       expect(
         () => ServerpodConfig.loadFromMap(
@@ -755,7 +802,9 @@ redis:
   );
 
   test(
-    'Given a Serverpod config map with half the values and the environment variables the other half for the redis when loading from Map then configuration then the redis config is created',
+    'Given a Serverpod config map with half the values and the environment variables the other half for the redis, '
+    'when loading from Map, '
+    'then configuration then the redis config is created',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -786,7 +835,9 @@ redis:
   );
 
   test(
-    'Given a Serverpod config map with all the values and the environment variables for the redis when loading from Map then the config is overridden by the environment variables.',
+    'Given a Serverpod config map with all the values and the environment variables for the redis, '
+    'when loading from Map, '
+    'then the config is overridden by the environment variables.',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -819,7 +870,9 @@ redis:
   );
 
   test(
-    'Given a Serverpod config with the redis enabled environment variable set when loading from Map then the redis configuration is enabled.',
+    'Given a Serverpod config with the redis enabled environment variable set, '
+    'when loading from Map, '
+    'then the redis configuration is enabled.',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -848,7 +901,9 @@ redis:
   );
 
   test(
-    'Given a Serverpod config with server id when loading from Map then serverId configuration matches supplied value.',
+    'Given a Serverpod config with server id, '
+    'when loading from Map, '
+    'then serverId configuration matches supplied value.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -871,7 +926,9 @@ serverId: testServer1
   );
 
   test(
-    'Given a Serverpod config with only the api server configuration but the environment variables containing the server id when loading from Map then the server id matches supplied value.',
+    'Given a Serverpod config with only the api server configuration but the environment variables containing the server id, '
+    'when loading from Map, '
+    'then the server id matches supplied value.',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -895,7 +952,8 @@ serverId: testServer1
   );
 
   test(
-    'Given a Serverpod config with only the api server configuration but the server id given as an argument then the server id matches supplied value.',
+    'Given a Serverpod config with only the api server configuration but the server id given as an argument, '
+    'then the server id matches supplied value.',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -916,7 +974,9 @@ serverId: testServer1
   );
 
   test(
-    'Given a Serverpod config with server id when loading from Map and the environment variables containing the server id but the server id given as an argument is the default value then the server id from environment takes the precedence.',
+    'Given a Serverpod config with server id, '
+    'when loading from Map and the environment variables containing the server id but the server id given as an argument is the default value, '
+    'then the server id from environment takes the precedence.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -942,7 +1002,9 @@ serverId: testServerIdFromConfig
   );
 
   test(
-    'Given a Serverpod config with server id when loading from Map and the environment variables containing the server id and the server id given as an argument is a custom defined value then the server id from the argument takes the precedence.',
+    'Given a Serverpod config with server id, '
+    'when loading from Map and the environment variables containing the server id and the server id given as an argument is a custom defined value, '
+    'then the server id from the argument takes the precedence.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -968,7 +1030,9 @@ serverId: testServerIdFromConfig
   );
 
   test(
-    'Given a Serverpod config without futureCallExecutionEnabled when loading from Map then the futureCallExecutionEnabled is set to true.',
+    'Given a Serverpod config without futureCallExecutionEnabled, '
+    'when loading from Map, '
+    'then the futureCallExecutionEnabled is set to true.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -990,7 +1054,9 @@ apiServer:
   );
 
   test(
-    'Given a Serverpod config with futureCallExecutionEnabled set to false when loading from Map then the futureCallExecutionEnabled is set to false.',
+    'Given a Serverpod config with futureCallExecutionEnabled set to false, '
+    'when loading from Map, '
+    'then the futureCallExecutionEnabled is set to false.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -1013,7 +1079,9 @@ futureCallExecutionEnabled: false
   );
 
   test(
-    'Given a Serverpod config without futureCallExecutionEnabled and environment contains SERVERPOD_DISABLE_FUTURE_CALL_EXECUTION set to false when loading from Map then the futureCallExecutionEnabled is set to false.',
+    'Given a Serverpod config without futureCallExecutionEnabled and environment contains SERVERPOD_DISABLE_FUTURE_CALL_EXECUTION set to false, '
+    'when loading from Map, '
+    'then the futureCallExecutionEnabled is set to false.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -1038,7 +1106,9 @@ apiServer:
   );
 
   test(
-    'Given a Serverpod config with futureCallExecutionEnabled set to false and environment contains SERVERPOD_FUTURE_CALL_EXECUTION_ENABLED set to true when loading from Map then the futureCallExecutionEnabled is set to true.',
+    'Given a Serverpod config with futureCallExecutionEnabled set to false and environment contains SERVERPOD_FUTURE_CALL_EXECUTION_ENABLED set to true, '
+    'when loading from Map, '
+    'then the futureCallExecutionEnabled is set to true.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -1064,7 +1134,9 @@ futureCallExecutionEnabled: false
   );
 
   test(
-    'Given a Serverpod config instance is created with runMode set to "development" when reading the consoleLogFormat then the consoleLogFormat is set to text',
+    'Given a Serverpod config instance is created with runMode set to "development", '
+    'when reading the consoleLogFormat, '
+    'then the consoleLogFormat is set to text',
     () {
       var config = ServerpodConfig(
         runMode: 'development',
@@ -1076,7 +1148,9 @@ futureCallExecutionEnabled: false
   );
 
   test(
-    'Given a Serverpod config instance is created with runMode set to "production" when reading the consoleLogFormat then the consoleLogFormat is set to json',
+    'Given a Serverpod config instance is created with runMode set to "production", '
+    'when reading the consoleLogFormat, '
+    'then the consoleLogFormat is set to json',
     () {
       var config = ServerpodConfig(
         runMode: 'production',
@@ -1087,7 +1161,7 @@ futureCallExecutionEnabled: false
     },
   );
 
-  group('Given an empty Serverpod config map when loading from Map then', () {
+  group('Given an empty Serverpod config map, when loading from Map, then', () {
     test('future call config uses default concurrency limit of 1', () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -1135,7 +1209,8 @@ futureCallExecutionEnabled: false
   });
 
   group(
-    'Given a Serverpod config with basic API server configuration when loading from Map',
+    'Given a Serverpod config with basic API server configuration, '
+    'when loading from Map,',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -1145,7 +1220,7 @@ apiServer:
   publicScheme: http
 ''';
 
-      var config = ServerpodConfig.loadFromMap(
+      late var config = ServerpodConfig.loadFromMap(
         runMode,
         serverId,
         passwords,
@@ -1171,7 +1246,9 @@ apiServer:
   );
 
   test(
-    'Given a Serverpod config with role in environment variable when loading from Map then role from environment variable is used',
+    'Given a Serverpod config with role in environment variable, '
+    'when loading from Map, '
+    'then role from environment variable is used',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -1195,7 +1272,9 @@ apiServer:
   );
 
   test(
-    'Given a Serverpod config with role in both environment variable and command line args when loading from Map then role from command line args takes precedence over environment',
+    'Given a Serverpod config with role in both environment variable and command line args, '
+    'when loading from Map, '
+    'then role from command line args takes precedence over environment',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -1222,7 +1301,9 @@ apiServer:
   );
 
   test(
-    'Given a Serverpod config with invalid role in environment variable when loading from Map then ArgumentError is thrown',
+    'Given a Serverpod config with invalid role in environment variable, '
+    'when loading from Map, '
+    'then ArgumentError is thrown',
     () {
       expect(
         () => ServerpodConfig.loadFromMap(
@@ -1255,7 +1336,9 @@ apiServer:
   );
 
   test(
-    'Given a Serverpod config with valid roles in environment variable when loading from Map then all valid roles are accepted from environment',
+    'Given a Serverpod config with valid roles in environment variable, '
+    'when loading from Map, '
+    'then all valid roles are accepted from environment',
     () {
       final validRoles = ['monolith', 'serverless', 'maintenance'];
       final expectedRoles = [
@@ -1288,7 +1371,9 @@ apiServer:
   );
 
   test(
-    'Given a Serverpod config with logging mode in environment variable when loading from Map then logging mode from environment variable is used',
+    'Given a Serverpod config with logging mode in environment variable, '
+    'when loading from Map, '
+    'then logging mode from environment variable is used',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -1312,7 +1397,9 @@ apiServer:
   );
 
   test(
-    'Given a Serverpod config with logging mode in both environment variable and command line args when loading from Map then logging mode from command line args takes precedence over environment',
+    'Given a Serverpod config with logging mode in both environment variable and command line args, '
+    'when loading from Map, '
+    'then logging mode from command line args takes precedence over environment',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -1339,7 +1426,9 @@ apiServer:
   );
 
   test(
-    'Given a Serverpod config with invalid logging mode in environment variable when loading from Map then ArgumentError is thrown',
+    'Given a Serverpod config with invalid logging mode in environment variable, '
+    'when loading from Map, '
+    'then ArgumentError is thrown',
     () {
       expect(
         () => ServerpodConfig.loadFromMap(
@@ -1372,7 +1461,9 @@ apiServer:
   );
 
   test(
-    'Given a Serverpod config with valid logging modes in environment variable when loading from Map then all valid logging modes are accepted from environment',
+    'Given a Serverpod config with valid logging modes in environment variable, '
+    'when loading from Map, '
+    'then all valid logging modes are accepted from environment',
     () {
       final validLoggingModes = ['normal', 'verbose'];
       final expectedLoggingModes = [
@@ -1404,7 +1495,9 @@ apiServer:
   );
 
   test(
-    'Given a Serverpod config with apply migrations environment variable set to true when loading from Map then apply migrations from environment variable is used',
+    'Given a Serverpod config with apply migrations environment variable set to true, '
+    'when loading from Map, '
+    'then apply migrations from environment variable is used',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -1428,7 +1521,9 @@ apiServer:
   );
 
   test(
-    'Given a Serverpod config with apply migrations environment variable set to false when loading from Map then apply migrations from environment variable is used',
+    'Given a Serverpod config with apply migrations environment variable set to false, '
+    'when loading from Map, '
+    'then apply migrations from environment variable is used',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -1452,7 +1547,9 @@ apiServer:
   );
 
   test(
-    'Given a Serverpod config with apply migrations in both environment variable and command line args when loading from Map then apply migrations from command line args takes precedence over environment',
+    'Given a Serverpod config with apply migrations in both environment variable and command line args, '
+    'when loading from Map, '
+    'then apply migrations from command line args takes precedence over environment',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -1479,7 +1576,9 @@ apiServer:
   );
 
   test(
-    'Given a Serverpod config with invalid apply migrations environment variable when loading from Map then ArgumentError is thrown',
+    'Given a Serverpod config with invalid apply migrations environment variable, '
+    'when loading from Map, '
+    'then ArgumentError is thrown',
     () {
       expect(
         () => ServerpodConfig.loadFromMap(
@@ -1512,7 +1611,9 @@ apiServer:
   );
 
   test(
-    'Given a Serverpod config with apply repair migration environment variable set to true when loading from Map then apply repair migration from environment variable is used',
+    'Given a Serverpod config with apply repair migration environment variable set to true, '
+    'when loading from Map, '
+    'then apply repair migration from environment variable is used',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -1536,7 +1637,9 @@ apiServer:
   );
 
   test(
-    'Given a Serverpod config with apply repair migration environment variable set to false when loading from Map then apply repair migration from environment variable is used',
+    'Given a Serverpod config with apply repair migration environment variable set to false, '
+    'when loading from Map, '
+    'then apply repair migration from environment variable is used',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -1560,7 +1663,9 @@ apiServer:
   );
 
   test(
-    'Given a Serverpod config with apply repair migration in both environment variable and command line args when loading from Map then apply repair migration from command line args takes precedence over environment',
+    'Given a Serverpod config with apply repair migration in both environment variable and command line args, '
+    'when loading from Map, '
+    'then apply repair migration from command line args takes precedence over environment',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -1587,7 +1692,9 @@ apiServer:
   );
 
   test(
-    'Given a Serverpod config with invalid apply repair migration environment variable when loading from Map then ArgumentError is thrown',
+    'Given a Serverpod config with invalid apply repair migration environment variable, '
+    'when loading from Map, '
+    'then ArgumentError is thrown',
     () {
       expect(
         () => ServerpodConfig.loadFromMap(
@@ -1620,7 +1727,9 @@ apiServer:
   );
 
   test(
-    'Given a Serverpod config with no serverId specified and null serverId arg when loading from Map then serverId defaults to "default"',
+    'Given a Serverpod config with no serverId specified and null serverId arg, '
+    'when loading from Map, '
+    'then serverId defaults to "default"',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -1642,7 +1751,9 @@ apiServer:
   );
 
   test(
-    'Given a Serverpod config with serverId in config file and null serverId arg when loading from Map then serverId from config file is used',
+    'Given a Serverpod config with serverId in config file and null serverId arg, '
+    'when loading from Map, '
+    'then serverId from config file is used',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -1665,7 +1776,9 @@ serverId: configFileServerId
   );
 
   test(
-    'Given a Serverpod config with serverId in both config file and environment variable with null serverId arg when loading from Map then serverId from environment takes precedence over config file',
+    'Given a Serverpod config with serverId in both config file and environment variable with null serverId arg, '
+    'when loading from Map, '
+    'then serverId from environment takes precedence over config file',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -1691,7 +1804,9 @@ serverId: configFileServerId
   );
 
   test(
-    'Given a Serverpod config with serverId in config file and environment variable and command line arg when loading from Map then serverId from command line arg takes precedence over all other sources',
+    'Given a Serverpod config with serverId in config file and environment variable and command line arg, '
+    'when loading from Map, '
+    'then serverId from command line arg takes precedence over all other sources',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -1717,7 +1832,9 @@ serverId: configFileServerId
   );
 
   test(
-    'Given a Serverpod config with empty string serverId from command line arg when loading from Map then empty string serverId from command line arg is still used',
+    'Given a Serverpod config with empty string serverId from command line arg, '
+    'when loading from Map, '
+    'then empty string serverId from command line arg is still used',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -1741,7 +1858,9 @@ serverId: configFileServerId
   );
 
   test(
-    'Given a Serverpod config with no validateHeaders config when loading from Map then the default value is true',
+    'Given a Serverpod config with no validateHeaders config, '
+    'when loading from Map, '
+    'then the default value is true',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -1755,7 +1874,9 @@ serverId: configFileServerId
   );
 
   test(
-    'Given a Serverpod config with validateHeaders set to false when loading from Map then the value is false',
+    'Given a Serverpod config with validateHeaders set to false, '
+    'when loading from Map, '
+    'then the value is false',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -1771,7 +1892,9 @@ serverId: configFileServerId
   );
 
   test(
-    'Given a Serverpod config with validateHeaders set to true when loading from Map then the value is true',
+    'Given a Serverpod config with validateHeaders set to true, '
+    'when loading from Map, '
+    'then the value is true',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -1787,7 +1910,9 @@ serverId: configFileServerId
   );
 
   test(
-    'Given a Serverpod config with validateHeaders in environment variable when loading from Map then the environment value overrides config',
+    'Given a Serverpod config with validateHeaders in environment variable, '
+    'when loading from Map, '
+    'then the environment value overrides config',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -1806,7 +1931,9 @@ serverId: configFileServerId
   );
 
   test(
-    'Given a Serverpod config with validateHeaders only in environment variable when loading from Map then the environment value is used',
+    'Given a Serverpod config with validateHeaders only in environment variable, '
+    'when loading from Map, '
+    'then the environment value is used',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -1823,7 +1950,9 @@ serverId: configFileServerId
   );
 
   test(
-    'Given a Serverpod config with no websocketPingInterval when loading from Map then default value of 30 seconds is used.',
+    'Given a Serverpod config with no websocketPingInterval, '
+    'when loading from Map, '
+    'then default value of 30 seconds is used.',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -1837,7 +1966,9 @@ serverId: configFileServerId
   );
 
   test(
-    'Given a Serverpod config with websocketPingInterval in YAML when loading from Map then the YAML value is used.',
+    'Given a Serverpod config with websocketPingInterval in YAML, '
+    'when loading from Map, '
+    'then the YAML value is used.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -1860,7 +1991,9 @@ websocketPingInterval: 15
   );
 
   test(
-    'Given a Serverpod config with websocketPingInterval in environment variable when loading from Map then environment value overrides config.',
+    'Given a Serverpod config with websocketPingInterval in environment variable, '
+    'when loading from Map, '
+    'then environment value overrides config.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -1886,7 +2019,9 @@ websocketPingInterval: 15
   );
 
   test(
-    'Given a Serverpod config with websocketPingInterval only in environment variable when loading from Map then environment value is used.',
+    'Given a Serverpod config with websocketPingInterval only in environment variable, '
+    'when loading from Map, '
+    'then environment value is used.',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
@@ -1903,7 +2038,9 @@ websocketPingInterval: 15
   );
 
   test(
-    'Given a Serverpod config with invalid websocketPingInterval in environment variable when loading from Map then ArgumentError is thrown.',
+    'Given a Serverpod config with invalid websocketPingInterval in environment variable, '
+    'when loading from Map, '
+    'then ArgumentError is thrown.',
     () {
       expect(
         () => ServerpodConfig.loadFromMap(
@@ -1929,7 +2066,9 @@ websocketPingInterval: 15
   );
 
   test(
-    'Given a Serverpod config with zero websocketPingInterval in environment variable when loading from Map then ArgumentError is thrown.',
+    'Given a Serverpod config with zero websocketPingInterval in environment variable, '
+    'when loading from Map, '
+    'then ArgumentError is thrown.',
     () {
       expect(
         () => ServerpodConfig.loadFromMap(
@@ -1955,7 +2094,9 @@ websocketPingInterval: 15
   );
 
   test(
-    'Given a Serverpod config with negative websocketPingInterval in environment variable when loading from Map then ArgumentError is thrown.',
+    'Given a Serverpod config with negative websocketPingInterval in environment variable, '
+    'when loading from Map, '
+    'then ArgumentError is thrown.',
     () {
       expect(
         () => ServerpodConfig.loadFromMap(
@@ -1982,7 +2123,9 @@ websocketPingInterval: 15
   );
 
   test(
-    'Given a Serverpod config with invalid websocketPingInterval in YAML when loading from Map then ArgumentError is thrown.',
+    'Given a Serverpod config with invalid websocketPingInterval in YAML, '
+    'when loading from Map, '
+    'then ArgumentError is thrown.',
     () {
       var serverpodConfig = '''
 apiServer:

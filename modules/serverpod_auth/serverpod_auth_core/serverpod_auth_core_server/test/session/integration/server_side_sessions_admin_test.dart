@@ -64,7 +64,8 @@ void main() {
     );
 
     test(
-      'when calling `deleteSessions` for another user, then nothing is deleted.',
+      'when calling `deleteSessions` for another user, '
+      'then nothing is deleted.',
       () async {
         final deleted = await ServerSideSessionsAdmin().deleteSessions(
           session,
@@ -92,7 +93,8 @@ void main() {
     );
 
     test(
-      'when calling `deleteSessions` for another `method`, then nothing is deleted.',
+      'when calling `deleteSessions` for another `method`, '
+      'then nothing is deleted.',
       () async {
         final deleted = await ServerSideSessionsAdmin().deleteSessions(
           session,
@@ -120,7 +122,8 @@ void main() {
     );
 
     test(
-      'when calling `deleteSessions` with another session id, then nothing is deleted.',
+      'when calling `deleteSessions` with another session id, '
+      'then nothing is deleted.',
       () async {
         final deleted = await ServerSideSessionsAdmin().deleteSessions(
           session,
@@ -133,7 +136,8 @@ void main() {
     );
 
     test(
-      'when calling `deleteSessions` for the user with another `method`, then nothing is deleted.',
+      'when calling `deleteSessions` for the user with another `method`, '
+      'then nothing is deleted.',
       () async {
         final deleted = await ServerSideSessionsAdmin().deleteSessions(
           session,
@@ -150,7 +154,7 @@ void main() {
   withServerpod(
     'Given an auth session expiring in 1 day,',
     (final sessionBuilder, final endpoints) {
-      final expiresAt = DateTime.now().add(const Duration(days: 1));
+      late final expiresAt = DateTime.now().add(const Duration(days: 1));
       late Session session;
 
       setUp(() async {
@@ -187,7 +191,7 @@ void main() {
   withServerpod(
     'Given an expired auth session,',
     (final sessionBuilder, final endpoints) {
-      final expiresAt = DateTime.now().subtract(const Duration(days: 1));
+      late final expiresAt = DateTime.now().subtract(const Duration(days: 1));
       late Session session;
 
       setUp(() async {
@@ -220,7 +224,8 @@ void main() {
       );
 
       test(
-        'when calling `deleteExpiredSessions` with `deleteExpired: false`, then it is kept.',
+        'when calling `deleteExpiredSessions` with `deleteExpired: false`, '
+        'then it is kept.',
         () async {
           await ServerSideSessionsAdmin().deleteExpiredSessions(
             session,
@@ -314,7 +319,8 @@ void main() {
       );
 
       test(
-        'when calling `deleteExpiredSessions` with `deleteInactive: false`, then it is kept.',
+        'when calling `deleteExpiredSessions` with `deleteInactive: false`, '
+        'then it is kept.',
         () async {
           await ServerSideSessionsAdmin().deleteExpiredSessions(
             session,

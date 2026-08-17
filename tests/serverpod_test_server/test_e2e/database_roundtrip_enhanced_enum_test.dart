@@ -8,10 +8,10 @@ void main() {
   final client = Client(serverUrl);
 
   group(
-    'Given an object stored in the database containing an enhanced enum serialized byIndex',
+    'Given an object stored in the database containing an enhanced enum serialized byIndex,',
     () {
       test(
-        'when roundtripping then value and properties are preserved',
+        'when roundtripping, then value and properties are preserved',
         () async {
           final object = ObjectWithEnumEnhancedBuilder()
               .withByIndex(TestEnumEnhanced.two)
@@ -29,10 +29,10 @@ void main() {
   );
 
   group(
-    'Given an object stored in the database containing an enhanced enum serialized byName',
+    'Given an object stored in the database containing an enhanced enum serialized byName,',
     () {
       test(
-        'when roundtripping then value and properties are preserved',
+        'when roundtripping, then value and properties are preserved',
         () async {
           final object = ObjectWithEnumEnhancedBuilder()
               .withByName(TestEnumEnhancedByName.two)
@@ -50,10 +50,10 @@ void main() {
   );
 
   group(
-    'Given an object stored in the database containing a list of enhanced enums',
+    'Given an object stored in the database containing a list of enhanced enums,',
     () {
       test(
-        'when roundtripping then all values and properties are preserved',
+        'when roundtripping, then all values and properties are preserved',
         () async {
           final object = ObjectWithEnumEnhancedBuilder().withByIndexList([
             TestEnumEnhanced.one,
@@ -73,9 +73,9 @@ void main() {
     },
   );
 
-  group('Given a nullable enhanced enum field set to null', () {
+  group('Given a nullable enhanced enum field set to null,', () {
     test(
-      'when storing then null is preserved after roundtrip',
+      'when storing, then null is preserved after roundtrip',
       () async {
         final object = ObjectWithEnumEnhancedBuilder().build();
 

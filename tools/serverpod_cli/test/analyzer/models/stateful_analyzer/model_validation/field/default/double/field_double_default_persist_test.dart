@@ -10,9 +10,10 @@ import '../../../../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
-  group('Given a class with fields with a "defaultPersist" keyword', () {
+  group('Given a class with fields with a "defaultPersist" keyword,', () {
     test(
-      'when the field is of type double and the defaultPersist is set to "10.5", then the field should have a "default persist" value',
+      'when the field is of type double and the defaultPersist is set to "10.5", '
+      'then the field should have a "default persist" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -40,7 +41,8 @@ void main() {
     );
 
     test(
-      'when the field is of type double and the defaultPersist is set to "20.5", then the field should have a "default persist" value',
+      'when the field is of type double and the defaultPersist is set to "20.5", '
+      'then the field should have a "default persist" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -72,7 +74,8 @@ void main() {
     );
 
     test(
-      'when the field is of type double and the defaultPersist is set to an integer "10", then the field should have a "default persist" value',
+      'when the field is of type double and the defaultPersist is set to an integer "10", '
+      'then the field should have a "default persist" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -100,7 +103,8 @@ void main() {
     );
 
     test(
-      'when the field is of type double and the defaultPersist is empty, then an error is generated',
+      'when the field is of type double and the defaultPersist is empty, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -131,7 +135,8 @@ void main() {
     );
 
     test(
-      'when the field is of type double with an invalid defaultPersist value "TEN.POINT_FIVE", then an error is generated',
+      'when the field is of type double with an invalid defaultPersist value "TEN.POINT_FIVE", '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -162,7 +167,8 @@ void main() {
     );
 
     test(
-      'when the field is of type double with an invalid defaultPersist value containing non-numeric characters, then an error is generated',
+      'when the field is of type double with an invalid defaultPersist value containing non-numeric characters, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -193,7 +199,8 @@ void main() {
     );
 
     test(
-      'when the field is of type double with an invalid defaultPersist value, then an error is generated',
+      'when the field is of type double with an invalid defaultPersist value, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -224,7 +231,8 @@ void main() {
     );
 
     test(
-      'when the field is of type double non-nullable type, then an error is generated',
+      'when the field is of type double non-nullable type, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(

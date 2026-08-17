@@ -15,7 +15,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "defaultPersist=10" field should be 10',
+      'when creating a record in the database, '
+      'then the "defaultPersist=10" field should be 10',
       () async {
         var object = IntDefaultPersist();
         var databaseObject = await IntDefaultPersist.db.insertRow(
@@ -27,7 +28,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "defaultPersist=10" field should be 10',
+      'when creating a record in the database with an unsafe query, '
+      'then the "defaultPersist=10" field should be 10',
       () async {
         await session.db.unsafeQuery(
           'INSERT INTO "${IntDefaultPersist.t.tableName}" DEFAULT VALUES',
@@ -38,7 +40,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "intDefaultPersist" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "intDefaultPersist" field value should match the provided value',
       () async {
         var specificObject = IntDefaultPersist(
           intDefaultPersist: 20,

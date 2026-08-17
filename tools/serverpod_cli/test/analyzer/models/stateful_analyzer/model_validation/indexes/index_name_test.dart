@@ -10,7 +10,9 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   test(
-    'Given a class with an index when analyzing models then the index name is set correctly.',
+    'Given a class with an index, '
+    'when analyzing models, '
+    'then the index name is set correctly.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -47,7 +49,8 @@ void main() {
   );
 
   test(
-    'Given a class with an index key that is not a string, then collect an error that the index name has to be defined as a string.',
+    'Given a class with an index key that is not a string, '
+    'then collect an error that the index name has to be defined as a string.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -86,7 +89,8 @@ void main() {
   );
 
   test(
-    'Given a class with an index key that is not a string in snake_case_format, then collect an error that the index name is using an invalid format.',
+    'Given a class with an index key that is not a string in snake_case_format, '
+    'then collect an error that the index name is using an invalid format.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -126,7 +130,8 @@ void main() {
 
   group('Index relationships.', () {
     test(
-      'Given two classes with the same index name defined, then collect an error notifying that the index name is already in use.',
+      'Given two classes with the same index name defined, '
+      'then collect an error notifying that the index name is already in use.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -177,7 +182,8 @@ void main() {
   });
 
   test(
-    'Given an index with a name that is longer than 63 characters, then collect an error that the index name is too long.',
+    'Given an index with a name that is longer than 63 characters, '
+    'then collect an error that the index name is too long.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -216,9 +222,9 @@ void main() {
   );
 
   group(
-    'Given an index with a name that is 63 characters when analyzing models',
+    'Given an index with a name that is 63 characters, when analyzing models,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -232,13 +238,13 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       var errors = collector.errors;
       test('then no errors are collected.', () {
@@ -258,7 +264,9 @@ void main() {
   );
 
   test(
-    'Given a class with an index name that matches the table name when analyzing models then collect an error that the index name cannot be the same as the table name.',
+    'Given a class with an index name that matches the table name, '
+    'when analyzing models, '
+    'then collect an error that the index name cannot be the same as the table name.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(

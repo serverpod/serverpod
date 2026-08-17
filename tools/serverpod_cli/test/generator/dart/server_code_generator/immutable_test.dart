@@ -22,9 +22,10 @@ void main() {
   );
 
   group(
-    'Given an immutable class named $testClassName with one primitive var when generating code',
+    'Given an immutable class named $testClassName with one primitive var, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -33,26 +34,27 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var compilationUnit = parseString(
+      late var compilationUnit = parseString(
         content: codeMap[expectedFilePath]!,
       ).unit;
 
       group('then the $testClassName', () {
-        var baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        late var baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
           compilationUnit,
           name: testClassName,
         );
 
         group('has a hashCode method', () {
-          var hashCodeGetter = CompilationUnitHelpers.tryFindMethodDeclaration(
-            baseClass!,
-            name: 'hashCode',
-          );
+          late var hashCodeGetter =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                baseClass!,
+                name: 'hashCode',
+              );
 
           test('declared.', () {
             expect(
@@ -85,10 +87,11 @@ void main() {
         }, skip: baseClass == null);
 
         group('has a == operator', () {
-          var equalsOperator = CompilationUnitHelpers.tryFindMethodDeclaration(
-            baseClass!,
-            name: '==',
-          );
+          late var equalsOperator =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                baseClass!,
+                name: '==',
+              );
 
           test('declared.', () {
             expect(
@@ -142,9 +145,10 @@ void main() {
   );
 
   group(
-    'Given an immutable class named $testClassName with twenty primitive vars when generating code',
+    'Given an immutable class named $testClassName with twenty primitive vars, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -172,26 +176,27 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var compilationUnit = parseString(
+      late var compilationUnit = parseString(
         content: codeMap[expectedFilePath]!,
       ).unit;
 
       group('then the $testClassName', () {
-        var baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        late var baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
           compilationUnit,
           name: testClassName,
         );
 
         group('has a hashCode method', () {
-          var hashCodeGetter = CompilationUnitHelpers.tryFindMethodDeclaration(
-            baseClass!,
-            name: 'hashCode',
-          );
+          late var hashCodeGetter =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                baseClass!,
+                name: 'hashCode',
+              );
 
           test('declared.', () {
             expect(
@@ -224,10 +229,11 @@ void main() {
         }, skip: baseClass == null);
 
         group('has a == operator', () {
-          var equalsOperator = CompilationUnitHelpers.tryFindMethodDeclaration(
-            baseClass!,
-            name: '==',
-          );
+          late var equalsOperator =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                baseClass!,
+                name: '==',
+              );
 
           test('declared.', () {
             expect(

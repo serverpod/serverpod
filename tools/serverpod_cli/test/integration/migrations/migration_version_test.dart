@@ -23,7 +23,9 @@ void main() {
   });
 
   test(
-    'Given an existing directory when writing migration version with same name then exception is thrown.',
+    'Given an existing directory, '
+    'when writing migration version with same name, '
+    'then exception is thrown.',
     () async {
       var versionName = '00000000000000';
       var versionDirectory = Directory(

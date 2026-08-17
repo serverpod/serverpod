@@ -7,9 +7,10 @@ void main() {
   late ProcessResult result;
 
   group(
-    'Given a serverpod passwords file with the secret service and the environment variable SERVERPOD_DATABASE_PASSWORD is set when loading the passwords',
+    'Given a serverpod passwords file with the secret service and the environment variable SERVERPOD_DATABASE_PASSWORD is set, '
+    'when loading the passwords,',
     () {
-      var dbPassword = const Uuid().v4();
+      late var dbPassword = const Uuid().v4();
 
       setUpAll(() async {
         result = await Process.run(
@@ -41,9 +42,10 @@ void main() {
   );
 
   group(
-    'Given a serverpod passwords file with the secret service and the environment variable for the secret service is also set when loading the passwords',
+    'Given a serverpod passwords file with the secret service and the environment variable for the secret service is also set, '
+    'when loading the passwords,',
     () {
-      var serviceSecret = const Uuid().v4();
+      late var serviceSecret = const Uuid().v4();
 
       setUpAll(() async {
         result = await Process.run(
@@ -71,9 +73,10 @@ void main() {
   );
 
   group(
-    'Given no serverpod passwords file exists but the env variable SERVERPOD_DATABASE_PASSWORD is set when loading the passwords',
+    'Given no serverpod passwords file exists but the env variable SERVERPOD_DATABASE_PASSWORD is set, '
+    'when loading the passwords,',
     () {
-      var dbPassword = const Uuid().v4();
+      late var dbPassword = const Uuid().v4();
 
       setUpAll(() async {
         result = await Process.run(
@@ -105,9 +108,10 @@ void main() {
   );
 
   group(
-    'Given an empty serverpod passwords file and the env variable SERVERPOD_DATABASE_PASSWORD is set when loading the passwords',
+    'Given an empty serverpod passwords file and the env variable SERVERPOD_DATABASE_PASSWORD is set, '
+    'when loading the passwords,',
     () {
-      var dbPassword = const Uuid().v4();
+      late var dbPassword = const Uuid().v4();
 
       setUpAll(() async {
         result = await Process.run(

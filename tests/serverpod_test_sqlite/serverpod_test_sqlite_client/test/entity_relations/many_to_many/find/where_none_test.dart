@@ -6,9 +6,10 @@ import '../../../test_util.dart';
 void main() {
   initTestClientSession();
 
-  group('Given models with many to many relation', () {
+  group('Given models with many to many relation,', () {
     test(
-      'when fetching models filtered by none many relation then result is as expected',
+      'when fetching models filtered by none many relation, '
+      'then result is as expected',
       () async {
         var students = await Student.db.insert(session, [
           Student(name: 'Alex'),
@@ -39,7 +40,8 @@ void main() {
     );
 
     test(
-      'when fetching models filtered by filtered none many relation then result is as expected',
+      'when fetching models filtered by filtered none many relation, '
+      'then result is as expected',
       () async {
         var students = await Student.db.insert(session, [
           Student(name: 'Alex'),
@@ -81,7 +83,8 @@ void main() {
     );
 
     test(
-      'when fetching models filtered by none many relation in combination with other filter then result is as expected',
+      'when fetching models filtered by none many relation in combination with other filter, '
+      'then result is as expected',
       () async {
         var students = await Student.db.insert(session, [
           Student(name: 'Alex'),
@@ -113,7 +116,8 @@ void main() {
     );
 
     test(
-      'when fetching models filtered by multiple filtered none many relation then result is as expected',
+      'when fetching models filtered by multiple filtered none many relation, '
+      'then result is as expected',
       () async {
         var students = await Student.db.insert(session, [
           Student(name: 'Alex'),

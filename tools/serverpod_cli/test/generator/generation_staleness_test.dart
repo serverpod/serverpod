@@ -88,7 +88,7 @@ void main() {
     await tempDir.delete(recursive: true);
   });
 
-  group('Given no stamp file', () {
+  group('Given no stamp file,', () {
     test(
       'when isGenerationUpToDate is called, '
       'then it returns false',
@@ -99,7 +99,7 @@ void main() {
     );
   });
 
-  group('Given a stamp newer than all sources with matching CLI version', () {
+  group('Given a stamp newer than all sources with matching CLI version,', () {
     setUp(() async {
       // Ensure the file system clock has advanced past source file mtimes.
       final srcMtime = (await endpointFile.stat()).modified;
@@ -117,7 +117,7 @@ void main() {
     );
   });
 
-  group('Given one source file newer than stamp', () {
+  group('Given one source file newer than stamp,', () {
     setUp(() async {
       await writeGenerationStamp(config, generatedFiles: {});
       final stampMtime = stampFile.statSync().modified;
@@ -138,7 +138,7 @@ void main() {
     );
   });
 
-  group('Given config/generator.yaml newer than stamp', () {
+  group('Given config/generator.yaml newer than stamp,', () {
     setUp(() async {
       await writeGenerationStamp(config, generatedFiles: {});
       final stampMtime = stampFile.statSync().modified;
@@ -180,7 +180,7 @@ formatter:
     },
   );
 
-  group('Given stamp has old CLI version', () {
+  group('Given stamp has old CLI version,', () {
     setUp(() async {
       // Write stamp with a different version.
       await stampFile.create(recursive: true);
@@ -199,7 +199,7 @@ formatter:
     );
   });
 
-  group('Given a stamp with recorded generated files', () {
+  group('Given a stamp with recorded generated files,', () {
     late File generatedFile;
 
     setUp(() async {
@@ -252,7 +252,7 @@ formatter:
     );
   });
 
-  group('Given the server pubspec changes after the stamp', () {
+  group('Given the server pubspec changes after the stamp,', () {
     late File pubspecFile;
 
     setUp(() async {
@@ -281,7 +281,7 @@ formatter:
   });
 
   group('Given a source edited after enumeration but before the stamp is '
-      'written (the mid-generation race)', () {
+      'written (the mid-generation race),', () {
     setUp(() async {
       // The walk stamps each source as it reads it.
       final stamps = await enumerateSourceFiles(config);
@@ -314,10 +314,10 @@ formatter:
   });
 
   group('Given a source whose size changed but mtime did not '
-      '(a same-tick edit)', () {
+      '(a same-tick edit),', () {
     // A second-aligned mtime so setLastModified round-trips exactly (the
     // filesystem here truncates mtimes to whole seconds).
-    final pinnedMtime = DateTime(2026, 1, 1, 12, 0, 0);
+    late final pinnedMtime = DateTime(2026, 1, 1, 12, 0, 0);
 
     setUp(() async {
       await endpointFile.setLastModified(pinnedMtime);
@@ -345,7 +345,7 @@ formatter:
     );
   });
 
-  group('Given a shared model package with a newer file', () {
+  group('Given a shared model package with a newer file,', () {
     late _FakeConfig sharedConfig;
 
     setUp(() async {
@@ -385,7 +385,7 @@ formatter:
     );
   });
 
-  group('Given writeGenerationStamp is called', () {
+  group('Given writeGenerationStamp is called,', () {
     test(
       'when the stamp file is read, '
       'then it contains the current CLI version',
@@ -420,7 +420,7 @@ formatter:
     );
   });
 
-  group('Given enumerateSourceFiles', () {
+  group('Given enumerateSourceFiles,', () {
     test(
       'when called, '
       'then it returns dart and model files from source directories',

@@ -20,7 +20,7 @@ class CompleterTestCall extends FutureCall<SimpleData>
 
 void main() async {
   withServerpod(
-    'Given FutureCallManager with registered recurring cron FutureCall that is due',
+    'Given FutureCallManager with registered recurring cron FutureCall that is due,',
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, _) {
       late FutureCallManager futureCallManager;
@@ -29,7 +29,7 @@ void main() async {
       final testCallName = 'test-recurring-cron-execution-call';
       final identifier = 'recurring-cron-execution-id';
       final cronExpression = '*/5 * * * *';
-      final data = SimpleData(num: 4);
+      late final data = SimpleData(num: 4);
 
       setUp(() async {
         session = sessionBuilder.build();
@@ -65,7 +65,7 @@ void main() async {
         );
       });
 
-      group('when running scheduled FutureCalls', () {
+      group('when running scheduled FutureCalls,', () {
         late List<FutureCallEntry> oldFutureCallEntries;
         late List<FutureCallEntry> futureCallEntries;
 
@@ -132,7 +132,7 @@ void main() async {
       });
 
       group(
-        'when start is called',
+        'when start is called,',
         () {
           setUp(() async {
             await futureCallManager.start();
@@ -176,7 +176,7 @@ void main() async {
   );
 
   withServerpod(
-    'Given FutureCallManager with registered recurring interval FutureCall that is due',
+    'Given FutureCallManager with registered recurring interval FutureCall that is due,',
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, _) {
       late FutureCallManager futureCallManager;
@@ -184,8 +184,8 @@ void main() async {
       late Session session;
       final testCallName = 'test-recurring-interval-execution-call';
       final identifier = 'recurring-interval-execution-id';
-      final interval = Duration(minutes: 5);
-      final data = SimpleData(num: 6);
+      late final interval = Duration(minutes: 5);
+      late final data = SimpleData(num: 6);
 
       setUp(() async {
         session = sessionBuilder.build();
@@ -221,7 +221,7 @@ void main() async {
         );
       });
 
-      group('when running scheduled FutureCalls', () {
+      group('when running scheduled FutureCalls,', () {
         late List<FutureCallEntry> oldFutureCallEntries;
         late List<FutureCallEntry> futureCallEntries;
 
@@ -289,7 +289,7 @@ void main() async {
       });
 
       group(
-        'when start is called',
+        'when start is called,',
         () {
           setUp(() async {
             await futureCallManager.start();
@@ -335,7 +335,7 @@ void main() async {
   );
 
   withServerpod(
-    'Given FutureCallManager with non-recurring FutureCall',
+    'Given FutureCallManager with non-recurring FutureCall,',
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, _) {
       late FutureCallManager futureCallManager;
@@ -377,7 +377,7 @@ void main() async {
         );
       });
 
-      group('when running scheduled FutureCalls', () {
+      group('when running scheduled FutureCalls,', () {
         late List<FutureCallEntry> futureCallEntries;
 
         setUp(() async {
@@ -399,7 +399,7 @@ void main() async {
       });
 
       group(
-        'when start is called',
+        'when start is called,',
         () {
           setUp(() async {
             await futureCallManager.start();

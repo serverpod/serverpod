@@ -14,9 +14,10 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   group(
-    'Given an endpoint with no @unauthenticatedClientCall annotation when generating client code',
+    'Given an endpoint with no @unauthenticatedClientCall annotation, '
+    'when generating client code,',
     () {
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [
           EndpointDefinitionBuilder()
               .withClassName('ExampleEndpoint')
@@ -42,7 +43,7 @@ void main() {
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );
@@ -92,9 +93,10 @@ void main() {
   );
 
   group(
-    'Given an endpoint class annotated as @unauthenticatedClientCall with more than one method when generating client code',
+    'Given an endpoint class annotated as @unauthenticatedClientCall with more than one method, '
+    'when generating client code,',
     () {
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [
           EndpointDefinitionBuilder()
               .withClassName('ExampleEndpoint')
@@ -125,7 +127,7 @@ void main() {
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );
@@ -177,9 +179,10 @@ void main() {
   );
 
   group(
-    'Given an endpoint class with only a few methods annotated as @unauthenticatedClientCall when generating client code',
+    'Given an endpoint class with only a few methods annotated as @unauthenticatedClientCall, '
+    'when generating client code,',
     () {
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [
           EndpointDefinitionBuilder()
               .withClassName('ExampleEndpoint')
@@ -227,7 +230,7 @@ void main() {
         futureCalls: [],
       );
 
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: config,
       );

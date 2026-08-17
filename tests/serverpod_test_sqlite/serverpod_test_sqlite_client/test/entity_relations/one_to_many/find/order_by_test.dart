@@ -7,9 +7,10 @@ import '../../../test_util.dart';
 void main() {
   initTestClientSession();
 
-  group('Given models with one to many relation', () {
+  group('Given models with one to many relation,', () {
     test(
-      'when fetching models ordered on count of many relation then result is as expected.',
+      'when fetching models ordered on count of many relation, '
+      'then result is as expected.',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Alex'),
@@ -39,7 +40,8 @@ void main() {
     );
 
     test(
-      'when fetching models ordered on count of filtered many relation then result is as expected.',
+      'when fetching models ordered on count of filtered many relation, '
+      'then result is as expected.',
       () async {
         var customers = await Customer.db.insert(session, [
           Customer(name: 'Alex'),
@@ -70,9 +72,10 @@ void main() {
     );
   });
 
-  group('Given models with multiple one to many relations', () {
+  group('Given models with multiple one to many relations,', () {
     test(
-      'when fetching models ordered on multiple separate one to many relations then result order is as expected.',
+      'when fetching models ordered on multiple separate one to many relations, '
+      'then result order is as expected.',
       () async {
         var cities = await City.db.insert(session, [
           City(name: 'Stockholm'),

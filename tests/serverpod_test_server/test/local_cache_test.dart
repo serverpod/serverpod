@@ -18,7 +18,9 @@ void main() {
   tearDown(() async => await cache.clear());
 
   test(
-    'Given an entry was `put` to the cache, when it is accessed, then it can be read',
+    'Given an entry was `put` to the cache, '
+    'when it is accessed, '
+    'then it can be read',
     () async {
       const key = 'entry';
       var entry = SimpleData(num: 0);
@@ -31,7 +33,9 @@ void main() {
   );
 
   test(
-    'Given a primitive int entry was `put` to the cache, when it is accessed, then it can be read',
+    'Given a primitive int entry was `put` to the cache, '
+    'when it is accessed, '
+    'then it can be read',
     () async {
       const key = 'entry';
       var entry = 0;
@@ -44,7 +48,9 @@ void main() {
   );
 
   test(
-    'Given a primitive DateTime entry was `put` to the cache, when it is accessed, then it can be read',
+    'Given a primitive DateTime entry was `put` to the cache, '
+    'when it is accessed, '
+    'then it can be read',
     () async {
       const key = 'entry';
       var entry = DateTime.now().toUtc();
@@ -57,7 +63,9 @@ void main() {
   );
 
   test(
-    'Given a primitive Duration entry was `put` to the cache, when it is accessed, then it can be read',
+    'Given a primitive Duration entry was `put` to the cache, '
+    'when it is accessed, '
+    'then it can be read',
     () async {
       const key = 'entry';
       var entry = Duration(seconds: 1);
@@ -70,7 +78,9 @@ void main() {
   );
 
   test(
-    'Given a primitive ByteData entry was `put` to the cache, when it is accessed, then it can be read',
+    'Given a primitive ByteData entry was `put` to the cache, '
+    'when it is accessed, '
+    'then it can be read',
     () async {
       const key = 'entry';
       var entry = ByteData.view(Uint8List.fromList([1, 2, 3]).buffer);
@@ -86,7 +96,9 @@ void main() {
   );
 
   test(
-    'Given a primitive UuidValue entry was `put` to the cache, when it is accessed, then it can be read',
+    'Given a primitive UuidValue entry was `put` to the cache, '
+    'when it is accessed, '
+    'then it can be read',
     () async {
       const key = 'entry';
       var entry = const Uuid().v4obj();
@@ -99,7 +111,9 @@ void main() {
   );
 
   test(
-    'Given a primitive String entry was `put` to the cache, when it is accessed, then it can be read',
+    'Given a primitive String entry was `put` to the cache, '
+    'when it is accessed, '
+    'then it can be read',
     () async {
       const key = 'entry';
       var entry = 'test';
@@ -112,7 +126,9 @@ void main() {
   );
 
   test(
-    'Given a list of serializable objects was `put` to the cache, when it is accessed, then it can be read',
+    'Given a list of serializable objects was `put` to the cache, '
+    'when it is accessed, '
+    'then it can be read',
     () async {
       const key = 'entry';
       var entry = [SimpleData(num: 0), SimpleData(num: 1)];
@@ -127,7 +143,9 @@ void main() {
   );
 
   test(
-    'Given a non-serializable object when trying to put it to the cache, then it will throw an Error',
+    'Given a non-serializable object, '
+    'when trying to put it to the cache, '
+    'then it will throw an Error',
     () async {
       var entry = Object();
 
@@ -147,7 +165,9 @@ void main() {
   );
 
   test(
-    'Given an entry was written to the cache, when the size is checked, then it will be 1',
+    'Given an entry was written to the cache, '
+    'when the size is checked, '
+    'then it will be 1',
     () async {
       var entry = SimpleData(num: 0);
 
@@ -158,7 +178,9 @@ void main() {
   );
 
   test(
-    'Given an empty cache, when any item is accessed, then it will return `null`',
+    'Given an empty cache, '
+    'when any item is accessed, '
+    'then it will return `null`',
     () async {
       var retrieved = await cache.get<SimpleData>('missing');
 
@@ -167,7 +189,9 @@ void main() {
   );
 
   test(
-    'Given a custom class with toJson/fromJson methods was `put` to the cache, when it is accessed, then it can be read',
+    'Given a custom class with toJson/fromJson methods was `put` to the cache, '
+    'when it is accessed, '
+    'then it can be read',
     () async {
       var entry = CustomClass2('test');
 
@@ -179,7 +203,9 @@ void main() {
   );
 
   test(
-    'Given a cache entry with a lifetime, when it is accessed before it has expired, then the cache will return the item',
+    'Given a cache entry with a lifetime, '
+    'when it is accessed before it has expired, '
+    'then the cache will return the item',
     () async {
       const key = 'entry_lifetime_1';
       var entry = SimpleData(num: 0);
@@ -196,7 +222,9 @@ void main() {
   );
 
   test(
-    'Given a cache entry with a lifetime, when it is accessed after it has expired, then the cache will return `null`',
+    'Given a cache entry with a lifetime, '
+    'when it is accessed after it has expired, '
+    'then the cache will return `null`',
     () async {
       const key = 'entry_lifetime_2';
       var entry = SimpleData(num: 0);
@@ -215,7 +243,9 @@ void main() {
   );
 
   test(
-    'Given a cache where multiple writes happened for the same key, when that key is accessed, then the latest value will be returned',
+    'Given a cache where multiple writes happened for the same key, '
+    'when that key is accessed, '
+    'then the latest value will be returned',
     () async {
       final key = 'multi_write';
       var entryA = SimpleData(num: 0);
@@ -230,7 +260,9 @@ void main() {
   );
 
   test(
-    'Given a cache where more entries than it should hold are added, when its size is checked, then it will only contain the latest \$CACHE_SIZE items',
+    'Given a cache where more entries than it should hold are added, '
+    'when its size is checked, '
+    'then it will only contain the latest \$CACHE_SIZE items',
     () async {
       var numEntries = cacheMaxSize * 2;
 
@@ -250,7 +282,9 @@ void main() {
   );
 
   test(
-    'Given a cache with various items, when a single key is invalidated, then it will return `null` for that key while retaining all others',
+    'Given a cache with various items, '
+    'when a single key is invalidated, '
+    'then it will return `null` for that key while retaining all others',
     () async {
       for (var i = 0; i < cacheMaxSize; i++) {
         var entry = SimpleData(num: i);
@@ -278,7 +312,9 @@ void main() {
   );
 
   test(
-    'Given a cache with items in 2 groups, when a single group is invalidated, then it will loose all items associated with that group',
+    'Given a cache with items in 2 groups, '
+    'when a single group is invalidated, '
+    'then it will loose all items associated with that group',
     () async {
       for (var i = 0; i < cacheMaxSize ~/ 2; i++) {
         var entry = SimpleData(num: i);
@@ -308,7 +344,7 @@ void main() {
     },
   );
 
-  test('Invalidate key then group', () async {
+  test('Invalidate key, then group', () async {
     for (var i = 0; i < cacheMaxSize ~/ 2; i++) {
       var entry = SimpleData(num: i);
       await cache.put('entry:$i', entry, group: 'group:0');
@@ -337,7 +373,9 @@ void main() {
   });
 
   test(
-    'Given a cache with an expired item, when `get` is invoked with a `cacheMissHandler`, then the `cacheMissHandler` will be invoked and the newly create value returned',
+    'Given a cache with an expired item, '
+    'when `get` is invoked with a `cacheMissHandler`, '
+    'then the `cacheMissHandler` will be invoked and the newly create value returned',
     () async {
       final key = 'obj1';
 
@@ -362,7 +400,9 @@ void main() {
   );
 
   test(
-    'Given an empty cache, when simultaneous `get`s are executed for the same key, then only the `cacheMissHandler` of the first request will be invoked',
+    'Given an empty cache, '
+    'when simultaneous `get`s are executed for the same key, '
+    'then only the `cacheMissHandler` of the first request will be invoked',
     () async {
       final key = 'value_to_be_computed';
 
@@ -392,7 +432,9 @@ void main() {
   );
 
   test(
-    'Given an empty cache, when `get` is called with a `cacheMissHandler` returning an object, then that handler will be invoked to generate a new item to be stored in the cache and returned',
+    'Given an empty cache, '
+    'when `get` is called with a `cacheMissHandler` returning an object, '
+    'then that handler will be invoked to generate a new item to be stored in the cache and returned',
     () async {
       const cacheKey = 'testKey';
 
@@ -409,7 +451,9 @@ void main() {
   );
 
   test(
-    'Given an empty cache, when `get` is called with a `cacheMissHandler` returning null, then that handler will be invoked and `null` will be returned and nothing stored in the cache',
+    'Given an empty cache, '
+    'when `get` is called with a `cacheMissHandler` returning null, '
+    'then that handler will be invoked and `null` will be returned and nothing stored in the cache',
     () async {
       const cacheKey = 'testKey';
 
@@ -426,7 +470,9 @@ void main() {
   );
 
   test(
-    'Given a cache containing an item with infinite lifetime, when that item is retrieved, then it will be returned and the `cacheMissHandler` will not be invoked',
+    'Given a cache containing an item with infinite lifetime, '
+    'when that item is retrieved, '
+    'then it will be returned and the `cacheMissHandler` will not be invoked',
     () async {
       const cacheKey = 'testKey';
 
@@ -441,7 +487,7 @@ void main() {
   );
 
   group('Given a primitive object is not in the cache and a cache miss handler '
-      'is specified to return an object', () {
+      'is specified to return an object,', () {
     const cacheKey = 'testKey';
     int? retrieved;
     setUp(() async {
@@ -451,13 +497,13 @@ void main() {
       );
     });
 
-    test('when the object is retrieved '
+    test('when the object is retrieved, '
         'then the cache miss handler returns the correct object', () {
       expect(retrieved, equals(1337));
     });
 
     test(
-      'when the object is retrieved again '
+      'when the object is retrieved again, '
       'then the cache miss handler value is retrievable from the cache',
       () async {
         var value = await cache.get<int>(cacheKey);
@@ -468,7 +514,7 @@ void main() {
 
   group(
     'Given a list of serializable objects is not in the cache and a cache miss handler '
-    'is specified to return an object',
+    'is specified to return an object,',
     () {
       const cacheKey = 'testKey';
       List<SimpleData>? retrieved;
@@ -479,14 +525,14 @@ void main() {
         );
       });
 
-      test('when the object is retrieved '
+      test('when the object is retrieved, '
           'then the cache miss handler returns the correct object', () {
         expect(retrieved?.length, equals(1));
         expect(retrieved?[0].num, equals(1337));
       });
 
       test(
-        'when the object is retrieved again '
+        'when the object is retrieved again, '
         'then the cache miss handler value is retrievable from the cache',
         () async {
           var value = await cache.get<List<SimpleData>>(cacheKey);

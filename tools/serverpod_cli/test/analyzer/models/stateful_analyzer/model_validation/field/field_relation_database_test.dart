@@ -9,8 +9,8 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   test(
-    'Given a relation from a client-scoped table to a related table with database all '
-    'when validating '
+    'Given a relation from a client-scoped table to a related table with database all, '
+    'when validating, '
     'then no error is generated.',
     () {
       var models = [
@@ -46,8 +46,8 @@ void main() {
   );
 
   test(
-    'Given a relation between two table classes that both use the same database scope '
-    'when validating '
+    'Given a relation between two table classes that both use the same database scope, '
+    'when validating, '
     'then no error is generated.',
     () {
       var models = [
@@ -83,8 +83,8 @@ void main() {
   );
 
   test(
-    'Given a relation between a table classes with database client and a table classes with database server '
-    'when validating '
+    'Given a relation between a table classes with database client and a table classes with database server, '
+    'when validating, '
     'then an error is generated that the database scopes must be the same.',
     () {
       var models = [

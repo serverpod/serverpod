@@ -5,7 +5,8 @@ import 'package:test/scaffolding.dart';
 
 void main() {
   group(
-    'Given a Serverpod server when calling an endpoint with a malformed json body',
+    'Given a Serverpod server, '
+    'when calling an endpoint with a malformed json body,',
     () {
       late http.Response response;
 

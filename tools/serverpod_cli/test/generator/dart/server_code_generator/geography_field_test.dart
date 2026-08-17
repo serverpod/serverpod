@@ -15,11 +15,12 @@ void main() {
   // ====== GeographyPoint ======
 
   group(
-    'Given a class with a non-nullable geography point field when generating code',
+    'Given a class with a non-nullable geography point field, '
+    'when generating code,',
     () {
       var testClassName = 'ExampleWithGeographyPoint';
       var testClassFileName = 'example_with_geography_point';
-      var expectedFilePath = path.join(
+      late var expectedFilePath = path.join(
         'lib',
         'src',
         'generated',
@@ -27,7 +28,7 @@ void main() {
       );
       var tableName = 'example_with_geography_point_table';
 
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -156,11 +157,12 @@ void main() {
   );
 
   group(
-    'Given a class with a nullable geography point field when generating code',
+    'Given a class with a nullable geography point field, '
+    'when generating code,',
     () {
       var testClassName = 'ExampleWithGeographyPoint';
       var testClassFileName = 'example_with_geography_point';
-      var expectedFilePath = path.join(
+      late var expectedFilePath = path.join(
         'lib',
         'src',
         'generated',
@@ -168,7 +170,7 @@ void main() {
       );
       var tableName = 'example_with_geography_point_table';
 
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -250,11 +252,12 @@ void main() {
   // ====== GeographyLineString ======
 
   group(
-    'Given a class with a non-nullable geography line string field when generating code',
+    'Given a class with a non-nullable geography line string field, '
+    'when generating code,',
     () {
       var testClassName = 'ExampleWithGeographyLineString';
       var testClassFileName = 'example_with_geography_line_string';
-      var expectedFilePath = path.join(
+      late var expectedFilePath = path.join(
         'lib',
         'src',
         'generated',
@@ -262,7 +265,7 @@ void main() {
       );
       var tableName = 'example_with_geography_line_string_table';
 
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -393,11 +396,12 @@ void main() {
   );
 
   group(
-    'Given a class with a nullable geography line string field when generating code',
+    'Given a class with a nullable geography line string field, '
+    'when generating code,',
     () {
       var testClassName = 'ExampleWithGeographyLineString';
       var testClassFileName = 'example_with_geography_line_string';
-      var expectedFilePath = path.join(
+      late var expectedFilePath = path.join(
         'lib',
         'src',
         'generated',
@@ -405,7 +409,7 @@ void main() {
       );
       var tableName = 'example_with_geography_line_string_table';
 
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -485,11 +489,12 @@ void main() {
   // ====== GeographyPolygon ======
 
   group(
-    'Given a class with a non-nullable geography polygon field when generating code',
+    'Given a class with a non-nullable geography polygon field, '
+    'when generating code,',
     () {
       var testClassName = 'ExampleWithGeographyPolygon';
       var testClassFileName = 'example_with_geography_polygon';
-      var expectedFilePath = path.join(
+      late var expectedFilePath = path.join(
         'lib',
         'src',
         'generated',
@@ -497,7 +502,7 @@ void main() {
       );
       var tableName = 'example_with_geography_polygon_table';
 
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -626,11 +631,12 @@ void main() {
   );
 
   group(
-    'Given a class with a nullable geography polygon field when generating code',
+    'Given a class with a nullable geography polygon field, '
+    'when generating code,',
     () {
       var testClassName = 'ExampleWithGeographyPolygon';
       var testClassFileName = 'example_with_geography_polygon';
-      var expectedFilePath = path.join(
+      late var expectedFilePath = path.join(
         'lib',
         'src',
         'generated',
@@ -638,7 +644,7 @@ void main() {
       );
       var tableName = 'example_with_geography_polygon_table';
 
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -720,11 +726,12 @@ void main() {
   // ====== GeographyGeometryCollection ======
 
   group(
-    'Given a class with a non-nullable geography geometry collection field when generating code',
+    'Given a class with a non-nullable geography geometry collection field, '
+    'when generating code,',
     () {
       var testClassName = 'ExampleWithGeographyGeometryCollection';
       var testClassFileName = 'example_with_geography_geometry_collection';
-      var expectedFilePath = path.join(
+      late var expectedFilePath = path.join(
         'lib',
         'src',
         'generated',
@@ -732,7 +739,7 @@ void main() {
       );
       var tableName = 'example_with_geography_geometry_collection_table';
 
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -863,11 +870,12 @@ void main() {
   );
 
   group(
-    'Given a class with a nullable geography geometry collection field when generating code',
+    'Given a class with a nullable geography geometry collection field, '
+    'when generating code,',
     () {
       var testClassName = 'ExampleWithGeographyGeometryCollection';
       var testClassFileName = 'example_with_geography_geometry_collection';
-      var expectedFilePath = path.join(
+      late var expectedFilePath = path.join(
         'lib',
         'src',
         'generated',
@@ -875,7 +883,7 @@ void main() {
       );
       var tableName = 'example_with_geography_geometry_collection_table';
 
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)

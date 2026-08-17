@@ -7,7 +7,7 @@ import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a Serverpod server with a maximum request size of 10 bytes', () {
+  group('Given a Serverpod server with a maximum request size of 10 bytes,', () {
     late Serverpod server;
     late Session session;
     const int maxRequestSize = 10; // Maximum allowed request size in bytes
@@ -34,7 +34,7 @@ void main() {
       await session.close();
       await server.shutdown(exitProcess: false);
     });
-    group('when a request with a body larger than 10 bytes is sent', () {
+    group('when a request with a body larger than 10 bytes is sent,', () {
       late http.Response response;
 
       setUp(() async {

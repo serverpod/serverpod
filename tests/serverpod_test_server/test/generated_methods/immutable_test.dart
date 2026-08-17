@@ -2,9 +2,11 @@ import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Equals behavior', () {
+  group('Equals behavior,', () {
     test(
-      'Given two identical immutable objects when comparing equality then equality comparison returns true',
+      'Given two identical immutable objects, '
+      'when comparing equality, '
+      'then equality comparison returns true',
       () {
         final firstObject = ImmutableObject(variable: 'value');
         final secondObject = ImmutableObject(variable: 'value');
@@ -13,7 +15,9 @@ void main() {
     );
 
     test(
-      'Given two immutable objects with different values when comparing equality then equality comparison returns false',
+      'Given two immutable objects with different values, '
+      'when comparing equality, '
+      'then equality comparison returns false',
       () {
         final firstObject = ImmutableObject(variable: 'value1');
         final secondObject = ImmutableObject(variable: 'value2');
@@ -22,7 +26,9 @@ void main() {
     );
 
     test(
-      'Given two immutable objects each containing identical lists when comparing equality then equality comparison returns true',
+      'Given two immutable objects each containing identical lists, '
+      'when comparing equality, '
+      'then equality comparison returns true',
       () {
         final firstObject = ImmutableObjectWithList(
           listVariable: ['a', 'b', 'c'],
@@ -35,7 +41,9 @@ void main() {
     );
 
     test(
-      'Given two immutable objects each containing different lists when comparing equality then equality comparison returns false',
+      'Given two immutable objects each containing different lists, '
+      'when comparing equality, '
+      'then equality comparison returns false',
       () {
         final firstObject = ImmutableObjectWithList(
           listVariable: ['a', 'b', 'c'],
@@ -48,7 +56,9 @@ void main() {
     );
 
     test(
-      'Given two immutable objects each containing identical maps when comparing equality then equality comparison returns true',
+      'Given two immutable objects each containing identical maps, '
+      'when comparing equality, '
+      'then equality comparison returns true',
       () {
         final firstObject = ImmutableObjectWithMap(
           mapVariable: {'k1': 'v1', 'k2': 'v2'},
@@ -61,7 +71,9 @@ void main() {
     );
 
     test(
-      'Given two immutable objects each containing different maps when comparing equality then equality comparison returns false',
+      'Given two immutable objects each containing different maps, '
+      'when comparing equality, '
+      'then equality comparison returns false',
       () {
         final firstObject = ImmutableObjectWithMap(
           mapVariable: {'k1': 'v1', 'k2': 'v2'},
@@ -74,7 +86,9 @@ void main() {
     );
 
     test(
-      'Given two immutable objects each containing identical records when comparing equality then equality comparison returns true',
+      'Given two immutable objects each containing identical records, '
+      'when comparing equality, '
+      'then equality comparison returns true',
       () {
         final firstObject = ImmutableObjectWithRecord(
           recordVariable: (1, 'value'),
@@ -87,7 +101,9 @@ void main() {
     );
 
     test(
-      'Given two immutable objects each containing different records when comparing equality then equality comparison returns false',
+      'Given two immutable objects each containing different records, '
+      'when comparing equality, '
+      'then equality comparison returns false',
       () {
         final firstObject = ImmutableObjectWithRecord(
           recordVariable: (1, 'value1'),
@@ -100,7 +116,9 @@ void main() {
     );
 
     test(
-      'Given two immutable objects containing identical immutable objects when comparing equality then equality comparison returns true',
+      'Given two immutable objects containing identical immutable objects, '
+      'when comparing equality, '
+      'then equality comparison returns true',
       () {
         final firstObject = ImmutableObjectWithImmutableObject(
           immutableVariable: ImmutableObject(variable: 'value'),
@@ -113,7 +131,9 @@ void main() {
     );
 
     test(
-      'Given two immutable objects containing different immutable objects when comparing equality then equality comparison returns false',
+      'Given two immutable objects containing different immutable objects, '
+      'when comparing equality, '
+      'then equality comparison returns false',
       () {
         final firstObject = ImmutableObjectWithImmutableObject(
           immutableVariable: ImmutableObject(variable: 'value1'),
@@ -126,7 +146,9 @@ void main() {
     );
 
     test(
-      'Given two identical immutable objects with no fields when comparing equality then equality comparison returns true',
+      'Given two identical immutable objects with no fields, '
+      'when comparing equality, '
+      'then equality comparison returns true',
       () {
         final firstObject = ImmutableObjectWithNoFields();
         final secondObject = ImmutableObjectWithNoFields();
@@ -135,7 +157,9 @@ void main() {
     );
 
     test(
-      'Given two immutable objects with multiple identical fields when comparing equality then equality comparison returns true',
+      'Given two immutable objects with multiple identical fields, '
+      'when comparing equality, '
+      'then equality comparison returns true',
       () {
         final firstObject = ImmutableObjectWithMultipleFields(
           anInt: 1,
@@ -154,7 +178,9 @@ void main() {
     );
 
     test(
-      'Given two immutable objects with multiple different fields when comparing equality then equality comparison returns false',
+      'Given two immutable objects with multiple different fields, '
+      'when comparing equality, '
+      'then equality comparison returns false',
       () {
         final firstObject = ImmutableObjectWithMultipleFields(
           anInt: 1,
@@ -173,7 +199,9 @@ void main() {
     );
 
     test(
-      'Given two immutable child objects with identical fields when comparing equality then equality comparison returns true',
+      'Given two immutable child objects with identical fields, '
+      'when comparing equality, '
+      'then equality comparison returns true',
       () {
         final firstObject = ImmutableChildObject(
           variable: 'value',
@@ -188,7 +216,9 @@ void main() {
     );
 
     test(
-      'Given two immutable child objects with different fields when comparing equality then equality comparison returns false',
+      'Given two immutable child objects with different fields, '
+      'when comparing equality, '
+      'then equality comparison returns false',
       () {
         final firstObject = ImmutableChildObject(
           variable: 'value1',
@@ -203,7 +233,9 @@ void main() {
     );
 
     test(
-      'Given an immutable object and a immutable child object with identical fields when comparing equality then equality comparison returns false',
+      'Given an immutable object and a immutable child object with identical fields, '
+      'when comparing equality, '
+      'then equality comparison returns false',
       () {
         final firstObject = ImmutableObject(variable: 'value');
         final secondObject = ImmutableChildObjectWithNoAdditionalFields(
@@ -214,9 +246,10 @@ void main() {
     );
   });
 
-  group('copyWith', () {
+  group('copyWith,', () {
     group(
-      'Given an immutable object when creating a copy with a new scalar value',
+      'Given an immutable object, '
+      'when creating a copy with a new scalar value,',
       () {
         late ImmutableObject original;
         late ImmutableObject copy;
@@ -241,7 +274,8 @@ void main() {
     );
 
     group(
-      'Given an immutable object containing a list when creating a copy with a new list',
+      'Given an immutable object containing a list, '
+      'when creating a copy with a new list,',
       () {
         late ImmutableObjectWithList original;
         late ImmutableObjectWithList copy;
@@ -266,7 +300,8 @@ void main() {
     );
 
     group(
-      'Given an immutable object containing a map when creating a copy with a new map',
+      'Given an immutable object containing a map, '
+      'when creating a copy with a new map,',
       () {
         late ImmutableObjectWithMap original;
         late ImmutableObjectWithMap copy;
@@ -291,7 +326,8 @@ void main() {
     );
 
     group(
-      'Given an immutable object containing a record when creating a copy with a new record',
+      'Given an immutable object containing a record, '
+      'when creating a copy with a new record,',
       () {
         late ImmutableObjectWithRecord original;
         late ImmutableObjectWithRecord copy;
@@ -316,7 +352,8 @@ void main() {
     );
 
     group(
-      'Given an immutable object containing another immutable object when creating a copy with a new immutable object',
+      'Given an immutable object containing another immutable object, '
+      'when creating a copy with a new immutable object,',
       () {
         late ImmutableObjectWithImmutableObject original;
         late ImmutableObjectWithImmutableObject copy;
@@ -345,7 +382,8 @@ void main() {
     );
 
     group(
-      'Given an immutable object with multiple fields when creating a copy with some updated fields',
+      'Given an immutable object with multiple fields, '
+      'when creating a copy with some updated fields,',
       () {
         late ImmutableObjectWithMultipleFields original;
         late ImmutableObjectWithMultipleFields copy;
@@ -384,7 +422,8 @@ void main() {
     );
 
     group(
-      'Given an immutable child object when creating a copy with a new scalar value',
+      'Given an immutable child object, '
+      'when creating a copy with a new scalar value,',
       () {
         late ImmutableChildObject original;
         late ImmutableChildObject copy;

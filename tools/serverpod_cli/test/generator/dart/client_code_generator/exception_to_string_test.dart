@@ -15,7 +15,7 @@ const generator = DartClientCodeGenerator();
 
 void main() {
   group(
-    'Given an exception class with fields when generating client code',
+    'Given an exception class with fields, when generating client code,',
     () {
       ClassDeclaration? baseClass;
       MethodDeclaration? toStringMethod;
@@ -90,7 +90,7 @@ void main() {
   );
 
   group(
-    'Given an exception class without fields when generating client code',
+    'Given an exception class without fields, when generating client code,',
     () {
       ClassDeclaration? baseClass;
       MethodDeclaration? toStringMethod;

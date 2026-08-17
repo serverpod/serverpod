@@ -5,25 +5,26 @@ import 'package:test/test.dart';
 void main() {
   final authUserId = const Uuid().v4obj();
 
-  group('Given an `AuthenticationInfo` with a UUID `authId`', () {
-    final authId = const Uuid().v4obj();
+  group('Given an `AuthenticationInfo` with a UUID `authId`,', () {
+    late final authId = const Uuid().v4obj();
 
-    final authenticationInfo = AuthenticationInfo(
+    late final authenticationInfo = AuthenticationInfo(
       authUserId.uuid,
       {},
       authId: authId.uuid,
     );
 
     test(
-      'when reading the `serverSideSessionId` field, then the UUID is returned.',
+      'when reading the `serverSideSessionId` field, '
+      'then the UUID is returned.',
       () {
         expect(authenticationInfo.serverSideSessionId, authId);
       },
     );
   });
 
-  group('Given an `AuthenticationInfo` with a non-UUID `authId`', () {
-    final authenticationInfo = AuthenticationInfo(
+  group('Given an `AuthenticationInfo` with a non-UUID `authId`,', () {
+    late final authenticationInfo = AuthenticationInfo(
       '123',
       {},
       authId: 'foo-bar',

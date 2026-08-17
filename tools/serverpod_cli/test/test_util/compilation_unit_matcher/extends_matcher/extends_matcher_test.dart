@@ -4,7 +4,7 @@ import '../../compilation_unit_matcher.dart';
 
 void main() {
   group(
-    'Given compilation unit with class that does not extend another class',
+    'Given compilation unit with class that does not extend another class,',
     () {
       late final compilationUnit = parseCode(
         '''
@@ -12,7 +12,7 @@ void main() {
       ''',
       );
 
-      test('when negate matching class and extention then test passes', () {
+      test('when negate matching class and extention, then test passes', () {
         expect(
           compilationUnit,
           isNot(containsClass('User').thatExtends('Parent')),
@@ -20,7 +20,8 @@ void main() {
       });
 
       test(
-        'when matching with class name and non-existent extends then test fails',
+        'when matching with class name and non-existent extends, '
+        'then test fails',
         () {
           final matcher =
               containsClass('User').thatExtends('NonExistentParent') as Matcher;
@@ -38,14 +39,14 @@ void main() {
     },
   );
 
-  group('Given compilation unit with class that extends another class', () {
+  group('Given compilation unit with class that extends another class,', () {
     late final compilationUnit = parseCode(
       '''
       class User extends Parent {}
       ''',
     );
 
-    test('when matching class and extention then test passes', () {
+    test('when matching class and extention, then test passes', () {
       expect(
         compilationUnit,
         containsClass('User').thatExtends('Parent'),
@@ -53,7 +54,7 @@ void main() {
     });
 
     test(
-      'when negate matching class and invalid extention then test passes',
+      'when negate matching class and invalid extention, then test passes',
       () {
         expect(
           compilationUnit,
@@ -63,7 +64,8 @@ void main() {
     );
 
     test(
-      'when matching with class name and incorrect extends clause then test fails',
+      'when matching with class name and incorrect extends clause, '
+      'then test fails',
       () {
         final matcher =
             containsClass('User').thatExtends('InvalidParent') as Matcher;
@@ -81,7 +83,9 @@ void main() {
   });
 
   test(
-    'Given matcher for class extending another class when fetching description then description is correct',
+    'Given matcher for class extending another class, '
+    'when fetching description, '
+    'then description is correct',
     () {
       final matcher = containsClass('User').thatExtends('Parent') as Matcher;
       final description = StringDescription();

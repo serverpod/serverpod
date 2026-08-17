@@ -6,7 +6,7 @@ import 'serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given an `AuthenticationInfo` created through the `TestSessionBuilder` for an `int` user ID, ',
+    'Given an `AuthenticationInfo` created through the `TestSessionBuilder` for an `int` user ID,',
     (sessionBuilder, final endpoints) {
       late AuthenticationInfo? authenticationInfo;
 
@@ -40,7 +40,7 @@ void main() {
   );
 
   withServerpod(
-    'Given an `AuthenticationInfo` created through the `TestSessionBuilder` for a `UUID` user ID, ',
+    'Given an `AuthenticationInfo` created through the `TestSessionBuilder` for a `UUID` user ID,',
     (sessionBuilder, final endpoints) {
       const uuidString = '78da5669-e934-48a2-9f90-047cc0956b9e';
       late AuthenticationInfo? authenticationInfo;

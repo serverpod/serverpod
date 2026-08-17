@@ -9,9 +9,10 @@ import '../../../../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
-  group('Given a class with serverOnly scoped fields with default values', () {
+  group('Given a class with serverOnly scoped fields with default values,', () {
     test(
-      'when the field is serverOnly with default value, then no validation errors are generated',
+      'when the field is serverOnly with default value, '
+      'then no validation errors are generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -45,7 +46,8 @@ void main() {
     );
 
     test(
-      'when the field is serverOnly with string default value, then the field should have the correct default value',
+      'when the field is serverOnly with string default value, '
+      'then the field should have the correct default value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -75,7 +77,8 @@ void main() {
     );
 
     test(
-      'when multiple fields have different scopes and defaults, then all are validated correctly',
+      'when multiple fields have different scopes and defaults, '
+      'then all are validated correctly',
       () {
         var models = [
           ModelSourceBuilder().withYaml(

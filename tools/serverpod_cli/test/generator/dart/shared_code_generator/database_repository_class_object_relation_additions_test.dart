@@ -33,9 +33,9 @@ void main() {
     '$testClassFileName.dart',
   ]);
 
-  group('Given a class with table name when generating code', () {
+  group('Given a class with table name, when generating code,', () {
     var tableName = 'example_table';
-    var models = [
+    late var models = [
       ModelClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withTableName(tableName)
@@ -44,12 +44,14 @@ void main() {
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late var compilationUnit = parseString(
+      content: codeMap[expectedFilePath]!,
+    ).unit;
 
     test(
       'then a class named ${testClassName}AttachRowRepository is NOT generated',
@@ -82,9 +84,10 @@ void main() {
     );
   });
   group(
-    'Given a class with table name and object relation field when generating code',
+    'Given a class with table name and object relation field, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -106,16 +109,16 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var compilationUnit = parseString(
+      late var compilationUnit = parseString(
         content: codeMap[expectedFilePath]!,
       ).unit;
 
-      var repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      late var repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
         compilationUnit,
         name: '${testClassName}Repository',
       );
@@ -167,11 +170,11 @@ void main() {
         },
       );
 
-      var repositoryAttachClass =
+      late var repositoryAttachClass =
           CompilationUnitHelpers.tryFindClassDeclaration(
             compilationUnit,
             name: '${testClassName}AttachRowRepository',
-          );
+          )!;
 
       group(
         'then the ${testClassName}AttachRowRepository',
@@ -179,7 +182,7 @@ void main() {
           test('has a private constructor', () {
             var constructor =
                 CompilationUnitHelpers.tryFindConstructorDeclaration(
-                  repositoryAttachClass!,
+                  repositoryAttachClass,
                   name: '_',
                 );
             expect(
@@ -189,10 +192,11 @@ void main() {
             );
           });
 
-          var companyMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            repositoryAttachClass!,
-            name: 'company',
-          );
+          late var companyMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                repositoryAttachClass,
+                name: 'company',
+              );
 
           test('has a company method defined.', () {
             expect(companyMethod, isNotNull, reason: 'Missing company method.');
@@ -211,10 +215,11 @@ void main() {
             skip: companyMethod == null,
           );
 
-          var addressMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            repositoryAttachClass,
-            name: 'address',
-          );
+          late var addressMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                repositoryAttachClass,
+                name: 'address',
+              );
 
           test('has a address method defined.', () {
             expect(addressMethod, isNotNull, reason: 'Missing address method.');
@@ -281,18 +286,19 @@ void main() {
         },
       );
 
-      var repositoryDetachClass =
+      late var repositoryDetachClass =
           CompilationUnitHelpers.tryFindClassDeclaration(
             compilationUnit,
             name: '${testClassName}DetachRowRepository',
-          );
+          )!;
+
       group(
         'then the ${testClassName}DetachRowRepository',
         () {
           test('has a private constructor', () {
             var constructor =
                 CompilationUnitHelpers.tryFindConstructorDeclaration(
-                  repositoryDetachClass!,
+                  repositoryDetachClass,
                   name: '_',
                 );
             expect(
@@ -302,10 +308,11 @@ void main() {
             );
           });
 
-          var companyMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            repositoryDetachClass!,
-            name: 'company',
-          );
+          late var companyMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                repositoryDetachClass,
+                name: 'company',
+              );
 
           test('has a company method defined.', () {
             expect(companyMethod, isNotNull, reason: 'Missing company method.');
@@ -324,10 +331,11 @@ void main() {
             skip: companyMethod == null,
           );
 
-          var addressMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            repositoryDetachClass,
-            name: 'address',
-          );
+          late var addressMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                repositoryDetachClass,
+                name: 'address',
+              );
 
           test(
             'has NOT an address method defined for none nullable relation.',
@@ -372,9 +380,10 @@ void main() {
   );
 
   group(
-    'Given a class with table name and object relation field when generating code',
+    'Given a class with table name and object relation field, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -390,16 +399,16 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var compilationUnit = parseString(
+      late var compilationUnit = parseString(
         content: codeMap[expectedFilePath]!,
       ).unit;
 
-      var repositoryDetachClass =
+      late var repositoryDetachClass =
           CompilationUnitHelpers.tryFindClassDeclaration(
             compilationUnit,
             name: '${testClassName}DetachRowRepository',
@@ -417,9 +426,10 @@ void main() {
   );
 
   group(
-    'Given a class with table name and object relation field when generating code',
+    'Given a class with table name and object relation field, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -440,16 +450,16 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var compilationUnit = parseString(
+      late var compilationUnit = parseString(
         content: codeMap[expectedFilePath]!,
       ).unit;
 
-      var repositoryDetachClass =
+      late var repositoryDetachClass =
           CompilationUnitHelpers.tryFindClassDeclaration(
             compilationUnit,
             name: '${testClassName}DetachRowRepository',
@@ -458,10 +468,11 @@ void main() {
       group(
         'then the address method is not generated for none nullable relation.',
         () {
-          var addressMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            repositoryDetachClass!,
-            name: 'address',
-          );
+          late var addressMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                repositoryDetachClass!,
+                name: 'address',
+              );
 
           test('', () {
             expect(addressMethod, isNull, reason: 'Missing address method.');
@@ -472,10 +483,10 @@ void main() {
   );
 
   group(
-    'Given a class with a self relation where the field has the same name as the class',
+    'Given a class with a self relation where the field has the same name as the class,',
     () {
       var tableName = 'example_table';
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withFileName(testClassFileName)
             .withTableName(tableName)
@@ -490,27 +501,28 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var compilationUnit = parseString(
+      late var compilationUnit = parseString(
         content: codeMap[expectedFilePath]!,
       ).unit;
 
-      var attachRowRepository = CompilationUnitHelpers.tryFindClassDeclaration(
-        compilationUnit,
-        name: '${testClassName}AttachRowRepository',
-      );
+      late var attachRowRepository =
+          CompilationUnitHelpers.tryFindClassDeclaration(
+            compilationUnit,
+            name: '${testClassName}AttachRowRepository',
+          );
 
       group('then the attach method for example', () {
-        var method = CompilationUnitHelpers.tryFindMethodDeclaration(
+        late var method = CompilationUnitHelpers.tryFindMethodDeclaration(
           attachRowRepository!,
           name: 'example',
         );
 
-        test('has the secondary input param named "nestedExample" ', () {
+        test('has the secondary input param named "nestedExample"', () {
           expect(
             method?.parameters?.toSource(),
             matches(
@@ -531,11 +543,12 @@ void main() {
   );
 
   group(
-    'Given a class with multi-word name and object relation field when generating code',
+    'Given a class with multi-word name and object relation field, '
+    'when generating code,',
     () {
       var multiWordClassName = 'CitizenInt';
       var multiWordClassFileName = 'citizen_int';
-      var multiWordExpectedFilePath = path.joinAll([
+      late var multiWordExpectedFilePath = path.joinAll([
         ...serverPathParts,
         'packages',
         'shared',
@@ -545,7 +558,7 @@ void main() {
         '$multiWordClassFileName.dart',
       ]);
 
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(multiWordClassName)
             .withFileName(multiWordClassFileName)
@@ -561,27 +574,29 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var compilationUnit = parseString(
+      late var compilationUnit = parseString(
         content: codeMap[multiWordExpectedFilePath]!,
       ).unit;
 
-      var attachRowRepository = CompilationUnitHelpers.tryFindClassDeclaration(
-        compilationUnit,
-        name: '${multiWordClassName}AttachRowRepository',
-      );
+      late var attachRowRepository =
+          CompilationUnitHelpers.tryFindClassDeclaration(
+            compilationUnit,
+            name: '${multiWordClassName}AttachRowRepository',
+          );
 
-      var detachRowRepository = CompilationUnitHelpers.tryFindClassDeclaration(
-        compilationUnit,
-        name: '${multiWordClassName}DetachRowRepository',
-      );
+      late var detachRowRepository =
+          CompilationUnitHelpers.tryFindClassDeclaration(
+            compilationUnit,
+            name: '${multiWordClassName}DetachRowRepository',
+          );
 
       group('then the attach method for address', () {
-        var method = CompilationUnitHelpers.tryFindMethodDeclaration(
+        late var method = CompilationUnitHelpers.tryFindMethodDeclaration(
           attachRowRepository!,
           name: 'address',
         );
@@ -599,7 +614,7 @@ void main() {
       }, skip: attachRowRepository == null);
 
       group('then the detach method for address', () {
-        var method = CompilationUnitHelpers.tryFindMethodDeclaration(
+        late var method = CompilationUnitHelpers.tryFindMethodDeclaration(
           detachRowRepository!,
           name: 'address',
         );

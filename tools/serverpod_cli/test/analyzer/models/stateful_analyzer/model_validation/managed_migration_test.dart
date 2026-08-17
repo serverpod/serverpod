@@ -10,7 +10,8 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   test(
-    'Given a class without an explicit managed migration flag set then the internal state for the flag is true',
+    'Given a class without an explicit managed migration flag set, '
+    'then the internal state for the flag is true',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -43,7 +44,8 @@ void main() {
   );
 
   test(
-    'Given a class with the managedMigration flag set to true then the internal state for the flag is true',
+    'Given a class with the managedMigration flag set to true, '
+    'then the internal state for the flag is true',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -77,7 +79,8 @@ void main() {
   );
 
   test(
-    'Given a class with the managedMigration flag set to false then the internal state for the flag is false',
+    'Given a class with the managedMigration flag set to false, '
+    'then the internal state for the flag is false',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -111,7 +114,8 @@ void main() {
   );
 
   test(
-    'Given a class with the managedMigration flag set none boolean value then an error is reported',
+    'Given a class with the managedMigration flag set none boolean value, '
+    'then an error is reported',
     () {
       var models = [
         ModelSourceBuilder().withYaml(

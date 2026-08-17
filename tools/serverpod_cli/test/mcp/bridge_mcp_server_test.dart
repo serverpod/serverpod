@@ -24,7 +24,7 @@ import 'package:test/test.dart';
 /// upfront regardless of whether the runner is currently up.
 void main() {
   group(
-    'Given a BridgeMcpServer wired to a running runner socket',
+    'Given a BridgeMcpServer wired to a running runner socket,',
     skip: !hasUnixSocketSupport(),
     () {
       late Directory tempServerDir;
@@ -110,7 +110,7 @@ void main() {
   );
 
   group(
-    'Given a BridgeMcpServer wired to a socket with no runner listening',
+    'Given a BridgeMcpServer wired to a socket with no runner listening,',
     skip: !hasUnixSocketSupport(),
     () {
       late Directory tempServerDir;
@@ -182,7 +182,7 @@ void main() {
   );
 
   group(
-    'Given a BridgeMcpServer that auto-connects after the runner appears',
+    'Given a BridgeMcpServer that auto-connects after the runner appears,',
     skip: !hasUnixSocketSupport(),
     () {
       test(

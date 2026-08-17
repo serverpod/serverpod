@@ -15,7 +15,7 @@ void main() {
     publicPort: 0,
   );
 
-  group('Given a running server with configured authentication', () {
+  group('Given a running server with configured authentication,', () {
     late Serverpod pod;
     late int port;
     late http.Client httpClient;
@@ -43,7 +43,7 @@ void main() {
     });
 
     test(
-      'when calling GET /livez '
+      'when calling GET /livez, '
       'then response status code is 200',
       () async {
         final response = await httpClient.get(
@@ -55,7 +55,7 @@ void main() {
     );
 
     test(
-      'when calling GET /livez with no authentication '
+      'when calling GET /livez with no authentication, '
       'then response has no body',
       () async {
         final response = await httpClient.get(
@@ -67,7 +67,7 @@ void main() {
     );
 
     test(
-      'when calling GET /livez with valid authentication '
+      'when calling GET /livez with valid authentication, '
       'then response is JSON with status pass',
       () async {
         final response = await httpClient.get(
@@ -83,7 +83,7 @@ void main() {
     );
   });
 
-  group('Given a running server with no database', () {
+  group('Given a running server with no database,', () {
     late Serverpod pod;
     late int port;
     late http.Client httpClient;
@@ -111,7 +111,7 @@ void main() {
     });
 
     test(
-      'when calling GET /readyz '
+      'when calling GET /readyz, '
       'then response status code is 200',
       () async {
         final response = await httpClient.get(
@@ -123,7 +123,7 @@ void main() {
     );
 
     test(
-      'when calling GET /readyz with no authentication '
+      'when calling GET /readyz with no authentication, '
       'then response has no body',
       () async {
         final response = await httpClient.get(
@@ -135,7 +135,7 @@ void main() {
     );
 
     test(
-      'when calling GET /readyz with valid authentication '
+      'when calling GET /readyz with valid authentication, '
       'then response is JSON with status pass',
       () async {
         final response = await httpClient.get(
@@ -150,7 +150,7 @@ void main() {
     );
   });
 
-  group('Given a started server', () {
+  group('Given a started server,', () {
     late Serverpod pod;
     late int port;
     late http.Client httpClient;
@@ -178,7 +178,7 @@ void main() {
     });
 
     test(
-      'when calling GET /startupz '
+      'when calling GET /startupz, '
       'then response status code is 200',
       () async {
         final response = await httpClient.get(
@@ -190,7 +190,7 @@ void main() {
     );
 
     test(
-      'when calling GET /startupz with no authentication '
+      'when calling GET /startupz with no authentication, '
       'then response has no body',
       () async {
         final response = await httpClient.get(
@@ -202,7 +202,7 @@ void main() {
     );
 
     test(
-      'when calling GET /startupz with valid authentication '
+      'when calling GET /startupz with valid authentication, '
       'then response includes startup indicator',
       () async {
         final response = await httpClient.get(
@@ -220,7 +220,7 @@ void main() {
     );
   });
 
-  group('Given a server with failing startup indicator', () {
+  group('Given a server with failing startup indicator,', () {
     late Serverpod pod;
     late int port;
     late http.Client httpClient;
@@ -256,7 +256,7 @@ void main() {
     });
 
     test(
-      'when calling GET /startupz '
+      'when calling GET /startupz, '
       'then response status code is 503',
       () async {
         final response = await httpClient.get(
@@ -268,7 +268,7 @@ void main() {
     );
 
     test(
-      'when calling GET /startupz with valid authentication '
+      'when calling GET /startupz with valid authentication, '
       'then response includes failure details',
       () async {
         final response = await httpClient.get(
@@ -284,7 +284,7 @@ void main() {
     );
   });
 
-  group('Given a server with passing readiness indicator', () {
+  group('Given a server with passing readiness indicator,', () {
     late Serverpod pod;
     late int port;
     late http.Client httpClient;
@@ -320,7 +320,7 @@ void main() {
     });
 
     test(
-      'when calling GET /readyz '
+      'when calling GET /readyz, '
       'then response status code is 200',
       () async {
         final response = await httpClient.get(
@@ -332,7 +332,7 @@ void main() {
     );
 
     test(
-      'when calling GET /readyz with valid authentication '
+      'when calling GET /readyz with valid authentication, '
       'then response includes indicator result',
       () async {
         final response = await httpClient.get(
@@ -349,7 +349,7 @@ void main() {
     );
   });
 
-  group('Given a server with failing readiness indicator', () {
+  group('Given a server with failing readiness indicator,', () {
     late Serverpod pod;
     late int port;
     late http.Client httpClient;
@@ -386,7 +386,7 @@ void main() {
     });
 
     test(
-      'when calling GET /readyz '
+      'when calling GET /readyz, '
       'then response status code is 503',
       () async {
         final response = await httpClient.get(
@@ -398,7 +398,7 @@ void main() {
     );
 
     test(
-      'when calling GET /readyz with valid authentication '
+      'when calling GET /readyz with valid authentication, '
       'then response includes failure details',
       () async {
         final response = await httpClient.get(
@@ -414,7 +414,7 @@ void main() {
     );
   });
 
-  group('Given a server with caching enabled', () {
+  group('Given a server with caching enabled,', () {
     late Serverpod pod;
     late int port;
     late http.Client httpClient;
@@ -451,7 +451,7 @@ void main() {
     });
 
     test(
-      'when calling GET /readyz multiple times within cache TTL '
+      'when calling GET /readyz multiple times within cache TTL, '
       'then indicator is only called once',
       () async {
         // First request triggers the check
@@ -469,7 +469,7 @@ void main() {
     );
 
     test(
-      'when calling GET /readyz after cache TTL expires '
+      'when calling GET /readyz after cache TTL expires, '
       'then indicator is called again',
       () async {
         // First request triggers the check
@@ -486,7 +486,7 @@ void main() {
     );
   });
 
-  group('Given a server with slow indicator exceeding timeout', () {
+  group('Given a server with slow indicator exceeding timeout,', () {
     late Serverpod pod;
     late int port;
     late http.Client httpClient;
@@ -523,7 +523,7 @@ void main() {
     });
 
     test(
-      'when calling GET /readyz '
+      'when calling GET /readyz, '
       'then indicator times out and returns 503',
       () async {
         final response = await httpClient.get(
@@ -535,7 +535,7 @@ void main() {
     );
 
     test(
-      'when calling GET /readyz with valid authentication '
+      'when calling GET /readyz with valid authentication, '
       'then response indicates timeout failure',
       () async {
         final response = await httpClient.get(

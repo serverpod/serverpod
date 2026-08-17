@@ -11,7 +11,7 @@ void main() {
   late Session session;
 
   withServerpod(
-    'Given MicrosoftIdpAdmin',
+    'Given MicrosoftIdpAdmin,',
     (final sessionBuilder, final endpoints) {
       setUp(() {
         utils = _createUtils();
@@ -20,7 +20,7 @@ void main() {
       });
 
       test(
-        'when linking Microsoft authentication then it creates a new account.',
+        'when linking Microsoft authentication, then it creates a new account.',
         () async {
           final authUser = await const AuthUsers().create(session);
           final accountDetails = (
@@ -44,7 +44,8 @@ void main() {
       );
 
       test(
-        'when finding user by Microsoft user id then it returns the auth user id.',
+        'when finding user by Microsoft user id, '
+        'then it returns the auth user id.',
         () async {
           final authUser = await const AuthUsers().create(session);
           final userIdentifier = 'microsoft-user-${const Uuid().v4()}';
@@ -67,7 +68,8 @@ void main() {
       );
 
       test(
-        'when finding user by non-existent Microsoft user id then it returns null.',
+        'when finding user by non-existent Microsoft user id, '
+        'then it returns null.',
         () async {
           final foundUserId = await MicrosoftIdpAdmin.findUserByMicrosoftUserId(
             session,

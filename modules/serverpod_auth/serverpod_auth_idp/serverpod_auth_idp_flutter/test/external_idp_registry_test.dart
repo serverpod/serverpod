@@ -65,9 +65,9 @@ void main() {
     registry.clear();
   });
 
-  group('Given an empty registry', () {
+  group('Given an empty registry,', () {
     test(
-      'when calling hasBuilder then it returns false.',
+      'when calling hasBuilder, then it returns false.',
       () {
         final result = registry.hasBuilder<MockIdpEndpoint>();
         expect(result, isFalse);
@@ -75,7 +75,7 @@ void main() {
     );
 
     test(
-      'when calling getBuilder then it returns null.',
+      'when calling getBuilder, then it returns null.',
       () {
         final builder = registry.getBuilder<MockIdpEndpoint>();
         expect(builder, isNull);
@@ -83,7 +83,7 @@ void main() {
     );
 
     test(
-      'when calling unregister then it returns false.',
+      'when calling unregister, then it returns false.',
       () {
         final result = registry.unregister<MockIdpEndpoint>();
         expect(result, isFalse);
@@ -91,7 +91,7 @@ void main() {
     );
 
     test(
-      'when calling registeredTypes then it returns empty list.',
+      'when calling registeredTypes, then it returns empty list.',
       () {
         final types = registry.registeredTypes;
         expect(types, isEmpty);
@@ -99,7 +99,7 @@ void main() {
     );
 
     test(
-      'when calling count then it returns 0.',
+      'when calling count, then it returns 0.',
       () {
         final count = registry.count;
         expect(count, equals(0));
@@ -107,7 +107,7 @@ void main() {
     );
 
     test(
-      'when calling hasRegistrations then it returns false.',
+      'when calling hasRegistrations, then it returns false.',
       () {
         final result = registry.hasRegistrations;
         expect(result, isFalse);
@@ -115,7 +115,7 @@ void main() {
     );
 
     test(
-      'when registering a builder then it succeeds.',
+      'when registering a builder, then it succeeds.',
       () {
         expect(
           () => registry.register<MockIdpEndpoint>(mockWidgetBuilder),
@@ -126,13 +126,13 @@ void main() {
     );
   });
 
-  group('Given a registry with one registered provider', () {
+  group('Given a registry with one registered provider,', () {
     setUp(() {
       registry.register<MockIdpEndpoint>(mockWidgetBuilder);
     });
 
     test(
-      'when calling hasBuilder for registered type then it returns true.',
+      'when calling hasBuilder for registered type, then it returns true.',
       () {
         final result = registry.hasBuilder<MockIdpEndpoint>();
         expect(result, isTrue);
@@ -140,7 +140,7 @@ void main() {
     );
 
     test(
-      'when calling hasBuilder for unregistered type then it returns false.',
+      'when calling hasBuilder for unregistered type, then it returns false.',
       () {
         final result = registry.hasBuilder<AnotherMockIdpEndpoint>();
         expect(result, isFalse);
@@ -148,7 +148,8 @@ void main() {
     );
 
     test(
-      'when calling getBuilder for registered type then it returns the builder.',
+      'when calling getBuilder for registered type, '
+      'then it returns the builder.',
       () {
         final builder = registry.getBuilder<MockIdpEndpoint>();
         expect(builder, isNotNull);
@@ -157,7 +158,7 @@ void main() {
     );
 
     test(
-      'when calling getBuilder for unregistered type then it returns null.',
+      'when calling getBuilder for unregistered type, then it returns null.',
       () {
         final builder = registry.getBuilder<AnotherMockIdpEndpoint>();
         expect(builder, isNull);
@@ -165,7 +166,7 @@ void main() {
     );
 
     test(
-      'when calling registeredTypes then it returns list with one type.',
+      'when calling registeredTypes, then it returns list with one type.',
       () {
         final types = registry.registeredTypes;
         expect(types, hasLength(1));
@@ -174,7 +175,7 @@ void main() {
     );
 
     test(
-      'when calling count then it returns 1.',
+      'when calling count, then it returns 1.',
       () {
         final count = registry.count;
         expect(count, equals(1));
@@ -182,7 +183,7 @@ void main() {
     );
 
     test(
-      'when calling hasRegistrations then it returns true.',
+      'when calling hasRegistrations, then it returns true.',
       () {
         final result = registry.hasRegistrations;
         expect(result, isTrue);
@@ -190,7 +191,7 @@ void main() {
     );
 
     test(
-      'when unregistering the registered type then it returns true.',
+      'when unregistering the registered type, then it returns true.',
       () {
         final result = registry.unregister<MockIdpEndpoint>();
         expect(result, isTrue);
@@ -199,7 +200,7 @@ void main() {
     );
 
     test(
-      'when unregistering an unregistered type then it returns false.',
+      'when unregistering an unregistered type, then it returns false.',
       () {
         final result = registry.unregister<AnotherMockIdpEndpoint>();
         expect(result, isFalse);
@@ -208,7 +209,7 @@ void main() {
     );
 
     test(
-      'when registering the same type again then it throws StateError.',
+      'when registering the same type again, then it throws StateError.',
       () {
         expect(
           () => registry.register<MockIdpEndpoint>(anotherMockWidgetBuilder),
@@ -224,7 +225,7 @@ void main() {
     );
 
     test(
-      'when registering a different type then it succeeds.',
+      'when registering a different type, then it succeeds.',
       () {
         expect(
           () => registry.register<AnotherMockIdpEndpoint>(
@@ -239,7 +240,7 @@ void main() {
     );
 
     test(
-      'when calling clear then all registrations are removed.',
+      'when calling clear, then all registrations are removed.',
       () {
         registry.clear();
         expect(registry.hasRegistrations, isFalse);
@@ -249,7 +250,7 @@ void main() {
     );
   });
 
-  group('Given a registry with multiple registered providers', () {
+  group('Given a registry with multiple registered providers,', () {
     setUp(() {
       registry.register<MockIdpEndpoint>(mockWidgetBuilder);
       registry.register<AnotherMockIdpEndpoint>(anotherMockWidgetBuilder);
@@ -257,7 +258,7 @@ void main() {
     });
 
     test(
-      'when calling registeredTypes then it returns all registered types.',
+      'when calling registeredTypes, then it returns all registered types.',
       () {
         final types = registry.registeredTypes;
         expect(types, hasLength(3));
@@ -268,7 +269,7 @@ void main() {
     );
 
     test(
-      'when calling count then it returns 3.',
+      'when calling count, then it returns 3.',
       () {
         final count = registry.count;
         expect(count, equals(3));
@@ -276,7 +277,7 @@ void main() {
     );
 
     test(
-      'when calling hasRegistrations then it returns true.',
+      'when calling hasRegistrations, then it returns true.',
       () {
         final result = registry.hasRegistrations;
         expect(result, isTrue);
@@ -284,7 +285,7 @@ void main() {
     );
 
     test(
-      'when unregistering one type then others remain registered.',
+      'when unregistering one type, then others remain registered.',
       () {
         final result = registry.unregister<MockIdpEndpoint>();
         expect(result, isTrue);
@@ -296,7 +297,7 @@ void main() {
     );
 
     test(
-      'when calling clear then all registrations are removed.',
+      'when calling clear, then all registrations are removed.',
       () {
         registry.clear();
         expect(registry.hasRegistrations, isFalse);
@@ -309,7 +310,7 @@ void main() {
     );
 
     test(
-      'when getting builder for each type then correct builder is returned.',
+      'when getting builder for each type, then correct builder is returned.',
       () {
         final builder1 = registry.getBuilder<MockIdpEndpoint>();
         final builder2 = registry.getBuilder<AnotherMockIdpEndpoint>();
@@ -322,14 +323,14 @@ void main() {
     );
   });
 
-  group('Given a registry after clear', () {
+  group('Given a registry after clear,', () {
     setUp(() {
       registry.register<MockIdpEndpoint>(mockWidgetBuilder);
       registry.clear();
     });
 
     test(
-      'when registering the previously registered type then it succeeds.',
+      'when registering the previously registered type, then it succeeds.',
       () {
         expect(
           () => registry.register<MockIdpEndpoint>(mockWidgetBuilder),
@@ -340,7 +341,7 @@ void main() {
     );
 
     test(
-      'when checking state then registry is empty.',
+      'when checking state, then registry is empty.',
       () {
         expect(registry.hasRegistrations, isFalse);
         expect(registry.count, equals(0));

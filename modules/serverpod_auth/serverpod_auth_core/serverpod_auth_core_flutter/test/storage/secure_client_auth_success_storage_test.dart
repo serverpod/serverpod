@@ -5,7 +5,7 @@ void main() {
   const key = 'test_key';
   late TestSecureKeyValueStorage storage;
 
-  group('Given a SecureClientAuthSuccessStorage created with default key', () {
+  group('Given a SecureClientAuthSuccessStorage created with default key,', () {
     const defaultKey = 'serverpod_auth_success_key';
 
     setUp(() {
@@ -13,13 +13,13 @@ void main() {
       storage = TestSecureKeyValueStorage.create();
     });
 
-    test('when calling set then it uses the default key.', () async {
+    test('when calling set, then it uses the default key.', () async {
       await storage.set(_authSuccess);
 
       expect(await storage.delegate.read(key: defaultKey), isNotNull);
     });
 
-    test('when calling get then it uses the default key.', () async {
+    test('when calling get, then it uses the default key.', () async {
       await storage.delegate.write(
         key: defaultKey,
         value: _authSuccess.toString(),
@@ -31,7 +31,7 @@ void main() {
     });
   });
 
-  group('Given a SecureClientAuthSuccessStorage created with custom key', () {
+  group('Given a SecureClientAuthSuccessStorage created with custom key,', () {
     const customKey = 'custom_auth_key';
 
     setUp(() {
@@ -41,13 +41,13 @@ void main() {
       );
     });
 
-    test('when calling set then it uses the custom key', () async {
+    test('when calling set, then it uses the custom key', () async {
       await storage.set(_authSuccess);
 
       expect(await storage.delegate.read(key: customKey), isNotNull);
     });
 
-    test('when calling get then it uses the custom key.', () async {
+    test('when calling get, then it uses the custom key.', () async {
       await storage.delegate.write(
         key: customKey,
         value: _authSuccess.toString(),
@@ -59,20 +59,21 @@ void main() {
     });
   });
 
-  group('Given an uninitialized SecureClientAuthSuccessStorage', () {
+  group('Given an uninitialized SecureClientAuthSuccessStorage,', () {
     setUp(() {
       FlutterSecureStorage.setMockInitialValues({});
       storage = TestSecureKeyValueStorage.create(authSuccessStorageKey: key);
     });
 
-    test('when calling get then it returns null', () async {
+    test('when calling get, then it returns null', () async {
       final result = await storage.get();
 
       expect(result, isNull);
     });
 
     test(
-      'when calling set with AuthSuccess data then it encodes and stores the data as JSON string.',
+      'when calling set with AuthSuccess data, '
+      'then it encodes and stores the data as JSON string.',
       () async {
         await storage.set(_authSuccess);
 
@@ -83,7 +84,7 @@ void main() {
     );
   });
 
-  group('Given a SecureClientAuthSuccessStorage with data in storage', () {
+  group('Given a SecureClientAuthSuccessStorage with data in storage,', () {
     setUp(() async {
       FlutterSecureStorage.setMockInitialValues({});
       storage = TestSecureKeyValueStorage.create(authSuccessStorageKey: key);
@@ -91,7 +92,7 @@ void main() {
     });
 
     test(
-      'when decoding stored value then original object is returned.',
+      'when decoding stored value, then original object is returned.',
       () async {
         final value = await storage.delegate.read(key: key);
 
@@ -103,7 +104,7 @@ void main() {
       },
     );
 
-    test('when calling get then data is retrieved from storage', () async {
+    test('when calling get, then data is retrieved from storage', () async {
       final result = await storage.get();
 
       expect(result, isNotNull);
@@ -111,7 +112,8 @@ void main() {
     });
 
     test(
-      'when calling set with a new AuthSuccess data then new data replaces old stored data.',
+      'when calling set with a new AuthSuccess data, '
+      'then new data replaces old stored data.',
       () async {
         final authSuccessNew = _authSuccess.copyWith(token: 'different-token');
         await storage.set(authSuccessNew);
@@ -122,7 +124,7 @@ void main() {
       },
     );
 
-    test('when calling set with null then stored data is null.', () async {
+    test('when calling set with null, then stored data is null.', () async {
       await storage.set(null);
 
       final stored = await storage.get();
@@ -132,7 +134,9 @@ void main() {
   });
 
   test(
-    'Given a SecureClientAuthSuccessStorage with invalid JSON data in storage, when calling get then it throws an exception.',
+    'Given a SecureClientAuthSuccessStorage with invalid JSON data in storage, '
+    'when calling get, '
+    'then it throws an exception.',
     () async {
       FlutterSecureStorage.setMockInitialValues({});
       storage = TestSecureKeyValueStorage.create(authSuccessStorageKey: key);

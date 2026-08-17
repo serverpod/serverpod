@@ -5,7 +5,8 @@ import 'package:test/test.dart';
 
 void main() {
   group(
-    'Given an existing table, when adding a non-nullable column with a default value,',
+    'Given an existing table, '
+    'when adding a non-nullable column with a default value,',
     () {
       setUpAll(() async {
         var createTableProtocol = {

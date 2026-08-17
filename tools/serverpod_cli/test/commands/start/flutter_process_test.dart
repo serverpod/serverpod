@@ -150,7 +150,7 @@ Future<({HttpServer server, String wsUri})> _startFakeLoggingVmService({
 }
 
 void main() {
-  group('Given a FlutterProcess missing the executable', () {
+  group('Given a FlutterProcess missing the executable,', () {
     late FlutterProcess fp;
 
     setUp(() {
@@ -162,7 +162,7 @@ void main() {
     });
 
     test(
-      'when calling start '
+      'when calling start, '
       'then FlutterNotInstalledException is thrown so the caller can keep going',
       () async {
         await expectLater(
@@ -173,7 +173,7 @@ void main() {
     );
   });
 
-  group('Given a FlutterProcess running', () {
+  group('Given a FlutterProcess running,', () {
     late FlutterProcess fp;
 
     setUp(() async {
@@ -194,7 +194,7 @@ void main() {
     });
 
     test(
-      'when calling start again while still running '
+      'when calling start again while still running, '
       'then it throws StateError instead of spawning a duplicate process',
       () async {
         expect(fp.start, throwsStateError);
@@ -202,7 +202,7 @@ void main() {
     );
 
     group(
-      'Given a running FlutterProcess with a shim that never publishes app.debugPort or app.webLaunchUrl',
+      'Given a running FlutterProcess with a shim that never publishes app.debugPort or app.webLaunchUrl,',
       () {
         late FlutterProcess fp;
 
@@ -222,7 +222,7 @@ void main() {
         });
 
         test(
-          'when awaiting launched and connectToVmService '
+          'when awaiting launched and connectToVmService, '
           'then both are only resolved after the process is stopped (matches "no reload available" semantics)',
           () async {
             var launchedResolved = false;
@@ -248,7 +248,7 @@ void main() {
         );
 
         test(
-          'when connectToVmService is called with a short timeout '
+          'when connectToVmService is called with a short timeout, '
           'then it gives up without throwing so the caller can proceed',
           () async {
             // Mirrors the chrome-tab-closed-quickly bug:
@@ -268,7 +268,7 @@ void main() {
   });
 
   group(
-    'Given a running FlutterProcess parsing machine protocol from a shim',
+    'Given a running FlutterProcess parsing machine protocol from a shim,',
     () {
       late FlutterProcess fp;
       late ({HttpServer server, String wsUri}) fake;
@@ -307,7 +307,7 @@ void main() {
       });
 
       test(
-        'when the shim emits app.progress, app.webLaunchUrl, app.debugPort, app.dtd, app.started '
+        'when the shim emits app.progress, app.webLaunchUrl, app.debugPort, app.dtd, app.started, '
         'then onProgress and onStarted fire, flutterAppUrl is captured, dtdUri is captured, and vmServiceUri is the http form of the daemon\'s wsUri',
         () async {
           await started.future.timeout(const Duration(seconds: 20));
@@ -328,7 +328,7 @@ void main() {
     },
   );
 
-  group('Given a FlutterProcess that was never started', () {
+  group('Given a FlutterProcess that was never started,', () {
     late FlutterProcess fp;
 
     setUp(() {
@@ -339,21 +339,21 @@ void main() {
     });
 
     test(
-      'when reload is called then it returns false without throwing',
+      'when reload is called, then it returns false without throwing',
       () async {
         expect(await fp.reload(), isFalse);
       },
     );
 
     test(
-      'when stop is called then it completes',
+      'when stop is called, then it completes',
       () async {
         expect(await fp.stop(), 0);
       },
     );
 
     test(
-      'when stop is called multiple times then it completes idempotently',
+      'when stop is called multiple times, then it completes idempotently',
       () async {
         expect(await fp.stop(), 0);
         expect(await fp.stop(), 0);
@@ -361,7 +361,7 @@ void main() {
     );
   });
 
-  group('Given a FlutterProcess wired to a VmServiceProxy', () {
+  group('Given a FlutterProcess wired to a VmServiceProxy,', () {
     late FlutterProcess fp;
     late ({HttpServer server, String wsUri}) fake;
     late VmServiceProxy proxy;
@@ -395,9 +395,8 @@ void main() {
     });
 
     test(
-      'when the shim publishes a URI '
-      'then the proxy upstream becomes the WS form of that URI, '
-      'and is cleared on stop',
+      'when the shim publishes a URI, '
+      'then the proxy upstream becomes the WS form of that URI, and is cleared on stop',
       () async {
         // Poll until the proxy observes the upstream bind.
         final deadline = DateTime.now().add(const Duration(seconds: 5));
@@ -425,8 +424,8 @@ void main() {
   });
 
   test(
-    'Given a ws URI ending in /ws'
-    'when getting the http URI '
+    'Given a ws URI ending in /ws, '
+    'when getting the http URI, '
     'then the scheme swaps to http and the /ws suffix is stripped',
     () {
       expect(
@@ -436,8 +435,8 @@ void main() {
     },
   );
 
-  test('Given a wss URI'
-      'when getting the http URI '
+  test('Given a wss URI, '
+      'when getting the http URI, '
       'then the scheme swaps to https', () {
     // Uri.toString() strips the port when it matches the scheme default.
     expect(
@@ -446,8 +445,8 @@ void main() {
     );
   });
 
-  test('Given a ws URI with a path other than /ws'
-      'when getting the http URI '
+  test('Given a ws URI with a path other than /ws, '
+      'when getting the http URI, '
       'then the path is left alone', () {
     expect(
       FlutterProcess.httpFromWs('ws://127.0.0.1:54321/different'),
@@ -455,7 +454,7 @@ void main() {
     );
   });
 
-  group('Given a FlutterProcess receiving machine protocol lines', () {
+  group('Given a FlutterProcess receiving machine protocol lines,', () {
     late FlutterProcess fp;
     late List<String> progressMessages;
     late StringBuffer stdoutBuffer;
@@ -614,7 +613,7 @@ The key [GlobalKey#1d408] was used by multiple widgets.''';
     );
 
     test(
-      'when given a line that does not start with [ '
+      'when given a line that does not start with [, '
       'then the line is ignored',
       () {
         fp.handleMachineLine('just some text');
@@ -625,7 +624,7 @@ The key [GlobalKey#1d408] was used by multiple widgets.''';
     );
 
     test(
-      'when given a [-prefixed line containing malformed JSON '
+      'when given a [-prefixed line containing malformed JSON, '
       'then the line is ignored',
       () {
         fp.handleMachineLine('[not-json');
@@ -634,7 +633,7 @@ The key [GlobalKey#1d408] was used by multiple widgets.''';
     );
 
     test(
-      'when given an envelope missing the event field '
+      'when given an envelope missing the event field, '
       'then the envelope is ignored',
       () {
         fp.handleMachineLine(
@@ -647,7 +646,7 @@ The key [GlobalKey#1d408] was used by multiple widgets.''';
     );
 
     test(
-      'when given a line containing multiple events '
+      'when given a line containing multiple events, '
       'then each event is processed in order',
       () {
         fp.handleMachineLine(
@@ -672,7 +671,7 @@ The key [GlobalKey#1d408] was used by multiple widgets.''';
     );
 
     test(
-      'when app.started arrives then onStarted fires',
+      'when app.started arrives, then onStarted fires',
       () {
         var startedCalls = 0;
         fp = FlutterProcess(
@@ -701,7 +700,7 @@ The key [GlobalKey#1d408] was used by multiple widgets.''';
     );
 
     test(
-      'when given app.dtd then dtdUri is captured',
+      'when given app.dtd, then dtdUri is captured',
       () {
         fp.handleMachineLine(
           jsonEncode([
@@ -717,7 +716,7 @@ The key [GlobalKey#1d408] was used by multiple widgets.''';
     );
 
     test(
-      'when app.webLaunchUrl arrives before app.debugPort '
+      'when app.webLaunchUrl arrives before app.debugPort, '
       'then launched completes immediately (web-server gate semantics)',
       () async {
         fp.handleMachineLine(
@@ -735,7 +734,7 @@ The key [GlobalKey#1d408] was used by multiple widgets.''';
     );
 
     test(
-      'when device is "web-server-launch-browser" and app.webLaunchUrl arrives '
+      'when device is "web-server-launch-browser" and app.webLaunchUrl arrives, '
       'then the browser launcher is invoked with that URL',
       () async {
         Uri? openedUrl;
@@ -761,7 +760,7 @@ The key [GlobalKey#1d408] was used by multiple widgets.''';
     );
 
     test(
-      'when device is "web-server" and app.webLaunchUrl arrives '
+      'when device is "web-server" and app.webLaunchUrl arrives, '
       'then the browser launcher is not invoked',
       () async {
         var browserLaunchCount = 0;
@@ -787,7 +786,7 @@ The key [GlobalKey#1d408] was used by multiple widgets.''';
     );
 
     test(
-      'when app.debugPort arrives without app.webLaunchUrl '
+      'when app.debugPort arrives without app.webLaunchUrl, '
       'then launched completes immediately (mobile/desktop gate semantics)',
       () async {
         fp.handleMachineLine(

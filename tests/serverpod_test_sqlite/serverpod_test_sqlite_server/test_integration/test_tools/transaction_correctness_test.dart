@@ -8,12 +8,12 @@ import 'serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given transaction call in test and rollbacks are enabled',
+    'Given transaction call in test and rollbacks are enabled,',
     rollbackDatabase: RollbackDatabase.afterEach,
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late var session = sessionBuilder.build();
 
-      test('when inserting an object '
+      test('when inserting an object, '
           'then should be persisted if transaction completes', () async {
         await session.db.transaction((transaction) async {
           await SimpleData.db.insertRow(
@@ -29,7 +29,7 @@ void main() {
       });
 
       test(
-        'when inserting an object '
+        'when inserting an object, '
         'then should be possible to observe the object inside transaction but not after if aborted',
         () async {
           var numberOfSimpleDatasInsideTransaction = 0;
@@ -57,7 +57,7 @@ void main() {
         },
       );
 
-      test('when inserting objects in parallel '
+      test('when inserting objects in parallel, '
           'then should be persisted if transaction completes', () async {
         await session.db.transaction((transaction) async {
           await Future.wait([
@@ -85,7 +85,7 @@ void main() {
         expect(simpleDatas.map((s) => s.num), containsAll([1, 2, 3]));
       });
 
-      test('when inserting an object in parallel to a transaction'
+      test('when inserting an object in parallel to a transaction, '
           'then should throw exception due to concurrent operations', () async {
         var future = Future.wait([
           session.db.transaction((transaction) {
@@ -114,7 +114,7 @@ void main() {
         );
       });
 
-      test('when inserting an object without transaction but is executed inside a transaction'
+      test('when inserting an object without transaction but is executed inside a transaction, '
           'then should throw exception due to concurrent operations', () async {
         var future = session.db.transaction((tx) async {
           await SimpleData.db.insertRow(
@@ -140,7 +140,7 @@ void main() {
         );
       });
 
-      test('when executing transactions in parallel'
+      test('when executing transactions in parallel, '
           'then should throw exception due to concurrent operations', () async {
         var future = Future.wait([
           session.db.transaction((tx) async {}),
@@ -161,7 +161,7 @@ void main() {
         );
       });
 
-      test('when database exception occurs '
+      test('when database exception occurs, '
           'then should not fail `dart test` by leaking exceptions', () async {
         var future = session.db.transaction((transaction) async {
           var data = UniqueData(number: 1, email: 'test@test.com');
@@ -194,7 +194,7 @@ void main() {
         );
       });
 
-      group('when non-database exception occurs', () {
+      group('when non-database exception occurs,', () {
         late Future<Never> throwingTransactionFuture;
 
         setUp(() {
@@ -241,7 +241,7 @@ void main() {
         });
       });
 
-      test('when next test is run '
+      test('when next test is run, '
           'then database operations should still work', () async {
         await SimpleData.db.insertRow(session, SimpleData(num: 1));
 
@@ -251,10 +251,10 @@ void main() {
   );
 
   withServerpod(
-    'Given transaction calls when rollbacks are disabled',
+    'Given transaction calls, when rollbacks are disabled,',
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late var session = sessionBuilder.build();
 
       tearDown(() async {
         await SimpleData.db.deleteWhere(
@@ -263,7 +263,7 @@ void main() {
         );
       });
 
-      test('when inserting an object in parallel to a transaction'
+      test('when inserting an object in parallel to a transaction, '
           'then should persist both', () async {
         await Future.wait([
           session.db.transaction((transaction) {
@@ -281,7 +281,7 @@ void main() {
       });
 
       test(
-        'when inserting an object without transaction but is executed inside a transaction'
+        'when inserting an object without transaction but is executed inside a transaction, '
         'then should throw because SQLite does not allow recursive write lock',
         () async {
           final future = session.db.transaction((tx) async {
@@ -307,7 +307,7 @@ void main() {
         },
       );
 
-      test('when inserting objects inside transactions in parallel'
+      test('when inserting objects inside transactions in parallel, '
           'then should persist objects', () async {
         await Future.wait([
           session.db.transaction(
@@ -334,11 +334,11 @@ void main() {
   );
 
   withServerpod(
-    'Given transaction call in test with database rollbacks enabled (default)',
+    'Given transaction call in test with database rollbacks enabled (default),',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late var session = sessionBuilder.build();
       test(
-        'when database exception occurs '
+        'when database exception occurs, '
         'then transaction WILL NOT throw exception if it was caught in the transaction',
         () async {
           var future = session.db.transaction((tx) async {
@@ -359,10 +359,10 @@ void main() {
   );
 
   withServerpod(
-    'Given transaction call in test with database rollbacks disabled',
+    'Given transaction call in test with database rollbacks disabled,',
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late var session = sessionBuilder.build();
 
       tearDown(() async {
         await UniqueData.db.deleteWhere(
@@ -372,7 +372,7 @@ void main() {
       });
 
       test(
-        'when database exception occurs '
+        'when database exception occurs, '
         'then transaction will complete if it was caught in the transaction',
         () async {
           var future = session.db.transaction((tx) async {

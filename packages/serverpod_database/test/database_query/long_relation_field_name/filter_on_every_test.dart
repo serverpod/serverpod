@@ -21,9 +21,9 @@ void main() {
   var expectedTruncatedName =
       'where_every_citizen_thisFieldIsExactly61CharactersLongAndIs1cf6';
 
-  group('Given SelectQueryBuilder', () {
-    group('when "every" filtering on relation with a long field name', () {
-      var query = SelectQueryBuilder(
+  group('Given SelectQueryBuilder,', () {
+    group('when "every" filtering on relation with a long field name,', () {
+      late var query = SelectQueryBuilder(
         table: citizenTable,
       ).withWhere(manyRelation.every((t) => t.id.equals(1))).build();
 
@@ -41,9 +41,9 @@ void main() {
       });
     });
   });
-  group('Given CountQueryBuilder', () {
-    group('when "every" filtering on relation with a long field name', () {
-      var query = CountQueryBuilder(
+  group('Given CountQueryBuilder,', () {
+    group('when "every" filtering on relation with a long field name,', () {
+      late var query = CountQueryBuilder(
         table: citizenTable,
       ).withWhere(manyRelation.every((t) => t.id.equals(1))).build();
 
@@ -61,9 +61,9 @@ void main() {
       });
     });
   });
-  group('Given DeleteQueryBuilder', () {
-    group('when "every" filtering on relation with a long field name', () {
-      var query = DeleteQueryBuilder(
+  group('Given DeleteQueryBuilder,', () {
+    group('when "every" filtering on relation with a long field name,', () {
+      late var query = DeleteQueryBuilder(
         table: citizenTable,
       ).withWhere(manyRelation.every((t) => t.id.equals(1))).build();
 

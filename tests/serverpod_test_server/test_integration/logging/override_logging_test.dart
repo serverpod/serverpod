@@ -26,7 +26,9 @@ void main() {
   });
 
   test(
-    'Given that the log settings are turned down but there is an override for the endpoint to allow all logging when calling a method then a log is written.',
+    'Given that the log settings are turned down but there is an override for the endpoint to allow all logging, '
+    'when calling a method, '
+    'then a log is written.',
     () async {
       var settings = RuntimeSettingsBuilder()
           .withLogSettings(LogSettingsBuilder().withLoggingTurnedDown().build())
@@ -49,7 +51,9 @@ void main() {
   );
 
   test(
-    'Given that the log settings are turned down but there is an override for the endpoint to allow all logging when calling another endpoint then no log is written.',
+    'Given that the log settings are turned down but there is an override for the endpoint to allow all logging, '
+    'when calling another endpoint, '
+    'then no log is written.',
     () async {
       var settings = RuntimeSettingsBuilder()
           .withLogSettings(LogSettingsBuilder().withLoggingTurnedDown().build())
@@ -70,7 +74,9 @@ void main() {
   );
 
   test(
-    'Given that the log settings are turned down but there is an override for the endpoint and method to allow all logging when calling a method then a log is written.',
+    'Given that the log settings are turned down but there is an override for the endpoint and method to allow all logging, '
+    'when calling a method, '
+    'then a log is written.',
     () async {
       var settings = RuntimeSettingsBuilder()
           .withLogSettings(LogSettingsBuilder().withLoggingTurnedDown().build())
@@ -95,7 +101,9 @@ void main() {
   );
 
   test(
-    'Given that the log settings are turned down but there is an override for the endpoint and method to allow all logging when calling another method then not log is written.',
+    'Given that the log settings are turned down but there is an override for the endpoint and method to allow all logging, '
+    'when calling another method, '
+    'then not log is written.',
     () async {
       var settings = RuntimeSettingsBuilder()
           .withLogSettings(LogSettingsBuilder().withLoggingTurnedDown().build())

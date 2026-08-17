@@ -25,8 +25,8 @@ void main() {
     }
   });
 
-  group('Given a valid future call class when analyzed', () {
-    var collector = CodeGenerationCollector();
+  group('Given a valid future call class, when analyzed,', () {
+    late var collector = CodeGenerationCollector();
     late Directory testDirectory;
 
     late List<FutureCallDefinition> futureCallDefinitions;
@@ -100,8 +100,8 @@ class ExampleFutureCall extends FutureCall {
     });
   });
 
-  group('Given a valid future call with documentation when analyzed', () {
-    var collector = CodeGenerationCollector();
+  group('Given a valid future call with documentation, when analyzed,', () {
+    late var collector = CodeGenerationCollector();
     late Directory testDirectory;
 
     late List<FutureCallDefinition> futureCallDefinitions;
@@ -148,9 +148,9 @@ class ExampleFutureCall extends FutureCall {
   });
 
   group(
-    'Given a future call class that implements InvokableFutureCall',
+    'Given a future call class that implements InvokableFutureCall,',
     () {
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -191,9 +191,9 @@ class ExampleFutureCall extends FutureCall implements InvokableFutureCall {
   );
 
   group(
-    'Given a dart class that does not inherit from FutureCall when analyzed',
+    'Given a dart class that does not inherit from FutureCall, when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -233,9 +233,9 @@ class ExampleFutureCall {
   );
 
   group(
-    'Given same future call class definition in multiple files when analyzed',
+    'Given same future call class definition in multiple files, when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;

@@ -7,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 
 void main() {
-  group('Apple sign-in button localization', () {
+  group('Apple sign-in button localization,', () {
     testWidgets(
       'Given default SignInLocalizationProvider with no override, '
       'when building the AppleSignInButton with signup variant, '
@@ -54,7 +54,7 @@ void main() {
     );
   });
 
-  group('Google sign-in button localization', () {
+  group('Google sign-in button localization,', () {
     testWidgets(
       'Given default SignInLocalizationProvider with no override, '
       'when building the GoogleSignInNativeButton with sign-in variant, '
@@ -102,7 +102,7 @@ void main() {
     );
   });
 
-  group('GitHub sign-in button localization', () {
+  group('GitHub sign-in button localization,', () {
     testWidgets(
       'Given default SignInLocalizationProvider with no override, '
       'when building the GitHubSignInButton with sign-up variant, '
@@ -154,7 +154,7 @@ void main() {
     );
   });
 
-  group('Microsoft sign-in button localization', () {
+  group('Microsoft sign-in button localization,', () {
     testWidgets(
       'Given default SignInLocalizationProvider with no override, '
       'when building the MicrosoftSignInButton with sign-up variant, '
@@ -208,7 +208,7 @@ void main() {
     );
   });
 
-  group('Anonymous sign-in button localization', () {
+  group('Anonymous sign-in button localization,', () {
     testWidgets(
       'Given default SignInLocalizationProvider with no override and a test AnonymousAuthController, '
       'when building the AnonymousSignInWidget, '

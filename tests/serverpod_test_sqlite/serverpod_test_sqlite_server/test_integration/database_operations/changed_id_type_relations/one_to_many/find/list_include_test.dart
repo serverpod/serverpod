@@ -36,7 +36,9 @@ void main() async {
   });
 
   test(
-    'Given an model with a list relation with nothing attached when fetching model including list relation then returned model has empty list as list relation.',
+    'Given an model with a list relation with nothing attached, '
+    'when fetching model including list relation, '
+    'then returned model has empty list as list relation.',
     () async {
       var stockholm = await City.db.insertRow(session, City(name: 'Stockholm'));
 
@@ -53,7 +55,9 @@ void main() async {
   );
 
   test(
-    'Given an model with a implicit list relation with data attached when fetching model including list relation then returned model has the attached data in the list relation.',
+    'Given an model with a implicit list relation with data attached, '
+    'when fetching model including list relation, '
+    'then returned model has the attached data in the list relation.',
     () async {
       var stockholm = await City.db.insertRow(session, City(name: 'Stockholm'));
       var gothenburg = await City.db.insertRow(
@@ -91,7 +95,9 @@ void main() async {
   );
 
   test(
-    'Given an model with a explicit list relation with data attached when fetching model including list relation then returned model has the attached data in the list relation.',
+    'Given an model with a explicit list relation with data attached, '
+    'when fetching model including list relation, '
+    'then returned model has the attached data in the list relation.',
     () async {
       var serverpod = await Organization.db.insertRow(
         session,
@@ -135,7 +141,9 @@ void main() async {
   );
 
   test(
-    'Given an model with a list relation with data attached when fetching filtered models including list relation then returned model has the attached data in the list relation.',
+    'Given an model with a list relation with data attached, '
+    'when fetching filtered models including list relation, '
+    'then returned model has the attached data in the list relation.',
     () async {
       var serverpod = await Organization.db.insertRow(
         session,
@@ -180,7 +188,9 @@ void main() async {
   );
 
   test(
-    'Given a list relation when querying for all models including the list relation then the list relation is populated in the returned models.',
+    'Given a list relation, '
+    'when querying for all models including the list relation, '
+    'then the list relation is populated in the returned models.',
     () async {
       var serverpod = await Organization.db.insertRow(
         session,
@@ -228,7 +238,9 @@ void main() async {
   );
 
   test(
-    'Given adjacent many relation in the top level when including both relations then the lists are populated in the returned value.',
+    'Given adjacent many relation in the top level, '
+    'when including both relations, '
+    'then the lists are populated in the returned value.',
     () async {
       var stockholm = await City.db.insertRow(session, City(name: 'Stockholm'));
       var gothenburg = await City.db.insertRow(
@@ -294,7 +306,9 @@ void main() async {
   );
 
   test(
-    'Given a deeply nested list relation when including the nested list then the list is included in the response.',
+    'Given a deeply nested list relation, '
+    'when including the nested list, '
+    'then the list is included in the response.',
     () async {
       var stockholm = await City.db.insertRow(session, City(name: 'Stockholm'));
       var gothenburg = await City.db.insertRow(
@@ -355,7 +369,9 @@ void main() async {
   );
 
   test(
-    'Given a list relation with a nested object relation when including the list and object then the deeply nested data is returned.',
+    'Given a list relation with a nested object relation, '
+    'when including the list and object, '
+    'then the deeply nested data is returned.',
     () async {
       var stockholm = await City.db.insertRow(session, City(name: 'Stockholm'));
 
@@ -403,7 +419,9 @@ void main() async {
   );
 
   test(
-    'Given a list relation with a nested object relation where the object relation is set to null in the database when including the list and object then the list is returned but the object is still null.',
+    'Given a list relation with a nested object relation where the object relation is set to null in the database, '
+    'when including the list and object, '
+    'then the list is returned but the object is still null.',
     () async {
       var stockholm = await City.db.insertRow(session, City(name: 'Stockholm'));
 
@@ -434,7 +452,9 @@ void main() async {
   );
 
   test(
-    'Given a list relation with a deeply nested list relation when including the list and nested list then the deeply nested data is returned.',
+    'Given a list relation with a deeply nested list relation, '
+    'when including the list and nested list, '
+    'then the deeply nested data is returned.',
     () async {
       var stockholm = await City.db.insertRow(session, City(name: 'Stockholm'));
 
@@ -514,7 +534,9 @@ void main() async {
   );
 
   test(
-    'Given a list relation when querying with a where clause in the included list then the result only includes the rows satisfying the where clause.',
+    'Given a list relation, '
+    'when querying with a where clause in the included list, '
+    'then the result only includes the rows satisfying the where clause.',
     () async {
       var stockholm = await City.db.insertRow(session, City(name: 'Stockholm'));
 
@@ -565,7 +587,9 @@ void main() async {
   );
 
   test(
-    'Given a list relation when querying with a orderBy clause in the included list then the result is ordered by the orderBy clause.',
+    'Given a list relation, '
+    'when querying with a orderBy clause in the included list, '
+    'then the result is ordered by the orderBy clause.',
     () async {
       var stockholm = await City.db.insertRow(session, City(name: 'Stockholm'));
 
@@ -607,7 +631,9 @@ void main() async {
   );
 
   test(
-    'Given a list relation when querying with a orderBy in descending order clause in the included list then the result is ordered by the orderBy clause.',
+    'Given a list relation, '
+    'when querying with a orderBy in descending order clause in the included list, '
+    'then the result is ordered by the orderBy clause.',
     () async {
       var stockholm = await City.db.insertRow(session, City(name: 'Stockholm'));
 
@@ -648,7 +674,9 @@ void main() async {
   );
 
   test(
-    'Given a list relation when querying with multiple orderBy clauses in the included list then the result is ordered by all the orderedBy clauses.',
+    'Given a list relation, '
+    'when querying with multiple orderBy clauses in the included list, '
+    'then the result is ordered by all the orderedBy clauses.',
     () async {
       var stockholm = await City.db.insertRow(session, City(name: 'Stockholm'));
 
@@ -692,7 +720,9 @@ void main() async {
   );
 
   test(
-    'Given a list relation with many rows in the database when including the list with a limit then no more rows are included than the limit provided.',
+    'Given a list relation with many rows in the database, '
+    'when including the list with a limit, '
+    'then no more rows are included than the limit provided.',
     () async {
       var stockholm = await City.db.insertRow(session, City(name: 'Stockholm'));
 
@@ -729,7 +759,9 @@ void main() async {
   );
 
   test(
-    'Given a list relation with many rows in the database when including the list with a limit and offset then no more rows are included than the limit provided.',
+    'Given a list relation with many rows in the database, '
+    'when including the list with a limit and offset, '
+    'then no more rows are included than the limit provided.',
     () async {
       var stockholm = await City.db.insertRow(session, City(name: 'Stockholm'));
 
@@ -772,7 +804,9 @@ void main() async {
   );
 
   test(
-    'Given a list relation with many rows in the database when including the list with a limit and offset in a find query then no more rows are included than the limit provided.',
+    'Given a list relation with many rows in the database, '
+    'when including the list with a limit and offset in a find query, '
+    'then no more rows are included than the limit provided.',
     () async {
       var stockholm = await City.db.insertRow(session, City(name: 'Stockholm'));
 
@@ -876,7 +910,9 @@ void main() async {
   );
 
   test(
-    'Given a list relation in a list relation when filtering the nested list on a count and limiting the result then only the selected rows are included and the size is the same as the limit.',
+    'Given a list relation in a list relation, '
+    'when filtering the nested list on a count and limiting the result, '
+    'then only the selected rows are included and the size is the same as the limit.',
     () async {
       var stockholm = await City.db.insertRow(session, City(name: 'Stockholm'));
 

@@ -2,9 +2,9 @@ import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given an enhanced enum with required properties', () {
+  group('Given an enhanced enum with required properties,', () {
     test(
-      'when accessing a required property then it returns the correct value',
+      'when accessing a required property, then it returns the correct value',
       () {
         expect(TestEnumEnhanced.one.shortName, '1');
         expect(TestEnumEnhanced.one.description, 'The first value');
@@ -12,7 +12,7 @@ void main() {
     );
 
     test(
-      'when calling toJson on byIndex enum then it returns the index',
+      'when calling toJson on byIndex enum, then it returns the index',
       () {
         expect(TestEnumEnhanced.one.toJson(), 0);
         expect(TestEnumEnhanced.two.toJson(), 1);
@@ -21,7 +21,7 @@ void main() {
     );
 
     test(
-      'when calling toJson on byName enum then it returns the name as string',
+      'when calling toJson on byName enum, then it returns the name as string',
       () {
         expect(TestEnumEnhancedByName.one.toJson(), 'one');
         expect(TestEnumEnhancedByName.two.toJson(), 'two');
@@ -30,7 +30,7 @@ void main() {
     );
 
     test(
-      'when serializing and deserializing then properties are preserved',
+      'when serializing and deserializing, then properties are preserved',
       () {
         final encoded = SerializationManager.encode(TestEnumEnhanced.one);
         final decoded = Protocol().decode<TestEnumEnhanced>(encoded);
@@ -40,16 +40,18 @@ void main() {
     );
   });
 
-  group('Given an enhanced enum with properties that have default values', () {
+  group('Given an enhanced enum with properties that have default values,', () {
     test(
-      'when accessing property with explicitly set value then that value is returned',
+      'when accessing property with explicitly set value, '
+      'then that value is returned',
       () {
         expect(TestEnumEnhanced.one.priority, 10);
       },
     );
 
     test(
-      'when accessing property with no set value then the default value is used',
+      'when accessing property with no set value, '
+      'then the default value is used',
       () {
         expect(TestEnumEnhanced.two.priority, 0);
         expect(TestEnumEnhanced.three.priority, 0);
@@ -57,7 +59,7 @@ void main() {
     );
 
     test(
-      'when serializing and deserializing then default values are preserved',
+      'when serializing and deserializing, then default values are preserved',
       () {
         final encoded = SerializationManager.encode(TestEnumEnhanced.two);
         final decoded = Protocol().decode<TestEnumEnhanced>(encoded);

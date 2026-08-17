@@ -73,7 +73,8 @@ void main() {
       });
 
       test(
-        'when starting password reset, then no verification code is sent because user does not exist in new system.',
+        'when starting password reset, '
+        'then no verification code is sent because user does not exist in new system.',
         () async {
           // The new system should not find the user since they're not migrated
           await endpoints.emailAccount.startPasswordReset(
@@ -87,7 +88,9 @@ void main() {
       );
 
       test(
-        'when migrating user and then starting password reset, then verification code is sent.',
+        'when migrating user and, '
+        'then starting password reset, '
+        'then verification code is sent.',
         () async {
           // First migrate the user
           await endpoints.emailAccountBackwardsCompatibilityTest.migrateUser(
@@ -251,7 +254,8 @@ void main() {
       );
 
       test(
-        'when completing password reset, then legacy password is cleared for security.',
+        'when completing password reset, '
+        'then legacy password is cleared for security.',
         () async {
           // Verify legacy password still exists before reset
           expect(
@@ -297,7 +301,8 @@ void main() {
       );
 
       test(
-        'when legacy password is cleared, then it remains cleared after subsequent login operations.',
+        'when legacy password is cleared, '
+        'then it remains cleared after subsequent login operations.',
         () async {
           // First, complete password reset to clear legacy password
           await endpoints.emailAccount.startPasswordReset(

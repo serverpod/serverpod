@@ -15,7 +15,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "defaultModel=now" field should be in UTC',
+      'when creating a record in the database, '
+      'then the "defaultModel=now" field should be in UTC',
       () async {
         var object = DateTimeDefaultModel();
         var databaseObject = await DateTimeDefaultModel.db.insertRow(
@@ -27,7 +28,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "defaultModel" field with UTC string should be in UTC',
+      'when creating a record in the database, '
+      'then the "defaultModel" field with UTC string should be in UTC',
       () async {
         var object = DateTimeDefaultModel();
         var databaseObject = await DateTimeDefaultModel.db.insertRow(
@@ -39,7 +41,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the nullable "defaultModel" field with UTC string should be in UTC',
+      'when creating a record in the database, '
+      'then the nullable "defaultModel" field with UTC string should be in UTC',
       () async {
         var object = DateTimeDefaultModel();
         var databaseObject = await DateTimeDefaultModel.db.insertRow(
@@ -51,7 +54,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "defaultModel=now" field value should match the current time',
+      'when creating a record in the database, '
+      'then the "defaultModel=now" field value should match the current time',
       () async {
         var object = DateTimeDefaultModel();
         var databaseObject = await DateTimeDefaultModel.db.insertRow(
@@ -69,7 +73,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "defaultModel" field value should match the default',
+      'when creating a record in the database, '
+      'then the "defaultModel" field value should match the default',
       () async {
         var object = DateTimeDefaultModel();
         var databaseObject = await DateTimeDefaultModel.db.insertRow(
@@ -84,7 +89,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the nullable "defaultModel" field value should match the default',
+      'when creating a record in the database, '
+      'then the nullable "defaultModel" field value should match the default',
       () async {
         var object = DateTimeDefaultModel();
         var databaseObject = await DateTimeDefaultModel.db.insertRow(
@@ -99,7 +105,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "dateTimeDefaultModelNow" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "dateTimeDefaultModelNow" field value should match the provided value',
       () async {
         var date = DateTime.parse('2024-05-05T22:00:00.000Z');
         var specificObject = DateTimeDefaultModel(
@@ -117,7 +124,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "dateTimeDefaultModelStr" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "dateTimeDefaultModelStr" field value should match the provided value',
       () async {
         var date = DateTime.parse('2024-05-05T22:00:00.000Z');
         var specificObject = DateTimeDefaultModel(
@@ -135,7 +143,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "dateTimeDefaultModelStrNull" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "dateTimeDefaultModelStrNull" field value should match the provided value',
       () async {
         var date = DateTime.parse('2024-05-05T22:00:00.000Z');
         var specificObject = DateTimeDefaultModel(

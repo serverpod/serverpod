@@ -128,8 +128,8 @@ void main() {
       ...standardNonBasicAuthKeys,
     ]) {
       test(
-        'Given an auth key in valid HTTP auth header format "${_stripControlCharacters(key)}" ($descr) '
-        'when checking its validity '
+        'Given an auth key in valid HTTP auth header format "${_stripControlCharacters(key)}" ($descr), '
+        'when checking its validity, '
         'then it should correctly be recognized as valid',
         () {
           expect(isValidAuthHeaderValue(key), isTrue);
@@ -142,8 +142,8 @@ void main() {
       ...arbitraryAuthKeys,
     ]) {
       test(
-        'Given an auth key in invalid HTTP auth header format "${_stripControlCharacters(key)}" ($descr) '
-        'when checking its validity '
+        'Given an auth key in invalid HTTP auth header format "${_stripControlCharacters(key)}" ($descr), '
+        'when checking its validity, '
         'then it should correctly recognize it as invalid',
         () {
           expect(isValidAuthHeaderValue(key), isFalse);
@@ -155,8 +155,8 @@ void main() {
   group('Basic auth header wrapping checking:', () {
     for (var (key, descr) in standardBasicAuthKeys) {
       test(
-        'Given an auth key in "Basic" HTTP auth header format "${_stripControlCharacters(key)}" ($descr) '
-        'when checking if it is wrapped '
+        'Given an auth key in "Basic" HTTP auth header format "${_stripControlCharacters(key)}" ($descr), '
+        'when checking if it is wrapped, '
         'then it should correctly recognize it as a wrapped auth key',
         () {
           expect(isWrappedBasicAuthHeaderValue(key), isTrue);
@@ -166,8 +166,8 @@ void main() {
 
     for (var (key, descr) in invalidBasicAuthKeys) {
       test(
-        'Given an auth key in "Basic" HTTP auth header with invalid format "${_stripControlCharacters(key)}" ($descr) '
-        'when checking if it is wrapped '
+        'Given an auth key in "Basic" HTTP auth header with invalid format "${_stripControlCharacters(key)}" ($descr), '
+        'when checking if it is wrapped, '
         'then it should reject it with the proper exception',
         () {
           expect(
@@ -185,8 +185,8 @@ void main() {
       ...arbitraryAuthKeys,
     ]) {
       test(
-        'Given an auth key not in "Basic" HTTP auth header format "${_stripControlCharacters(key)}" ($descr) '
-        'when checking if it is wrapped '
+        'Given an auth key not in "Basic" HTTP auth header format "${_stripControlCharacters(key)}" ($descr), '
+        'when checking if it is wrapped, '
         'then it should correctly recognize it as not wrapped',
         () {
           expect(isWrappedBasicAuthHeaderValue(key), isFalse);
@@ -198,8 +198,8 @@ void main() {
   group('Bearer auth header wrapping checking:', () {
     for (var (key, descr) in standardBearerAuthKeys) {
       test(
-        'Given an auth key in "Bearer" HTTP auth header format "${_stripControlCharacters(key)}" ($descr) '
-        'when checking if it is wrapped '
+        'Given an auth key in "Bearer" HTTP auth header format "${_stripControlCharacters(key)}" ($descr), '
+        'when checking if it is wrapped, '
         'then it should correctly recognize it as a wrapped bearer auth key',
         () {
           expect(isWrappedBearerAuthHeaderValue(key), isTrue);
@@ -209,8 +209,8 @@ void main() {
 
     for (var (key, descr) in invalidBearerAuthKeys) {
       test(
-        'Given an auth key in "Bearer" HTTP auth header with invalid format "${_stripControlCharacters(key)}" ($descr) '
-        'when checking if it is wrapped '
+        'Given an auth key in "Bearer" HTTP auth header with invalid format "${_stripControlCharacters(key)}" ($descr), '
+        'when checking if it is wrapped, '
         'then it should reject it with the proper exception',
         () {
           expect(
@@ -228,8 +228,8 @@ void main() {
       ...arbitraryAuthKeys,
     ]) {
       test(
-        'Given an auth key not in "Bearer" HTTP auth header format "${_stripControlCharacters(key)}" ($descr) '
-        'when checking if it is wrapped '
+        'Given an auth key not in "Bearer" HTTP auth header format "${_stripControlCharacters(key)}" ($descr), '
+        'when checking if it is wrapped, '
         'then it should correctly recognize it as not wrapped',
         () {
           expect(isWrappedBearerAuthHeaderValue(key), isFalse);
@@ -247,8 +247,7 @@ void main() {
       ...arbitraryAuthKeys,
     ]) {
       test(
-        'Given auth key "${_stripControlCharacters(key)}" ($descr) '
-        'when wrapping it as basic auth '
+        'Given auth key "${_stripControlCharacters(key)}" ($descr) when wrapping it as basic auth, '
         'then it should result in an HTTP "authorization" compliant value format',
         () {
           var wrapped = wrapAsBasicAuthHeaderValue(key);
@@ -256,21 +255,22 @@ void main() {
         },
       );
 
-      test('Given auth key "${_stripControlCharacters(key)}" ($descr) '
-          'when wrapping and unwrapping it as basic auth '
-          'then it should result in the same value', () {
-        var wrapped = wrapAsBasicAuthHeaderValue(key);
-        var unwrapped = unwrapAuthHeaderValue(wrapped);
-        expect(unwrapped, key);
-      });
+      test(
+        'Given auth key "${_stripControlCharacters(key)}" ($descr) when wrapping and unwrapping it as basic auth, '
+        'then it should result in the same value',
+        () {
+          var wrapped = wrapAsBasicAuthHeaderValue(key);
+          var unwrapped = unwrapAuthHeaderValue(wrapped);
+          expect(unwrapped, key);
+        },
+      );
     }
   });
 
   group('When using bearer token wrapping and unwrapping:', () {
     for (var (token, descr) in conventionalBearerTokens) {
       test(
-        'Given bearer token "${_stripControlCharacters(token)}" ($descr) '
-        'when wrapping it as bearer auth '
+        'Given bearer token "${_stripControlCharacters(token)}" ($descr) when wrapping it as bearer auth, '
         'then it should result in an HTTP "authorization" compliant value format',
         () {
           var wrapped = wrapAsBearerAuthHeaderValue(token);
@@ -278,18 +278,20 @@ void main() {
         },
       );
 
-      test('Given bearer token "${_stripControlCharacters(token)}" ($descr) '
-          'when wrapping and unwrapping it as bearer auth '
-          'then it should result in the same value', () {
-        var wrapped = wrapAsBearerAuthHeaderValue(token);
-        var unwrapped = unwrapAuthHeaderValue(wrapped);
-        expect(unwrapped, token);
-      });
+      test(
+        'Given bearer token "${_stripControlCharacters(token)}" ($descr) when wrapping and unwrapping it as bearer auth, '
+        'then it should result in the same value',
+        () {
+          var wrapped = wrapAsBearerAuthHeaderValue(token);
+          var unwrapped = unwrapAuthHeaderValue(wrapped);
+          expect(unwrapped, token);
+        },
+      );
     }
   });
 
-  test('Given a null auth value '
-      'when unwrapping it '
+  test('Given a null auth value, '
+      'when unwrapping it, '
       'then it should return null', () {
     expect(unwrapAuthHeaderValue(null), isNull);
   });

@@ -8,7 +8,7 @@ import '../test_utils/email_idp_test_fixture.dart';
 
 void main() {
   withServerpod(
-    'Given account request created',
+    'Given account request created,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -50,7 +50,7 @@ void main() {
         await fixture.tearDown(session);
       });
 
-      group('when finishRegistration is called with valid parameters', () {
+      group('when finishRegistration is called with valid parameters,', () {
         late Future<AuthSuccess> authSuccessFuture;
 
         setUp(() async {
@@ -100,7 +100,8 @@ void main() {
       });
 
       test(
-        'when finishRegistration is called with invalid registration token then it throws EmailAccountRequestException with reason "invalid"',
+        'when finishRegistration is called with invalid registration token, '
+        'then it throws EmailAccountRequestException with reason "invalid"',
         () async {
           final result = fixture.emailIdp.finishRegistration(
             session,
@@ -122,7 +123,8 @@ void main() {
       );
 
       test(
-        'when finishRegistration is called with invalid password then it throws EmailAccountRequestException with reason "policyViolation"',
+        'when finishRegistration is called with invalid password, '
+        'then it throws EmailAccountRequestException with reason "policyViolation"',
         () async {
           final result = fixture.emailIdp.finishRegistration(
             session,
@@ -146,7 +148,7 @@ void main() {
   );
 
   withServerpod(
-    'Given verified expired account request',
+    'Given verified expired account request,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -196,7 +198,8 @@ void main() {
       });
 
       test(
-        'when finishRegistration is called with valid parameters then it throws EmailAccountRequestException with reason "expired"',
+        'when finishRegistration is called with valid parameters, '
+        'then it throws EmailAccountRequestException with reason "expired"',
         () async {
           final result = fixture.emailIdp.finishRegistration(
             session,
@@ -218,7 +221,8 @@ void main() {
       );
 
       test(
-        'when finishRegistration is called with invalid verification code then it throws EmailAccountRequestException with reason "invalid"',
+        'when finishRegistration is called with invalid verification code, '
+        'then it throws EmailAccountRequestException with reason "invalid"',
         () async {
           final result = fixture.emailIdp.finishRegistration(
             session,
@@ -242,7 +246,7 @@ void main() {
   );
 
   withServerpod(
-    'Given no account request created',
+    'Given no account request created,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -258,7 +262,8 @@ void main() {
       });
 
       test(
-        'when finishRegistration is called then it throws EmailAccountRequestException with reason "invalid"',
+        'when finishRegistration is called, '
+        'then it throws EmailAccountRequestException with reason "invalid"',
         () async {
           final result = fixture.emailIdp.finishRegistration(
             session,

@@ -15,7 +15,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "uuidDefaultAndDefaultPersist" field value should match the defaultModel value',
+      'when creating a record in the database with an unsafe query, '
+      'then the "uuidDefaultAndDefaultPersist" field value should match the defaultModel value',
       () async {
         await session.db.unsafeQuery(
           'INSERT INTO "${UuidDefaultMix.t.tableName}" DEFAULT VALUES',
@@ -29,7 +30,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "uuidDefaultAndDefaultPersist" field value should match the defaultPersist value',
+      'when creating a record in the database with an unsafe query, '
+      'then the "uuidDefaultAndDefaultPersist" field value should match the defaultPersist value',
       () async {
         await session.db.unsafeQuery(
           'INSERT INTO "${UuidDefaultMix.t.tableName}" DEFAULT VALUES',
@@ -43,7 +45,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "uuidDefaultModelAndDefaultPersist" field value should match the defaultPersist value',
+      'when creating a record in the database with an unsafe query, '
+      'then the "uuidDefaultModelAndDefaultPersist" field value should match the defaultPersist value',
       () async {
         await session.db.unsafeQuery(
           'INSERT INTO "${UuidDefaultMix.t.tableName}" DEFAULT VALUES',
@@ -57,7 +60,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with specific values, then the "uuidDefaultAndDefaultModel" field value should match the provided value',
+      'when creating a record in the database with specific values, '
+      'then the "uuidDefaultAndDefaultModel" field value should match the provided value',
       () async {
         var uuid = UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000');
         var specificObject = UuidDefaultMix(
@@ -75,7 +79,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with specific values, then the "uuidDefaultAndDefaultPersist" field value should match the provided value',
+      'when creating a record in the database with specific values, '
+      'then the "uuidDefaultAndDefaultPersist" field value should match the provided value',
       () async {
         var uuid = UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000');
         var specificObject = UuidDefaultMix(
@@ -93,7 +98,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with specific values, then the "uuidDefaultModelAndDefaultPersist" field value should match the provided value',
+      'when creating a record in the database with specific values, '
+      'then the "uuidDefaultModelAndDefaultPersist" field value should match the provided value',
       () async {
         var uuid = UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000');
         var specificObject = UuidDefaultMix(

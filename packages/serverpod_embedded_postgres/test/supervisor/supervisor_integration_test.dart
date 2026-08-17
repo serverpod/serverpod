@@ -58,11 +58,11 @@ void main() {
       : 'Unix domain sockets not available on this Dart/platform';
 
   group(
-    'Given an initialized cluster and the real Zonky binaries',
+    'Given an initialized cluster and the real Zonky binaries,',
     skip: udsSkip,
     () {
       test(
-        'when Supervisor.start runs with UnixTransport '
+        'when Supervisor.start runs with UnixTransport, '
         'then the postmaster becomes ready, accepts a SELECT 1, and stops cleanly on stop().',
         () async {
           var sup = await Supervisor.start(
@@ -108,7 +108,7 @@ void main() {
       );
 
       test(
-        'when verifyIdentity is called on the captured identity of a supervisor that has been cleanly stopped '
+        'when verifyIdentity is called on the captured identity of a supervisor that has been cleanly stopped, '
         'then notRunning is returned (or foreign, if the kernel recycled the pid).',
         () async {
           var sup = await Supervisor.start(
@@ -148,7 +148,7 @@ void main() {
       );
 
       test(
-        'when Supervisor.start is given a 100ms timeout against a non-running postmaster '
+        'when Supervisor.start is given a 100ms timeout against a non-running postmaster, '
         'then StartupTimeoutException is thrown with logTail attached.',
         () async {
           // Use an installDir that won't actually start fast - we just

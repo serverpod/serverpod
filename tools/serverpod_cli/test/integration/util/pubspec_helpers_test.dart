@@ -33,7 +33,7 @@ void main() {
   });
 
   group('shouldBeIgnored', () {
-    test('should return true when path is within an ignorePath', () {
+    test('should return true, when path is within an ignorePath', () {
       var ignorePaths = [p.join('path', 'subdirectory')];
       var path = p.join('ignore', 'path', 'subdirectory', 'file.txt');
 
@@ -43,7 +43,7 @@ void main() {
     });
 
     test(
-      'should return true when folder is within an ignorePath but not root',
+      'should return true, when folder is within an ignorePath but not root',
       () {
         var ignorePaths = ['path'];
         var path = p.join('ignore', 'path', 'subdirectory', 'file.txt');
@@ -54,7 +54,7 @@ void main() {
       },
     );
 
-    test('should return false when path is not within any ignorePath', () {
+    test('should return false, when path is not within any ignorePath', () {
       var ignorePaths = [p.join('ignore', 'path')];
       var path = p.join('another', 'path', 'subdirectory', 'file.txt');
 
@@ -63,7 +63,7 @@ void main() {
       expect(result, isFalse);
     });
 
-    test('should return false when ignorePaths is empty', () {
+    test('should return false, when ignorePaths is empty', () {
       List<String> ignorePaths = [];
       var path = p.join('any', 'path', 'subdirectory', 'file.txt');
 
@@ -73,7 +73,7 @@ void main() {
     });
 
     test(
-      'should return false when ignorePaths is part of folder name in path',
+      'should return false, when ignorePaths is part of folder name in path',
       () {
         List<String> ignorePaths = ['part'];
         var path = p.join('any', 'path', 'part_of', 'subdirectory', 'file.txt');
@@ -86,14 +86,14 @@ void main() {
   });
 
   group('parsePubspec', () {
-    test('success when parsing valid pubspec file', () {
+    test('success, when parsing valid pubspec file', () {
       var file = File(
         p.join(testAssetsPath.path, 'pubspec_parse', 'pubspec.yaml'),
       );
       expect(() => parsePubspec(file), returnsNormally);
     });
 
-    test('throw exception when parsing invalid pubspec file', () {
+    test('throw exception, when parsing invalid pubspec file', () {
       var file = File(
         p.join(testAssetsPath.path, 'pubspec_parse', 'pubspec_invalid.yaml'),
       );
@@ -101,10 +101,10 @@ void main() {
     });
   });
 
-  group('addDependencyToPubspec', () {
-    group('Given a pubspec file with dependencies', () {
+  group('addDependencyToPubspec,', () {
+    group('Given a pubspec file with dependencies,', () {
       test(
-        'when adding a new dependency with version constraint '
+        'when adding a new dependency with version constraint, '
         'then it is added to the dependencies section',
         () {
           const pubspecContents = '''
@@ -138,7 +138,7 @@ dependencies:
       );
 
       test(
-        'when adding a new dependency with path '
+        'when adding a new dependency with path, '
         'then it is added to the dependencies section',
         () {
           const pubspecContents = '''
@@ -171,7 +171,7 @@ dependencies:
       );
 
       test(
-        'when modifying an existing dependency from version constraint to path '
+        'when modifying an existing dependency from version constraint to path, '
         'then it is updated',
         () {
           const pubspecContents = '''
@@ -203,7 +203,7 @@ dependencies:
       );
 
       test(
-        'when modifying an existing dependency with an updated version constraint '
+        'when modifying an existing dependency with an updated version constraint, '
         'then it is updated',
         () {
           const pubspecContents = '''
@@ -236,7 +236,7 @@ dependencies:
       );
 
       test(
-        'when modifying an existing dependency from path to version constraint '
+        'when modifying an existing dependency from path to version constraint, '
         'then it is updated',
         () {
           const pubspecContents = '''
@@ -270,7 +270,7 @@ dependencies:
       );
 
       test(
-        'when modifying an existing dependency with an updated path'
+        'when modifying an existing dependency with an updated path, '
         'then it is updated',
         () {
           const pubspecContents = '''
@@ -304,8 +304,8 @@ dependencies:
     });
 
     test(
-      'Given a pubspec file with no dependencies '
-      'when adding a dependency with version constraint '
+      'Given a pubspec file with no dependencies, '
+      'when adding a dependency with version constraint, '
       'then it is added to the dependencies section',
       () {
         const pubspecContents = '''
@@ -337,9 +337,9 @@ version: 1.0.0
       },
     );
 
-    group('Given a pubspec file with dependencies overrides', () {
+    group('Given a pubspec file with dependencies overrides,', () {
       test(
-        'when adding a dependency override for an existing package '
+        'when adding a dependency override for an existing package, '
         'then it is added to the dependencies section',
         () {
           const pubspecContents = '''
@@ -377,7 +377,8 @@ dependency_overrides:
       );
 
       test(
-        'when adding a new dependency override, then it is added to the dependencies section',
+        'when adding a new dependency override, '
+        'then it is added to the dependencies section',
         () {
           const pubspecContents = '''
 name: test
@@ -450,10 +451,10 @@ dependency_overrides:
       );
     });
 
-    group('Given a pubspec file with no dependencies overrides', () {
+    group('Given a pubspec file with no dependencies overrides,', () {
       test(
-        'Given a pubspec file with no dependencies overrides '
-        'when adding a dependency override '
+        'Given a pubspec file with no dependencies overrides, '
+        'when adding a dependency override, '
         'then it is added to the dependencies section',
         () {
           const pubspecContents = '''

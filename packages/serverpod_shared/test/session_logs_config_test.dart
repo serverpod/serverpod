@@ -14,7 +14,9 @@ void main() {
   };
 
   test(
-    'Given a Serverpod config with "development" run mode missing sessionLogs configuration and no database when loading from Map then sessionLogs defaults to console text logging enabled and persistent logging disabled',
+    'Given a Serverpod config with "development" run mode missing sessionLogs configuration and no database, '
+    'when loading from Map, '
+    'then sessionLogs defaults to console text logging enabled and persistent logging disabled',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -41,7 +43,9 @@ apiServer:
   );
 
   test(
-    'Given a Serverpod config with "production" run mode missing sessionLogs configuration and no database when loading from Map then sessionLogs defaults to console json logging enabled and persistent logging disabled',
+    'Given a Serverpod config with "production" run mode missing sessionLogs configuration and no database, '
+    'when loading from Map, '
+    'then sessionLogs defaults to console json logging enabled and persistent logging disabled',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -68,7 +72,9 @@ apiServer:
   );
 
   test(
-    'Given a Serverpod config with the sessionLogs configuration missing cleanup configuration when loading from Map then sessionLogs cleanup configuration defaults are used',
+    'Given a Serverpod config with the sessionLogs configuration missing cleanup configuration, '
+    'when loading from Map, '
+    'then sessionLogs cleanup configuration defaults are used',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -97,7 +103,9 @@ sessionLogs:
   );
 
   test(
-    'Given a Serverpod config with "development" run mode missing sessionLogs configuration and a database when loading from Map then sessionLogs defaults to persistent logging enabled and console text logging is enabled',
+    'Given a Serverpod config with "development" run mode missing sessionLogs configuration and a database, '
+    'when loading from Map, '
+    'then sessionLogs defaults to persistent logging enabled and console text logging is enabled',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -129,7 +137,9 @@ database:
   );
 
   test(
-    'Given a Serverpod config with "production" run mode missing sessionLogs configuration and a database when loading from Map then sessionLogs defaults to persistent logging enabled and json console logging disabled',
+    'Given a Serverpod config with "production" run mode missing sessionLogs configuration and a database, '
+    'when loading from Map, '
+    'then sessionLogs defaults to persistent logging enabled and json console logging disabled',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -161,7 +171,9 @@ database:
   );
 
   test(
-    'Given a Serverpod config with sessionLogs and no database when persistentEnabled is true then a StateError is thrown',
+    'Given a Serverpod config with sessionLogs and no database, '
+    'when persistentEnabled is true, '
+    'then a StateError is thrown',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -195,7 +207,9 @@ sessionLogs:
   );
 
   test(
-    'Given a Serverpod config with sessionLogs and no database when persistentEnabled is false then it remains false',
+    'Given a Serverpod config with sessionLogs and no database, '
+    'when persistentEnabled is false, '
+    'then it remains false',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -220,7 +234,9 @@ sessionLogs:
   );
 
   test(
-    'Given a Serverpod config with sessionLogs and database when persistentEnabled is true then persistentEnabled remains true',
+    'Given a Serverpod config with sessionLogs and database, '
+    'when persistentEnabled is true, '
+    'then persistentEnabled remains true',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -249,7 +265,9 @@ sessionLogs:
   );
 
   test(
-    'Given a Serverpod config with sessionLogs when consoleEnabled is true then consoleEnabled remains true',
+    'Given a Serverpod config with sessionLogs, '
+    'when consoleEnabled is true, '
+    'then consoleEnabled remains true',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -273,7 +291,9 @@ sessionLogs:
   );
 
   test(
-    'Given a Serverpod config with sessionLogs and database when persistentEnabled is false then persistentEnabled remains false',
+    'Given a Serverpod config with sessionLogs and database, '
+    'when persistentEnabled is false, '
+    'then persistentEnabled remains false',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -306,7 +326,9 @@ sessionLogs:
   );
 
   test(
-    'Given a Serverpod config with sessionLogs and database when environment variables override them then sessionLogs config reflects the environment overrides',
+    'Given a Serverpod config with sessionLogs and database, '
+    'when environment variables override them, '
+    'then sessionLogs config reflects the environment overrides',
     () {
       var config = ServerpodConfig.loadFromMap(
         developmentRunMode,
@@ -354,7 +376,9 @@ sessionLogs:
   );
 
   test(
-    'Given a Serverpod config with database and no sessionLogs when only SERVERPOD_SESSION_CONSOLE_LOG_ENABLED is set to true then persistent logging keeps default enabled and console logging is true',
+    'Given a Serverpod config with database and no sessionLogs, '
+    'when only SERVERPOD_SESSION_CONSOLE_LOG_ENABLED is set to true, '
+    'then persistent logging keeps default enabled and console logging is true',
     () {
       var config = ServerpodConfig.loadFromMap(
         developmentRunMode,
@@ -395,7 +419,9 @@ sessionLogs:
   );
 
   test(
-    'Given a Serverpod config with database and no sessionLogs when only SERVERPOD_SESSION_CONSOLE_LOG_ENABLED is set to false then persistent logging keeps default enabled and console logging is false',
+    'Given a Serverpod config with database and no sessionLogs, '
+    'when only SERVERPOD_SESSION_CONSOLE_LOG_ENABLED is set to false, '
+    'then persistent logging keeps default enabled and console logging is false',
     () {
       var config = ServerpodConfig.loadFromMap(
         developmentRunMode,
@@ -426,7 +452,9 @@ sessionLogs:
   );
 
   test(
-    'Given a Serverpod config with database and no sessionLogs when only SERVERPOD_SESSION_PERSISTENT_LOG_ENABLED is set then console logging keeps default',
+    'Given a Serverpod config with database and no sessionLogs, '
+    'when only SERVERPOD_SESSION_PERSISTENT_LOG_ENABLED is set, '
+    'then console logging keeps default',
     () {
       var config = ServerpodConfig.loadFromMap(
         developmentRunMode,
@@ -461,7 +489,9 @@ sessionLogs:
   );
 
   test(
-    'Given a Serverpod config with an invalid console log format when loading from Map then argument error is thrown',
+    'Given a Serverpod config with an invalid console log format, '
+    'when loading from Map, '
+    'then argument error is thrown',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -499,7 +529,9 @@ sessionLogs:
   );
 
   test(
-    'Given a Serverpod config with an invalid cleanup interval when loading from Map then argument error is thrown',
+    'Given a Serverpod config with an invalid cleanup interval, '
+    'when loading from Map, '
+    'then argument error is thrown',
     () {
       var serverpodConfig = '''
       apiServer:
@@ -532,7 +564,9 @@ sessionLogs:
   );
 
   test(
-    'Given a Serverpod config with an invalid retention period when loading from Map then argument error is thrown',
+    'Given a Serverpod config with an invalid retention period, '
+    'when loading from Map, '
+    'then argument error is thrown',
     () {
       var serverpodConfig = '''
       apiServer:
@@ -565,7 +599,9 @@ sessionLogs:
   );
 
   test(
-    'Given a Serverpod config with an invalid retention count when loading from Map then argument error is thrown',
+    'Given a Serverpod config with an invalid retention count, '
+    'when loading from Map, '
+    'then argument error is thrown',
     () {
       var serverpodConfig = '''
       apiServer:

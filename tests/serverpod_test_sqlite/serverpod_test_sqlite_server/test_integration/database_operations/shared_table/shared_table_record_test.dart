@@ -7,7 +7,7 @@ void main() {
   withServerpod(
     'Given an empty database,',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late var session = sessionBuilder.build();
 
       test(
         'when inserting a shared table record, '
@@ -73,7 +73,7 @@ void main() {
     sessionBuilder,
     endpoints,
   ) {
-    var session = sessionBuilder.build();
+    late var session = sessionBuilder.build();
     late SharedTableRecord inserted;
 
     setUp(() async {

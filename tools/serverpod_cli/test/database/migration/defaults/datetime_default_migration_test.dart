@@ -7,9 +7,10 @@ import '../../../test_util/builders/database/database_definition_builder.dart';
 import '../../../test_util/builders/database/table_definition_builder.dart';
 
 void main() {
-  group('Given a database table definition with a DateTime column', () {
+  group('Given a database table definition with a DateTime column,', () {
     test(
-      'when generating SQL with a specific timestamp default value, then the table should have the correct default value.',
+      'when generating SQL with a specific timestamp default value, '
+      'then the table should have the correct default value.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -38,7 +39,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with no columnDefault, then the table should not have a default value for the DateTime field.',
+      'when generating SQL with no columnDefault, '
+      'then the table should not have a default value for the DateTime field.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -70,7 +72,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with columnDefault set to "CURRENT_TIMESTAMP", then the table should have CURRENT_TIMESTAMP as the default value.',
+      'when generating SQL with columnDefault set to "CURRENT_TIMESTAMP", '
+      'then the table should have CURRENT_TIMESTAMP as the default value.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -99,7 +102,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with nullable DateTime field and columnDefault, then the table should be nullable with the correct default value.',
+      'when generating SQL with nullable DateTime field and columnDefault, '
+      'then the table should be nullable with the correct default value.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -129,7 +133,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with nullable DateTime field and no columnDefault, then the table should be nullable with no default value.',
+      'when generating SQL with nullable DateTime field and no columnDefault, '
+      'then the table should be nullable with no default value.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -162,9 +167,10 @@ void main() {
     );
   });
 
-  group('Given a SQLite database table definition with a DateTime column ', () {
+  group('Given a SQLite database table definition with a DateTime column,', () {
     test(
-      'when generating SQL with a specific timestamp default value, then the column uses INTEGER epoch milliseconds.',
+      'when generating SQL with a specific timestamp default value, '
+      'then the column uses INTEGER epoch milliseconds.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withDefaultModules()
@@ -196,7 +202,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with no columnDefault, then the DateTime column has no DEFAULT.',
+      'when generating SQL with no columnDefault, '
+      'then the DateTime column has no DEFAULT.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withDefaultModules()
@@ -223,7 +230,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with columnDefault set to "now", then the column uses unixepoch milliseconds.',
+      'when generating SQL with columnDefault set to "now", '
+      'then the column uses unixepoch milliseconds.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withDefaultModules()
@@ -255,7 +263,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with nullable DateTime field and columnDefault, then the column is nullable with epoch default.',
+      'when generating SQL with nullable DateTime field and columnDefault, '
+      'then the column is nullable with epoch default.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withDefaultModules()
@@ -288,7 +297,8 @@ void main() {
     );
 
     test(
-      'when generating SQL with nullable DateTime field and no columnDefault, then the column has no DEFAULT.',
+      'when generating SQL with nullable DateTime field and no columnDefault, '
+      'then the column has no DEFAULT.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withDefaultModules()

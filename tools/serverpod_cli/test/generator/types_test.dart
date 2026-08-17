@@ -11,7 +11,9 @@ void main() {
   );
 
   test(
-    'Given "RecordType", when creating "TypeDefinition", then the `className` is set to "Record"',
+    'Given "RecordType", '
+    'when creating "TypeDefinition", '
+    'then the `className` is set to "Record"',
     () {
       var typeDefinition = TypeDefinition.fromDartType(
         RecordType(
@@ -26,7 +28,9 @@ void main() {
   );
 
   test(
-    'Given "RecordType" with a positional field, when creating "TypeDefinition", then the positional field is stored in `generics` without a `recordFieldName`',
+    'Given "RecordType" with a positional field, '
+    'when creating "TypeDefinition", '
+    'then the positional field is stored in `generics` without a `recordFieldName`',
     () {
       var typeDefinition = TypeDefinition.fromDartType(
         RecordType(
@@ -47,7 +51,9 @@ void main() {
   );
 
   test(
-    'Given "RecordType" with a named field, when creating "TypeDefinition", then the positional field is stored in `generics` with its name as `recordFieldName`',
+    'Given "RecordType" with a named field, '
+    'when creating "TypeDefinition", '
+    'then the positional field is stored in `generics` with its name as `recordFieldName`',
     () {
       var typeDefinition = TypeDefinition.fromDartType(
         RecordType(
@@ -67,7 +73,9 @@ void main() {
     },
   );
   test(
-    'Given "RecordType" with a positional and a named field, when creating "TypeDefinition", then the fields are stored in `generics` without and with a `recordFieldName` respectively',
+    'Given "RecordType" with a positional and a named field, '
+    'when creating "TypeDefinition", '
+    'then the fields are stored in `generics` without and with a `recordFieldName` respectively',
     () {
       var typeDefinition = TypeDefinition.fromDartType(
         RecordType(
@@ -93,7 +101,9 @@ void main() {
   );
 
   test(
-    'Given "RecordType" with a positional and a named field containing further records, when creating "TypeDefinition", then the fields are stored in `generics` without and with a `recordFieldName` respectively and each nested field\'s `generics` contains the record information',
+    'Given "RecordType" with a positional and a named field containing further records, '
+    'when creating "TypeDefinition", '
+    'then the fields are stored in `generics` without and with a `recordFieldName` respectively and each nested field\'s `generics` contains the record information',
     () {
       var childRecordType = RecordType(
         nullabilitySuffix: NullabilitySuffix.none,
@@ -159,7 +169,9 @@ void main() {
   );
 
   test(
-    'Given a field type in parentheses, when it is parsed, then it is used as `className` verbatim',
+    'Given a field type in parentheses, '
+    'when it is parsed, '
+    'then it is used as `className` verbatim',
     () {
       var type = parseType('(int)', extraClasses: []);
 
@@ -170,7 +182,9 @@ void main() {
   );
 
   test(
-    'Given a record-ish looking input of `(,)`, when it is parsed, then it is used as `className` verbatim',
+    'Given a record-ish looking input of `(,)`, '
+    'when it is parsed, '
+    'then it is used as `className` verbatim',
     () {
       var type = parseType('(,)', extraClasses: []);
 
@@ -181,7 +195,9 @@ void main() {
   );
 
   test(
-    'Given a record-ish looking input of `()`, when it is parsed, then it is used as `className` verbatim',
+    'Given a record-ish looking input of `()`, '
+    'when it is parsed, '
+    'then it is used as `className` verbatim',
     () {
       var type = parseType('()', extraClasses: []);
 
@@ -192,7 +208,9 @@ void main() {
   );
 
   test(
-    'Given a field type of a record holding a single positional field, when it is parsed, then the correct type definition is returned.',
+    'Given a field type of a record holding a single positional field, '
+    'when it is parsed, '
+    'then the correct type definition is returned.',
     () {
       var type = parseType('(int,)', extraClasses: []);
 
@@ -208,7 +226,9 @@ void main() {
   );
 
   test(
-    'Given a field type of an optional record holding a single positional field, when it is parsed, then the correct type definition is returned.',
+    'Given a field type of an optional record holding a single positional field, '
+    'when it is parsed, '
+    'then the correct type definition is returned.',
     () {
       var type = parseType('(int,)?', extraClasses: []);
 
@@ -224,7 +244,9 @@ void main() {
   );
 
   test(
-    'Given a field type of a record holding a single nullable positional field, when it is parsed, then the correct type definition is returned.',
+    'Given a field type of a record holding a single nullable positional field, '
+    'when it is parsed, '
+    'then the correct type definition is returned.',
     () {
       var type = parseType('(int?,)', extraClasses: []);
 
@@ -240,7 +262,9 @@ void main() {
   );
 
   test(
-    'Given a field type of a record holding a single named field, when it is parsed, then the correct type definition is returned.',
+    'Given a field type of a record holding a single named field, '
+    'when it is parsed, '
+    'then the correct type definition is returned.',
     () {
       var type = parseType('({String foo})', extraClasses: []);
 
@@ -256,7 +280,9 @@ void main() {
   );
 
   test(
-    'Given a field type of a record holding a named nullable field, when it is parsed, then the correct type definition is returned.',
+    'Given a field type of a record holding a named nullable field, '
+    'when it is parsed, '
+    'then the correct type definition is returned.',
     () {
       var type = parseType('({String? foo,})', extraClasses: []);
 
@@ -272,7 +298,9 @@ void main() {
   );
 
   test(
-    'Given a field type of a record holding a named nullable field with extra whitespace in the definition, when it is parsed, then the correct type definition is returned.',
+    'Given a field type of a record holding a named nullable field with extra whitespace in the definition, '
+    'when it is parsed, '
+    'then the correct type definition is returned.',
     () {
       var type = parseType('({List< String >? namedList,})', extraClasses: []);
 
@@ -299,7 +327,9 @@ void main() {
   );
 
   test(
-    'Given a field type of a record holding a nested record as a positional field in the definition, when it is parsed, then the correct type definition is returned.',
+    'Given a field type of a record holding a nested record as a positional field in the definition, '
+    'when it is parsed, '
+    'then the correct type definition is returned.',
     () {
       var type = parseType('((String, int),)?', extraClasses: []);
 
@@ -331,7 +361,9 @@ void main() {
   );
 
   test(
-    'Given a field type of a record holding a positional field with a "hint name" in the definition, when it is parsed, then the correct type definition is returned.',
+    'Given a field type of a record holding a positional field with a "hint name" in the definition, '
+    'when it is parsed, '
+    'then the correct type definition is returned.',
     () {
       var type = parseType('(String namedPositional,)', extraClasses: []);
 
@@ -347,7 +379,9 @@ void main() {
   );
 
   test(
-    'Given a field type of a record holding a positional field with generic parameters and a "hint name" in the definition, when it is parsed, then the correct type definition is returned.',
+    'Given a field type of a record holding a positional field with generic parameters and a "hint name" in the definition, '
+    'when it is parsed, '
+    'then the correct type definition is returned.',
     () {
       var type = parseType(
         '(Map<String, int> positionalMap,)',
@@ -382,7 +416,9 @@ void main() {
   );
 
   test(
-    'Given a field type of a record holding a positional field with generic parameters and a "hint name" and extra whitespace in the definition, when it is parsed, then the correct type definition is returned.',
+    'Given a field type of a record holding a positional field with generic parameters and a "hint name" and extra whitespace in the definition, '
+    'when it is parsed, '
+    'then the correct type definition is returned.',
     () {
       var type = parseType(
         '( List < Set < String > > listOfString,)',
@@ -420,7 +456,9 @@ void main() {
     },
   );
   test(
-    'Given a field type of a record holding a nullable positional field with generic parameters, a "hint name", and extra whitespace in the definition in the definition, when it is parsed, then the correct type definition is returned.',
+    'Given a field type of a record holding a nullable positional field with generic parameters, a "hint name", and extra whitespace in the definition in the definition, '
+    'when it is parsed, '
+    'then the correct type definition is returned.',
     () {
       // Technically even `String ?foo` would be valid Dart, though it's currently not supported in the "split parser"
       var type = parseType(
@@ -454,7 +492,9 @@ void main() {
   );
 
   test(
-    'Given a field type of a record holding a positional field with generic parameters on the type definition, when it is parsed, then the correct type definition is returned.',
+    'Given a field type of a record holding a positional field with generic parameters on the type definition, '
+    'when it is parsed, '
+    'then the correct type definition is returned.',
     () {
       var type = parseType('(Map<String, bool?>,)', extraClasses: []);
 
@@ -484,7 +524,9 @@ void main() {
   );
 
   test(
-    'Given a field type of a record holding positional and named fields with nested record types on the type definition, when it is parsed, then the correct type definition is returned.',
+    'Given a field type of a record holding positional and named fields with nested record types on the type definition, '
+    'when it is parsed, '
+    'then the correct type definition is returned.',
     () {
       var type = parseType(
         '((int, String?) nestedPositionalRecord, {(bool, Duration?) namedNestedRecord})?',
@@ -535,7 +577,9 @@ void main() {
   );
 
   test(
-    'Given a field type of a record holding positional and named field with nested generics in record types on the type definition, when it is parsed, then the correct type definition is returned.',
+    'Given a field type of a record holding positional and named field with nested generics in record types on the type definition, '
+    'when it is parsed, '
+    'then the correct type definition is returned.',
     () {
       var type = parseType(
         '((List<(SimpleData,)>,) nestedRecordWithList, {(SimpleData, Map<String, SimpleData>) namedNestedRecord})?',
@@ -630,7 +674,9 @@ void main() {
   );
 
   test(
-    'Given a field type of a vector when it is parsed then the correct type definition is returned.',
+    'Given a field type of a vector, '
+    'when it is parsed, '
+    'then the correct type definition is returned.',
     () {
       var type = parseType('Vector(512)?', extraClasses: []);
       expect(type.className, 'Vector');
@@ -640,7 +686,9 @@ void main() {
   );
 
   test(
-    'Given a field type of a half vector when it is parsed then the correct type definition is returned.',
+    'Given a field type of a half vector, '
+    'when it is parsed, '
+    'then the correct type definition is returned.',
     () {
       var type = parseType('HalfVector(256)', extraClasses: []);
       expect(type.className, 'HalfVector');
@@ -650,7 +698,9 @@ void main() {
   );
 
   test(
-    'Given a field type of a sparse vector when it is parsed then the correct type definition is returned.',
+    'Given a field type of a sparse vector, '
+    'when it is parsed, '
+    'then the correct type definition is returned.',
     () {
       var type = parseType('SparseVector(1024)?', extraClasses: []);
       expect(type.className, 'SparseVector');
@@ -660,7 +710,9 @@ void main() {
   );
 
   test(
-    'Given a field type of a bit vector when it is parsed then the correct type definition is returned.',
+    'Given a field type of a bit vector, '
+    'when it is parsed, '
+    'then the correct type definition is returned.',
     () {
       var type = parseType('Bit(64)', extraClasses: []);
       expect(type.className, 'Bit');

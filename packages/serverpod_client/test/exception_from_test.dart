@@ -37,8 +37,8 @@ class TestException extends SerializableException {
 }
 
 void main() {
-  group('Given a serializable exception when parsing the exception', () {
-    var exception = getExceptionFrom(
+  group('Given a serializable exception, when parsing the exception,', () {
+    late var exception = getExceptionFrom(
       data:
           '{"className": "TestException", "data": {"message": "A custom exception"}}',
       serializationManager: TestSerializationImpl(),
@@ -55,9 +55,10 @@ void main() {
   });
 
   group(
-    'Given malformed data with an unknown status code when parsing the exception',
+    'Given malformed data with an unknown status code, '
+    'when parsing the exception,',
     () {
-      var exception = getExceptionFrom(
+      late var exception = getExceptionFrom(
         data: 'malformed data',
         serializationManager: TestSerialization(),
         statusCode: 499,
@@ -78,9 +79,10 @@ void main() {
   );
 
   group(
-    'Given malformed data with a bad request status code when parsing the exception',
+    'Given malformed data with a bad request status code, '
+    'when parsing the exception,',
     () {
-      var exception = getExceptionFrom(
+      late var exception = getExceptionFrom(
         data: 'malformed data',
         serializationManager: TestSerialization(),
         statusCode: 400,
@@ -100,9 +102,10 @@ void main() {
   );
 
   group(
-    'Given empty data with a bad request status code when parsing the exception',
+    'Given empty data with a bad request status code, '
+    'when parsing the exception,',
     () {
-      var exception = getExceptionFrom(
+      late var exception = getExceptionFrom(
         data: '',
         serializationManager: TestSerialization(),
         statusCode: 400,
@@ -119,9 +122,10 @@ void main() {
   );
 
   group(
-    'Given empty data with a unauthorized status code when parsing the exception',
+    'Given empty data with a unauthorized status code, '
+    'when parsing the exception,',
     () {
-      var exception = getExceptionFrom(
+      late var exception = getExceptionFrom(
         data: '',
         serializationManager: TestSerialization(),
         statusCode: 401,
@@ -138,9 +142,10 @@ void main() {
   );
 
   group(
-    'Given empty data with a forbidden status code when parsing the exception',
+    'Given empty data with a forbidden status code, '
+    'when parsing the exception,',
     () {
-      var exception = getExceptionFrom(
+      late var exception = getExceptionFrom(
         data: '',
         serializationManager: TestSerialization(),
         statusCode: 403,
@@ -157,9 +162,10 @@ void main() {
   );
 
   group(
-    'Given empty data with a not found status code when parsing the exception',
+    'Given empty data with a not found status code, '
+    'when parsing the exception,',
     () {
-      var exception = getExceptionFrom(
+      late var exception = getExceptionFrom(
         data: '',
         serializationManager: TestSerialization(),
         statusCode: 404,
@@ -176,9 +182,10 @@ void main() {
   );
 
   group(
-    'Given empty data with a internal server error status code when parsing the exception',
+    'Given empty data with a internal server error status code, '
+    'when parsing the exception,',
     () {
-      var exception = getExceptionFrom(
+      late var exception = getExceptionFrom(
         data: '',
         serializationManager: TestSerialization(),
         statusCode: 500,

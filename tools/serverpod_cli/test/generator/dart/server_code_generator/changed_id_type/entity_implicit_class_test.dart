@@ -17,9 +17,9 @@ void main() {
   var expectedFilePath = path.join('lib', 'src', 'generated', 'example.dart');
 
   group(
-    'Given a table class with id type "int" with a field that should persist but is scoped too none',
+    'Given a table class with id type "int" with a field that should persist but is scoped too none,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName('Example')
             .withFileName('example')
@@ -46,7 +46,7 @@ void main() {
         content: codeMap[expectedFilePath]!,
       ).unit;
 
-      var implicitClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      late var implicitClass = CompilationUnitHelpers.tryFindClassDeclaration(
         compilationUnit,
         name: 'ExampleImplicit',
       );
@@ -77,9 +77,9 @@ void main() {
   );
 
   group(
-    'Given a table class with id type "UUIDv4" with a field that should persist but is scoped too none',
+    'Given a table class with id type "UUIDv4" with a field that should persist but is scoped too none,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName('Example')
             .withFileName('example')
@@ -106,7 +106,7 @@ void main() {
         content: codeMap[expectedFilePath]!,
       ).unit;
 
-      var implicitClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      late var implicitClass = CompilationUnitHelpers.tryFindClassDeclaration(
         compilationUnit,
         name: 'ExampleImplicit',
       );

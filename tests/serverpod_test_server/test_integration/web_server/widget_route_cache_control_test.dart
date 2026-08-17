@@ -42,7 +42,7 @@ class RedirectTestRoute extends WidgetRoute {
 }
 
 void main() {
-  group('Given a web server with widget routes', () {
+  group('Given a web server with widget routes,', () {
     late Serverpod serverpod;
 
     setUp(() async {
@@ -61,7 +61,7 @@ void main() {
     });
 
     test(
-      'when requesting an HTML widget route '
+      'when requesting an HTML widget route, '
       'then the cache-control header is set to no-cache and private',
       () async {
         var response = await http.get(
@@ -73,7 +73,7 @@ void main() {
     );
 
     test(
-      'when requesting a JSON widget route '
+      'when requesting a JSON widget route, '
       'then the cache-control header is set to no-cache and private',
       () async {
         var response = await http.get(
@@ -84,7 +84,7 @@ void main() {
       },
     );
 
-    test('when requesting a JSON widget route '
+    test('when requesting a JSON widget route, '
         'then the content-type is application/json', () async {
       var response = await http.get(
         Uri.parse('${serverpod.webUrl}json-route'),
@@ -94,7 +94,7 @@ void main() {
     });
 
     test(
-      'when requesting an HTML widget route '
+      'when requesting an HTML widget route, '
       'then the content-type is text/html even with cache headers set',
       () async {
         var response = await http.get(
@@ -106,7 +106,7 @@ void main() {
       },
     );
 
-    test('when requesting a JSON widget route '
+    test('when requesting a JSON widget route, '
         'then both content-type and cache headers are set correctly', () async {
       var response = await http.get(
         Uri.parse('${serverpod.webUrl}json-route'),
@@ -117,7 +117,7 @@ void main() {
     });
 
     test(
-      'when requesting a redirect widget route '
+      'when requesting a redirect widget route, '
       'then the redirect response does not have cache-control headers',
       () async {
         // Create client that doesn't follow redirects
@@ -138,7 +138,7 @@ void main() {
       },
     );
 
-    test('when requesting a redirect widget route '
+    test('when requesting a redirect widget route, '
         'then the location header is set correctly', () async {
       var client = http.Client();
       var request = http.Request(

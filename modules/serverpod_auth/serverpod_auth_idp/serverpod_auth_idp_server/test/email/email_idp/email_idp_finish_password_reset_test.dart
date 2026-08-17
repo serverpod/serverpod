@@ -9,7 +9,7 @@ import '../test_utils/email_idp_test_fixture.dart';
 
 void main() {
   withServerpod(
-    'Given password reset request created',
+    'Given password reset request created,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -66,7 +66,8 @@ void main() {
       });
 
       test(
-        'when finishPasswordReset is called with valid password reset token and password then it succeeds and returns auth user id',
+        'when finishPasswordReset is called with valid password reset token and password, '
+        'then it succeeds and returns auth user id',
         () async {
           final result = fixture.emailIdp.finishPasswordReset(
             session,
@@ -79,7 +80,8 @@ void main() {
       );
 
       test(
-        'when finishPasswordReset is called with invalid password reset token then it throws EmailAccountPasswordResetException with reason "invalid"',
+        'when finishPasswordReset is called with invalid password reset token, '
+        'then it throws EmailAccountPasswordResetException with reason "invalid"',
         () async {
           final result = fixture.emailIdp.finishPasswordReset(
             session,
@@ -101,7 +103,8 @@ void main() {
       );
 
       test(
-        'when finishPasswordReset is called with password that violates policy then it throws EmailAccountPasswordResetException with reason "policyViolation"',
+        'when finishPasswordReset is called with password that violates policy, '
+        'then it throws EmailAccountPasswordResetException with reason "policyViolation"',
         () async {
           final result = fixture.emailIdp.finishPasswordReset(
             session,
@@ -125,7 +128,7 @@ void main() {
   );
 
   withServerpod(
-    'Given expired password reset request',
+    'Given expired password reset request,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -187,7 +190,8 @@ void main() {
       });
 
       test(
-        'when finishPasswordReset is called with valid parameters then it throws EmailAccountPasswordResetException with reason "expired"',
+        'when finishPasswordReset is called with valid parameters, '
+        'then it throws EmailAccountPasswordResetException with reason "expired"',
         () async {
           final result = fixture.emailIdp.finishPasswordReset(
             session,
@@ -209,7 +213,8 @@ void main() {
       );
 
       test(
-        'when finishPasswordReset is called with invalid password reset token then it throws EmailAccountPasswordResetException with reason "expired"',
+        'when finishPasswordReset is called with invalid password reset token, '
+        'then it throws EmailAccountPasswordResetException with reason "expired"',
         () async {
           final result = fixture.emailIdp.finishPasswordReset(
             session,
@@ -233,7 +238,7 @@ void main() {
   );
 
   withServerpod(
-    'Given no password reset request created',
+    'Given no password reset request created,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -249,7 +254,8 @@ void main() {
       });
 
       test(
-        'when finishPasswordReset is called with invalid password reset token then it throws EmailAccountPasswordResetException with reason "invalid"',
+        'when finishPasswordReset is called with invalid password reset token, '
+        'then it throws EmailAccountPasswordResetException with reason "invalid"',
         () async {
           final result = fixture.emailIdp.finishPasswordReset(
             session,
@@ -273,7 +279,7 @@ void main() {
   );
 
   withServerpod(
-    'Given password reset request exists for blocked auth user',
+    'Given password reset request exists for blocked auth user,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -328,7 +334,7 @@ void main() {
         await fixture.tearDown(session);
       });
 
-      test('when finishPasswordReset is called then completes', () async {
+      test('when finishPasswordReset is called, then completes', () async {
         final result = fixture.emailIdp.finishPasswordReset(
           session,
           finishPasswordResetToken: finishPasswordResetToken,
@@ -341,7 +347,7 @@ void main() {
   );
 
   withServerpod(
-    'Given user with multiple sessions and password reset request',
+    'Given user with multiple sessions and password reset request,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -399,7 +405,8 @@ void main() {
       });
 
       test(
-        'when finishPasswordReset is called with valid parameters then it destroys all existing sessions',
+        'when finishPasswordReset is called with valid parameters, '
+        'then it destroys all existing sessions',
         () async {
           // Complete password reset
           await fixture.emailIdp.finishPasswordReset(
@@ -421,7 +428,7 @@ void main() {
   );
 
   withServerpod(
-    'Given completed password reset request',
+    'Given completed password reset request,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -473,7 +480,8 @@ void main() {
       });
 
       test(
-        'when finishPasswordReset is called then it throws EmailAccountPasswordResetException with reason "invalid"',
+        'when finishPasswordReset is called, '
+        'then it throws EmailAccountPasswordResetException with reason "invalid"',
         () async {
           final result = fixture.emailIdp.finishPasswordReset(
             session,

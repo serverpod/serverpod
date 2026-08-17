@@ -8,7 +8,7 @@ void main() async {
   late Serverpod server;
   late Session session;
 
-  group('Database logger -', () {
+  group('Database logger -,', () {
     setUp(() async {
       server = IntegrationTestServer.create();
       await server.startWithDatabase();
@@ -23,7 +23,9 @@ void main() async {
     });
 
     test(
-      'Given an internal session with logging enabled when calling log then a log is written.',
+      'Given an internal session with logging enabled, '
+      'when calling log, '
+      'then a log is written.',
       () async {
         var settings = RuntimeSettingsBuilder().build();
         await server.updateRuntimeSettings(settings);
@@ -43,7 +45,9 @@ void main() async {
     );
 
     test(
-      'Given an internal session with logging disabled but the log settings on the highest level when calling log then no log is written.',
+      'Given an internal session with logging disabled but the log settings on the highest level, '
+      'when calling log, '
+      'then no log is written.',
       () async {
         var settings = RuntimeSettingsBuilder().build();
         await server.updateRuntimeSettings(settings);

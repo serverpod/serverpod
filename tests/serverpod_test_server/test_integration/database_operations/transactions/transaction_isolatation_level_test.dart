@@ -8,10 +8,10 @@ import '../../test_tools/serverpod_test_tools.dart';
 
 void main() async {
   withServerpod(
-    'Given read committed transaction isolation level and single row in database',
+    'Given read committed transaction isolation level and single row in database,',
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, _) {
-      var session = sessionBuilder.build();
+      late var session = sessionBuilder.build();
 
       tearDown(() async {
         await SimpleData.db.deleteWhere(
@@ -21,9 +21,9 @@ void main() async {
       });
 
       group(
-        'Given read committed transaction isolation level and single row in database',
+        'Given read committed transaction isolation level and single row in database,',
         () {
-          var settings = TransactionSettings(
+          late var settings = TransactionSettings(
             isolationLevel: IsolationLevel.readCommitted,
           );
 
@@ -35,7 +35,7 @@ void main() async {
             );
           });
 
-          test('when row is modified after first statement in transaction '
+          test('when row is modified after first statement in transaction, '
               'then transaction observes the updated value.', () async {
             var c1 = Completer();
             var c2 = Completer();
@@ -75,10 +75,10 @@ void main() async {
   );
 
   withServerpod(
-    'Given repeatable read transaction isolation level',
+    'Given repeatable read transaction isolation level,',
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, _) {
-      var session = sessionBuilder.build();
+      late var session = sessionBuilder.build();
 
       tearDown(() async {
         await SimpleData.db.deleteWhere(
@@ -87,11 +87,11 @@ void main() async {
         );
       });
 
-      var settings = TransactionSettings(
+      late var settings = TransactionSettings(
         isolationLevel: IsolationLevel.repeatableRead,
       );
 
-      test('when row is modified after first statement in transaction '
+      test('when row is modified after first statement in transaction, '
           'then transaction does NOT observe the updated value.', () async {
         var testData = await SimpleData.db.insertRow(
           session,
@@ -131,7 +131,7 @@ void main() async {
         expect(result?.num, 1);
       });
 
-      test('when read row is concurrently modified by other transaction '
+      test('when read row is concurrently modified by other transaction, '
           'then modifications are preserved', () async {
         var testData1 = await SimpleData.db.insertRow(
           session,
@@ -200,10 +200,10 @@ void main() async {
   );
 
   withServerpod(
-    'Given serializable transaction isolation level',
+    'Given serializable transaction isolation level,',
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, _) {
-      var session = sessionBuilder.build();
+      late var session = sessionBuilder.build();
 
       tearDown(() async {
         await SimpleData.db.deleteWhere(
@@ -212,11 +212,11 @@ void main() async {
         );
       });
 
-      var settings = TransactionSettings(
+      late var settings = TransactionSettings(
         isolationLevel: IsolationLevel.serializable,
       );
 
-      test('when row is modified after first statement in transaction '
+      test('when row is modified after first statement in transaction, '
           'then transaction does NOT observe the updated value.', () async {
         var testData = await SimpleData.db.insertRow(
           session,
@@ -255,7 +255,7 @@ void main() async {
         expect(result?.num, 1);
       });
 
-      test('when read row is concurrently modified by other transaction '
+      test('when read row is concurrently modified by other transaction, '
           'then database exception is thrown for one transaction', () async {
         var testData1 = await SimpleData.db.insertRow(
           session,

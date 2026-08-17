@@ -10,7 +10,7 @@ void main() {
   withServerpod(
     'Given an `AuthUser` with a `UserProfile`,',
     (final sessionBuilder, final endpoints) {
-      final profileData = UserProfileData(
+      late final profileData = UserProfileData(
         userName: 'username',
         fullName: 'Full Name',
         email: 'test@serverpod.dev',
@@ -29,7 +29,8 @@ void main() {
       });
 
       test(
-        'when listing without any criteria, then the profile with data is returned.',
+        'when listing without any criteria, '
+        'then the profile with data is returned.',
         () async {
           final profiles = await userProfiles.admin.listUserProfiles(
             session,
@@ -44,7 +45,8 @@ void main() {
       );
 
       test(
-        'when listing with the matching `email` parameter, then the profile is returned.',
+        'when listing with the matching `email` parameter, '
+        'then the profile is returned.',
         () async {
           final profiles = await userProfiles.admin.listUserProfiles(
             session,
@@ -56,7 +58,8 @@ void main() {
       );
 
       test(
-        'when listing with the matching `username` parameter, then the profile is returned.',
+        'when listing with the matching `username` parameter, '
+        'then the profile is returned.',
         () async {
           final profiles = await userProfiles.admin.listUserProfiles(
             session,
@@ -68,7 +71,8 @@ void main() {
       );
 
       test(
-        'when listing with the matching `fullName` parameter, then the profile is returned.',
+        'when listing with the matching `fullName` parameter, '
+        'then the profile is returned.',
         () async {
           final profiles = await userProfiles.admin.listUserProfiles(
             session,
@@ -80,7 +84,8 @@ void main() {
       );
 
       test(
-        'when listing with no matching criteria, then no profiles are returned.',
+        'when listing with no matching criteria, '
+        'then no profiles are returned.',
         () async {
           final profiles = await userProfiles.admin.listUserProfiles(
             session,
@@ -92,7 +97,8 @@ void main() {
       );
 
       test(
-        'when listing with one matching and one non-matching criteria, then no profiles are returned.',
+        'when listing with one matching and one non-matching criteria, '
+        'then no profiles are returned.',
         () async {
           final profiles = await userProfiles.admin.listUserProfiles(
             session,
@@ -109,7 +115,7 @@ void main() {
   withServerpod(
     'Given two `AuthUser`s with identical `UserProfile`s,',
     (final sessionBuilder, final endpoints) {
-      final profileData = UserProfileData(
+      late final profileData = UserProfileData(
         userName: 'username',
         fullName: 'Full Name',
         email: 'test@serverpod.dev',
@@ -151,12 +157,12 @@ void main() {
   withServerpod(
     'Given two `AuthUser`s with unique `UserProfile`s,',
     (final sessionBuilder, final endpoints) {
-      final profileData1 = UserProfileData(
+      late final profileData1 = UserProfileData(
         userName: 'user1',
         fullName: 'Full Name One',
         email: 'one@serverpod.dev',
       );
-      final profileData2 = UserProfileData(
+      late final profileData2 = UserProfileData(
         userName: 'user2',
         fullName: 'Full Name Two',
         email: 'two@serverpod.dev',
@@ -179,7 +185,8 @@ void main() {
       });
 
       test(
-        'when listing with a criteria for user1, then only that one is returned.',
+        'when listing with a criteria for user1, '
+        'then only that one is returned.',
         () async {
           final profiles = await userProfiles.admin.listUserProfiles(
             session,
@@ -192,7 +199,8 @@ void main() {
       );
 
       test(
-        'when listing with a criteria for user2, then only that one is returned.',
+        'when listing with a criteria for user2, '
+        'then only that one is returned.',
         () async {
           final profiles = await userProfiles.admin.listUserProfiles(
             session,
@@ -205,7 +213,8 @@ void main() {
       );
 
       test(
-        'when listing with a criteria for user1 combined with one for user2, then no profiles are returned.',
+        'when listing with a criteria for user1 combined with one for user2, '
+        'then no profiles are returned.',
         () async {
           final profiles = await userProfiles.admin.listUserProfiles(
             session,

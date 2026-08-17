@@ -23,9 +23,9 @@ void main() {
     testProjectDirectory.deleteSync(recursive: true);
   });
 
-  group('Given a valid endpoint class when analyzed', () {
-    var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
+  group('Given a valid endpoint class, when analyzed,', () {
+    late var collector = CodeGenerationCollector();
+    late var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
 
@@ -91,9 +91,9 @@ class ExampleEndpoint extends Endpoint {
     });
   });
 
-  group('Given a valid endpoint with documentation when analyzed', () {
-    var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
+  group('Given a valid endpoint with documentation, when analyzed,', () {
+    late var collector = CodeGenerationCollector();
+    late var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
 
@@ -131,10 +131,10 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
-    'Given a dart class that does not inherit from Endpoint when analyzed',
+    'Given a dart class that does not inherit from Endpoint, when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late var collector = CodeGenerationCollector();
+      late var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -166,9 +166,10 @@ class ExampleEndpoint {
     },
   );
 
-  group('Given same endpoint class definition in multiple files when analyzed', () {
-    var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
+  group('Given same endpoint class definition in multiple files, '
+      'when analyzed,', () {
+    late var collector = CodeGenerationCollector();
+    late var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
 

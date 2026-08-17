@@ -26,7 +26,7 @@ void main() {
     client.close();
   });
 
-  group('Given a web server with FlutterRoute', () {
+  group('Given a web server with FlutterRoute,', () {
     late Serverpod pod;
 
     setUp(() async {
@@ -43,7 +43,7 @@ void main() {
       await pod.shutdown(exitProcess: false);
     });
 
-    test('when requesting file then WASM headers are present', () async {
+    test('when requesting file, then WASM headers are present', () async {
       final response = await client.get(
         Uri.parse('${pod.webUrl}main.dart.js'),
       );
@@ -52,7 +52,7 @@ void main() {
       expect(response.headers['cross-origin-embedder-policy'], 'require-corp');
     });
 
-    test('when requesting index.html then served with WASM headers', () async {
+    test('when requesting index.html, then served with WASM headers', () async {
       final response = await client.get(
         Uri.parse('${pod.webUrl}index.html'),
       );
@@ -63,7 +63,7 @@ void main() {
     });
 
     test(
-      'when requesting non-existent file then fallback with WASM headers',
+      'when requesting non-existent file, then fallback with WASM headers',
       () async {
         final response = await client.get(
           Uri.parse('${pod.webUrl}app/route/123'),
@@ -79,7 +79,7 @@ void main() {
     );
 
     test(
-      'when FlutterRoute uses default index then index.html is used',
+      'when FlutterRoute uses default index, then index.html is used',
       () async {
         final response = await client.get(
           Uri.parse('${pod.webUrl}non-existent-route'),
@@ -90,7 +90,7 @@ void main() {
     );
 
     test(
-      'when requesting / then index.html is used',
+      'when requesting /, then index.html is used',
       () async {
         final response = await client.get(
           Uri.parse(pod.webUrl),
@@ -102,7 +102,7 @@ void main() {
   });
 
   group(
-    'Given a web server with FlutterRoute configured without WASM headers',
+    'Given a web server with FlutterRoute configured without WASM headers,',
     () {
       late Serverpod pod;
 
@@ -130,7 +130,8 @@ void main() {
       });
 
       test(
-        'when requesting non-existent file, then fallback does not have WASM headers',
+        'when requesting non-existent file, '
+        'then fallback does not have WASM headers',
         () async {
           final response = await client.get(
             Uri.parse('${pod.webUrl}app/route/123'),
@@ -144,7 +145,7 @@ void main() {
     },
   );
 
-  group('Given a FlutterRoute with custom index file', () {
+  group('Given a FlutterRoute with custom index file,', () {
     late Serverpod pod;
     late File customIndex;
 
@@ -171,7 +172,7 @@ void main() {
     });
 
     test(
-      'when FlutterRoute uses custom index then custom file is used',
+      'when FlutterRoute uses custom index, then custom file is used',
       () async {
         final response = await client.get(
           Uri.parse('${pod.webUrl}non-existent-route'),
@@ -187,7 +188,7 @@ void main() {
     );
   });
 
-  group('Given a FlutterRoute with cache control', () {
+  group('Given a FlutterRoute with cache control,', () {
     late Serverpod pod;
 
     setUp(() async {
@@ -209,7 +210,7 @@ void main() {
       await pod.shutdown(exitProcess: false);
     });
 
-    test('when cache control is set then headers are applied', () async {
+    test('when cache control is set, then headers are applied', () async {
       final response = await client.get(
         Uri.parse('${pod.webUrl}main.dart.js'),
       );
@@ -328,7 +329,7 @@ void main() {
     expect(() => FlutterRoute(webDir), throwsFormatException);
   });
 
-  group('Given a FlutterRoute with default caching', () {
+  group('Given a FlutterRoute with default caching,', () {
     late Serverpod pod;
 
     setUp(() async {
@@ -359,7 +360,7 @@ void main() {
     });
 
     test(
-      'when index.html is requested then no-cache headers are present',
+      'when index.html is requested, then no-cache headers are present',
       () async {
         final response = await client.get(
           Uri.parse('${pod.webUrl}index.html'),
@@ -371,7 +372,8 @@ void main() {
     );
 
     test(
-      'when flutter_service_worker.js is requested then no-cache headers are present',
+      'when flutter_service_worker.js is requested, '
+      'then no-cache headers are present',
       () async {
         final response = await client.get(
           Uri.parse(
@@ -385,7 +387,8 @@ void main() {
     );
 
     test(
-      'when flutter_bootstrap.js is requested then no-cache headers are present',
+      'when flutter_bootstrap.js is requested, '
+      'then no-cache headers are present',
       () async {
         final response = await client.get(
           Uri.parse('${pod.webUrl}flutter_bootstrap.js'),
@@ -397,7 +400,7 @@ void main() {
     );
 
     test(
-      'when manifest.json is requested then no-cache headers are present',
+      'when manifest.json is requested, then no-cache headers are present',
       () async {
         final response = await client.get(
           Uri.parse('${pod.webUrl}manifest.json'),
@@ -409,7 +412,7 @@ void main() {
     );
 
     test(
-      'when version.json is requested then no-cache headers are present',
+      'when version.json is requested, then no-cache headers are present',
       () async {
         final response = await client.get(
           Uri.parse('${pod.webUrl}version.json'),
@@ -421,7 +424,7 @@ void main() {
     );
 
     test(
-      'when main.dart.js is requested then no-cache headers are present',
+      'when main.dart.js is requested, then no-cache headers are present',
       () async {
         final response = await client.get(
           Uri.parse('${pod.webUrl}main.dart.js'),
@@ -433,7 +436,7 @@ void main() {
     );
 
     test(
-      'when assets/image.png is requested then no-cache headers are present',
+      'when assets/image.png is requested, then no-cache headers are present',
       () async {
         final response = await client.get(
           Uri.parse('${pod.webUrl}assets/image.png'),

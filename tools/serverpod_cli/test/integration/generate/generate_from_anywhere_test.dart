@@ -10,7 +10,7 @@ void main() {
     CommandLineExperimentalFeatures.initialize([]);
   });
 
-  group('GeneratorConfig.load with auto-detection', () {
+  group('GeneratorConfig.load with auto-detection,', () {
     test(
       'Given in project root directory, '
       'when GeneratorConfig.load is called without directory parameter, '

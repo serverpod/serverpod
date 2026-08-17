@@ -11,7 +11,7 @@ Finder blockingAbsorbPointerFinder() {
 }
 
 void main() {
-  group('SignInFlowCoordinator', () {
+  group('SignInFlowCoordinator,', () {
     testWidgets(
       'Given SignInFlowCoordinatorWidget, '
       'when lockUI is called, '

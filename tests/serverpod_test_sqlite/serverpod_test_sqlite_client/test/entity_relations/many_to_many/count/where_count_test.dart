@@ -6,9 +6,10 @@ import '../../../test_util.dart';
 void main() {
   initTestClientSession();
 
-  group('Given models with many to many relation', () {
+  group('Given models with many to many relation,', () {
     test(
-      'when counting models filtered on many relation count then result is as expected',
+      'when counting models filtered on many relation count, '
+      'then result is as expected',
       () async {
         var students = await Student.db.insert(session, [
           Student(name: 'Alex'),
@@ -43,7 +44,8 @@ void main() {
     );
 
     test(
-      'when counting models filtered on filtered many relation count then result is as expected',
+      'when counting models filtered on filtered many relation count, '
+      'then result is as expected',
       () async {
         var students = await Student.db.insert(session, [
           Student(name: 'Alex'),
@@ -86,7 +88,8 @@ void main() {
     );
 
     test(
-      'when counting models filtered on many relation count in combination with other filter then result is as expected',
+      'when counting models filtered on many relation count in combination with other filter, '
+      'then result is as expected',
       () async {
         var students = await Student.db.insert(session, [
           Student(name: 'Alex'),
@@ -128,7 +131,8 @@ void main() {
     );
 
     test(
-      'when counting models filtered on multiple many relation count then result is as expected',
+      'when counting models filtered on multiple many relation count, '
+      'then result is as expected',
       () async {
         var students = await Student.db.insert(session, [
           Student(name: 'Alex'),
@@ -168,7 +172,8 @@ void main() {
     );
 
     test(
-      'when counting models filtered on multiple filtered many relation count then result is as expected',
+      'when counting models filtered on multiple filtered many relation count, '
+      'then result is as expected',
       () async {
         var students = await Student.db.insert(session, [
           Student(name: 'Alex'),

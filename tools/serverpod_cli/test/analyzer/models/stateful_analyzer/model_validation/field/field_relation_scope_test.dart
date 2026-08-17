@@ -21,9 +21,9 @@ void main() {
       .withFileName('post_class')
       .build();
 
-  group('Given a class with a non-optional relation and "serverOnly" scope', () {
+  group('Given a class with a non-optional relation and "serverOnly" scope,', () {
     test(
-      'when analyzed then an error is generated for an object relation',
+      'when analyzed, then an error is generated for an object relation',
       () {
         var models = [
           parentClassModel,
@@ -59,7 +59,7 @@ void main() {
     );
 
     test(
-      'when analyzed then no errors are generated for a manual field relation',
+      'when analyzed, then no errors are generated for a manual field relation',
       () {
         var models = [
           parentClassModel,
@@ -90,8 +90,8 @@ void main() {
   });
 
   test(
-    'Given a class with an optional relation and "serverOnly" scope '
-    'when analyzed then no errors are generated for an object relation',
+    'Given a class with an optional relation and "serverOnly" scope, '
+    'when analyzed, then no errors are generated for an object relation',
     () {
       var models = [
         parentClassModel,

@@ -2,7 +2,7 @@ import 'package:serverpod_cloud_storage_gcp/src/config/gcp_endpoint_config.dart'
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a GcpEndpointConfig with default settings', () {
+  group('Given a GcpEndpointConfig with default settings,', () {
     late GcpEndpointConfig config;
 
     setUp(() {
@@ -10,7 +10,7 @@ void main() {
     });
 
     test(
-      'when building bucket URI '
+      'when building bucket URI, '
       'then it returns path-style URL with bucket in path',
       () {
         final uri = config.buildBucketUri('my-bucket', 'us-east-1');
@@ -22,7 +22,7 @@ void main() {
     );
 
     test(
-      'when building bucket URI with different regions '
+      'when building bucket URI with different regions, '
       'then it ignores the region parameter',
       () {
         final uri1 = config.buildBucketUri('my-bucket', 'us-east-1');
@@ -34,7 +34,7 @@ void main() {
     );
 
     test(
-      'when building public URI '
+      'when building public URI, '
       'then it returns path-style public URL',
       () {
         final uri = config.buildPublicUri(
@@ -51,7 +51,7 @@ void main() {
     );
 
     test(
-      'when building public URI with simple file path '
+      'when building public URI with simple file path, '
       'then it handles the path correctly',
       () {
         final uri = config.buildPublicUri('my-bucket', 'us-east-1', 'file.txt');
@@ -61,7 +61,7 @@ void main() {
     );
 
     test(
-      'when getting service name '
+      'when getting service name, '
       'then it returns Google Cloud Storage',
       () {
         expect(config.serviceName, 'Google Cloud Storage');
@@ -69,7 +69,7 @@ void main() {
     );
   });
 
-  group('Given a GcpEndpointConfig with custom public host', () {
+  group('Given a GcpEndpointConfig with custom public host,', () {
     late GcpEndpointConfig config;
 
     setUp(() {
@@ -79,7 +79,7 @@ void main() {
     });
 
     test(
-      'when building public URI '
+      'when building public URI, '
       'then it uses the custom public host',
       () {
         final uri = config.buildPublicUri('my-bucket', 'us-east-1', 'file.txt');
@@ -91,7 +91,7 @@ void main() {
     );
 
     test(
-      'when building public URI with override host '
+      'when building public URI with override host, '
       'then the override takes precedence',
       () {
         final overrideHost = Uri.https('override.example.com', '/');

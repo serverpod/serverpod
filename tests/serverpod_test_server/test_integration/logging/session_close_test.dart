@@ -16,7 +16,7 @@ class TestError extends Error {
 
 void main() {
   withServerpod(
-    'Given an existing session with session logging disabled',
+    'Given an existing session with session logging disabled,',
     enableSessionLogging: false,
     serverpodLoggingMode: ServerpodLoggingMode.verbose,
     (sessionBuilder, endpoints) {

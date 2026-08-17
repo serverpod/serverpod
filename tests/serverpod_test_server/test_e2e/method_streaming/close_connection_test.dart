@@ -13,7 +13,9 @@ void main() {
   );
 
   test(
-    'Given open streaming method connection when close method streams is called then connection is closed with exception.',
+    'Given open streaming method connection, '
+    'when close method streams is called, '
+    'then connection is closed with exception.',
     () async {
       var messageReceived = Completer();
       var streamErrorCompleter = Completer<Object>();
@@ -39,7 +41,9 @@ void main() {
   );
 
   test(
-    'Given a streaming connection that was closed when establishing a new streaming connection then messages can be successfully transmitted.',
+    'Given a streaming connection that was closed, '
+    'when establishing a new streaming connection, '
+    'then messages can be successfully transmitted.',
     () async {
       {
         var firstConnectionEstablished = Completer();
@@ -73,7 +77,9 @@ void main() {
   );
 
   test(
-    'Given an input stream that continuously sends data to the server when closing all method streams then the method stream is successfully closed.',
+    'Given an input stream that continuously sends data to the server, '
+    'when closing all method streams, '
+    'then the method stream is successfully closed.',
     () async {
       var stream = client.methodStreaming.intEchoStream(
         Stream.periodic(Duration(microseconds: 1), (i) => i),

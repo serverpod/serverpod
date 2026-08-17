@@ -9,7 +9,9 @@ void main() {
   var protocol = _TestProtocol();
 
   test(
-    'Given an integer when encoding and decoding with type then output matches input',
+    'Given an integer, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       int number = 1;
       var encoded = protocol.encodeWithType(number);
@@ -19,7 +21,9 @@ void main() {
   );
 
   test(
-    'Given a non-null nullable integer when encoding and decoding with type then output matches input',
+    'Given a non-null nullable integer, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       int? number = 1;
       var encoded = protocol.encodeWithType(number);
@@ -29,7 +33,9 @@ void main() {
   );
 
   test(
-    'Given a null nullable integer when encoding and decoding with type then output matches input',
+    'Given a null nullable integer, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       int? number;
       var encoded = protocol.encodeWithType(number);
@@ -39,7 +45,9 @@ void main() {
   );
 
   test(
-    'Given a double when encoding and decoding with type then output matches input',
+    'Given a double, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       double number = 1.0;
       var encoded = protocol.encodeWithType(number);
@@ -49,7 +57,9 @@ void main() {
   );
 
   test(
-    'Given a non-null nullable double when encoding and decoding with type then output matches input',
+    'Given a non-null nullable double, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       double? number = 1.0;
       var encoded = protocol.encodeWithType(number);
@@ -59,7 +69,9 @@ void main() {
   );
 
   test(
-    'Given a null nullable double when encoding and decoding with type then output matches input',
+    'Given a null nullable double, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       double? number;
       var encoded = protocol.encodeWithType(number);
@@ -69,7 +81,9 @@ void main() {
   );
 
   test(
-    'Given a string when encoding and decoding with type then output matches input',
+    'Given a string, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       String text = 'hello';
       var encoded = protocol.encodeWithType(text);
@@ -79,7 +93,9 @@ void main() {
   );
 
   test(
-    'Given a non-null nullable string when encoding and decoding with type then output matches input',
+    'Given a non-null nullable string, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       String? text = 'hello';
       var encoded = protocol.encodeWithType(text);
@@ -89,7 +105,9 @@ void main() {
   );
 
   test(
-    'Given a null nullable string when encoding and decoding with type then output matches input',
+    'Given a null nullable string, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       String? text;
       var encoded = protocol.encodeWithType(text);
@@ -99,7 +117,9 @@ void main() {
   );
 
   test(
-    'Given a boolean when encoding and decoding with type then output matches input',
+    'Given a boolean, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       bool flag = true;
       var encoded = protocol.encodeWithType(flag);
@@ -109,7 +129,9 @@ void main() {
   );
 
   test(
-    'Given a non-null nullable boolean when encoding and decoding with type then output matches input',
+    'Given a non-null nullable boolean, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       bool? flag = true;
       var encoded = protocol.encodeWithType(flag);
@@ -119,7 +141,9 @@ void main() {
   );
 
   test(
-    'Given a null nullable boolean when encoding and decoding with type then output matches input',
+    'Given a null nullable boolean, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       bool? flag;
       var encoded = protocol.encodeWithType(flag);
@@ -129,7 +153,9 @@ void main() {
   );
 
   test(
-    'Given a DateTime when encoding and decoding with type then output matches input',
+    'Given a DateTime, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       DateTime dateTime = DateTime.now();
       var encoded = protocol.encodeWithType(dateTime);
@@ -139,7 +165,9 @@ void main() {
   );
 
   test(
-    'Given a non-null nullable DateTime when encoding and decoding with type then output matches input',
+    'Given a non-null nullable DateTime, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       DateTime? dateTime = DateTime.now();
       var encoded = protocol.encodeWithType(dateTime);
@@ -149,7 +177,9 @@ void main() {
   );
 
   test(
-    'Given a null nullable DateTime when encoding and decoding with type then output matches input',
+    'Given a null nullable DateTime, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       DateTime? dateTime;
       var encoded = protocol.encodeWithType(dateTime);
@@ -159,7 +189,9 @@ void main() {
   );
 
   test(
-    'Given a ByteData when encoding and decoding with type then output matches input',
+    'Given a ByteData, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       ByteData byteData = ByteData(4);
       byteData.setInt32(0, 123456789);
@@ -170,7 +202,9 @@ void main() {
   );
 
   test(
-    'Given a non-null nullable ByteData when encoding and decoding with type then output matches input',
+    'Given a non-null nullable ByteData, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       ByteData? byteData = ByteData(4);
       byteData.setInt32(0, 123456789);
@@ -181,7 +215,9 @@ void main() {
   );
 
   test(
-    'Given a null nullable ByteData when encoding and decoding with type then output matches input',
+    'Given a null nullable ByteData, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       ByteData? byteData;
       var encoded = protocol.encodeWithType(byteData);
@@ -191,7 +227,9 @@ void main() {
   );
 
   test(
-    'Given a Duration when encoding and decoding with type then output matches input',
+    'Given a Duration, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       Duration duration = const Duration(seconds: 60);
       var encoded = protocol.encodeWithType(duration);
@@ -201,7 +239,9 @@ void main() {
   );
 
   test(
-    'Given a non-null nullable Duration when encoding and decoding with type then output matches input',
+    'Given a non-null nullable Duration, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       Duration? duration = const Duration(seconds: 60);
       var encoded = protocol.encodeWithType(duration);
@@ -211,7 +251,9 @@ void main() {
   );
 
   test(
-    'Given a null nullable Duration when encoding and decoding with type then output matches input',
+    'Given a null nullable Duration, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       Duration? duration;
       var encoded = protocol.encodeWithType(duration);
@@ -221,7 +263,9 @@ void main() {
   );
 
   test(
-    'Given a UuidValue when encoding and decoding with type then output matches input',
+    'Given a UuidValue, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       UuidValue uuid = const Uuid().v4obj();
       var encoded = protocol.encodeWithType(uuid);
@@ -231,7 +275,9 @@ void main() {
   );
 
   test(
-    'Given a non-null nullable UuidValue when encoding and decoding with type then output matches input',
+    'Given a non-null nullable UuidValue, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       UuidValue? uuid = const Uuid().v4obj();
       var encoded = protocol.encodeWithType(uuid);
@@ -241,7 +287,9 @@ void main() {
   );
 
   test(
-    'Given a null nullable UuidValue when encoding and decoding with type then output matches input',
+    'Given a null nullable UuidValue, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       UuidValue? uuid;
       var encoded = protocol.encodeWithType(uuid);
@@ -251,7 +299,9 @@ void main() {
   );
 
   test(
-    'Given a Uri when encoding and decoding with type then output matches input',
+    'Given a Uri, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       Uri uri = Uri.parse('https://docs.serverpod.dev/contribute');
       var encoded = protocol.encodeWithType(uri);
@@ -261,7 +311,9 @@ void main() {
   );
 
   test(
-    'Given a non-null nullable Uri when encoding and decoding with type then output matches input',
+    'Given a non-null nullable Uri, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       Uri? uri = Uri.parse('https://docs.serverpod.dev/contribute');
       var encoded = protocol.encodeWithType(uri);
@@ -271,7 +323,9 @@ void main() {
   );
 
   test(
-    'Given a null nullable Uri when encoding and decoding with type then output matches input',
+    'Given a null nullable Uri, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       Uri? uri;
       var encoded = protocol.encodeWithType(uri);
@@ -281,7 +335,9 @@ void main() {
   );
 
   test(
-    'Given a BigInt when encoding and decoding with type then output matches input',
+    'Given a BigInt, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       BigInt bigInt = BigInt.parse('12345678901234567890');
       var encoded = protocol.encodeWithType(bigInt);
@@ -291,7 +347,9 @@ void main() {
   );
 
   test(
-    'Given a non-null nullable BigInt when encoding and decoding with type then output matches input',
+    'Given a non-null nullable BigInt, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       BigInt? bigInt = BigInt.parse('-12345678901234567890');
       var encoded = protocol.encodeWithType(bigInt);
@@ -301,7 +359,9 @@ void main() {
   );
 
   test(
-    'Given a null nullable BigInt when encoding and decoding with type then output matches input',
+    'Given a null nullable BigInt, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       BigInt? bigInt;
       var encoded = protocol.encodeWithType(bigInt);
@@ -311,7 +371,9 @@ void main() {
   );
 
   test(
-    'Given a Vector when encoding and decoding with type then output matches input.',
+    'Given a Vector, '
+    'when encoding and decoding with type, '
+    'then output matches input.',
     () {
       Vector vector = const Vector([1.0, 2.0, 3.0]);
       var encoded = protocol.encodeWithType(vector);
@@ -321,7 +383,9 @@ void main() {
   );
 
   test(
-    'Given a non-null nullable Vector when encoding and decoding with type then output matches input.',
+    'Given a non-null nullable Vector, '
+    'when encoding and decoding with type, '
+    'then output matches input.',
     () {
       Vector? vector = const Vector([1.0, 2.0, 3.0]);
       var encoded = protocol.encodeWithType(vector);
@@ -331,7 +395,9 @@ void main() {
   );
 
   test(
-    'Given a null nullable Vector when encoding and decoding with type then output matches input.',
+    'Given a null nullable Vector, '
+    'when encoding and decoding with type, '
+    'then output matches input.',
     () {
       Vector? vector;
       var encoded = protocol.encodeWithType(vector);
@@ -341,7 +407,9 @@ void main() {
   );
 
   test(
-    'Given a HalfVector when encoding and decoding with type then output matches input',
+    'Given a HalfVector, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       HalfVector halfVector = const HalfVector([1.0, 2.0, 3.0]);
       var encoded = protocol.encodeWithType(halfVector);
@@ -351,7 +419,9 @@ void main() {
   );
 
   test(
-    'Given a non-null nullable HalfVector when encoding and decoding with type then output matches input',
+    'Given a non-null nullable HalfVector, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       HalfVector? halfVector = const HalfVector([1.0, 2.0, 3.0]);
       var encoded = protocol.encodeWithType(halfVector);
@@ -361,7 +431,9 @@ void main() {
   );
 
   test(
-    'Given a null nullable HalfVector when encoding and decoding with type then output matches input',
+    'Given a null nullable HalfVector, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       HalfVector? halfVector;
       var encoded = protocol.encodeWithType(halfVector);
@@ -371,7 +443,9 @@ void main() {
   );
 
   test(
-    'Given a SparseVector when encoding and decoding with type then output matches input',
+    'Given a SparseVector, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       SparseVector sparseVector = SparseVector([1.0, 0.0, 2.0, 0.0, 3.0]);
       var encoded = protocol.encodeWithType(sparseVector);
@@ -381,7 +455,9 @@ void main() {
   );
 
   test(
-    'Given a non-null nullable SparseVector when encoding and decoding with type then output matches input',
+    'Given a non-null nullable SparseVector, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       SparseVector? sparseVector = SparseVector([1.0, 0.0, 2.0, 0.0, 3.0]);
       var encoded = protocol.encodeWithType(sparseVector);
@@ -391,7 +467,9 @@ void main() {
   );
 
   test(
-    'Given a null nullable SparseVector when encoding and decoding with type then output matches input',
+    'Given a null nullable SparseVector, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       SparseVector? sparseVector;
       var encoded = protocol.encodeWithType(sparseVector);
@@ -401,7 +479,9 @@ void main() {
   );
 
   test(
-    'Given a Bit vector when encoding and decoding with type then output matches input',
+    'Given a Bit vector, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       Bit bitVector = Bit([true, false, true, false, true]);
       var encoded = protocol.encodeWithType(bitVector);
@@ -411,7 +491,9 @@ void main() {
   );
 
   test(
-    'Given a non-null nullable Bit vector when encoding and decoding with type then output matches input',
+    'Given a non-null nullable Bit vector, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       Bit? bitVector = Bit([true, false, true, false, true]);
       var encoded = protocol.encodeWithType(bitVector);
@@ -421,7 +503,9 @@ void main() {
   );
 
   test(
-    'Given a null nullable Bit vector when encoding and decoding with type then output matches input',
+    'Given a null nullable Bit vector, '
+    'when encoding and decoding with type, '
+    'then output matches input',
     () {
       Bit? bitVector;
       var encoded = protocol.encodeWithType(bitVector);

@@ -56,9 +56,10 @@ void main() {
   var citizenTable = Table<int?>(tableName: 'citizen');
   var companyTable = Table<int?>(tableName: 'company');
 
-  group('Given SelectQueryBuilder', () {
+  group('Given SelectQueryBuilder,', () {
     test(
-      'when initialized with table without fields then argument error is thrown',
+      'when initialized with table without fields, '
+      'then argument error is thrown',
       () {
         expect(
           () => SelectQueryBuilder(table: _TableWithoutFields()),
@@ -76,7 +77,8 @@ void main() {
     );
 
     test(
-      'when trying to set select fields to empty list then argument error is thrown',
+      'when trying to set select fields to empty list, '
+      'then argument error is thrown',
       () {
         expect(
           () => SelectQueryBuilder(table: citizenTable).withSelectFields([]),
@@ -93,14 +95,14 @@ void main() {
       },
     );
 
-    test('when default initialized then build outputs a valid SQL query.', () {
+    test('when default initialized, then build outputs a valid SQL query.', () {
       var query = SelectQueryBuilder(table: citizenTable).build();
 
       expect(query, 'SELECT "citizen"."id" AS "citizen.id" FROM "citizen"');
     });
 
     test(
-      'when query with specific fields is built then output selects fields.',
+      'when query with specific fields is built, then output selects fields.',
       () {
         var fields = [
           ColumnString('id', citizenTable),
@@ -119,7 +121,8 @@ void main() {
     );
 
     test(
-      'when query with simple where expression is built then output is a WHERE query.',
+      'when query with simple where expression is built, '
+      'then output is a WHERE query.',
       () {
         var query = SelectQueryBuilder(
           table: citizenTable,
@@ -133,7 +136,8 @@ void main() {
     );
 
     test(
-      'when query with where expression is built then output is a WHERE query.',
+      'when query with where expression is built, '
+      'then output is a WHERE query.',
       () {
         var expression1 = const Expression('TRUE = TRUE');
         var expression2 = const Expression('FALSE = FALSE');
@@ -151,7 +155,8 @@ void main() {
     );
 
     test(
-      'when query with single order by is built then output is single order by query.',
+      'when query with single order by is built, '
+      'then output is single order by query.',
       () {
         var order = ColumnString('id', citizenTable).asc();
 
@@ -167,7 +172,8 @@ void main() {
     );
 
     test(
-      'when query with multiple order by is built then output is query with multiple order by requirements.',
+      'when query with multiple order by is built, '
+      'then output is query with multiple order by requirements.',
       () {
         var orders = [
           ColumnString('id', citizenTable).asc(),
@@ -187,7 +193,8 @@ void main() {
     );
 
     test(
-      'when ordering by many relation then output is many relation order by query.',
+      'when ordering by many relation, '
+      'then output is many relation order by query.',
       () {
         var relationTable = _TableWithManyRelation(
           tableName: citizenTable.tableName,
@@ -207,7 +214,8 @@ void main() {
     );
 
     test(
-      'when ordering by is filtered many relation then output contains many relation sub query.',
+      'when ordering by is filtered many relation, '
+      'then output contains many relation sub query.',
       () {
         var relationTable = _TableWithManyRelation(
           tableName: citizenTable.tableName,
@@ -228,7 +236,8 @@ void main() {
       },
     );
 
-    test('when query with limit is built then output is query with limit.', () {
+    test('when query with limit is built, '
+        'then output is query with limit.', () {
       var query = SelectQueryBuilder(table: citizenTable).withLimit(10).build();
 
       expect(
@@ -238,7 +247,7 @@ void main() {
     });
 
     test(
-      'when query with offset is built then output is query with offset.',
+      'when query with offset is built, then output is query with offset.',
       () {
         var query = SelectQueryBuilder(
           table: citizenTable,
@@ -252,7 +261,8 @@ void main() {
     );
 
     test(
-      'when where expression depends on relations then output includes joins according to table relations.',
+      'when where expression depends on relations, '
+      'then output includes joins according to table relations.',
       () {
         var relationTable = Table<int?>(
           tableName: companyTable.tableName,
@@ -277,7 +287,8 @@ void main() {
     );
 
     test(
-      'when where expression depends on nested relations then output includes joins according to table relations.',
+      'when where expression depends on nested relations, '
+      'then output includes joins according to table relations.',
       () {
         var nestedRelationTable = Table<int?>(
           tableName: citizenTable.tableName,
@@ -311,7 +322,8 @@ void main() {
       },
     );
 
-    test('when all properties configured is built then output is valid SQL.', () {
+    test('when all properties configured is built, '
+        'then output is valid SQL.', () {
       var manyRelationTable = Table<int?>(
         tableName: companyTable.tableName,
         tableRelation: TableRelation([
@@ -366,7 +378,8 @@ void main() {
     });
 
     test(
-      'when column where expression has different table as base then exception is thrown.',
+      'when column where expression has different table as base, '
+      'then exception is thrown.',
       () {
         var queryBuilder = SelectQueryBuilder(
           table: citizenTable,
@@ -388,7 +401,7 @@ void main() {
     );
 
     test(
-      'when order by has different table as base then exception is thrown.',
+      'when order by has different table as base, then exception is thrown.',
       () {
         var queryBuilder = SelectQueryBuilder(
           table: citizenTable,
@@ -410,7 +423,7 @@ void main() {
     );
 
     test(
-      'when count field has different table as base then exception is thrown.',
+      'when count field has different table as base, then exception is thrown.',
       () {
         var queryBuilder = SelectQueryBuilder(table: citizenTable)
             .withCountTableRelation(
@@ -439,7 +452,8 @@ void main() {
     );
 
     test(
-      'when count column with inner where that does NOT have table relations then exception is thrown.',
+      'when count column with inner where that does NOT have table relations, '
+      'then exception is thrown.',
       () {
         var countColumn = ColumnCount(
           citizenTable.id.equals(5),
@@ -466,7 +480,8 @@ void main() {
     );
 
     test(
-      'when same count column with inner where appears multiple times then query includes multiple ordering by same column.',
+      'when same count column with inner where appears multiple times, '
+      'then query includes multiple ordering by same column.',
       () {
         var relationTable = Table<int?>(
           tableName: companyTable.tableName,
@@ -496,7 +511,8 @@ void main() {
     );
 
     test(
-      'when ordering by multiple many relations then query includes multiple ordering by same column.',
+      'when ordering by multiple many relations, '
+      'then query includes multiple ordering by same column.',
       () {
         var friendsRelationTable = _TableWithManyRelation(
           tableName: citizenTable.tableName,
@@ -524,14 +540,14 @@ void main() {
     );
   });
 
-  group('Given CountQueryBuilder', () {
-    test('when default initialized then build outputs a valid SQL query.', () {
+  group('Given CountQueryBuilder,', () {
+    test('when default initialized, then build outputs a valid SQL query.', () {
       var query = CountQueryBuilder(table: citizenTable).build();
 
       expect(query, 'SELECT COUNT("citizen"."id") FROM "citizen"');
     });
     test(
-      'when query with alias is built then count result has defined alias.',
+      'when query with alias is built, then count result has defined alias.',
       () {
         var query = CountQueryBuilder(
           table: citizenTable,
@@ -542,7 +558,7 @@ void main() {
     );
 
     test(
-      'when query with field is built then count is based on that field.',
+      'when query with field is built, then count is based on that field.',
       () {
         var query = CountQueryBuilder(
           table: citizenTable,
@@ -553,7 +569,8 @@ void main() {
     );
 
     test(
-      'when query with where expression is built then output is a WHERE query.',
+      'when query with where expression is built, '
+      'then output is a WHERE query.',
       () {
         var query = CountQueryBuilder(
           table: citizenTable,
@@ -567,7 +584,7 @@ void main() {
     );
 
     test(
-      'when query with limit is built then output is a query with limit.',
+      'when query with limit is built, then output is a query with limit.',
       () {
         var query = CountQueryBuilder(
           table: citizenTable,
@@ -578,7 +595,8 @@ void main() {
     );
 
     test(
-      'when filtered count column is used in where expression then query is a sub queried count query.',
+      'when filtered count column is used in where expression, '
+      'then query is a sub queried count query.',
       () {
         var relationTable = _TableWithManyRelation(
           tableName: citizenTable.tableName,
@@ -598,7 +616,8 @@ void main() {
     );
 
     test(
-      'when where expression depends on relations then output includes joins according to table relations.',
+      'when where expression depends on relations, '
+      'then output includes joins according to table relations.',
       () {
         var relationTable = Table<int?>(
           tableName: companyTable.tableName,
@@ -628,7 +647,8 @@ void main() {
     );
 
     test(
-      'when where expression depends on nested relations then output includes joins according to table relations.',
+      'when where expression depends on nested relations, '
+      'then output includes joins according to table relations.',
       () {
         var nestedRelationTable = Table<int?>(
           tableName: citizenTable.tableName,
@@ -663,7 +683,8 @@ void main() {
     );
 
     test(
-      'when query with all properties configured is built then output is valid SQL.',
+      'when query with all properties configured is built, '
+      'then output is valid SQL.',
       () {
         var relationTable = Table<int?>(
           tableName: companyTable.tableName,
@@ -693,7 +714,8 @@ void main() {
     );
 
     test(
-      'when column where expression has different table as base then exception is thrown.',
+      'when column where expression has different table as base, '
+      'then exception is thrown.',
       () {
         var queryBuilder = CountQueryBuilder(
           table: citizenTable,
@@ -715,15 +737,16 @@ void main() {
     );
   });
 
-  group('Given DeleteQueryBuilder', () {
-    test('when default initialized then build outputs a valid SQL query.', () {
+  group('Given DeleteQueryBuilder,', () {
+    test('when default initialized, then build outputs a valid SQL query.', () {
       var query = DeleteQueryBuilder(table: citizenTable).build();
 
       expect(query, 'DELETE FROM "citizen"');
     });
 
     test(
-      'when query with where expression is built then output is a WHERE query.',
+      'when query with where expression is built, '
+      'then output is a WHERE query.',
       () {
         var query = DeleteQueryBuilder(
           table: citizenTable,
@@ -734,7 +757,7 @@ void main() {
     );
 
     test(
-      'when query returning all is built then output is a return all query.',
+      'when query returning all is built, then output is a return all query.',
       () {
         var query = DeleteQueryBuilder(
           table: citizenTable,
@@ -748,7 +771,7 @@ void main() {
     );
 
     test(
-      'when query return id is build then the output is a return id query.',
+      'when query return id is build, then the output is a return id query.',
       () {
         var query = DeleteQueryBuilder(
           table: citizenTable,
@@ -759,7 +782,8 @@ void main() {
     );
 
     test(
-      'when where expression depends on relations then output includes using according to table relations.',
+      'when where expression depends on relations, '
+      'then output includes using according to table relations.',
       () {
         var relationTable = Table<int?>(
           tableName: companyTable.tableName,
@@ -784,7 +808,8 @@ void main() {
     );
 
     test(
-      'when where expression depends on nested relations then output includes using according to table relations.',
+      'when where expression depends on nested relations, '
+      'then output includes using according to table relations.',
       () {
         var nestedRelationTable = Table<int?>(
           tableName: citizenTable.tableName,
@@ -814,7 +839,8 @@ void main() {
     );
 
     test(
-      'when query with all properties configured is built then output is valid SQL.',
+      'when query with all properties configured is built, '
+      'then output is valid SQL.',
       () {
         var relationTable = Table<int?>(
           tableName: companyTable.tableName,
@@ -847,7 +873,8 @@ void main() {
     );
 
     test(
-      'when column where expression has different table as base then exception is thrown.',
+      'when column where expression has different table as base, '
+      'then exception is thrown.',
       () {
         var queryBuilder = DeleteQueryBuilder(
           table: citizenTable,
@@ -870,7 +897,9 @@ void main() {
   });
 
   test(
-    'Given a select query with a filtered result set when building the query then the query includes a where clause for the specified ids',
+    'Given a select query with a filtered result set, '
+    'when building the query, '
+    'then the query includes a where clause for the specified ids',
     () {
       var manyTable = _TableWithManyRelation(
         relationAlias: 'citizens',
@@ -895,7 +924,9 @@ void main() {
   );
 
   test(
-    'Given a select query with a filtered result set and a manual where query when building then the query contains the where clause chained with the id filter with an AND.',
+    'Given a select query with a filtered result set and a manual where query, '
+    'when building, '
+    'then the query contains the where clause chained with the id filter with an AND.',
     () {
       var manyTable = _TableWithManyRelation(
         relationAlias: 'citizens',
@@ -926,7 +957,9 @@ void main() {
   );
 
   test(
-    'Given a select query with a filtered result set and a limit when building then the query is wrapped in a subquery with a row_number() that selects the specific rows.',
+    'Given a select query with a filtered result set and a limit, '
+    'when building, '
+    'then the query is wrapped in a subquery with a row_number() that selects the specific rows.',
     () {
       var manyTable = _TableWithManyRelation(
         relationAlias: 'citizens',
@@ -953,7 +986,9 @@ void main() {
   );
 
   test(
-    'Given a select query with a filtered result set and an offset when building then the query is wrapped in a subquery with a row_number() that selects the specific rows.',
+    'Given a select query with a filtered result set and an offset, '
+    'when building, '
+    'then the query is wrapped in a subquery with a row_number() that selects the specific rows.',
     () {
       var manyTable = _TableWithManyRelation(
         relationAlias: 'citizens',
@@ -980,7 +1015,9 @@ void main() {
   );
 
   test(
-    'Given a select query with a filtered result set and a limit and an offset when building then the query is wrapped in a subquery with a row_number() that selects the specific rows.',
+    'Given a select query with a filtered result set and a limit and an offset, '
+    'when building, '
+    'then the query is wrapped in a subquery with a row_number() that selects the specific rows.',
     () {
       var manyTable = _TableWithManyRelation(
         relationAlias: 'citizens',
@@ -1007,10 +1044,10 @@ void main() {
     },
   );
 
-  group('Given a SelectQueryBuilder', () {
-    var table = Table<int?>(tableName: 'citizen');
+  group('Given a SelectQueryBuilder,', () {
+    late var table = Table<int?>(tableName: 'citizen');
 
-    group('when building with lock mode forUpdate', () {
+    group('when building with lock mode forUpdate,', () {
       test('then query contains FOR UPDATE clause', () {
         var query = SelectQueryBuilder(
           table: table,
@@ -1023,7 +1060,7 @@ void main() {
       });
     });
 
-    group('when building with lock mode forNoKeyUpdate', () {
+    group('when building with lock mode forNoKeyUpdate,', () {
       test('then query contains FOR NO KEY UPDATE clause', () {
         var query = SelectQueryBuilder(
           table: table,
@@ -1036,7 +1073,7 @@ void main() {
       });
     });
 
-    group('when building with lock mode forShare', () {
+    group('when building with lock mode forShare,', () {
       test('then query contains FOR SHARE clause', () {
         var query = SelectQueryBuilder(
           table: table,
@@ -1049,7 +1086,7 @@ void main() {
       });
     });
 
-    group('when building with lock mode forKeyShare', () {
+    group('when building with lock mode forKeyShare,', () {
       test('then query contains FOR KEY SHARE clause', () {
         var query = SelectQueryBuilder(
           table: table,
@@ -1062,7 +1099,7 @@ void main() {
       });
     });
 
-    group('when building with lock behavior wait', () {
+    group('when building with lock behavior wait,', () {
       test('then query contains no behavior suffix', () {
         var query = SelectQueryBuilder(
           table: table,
@@ -1075,7 +1112,7 @@ void main() {
       });
     });
 
-    group('when building with lock behavior noWait', () {
+    group('when building with lock behavior noWait,', () {
       test('then query contains NOWAIT suffix', () {
         var query = SelectQueryBuilder(
           table: table,
@@ -1089,7 +1126,7 @@ void main() {
     });
 
     test(
-      'when building with lock mode, lock behavior noWait and a where clause that adds a left join '
+      'when building with lock mode, lock behavior noWait and a where clause that adds a left join, '
       'then the query contains OF clause before NOWAIT',
       () {
         var companyTbl = Table<int?>(tableName: 'company');
@@ -1120,7 +1157,7 @@ void main() {
       },
     );
 
-    group('when building with lock behavior skipLocked', () {
+    group('when building with lock behavior skipLocked,', () {
       test('then query contains SKIP LOCKED suffix', () {
         var query = SelectQueryBuilder(
           table: table,
@@ -1133,7 +1170,7 @@ void main() {
       });
     });
 
-    group('when building with lock mode and a where clause', () {
+    group('when building with lock mode and a where clause,', () {
       test('then lock clause appears after where', () {
         var query = SelectQueryBuilder(table: table)
             .withWhere(ColumnString('name', table).equals('John'))
@@ -1148,7 +1185,7 @@ void main() {
     });
 
     test(
-      'when building with lock mode and a where clause that adds a left join '
+      'when building with lock mode and a where clause that adds a left join, '
       'then lock clause uses FOR UPDATE OF base table.',
       () {
         var companyTbl = Table<int?>(tableName: 'company');
@@ -1179,7 +1216,7 @@ void main() {
       },
     );
 
-    group('when building with lock mode and order by', () {
+    group('when building with lock mode and order by,', () {
       test('then lock clause appears after order by', () {
         var query = SelectQueryBuilder(table: table)
             .withOrderBy([ColumnString('name', table).asc()])
@@ -1193,7 +1230,7 @@ void main() {
       });
     });
 
-    group('when building with lock mode and limit', () {
+    group('when building with lock mode and limit,', () {
       test('then lock clause appears before limit', () {
         var query = SelectQueryBuilder(
           table: table,
@@ -1206,7 +1243,7 @@ void main() {
       });
     });
 
-    group('when building with lock mode, order by, and limit', () {
+    group('when building with lock mode, order by, and limit,', () {
       test('then lock clause appears between order by and limit', () {
         var query = SelectQueryBuilder(table: table)
             .withOrderBy([ColumnString('name', table).asc()])
@@ -1221,7 +1258,7 @@ void main() {
       });
     });
 
-    group('when building without lock mode', () {
+    group('when building without lock mode,', () {
       test('then query has no lock clause', () {
         var query = SelectQueryBuilder(table: table).build();
 
@@ -1230,7 +1267,7 @@ void main() {
       });
     });
 
-    group('when specifying both mode and behavior', () {
+    group('when specifying both mode and behavior,', () {
       test('then query is correct', () {
         var query = SelectQueryBuilder(
           table: table,
@@ -1245,7 +1282,9 @@ void main() {
   });
 
   test(
-    'Given a select query with a filtered result set and an order by and a limit when building then the query window function includes the ORDER BY clause.',
+    'Given a select query with a filtered result set and an order by and a limit, '
+    'when building, '
+    'then the query window function includes the ORDER BY clause.',
     () {
       var manyTable = _TableWithManyRelation(
         relationAlias: 'citizens',
@@ -1273,7 +1312,9 @@ void main() {
   );
 
   test(
-    'Given a select query with a filtered result set and multiple order by columns and a limit when building then the query window function includes all ORDER BY columns.',
+    'Given a select query with a filtered result set and multiple order by columns and a limit, '
+    'when building, '
+    'then the query window function includes all ORDER BY columns.',
     () {
       var manyTable = _TableWithManyRelation(
         relationAlias: 'citizens',

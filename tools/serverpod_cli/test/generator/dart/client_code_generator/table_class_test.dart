@@ -27,9 +27,9 @@ void main() {
   );
 
   group(
-    'Given a class with a client database table when generating client code',
+    'Given a class with a client database table, when generating client code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -38,7 +38,7 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );

@@ -5,8 +5,8 @@ import 'package:test/test.dart';
 
 void main() {
   group('Given String column definition', () {
-    group('with no default value', () {
-      ColumnDefinition defaultColumn = ColumnDefinition(
+    group('with no default value,', () {
+      late ColumnDefinition defaultColumn = ColumnDefinition(
         name: 'stringDefault',
         columnType: ColumnType.text,
         isNullable: false,
@@ -14,7 +14,8 @@ void main() {
       );
 
       test(
-        'when converting to PostgreSQL SQL code, then it should not have the default value',
+        'when converting to PostgreSQL SQL code, '
+        'then it should not have the default value',
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
@@ -24,7 +25,8 @@ void main() {
       );
 
       test(
-        'when converting to SQLite SQL code, then it should not have the default value',
+        'when converting to SQLite SQL code, '
+        'then it should not have the default value',
         () {
           expect(
             defaultColumn.toSqlFragment(),
@@ -34,8 +36,8 @@ void main() {
       );
     });
 
-    group('with "This is a default value" as default value', () {
-      ColumnDefinition defaultColumn = ColumnDefinition(
+    group('with "This is a default value" as default value,', () {
+      late ColumnDefinition defaultColumn = ColumnDefinition(
         name: 'stringDefault',
         columnType: ColumnType.text,
         isNullable: false,
@@ -44,7 +46,8 @@ void main() {
       );
 
       test(
-        'when converting to PostgreSQL SQL code, then it should have the default value',
+        'when converting to PostgreSQL SQL code, '
+        'then it should have the default value',
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
@@ -54,7 +57,8 @@ void main() {
       );
 
       test(
-        'when converting to SQLite SQL code, then it should have the default value',
+        'when converting to SQLite SQL code, '
+        'then it should have the default value',
         () {
           expect(
             defaultColumn.toSqlFragment(),
@@ -64,8 +68,8 @@ void main() {
       );
     });
 
-    group('with "Another default value" as default value', () {
-      ColumnDefinition defaultColumn = ColumnDefinition(
+    group('with "Another default value" as default value,', () {
+      late ColumnDefinition defaultColumn = ColumnDefinition(
         name: 'stringDefault',
         columnType: ColumnType.text,
         isNullable: false,
@@ -74,7 +78,8 @@ void main() {
       );
 
       test(
-        'when converting to PostgreSQL SQL code, then it should have the default value',
+        'when converting to PostgreSQL SQL code, '
+        'then it should have the default value',
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
@@ -84,7 +89,8 @@ void main() {
       );
 
       test(
-        'when converting to SQLite SQL code, then it should have the default value',
+        'when converting to SQLite SQL code, '
+        'then it should have the default value',
         () {
           expect(
             defaultColumn.toSqlFragment(),
@@ -94,8 +100,8 @@ void main() {
       );
     });
 
-    group('with nullable column and no default value', () {
-      ColumnDefinition defaultColumn = ColumnDefinition(
+    group('with nullable column and no default value,', () {
+      late ColumnDefinition defaultColumn = ColumnDefinition(
         name: 'stringDefault',
         columnType: ColumnType.text,
         isNullable: true,
@@ -103,7 +109,8 @@ void main() {
       );
 
       test(
-        'when converting to PostgreSQL SQL code, then it should be nullable with no default value',
+        'when converting to PostgreSQL SQL code, '
+        'then it should be nullable with no default value',
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
@@ -113,7 +120,8 @@ void main() {
       );
 
       test(
-        'when converting to SQLite SQL code, then it should be nullable with no default value',
+        'when converting to SQLite SQL code, '
+        'then it should be nullable with no default value',
         () {
           expect(
             defaultColumn.toSqlFragment(),
@@ -124,9 +132,9 @@ void main() {
     });
 
     group(
-      'with nullable column and "This is a default value" as default value',
+      'with nullable column and "This is a default value" as default value,',
       () {
-        ColumnDefinition defaultColumn = ColumnDefinition(
+        late ColumnDefinition defaultColumn = ColumnDefinition(
           name: 'stringDefault',
           columnType: ColumnType.text,
           isNullable: true,
@@ -135,7 +143,8 @@ void main() {
         );
 
         test(
-          'when converting to PostgreSQL SQL code, then it should be nullable with the default value',
+          'when converting to PostgreSQL SQL code, '
+          'then it should be nullable with the default value',
           () {
             expect(
               defaultColumn.toPgSqlFragment(),
@@ -145,7 +154,8 @@ void main() {
         );
 
         test(
-          'when converting to SQLite SQL code, then it should be nullable with the default value',
+          'when converting to SQLite SQL code, '
+          'then it should be nullable with the default value',
           () {
             expect(
               defaultColumn.toSqlFragment(),
@@ -157,9 +167,9 @@ void main() {
     );
 
     group(
-      'with nullable column and "Another default value" as default value',
+      'with nullable column and "Another default value" as default value,',
       () {
-        ColumnDefinition defaultColumn = ColumnDefinition(
+        late ColumnDefinition defaultColumn = ColumnDefinition(
           name: 'stringDefault',
           columnType: ColumnType.text,
           isNullable: true,
@@ -168,7 +178,8 @@ void main() {
         );
 
         test(
-          'when converting to PostgreSQL SQL code, then it should be nullable with the default value',
+          'when converting to PostgreSQL SQL code, '
+          'then it should be nullable with the default value',
           () {
             expect(
               defaultColumn.toPgSqlFragment(),
@@ -178,7 +189,8 @@ void main() {
         );
 
         test(
-          'when converting to SQLite SQL code, then it should be nullable with the default value',
+          'when converting to SQLite SQL code, '
+          'then it should be nullable with the default value',
           () {
             expect(
               defaultColumn.toSqlFragment(),
@@ -189,8 +201,8 @@ void main() {
       },
     );
 
-    group('with "defaultPersist" that includes single quotes', () {
-      ColumnDefinition defaultColumn = ColumnDefinition(
+    group('with "defaultPersist" that includes single quotes,', () {
+      late ColumnDefinition defaultColumn = ColumnDefinition(
         name: 'stringDefaultSingleQuote',
         columnType: ColumnType.text,
         isNullable: false,
@@ -199,7 +211,8 @@ void main() {
       );
 
       test(
-        'when converting to PostgreSQL SQL code, then it should include the single quotes in the default value',
+        'when converting to PostgreSQL SQL code, '
+        'then it should include the single quotes in the default value',
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
@@ -209,7 +222,8 @@ void main() {
       );
 
       test(
-        'when converting to SQLite SQL code, then it should include the single quotes in the default value',
+        'when converting to SQLite SQL code, '
+        'then it should include the single quotes in the default value',
         () {
           expect(
             defaultColumn.toSqlFragment(),
@@ -219,8 +233,8 @@ void main() {
       );
     });
 
-    group('with "defaultPersist" that includes double quotes', () {
-      ColumnDefinition defaultColumn = ColumnDefinition(
+    group('with "defaultPersist" that includes double quotes,', () {
+      late ColumnDefinition defaultColumn = ColumnDefinition(
         name: 'stringDefaultDoubleQuote',
         columnType: ColumnType.text,
         isNullable: false,
@@ -229,7 +243,8 @@ void main() {
       );
 
       test(
-        'when converting to PostgreSQL SQL code, then it should include the double quotes in the default value',
+        'when converting to PostgreSQL SQL code, '
+        'then it should include the double quotes in the default value',
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
@@ -239,7 +254,8 @@ void main() {
       );
 
       test(
-        'when converting to SQLite SQL code, then it should include the double quotes in the default value',
+        'when converting to SQLite SQL code, '
+        'then it should include the double quotes in the default value',
         () {
           expect(
             defaultColumn.toSqlFragment(),
@@ -249,8 +265,8 @@ void main() {
       );
     });
 
-    group('with nullable column and "defaultPersist" including single quotes', () {
-      ColumnDefinition defaultColumn = ColumnDefinition(
+    group('with nullable column and "defaultPersist" including single quotes,', () {
+      late ColumnDefinition defaultColumn = ColumnDefinition(
         name: 'stringDefaultSingleQuote',
         columnType: ColumnType.text,
         isNullable: true,
@@ -259,7 +275,8 @@ void main() {
       );
 
       test(
-        'when converting to PostgreSQL SQL code, then it should be nullable and include the single quotes in the default value',
+        'when converting to PostgreSQL SQL code, '
+        'then it should be nullable and include the single quotes in the default value',
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
@@ -269,7 +286,8 @@ void main() {
       );
 
       test(
-        'when converting to SQLite SQL code, then it should be nullable and include the single quotes in the default value',
+        'when converting to SQLite SQL code, '
+        'then it should be nullable and include the single quotes in the default value',
         () {
           expect(
             defaultColumn.toSqlFragment(),
@@ -279,8 +297,8 @@ void main() {
       );
     });
 
-    group('with nullable column and "defaultPersist" including double quotes', () {
-      ColumnDefinition defaultColumn = ColumnDefinition(
+    group('with nullable column and "defaultPersist" including double quotes,', () {
+      late ColumnDefinition defaultColumn = ColumnDefinition(
         name: 'stringDefaultDoubleQuote',
         columnType: ColumnType.text,
         isNullable: true,
@@ -289,7 +307,8 @@ void main() {
       );
 
       test(
-        'when converting to PostgreSQL SQL code, then it should be nullable and include the double quotes in the default value',
+        'when converting to PostgreSQL SQL code, '
+        'then it should be nullable and include the double quotes in the default value',
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
@@ -299,7 +318,8 @@ void main() {
       );
 
       test(
-        'when converting to SQLite SQL code, then it should be nullable and include the double quotes in the default value',
+        'when converting to SQLite SQL code, '
+        'then it should be nullable and include the double quotes in the default value',
         () {
           expect(
             defaultColumn.toSqlFragment(),

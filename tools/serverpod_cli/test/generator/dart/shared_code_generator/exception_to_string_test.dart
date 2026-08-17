@@ -23,7 +23,7 @@ const generator = DartSharedCodeGenerator();
 
 void main() {
   group(
-    'Given an exception class with fields when generating shared code',
+    'Given an exception class with fields, when generating shared code,',
     () {
       ClassDeclaration? baseClass;
       MethodDeclaration? toStringMethod;
@@ -100,7 +100,7 @@ void main() {
   );
 
   group(
-    'Given an exception class without fields when generating shared code',
+    'Given an exception class without fields, when generating shared code,',
     () {
       ClassDeclaration? baseClass;
       MethodDeclaration? toStringMethod;

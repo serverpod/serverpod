@@ -15,7 +15,8 @@ const generator = DartClientCodeGenerator();
 
 void main() {
   group(
-    'Given a class named StringDefault with String fields having defaultModelValue when generating code',
+    'Given a class named StringDefault with String fields having defaultModelValue, '
+    'when generating code,',
     () {
       ClassDeclaration? baseClass;
       ConstructorDeclaration? privateConstructor;
@@ -123,7 +124,8 @@ void main() {
   );
 
   group(
-    'Given a class named StringDefaultPersist with String fields having defaultPersistValue when generating code',
+    'Given a class named StringDefaultPersist with String fields having defaultPersistValue, '
+    'when generating code,',
     () {
       ClassDeclaration? baseClass;
       ConstructorDeclaration? privateConstructor;

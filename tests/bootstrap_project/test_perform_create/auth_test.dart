@@ -22,7 +22,7 @@ void main() {
 
   group(
     'Given a TemplateContext with auth and a database option enabled, '
-    'when performCreate is called with the context and a fullstack template type',
+    'when performCreate is called with the context and a fullstack template type,',
     () {
       final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
@@ -211,7 +211,7 @@ void main() {
 
   group(
     'Given a TemplateContext with auth disabled, '
-    'when performCreate is called with the context and a fullstack template type',
+    'when performCreate is called with the context and a fullstack template type,',
     () {
       final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
@@ -380,7 +380,7 @@ void main() {
 
   group(
     'Given a TemplateContext with auth disabled and a database option enabled, '
-    'when performCreate is called with the context and a fullstack template type',
+    'when performCreate is called with the context and a fullstack template type,',
     () {
       final project = setUpPerformCreateInTempDir(
         context: TemplateContext(

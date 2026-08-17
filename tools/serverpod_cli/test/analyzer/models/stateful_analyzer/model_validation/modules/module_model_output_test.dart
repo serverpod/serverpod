@@ -8,9 +8,9 @@ import '../../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().withAuthModule().build();
   group(
-    'Given module model classes in the reference list only the local models are returned',
+    'Given module model classes in the reference list only the local models are returned,',
     () {
-      var models = [
+      late var models = [
         ModelSourceBuilder()
             .withModuleAlias('auth')
             .withFileName('user_info')
@@ -33,13 +33,13 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late StatefulAnalyzer analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var entities = analyzer.validateAll();
+      late var entities = analyzer.validateAll();
       var errors = collector.errors;
 
       test('then no errors are collected.', () {

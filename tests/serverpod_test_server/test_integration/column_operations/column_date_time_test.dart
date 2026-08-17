@@ -27,8 +27,8 @@ void main() async {
   setUpAll(() async => await _createTestDatabase(session));
   tearDownAll(() async => await _deleteAll(session));
 
-  group('Given date time column in database', () {
-    test('when fetching all then all rows are returned.', () async {
+  group('Given date time column in database,', () {
+    test('when fetching all, then all rows are returned.', () async {
       var result = await Types.db.find(
         session,
         where: (_) => Constant.bool(true),
@@ -37,7 +37,7 @@ void main() async {
     });
 
     test(
-      'when filtering using equals then matching row is returned.',
+      'when filtering using equals, then matching row is returned.',
       () async {
         var result = await Types.db.find(
           session,
@@ -49,7 +49,7 @@ void main() async {
     );
 
     test(
-      'when filtering using equals with null then matching row is returned.',
+      'when filtering using equals with null, then matching row is returned.',
       () async {
         var result = await Types.db.find(
           session,
@@ -61,7 +61,7 @@ void main() async {
     );
 
     test(
-      'when filtering using notEquals then matching rows are returned.',
+      'when filtering using notEquals, then matching rows are returned.',
       () async {
         var result = await Types.db.find(
           session,
@@ -73,7 +73,8 @@ void main() async {
     );
 
     test(
-      'when filtering using notEquals with null then matching rows are returned.',
+      'when filtering using notEquals with null, '
+      'then matching rows are returned.',
       () async {
         var result = await Types.db.find(
           session,
@@ -85,7 +86,7 @@ void main() async {
     );
 
     test(
-      'when filtering using inSet then matching rows are returned.',
+      'when filtering using inSet, then matching rows are returned.',
       () async {
         var result = await Types.db.find(
           session,
@@ -97,7 +98,7 @@ void main() async {
     );
 
     test(
-      'when filtering using empty inSet then no rows are returned.',
+      'when filtering using empty inSet, then no rows are returned.',
       () async {
         var result = await Types.db.find(
           session,
@@ -109,7 +110,7 @@ void main() async {
     );
 
     test(
-      'when filtering using notInSet then matching row is returned.',
+      'when filtering using notInSet, then matching row is returned.',
       () async {
         var result = await Types.db.find(
           session,
@@ -121,7 +122,7 @@ void main() async {
     );
 
     test(
-      'when filtering using empty notInSet then all rows are returned.',
+      'when filtering using empty notInSet, then all rows are returned.',
       () async {
         var result = await Types.db.find(
           session,
@@ -133,7 +134,7 @@ void main() async {
     );
 
     test(
-      'when filtering using greater than then matching rows are returned.',
+      'when filtering using greater than, then matching rows are returned.',
       () async {
         var result = await Types.db.find(
           session,
@@ -145,7 +146,8 @@ void main() async {
     );
 
     test(
-      'when filtering using greater or equal than then matching rows are returned.',
+      'when filtering using greater or equal than, '
+      'then matching rows are returned.',
       () async {
         var result = await Types.db.find(
           session,
@@ -157,7 +159,7 @@ void main() async {
     );
 
     test(
-      'when filtering using less than then matching rows are returned.',
+      'when filtering using less than, then matching rows are returned.',
       () async {
         var result = await Types.db.find(
           session,
@@ -169,7 +171,8 @@ void main() async {
     );
 
     test(
-      'when filtering using less or equal than then matching rows are returned.',
+      'when filtering using less or equal than, '
+      'then matching rows are returned.',
       () async {
         var result = await Types.db.find(
           session,
@@ -181,7 +184,7 @@ void main() async {
     );
 
     test(
-      'when filtering using between then matching rows are returned.',
+      'when filtering using between, then matching rows are returned.',
       () async {
         var result = await Types.db.find(
           session,
@@ -193,7 +196,7 @@ void main() async {
     );
 
     test(
-      'when filtering using not between then matching row is returned.',
+      'when filtering using not between, then matching row is returned.',
       () async {
         var result = await Types.db.find(
           session,

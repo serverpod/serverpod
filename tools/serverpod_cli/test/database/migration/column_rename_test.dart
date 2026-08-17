@@ -8,13 +8,14 @@ import '../../test_util/builders/database/table_definition_builder.dart';
 
 void main() {
   group(
-    'Given columns with different model field ids when names could match rename',
+    'Given columns with different model field ids, '
+    'when names could match rename,',
     () {
       const tableName = 'example_table';
       const oldColumnName = 'old_name';
       const newColumnName = 'new_name';
 
-      var sourceDefinition = DatabaseDefinitionBuilder()
+      late var sourceDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -30,7 +31,7 @@ void main() {
           )
           .build();
 
-      var targetDefinition = DatabaseDefinitionBuilder()
+      late var targetDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -47,7 +48,7 @@ void main() {
           )
           .build();
 
-      var migration = generateDatabaseMigration(
+      late var migration = generateDatabaseMigration(
         databaseSource: sourceDefinition,
         databaseTarget: targetDefinition,
       );
@@ -72,13 +73,13 @@ void main() {
     },
   );
 
-  group('Given a table with a renamed column when detecting migration', () {
+  group('Given a table with a renamed column, when detecting migration,', () {
     const tableName = 'example_table';
     const oldColumnName = 'old_name';
     const newColumnName = 'new_name';
     const modelFieldName = 'myField';
 
-    var sourceDefinition = DatabaseDefinitionBuilder()
+    late var sourceDefinition = DatabaseDefinitionBuilder()
         .withDefaultModules()
         .withTable(
           TableDefinitionBuilder()
@@ -94,7 +95,7 @@ void main() {
         )
         .build();
 
-    var targetDefinition = DatabaseDefinitionBuilder()
+    late var targetDefinition = DatabaseDefinitionBuilder()
         .withDefaultModules()
         .withTable(
           TableDefinitionBuilder()
@@ -110,7 +111,7 @@ void main() {
         )
         .build();
 
-    var migration = generateDatabaseMigration(
+    late var migration = generateDatabaseMigration(
       databaseSource: sourceDefinition,
       databaseTarget: targetDefinition,
     );
@@ -156,7 +157,7 @@ void main() {
   });
 
   group(
-    'Given a table with multiple renamed columns when detecting migration',
+    'Given a table with multiple renamed columns, when detecting migration,',
     () {
       const tableName = 'example_table';
       const oldName1 = 'old_name_1';
@@ -166,7 +167,7 @@ void main() {
       const modelField1 = 'fieldOne';
       const modelField2 = 'fieldTwo';
 
-      var sourceDefinition = DatabaseDefinitionBuilder()
+      late var sourceDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -189,7 +190,7 @@ void main() {
           )
           .build();
 
-      var targetDefinition = DatabaseDefinitionBuilder()
+      late var targetDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -212,7 +213,7 @@ void main() {
           )
           .build();
 
-      var migration = generateDatabaseMigration(
+      late var migration = generateDatabaseMigration(
         databaseSource: sourceDefinition,
         databaseTarget: targetDefinition,
       );
@@ -238,14 +239,14 @@ void main() {
   );
 
   group(
-    'Given a renamed column with a changed type when detecting migration',
+    'Given a renamed column with a changed type, when detecting migration,',
     () {
       const tableName = 'example_table';
       const oldColumnName = 'old_name';
       const newColumnName = 'new_name';
       const modelFieldName = 'myField';
 
-      var sourceDefinition = DatabaseDefinitionBuilder()
+      late var sourceDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -262,7 +263,7 @@ void main() {
           )
           .build();
 
-      var targetDefinition = DatabaseDefinitionBuilder()
+      late var targetDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -280,7 +281,7 @@ void main() {
           )
           .build();
 
-      var migration = generateDatabaseMigration(
+      late var migration = generateDatabaseMigration(
         databaseSource: sourceDefinition,
         databaseTarget: targetDefinition,
       );
@@ -327,14 +328,15 @@ void main() {
   );
 
   group(
-    'Given a renamed column with changed nullability when detecting migration',
+    'Given a renamed column with changed nullability, '
+    'when detecting migration,',
     () {
       const tableName = 'example_table';
       const oldColumnName = 'old_name';
       const newColumnName = 'new_name';
       const modelFieldName = 'nullableField';
 
-      var sourceDefinition = DatabaseDefinitionBuilder()
+      late var sourceDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -351,7 +353,7 @@ void main() {
           )
           .build();
 
-      var targetDefinition = DatabaseDefinitionBuilder()
+      late var targetDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -368,7 +370,7 @@ void main() {
           )
           .build();
 
-      var migration = generateDatabaseMigration(
+      late var migration = generateDatabaseMigration(
         databaseSource: sourceDefinition,
         databaseTarget: targetDefinition,
       );
@@ -393,7 +395,7 @@ void main() {
   );
 
   group(
-    'Given a renamed column with changed default when detecting migration',
+    'Given a renamed column with changed default, when detecting migration,',
     () {
       const tableName = 'example_table';
       const oldColumnName = 'old_name';
@@ -401,7 +403,7 @@ void main() {
       const defaultValue = "'default'";
       const modelFieldName = 'defaultField';
 
-      var sourceDefinition = DatabaseDefinitionBuilder()
+      late var sourceDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -417,7 +419,7 @@ void main() {
           )
           .build();
 
-      var targetDefinition = DatabaseDefinitionBuilder()
+      late var targetDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -434,7 +436,7 @@ void main() {
           )
           .build();
 
-      var migration = generateDatabaseMigration(
+      late var migration = generateDatabaseMigration(
         databaseSource: sourceDefinition,
         databaseTarget: targetDefinition,
       );
@@ -462,7 +464,7 @@ void main() {
     },
   );
 
-  group('Given a table with mixed operations when detecting migration', () {
+  group('Given a table with mixed operations, when detecting migration,', () {
     const tableName = 'example_table';
     const renamedOldName = 'old_name';
     const renamedNewName = 'new_name';
@@ -471,7 +473,7 @@ void main() {
     const unchangedColumnName = 'unchanged_column';
     const renamedModelField = 'renamedModelField';
 
-    var sourceDefinition = DatabaseDefinitionBuilder()
+    late var sourceDefinition = DatabaseDefinitionBuilder()
         .withDefaultModules()
         .withTable(
           TableDefinitionBuilder()
@@ -501,7 +503,7 @@ void main() {
         )
         .build();
 
-    var targetDefinition = DatabaseDefinitionBuilder()
+    late var targetDefinition = DatabaseDefinitionBuilder()
         .withDefaultModules()
         .withTable(
           TableDefinitionBuilder()
@@ -532,7 +534,7 @@ void main() {
         )
         .build();
 
-    var migration = generateDatabaseMigration(
+    late var migration = generateDatabaseMigration(
       databaseSource: sourceDefinition,
       databaseTarget: targetDefinition,
     );

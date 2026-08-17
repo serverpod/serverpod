@@ -29,10 +29,10 @@ void main() async {
   });
 
   group(
-    'Given a transaction that does not match required database transaction',
+    'Given a transaction that does not match required database transaction,',
     () {
-      var invalidTransactionType = MockTransaction();
-      test('when calling `deleteWhere` then an error is thrown.', () async {
+      late var invalidTransactionType = MockTransaction();
+      test('when calling `deleteWhere`, then an error is thrown.', () async {
         expect(
           session.db.transaction<void>((transaction) async {
             await UniqueData.db.deleteWhere(
@@ -45,7 +45,7 @@ void main() async {
         );
       });
 
-      test('when calling `delete` then an error is thrown.', () async {
+      test('when calling `delete`, then an error is thrown.', () async {
         expect(
           session.db.transaction<void>((transaction) async {
             await UniqueData.db.delete(
@@ -58,7 +58,7 @@ void main() async {
         );
       });
 
-      test('when calling `deleteRow` then an error is thrown.', () async {
+      test('when calling `deleteRow`, then an error is thrown.', () async {
         expect(
           session.db.transaction<void>((transaction) async {
             await UniqueData.db.deleteRow(
@@ -73,7 +73,7 @@ void main() async {
     },
   );
 
-  group('Given deleting an object inside a transaction that is committed', () {
+  group('Given deleting an object inside a transaction that is committed,', () {
     late UniqueData insertedData;
     setUp(() async {
       insertedData = await UniqueData.db.insertRow(
@@ -82,7 +82,7 @@ void main() async {
       );
     });
 
-    test('when calling `delete` then does delete the object.', () async {
+    test('when calling `delete`, then does delete the object.', () async {
       await session.db.transaction((transaction) async {
         await UniqueData.db.delete(
           session,
@@ -94,7 +94,7 @@ void main() async {
       expect(await UniqueData.db.find(session), isEmpty);
     });
 
-    test('when calling `deleteWhere` then does delete the object.', () async {
+    test('when calling `deleteWhere`, then does delete the object.', () async {
       await session.db.transaction((transaction) async {
         await UniqueData.db.deleteWhere(
           session,
@@ -106,7 +106,7 @@ void main() async {
       expect(await UniqueData.db.find(session), isEmpty);
     });
 
-    test('when calling `deleteRow` then does delete the object.', () async {
+    test('when calling `deleteRow`, then does delete the object.', () async {
       await session.db.transaction((transaction) async {
         await UniqueData.db.deleteRow(
           session,
@@ -119,78 +119,84 @@ void main() async {
     });
   });
 
-  group('Given inserting object and starting transaction that is cancelled', () {
-    late UniqueData insertedData;
-    setUp(() async {
-      var data = UniqueData(number: 111, email: 'test@serverpod.dev');
+  group(
+    'Given inserting object and starting transaction that is cancelled,',
+    () {
+      late UniqueData insertedData;
+      setUp(() async {
+        var data = UniqueData(number: 111, email: 'test@serverpod.dev');
 
-      insertedData = await UniqueData.db.insertRow(
-        session,
-        data,
+        insertedData = await UniqueData.db.insertRow(
+          session,
+          data,
+        );
+      });
+
+      test(
+        'when calling `delete` before cancelling, '
+        'then does not delete the object.',
+        () async {
+          await session.db.transaction(
+            (transaction) async {
+              await UniqueData.db.delete(
+                session,
+                [insertedData],
+                transaction: transaction,
+              );
+
+              await transaction.cancel();
+            },
+          );
+
+          var fetchedData = await UniqueData.db.find(session);
+          expect(fetchedData, hasLength(1));
+          expect(fetchedData.first.number, 111);
+        },
       );
-    });
 
-    test(
-      'when calling `delete` before cancelling then does not delete the object.',
-      () async {
-        await session.db.transaction(
-          (transaction) async {
-            await UniqueData.db.delete(
-              session,
-              [insertedData],
-              transaction: transaction,
-            );
+      test(
+        'when calling `deleteWhere` before cancelling, '
+        'then does not delete the object.',
+        () async {
+          await session.db.transaction(
+            (transaction) async {
+              await UniqueData.db.deleteWhere(
+                session,
+                where: (_) => Constant.bool(true),
+                transaction: transaction,
+              );
 
-            await transaction.cancel();
-          },
-        );
+              await transaction.cancel();
+            },
+          );
 
-        var fetchedData = await UniqueData.db.find(session);
-        expect(fetchedData, hasLength(1));
-        expect(fetchedData.first.number, 111);
-      },
-    );
+          var fetchedData = await UniqueData.db.find(session);
+          expect(fetchedData, hasLength(1));
+          expect(fetchedData.first.number, 111);
+        },
+      );
 
-    test(
-      'when calling `deleteWhere` before cancelling then does not delete the object.',
-      () async {
-        await session.db.transaction(
-          (transaction) async {
-            await UniqueData.db.deleteWhere(
-              session,
-              where: (_) => Constant.bool(true),
-              transaction: transaction,
-            );
+      test(
+        'when calling `deleteRow` before cancelling, '
+        'then does not delete the object.',
+        () async {
+          await session.db.transaction(
+            (transaction) async {
+              await UniqueData.db.deleteRow(
+                session,
+                insertedData,
+                transaction: transaction,
+              );
 
-            await transaction.cancel();
-          },
-        );
+              await transaction.cancel();
+            },
+          );
 
-        var fetchedData = await UniqueData.db.find(session);
-        expect(fetchedData, hasLength(1));
-        expect(fetchedData.first.number, 111);
-      },
-    );
-
-    test(
-      'when calling `deleteRow` before cancelling then does not delete the object.',
-      () async {
-        await session.db.transaction(
-          (transaction) async {
-            await UniqueData.db.deleteRow(
-              session,
-              insertedData,
-              transaction: transaction,
-            );
-
-            await transaction.cancel();
-          },
-        );
-
-        var fetchedData = await UniqueData.db.find(session);
-        expect(fetchedData, hasLength(1));
-        expect(fetchedData.first.number, 111);
-      },
-    );
-  });
+          var fetchedData = await UniqueData.db.find(session);
+          expect(fetchedData, hasLength(1));
+          expect(fetchedData.first.number, 111);
+        },
+      );
+    },
+  );
 }

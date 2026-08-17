@@ -136,7 +136,8 @@ void main() {
       });
 
       test(
-        'when checking the custom migration hook, then it has been called for the user.',
+        'when checking the custom migration hook, '
+        'then it has been called for the user.',
         () async {
           expect(migratedUsers[userInfo.id!], isNotNull);
         },
@@ -153,7 +154,8 @@ void main() {
       );
 
       test(
-        'when checking the `EmailAccount`, then it has been created with the lower-case email variant.',
+        'when checking the `EmailAccount`, '
+        'then it has been created with the lower-case email variant.',
         () async {
           final emailAccount = await new_auth_email.EmailAccount.db
               .findFirstRow(
@@ -168,7 +170,8 @@ void main() {
       );
 
       test(
-        'when checking the `LegacyUserIdentifier`, then it has been created with the lower-case email variant.',
+        'when checking the `LegacyUserIdentifier`, '
+        'then it has been created with the lower-case email variant.',
         () async {
           final authUserId =
               await AuthBackwardsCompatibility.lookUpLegacyExternalUserIdentifier(
@@ -193,77 +196,81 @@ void main() {
     },
   );
 
-  withServerpod('Given five legacy `serverpod_auth` email-based user accounts,', (
-    final sessionBuilder,
-    final endpoints,
-  ) {
-    late Session session;
-    late UserMigrationFunction userMigration;
+  withServerpod(
+    'Given five legacy `serverpod_auth` email-based user accounts,',
+    (
+      final sessionBuilder,
+      final endpoints,
+    ) {
+      late Session session;
+      late UserMigrationFunction userMigration;
 
-    final migratedUsers = <int, UuidValue>{};
+      final migratedUsers = <int, UuidValue>{};
 
-    setUp(() async {
-      session = sessionBuilder.build();
+      setUp(() async {
+        session = sessionBuilder.build();
 
-      userMigration =
-          (
-            final session, {
-            required final newAuthUserId,
-            required final oldUserId,
-            final transaction,
-          }) async {
-            migratedUsers[oldUserId] = newAuthUserId;
-          };
+        userMigration =
+            (
+              final session, {
+              required final newAuthUserId,
+              required final oldUserId,
+              final transaction,
+            }) async {
+              migratedUsers[oldUserId] = newAuthUserId;
+            };
 
-      for (var i = 0; i < 5; i++) {
-        await legacy_auth.Emails.createUser(
-          session,
-          'user name',
-          'test_$i@serverpod.dev',
-          'Somepassword123!',
-        );
-      }
-    });
+        for (var i = 0; i < 5; i++) {
+          await legacy_auth.Emails.createUser(
+            session,
+            'user name',
+            'test_$i@serverpod.dev',
+            'Somepassword123!',
+          );
+        }
+      });
 
-    tearDown(() {
-      migratedUsers.clear();
-    });
+      tearDown(() {
+        migratedUsers.clear();
+      });
 
-    test(
-      'when calling `migrateUsers` successively, then accounts are migrated in the desired batch size.',
-      () async {
-        final migratedAccountsStep1 = await AuthMigrations.migrateUsers(
-          session,
-          userMigration: userMigration,
-          maxUsers: 2,
-          transaction: session.transaction,
-        );
-        expect(migratedAccountsStep1, 2);
-        expect(migratedUsers, hasLength(2));
-        expect(await MigratedUser.db.count(session), 2);
+      test(
+        'when calling `migrateUsers` successively, '
+        'then accounts are migrated in the desired batch size.',
+        () async {
+          final migratedAccountsStep1 = await AuthMigrations.migrateUsers(
+            session,
+            userMigration: userMigration,
+            maxUsers: 2,
+            transaction: session.transaction,
+          );
+          expect(migratedAccountsStep1, 2);
+          expect(migratedUsers, hasLength(2));
+          expect(await MigratedUser.db.count(session), 2);
 
-        final migratedAccountsStep2 = await AuthMigrations.migrateUsers(
-          session,
-          userMigration: userMigration,
-          maxUsers: 2,
-          transaction: session.transaction,
-        );
-        expect(migratedAccountsStep2, 2);
-        expect(migratedUsers, hasLength(4));
-        expect(await MigratedUser.db.count(session), 4);
+          final migratedAccountsStep2 = await AuthMigrations.migrateUsers(
+            session,
+            userMigration: userMigration,
+            maxUsers: 2,
+            transaction: session.transaction,
+          );
+          expect(migratedAccountsStep2, 2);
+          expect(migratedUsers, hasLength(4));
+          expect(await MigratedUser.db.count(session), 4);
 
-        final migratedAccountsStep3 = await AuthMigrations.migrateUsers(
-          session,
-          userMigration: userMigration,
-          maxUsers: 2,
-          transaction: session.transaction,
-        );
-        expect(migratedAccountsStep3, 1);
-        expect(migratedUsers, hasLength(5));
-        expect(await MigratedUser.db.count(session), 5);
-      },
-    );
-  });
+          final migratedAccountsStep3 = await AuthMigrations.migrateUsers(
+            session,
+            userMigration: userMigration,
+            maxUsers: 2,
+            transaction: session.transaction,
+          );
+          expect(migratedAccountsStep3, 1);
+          expect(migratedUsers, hasLength(5));
+          expect(await MigratedUser.db.count(session), 5);
+        },
+      );
+    },
+  );
 
   withServerpod(
     'Given a legacy `serverpod_auth` social-login-based user account migrated with `migrateUsers`,',
@@ -322,7 +329,8 @@ void main() {
       });
 
       test(
-        'when checking the custom migration hook, then it has been called for the user.',
+        'when checking the custom migration hook, '
+        'then it has been called for the user.',
         () async {
           expect(migratedUsers[userInfo.id!], isNotNull);
         },
@@ -339,14 +347,16 @@ void main() {
       );
 
       test(
-        'when checking the `EmailAccount`, then no entry has been created for the social-backed account.',
+        'when checking the `EmailAccount`, '
+        'then no entry has been created for the social-backed account.',
         () async {
           expect(await new_auth_email.EmailAccount.db.find(session), isEmpty);
         },
       );
 
       test(
-        'when checking the `LegacyUserIdentifier`, then it has been created with the external user ID.',
+        'when checking the `LegacyUserIdentifier`, '
+        'then it has been created with the external user ID.',
         () async {
           final authUserId =
               await AuthBackwardsCompatibility.lookUpLegacyExternalUserIdentifier(
@@ -421,7 +431,8 @@ void main() {
       });
 
       test(
-        'when looking up the LegacySession by the original AuthKey ID, then it is found with matching hash.',
+        'when looking up the LegacySession by the original AuthKey ID, '
+        'then it is found with matching hash.',
         () async {
           final legacySession = await LegacySession.db.findById(
             session,

@@ -29,11 +29,11 @@ void main() async {
   });
 
   group(
-    'Given a transaction that does not match required database transaction',
+    'Given a transaction that does not match required database transaction,',
     () {
-      var invalidTransactionType = MockTransaction();
+      late var invalidTransactionType = MockTransaction();
 
-      test('when calling `insert` then an error is thrown.', () async {
+      test('when calling `insert`, then an error is thrown.', () async {
         expect(
           session.db.transaction<void>((transaction) async {
             await UniqueData.db.insert(
@@ -46,7 +46,7 @@ void main() async {
         );
       });
 
-      test('when calling `insertRow` then an error is thrown.', () async {
+      test('when calling `insertRow`, then an error is thrown.', () async {
         expect(
           session.db.transaction<void>((transaction) async {
             await UniqueData.db.insertRow(
@@ -59,7 +59,7 @@ void main() async {
         );
       });
 
-      test('when making a query then an error is thrown.', () async {
+      test('when making a query, then an error is thrown.', () async {
         expect(
           session.db.unsafeExecute(
             'SELECT 1;',
@@ -71,42 +71,49 @@ void main() async {
     },
   );
 
-  group('Given inserting an object inside a transaction that is committed', () {
-    UniqueData data = UniqueData(number: 111, email: 'test@serverpod.dev');
+  group(
+    'Given inserting an object inside a transaction that is committed,',
+    () {
+      late UniqueData data = UniqueData(
+        number: 111,
+        email: 'test@serverpod.dev',
+      );
 
-    test('when calling `insert` then does create the object.', () async {
-      await session.db.transaction((transaction) async {
-        await UniqueData.db.insert(
-          session,
-          [data],
-          transaction: transaction,
-        );
+      test('when calling `insert`, then does create the object.', () async {
+        await session.db.transaction((transaction) async {
+          await UniqueData.db.insert(
+            session,
+            [data],
+            transaction: transaction,
+          );
+        });
+
+        var insertedData = await UniqueData.db.find(session);
+        expect(insertedData, hasLength(1));
+        expect(insertedData.first.number, 111);
       });
 
-      var insertedData = await UniqueData.db.find(session);
-      expect(insertedData, hasLength(1));
-      expect(insertedData.first.number, 111);
-    });
+      test('when calling `insertRow`, then does create the object.', () async {
+        await session.db.transaction((transaction) async {
+          await UniqueData.db.insertRow(
+            session,
+            data,
+            transaction: transaction,
+          );
+        });
 
-    test('when calling `insertRow` then does create the object.', () async {
-      await session.db.transaction((transaction) async {
-        await UniqueData.db.insertRow(
-          session,
-          data,
-          transaction: transaction,
-        );
+        var insertedData = await UniqueData.db.findFirstRow(session);
+        expect(insertedData?.number, 111);
       });
+    },
+  );
 
-      var insertedData = await UniqueData.db.findFirstRow(session);
-      expect(insertedData?.number, 111);
-    });
-  });
-
-  group('Given starting transaction that is cancelled', () {
-    UniqueData data = UniqueData(number: 111, email: 'test@serverpod.dev');
+  group('Given starting transaction that is cancelled,', () {
+    late UniqueData data = UniqueData(number: 111, email: 'test@serverpod.dev');
 
     test(
-      'when calling `insert` before cancelling then does not create the object.',
+      'when calling `insert` before cancelling, '
+      'then does not create the object.',
       () async {
         await session.db.transaction(
           (transaction) async {
@@ -128,7 +135,8 @@ void main() async {
     );
 
     test(
-      'when calling `insertRow` before cancelling then does not create the object.',
+      'when calling `insertRow` before cancelling, '
+      'then does not create the object.',
       () async {
         await session.db.transaction(
           (transaction) async {
@@ -151,7 +159,9 @@ void main() async {
   });
 
   test(
-    'Given a transaction that is cancelled when inserting row after transaction is cancelled then insertion has no effect',
+    'Given a transaction that is cancelled, '
+    'when inserting row after transaction is cancelled, '
+    'then insertion has no effect',
     () async {
       var data = UniqueData(number: 1, email: 'test@serverpod.dev');
       var data2 = UniqueData(number: 2, email: 'test2@serverpod.dev');

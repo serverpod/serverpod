@@ -10,11 +10,11 @@ import '../../test_util/database_definition_helpers.dart';
 
 void main() {
   group(
-    'Given a table that is not managed by serverpod that changes to be managed',
+    'Given a table that is not managed by serverpod that changes to be managed,',
     () {
       var tableName = 'example_table';
 
-      var sourceDefinition = DatabaseDefinitionBuilder()
+      late var sourceDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -24,7 +24,7 @@ void main() {
           )
           .build();
 
-      var targetDefinition = DatabaseDefinitionBuilder()
+      late var targetDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -34,19 +34,20 @@ void main() {
           )
           .build();
 
-      var migration = generateDatabaseMigration(
+      late var migration = generateDatabaseMigration(
         databaseSource: sourceDefinition,
         databaseTarget: targetDefinition,
       );
 
-      var psql = migration.toPgSql(
+      late var psql = migration.toPgSql(
         databaseDefinition: targetDefinition,
         installedModules: [],
         removedModules: [],
       );
 
       test(
-        'Given a table transitioning from none manage to manage then the psql code contains a create table if not exists.',
+        'Given a table transitioning from none manage to manage, '
+        'then the psql code contains a create table if not exists.',
         () {
           expect(psql, contains('CREATE TABLE IF NOT EXISTS "example_table"'));
         },
@@ -54,7 +55,7 @@ void main() {
     },
   );
 
-  group('pgvector extension creation in migrations', () {
+  group('pgvector extension creation in migrations,', () {
     const createVectorExtension = '''
 DO \$\$
 BEGIN
@@ -68,7 +69,8 @@ END
 ''';
 
     test(
-      'Given a migration with no vector field changes, then the code for creating vector extension is not generated.',
+      'Given a migration with no vector field changes, '
+      'then the code for creating vector extension is not generated.',
       () {
         var migration = DatabaseMigration(
           actions: [],
@@ -86,7 +88,8 @@ END
     );
 
     test(
-      'Given a migration that adds a table with a vector field, then the code for creating vector extension is generated.',
+      'Given a migration that adds a table with a vector field, '
+      'then the code for creating vector extension is generated.',
       () {
         var sourceDefinition = DatabaseDefinitionBuilder().build();
 
@@ -121,7 +124,8 @@ END
     );
 
     test(
-      'Given a migration that adds a vector column to existing table, then the code for creating vector extension is generated.',
+      'Given a migration that adds a vector column to existing table, '
+      'then the code for creating vector extension is generated.',
       () {
         var sourceDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -160,7 +164,8 @@ END
     );
 
     test(
-      'Given a migration that removes a table with a vector field, then the code for creating vector extension is not generated.',
+      'Given a migration that removes a table with a vector field, '
+      'then the code for creating vector extension is not generated.',
       () {
         var sourceDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -195,7 +200,8 @@ END
     );
 
     test(
-      'Given a migration that adds a table with a half vector field, then the code for creating vector extension is generated.',
+      'Given a migration that adds a table with a half vector field, '
+      'then the code for creating vector extension is generated.',
       () {
         var sourceDefinition = DatabaseDefinitionBuilder().build();
 
@@ -230,7 +236,8 @@ END
     );
 
     test(
-      'Given a migration that adds a half vector column to existing table, then the code for creating vector extension is generated.',
+      'Given a migration that adds a half vector column to existing table, '
+      'then the code for creating vector extension is generated.',
       () {
         var sourceDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -269,7 +276,8 @@ END
     );
 
     test(
-      'Given a migration that removes a table with a half vector field, then the code for creating vector extension is not generated.',
+      'Given a migration that removes a table with a half vector field, '
+      'then the code for creating vector extension is not generated.',
       () {
         var sourceDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -304,7 +312,8 @@ END
     );
 
     test(
-      'Given a migration that adds a table with a sparse vector field, then the code for creating vector extension is generated.',
+      'Given a migration that adds a table with a sparse vector field, '
+      'then the code for creating vector extension is generated.',
       () {
         var sourceDefinition = DatabaseDefinitionBuilder().build();
 
@@ -339,7 +348,8 @@ END
     );
 
     test(
-      'Given a migration that adds a sparse vector column to existing table, then the code for creating vector extension is generated.',
+      'Given a migration that adds a sparse vector column to existing table, '
+      'then the code for creating vector extension is generated.',
       () {
         var sourceDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -378,7 +388,8 @@ END
     );
 
     test(
-      'Given a migration that removes a table with a sparse vector field, then the code for creating vector extension is not generated.',
+      'Given a migration that removes a table with a sparse vector field, '
+      'then the code for creating vector extension is not generated.',
       () {
         var sourceDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -413,7 +424,8 @@ END
     );
 
     test(
-      'Given a migration that adds a table with a bit vector field, then the code for creating vector extension is generated.',
+      'Given a migration that adds a table with a bit vector field, '
+      'then the code for creating vector extension is generated.',
       () {
         var sourceDefinition = DatabaseDefinitionBuilder().build();
 
@@ -448,7 +460,8 @@ END
     );
 
     test(
-      'Given a migration that adds a bit vector column to existing table, then the code for creating vector extension is generated.',
+      'Given a migration that adds a bit vector column to existing table, '
+      'then the code for creating vector extension is generated.',
       () {
         var sourceDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -487,7 +500,8 @@ END
     );
 
     test(
-      'Given a migration that removes a table with a bit vector field, then the code for creating vector extension is not generated.',
+      'Given a migration that removes a table with a bit vector field, '
+      'then the code for creating vector extension is not generated.',
       () {
         var sourceDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -522,7 +536,7 @@ END
     );
   });
 
-  group('postgis extension creation in migrations', () {
+  group('postgis extension creation in migrations,', () {
     const createPostgisExtension = '''
 --
 -- CREATE POSTGIS EXTENSION IF AVAILABLE
@@ -539,7 +553,8 @@ END
 ''';
 
     test(
-      'Given a migration with no geography field changes, then the code for creating postgis extension is not generated.',
+      'Given a migration with no geography field changes, '
+      'then the code for creating postgis extension is not generated.',
       () {
         var migration = DatabaseMigration(
           actions: [],
@@ -557,7 +572,8 @@ END
     );
 
     test(
-      'Given a migration that adds a table with a geography point field, then the code for creating postgis extension is generated.',
+      'Given a migration that adds a table with a geography point field, '
+      'then the code for creating postgis extension is generated.',
       () {
         var sourceDefinition = DatabaseDefinitionBuilder().build();
 
@@ -591,7 +607,8 @@ END
     );
 
     test(
-      'Given a migration that adds a geography point column to existing table, then the code for creating postgis extension is generated.',
+      'Given a migration that adds a geography point column to existing table, '
+      'then the code for creating postgis extension is generated.',
       () {
         var sourceDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -629,7 +646,8 @@ END
     );
 
     test(
-      'Given a migration that removes a table with a geography point field, then the code for creating postgis extension is not generated.',
+      'Given a migration that removes a table with a geography point field, '
+      'then the code for creating postgis extension is not generated.',
       () {
         var sourceDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -663,7 +681,8 @@ END
     );
 
     test(
-      'Given a migration that adds a geography line string column to existing table, then the code for creating postgis extension is generated.',
+      'Given a migration that adds a geography line string column to existing table, '
+      'then the code for creating postgis extension is generated.',
       () {
         var sourceDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -701,7 +720,8 @@ END
     );
 
     test(
-      'Given a migration that adds a geography polygon column to existing table, then the code for creating postgis extension is generated.',
+      'Given a migration that adds a geography polygon column to existing table, '
+      'then the code for creating postgis extension is generated.',
       () {
         var sourceDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -739,7 +759,8 @@ END
     );
 
     test(
-      'Given a migration that adds a geography geometry collection column to existing table, then the code for creating postgis extension is generated.',
+      'Given a migration that adds a geography geometry collection column to existing table, '
+      'then the code for creating postgis extension is generated.',
       () {
         var sourceDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -777,7 +798,8 @@ END
     );
 
     test(
-      'Given a migration that removes a table with a geography line string field, then the code for creating postgis extension is not generated.',
+      'Given a migration that removes a table with a geography line string field, '
+      'then the code for creating postgis extension is not generated.',
       () {
         var sourceDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -811,7 +833,8 @@ END
     );
 
     test(
-      'Given a migration that removes a table with a geography polygon field, then the code for creating postgis extension is not generated.',
+      'Given a migration that removes a table with a geography polygon field, '
+      'then the code for creating postgis extension is not generated.',
       () {
         var sourceDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -845,7 +868,8 @@ END
     );
 
     test(
-      'Given a migration that removes a table with a geography geometry collection field, then the code for creating postgis extension is not generated.',
+      'Given a migration that removes a table with a geography geometry collection field, '
+      'then the code for creating postgis extension is not generated.',
       () {
         var sourceDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -879,7 +903,8 @@ END
     );
 
     test(
-      'Given a migration that adds a table with a geography line string field, then the code for creating postgis extension is generated.',
+      'Given a migration that adds a table with a geography line string field, '
+      'then the code for creating postgis extension is generated.',
       () {
         var sourceDefinition = DatabaseDefinitionBuilder().build();
 
@@ -913,7 +938,8 @@ END
     );
 
     test(
-      'Given a migration that adds a table with a geography polygon field, then the code for creating postgis extension is generated.',
+      'Given a migration that adds a table with a geography polygon field, '
+      'then the code for creating postgis extension is generated.',
       () {
         var sourceDefinition = DatabaseDefinitionBuilder().build();
 
@@ -947,7 +973,8 @@ END
     );
 
     test(
-      'Given a migration that adds a table with a geography geometry collection field, then the code for creating postgis extension is generated.',
+      'Given a migration that adds a table with a geography geometry collection field, '
+      'then the code for creating postgis extension is generated.',
       () {
         var sourceDefinition = DatabaseDefinitionBuilder().build();
 
@@ -983,7 +1010,9 @@ END
 
   /// Issue: https://github.com/serverpod/serverpod/issues/3503
   test(
-    'Given an existing table that that references a new table with a name lexically sorted before the existing one, when creating migraion sql then the migration code should create the table before defining the foreign key',
+    'Given an existing table that that references a new table with a name lexically sorted before the existing one, '
+    'when creating migraion sql, '
+    'then the migration code should create the table before defining the foreign key',
     () {
       var sourceModels = [
         ModelSourceBuilder().withFileName('existing_table').withYaml(
@@ -1047,11 +1076,13 @@ fields:
     },
   );
 
-  group('UUID v7 function generation in migrations', () {
+  group('UUID v7 function generation in migrations,', () {
     const v7functionHeader = 'create or replace function gen_random_uuid_v7()';
 
     test(
-      'Given no tables with UUID v7 default columns when generating migration SQL then the UUID v7 function declaration is not included.',
+      'Given no tables with UUID v7 default columns, '
+      'when generating migration SQL, '
+      'then the UUID v7 function declaration is not included.',
       () {
         final sourceDefinition = DatabaseDefinitionBuilder()
             .withDefaultModules()
@@ -1088,7 +1119,9 @@ fields:
     );
 
     test(
-      'Given a new table with UUID v7 default column when generating migration SQL then the UUID v7 function declaration is included.',
+      'Given a new table with UUID v7 default column, '
+      'when generating migration SQL, '
+      'then the UUID v7 function declaration is included.',
       () {
         final sourceDefinition = DatabaseDefinitionBuilder()
             .withDefaultModules()
@@ -1126,7 +1159,9 @@ fields:
     );
 
     test(
-      'Given an existing table when adding a column with UUID v7 default then the UUID v7 function declaration is included.',
+      'Given an existing table, '
+      'when adding a column with UUID v7 default, '
+      'then the UUID v7 function declaration is included.',
       () {
         final sourceDefinition = DatabaseDefinitionBuilder()
             .withDefaultModules()
@@ -1181,7 +1216,9 @@ fields:
     );
 
     test(
-      'Given a table with a UUID column when modifying it to use UUID v7 default then the UUID v7 function declaration is included.',
+      'Given a table with a UUID column, '
+      'when modifying it to use UUID v7 default, '
+      'then the UUID v7 function declaration is included.',
       () {
         final sourceDefinition = DatabaseDefinitionBuilder()
             .withDefaultModules()
@@ -1242,7 +1279,9 @@ fields:
     );
 
     test(
-      'Given a table with UUID v7 default when changing to UUID v4 default then the UUID v7 function declaration is not included.',
+      'Given a table with UUID v7 default, '
+      'when changing to UUID v4 default, '
+      'then the UUID v7 function declaration is not included.',
       () {
         final sourceDefinition = DatabaseDefinitionBuilder()
             .withDefaultModules()

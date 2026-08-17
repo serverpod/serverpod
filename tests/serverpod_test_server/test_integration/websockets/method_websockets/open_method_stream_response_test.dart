@@ -7,7 +7,7 @@ import 'package:web_socket/web_socket.dart';
 import '../websocket_extensions.dart';
 
 void main() {
-  group('Given method websocket connection', () {
+  group('Given method websocket connection,', () {
     late Serverpod server;
     late WebSocket webSocket;
 
@@ -25,7 +25,8 @@ void main() {
     });
 
     test(
-      'when an OpenMethodStreamResponse message and a ping message is sent to the server then OpenMethodStreamResponse is ignored and the server only responds with a pong message.',
+      'when an OpenMethodStreamResponse message and a ping message is sent to the server, '
+      'then OpenMethodStreamResponse is ignored and the server only responds with a pong message.',
       () {
         var pongReceived = Completer<void>();
         var otherMessageReceived = Completer<void>();

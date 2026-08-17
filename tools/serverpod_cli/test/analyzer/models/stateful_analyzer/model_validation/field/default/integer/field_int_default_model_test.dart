@@ -10,9 +10,10 @@ import '../../../../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
-  group('Given a class with fields with a "defaultModel" keyword', () {
+  group('Given a class with fields with a "defaultModel" keyword,', () {
     test(
-      'when the field is of type int and the defaultModel is set to "10", then the field should have a "default model" value',
+      'when the field is of type int and the defaultModel is set to "10", '
+      'then the field should have a "default model" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -40,7 +41,8 @@ void main() {
     );
 
     test(
-      'when the field is of type int and the defaultModel is set to "20", then the field should have a "default model" value',
+      'when the field is of type int and the defaultModel is set to "20", '
+      'then the field should have a "default model" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -69,7 +71,8 @@ void main() {
     );
 
     test(
-      'when the field is of type int and the defaultModel is empty, then an error is generated',
+      'when the field is of type int and the defaultModel is empty, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -133,7 +136,8 @@ void main() {
     );
 
     test(
-      'when the field is of type int with an invalid default value "TEN", then an error is generated',
+      'when the field is of type int with an invalid default value "TEN", '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -164,7 +168,8 @@ void main() {
     );
 
     test(
-      'when the field is of type int with an invalid default value containing decimals, then an error is generated',
+      'when the field is of type int with an invalid default value containing decimals, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -195,7 +200,8 @@ void main() {
     );
 
     test(
-      'when the field is of type int with an invalid defaultModel value, then an error is generated',
+      'when the field is of type int with an invalid defaultModel value, '
+      'then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -227,7 +233,8 @@ void main() {
   });
 
   test(
-    'Given a class with a declared id field of type int with a "defaultModel" keyword, then an error is collected',
+    'Given a class with a declared id field of type int with a "defaultModel" keyword, '
+    'then an error is collected',
     () {
       var models = [
         ModelSourceBuilder().withYaml(

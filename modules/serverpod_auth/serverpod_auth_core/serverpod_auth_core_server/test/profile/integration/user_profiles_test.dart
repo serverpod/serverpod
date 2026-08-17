@@ -23,7 +23,8 @@ void main() {
       });
 
       test(
-        'when creating a user profile, then it can be looked up by the auth user ID.',
+        'when creating a user profile, '
+        'then it can be looked up by the auth user ID.',
         () async {
           userProfiles = const UserProfiles();
 
@@ -45,7 +46,8 @@ void main() {
       );
 
       test(
-        'when creating a new user profile, then `onBeforeUserProfileCreated` can be used to modify it before persisting.',
+        'when creating a new user profile, '
+        'then `onBeforeUserProfileCreated` can be used to modify it before persisting.',
         () async {
           userProfiles = UserProfiles(
             config: UserProfileConfig(
@@ -73,7 +75,8 @@ void main() {
       );
 
       test(
-        'when creating a new user profile, then `onAfterUserProfileCreated` is invoked with the new profile after it has been written to the database.',
+        'when creating a new user profile, '
+        'then `onAfterUserProfileCreated` is invoked with the new profile after it has been written to the database.',
         () async {
           UserProfileModel? createdProfileFromCallback;
           userProfiles = UserProfiles(
@@ -103,7 +106,8 @@ void main() {
       );
 
       test(
-        'when `onBeforeUserProfileCreated` throws during the creation of a new user profile, then the profile is not stored in the database and the error forwarded.',
+        'when `onBeforeUserProfileCreated` throws during the creation of a new user profile, '
+        'then the profile is not stored in the database and the error forwarded.',
         () async {
           final userProfiles = UserProfiles(
             config: UserProfileConfig(
@@ -133,7 +137,8 @@ void main() {
       );
 
       test(
-        'when `onAfterUserProfileCreated` throws during the creation of a new user profile, then the profile is not stored in the database and the error forwarded.',
+        'when `onAfterUserProfileCreated` throws during the creation of a new user profile, '
+        'then the profile is not stored in the database and the error forwarded.',
         () async {
           final userProfiles = UserProfiles(
             config: UserProfileConfig(
@@ -191,9 +196,10 @@ void main() {
       );
 
       group(
-        'when creating a user profile with image url, then image is accessible on user.',
+        'when creating a user profile with image url, '
+        'then image is accessible on user.',
         () {
-          final userProfiles = UserProfiles(
+          late final userProfiles = UserProfiles(
             config: UserProfileConfig(
               /// Mock image fetch function that returns a 1x1 pixel PNG.
               imageFetchFunc: (final _) => onePixelPng,
@@ -233,7 +239,7 @@ void main() {
       );
 
       group(
-        'when creating a user profile with image bytes',
+        'when creating a user profile with image bytes,',
         () {
           const userProfiles = UserProfiles();
           late UserProfileModel createdProfile;
@@ -328,7 +334,8 @@ void main() {
     });
 
     test(
-      'when trying to create a second user profile for the same auth user ID, then this fails.',
+      'when trying to create a second user profile for the same auth user ID, '
+      'then this fails.',
       () async {
         const userProfiles = UserProfiles();
         await expectLater(
@@ -351,7 +358,8 @@ void main() {
     );
 
     test(
-      'when updating a user profile, then `onBeforeUserProfileUpdated` is invoked with the new profile to be set.',
+      'when updating a user profile, '
+      'then `onBeforeUserProfileUpdated` is invoked with the new profile to be set.',
       () async {
         UserProfileData? updatedProfileFromCallback;
         final userProfiles = UserProfiles(
@@ -389,7 +397,8 @@ void main() {
     );
 
     test(
-      'when `onBeforeUserProfileUpdated` throws during the update of a user profile, then the update is not visible in the database.',
+      'when `onBeforeUserProfileUpdated` throws during the update of a user profile, '
+      'then the update is not visible in the database.',
       () async {
         final userProfiles = UserProfiles(
           config: UserProfileConfig(
@@ -426,7 +435,8 @@ void main() {
     );
 
     test(
-      'when `onAfterUserProfileUpdated` throws during the update of a user profile, then the update is not visible in the database.',
+      'when `onAfterUserProfileUpdated` throws during the update of a user profile, '
+      'then the update is not visible in the database.',
       () async {
         final userProfiles = UserProfiles(
           config: UserProfileConfig(
@@ -462,7 +472,8 @@ void main() {
     );
 
     test(
-      'when updating a user profile, then `onAfterUserProfileUpdated` is invoked with the updated profile.',
+      'when updating a user profile, '
+      'then `onAfterUserProfileUpdated` is invoked with the updated profile.',
       () async {
         UserProfileModel? updatedProfileFromCallback;
         final userProfiles = UserProfiles(
@@ -590,7 +601,8 @@ void main() {
     );
 
     test(
-      'when removing the user image then no default image is added and imageUrl remains null.',
+      'when removing the user image, '
+      'then no default image is added and imageUrl remains null.',
       () async {
         const userProfiles = UserProfiles();
         final profileBefore = await userProfiles.findUserProfileByUserId(
@@ -686,7 +698,8 @@ void main() {
     );
 
     test(
-      'when deleting the user profile, then the images are deleted from storage as well.',
+      'when deleting the user profile, '
+      'then the images are deleted from storage as well.',
       () async {
         const userProfiles = UserProfiles();
         final userProfile = await userProfiles.maybeFindUserProfileByUserId(
@@ -754,7 +767,9 @@ void main() {
     );
 
     test(
-      'Given a user profile with an image when removing the user image then the image is deleted and imageUrl is null.',
+      'Given a user profile with an image, '
+      'when removing the user image, '
+      'then the image is deleted and imageUrl is null.',
       () async {
         const userProfiles = UserProfiles();
         final profileBeforeRemove = await userProfiles.findUserProfileByUserId(
@@ -820,7 +835,8 @@ void main() {
       });
 
       test(
-        'when creating a profile and its associated image in a transaction, then there are visible in that transaction but not after a rollback.',
+        'when creating a profile and its associated image in a transaction, '
+        'then there are visible in that transaction but not after a rollback.',
         () async {
           expect(session.transaction, isNull);
 

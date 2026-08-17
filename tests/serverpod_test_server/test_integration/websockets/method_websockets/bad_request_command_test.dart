@@ -7,7 +7,7 @@ import 'package:web_socket/web_socket.dart';
 import '../websocket_extensions.dart';
 
 void main() {
-  group('Given method websocket connection', () {
+  group('Given method websocket connection,', () {
     late Serverpod server;
     late WebSocket webSocket;
 
@@ -24,7 +24,7 @@ void main() {
       await webSocket.tryClose();
     });
 
-    test('when bad request is sent then connection is closed.', () async {
+    test('when bad request is sent, then connection is closed.', () async {
       var webSocketCompleter = Completer<void>();
       webSocket.textEvents.listen(
         (event) {},

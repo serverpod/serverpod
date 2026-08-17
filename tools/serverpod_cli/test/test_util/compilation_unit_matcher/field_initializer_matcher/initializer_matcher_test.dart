@@ -4,7 +4,7 @@ import '../../compilation_unit_matcher.dart';
 
 void main() {
   group(
-    'Given compilation unit with class with constructor without field initializer',
+    'Given compilation unit with class with constructor without field initializer,',
     () {
       late final compilationUnit = parseCode(
         '''
@@ -14,7 +14,7 @@ void main() {
     ''',
       );
 
-      test('when negate matching field initializer then test passes', () {
+      test('when negate matching field initializer, then test passes', () {
         expect(
           compilationUnit,
           isNot(
@@ -28,7 +28,7 @@ void main() {
   );
 
   group(
-    'Given compilation unit with class with constructor with field initializer',
+    'Given compilation unit with class with constructor with field initializer,',
     () {
       late final compilationUnit = parseCode(
         '''
@@ -39,7 +39,7 @@ void main() {
     ''',
       );
 
-      test('when matching field initializer then test passes', () {
+      test('when matching field initializer, then test passes', () {
         expect(
           compilationUnit,
           containsClass(
@@ -48,7 +48,7 @@ void main() {
         );
       });
 
-      test('when negate matching wrong initializer then test passes', () {
+      test('when negate matching wrong initializer, then test passes', () {
         expect(
           compilationUnit,
           isNot(
@@ -60,7 +60,7 @@ void main() {
       });
 
       test(
-        'when matching field initializer then mismatch description is correct',
+        'when matching field initializer, then mismatch description is correct',
         () {
           final matcher =
               containsClass(
@@ -82,7 +82,9 @@ void main() {
   );
 
   test(
-    'Given field initializer matcher when describing matcher then description is correct',
+    'Given field initializer matcher, '
+    'when describing matcher, '
+    'then description is correct',
     () {
       final matcher =
           containsClass(

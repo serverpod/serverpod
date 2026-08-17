@@ -7,7 +7,7 @@ void main() async {
   var session = await IntegrationTestServer().session();
   var userId = 1;
 
-  group('Given an authenticated user', () {
+  group('Given an authenticated user,', () {
     tearDown(() async {
       session.updateAuthenticated(null);
       await AuthKey.db.deleteWhere(
@@ -17,7 +17,8 @@ void main() async {
     });
 
     test(
-      'when updateSession is true then the session is updated with authentication info',
+      'when updateSession is true, '
+      'then the session is updated with authentication info',
       () async {
         await UserAuthentication.signInUser(
           session,
@@ -48,7 +49,8 @@ void main() async {
     );
 
     test(
-      'when updateSession is false then the session is not updated with authentication info',
+      'when updateSession is false, '
+      'then the session is not updated with authentication info',
       () async {
         await UserAuthentication.signInUser(
           session,
@@ -69,7 +71,8 @@ void main() async {
     );
 
     test(
-      'when updateSession is not provided (default behavior) then the session is updated with authentication info',
+      'when updateSession is not provided (default behavior), '
+      'then the session is updated with authentication info',
       () async {
         await UserAuthentication.signInUser(
           session,

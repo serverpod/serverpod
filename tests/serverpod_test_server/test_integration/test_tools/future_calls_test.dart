@@ -7,7 +7,7 @@ import 'serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given TestToolsEndpoint with generated futureCalls',
+    'Given TestToolsEndpoint with generated futureCalls,',
     (sessionBuilder, endpoints) {
       late Session session;
 
@@ -16,7 +16,7 @@ void main() {
       });
 
       test(
-        'when invoking a future call then it is executed immediately',
+        'when invoking a future call, then it is executed immediately',
         () async {
           await endpoints.futureCalls.testGeneratedCall.logData(
             sessionBuilder,

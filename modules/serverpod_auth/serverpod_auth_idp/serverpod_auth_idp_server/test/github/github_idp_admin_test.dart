@@ -48,7 +48,8 @@ void main() {
       });
 
       test(
-        'when calling `GitHubIdpAdmin.findUserByGitHubUserId` with existing userIdentifier, then the auth user ID is returned.',
+        'when calling `GitHubIdpAdmin.findUserByGitHubUserId` with existing userIdentifier, '
+        'then the auth user ID is returned.',
         () async {
           final foundUserId = await GitHubIdpAdmin.findUserByGitHubUserId(
             session,
@@ -60,7 +61,8 @@ void main() {
       );
 
       test(
-        'when calling `GitHubIdpAdmin.findUserByGitHubUserId` with non-existing userIdentifier, then null is returned.',
+        'when calling `GitHubIdpAdmin.findUserByGitHubUserId` with non-existing userIdentifier, '
+        'then null is returned.',
         () async {
           final foundUserId = await GitHubIdpAdmin.findUserByGitHubUserId(
             session,
@@ -92,7 +94,8 @@ void main() {
       });
 
       test(
-        'when calling `linkGitHubAuthentication`, then a GitHub account is created.',
+        'when calling `linkGitHubAuthentication`, '
+        'then a GitHub account is created.',
         () async {
           final githubAccount = await admin.linkGitHubAuthentication(
             session,

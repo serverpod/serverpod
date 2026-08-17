@@ -16,7 +16,8 @@ const generator = DartClientCodeGenerator();
 
 void main() {
   group(
-    'Given a class with serverOnly scoped fields having defaultModelValue when generating client code',
+    'Given a class with serverOnly scoped fields having defaultModelValue, '
+    'when generating client code,',
     () {
       ClassDeclaration? baseClass;
       ConstructorDeclaration? privateConstructor;

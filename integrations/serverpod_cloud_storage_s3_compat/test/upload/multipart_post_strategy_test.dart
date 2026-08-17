@@ -5,8 +5,8 @@ import 'package:test/test.dart';
 
 void main() {
   test(
-    'Given a MultipartPostUploadStrategy '
-    'when reading uploadType '
+    'Given a MultipartPostUploadStrategy, '
+    'when reading uploadType, '
     'then it is multipart',
     () {
       final strategy = MultipartPostUploadStrategy();
@@ -15,7 +15,7 @@ void main() {
     },
   );
 
-  group('Given a MultipartPostUploadStrategy with custom endpoints', () {
+  group('Given a MultipartPostUploadStrategy with custom endpoints,', () {
     late MultipartPostUploadStrategy strategy;
     late CustomEndpointConfig endpoints;
 
@@ -26,7 +26,7 @@ void main() {
       );
     });
 
-    group('when creating direct upload description', () {
+    group('when creating direct upload description,', () {
       late String? description;
 
       setUp(() async {
@@ -92,7 +92,7 @@ void main() {
       });
     });
 
-    group('when creating private upload description', () {
+    group('when creating private upload description,', () {
       late String? description;
 
       setUp(() async {
@@ -118,7 +118,7 @@ void main() {
     });
   });
 
-  group('Given a MultipartPostUploadStrategy with HTTP custom endpoints', () {
+  group('Given a MultipartPostUploadStrategy with HTTP custom endpoints,', () {
     late MultipartPostUploadStrategy strategy;
     late CustomEndpointConfig endpoints;
 
@@ -130,7 +130,7 @@ void main() {
       );
     });
 
-    group('when creating direct upload description', () {
+    group('when creating direct upload description,', () {
       late String? description;
 
       setUp(() async {

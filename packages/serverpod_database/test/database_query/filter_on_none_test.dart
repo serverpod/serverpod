@@ -16,9 +16,9 @@ void main() {
   ]).build();
   var manyRelation = ManyRelationBuilder(relationTable).build();
 
-  group('Given SelectQueryBuilder', () {
-    group('when filtering on none many relation', () {
-      var query = SelectQueryBuilder(
+  group('Given SelectQueryBuilder,', () {
+    group('when filtering on none many relation,', () {
+      late var query = SelectQueryBuilder(
         table: citizenTable,
       ).withWhere(manyRelation.none()).build();
       test('then a sub query is created for the filter.', () {
@@ -39,8 +39,8 @@ void main() {
       });
     });
 
-    group('when filtering on NOT none many relation', () {
-      var query = SelectQueryBuilder(
+    group('when filtering on NOT none many relation,', () {
+      late var query = SelectQueryBuilder(
         table: citizenTable,
       ).withWhere(~manyRelation.none()).build();
 
@@ -58,9 +58,9 @@ void main() {
     });
 
     group(
-      'when filtering on NOT of a combined scalar and none many relation',
+      'when filtering on NOT of a combined scalar and none many relation,',
       () {
-        var query = SelectQueryBuilder(
+        late var query = SelectQueryBuilder(
           table: citizenTable,
         ).withWhere(~(citizenTable.id.equals(1) & manyRelation.none())).build();
 
@@ -82,8 +82,8 @@ void main() {
       },
     );
 
-    group('when filtering on filtered none many relation', () {
-      var query = SelectQueryBuilder(
+    group('when filtering on filtered none many relation,', () {
+      late var query = SelectQueryBuilder(
         table: citizenTable,
       ).withWhere(manyRelation.none((t) => t.id.equals(1))).build();
 
@@ -97,10 +97,10 @@ void main() {
       });
     });
 
-    group('when filtering on multiple none many relation', () {
-      var where =
+    group('when filtering on multiple none many relation,', () {
+      late var where =
           manyRelation.none((t) => t.id.equals(1)) & manyRelation.none();
-      var query = SelectQueryBuilder(
+      late var query = SelectQueryBuilder(
         table: citizenTable,
       ).withWhere(where).build();
 
@@ -145,9 +145,9 @@ void main() {
     });
   });
 
-  group('Given DeleteQueryBuilder', () {
-    group('when filtering on none many relation', () {
-      var query = DeleteQueryBuilder(
+  group('Given DeleteQueryBuilder,', () {
+    group('when filtering on none many relation,', () {
+      late var query = DeleteQueryBuilder(
         table: citizenTable,
       ).withWhere(manyRelation.none()).build();
       test('then a sub query is created for the filter.', () {
@@ -168,8 +168,8 @@ void main() {
       });
     });
 
-    group('when filtering on filtered none many relation', () {
-      var query = DeleteQueryBuilder(
+    group('when filtering on filtered none many relation,', () {
+      late var query = DeleteQueryBuilder(
         table: citizenTable,
       ).withWhere(manyRelation.none((t) => t.id.equals(1))).build();
 
@@ -183,10 +183,10 @@ void main() {
       });
     });
 
-    group('when filtering on multiple none many relation', () {
-      var where =
+    group('when filtering on multiple none many relation,', () {
+      late var where =
           manyRelation.none((t) => t.id.equals(1)) & manyRelation.none();
-      var query = DeleteQueryBuilder(
+      late var query = DeleteQueryBuilder(
         table: citizenTable,
       ).withWhere(where).build();
 

@@ -34,7 +34,7 @@ class NonBustWidgetRoute extends WidgetRoute {
 }
 
 void main() {
-  group('Given a WidgetRoute with cacheBustingConfig', () {
+  group('Given a WidgetRoute with cacheBustingConfig,', () {
     late Serverpod pod;
     late int port;
     late Directory assetDir;
@@ -95,7 +95,8 @@ void main() {
     });
 
     test(
-      'when template uses cache-busting patterns, then response contains cache-busted paths',
+      'when template uses cache-busting patterns, '
+      'then response contains cache-busted paths',
       () async {
         var response = await http.get(
           Uri.parse('http://localhost:$port/bust-page'),

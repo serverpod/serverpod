@@ -12,9 +12,10 @@ void main() {
   final config = GeneratorConfigBuilder().withName(projectName).build();
 
   group(
-    'Given a class with a field with jsonKey set to a valid string when analyzing',
+    'Given a class with a field with jsonKey set to a valid string, '
+    'when analyzing,',
     () {
-      final models = [
+      late final models = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -51,9 +52,9 @@ void main() {
   );
 
   group(
-    'Given a class with a field without jsonKey set when analyzing',
+    'Given a class with a field without jsonKey set, when analyzing,',
     () {
-      final models = [
+      late final models = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -90,9 +91,10 @@ void main() {
   );
 
   group(
-    'Given a class with a field with jsonKey containing special characters when analyzing',
+    'Given a class with a field with jsonKey containing special characters, '
+    'when analyzing,',
     () {
-      final models = [
+      late final models = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -128,9 +130,9 @@ void main() {
   );
 
   group(
-    'Given a table class with a field with jsonKey set when analyzing',
+    'Given a table class with a field with jsonKey set, when analyzing,',
     () {
-      final models = [
+      late final models = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -170,9 +172,10 @@ void main() {
   );
 
   group(
-    'Given a class with multiple fields with different jsonKey values when analyzing',
+    'Given a class with multiple fields with different jsonKey values, '
+    'when analyzing,',
     () {
-      final models = [
+      late final models = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -211,9 +214,9 @@ void main() {
   );
 
   group(
-    'Given a class with multiple fields with the same jsonKey when analyzing',
+    'Given a class with multiple fields with the same jsonKey, when analyzing,',
     () {
-      final models = [
+      late final models = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -254,9 +257,10 @@ void main() {
   );
 
   group(
-    'Given a class with a field with jsonKey set to an empty value when analyzing',
+    'Given a class with a field with jsonKey set to an empty value, '
+    'when analyzing,',
     () {
-      final models = [
+      late final models = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -297,9 +301,10 @@ void main() {
   );
 
   group(
-    'Given a class with a field with jsonKey set to an empty string when analyzing',
+    'Given a class with a field with jsonKey set to an empty string, '
+    'when analyzing,',
     () {
-      final models = [
+      late final models = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -339,9 +344,10 @@ void main() {
   );
 
   group(
-    'Given a class with a field with jsonKey set to a non-string value when analyzing',
+    'Given a class with a field with jsonKey set to a non-string value, '
+    'when analyzing,',
     () {
-      final models = [
+      late final models = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -381,9 +387,10 @@ void main() {
   );
 
   group(
-    'Given a class with a field with jsonKey matching another field name when analyzing',
+    'Given a class with a field with jsonKey matching another field name, '
+    'when analyzing,',
     () {
-      final models = [
+      late final models = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example

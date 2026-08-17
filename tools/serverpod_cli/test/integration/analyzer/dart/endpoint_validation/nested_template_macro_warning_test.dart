@@ -25,9 +25,10 @@ void main() {
   });
 
   group(
-    'Given an endpoint with nested template in class documentation when analyzed',
+    'Given an endpoint with nested template in class documentation, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late Directory testDirectory;
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
@@ -89,9 +90,10 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint with nested template in method documentation when analyzed',
+    'Given an endpoint with nested template in method documentation, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late Directory testDirectory;
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
@@ -149,8 +151,8 @@ class ExampleEndpoint extends Endpoint {
     },
   );
 
-  group('Given an endpoint with nested macro in template when analyzed', () {
-    var collector = CodeGenerationCollector();
+  group('Given an endpoint with nested macro in template, when analyzed,', () {
+    late var collector = CodeGenerationCollector();
     late Directory testDirectory;
 
     late List<EndpointDefinition> endpointDefinitions;
@@ -204,9 +206,10 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
-    'Given an endpoint with both nested template and nested macro when analyzed',
+    'Given an endpoint with both nested template and nested macro, '
+    'when analyzed,',
     () {
-      var collector = CodeGenerationCollector();
+      late var collector = CodeGenerationCollector();
       late Directory testDirectory;
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;

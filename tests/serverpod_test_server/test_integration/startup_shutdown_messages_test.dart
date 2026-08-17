@@ -43,7 +43,7 @@ void main() {
   const verbose = false;
 
   group(
-    'Given a running serverpod server with lifecycle messages silenced',
+    'Given a running serverpod server with lifecycle messages silenced,',
     () {
       late Process process;
       late List<String> stdoutLines;
@@ -76,7 +76,7 @@ void main() {
         });
       });
 
-      test('when starting the server '
+      test('when starting the server, '
           'then it does not print startup lifecycle messages', () async {
         await _waitForServerToStart(timeout: startupTimeout);
         await Future.delayed(signalDelay);
@@ -89,7 +89,7 @@ void main() {
         expect(exitCode, 130);
       });
 
-      test('when shutting down the server '
+      test('when shutting down the server, '
           'then it does not print lifecycle messages', () async {
         await _waitForServerToStart(timeout: startupTimeout);
         await Future.delayed(signalDelay);
@@ -104,7 +104,7 @@ void main() {
   );
 
   group(
-    'Given a running serverpod server with lifecycle messages enabled',
+    'Given a running serverpod server with lifecycle messages enabled,',
     () {
       late Process process;
       late List<String> stdoutLines;
@@ -136,7 +136,7 @@ void main() {
         });
       });
 
-      test('when starting the server '
+      test('when starting the server, '
           'then it prints lifecycle messages', () async {
         await _waitForServerToStart(timeout: startupTimeout);
         await Future.delayed(signalDelay);
@@ -149,7 +149,7 @@ void main() {
         expect(exitCode, 130);
       });
 
-      test('when shutting down the server '
+      test('when shutting down the server, '
           'then it prints lifecycle messages', () async {
         await _waitForServerToStart(timeout: startupTimeout);
         await Future.delayed(signalDelay);

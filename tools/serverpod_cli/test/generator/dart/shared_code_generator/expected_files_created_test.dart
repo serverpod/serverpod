@@ -19,8 +19,8 @@ final config = GeneratorConfigBuilder()
 const generator = DartSharedCodeGenerator();
 
 void main() {
-  group('Given a single class when generating the code', () {
-    var models = [
+  group('Given a single class, when generating the code,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
@@ -52,8 +52,8 @@ void main() {
     });
   });
 
-  group('Given a single enum when generating the code', () {
-    var models = [
+  group('Given a single enum, when generating the code,', () {
+    late var models = [
       EnumDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
@@ -85,8 +85,8 @@ void main() {
     });
   });
 
-  group('Given a multiple classes when generating the code', () {
-    var models = [
+  group('Given a multiple classes, when generating the code,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
@@ -182,7 +182,9 @@ void main() {
   });
 
   test(
-    'Given a server-side only enum when generating the code then the shared-side file is NOT created',
+    'Given a server-side only enum, '
+    'when generating the code, '
+    'then the shared-side file is NOT created',
     () {
       var models = [
         EnumDefinitionBuilder()

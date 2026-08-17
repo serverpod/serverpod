@@ -5,7 +5,7 @@ import '../serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given that runMode is set to test when calling withServerpod',
+    'Given that runMode is set to test, when calling withServerpod,',
     serverpodStartTimeout: Duration(seconds: 4),
     runMode: ServerpodRunMode.test,
     (sessionBuilder, endpoints) {

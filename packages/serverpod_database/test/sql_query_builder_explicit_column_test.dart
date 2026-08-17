@@ -20,9 +20,9 @@ class TableWithColumnOverride extends Table<int?> {
 void main() {
   ValueEncoder.set(const PostgresValueEncoder());
 
-  group('Given model with an explicit column field name', () {
+  group('Given model with an explicit column field name,', () {
     test(
-      'when building the select query '
+      'when building the select query, '
       'then the explicit column name is used in the sql',
       () {
         final table = TableWithColumnOverride();
@@ -41,7 +41,8 @@ void main() {
     );
 
     test(
-      'when deleting a table with explicit column names then the explicit column name is used in the sql',
+      'when deleting a table with explicit column names, '
+      'then the explicit column name is used in the sql',
       () {
         final table = TableWithColumnOverride();
         final query = DeleteQueryBuilder(
@@ -58,12 +59,13 @@ void main() {
     );
   });
 
-  group('Given model with relation with explicit column name', () {
-    var citizenTable = TableWithExplicitColumn(tableName: 'citizen');
-    var companyTable = Table<int?>(tableName: 'company');
+  group('Given model with relation with explicit column name,', () {
+    late var citizenTable = TableWithExplicitColumn(tableName: 'citizen');
+    late var companyTable = Table<int?>(tableName: 'company');
 
     test(
-      'when where expression depends on relations then output includes joins according to table relations.',
+      'when where expression depends on relations, '
+      'then output includes joins according to table relations.',
       () {
         var relationTable = TableWithExplicitColumn(
           tableName: companyTable.tableName,
@@ -102,12 +104,13 @@ void main() {
     );
   });
 
-  group('Given model with nested relation with explicit column name', () {
-    var citizenTable = TableWithExplicitColumn(tableName: 'citizen');
-    var companyTable = Table<int?>(tableName: 'company');
+  group('Given model with nested relation with explicit column name,', () {
+    late var citizenTable = TableWithExplicitColumn(tableName: 'citizen');
+    late var companyTable = Table<int?>(tableName: 'company');
 
     test(
-      'when where expression depends on nested relations then output includes joins according to table relations.',
+      'when where expression depends on nested relations, '
+      'then output includes joins according to table relations.',
       () {
         var nestedRelationTable = TableWithExplicitColumn(
           tableName: citizenTable.tableName,
@@ -159,11 +162,12 @@ void main() {
     );
   });
 
-  group('Given model with one-to-many relation with explicit column name', () {
-    var citizenTable = Table<int?>(tableName: 'citizen');
+  group('Given model with one-to-many relation with explicit column name,', () {
+    late var citizenTable = Table<int?>(tableName: 'citizen');
 
     test(
-      'when ordering by many relation then output is many relation order by query.',
+      'when ordering by many relation, '
+      'then output is many relation order by query.',
       () {
         var relationTable = TableWithExplicitManyRelation(
           tableName: citizenTable.tableName,
@@ -183,11 +187,12 @@ void main() {
     );
   });
 
-  group('Given model with self relation with explicit column name', () {
-    var citizenTable = TableWithExplicitSelfRelation(tableName: 'citizen');
+  group('Given model with self relation with explicit column name,', () {
+    late var citizenTable = TableWithExplicitSelfRelation(tableName: 'citizen');
 
     test(
-      'when where expression depends on self relation then output includes joins according to table relations.',
+      'when where expression depends on self relation, '
+      'then output includes joins according to table relations.',
       () {
         var relationTable = TableWithExplicitSelfRelation(
           tableName: citizenTable.tableName,
@@ -226,11 +231,12 @@ void main() {
     );
   });
 
-  group('Given CountQueryBuilder with explicit column names', () {
-    var citizenTable = Table<int?>(tableName: 'citizen');
+  group('Given CountQueryBuilder with explicit column names,', () {
+    late var citizenTable = Table<int?>(tableName: 'citizen');
 
     test(
-      'when filtered count column is used in where expression then query is a sub queried count query.',
+      'when filtered count column is used in where expression, '
+      'then query is a sub queried count query.',
       () {
         var relationTable = TableWithExplicitManyRelation(
           tableName: citizenTable.tableName,
@@ -250,7 +256,8 @@ void main() {
     );
 
     test(
-      'when none expression is used with explicit column then query uses NOT IN with field query alias.',
+      'when none expression is used with explicit column, '
+      'then query uses NOT IN with field query alias.',
       () {
         var relationTable = TableWithExplicitManyRelation(
           tableName: citizenTable.tableName,
@@ -270,7 +277,8 @@ void main() {
     );
 
     test(
-      'when every expression is used with explicit column then query uses NOT IN with field query alias.',
+      'when every expression is used with explicit column, '
+      'then query uses NOT IN with field query alias.',
       () {
         var relationTable = TableWithExplicitManyRelation(
           tableName: citizenTable.tableName,
@@ -290,12 +298,13 @@ void main() {
     );
   });
 
-  group('Given DeleteQueryBuilder with explicit column names', () {
-    var citizenTable = TableWithExplicitColumn(tableName: 'citizen');
-    var companyTable = Table<int?>(tableName: 'company');
+  group('Given DeleteQueryBuilder with explicit column names,', () {
+    late var citizenTable = TableWithExplicitColumn(tableName: 'citizen');
+    late var companyTable = Table<int?>(tableName: 'company');
 
     test(
-      'when deleting a table with explicit column names with where and order by then the order by uses the field alias in the sql',
+      'when deleting a table with explicit column names with where and order by, '
+      'then the order by uses the field alias in the sql',
       () {
         final table = TableWithColumnOverride();
         final query =
@@ -320,7 +329,8 @@ void main() {
     );
 
     test(
-      'when deleting a table with explicit column names and multiple order by columns then the order by uses the field aliases in the sql',
+      'when deleting a table with explicit column names and multiple order by columns, '
+      'then the order by uses the field aliases in the sql',
       () {
         final table = TableWithColumnOverride();
         final query =
@@ -345,7 +355,8 @@ void main() {
     );
 
     test(
-      'when query with return id and order by is built then format exception is thrown.',
+      'when query with return id and order by is built, '
+      'then format exception is thrown.',
       () {
         final table = TableWithColumnOverride();
         final queryBuilder =
@@ -372,7 +383,8 @@ void main() {
     );
 
     test(
-      'when query with return none and order by is built then format exception is thrown.',
+      'when query with return none and order by is built, '
+      'then format exception is thrown.',
       () {
         final table = TableWithColumnOverride();
         final queryBuilder =
@@ -399,7 +411,8 @@ void main() {
     );
 
     test(
-      'when delete query orders by a column that references its own table then format exception is thrown.',
+      'when delete query orders by a column that references its own table, '
+      'then format exception is thrown.',
       () {
         final table = TableWithColumnOverride();
         var relationTable = TableWithExplicitColumn(
@@ -440,7 +453,8 @@ void main() {
     );
 
     test(
-      'when delete query orders by column count then format exception is thrown.',
+      'when delete query orders by column count, '
+      'then format exception is thrown.',
       () {
         var relationTable = TableWithExplicitManyRelation(
           tableName: citizenTable.tableName,
@@ -473,7 +487,8 @@ void main() {
     );
 
     test(
-      'when delete query order by has different table as base then exception is thrown.',
+      'when delete query order by has different table as base, '
+      'then exception is thrown.',
       () {
         var queryBuilder =
             DeleteQueryBuilder(
@@ -501,7 +516,8 @@ void main() {
     );
 
     test(
-      'when where expression depends on relations then output includes using according to table relations.',
+      'when where expression depends on relations, '
+      'then output includes using according to table relations.',
       () {
         var relationTable = TableWithExplicitColumn(
           tableName: companyTable.tableName,
@@ -540,7 +556,8 @@ void main() {
     );
 
     test(
-      'when where expression depends on nested relations then output includes using according to table relations.',
+      'when where expression depends on nested relations, '
+      'then output includes using according to table relations.',
       () {
         var nestedRelationTable = TableWithExplicitColumn(
           tableName: citizenTable.tableName,
@@ -592,7 +609,8 @@ void main() {
     );
 
     test(
-      'when any expression is used and order by is built then output is a valid SQL query.',
+      'when any expression is used and order by is built, '
+      'then output is a valid SQL query.',
       () {
         final table = TableWithColumnOverride();
         var relationTable = TableWithExplicitManyRelation(
@@ -619,11 +637,12 @@ void main() {
     );
   });
 
-  group('Given many relation joining on non-id column with explicit names', () {
-    var citizenTable = Table<int?>(tableName: 'citizen');
+  group('Given many relation joining on non-id column with explicit names,', () {
+    late var citizenTable = Table<int?>(tableName: 'citizen');
 
     test(
-      'when none expression is used on non-id join then query uses NOT IN with correct field query alias.',
+      'when none expression is used on non-id join, '
+      'then query uses NOT IN with correct field query alias.',
       () {
         var relationTable = TableWithManyRelationOnNonId(
           tableName: citizenTable.tableName,

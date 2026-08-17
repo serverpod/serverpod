@@ -5,10 +5,10 @@ import 'package:serverpod_embedded_postgres/src/binary/executable.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given the host platform', () {
-    var installDir = Directory(p.join('install', '16.13.0'));
+  group('Given the host platform,', () {
+    late var installDir = Directory(p.join('install', '16.13.0'));
 
-    test('when getting the binary executable '
+    test('when getting the binary executable, '
         'then it lands in the bin/ directory.', () {
       var path = binExecutable(installDir, 'postgres');
 
@@ -16,7 +16,7 @@ void main() {
     });
 
     test(
-      'when getting the binary executable '
+      'when getting the binary executable, '
       'then the name carries the .exe extension on Windows and the bare name otherwise.',
       () {
         var name = p.basename(binExecutable(installDir, 'postgres'));

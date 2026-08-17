@@ -18,12 +18,13 @@ const generateWatchCompletionKeywords = [
 ];
 
 void main() async {
-  group('Given a model file that is changed when generate watch is active', () {
-    var projectName = createRandomProjectName();
+  group('Given a model file that is changed, '
+      'when generate watch is active,', () {
+    late var projectName = createRandomProjectName();
     var (serverDir, _, clientDir) = createProjectFolderPaths(projectName);
 
     Process? generateWatch;
-    KeywordSearchInStream generateStreamSearch = KeywordSearchInStream(
+    late KeywordSearchInStream generateStreamSearch = KeywordSearchInStream(
       keywords: generateWatchCompletionKeywords,
     );
     setUp(() async {
@@ -168,13 +169,14 @@ fields:
   });
 
   group(
-    'Given a model file in the "lib/src/ directory that is changed when generate watch is active',
+    'Given a model file in the "lib/src/ directory that is changed, '
+    'when generate watch is active,',
     () {
-      var projectName = createRandomProjectName();
+      late var projectName = createRandomProjectName();
       var (serverDir, _, clientDir) = createProjectFolderPaths(projectName);
 
       Process? generateWatch;
-      KeywordSearchInStream generateStreamSearch = KeywordSearchInStream(
+      late KeywordSearchInStream generateStreamSearch = KeywordSearchInStream(
         keywords: generateWatchCompletionKeywords,
       );
       setUp(() async {
@@ -319,12 +321,13 @@ fields:
     },
   );
 
-  group('Given an endpoint file that is changed when generate watch is active', () {
-    var projectName = createRandomProjectName();
+  group('Given an endpoint file that is changed, '
+      'when generate watch is active,', () {
+    late var projectName = createRandomProjectName();
     var (serverDir, _, _) = createProjectFolderPaths(projectName);
 
     Process? generateWatch;
-    KeywordSearchInStream generateStreamSearch = KeywordSearchInStream(
+    late KeywordSearchInStream generateStreamSearch = KeywordSearchInStream(
       keywords: generateWatchCompletionKeywords,
     );
     setUp(() async {
@@ -475,13 +478,14 @@ class TestEndpoint extends Endpoint {
   });
 
   group(
-    'Given an endpoint file in the "lib/src" folder that is changed when generate watch is active',
+    'Given an endpoint file in the "lib/src" folder that is changed, '
+    'when generate watch is active,',
     () {
-      var projectName = createRandomProjectName();
+      late var projectName = createRandomProjectName();
       var (serverDir, _, _) = createProjectFolderPaths(projectName);
 
       Process? generateWatch;
-      KeywordSearchInStream generateStreamSearch = KeywordSearchInStream(
+      late KeywordSearchInStream generateStreamSearch = KeywordSearchInStream(
         keywords: generateWatchCompletionKeywords,
       );
       setUp(() async {
@@ -634,13 +638,14 @@ class TestEndpoint extends Endpoint {
   );
 
   group(
-    'Given a serializable model used in an endpoint that is moved to a subfolder when generate watch is active',
+    'Given a serializable model used in an endpoint that is moved to a subfolder, '
+    'when generate watch is active,',
     () {
-      var projectName = createRandomProjectName();
+      late var projectName = createRandomProjectName();
       var (serverDir, _, clientDir) = createProjectFolderPaths(projectName);
 
       Process? generateWatch;
-      KeywordSearchInStream generateStreamSearch = KeywordSearchInStream(
+      late KeywordSearchInStream generateStreamSearch = KeywordSearchInStream(
         keywords: generateWatchCompletionKeywords,
       );
       setUp(() async {
@@ -790,12 +795,13 @@ fields:
     },
   );
 
-  group('Given a generated file that is changed when generate watch is active', () {
-    var projectName = createRandomProjectName();
+  group('Given a generated file that is changed, '
+      'when generate watch is active,', () {
+    late var projectName = createRandomProjectName();
     var (serverDir, _, clientDir) = createProjectFolderPaths(projectName);
 
     Process? generateWatch;
-    KeywordSearchInStream generateStreamSearch = KeywordSearchInStream(
+    late KeywordSearchInStream generateStreamSearch = KeywordSearchInStream(
       keywords: generateWatchCompletionKeywords,
     );
     setUp(() async {

@@ -4,7 +4,9 @@ import '../../compilation_unit_matcher.dart';
 
 void main() {
   test(
-    'Given unnamed constructor matcher when describing matcher then description is correct',
+    'Given unnamed constructor matcher, '
+    'when describing matcher, '
+    'then description is correct',
     () {
       final matcher = containsClass('User').withUnnamedConstructor() as Matcher;
       final description = StringDescription();
@@ -20,7 +22,9 @@ void main() {
   );
 
   test(
-    'Given named constructor matcher when describing matcher then description is correct',
+    'Given named constructor matcher, '
+    'when describing matcher, '
+    'then description is correct',
     () {
       final matcher =
           containsClass('User').withNamedConstructor('_') as Matcher;
@@ -35,7 +39,9 @@ void main() {
   );
 
   test(
-    'Given unnamed factory constructor matcher when describing matcher then description is correct',
+    'Given unnamed factory constructor matcher, '
+    'when describing matcher, '
+    'then description is correct',
     () {
       final matcher =
           containsClass('User').withUnnamedConstructor(isFactory: true)
@@ -51,7 +57,9 @@ void main() {
   );
 
   test(
-    'Given named factory constructor matcher when describing matcher then description is correct',
+    'Given named factory constructor matcher, '
+    'when describing matcher, '
+    'then description is correct',
     () {
       final matcher =
           containsClass('User').withNamedConstructor('_', isFactory: true)

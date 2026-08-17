@@ -22,15 +22,16 @@ void main() {
   ]);
 
   group(
-    'Given a hierarchy with a non-sealed parent exception and a child exception when generating code',
+    'Given a hierarchy with a non-sealed parent exception and a child exception, '
+    'when generating code,',
     () {
-      var parent = ExceptionClassDefinitionBuilder()
+      late var parent = ExceptionClassDefinitionBuilder()
           .withClassName('AppException')
           .withFileName('app_exception')
           .withSimpleField('message', 'String')
           .build();
 
-      var child = ExceptionClassDefinitionBuilder()
+      late var child = ExceptionClassDefinitionBuilder()
           .withClassName('NotFoundException')
           .withFileName('not_found_exception')
           .withSimpleField('code', 'int')
@@ -41,20 +42,20 @@ void main() {
 
       var models = [parent, child];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var parentCompilationUnit = parseString(
+      late var parentCompilationUnit = parseString(
         content: codeMap[getExpectedFilePath(parent.fileName)]!,
       ).unit;
-      var childCompilationUnit = parseString(
+      late var childCompilationUnit = parseString(
         content: codeMap[getExpectedFilePath(child.fileName)]!,
       ).unit;
 
       group('then the ${parent.className}', () {
-        var parentClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        late var parentClass = CompilationUnitHelpers.tryFindClassDeclaration(
           parentCompilationUnit,
           name: parent.className,
         );
@@ -96,7 +97,7 @@ void main() {
       });
 
       group('then the ${child.className}', () {
-        var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        late var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
           childCompilationUnit,
           name: child.className,
         );

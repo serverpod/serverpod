@@ -35,7 +35,7 @@ void main() {
     publicPort: 0,
   );
 
-  group('Given a WebServer started in dev mode', () {
+  group('Given a WebServer started in dev mode,', () {
     late Serverpod pod;
     late int port;
 
@@ -98,7 +98,7 @@ void main() {
     );
   });
 
-  group('Given a WebServer started without dev mode', () {
+  group('Given a WebServer started without dev mode,', () {
     late Serverpod pod;
     late int port;
 

@@ -9,7 +9,8 @@ import '../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
   test(
-    'Given that no initial validation was done, then an empty list is returned when validating all files.',
+    'Given that no initial validation was done, '
+    'then an empty list is returned when validating all files.',
     () {
       var statefulAnalyzer = StatefulAnalyzer(config, []);
 
@@ -20,7 +21,8 @@ void main() {
   );
 
   test(
-    'When we add and remove a model, then an empty list is returned when validating all files.',
+    'When we add and remove a model, '
+    'then an empty list is returned when validating all files.',
     () {
       var statefulAnalyzer = StatefulAnalyzer(config, []);
 
@@ -45,7 +47,9 @@ void main() {
   );
 
   test(
-    'Given an empty state, when removing a model that does not exist and validating all, then an empty list is returned',
+    'Given an empty state, '
+    'when removing a model that does not exist and validating all, '
+    'then an empty list is returned',
     () {
       var statefulAnalyzer = StatefulAnalyzer(config, []);
 
@@ -59,7 +63,9 @@ void main() {
   );
 
   test(
-    'Given an empty state, when reading registeredModelUris, then an empty list is returned.',
+    'Given an empty state, '
+    'when reading registeredModelUris, '
+    'then an empty list is returned.',
     () {
       var statefulAnalyzer = StatefulAnalyzer(config, []);
 
@@ -68,7 +74,9 @@ void main() {
   );
 
   test(
-    'Given models in the initial state, when reading registeredModelUris, then the source URIs of all registered models are returned.',
+    'Given models in the initial state, '
+    'when reading registeredModelUris, '
+    'then the source URIs of all registered models are returned.',
     () {
       var firstUri = Uri(path: 'lib/src/model/first.yaml');
       var secondUri = Uri(path: 'lib/src/model/second.yaml');
@@ -97,7 +105,9 @@ void main() {
   );
 
   test(
-    'Given an empty state, when validating a single model, then an empty list is returned',
+    'Given an empty state, '
+    'when validating a single model, '
+    'then an empty list is returned',
     () {
       var statefulAnalyzer = StatefulAnalyzer(config, []);
 
@@ -114,7 +124,9 @@ fields:
     },
   );
   test(
-    'Given a valid model class as the initial state, when validating all, then the class is serialized.',
+    'Given a valid model class as the initial state, '
+    'when validating all, '
+    'then the class is serialized.',
     () {
       var yamlSource = ModelSourceBuilder().withYaml(
         '''
@@ -134,7 +146,9 @@ fields:
   );
 
   test(
-    'Given a valid shared model as the initial state, when validating all, then the class is serialized and has sharedPackageName set.',
+    'Given a valid shared model as the initial state, '
+    'when validating all, '
+    'then the class is serialized and has sharedPackageName set.',
     () {
       var yamlSource = ModelSourceBuilder()
           .withYaml(
@@ -160,7 +174,9 @@ fields:
   );
 
   test(
-    'Given a valid model class and an error callback is registered, when validating all, then the callback is triggered.',
+    'Given a valid model class and an error callback is registered, '
+    'when validating all, '
+    'then the callback is triggered.',
     () {
       var yamlSource = ModelSourceBuilder().withYaml(
         '''
@@ -184,7 +200,9 @@ fields:
   );
 
   test(
-    'Given a model with invalid syntax and an error callback is registered, when validating all, then the callback is triggered.',
+    'Given a model with invalid syntax and an error callback is registered, '
+    'when validating all, '
+    'then the callback is triggered.',
     () {
       var yamlSource = ModelSourceBuilder().withYaml('''''').build();
 
@@ -202,7 +220,9 @@ fields:
   );
 
   test(
-    'Given a model with a severe error (invalid syntax), when validating all, then hasSevereErrors returns true',
+    'Given a model with a severe error (invalid syntax), '
+    'when validating all, '
+    'then hasSevereErrors returns true',
     () {
       var yamlSource = ModelSourceBuilder().withYaml('''''').build();
 
@@ -217,7 +237,9 @@ fields:
   );
 
   test(
-    'Given a model with multi line invalid yaml syntax when validating all then error is reported.',
+    'Given a model with multi line invalid yaml syntax, '
+    'when validating all, '
+    'then error is reported.',
     () {
       var invalidSource = ModelSourceBuilder().withYaml(
         '''
@@ -247,7 +269,9 @@ and neither is this line
   );
 
   test(
-    'Given a model that was invalid on first validation, when validating the same model with an updated valid syntax, then the previous errors are cleared.',
+    'Given a model that was invalid on first validation, '
+    'when validating the same model with an updated valid syntax, '
+    'then the previous errors are cleared.',
     () {
       var modelUri = Uri(path: 'lib/src/model/example.yaml');
       var invalidSource = ModelSourceBuilder()
@@ -299,7 +323,9 @@ and neither is this line
   );
 
   test(
-    'Given two yaml models with the same class name, when validating all, then an error is reported.',
+    'Given two yaml models with the same class name, '
+    'when validating all, '
+    'then an error is reported.',
     () {
       var yamlSource1 = ModelSourceBuilder().withFileName('example1').withYaml(
         '''
@@ -338,7 +364,9 @@ and neither is this line
   );
 
   test(
-    'Given two yaml models with the same class name, when removing and revalidating, then the previous error is cleared.',
+    'Given two yaml models with the same class name, '
+    'when removing and revalidating, '
+    'then the previous error is cleared.',
     () {
       var yamlSource1 = ModelSourceBuilder().withFileName('example1').withYaml(
         '''
@@ -386,7 +414,9 @@ and neither is this line
   );
 
   test(
-    'Given an initial validation with one valid model, when adding a second model with the same class and revalidating, then an error is reported.',
+    'Given an initial validation with one valid model, '
+    'when adding a second model with the same class and revalidating, '
+    'then an error is reported.',
     () {
       var yamlSource1 = ModelSourceBuilder().withFileName('example1').withYaml(
         '''
@@ -436,7 +466,9 @@ and neither is this line
   );
 
   test(
-    'Given a yaml model with a field type wrapped in (), when parsing, then an error should be returned',
+    'Given a yaml model with a field type wrapped in (), '
+    'when parsing, '
+    'then an error should be returned',
     () {
       var yamlSource = ModelSourceBuilder().withFileName('example').withYaml(
         '''
@@ -500,7 +532,7 @@ and neither is this line
 
   test(
     'Given two models containing a hint-severity issue and reportIssuesForPaths containing only one model path, '
-    'when validateAll is called '
+    'when validateAll is called, '
     'then only the in-scope model is notified.',
     () {
       const pathInScope = 'lib/src/model/in_scope.yaml';

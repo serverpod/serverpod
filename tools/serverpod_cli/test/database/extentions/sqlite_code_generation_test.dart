@@ -21,12 +21,12 @@ List<DatabaseMigrationVersionModel> _sqliteModules(DatabaseDefinition def) =>
       ];
 
 void main() {
-  group('Given classes with a circular relation when generating migration, '
-      'when generating SQL for SQLite, ', () {
+  group('Given classes with a circular relation, when generating migration, '
+      'when generating SQL for SQLite,', () {
     var citizen = 'citizen';
     var company = 'company';
     var town = 'town';
-    var models = [
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(citizen.sentenceCase)
           .withFileName(citizen)
@@ -50,7 +50,7 @@ void main() {
           .build(),
     ];
 
-    var databaseDefinition = createDatabaseDefinitionFromModels(
+    late var databaseDefinition = createDatabaseDefinitionFromModels(
       models,
       'example',
       [],
@@ -63,7 +63,7 @@ void main() {
     group(
       'then SQLite file for migration',
       () {
-        var sqliteFile = databaseDefinition.toSqliteSql(
+        late var sqliteFile = databaseDefinition.toSqliteSql(
           installedModules: _sqliteModules(databaseDefinition),
         );
 
@@ -170,9 +170,9 @@ void main() {
     },
   );
 
-  group('Given a table definition with a vector field', () {
+  group('Given a table definition with a vector field,', () {
     var modelName = 'vectorModel';
-    var models = [
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(modelName.sentenceCase)
           .withFileName(modelName)
@@ -181,7 +181,7 @@ void main() {
           .build(),
     ];
 
-    var databaseDefinition = createDatabaseDefinitionFromModels(
+    late var databaseDefinition = createDatabaseDefinitionFromModels(
       models,
       'example',
       [],
@@ -242,8 +242,8 @@ void main() {
     },
   );
 
-  group('Given a migration changing a column from json to jsonb', () {
-    var sourceDefinition = DatabaseDefinitionBuilder()
+  group('Given a migration changing a column from json to jsonb,', () {
+    late var sourceDefinition = DatabaseDefinitionBuilder()
         .withTable(
           TableDefinitionBuilder()
               .withName('my_table')
@@ -258,8 +258,10 @@ void main() {
         )
         .build();
     var sourceTable = sourceDefinition.tables.first;
-    var sourceColumn = sourceTable.columns.firstWhere((c) => c.name == 'data');
-    var targetDefinition = sourceDefinition.copyWith(
+    late var sourceColumn = sourceTable.columns.firstWhere(
+      (c) => c.name == 'data',
+    );
+    late var targetDefinition = sourceDefinition.copyWith(
       tables: [
         sourceTable.copyWith(
           columns: sourceTable.columns
@@ -273,7 +275,7 @@ void main() {
       ],
     );
 
-    var migration = generateDatabaseMigration(
+    late var migration = generateDatabaseMigration(
       databaseSource: sourceDefinition,
       databaseTarget: targetDefinition,
     );
@@ -299,8 +301,8 @@ void main() {
     );
   });
 
-  group('Given a migration changing a column from jsonb to json', () {
-    var sourceDefinition = DatabaseDefinitionBuilder()
+  group('Given a migration changing a column from jsonb to json,', () {
+    late var sourceDefinition = DatabaseDefinitionBuilder()
         .withTable(
           TableDefinitionBuilder()
               .withName('my_table')
@@ -315,8 +317,10 @@ void main() {
         )
         .build();
     var sourceTable = sourceDefinition.tables.first;
-    var sourceColumn = sourceTable.columns.firstWhere((c) => c.name == 'data');
-    var targetDefinition = sourceDefinition.copyWith(
+    late var sourceColumn = sourceTable.columns.firstWhere(
+      (c) => c.name == 'data',
+    );
+    late var targetDefinition = sourceDefinition.copyWith(
       tables: [
         sourceTable.copyWith(
           columns: sourceTable.columns
@@ -330,7 +334,7 @@ void main() {
       ],
     );
 
-    var migration = generateDatabaseMigration(
+    late var migration = generateDatabaseMigration(
       databaseSource: sourceDefinition,
       databaseTarget: targetDefinition,
     );
@@ -356,9 +360,9 @@ void main() {
     );
   });
 
-  group('Given a table definition with a GeographyPoint field', () {
+  group('Given a table definition with a GeographyPoint field,', () {
     var modelName = 'geoPointModel';
-    var models = [
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(modelName.sentenceCase)
           .withFileName(modelName)
@@ -367,13 +371,13 @@ void main() {
           .build(),
     ];
 
-    var databaseDefinition = createDatabaseDefinitionFromModels(
+    late var databaseDefinition = createDatabaseDefinitionFromModels(
       models,
       'example',
       [],
     );
 
-    test('when toSqliteSql is called then the column maps to TEXT.', () {
+    test('when toSqliteSql is called, then the column maps to TEXT.', () {
       var sqlite = databaseDefinition.toSqliteSql(
         installedModules: _sqliteModules(databaseDefinition),
       );
@@ -381,9 +385,9 @@ void main() {
     });
   });
 
-  group('Given a table definition with a GeographyLineString field', () {
+  group('Given a table definition with a GeographyLineString field,', () {
     var modelName = 'geoLineStringModel';
-    var models = [
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(modelName.sentenceCase)
           .withFileName(modelName)
@@ -392,13 +396,13 @@ void main() {
           .build(),
     ];
 
-    var databaseDefinition = createDatabaseDefinitionFromModels(
+    late var databaseDefinition = createDatabaseDefinitionFromModels(
       models,
       'example',
       [],
     );
 
-    test('when toSqliteSql is called then the column maps to TEXT.', () {
+    test('when toSqliteSql is called, then the column maps to TEXT.', () {
       var sqlite = databaseDefinition.toSqliteSql(
         installedModules: _sqliteModules(databaseDefinition),
       );
@@ -406,9 +410,9 @@ void main() {
     });
   });
 
-  group('Given a table definition with a GeographyPolygon field', () {
+  group('Given a table definition with a GeographyPolygon field,', () {
     var modelName = 'geoPolygonModel';
-    var models = [
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(modelName.sentenceCase)
           .withFileName(modelName)
@@ -417,13 +421,13 @@ void main() {
           .build(),
     ];
 
-    var databaseDefinition = createDatabaseDefinitionFromModels(
+    late var databaseDefinition = createDatabaseDefinitionFromModels(
       models,
       'example',
       [],
     );
 
-    test('when toSqliteSql is called then the column maps to TEXT.', () {
+    test('when toSqliteSql is called, then the column maps to TEXT.', () {
       var sqlite = databaseDefinition.toSqliteSql(
         installedModules: _sqliteModules(databaseDefinition),
       );
@@ -432,10 +436,10 @@ void main() {
   });
 
   group(
-    'Given a table definition with a GeographyGeometryCollection field',
+    'Given a table definition with a GeographyGeometryCollection field,',
     () {
       var modelName = 'geoCollectionModel';
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(modelName.sentenceCase)
             .withFileName(modelName)
@@ -444,13 +448,13 @@ void main() {
             .build(),
       ];
 
-      var databaseDefinition = createDatabaseDefinitionFromModels(
+      late var databaseDefinition = createDatabaseDefinitionFromModels(
         models,
         'example',
         [],
       );
 
-      test('when toSqliteSql is called then the column maps to TEXT.', () {
+      test('when toSqliteSql is called, then the column maps to TEXT.', () {
         var sqlite = databaseDefinition.toSqliteSql(
           installedModules: _sqliteModules(databaseDefinition),
         );

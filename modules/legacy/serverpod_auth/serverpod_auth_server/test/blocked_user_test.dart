@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 import 'integration/test_tools/serverpod_test_tools.dart';
 
 void main() {
-  withServerpod('Given a blocked user', (sessionBuilder, _) {
+  withServerpod('Given a blocked user,', (sessionBuilder, _) {
     const email = 'test@serverpod.dev';
     const password = 'password123';
     late int userId;
@@ -26,7 +26,8 @@ void main() {
     });
 
     test(
-      'when user attempts to authenticate, then authentication fails with reason "blocked"',
+      'when user attempts to authenticate, '
+      'then authentication fails with reason "blocked"',
       () async {
         var session = sessionBuilder.build();
         var result = await Emails.authenticate(session, email, password);
@@ -37,7 +38,7 @@ void main() {
     );
   });
 
-  withServerpod('Given a previously blocked user', (sessionBuilder, _) {
+  withServerpod('Given a previously blocked user,', (sessionBuilder, _) {
     const email = 'test@serverpod.dev';
     const password = 'password123';
     setUp(() async {

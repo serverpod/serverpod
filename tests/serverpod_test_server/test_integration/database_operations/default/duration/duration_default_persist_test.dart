@@ -15,7 +15,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database, then the "defaultPersist=1d 2h 10min 30s 100ms" field should be the expected duration',
+      'when creating a record in the database, '
+      'then the "defaultPersist=1d 2h 10min 30s 100ms" field should be the expected duration',
       () async {
         var object = DurationDefaultPersist();
         var databaseObject = await DurationDefaultPersist.db.insertRow(
@@ -38,7 +39,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with an unsafe query, then the "defaultPersist=1d 2h 10min 30s 100ms" field should be the expected duration',
+      'when creating a record in the database with an unsafe query, '
+      'then the "defaultPersist=1d 2h 10min 30s 100ms" field should be the expected duration',
       () async {
         await session.db.unsafeQuery(
           '''
@@ -65,7 +67,8 @@ void main() async {
     );
 
     test(
-      'when creating a record in the database with a specific value, then the "durationDefaultPersist" field value should match the provided value',
+      'when creating a record in the database with a specific value, '
+      'then the "durationDefaultPersist" field value should match the provided value',
       () async {
         var specificDuration = Duration(
           days: 3,

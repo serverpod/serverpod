@@ -10,12 +10,12 @@ void main() {
   var exceptionHandler = TestExceptionHandler();
 
   withServerpod(
-    'Given withServerpod with a diagnostic event handler',
+    'Given withServerpod with a diagnostic event handler,',
     experimentalFeatures: ExperimentalFeatures(
       diagnosticEventHandlers: [exceptionHandler],
     ),
     (sessionBuilder, endpoints) {
-      test('when calling an endpoint method that submits an exception event '
+      test('when calling an endpoint method that submits an exception event, '
           'then the diagnostic event handler gets called', () async {
         final result = await endpoints.diagnosticEventTest.submitExceptionEvent(
           sessionBuilder,

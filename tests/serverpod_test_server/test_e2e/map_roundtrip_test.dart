@@ -5,9 +5,9 @@ import 'package:test/test.dart';
 void main() {
   var client = Client(serverUrl);
 
-  group('Given a Map with DateTime key', () {
+  group('Given a Map with DateTime key,', () {
     test(
-      'when sent to the server then it is returned correctly.',
+      'when sent to the server, then it is returned correctly.',
       () async {
         var dateTime1 = DateTime.utc(2024, 1, 15, 10, 30);
         var dateTime2 = DateTime.utc(2024, 6, 20, 14, 45);
@@ -22,7 +22,7 @@ void main() {
     );
 
     test(
-      'when an empty map is sent to the server then empty map is returned.',
+      'when an empty map is sent to the server, then empty map is returned.',
       () async {
         var map = <DateTime, bool>{};
 
@@ -33,7 +33,8 @@ void main() {
     );
 
     test(
-      'when a nullable map with value is sent to the server then it is returned correctly.',
+      'when a nullable map with value is sent to the server, '
+      'then it is returned correctly.',
       () async {
         var dateTime = DateTime.utc(2024, 3, 10, 8, 0);
         var map = {dateTime: true};
@@ -47,7 +48,7 @@ void main() {
     );
 
     test(
-      'when a null map is sent to the server then null is returned.',
+      'when a null map is sent to the server, then null is returned.',
       () async {
         var result = await client.mapParameters.returnDateTimeBoolMapNullable(
           null,
@@ -58,9 +59,9 @@ void main() {
     );
   });
 
-  group('Given a Map with int key', () {
+  group('Given a Map with int key,', () {
     test(
-      'when sent to the server then it is returned correctly.',
+      'when sent to the server, then it is returned correctly.',
       () async {
         var map = {1: 'one', 2: 'two', 3: 'three'};
 
@@ -74,7 +75,7 @@ void main() {
     );
 
     test(
-      'when an empty map is sent to the server then empty map is returned.',
+      'when an empty map is sent to the server, then empty map is returned.',
       () async {
         var map = <int, String>{};
 
@@ -85,7 +86,8 @@ void main() {
     );
 
     test(
-      'when a nullable map with value is sent to the server then it is returned correctly.',
+      'when a nullable map with value is sent to the server, '
+      'then it is returned correctly.',
       () async {
         var map = {42: 'answer'};
 
@@ -96,7 +98,7 @@ void main() {
     );
 
     test(
-      'when a null map is sent to the server then null is returned.',
+      'when a null map is sent to the server, then null is returned.',
       () async {
         var result = await client.mapParameters.returnIntStringMapNullable(
           null,
@@ -107,9 +109,9 @@ void main() {
     );
   });
 
-  group('Given a Map with int key and int value (existing endpoint)', () {
+  group('Given a Map with int key and int value (existing endpoint),', () {
     test(
-      'when sent to the server then it is returned correctly.',
+      'when sent to the server, then it is returned correctly.',
       () async {
         var map = {1: 100, 2: 200, 3: 300};
 

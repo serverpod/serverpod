@@ -10,7 +10,7 @@ import '../test_utils/email_idp_test_fixture.dart';
 
 void main() {
   withServerpod(
-    'Given password reset request exists',
+    'Given password reset request exists,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -58,7 +58,7 @@ void main() {
       });
 
       group(
-        'when verifyPasswordResetCode is called with generated verification code',
+        'when verifyPasswordResetCode is called with generated verification code,',
         () {
           late Future<String> completePasswordResetToken;
 
@@ -82,7 +82,8 @@ void main() {
       );
 
       test(
-        'when verifyPasswordResetCode is called with invalid verification code then it throws EmailAccountPasswordResetException with reason "invalid"',
+        'when verifyPasswordResetCode is called with invalid verification code, '
+        'then it throws EmailAccountPasswordResetException with reason "invalid"',
         () async {
           final result = fixture.emailIdp.verifyPasswordResetCode(
             session,
@@ -104,7 +105,7 @@ void main() {
       );
 
       group(
-        'when verifyPasswordResetCode is called multiple times in quick succession',
+        'when verifyPasswordResetCode is called multiple times in quick succession,',
         () {
           late Future<List<String>> attempts;
           const numberOfAttempts = passwordResetVerificationCodeAllowedAttempts;
@@ -169,7 +170,8 @@ void main() {
       );
 
       test(
-        'when verifyPasswordResetCode is called with valid credentials after expiration then it throws EmailAccountPasswordResetException with reason "expired"',
+        'when verifyPasswordResetCode is called with valid credentials after expiration, '
+        'then it throws EmailAccountPasswordResetException with reason "expired"',
         () async {
           await withClock(
             Clock.fixed(
@@ -201,7 +203,8 @@ void main() {
       );
 
       test(
-        'when verifyPasswordResetCode is called with invalid credentials after expiration then it throws EmailAccountPasswordResetException with reason "invalid" to not leak that the request exists',
+        'when verifyPasswordResetCode is called with invalid credentials after expiration, '
+        'then it throws EmailAccountPasswordResetException with reason "invalid" to not leak that the request exists',
         () async {
           await withClock(
             Clock.fixed(
@@ -235,7 +238,7 @@ void main() {
   );
 
   withServerpod(
-    'Given password reset request that has been verified',
+    'Given password reset request that has been verified,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -286,7 +289,8 @@ void main() {
       });
 
       test(
-        'when verifyPasswordResetCode is called again with valid verification code then it throws EmailAccountPasswordResetException with reason "invalid"',
+        'when verifyPasswordResetCode is called again with valid verification code, '
+        'then it throws EmailAccountPasswordResetException with reason "invalid"',
         () async {
           final result = fixture.emailIdp.verifyPasswordResetCode(
             session,
@@ -308,7 +312,8 @@ void main() {
       );
 
       test(
-        'when verifyPasswordResetCode is called with expired request that has been verified then it throws EmailAccountPasswordResetException with reason "invalid" to not leak that the request exists',
+        'when verifyPasswordResetCode is called with expired request that has been verified, '
+        'then it throws EmailAccountPasswordResetException with reason "invalid" to not leak that the request exists',
         () async {
           await withClock(
             Clock.fixed(
@@ -342,7 +347,7 @@ void main() {
   );
 
   withServerpod(
-    'Given password reset request that has been validated with invalid credentials and config allows multiple attempts',
+    'Given password reset request that has been validated with invalid credentials and config allows multiple attempts,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -394,7 +399,8 @@ void main() {
       });
 
       test(
-        'when verifyPasswordResetCode is called with valid verification code then it succeeds and returns complete password reset token',
+        'when verifyPasswordResetCode is called with valid verification code, '
+        'then it succeeds and returns complete password reset token',
         () async {
           final result = await fixture.emailIdp.verifyPasswordResetCode(
             session,
@@ -409,7 +415,7 @@ void main() {
   );
 
   withServerpod(
-    'Given password reset request was validated with expired credentials',
+    'Given password reset request was validated with expired credentials,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -472,7 +478,8 @@ void main() {
       });
 
       test(
-        'when verifyPasswordResetCode is called with valid credentials then it throws EmailAccountPasswordResetException with reason "invalid"',
+        'when verifyPasswordResetCode is called with valid credentials, '
+        'then it throws EmailAccountPasswordResetException with reason "invalid"',
         () async {
           final result = fixture.emailIdp.verifyPasswordResetCode(
             session,
@@ -496,7 +503,7 @@ void main() {
   );
 
   withServerpod(
-    'Given password reset request that has failed verification matching the rate limit',
+    'Given password reset request that has failed verification matching the rate limit,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -549,7 +556,8 @@ void main() {
       });
 
       test(
-        'when verifyPasswordResetCode is called with valid credentials then it throws EmailAccountPasswordResetException with reason "tooManyAttempts"',
+        'when verifyPasswordResetCode is called with valid credentials, '
+        'then it throws EmailAccountPasswordResetException with reason "tooManyAttempts"',
         () async {
           final result = fixture.emailIdp.verifyPasswordResetCode(
             session,
@@ -573,7 +581,7 @@ void main() {
   );
 
   withServerpod(
-    'Given existing password reset that has failed to verify past the maximum number of allowed verification attempts',
+    'Given existing password reset that has failed to verify past the maximum number of allowed verification attempts,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -636,7 +644,8 @@ void main() {
       });
 
       test(
-        'when verifyPasswordResetCode is called with valid verification code then throws EmailAccountPasswordResetException with reason "tooManyAttempts"',
+        'when verifyPasswordResetCode is called with valid verification code, '
+        'then throws EmailAccountPasswordResetException with reason "tooManyAttempts"',
         () async {
           final result = fixture.emailIdp.verifyPasswordResetCode(
             session,
@@ -660,7 +669,7 @@ void main() {
   );
 
   withServerpod(
-    'Given no password reset request created',
+    'Given no password reset request created,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -682,7 +691,8 @@ void main() {
       });
 
       test(
-        'when verifyPasswordResetCode is called then it throws EmailAccountPasswordResetException with reason "invalid"',
+        'when verifyPasswordResetCode is called, '
+        'then it throws EmailAccountPasswordResetException with reason "invalid"',
         () async {
           final result = fixture.emailIdp.verifyPasswordResetCode(
             session,
@@ -704,7 +714,8 @@ void main() {
       );
 
       test(
-        'when verifyPasswordResetCode is called passed the allowed attempts then it throws EmailAccountPasswordResetException with reason "tooManyAttempts"',
+        'when verifyPasswordResetCode is called passed the allowed attempts, '
+        'then it throws EmailAccountPasswordResetException with reason "tooManyAttempts"',
         () async {
           final passwordResetRequestId = const Uuid().v4obj();
           // Make attempts up to the limit

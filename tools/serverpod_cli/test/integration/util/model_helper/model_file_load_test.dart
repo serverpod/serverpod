@@ -37,7 +37,7 @@ void main() {
       testProject.deleteSync(recursive: true);
     });
 
-    group('placed in the "lib/src/models" directory when loaded', () {
+    group('placed in the "lib/src/models" directory, when loaded,', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -68,7 +68,7 @@ fields:
       });
     });
 
-    group('placed in the "lib/src/protocol" directory when loaded', () {
+    group('placed in the "lib/src/protocol" directory, when loaded,', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -100,7 +100,8 @@ fields:
     });
 
     group(
-      'placed in a subdirectory of the "lib/src/models" directory when loaded',
+      'placed in a subdirectory of the "lib/src/models" directory, '
+      'when loaded,',
       () {
         late List<ModelSource> models;
 
@@ -135,7 +136,7 @@ fields:
       },
     );
 
-    group('placed in the "lib/src" directory when loaded', () {
+    group('placed in the "lib/src" directory, when loaded,', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -180,7 +181,7 @@ fields:
       testProject.deleteSync(recursive: true);
     });
 
-    group('placed in the "lib/src/models" directory when loaded', () {
+    group('placed in the "lib/src/models" directory, when loaded,', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -211,7 +212,7 @@ fields:
       });
     });
 
-    group('placed in the "lib/src/protocol" directory when loaded', () {
+    group('placed in the "lib/src/protocol" directory, when loaded,', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -243,7 +244,8 @@ fields:
     });
 
     group(
-      'placed in a subdirectory of the "lib/src/models" directory when loaded',
+      'placed in a subdirectory of the "lib/src/models" directory, '
+      'when loaded,',
       () {
         late List<ModelSource> models;
 
@@ -279,7 +281,8 @@ fields:
     );
 
     group(
-      'placed in a subdirectory of the "lib/src/protocol" directory when loaded',
+      'placed in a subdirectory of the "lib/src/protocol" directory, '
+      'when loaded,',
       () {
         late List<ModelSource> models;
 
@@ -314,7 +317,7 @@ fields:
       },
     );
 
-    group('placed in the "lib/src" directory when loaded', () {
+    group('placed in the "lib/src" directory, when loaded,', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -359,7 +362,7 @@ fields:
       testProject.deleteSync(recursive: true);
     });
 
-    group('placed in the "lib/src/models" directory when loaded', () {
+    group('placed in the "lib/src/models" directory, when loaded,', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -390,7 +393,7 @@ fields:
       });
     });
 
-    group('placed in the "lib/src/protocol" directory when loaded', () {
+    group('placed in the "lib/src/protocol" directory, when loaded,', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -422,7 +425,8 @@ fields:
     });
 
     group(
-      'placed in a subdirectory of the "lib/src/models" directory when loaded',
+      'placed in a subdirectory of the "lib/src/models" directory, '
+      'when loaded,',
       () {
         late List<ModelSource> models;
 
@@ -458,7 +462,8 @@ fields:
     );
 
     group(
-      'placed in a subdirectory of the "lib/src/protocol" directory when loaded',
+      'placed in a subdirectory of the "lib/src/protocol" directory, '
+      'when loaded,',
       () {
         late List<ModelSource> models;
 
@@ -493,7 +498,7 @@ fields:
       },
     );
 
-    group('placed in the "lib" directory when loaded', () {
+    group('placed in the "lib" directory, when loaded,', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -522,7 +527,7 @@ fields:
       });
     });
 
-    group('placed in a feature directory inside of "lib" when loaded', () {
+    group('placed in a feature directory inside of "lib", when loaded,', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -552,7 +557,7 @@ fields:
       });
     });
 
-    group('placed in the "lib/src" directory when loaded', () {
+    group('placed in the "lib/src" directory, when loaded,', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -582,7 +587,8 @@ fields:
       });
     });
 
-    group('placed in a feature directory inside of "lib/src" when loaded', () {
+    group('placed in a feature directory inside of "lib/src", '
+        'when loaded,', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -632,7 +638,7 @@ fields:
       testProject.deleteSync(recursive: true);
     });
 
-    group('placed in the "lib/src/models" directory when loaded', () {
+    group('placed in the "lib/src/models" directory, when loaded,', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -663,7 +669,7 @@ fields:
       });
     });
 
-    group('placed in the "lib/src/protocol" directory when loaded', () {
+    group('placed in the "lib/src/protocol" directory, when loaded,', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -695,7 +701,8 @@ fields:
     });
 
     group(
-      'placed in a subdirectory of the "lib/src/models" directory when loaded',
+      'placed in a subdirectory of the "lib/src/models" directory, '
+      'when loaded,',
       () {
         late List<ModelSource> models;
 
@@ -731,7 +738,8 @@ fields:
     );
 
     group(
-      'placed in a subdirectory of the "lib/src/protocol" directory when loaded',
+      'placed in a subdirectory of the "lib/src/protocol" directory, '
+      'when loaded,',
       () {
         late List<ModelSource> models;
 
@@ -765,7 +773,7 @@ fields:
       },
     );
 
-    group('placed in the "lib" directory when loaded', () {
+    group('placed in the "lib" directory, when loaded,', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -794,7 +802,7 @@ fields:
       });
     });
 
-    group('placed in a feature directory inside of "lib" when loaded', () {
+    group('placed in a feature directory inside of "lib", when loaded,', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -824,7 +832,7 @@ fields:
       });
     });
 
-    group('placed in the "lib/src" directory when loaded', () {
+    group('placed in the "lib/src" directory, when loaded,', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -854,7 +862,8 @@ fields:
       });
     });
 
-    group('placed in a feature directory inside of "lib/src" when loaded', () {
+    group('placed in a feature directory inside of "lib/src", '
+        'when loaded,', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -904,7 +913,7 @@ fields:
       testProject.deleteSync(recursive: true);
     });
 
-    group('placed in the "lib/src/models" directory when loaded', () {
+    group('placed in the "lib/src/models" directory, when loaded,', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -935,7 +944,7 @@ fields:
       });
     });
 
-    group('placed in the "lib/src/protocol" directory when loaded', () {
+    group('placed in the "lib/src/protocol" directory, when loaded,', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -967,7 +976,8 @@ fields:
     });
 
     group(
-      'placed in a subdirectory of the "lib/src/models" directory when loaded',
+      'placed in a subdirectory of the "lib/src/models" directory, '
+      'when loaded,',
       () {
         late List<ModelSource> models;
 
@@ -1003,7 +1013,8 @@ fields:
     );
 
     group(
-      'placed in a subdirectory of the "lib/src/protocol" directory when loaded',
+      'placed in a subdirectory of the "lib/src/protocol" directory, '
+      'when loaded,',
       () {
         late List<ModelSource> models;
 
@@ -1038,7 +1049,7 @@ fields:
       },
     );
 
-    group('placed in the "lib" directory when loaded', () {
+    group('placed in the "lib" directory, when loaded,', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -1067,7 +1078,7 @@ fields:
       });
     });
 
-    group('placed in a feature directory inside of "lib" when loaded', () {
+    group('placed in a feature directory inside of "lib", when loaded,', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -1097,7 +1108,7 @@ fields:
       });
     });
 
-    group('placed in the "lib/src" directory when loaded', () {
+    group('placed in the "lib/src" directory, when loaded,', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -1127,7 +1138,8 @@ fields:
       });
     });
 
-    group('placed in a feature directory inside of "lib/src" when loaded', () {
+    group('placed in a feature directory inside of "lib/src", '
+        'when loaded,', () {
       late List<ModelSource> models;
 
       setUp(() async {

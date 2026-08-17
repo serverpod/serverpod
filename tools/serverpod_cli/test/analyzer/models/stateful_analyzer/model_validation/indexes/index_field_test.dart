@@ -9,7 +9,8 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   test(
-    'Given a class with an index without any fields, then collect an error that at least one field has to be added.',
+    'Given a class with an index without any fields, '
+    'then collect an error that at least one field has to be added.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -48,7 +49,8 @@ void main() {
   );
 
   test(
-    'Given a class with an index with a field that does not exist, then collect an error that the field is missing in the class.',
+    'Given a class with an index with a field that does not exist, '
+    'then collect an error that the field is missing in the class.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -87,7 +89,8 @@ void main() {
   );
 
   test(
-    'Given a class with an index with two duplicated fields, then collect an error that duplicated fields are not allowed.',
+    'Given a class with an index with two duplicated fields, '
+    'then collect an error that duplicated fields are not allowed.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -126,7 +129,8 @@ void main() {
   );
 
   test(
-    'Given a class with an index with a field that has an !persist scope, then collect an error that the field is missing in the class.',
+    'Given a class with an index with a field that has an !persist scope, '
+    'then collect an error that the field is missing in the class.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -166,7 +170,8 @@ void main() {
   );
 
   test(
-    'Given a class with an index with two fields where the second is null, then collect an error that the field must be defined.',
+    'Given a class with an index with two fields where the second is null, '
+    'then collect an error that the field must be defined.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -205,7 +210,8 @@ void main() {
   );
 
   test(
-    'Given a class with an index that mixes vector and non-vector fields, then collect an error that mixing is not allowed.',
+    'Given a class with an index that mixes vector and non-vector fields, '
+    'then collect an error that mixing is not allowed.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -249,7 +255,8 @@ void main() {
   );
 
   test(
-    'Given a class with an index containing more than one vector field, then collect an error that multiple vector fields are not allowed.',
+    'Given a class with an index containing more than one vector field, '
+    'then collect an error that multiple vector fields are not allowed.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -293,7 +300,8 @@ void main() {
   );
 
   test(
-    'Given a class with an index that mixes half vector and non-vector fields, then collect an error that mixing is not allowed.',
+    'Given a class with an index that mixes half vector and non-vector fields, '
+    'then collect an error that mixing is not allowed.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -337,7 +345,8 @@ void main() {
   );
 
   test(
-    'Given a class with an index containing more than one half vector field, then collect an error that multiple vector fields are not allowed.',
+    'Given a class with an index containing more than one half vector field, '
+    'then collect an error that multiple vector fields are not allowed.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -381,7 +390,8 @@ void main() {
   );
 
   test(
-    'Given a class with an index that mixes sparse vector and non-vector fields, then collect an error that mixing is not allowed.',
+    'Given a class with an index that mixes sparse vector and non-vector fields, '
+    'then collect an error that mixing is not allowed.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -425,7 +435,8 @@ void main() {
   );
 
   test(
-    'Given a class with an index containing more than one sparse vector field, then collect an error that multiple vector fields are not allowed.',
+    'Given a class with an index containing more than one sparse vector field, '
+    'then collect an error that multiple vector fields are not allowed.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -469,7 +480,8 @@ void main() {
   );
 
   test(
-    'Given a class with an index that mixes bit vector and non-vector fields, then collect an error that mixing is not allowed.',
+    'Given a class with an index that mixes bit vector and non-vector fields, '
+    'then collect an error that mixing is not allowed.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -513,7 +525,8 @@ void main() {
   );
 
   test(
-    'Given a class with an index containing more than one bit vector field, then collect an error that multiple vector fields are not allowed.',
+    'Given a class with an index containing more than one bit vector field, '
+    'then collect an error that multiple vector fields are not allowed.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -557,7 +570,8 @@ void main() {
   );
 
   test(
-    'Given a class with an index that mixes geography and non-geography fields, then collect an error that mixing is not allowed.',
+    'Given a class with an index that mixes geography and non-geography fields, '
+    'then collect an error that mixing is not allowed.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -602,7 +616,8 @@ void main() {
   );
 
   test(
-    'Given a class with an index containing more than one geography field, then no mixing error is collected.',
+    'Given a class with an index containing more than one geography field, '
+    'then no mixing error is collected.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(

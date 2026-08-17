@@ -22,7 +22,7 @@ void main() {
 
   group(
     'Given a TemplateContext with postgres and redis disabled, '
-    'when performCreate is called with the context and a fullstack template type',
+    'when performCreate is called with the context and a fullstack template type,',
     () {
       final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
@@ -44,7 +44,7 @@ void main() {
 
   group(
     'Given a TemplateContext with postgres and redis disabled, '
-    'when performCreate is called with the context and a module template type',
+    'when performCreate is called with the context and a module template type,',
     () {
       final project = setUpPerformCreateInTempDir(
         context: TemplateContext(

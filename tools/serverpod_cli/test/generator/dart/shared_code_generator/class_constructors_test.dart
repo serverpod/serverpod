@@ -36,9 +36,10 @@ void main() {
   ]);
 
   group(
-    'Given a class named $testClassName with two primitive vars when generating code',
+    'Given a class named $testClassName with two primitive vars, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -208,9 +209,10 @@ void main() {
   );
 
   group(
-    'Given a class named $testClassName with a var with none scope when generating code',
+    'Given a class named $testClassName with a var with none scope, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -318,9 +320,10 @@ void main() {
   );
 
   group(
-    'Given a class named $testClassName with a var with serverOnly scope when generating code',
+    'Given a class named $testClassName with a var with serverOnly scope, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -424,9 +427,9 @@ void main() {
   );
 
   group(
-    'Given a class named $testClassName with a list var when generating code',
+    'Given a class named $testClassName with a list var, when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -451,7 +454,7 @@ void main() {
         content: codeMap[expectedFilePath]!,
       ).unit;
 
-      var implClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      late var implClass = CompilationUnitHelpers.tryFindClassDeclaration(
         compilationUnit,
         name: '_${testClassName}Impl',
       );

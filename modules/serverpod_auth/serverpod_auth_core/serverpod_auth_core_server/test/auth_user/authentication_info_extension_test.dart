@@ -3,10 +3,10 @@ import 'package:serverpod_auth_core_server/src/auth_user/auth_user.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given an `AuthenticationInfo` with a UUID `userIdentifier`', () {
-    final authUserId = const Uuid().v4obj();
+  group('Given an `AuthenticationInfo` with a UUID `userIdentifier`,', () {
+    late final authUserId = const Uuid().v4obj();
 
-    final authenticationInfo = AuthenticationInfo(
+    late final authenticationInfo = AuthenticationInfo(
       authUserId.uuid,
       {},
       authId: const Uuid().v4obj().uuid,
@@ -17,8 +17,8 @@ void main() {
     });
   });
 
-  group('Given an `AuthenticationInfo` with a non-UUID `userIdentifier`', () {
-    final authenticationInfo = AuthenticationInfo(
+  group('Given an `AuthenticationInfo` with a non-UUID `userIdentifier`,', () {
+    late final authenticationInfo = AuthenticationInfo(
       '123',
       {},
       authId: const Uuid().v4obj().uuid,

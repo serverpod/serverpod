@@ -8,11 +8,11 @@ import '../../test_util/builders/database/table_definition_builder.dart';
 
 void main() {
   group(
-    'Given multiple tables where one table has a warning that requires recreation '
-    'when generating migration',
+    'Given multiple tables where one table has a warning that requires recreation, '
+    'when generating migration,',
     () {
       // Create a source database with three tables
-      var sourceDefinition = DatabaseDefinitionBuilder()
+      late var sourceDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -53,7 +53,7 @@ void main() {
       // - table_one gets a new nullable column (simple alter)
       // - table_two gets a new non-nullable column without default (requires recreation)
       // - table_three gets a modified column (simple alter)
-      var targetDefinition = DatabaseDefinitionBuilder()
+      late var targetDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -103,7 +103,7 @@ void main() {
           )
           .build();
 
-      var migration = generateDatabaseMigration(
+      late var migration = generateDatabaseMigration(
         databaseSource: sourceDefinition,
         databaseTarget: targetDefinition,
       );
@@ -191,10 +191,10 @@ void main() {
   );
 
   group(
-    'Given two tables where both have warnings but only one requires recreation '
-    'when generating migration',
+    'Given two tables where both have warnings but only one requires recreation, '
+    'when generating migration,',
     () {
-      var sourceDefinition = DatabaseDefinitionBuilder()
+      late var sourceDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -222,7 +222,7 @@ void main() {
 
       // table_alpha: adding a non-nullable column without default (recreation)
       // table_beta: making an existing column non-nullable (warning but no recreation)
-      var targetDefinition = DatabaseDefinitionBuilder()
+      late var targetDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
             TableDefinitionBuilder()
@@ -255,7 +255,7 @@ void main() {
           )
           .build();
 
-      var migration = generateDatabaseMigration(
+      late var migration = generateDatabaseMigration(
         databaseSource: sourceDefinition,
         databaseTarget: targetDefinition,
       );

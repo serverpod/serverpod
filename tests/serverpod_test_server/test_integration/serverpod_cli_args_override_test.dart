@@ -8,10 +8,10 @@ import 'utils/serverpod_config_builder.dart';
 
 void main() {
   group(
-    'Given a ServerpodConfig with specific values and command line args that override them',
+    'Given a ServerpodConfig with specific values and command line args that override them,',
     () {
       test(
-        'when runMode is set to development in config and production in CLI args '
+        'when runMode is set to development in config and production in CLI args, '
         'then server uses production mode',
         () {
           final config = ServerpodConfigBuilder()
@@ -30,7 +30,7 @@ void main() {
       );
 
       test(
-        'when serverId is set to config-server in config and cli-server in CLI args '
+        'when serverId is set to config-server in config and cli-server in CLI args, '
         'then server uses cli-server id',
         () {
           final config = ServerpodConfigBuilder()
@@ -49,7 +49,7 @@ void main() {
       );
 
       test(
-        'when loggingMode is set to normal in config and verbose in CLI args '
+        'when loggingMode is set to normal in config and verbose in CLI args, '
         'then server uses verbose logging',
         () {
           final config = ServerpodConfigBuilder()
@@ -70,24 +70,27 @@ void main() {
         },
       );
 
-      test('when role is set to monolith in config and maintenance in CLI args '
-          'then server uses maintenance role', () {
-        final config = ServerpodConfigBuilder()
-            .withRole(ServerpodRole.monolith)
-            .build();
+      test(
+        'when role is set to monolith in config and maintenance in CLI args, '
+        'then server uses maintenance role',
+        () {
+          final config = ServerpodConfigBuilder()
+              .withRole(ServerpodRole.monolith)
+              .build();
 
-        final serverpod = Serverpod(
-          ['--role', 'maintenance'],
-          Protocol(),
-          Endpoints(),
-          config: config,
-        );
+          final serverpod = Serverpod(
+            ['--role', 'maintenance'],
+            Protocol(),
+            Endpoints(),
+            config: config,
+          );
 
-        expect(serverpod.config.role, equals(ServerpodRole.maintenance));
-      });
+          expect(serverpod.config.role, equals(ServerpodRole.maintenance));
+        },
+      );
 
       test(
-        'when applyMigrations is set to false in config and true in CLI args '
+        'when applyMigrations is set to false in config and true in CLI args, '
         'then server applies migrations',
         () {
           final config = ServerpodConfigBuilder()
@@ -106,7 +109,7 @@ void main() {
       );
 
       test(
-        'when applyRepairMigration is set to false in config and true in CLI args '
+        'when applyRepairMigration is set to false in config and true in CLI args, '
         'then server applies repair migration',
         () {
           final config = ServerpodConfigBuilder()
@@ -125,7 +128,7 @@ void main() {
       );
 
       test(
-        'when multiple values are overridden by CLI args '
+        'when multiple values are overridden by CLI args, '
         'then server uses CLI values for overridden fields and config values for others',
         () {
           final config = ServerpodConfigBuilder()
@@ -157,7 +160,7 @@ void main() {
       );
 
       test(
-        'when runMode is set to staging in config and no CLI args are provided '
+        'when runMode is set to staging in config and no CLI args are provided, '
         'then server uses staging mode',
         () {
           final config = ServerpodConfigBuilder()
@@ -180,7 +183,7 @@ void main() {
         },
       );
 
-      test('when invalid CLI args are provided with valid config '
+      test('when invalid CLI args are provided with valid config, '
           'then server uses config values', () {
         final config = ServerpodConfigBuilder()
             .withRunMode('development')
@@ -205,7 +208,7 @@ void main() {
     },
   );
 
-  test('Given no config, no CLI args, and no env variable are provided '
+  test('Given no config, no CLI args, and no env variable are provided, '
       'then server defaults to development mode', () {
     final serverpod = Serverpod(
       [],

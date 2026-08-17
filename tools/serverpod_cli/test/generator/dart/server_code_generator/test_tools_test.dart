@@ -34,9 +34,10 @@ void main() {
   );
 
   group(
-    'Given protocol definition without endpoints when generating test tools file',
+    'Given protocol definition without endpoints, '
+    'when generating test tools file,',
     () {
-      var protocolDefinition = const ProtocolDefinition(
+      late var protocolDefinition = const ProtocolDefinition(
         endpoints: [],
         models: [],
         futureCalls: [],
@@ -216,9 +217,10 @@ void main() {
   );
 
   group(
-    'Given protocol definition without endpoints when generating test tools file without database support',
+    'Given protocol definition without endpoints, '
+    'when generating test tools file without database support,',
     () {
-      var databaseDisabledConfig = GeneratorConfigBuilder()
+      late var databaseDisabledConfig = GeneratorConfigBuilder()
           .withName(projectName)
           .withRelativeServerTestToolsPathParts(
             [
@@ -228,7 +230,7 @@ void main() {
           )
           .withEnabledFeatures([])
           .build();
-      var protocolDefinition = const ProtocolDefinition(
+      late var protocolDefinition = const ProtocolDefinition(
         endpoints: [],
         models: [],
         futureCalls: [],
@@ -347,10 +349,11 @@ void main() {
   );
 
   group(
-    'Given protocol definition with endpoint when generating test tools file file',
+    'Given protocol definition with endpoint, '
+    'when generating test tools file file,',
     () {
       var endpointName = 'testing';
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [
           EndpointDefinitionBuilder()
               .withClassName('${endpointName.pascalCase}Endpoint')
@@ -495,11 +498,12 @@ void main() {
   );
 
   group(
-    'Given protocol definition with multiple endpoints when generating test tools file',
+    'Given protocol definition with multiple endpoints, '
+    'when generating test tools file,',
     () {
       var firstEndpointName = 'testing1';
       var secondEndpointName = 'testing2';
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [
           EndpointDefinitionBuilder()
               .withClassName('${firstEndpointName.pascalCase}Endpoint')
@@ -659,10 +663,11 @@ void main() {
   );
 
   group(
-    'Given a protocol definition with a method with Future return value when generating test tools file',
+    'Given a protocol definition with a method with Future return value, '
+    'when generating test tools file,',
     () {
       var endpointName = 'testing';
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [
           EndpointDefinitionBuilder()
               .withClassName('${endpointName.pascalCase}Endpoint')
@@ -717,10 +722,11 @@ void main() {
   );
 
   group(
-    'Given a protocol definition with a method with Stream return value when generating test tools file',
+    'Given a protocol definition with a method with Stream return value, '
+    'when generating test tools file,',
     () {
       var endpointName = 'testing';
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [
           EndpointDefinitionBuilder()
               .withClassName('${endpointName.pascalCase}Endpoint')
@@ -778,11 +784,12 @@ void main() {
   );
 
   group(
-    'Given a protocol definition with a method with a named non-stream parameter when generating test tools file',
+    'Given a protocol definition with a method with a named non-stream parameter, '
+    'when generating test tools file,',
     () {
       var endpointName = 'testing';
       var methodName = 'nonStreamMethod';
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [
           EndpointDefinitionBuilder()
               .withClassName('${endpointName.pascalCase}Endpoint')
@@ -850,11 +857,12 @@ void main() {
     },
   );
   group(
-    'Given a protocol definition with a method with optional non-stream parameter when generating test tools file',
+    'Given a protocol definition with a method with optional non-stream parameter, '
+    'when generating test tools file,',
     () {
       var endpointName = 'testing';
       var methodName = 'nonStreamMethod';
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [
           EndpointDefinitionBuilder()
               .withClassName('${endpointName.pascalCase}Endpoint')
@@ -923,11 +931,12 @@ void main() {
   );
 
   group(
-    'Given a protocol definition with a method with a nullable named non-stream parameter when generating test tools file',
+    'Given a protocol definition with a method with a nullable named non-stream parameter, '
+    'when generating test tools file,',
     () {
       var endpointName = 'testing';
       var methodName = 'nonStreamMethod';
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [
           EndpointDefinitionBuilder()
               .withClassName('${endpointName.pascalCase}Endpoint')
@@ -996,11 +1005,12 @@ void main() {
   );
 
   group(
-    'Given a protocol definition with a method with a Stream parameter when generating test tools file',
+    'Given a protocol definition with a method with a Stream parameter, '
+    'when generating test tools file,',
     () {
       var endpointName = 'testing';
       var methodName = 'streamMethod';
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [
           EndpointDefinitionBuilder()
               .withClassName('${endpointName.pascalCase}Endpoint')
@@ -1068,11 +1078,12 @@ void main() {
   );
 
   group(
-    'Given a protocol definition with a method with a named Stream parameter when generating test tools file',
+    'Given a protocol definition with a method with a named Stream parameter, '
+    'when generating test tools file,',
     () {
       var endpointName = 'testing';
       var methodName = 'streamMethod';
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [
           EndpointDefinitionBuilder()
               .withClassName('${endpointName.pascalCase}Endpoint')
@@ -1142,11 +1153,12 @@ void main() {
     },
   );
   group(
-    'Given a protocol definition with a method with Stream return value and Stream parameter when generating test tools file',
+    'Given a protocol definition with a method with Stream return value and Stream parameter, '
+    'when generating test tools file,',
     () {
       var endpointName = 'testing';
       var methodName = 'streamMethod';
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [
           EndpointDefinitionBuilder()
               .withClassName('${endpointName.pascalCase}Endpoint')
@@ -1218,10 +1230,11 @@ void main() {
   );
 
   group(
-    'Given a protocol definition with an abstract endpoint when generating test tools file',
+    'Given a protocol definition with an abstract endpoint, '
+    'when generating test tools file,',
     () {
       var abstractEndpointName = 'abstractTest';
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [
           EndpointDefinitionBuilder()
               .withClassName('${abstractEndpointName.pascalCase}Endpoint')
@@ -1264,12 +1277,13 @@ void main() {
   );
 
   group(
-    'Given protocol definition with a concrete endpoint that extends an abstract base endpoint when generating test tools file',
+    'Given protocol definition with a concrete endpoint that extends an abstract base endpoint, '
+    'when generating test tools file,',
     () {
       var abstractEndpointName = 'abstractTest';
       var concreteEndpointName = 'concreteTest';
 
-      var abstractEndpoint = EndpointDefinitionBuilder()
+      late var abstractEndpoint = EndpointDefinitionBuilder()
           .withClassName('${abstractEndpointName.pascalCase}Endpoint')
           .withName(abstractEndpointName)
           .withIsAbstract()
@@ -1280,7 +1294,7 @@ void main() {
           ])
           .build();
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [
           EndpointDefinitionBuilder()
               .withClassName('${concreteEndpointName.pascalCase}Endpoint')
@@ -1376,7 +1390,8 @@ void main() {
   );
 
   group(
-    'Given protocol definition with a concrete endpoint that extends another concrete endpoint when generating test tools file',
+    'Given protocol definition with a concrete endpoint that extends another concrete endpoint, '
+    'when generating test tools file,',
     () {
       var baseEndpointName = 'base';
       var concreteEndpointName = 'subclass';
@@ -1384,7 +1399,7 @@ void main() {
       var concreteMethodName = 'subclassMethod';
 
       // Create base endpoint
-      var baseEndpoint = EndpointDefinitionBuilder()
+      late var baseEndpoint = EndpointDefinitionBuilder()
           .withClassName('${baseEndpointName.pascalCase}Endpoint')
           .withName(baseEndpointName)
           .withMethods([
@@ -1395,7 +1410,7 @@ void main() {
           .build();
 
       // Create endpoint that extends base endpoint
-      var concreteEndpoint = EndpointDefinitionBuilder()
+      late var concreteEndpoint = EndpointDefinitionBuilder()
           .withClassName('${concreteEndpointName.pascalCase}Endpoint')
           .withName(concreteEndpointName)
           .withExtends(baseEndpoint)
@@ -1409,7 +1424,7 @@ void main() {
           ])
           .build();
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [baseEndpoint, concreteEndpoint],
         models: [],
         futureCalls: [],
@@ -1470,14 +1485,15 @@ void main() {
   );
 
   group(
-    'Given protocol definition with abstract > concrete > abstract subclass > concrete subclass endpoint hierarchy when generating test tools file',
+    'Given protocol definition with abstract > concrete > abstract subclass > concrete subclass endpoint hierarchy, '
+    'when generating test tools file,',
     () {
       var abstractBaseEndpointName = 'baseAbstract';
       var concreteBaseEndpointName = 'base';
       var abstractSubClassEndpointName = 'abstractSubClass';
       var concreteSubclassEndpointName = 'subclass';
 
-      var abstractBaseEndpoint = EndpointDefinitionBuilder()
+      late var abstractBaseEndpoint = EndpointDefinitionBuilder()
           .withClassName('BaseAbstractEndpoint')
           .withName(abstractBaseEndpointName)
           .withIsAbstract()
@@ -1488,7 +1504,7 @@ void main() {
           ])
           .build();
 
-      var concreteBaseEndpoint = EndpointDefinitionBuilder()
+      late var concreteBaseEndpoint = EndpointDefinitionBuilder()
           .withClassName('BaseEndpoint')
           .withName(concreteBaseEndpointName)
           .withExtends(abstractBaseEndpoint)
@@ -1499,7 +1515,7 @@ void main() {
           ])
           .build();
 
-      var abstractSubClassEndpoint = EndpointDefinitionBuilder()
+      late var abstractSubClassEndpoint = EndpointDefinitionBuilder()
           .withClassName('AbstractSubClassEndpoint')
           .withName(abstractSubClassEndpointName)
           .withIsAbstract()
@@ -1511,7 +1527,7 @@ void main() {
           ])
           .build();
 
-      var concreteSubclassEndpoint = EndpointDefinitionBuilder()
+      late var concreteSubclassEndpoint = EndpointDefinitionBuilder()
           .withClassName('SubclassEndpoint')
           .withName(concreteSubclassEndpointName)
           .withExtends(abstractSubClassEndpoint)
@@ -1522,7 +1538,7 @@ void main() {
           ])
           .build();
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [
           abstractBaseEndpoint,
           concreteBaseEndpoint,
@@ -1655,11 +1671,12 @@ void main() {
   );
 
   group(
-    'Given protocol definition with method annotated with @deprecated when generating test tools file',
+    'Given protocol definition with method annotated with @deprecated, '
+    'when generating test tools file,',
     () {
       var endpointName = 'testing';
       var methodName = 'deprecatedMethod';
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [
           EndpointDefinitionBuilder()
               .withClassName('${endpointName.pascalCase}Endpoint')
@@ -1698,11 +1715,12 @@ void main() {
   );
 
   group(
-    'Given protocol definition with method annotated with @Deprecated when generating test tools file',
+    'Given protocol definition with method annotated with @Deprecated, '
+    'when generating test tools file,',
     () {
       var endpointName = 'testing';
       var methodName = 'deprecatedMethod';
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [
           EndpointDefinitionBuilder()
               .withClassName('${endpointName.pascalCase}Endpoint')
@@ -1742,12 +1760,13 @@ void main() {
   );
 
   group(
-    'Given protocol definition with method with a parameter annotated with @deprecated when generating test tools file',
+    'Given protocol definition with method with a parameter annotated with @deprecated, '
+    'when generating test tools file,',
     () {
       var endpointName = 'example';
       var methodName = 'testMethod';
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [
           EndpointDefinitionBuilder()
               .withClassName('${endpointName.pascalCase}Endpoint')
@@ -1795,12 +1814,13 @@ void main() {
   );
 
   group(
-    'Given protocol definition with method with a parameter annotated with @Deprecated when generating test tools file',
+    'Given protocol definition with method with a parameter annotated with @Deprecated, '
+    'when generating test tools file,',
     () {
       var endpointName = 'example';
       var methodName = 'testMethod';
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [
           EndpointDefinitionBuilder()
               .withClassName('${endpointName.pascalCase}Endpoint')
@@ -1854,12 +1874,13 @@ void main() {
   );
 
   group(
-    'Given protocol definition with an abstract future call when generating test tools file',
+    'Given protocol definition with an abstract future call, '
+    'when generating test tools file,',
     () {
       var futureClassName = 'testing';
       var method = 'sayHello';
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [],
         models: [],
         futureCalls: [
@@ -1939,12 +1960,13 @@ void main() {
   );
 
   group(
-    'Given protocol definition with a concrete future call when generating test tools file',
+    'Given protocol definition with a concrete future call, '
+    'when generating test tools file,',
     () {
       var futureClassName = 'testing';
       var method = 'sayHello';
 
-      var protocolDefinition = ProtocolDefinition(
+      late var protocolDefinition = ProtocolDefinition(
         endpoints: [],
         models: [],
         futureCalls: [

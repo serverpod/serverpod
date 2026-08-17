@@ -3,7 +3,7 @@ import 'package:serverpod_cli/src/commands/start/tui/tab_model.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a TabModel with empty main and apps areas', () {
+  group('Given a TabModel with empty main and apps areas,', () {
     late TabModel model;
     late TabArea mainArea;
     late TabArea appsArea;
@@ -15,7 +15,7 @@ void main() {
     });
 
     test(
-      'when addTab is called then the tab is routed to its areaId',
+      'when addTab is called, then the tab is routed to its areaId',
       () {
         final serverTab = ServerLogTab();
         final appTab = AppLogTab(appId: 'admin', label: 'Admin');
@@ -29,7 +29,7 @@ void main() {
     );
 
     test(
-      'when addTab targets an unknown areaId then StateError is thrown',
+      'when addTab targets an unknown areaId, then StateError is thrown',
       () {
         final unknownTab = _UnknownAreaTab();
 
@@ -38,7 +38,7 @@ void main() {
     );
   });
 
-  group('Given a TabModel with a server tab and two app tabs', () {
+  group('Given a TabModel with a server tab and two app tabs,', () {
     late TabModel model;
     late TabArea mainArea;
     late TabArea appsArea;
@@ -57,7 +57,7 @@ void main() {
     });
 
     test(
-      'when each area sets its own selectedIndex then they stay independent',
+      'when each area sets its own selectedIndex, then they stay independent',
       () {
         appsArea.selectedIndex = 1;
         mainArea.selectedIndex = 0;
@@ -69,7 +69,7 @@ void main() {
     );
 
     test(
-      'when focusTab is called then focusedAreaIndex and selectedIndex update',
+      'when focusTab is called, then focusedAreaIndex and selectedIndex update',
       () {
         model.focusTab(appB);
 
@@ -80,7 +80,7 @@ void main() {
     );
 
     test(
-      'when cyclableTabs is called in side-by-side mode '
+      'when cyclableTabs is called in side-by-side mode, '
       'then single-tab areas are skipped',
       () {
         final cyclable = model.cyclableTabs(sideBySide: true);
@@ -90,7 +90,7 @@ void main() {
     );
 
     test(
-      'when cyclableTabs is called in merged mode then every tab is included',
+      'when cyclableTabs is called in merged mode, then every tab is included',
       () {
         final cyclable = model.cyclableTabs(sideBySide: false);
 
@@ -99,7 +99,7 @@ void main() {
     );
 
     test(
-      'when cycleTabs is called in side-by-side mode from the server tab '
+      'when cycleTabs is called in side-by-side mode from the server tab, '
       'then the first app tab is focused',
       () {
         model.focusedAreaIndex = 0;
@@ -112,7 +112,7 @@ void main() {
     );
 
     test(
-      'when cycleTabs is called in side-by-side mode from an app tab '
+      'when cycleTabs is called in side-by-side mode from an app tab, '
       'then only app tabs are visited',
       () {
         model.focusTab(appA);
@@ -124,7 +124,7 @@ void main() {
     );
 
     test(
-      'when cycleTabs wraps in side-by-side mode '
+      'when cycleTabs wraps in side-by-side mode, '
       'then it returns to the first app tab',
       () {
         model.focusTab(appB);
@@ -136,7 +136,7 @@ void main() {
     );
 
     test(
-      'when cycleTabs moves backward in side-by-side mode from the server tab '
+      'when cycleTabs moves backward in side-by-side mode from the server tab, '
       'then the last app tab is focused',
       () {
         model.focusedAreaIndex = 0;
@@ -148,7 +148,8 @@ void main() {
     );
 
     test(
-      'when selectAllTabs is called then the tab at the global index is focused',
+      'when selectAllTabs is called, '
+      'then the tab at the global index is focused',
       () {
         model.selectAllTabs(2);
 
@@ -158,7 +159,7 @@ void main() {
     );
   });
 
-  group('Given a TabModel with a server tab and one app tab', () {
+  group('Given a TabModel with a server tab and one app tab,', () {
     late TabModel model;
     late ServerLogTab serverTab;
     late AppLogTab appA;
@@ -174,7 +175,8 @@ void main() {
     });
 
     test(
-      'when cycleTabs is called in merged mode then the server tab is included',
+      'when cycleTabs is called in merged mode, '
+      'then the server tab is included',
       () {
         model.focusTab(serverTab);
 
@@ -185,7 +187,7 @@ void main() {
     );
 
     test(
-      'when cycleTabs is called in side-by-side mode then it is a no-op',
+      'when cycleTabs is called in side-by-side mode, then it is a no-op',
       () {
         // Each area holds a single tab, so nothing is cyclable side-by-side.
         model.focusTab(appA);
@@ -197,7 +199,7 @@ void main() {
     );
 
     test(
-      'when selectAllTabs is called with an out-of-range index '
+      'when selectAllTabs is called with an out-of-range index, '
       'then it is a no-op',
       () {
         model.selectAllTabs(5);
@@ -207,7 +209,7 @@ void main() {
     );
   });
 
-  group('Given a TabModel with two app tabs and the second selected', () {
+  group('Given a TabModel with two app tabs and the second selected,', () {
     late TabModel model;
     late TabArea appsArea;
     late AppLogTab appA;
@@ -225,7 +227,7 @@ void main() {
     });
 
     test(
-      'when the selected tab is removed then selectedIndex is clamped',
+      'when the selected tab is removed, then selectedIndex is clamped',
       () {
         model.removeTab(appB);
 
@@ -235,7 +237,7 @@ void main() {
     );
   });
 
-  group('Given a TabModel with a single app tab', () {
+  group('Given a TabModel with a single app tab,', () {
     late TabModel model;
     late TabArea appsArea;
     late AppLogTab appTab;
@@ -249,7 +251,7 @@ void main() {
     });
 
     test(
-      'when the last tab in an area is removed then selected is null',
+      'when the last tab in an area is removed, then selected is null',
       () {
         model.removeTab(appTab);
 

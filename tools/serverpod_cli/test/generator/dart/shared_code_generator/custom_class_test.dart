@@ -34,8 +34,8 @@ void main() {
     '$testClassFileName.dart',
   ]);
 
-  group('Given class $testClassName when generating code', () {
-    var models = [
+  group('Given class $testClassName, when generating code', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)

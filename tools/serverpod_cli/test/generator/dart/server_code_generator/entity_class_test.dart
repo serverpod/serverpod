@@ -26,8 +26,8 @@ void main() {
   );
   var tableName = 'example_table';
 
-  group('Given empty class named $testClassName when generating code', () {
-    var models = [
+  group('Given empty class named $testClassName, when generating code,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -125,8 +125,8 @@ void main() {
     });
   });
 
-  group('Given a class with table name when generating code', () {
-    var models = [
+  group('Given a class with table name, when generating code,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withTableName(tableName)
@@ -197,10 +197,11 @@ void main() {
       });
 
       group('has a constructor', () {
-        var constructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
-          maybeClassNamedExample!,
-          name: '_',
-        );
+        late var constructor =
+            CompilationUnitHelpers.tryFindConstructorDeclaration(
+              maybeClassNamedExample!,
+              name: '_',
+            );
 
         test('defined', () {
           expect(constructor, isNotNull, reason: 'No private constructor');
@@ -308,8 +309,8 @@ void main() {
     });
   });
 
-  group('Given a class with a none nullable field when generating code', () {
-    var models = [
+  group('Given a class with a none nullable field, when generating code,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -358,8 +359,8 @@ void main() {
     });
   });
 
-  group('Given a class with a nullable field when generating code', () {
-    var models = [
+  group('Given a class with a nullable field, when generating code,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -408,9 +409,10 @@ void main() {
   });
 
   group(
-    'Given a class with a non persistent field with scope all when generating code',
+    'Given a class with a non persistent field with scope all, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -455,9 +457,10 @@ void main() {
   );
 
   group(
-    'Given a class with a non persistent field with scope serverOnly when generating code',
+    'Given a class with a non persistent field with scope serverOnly, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -503,9 +506,10 @@ void main() {
   );
 
   group(
-    'Given a class with a non persistent field with scope none when generating code',
+    'Given a class with a non persistent field with scope none, '
+    'when generating code,',
     () {
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -550,8 +554,8 @@ void main() {
     },
   );
 
-  group('Given exception class when generating code', () {
-    var models = [
+  group('Given exception class, when generating code,', () {
+    late var models = [
       ExceptionClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -588,10 +592,11 @@ void main() {
   });
 
   group(
-    'Given a class with a persistent field with scope none when generating code',
+    'Given a class with a persistent field with scope none, '
+    'when generating code,',
     () {
       var fieldName = 'implicit_field';
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
@@ -623,7 +628,7 @@ void main() {
           );
 
       group(
-        'then class',
+        'then class,',
         () {
           test('is generated with field as hidden class variable.', () {
             expect(
@@ -676,10 +681,11 @@ void main() {
   );
 
   group(
-    'Given a class with a persistent field with scope none starting with underscore when generating code',
+    'Given a class with a persistent field with scope none starting with underscore, '
+    'when generating code,',
     () {
       var fieldName = '_implicit_field';
-      var models = [
+      late var models = [
         ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)

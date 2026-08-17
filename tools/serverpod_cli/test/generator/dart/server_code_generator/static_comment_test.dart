@@ -10,8 +10,8 @@ final config = GeneratorConfigBuilder().withName(projectName).build();
 const generator = DartServerCodeGenerator();
 
 void main() {
-  group('Given generated code', () {
-    var models = [
+  group('Given generated code,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
@@ -23,7 +23,7 @@ void main() {
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );

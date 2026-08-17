@@ -8,9 +8,9 @@ import '../../test_tools/serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given a database entry with all basic fields',
+    'Given a database entry with all basic fields,',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late var session = sessionBuilder.build();
 
       const originalBool = true;
       const originalInt = 1;
@@ -29,7 +29,7 @@ void main() {
         );
       });
 
-      group('when updating by id with no columns specified', () {
+      group('when updating by id with no columns specified,', () {
         test('then ArgumentError is thrown', () {
           expect(
             () => Types.db.updateById(
@@ -53,7 +53,7 @@ void main() {
         );
       });
 
-      group('when updating by id for a single column', () {
+      group('when updating by id for a single column,', () {
         const updatedInt = 42;
         late Types? updated;
 
@@ -92,7 +92,7 @@ void main() {
         );
       });
 
-      group('when updating by id for multiple columns', () {
+      group('when updating by id for multiple columns,', () {
         const updatedInt = 42;
         const updatedString = 'updated';
         late Types? updated;
@@ -135,7 +135,7 @@ void main() {
         );
       });
 
-      group('when updating within an aborted transaction', () {
+      group('when updating within an aborted transaction,', () {
         const transactionUpdatedInt = 42;
 
         setUp(() async {
@@ -162,9 +162,9 @@ void main() {
   );
 
   withServerpod(
-    'Given a database entry with non-null values',
+    'Given a database entry with non-null values,',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late var session = sessionBuilder.build();
 
       const originalInt = 1;
       const originalString = 'original';
@@ -178,7 +178,7 @@ void main() {
         );
       });
 
-      group('when updating non-null columns to null values', () {
+      group('when updating non-null columns to null values,', () {
         late Types? updated;
 
         setUp(() async {
@@ -206,9 +206,9 @@ void main() {
   );
 
   withServerpod(
-    'Given a database entry with null values',
+    'Given a database entry with null values,',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late var session = sessionBuilder.build();
 
       late Types existingEntry;
 
@@ -219,7 +219,7 @@ void main() {
         );
       });
 
-      group('when updating null columns to non-null values', () {
+      group('when updating null columns to non-null values,', () {
         const updatedInt = 1;
         const updatedString = 'updated';
         late Types? updated;
@@ -245,9 +245,9 @@ void main() {
   );
 
   withServerpod(
-    'Given a database entry with all supported data types',
+    'Given a database entry with all supported data types,',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late var session = sessionBuilder.build();
 
       late Types existingEntry;
 
@@ -282,7 +282,7 @@ void main() {
         );
       });
 
-      group('when updating all supported data types', () {
+      group('when updating all supported data types,', () {
         late Types? updated;
 
         setUp(() async {
@@ -397,12 +397,13 @@ void main() {
   );
 
   withServerpod(
-    'Given a non-existent database entry',
+    'Given a non-existent database entry,',
     (testSession, endpoints) {
-      var session = testSession.build();
+      late var session = testSession.build();
 
       test(
-        'when updating by non-existent id then DatabaseUpdateRowException is thrown',
+        'when updating by non-existent id, '
+        'then DatabaseUpdateRowException is thrown',
         () async {
           var updated = Types.db.updateById(
             session,

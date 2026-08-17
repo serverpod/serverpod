@@ -20,14 +20,14 @@ void main() async {
     assert(await pubGetProcess.exitCode == 0);
   });
 
-  group('Given a clean state', () {
-    final projectName =
+  group('Given a clean state,', () {
+    late final projectName =
         'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
     final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
       projectName,
     );
 
-    group('when creating a new project', () {
+    group('when creating a new project,', () {
       late File serverFile;
       late File mainFile;
 

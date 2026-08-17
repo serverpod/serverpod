@@ -11,7 +11,7 @@ void main() {
   late Session session;
 
   withServerpod(
-    'Given an unauthenticated session',
+    'Given an unauthenticated session,',
     (final sessionBuilder, final endpoints) {
       setUp(() {
         utils = _createUtils();
@@ -19,7 +19,7 @@ void main() {
       });
 
       test(
-        'when calling getAccount then it returns null',
+        'when calling getAccount, then it returns null',
         () async {
           final account = await utils.getAccount(session);
           expect(account, isNull);
@@ -28,7 +28,7 @@ void main() {
     },
   );
 
-  withServerpod('Given an authenticated session but no Apple account', (
+  withServerpod('Given an authenticated session but no Apple account,', (
     final sessionBuilder,
     final endpoints,
   ) {
@@ -45,7 +45,7 @@ void main() {
     });
 
     test(
-      'when calling getAccount then it returns null',
+      'when calling getAccount, then it returns null',
       () async {
         final account = await utils.getAccount(session);
         expect(account, isNull);
@@ -53,7 +53,7 @@ void main() {
     );
   });
 
-  withServerpod('Given an authenticated session with an Apple account', (
+  withServerpod('Given an authenticated session with an Apple account,', (
     final sessionBuilder,
     final endpoints,
   ) {
@@ -85,7 +85,7 @@ void main() {
     });
 
     test(
-      'when calling getAccount then it returns the account',
+      'when calling getAccount, then it returns the account',
       () async {
         final account = await utils.getAccount(session);
         expect(account, isNotNull);

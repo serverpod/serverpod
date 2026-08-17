@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 import '../../compilation_unit_matcher.dart';
 
 void main() {
-  group('Given compilation unit with class with no methods', () {
+  group('Given compilation unit with class with no methods,', () {
     late final compilationUnit = parseCode(
       '''
       class User {}
@@ -11,7 +11,8 @@ void main() {
     );
 
     test(
-      'when matching class and non-existing method then mismatch description is correct',
+      'when matching class and non-existing method, '
+      'then mismatch description is correct',
       () {
         final matcher =
             containsClass('User').withMethod('nonExistentMethod') as Matcher;
@@ -28,7 +29,7 @@ void main() {
     );
   });
 
-  group('Given compilation unit with class with String return method', () {
+  group('Given compilation unit with class with String return method,', () {
     late final compilationUnit = parseCode(
       '''
       class User {
@@ -38,7 +39,8 @@ void main() {
     );
 
     test(
-      'when matching with non-existent method then mismatch description is correct',
+      'when matching with non-existent method, '
+      'then mismatch description is correct',
       () {
         final matcher =
             containsClass('User').withMethod('nonExistentMethod') as Matcher;
@@ -55,7 +57,8 @@ void main() {
     );
 
     test(
-      'when matching class and override method then mismatch description is correct',
+      'when matching class and override method, '
+      'then mismatch description is correct',
       () {
         final matcher =
             containsClass('User').withMethod('getName', isOverride: true)
@@ -71,7 +74,8 @@ void main() {
     );
 
     test(
-      'when matching class and int return method then mismatch description is correct',
+      'when matching class and int return method, '
+      'then mismatch description is correct',
       () {
         final matcher =
             containsClass('User').withMethod('getName', returnType: 'int')
@@ -87,7 +91,8 @@ void main() {
     );
 
     test(
-      'when matching class and override int return method then mismatch description is correct',
+      'when matching class and override int return method, '
+      'then mismatch description is correct',
       () {
         final matcher =
             containsClass(
@@ -107,7 +112,7 @@ void main() {
     );
   });
 
-  group('Given compilation unit with class with multiple methods', () {
+  group('Given compilation unit with class with multiple methods,', () {
     late final compilationUnit = parseCode(
       '''
       class User {
@@ -118,7 +123,8 @@ void main() {
     );
 
     test(
-      'when matching with non-existent method then mismatch description is correct',
+      'when matching with non-existent method, '
+      'then mismatch description is correct',
       () {
         final matcher =
             containsClass('User').withMethod('nonExistentMethod') as Matcher;
@@ -134,7 +140,7 @@ void main() {
       },
     );
   });
-  group('Given compilation unit with class with overridden method', () {
+  group('Given compilation unit with class with overridden method,', () {
     late final compilationUnit = parseCode(
       '''
       class User {
@@ -145,7 +151,8 @@ void main() {
     );
 
     test(
-      'when matching class and non-overridden method then mismatch description is correct',
+      'when matching class and non-overridden method, '
+      'then mismatch description is correct',
       () {
         final matcher =
             containsClass('User').withMethod('getName', isOverride: false)

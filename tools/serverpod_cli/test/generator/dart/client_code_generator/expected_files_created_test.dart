@@ -11,15 +11,15 @@ final config = GeneratorConfigBuilder().withName(projectName).build();
 const generator = DartClientCodeGenerator();
 
 void main() {
-  group('Given a single class when generating the code', () {
-    var models = [
+  group('Given a single class, when generating the code,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
@@ -42,15 +42,15 @@ void main() {
     });
   });
 
-  group('Given a single enum when generating the code', () {
-    var models = [
+  group('Given a single enum, when generating the code,', () {
+    late var models = [
       EnumDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
@@ -73,8 +73,8 @@ void main() {
     });
   });
 
-  group('Given a multiple classes when generating the code', () {
-    var models = [
+  group('Given a multiple classes, when generating the code,', () {
+    late var models = [
       ModelClassDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
@@ -93,7 +93,7 @@ void main() {
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
@@ -162,7 +162,9 @@ void main() {
   });
 
   test(
-    'Given a server-side only class when generating the code then the client-side file is NOT created',
+    'Given a server-side only class, '
+    'when generating the code, '
+    'then the client-side file is NOT created',
     () {
       var models = [
         ModelClassDefinitionBuilder()
@@ -197,7 +199,9 @@ void main() {
   );
 
   test(
-    'Given a server-side only enum when generating the code then the client-side file is NOT created',
+    'Given a server-side only enum, '
+    'when generating the code, '
+    'then the client-side file is NOT created',
     () {
       var models = [
         EnumDefinitionBuilder()
