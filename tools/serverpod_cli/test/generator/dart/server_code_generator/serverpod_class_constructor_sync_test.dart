@@ -26,9 +26,9 @@ void main() {
   );
 
   test(
-    'Given the framework Serverpod constructor when comparing with the '
-    'generated Serverpod subclass then all named parameters are declared and '
-    'forwarded.',
+    'Given the framework Serverpod constructor '
+    'when comparing with the generated Serverpod subclass '
+    'then all named parameters are declared and forwarded.',
     () {
       var frameworkFile = File(frameworkSourcePath);
       if (!frameworkFile.existsSync()) {

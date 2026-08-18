@@ -105,8 +105,9 @@ void main() {
   );
 
   test(
-    'Given a module package when generating protocol code then no serverpod '
-    'file is created.',
+    'Given a module package '
+    'when generating protocol code '
+    'then no serverpod file is created.',
     () {
       var config = GeneratorConfigBuilder()
           .withName(projectName)
