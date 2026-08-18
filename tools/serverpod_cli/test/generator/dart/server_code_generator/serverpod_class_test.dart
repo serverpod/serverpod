@@ -4,6 +4,7 @@ import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:test/test.dart';
 
+import '../../../test_util/builders/future_call_definition_builder.dart';
 import '../../../test_util/builders/generator_config_builder.dart';
 
 const projectName = 'example_project';
@@ -65,6 +66,39 @@ void main() {
             expect(serverpodFile, matches(r'_i\d+\.Protocol\(\)'));
             expect(serverpodFile, matches(r'_i\d+\.Endpoints\(\)'));
           },
+        );
+
+        test('does not export the future calls getter.', () {
+          expect(serverpodFile, isNot(contains("export 'future_calls.dart'")));
+        });
+      });
+    },
+  );
+
+  group(
+    'Given a server package with future calls when generating protocol code',
+    () {
+      late String? serverpodFile;
+      setUpAll(() {
+        var config = GeneratorConfigBuilder().withName(projectName).build();
+
+        var codeMap = generator.generateProtocolCode(
+          protocolDefinition: ProtocolDefinition(
+            endpoints: [],
+            models: [],
+            futureCalls: [FutureCallDefinitionBuilder().build()],
+          ),
+          config: config,
+        );
+        serverpodFile = codeMap[expectedFileName];
+      });
+
+      test('then the serverpod file exports the future calls getter.', () {
+        expect(
+          serverpodFile,
+          contains(
+            "export 'future_calls.dart' show ServerpodFutureCallsGetter;",
+          ),
         );
       });
     },

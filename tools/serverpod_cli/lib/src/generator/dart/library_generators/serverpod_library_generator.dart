@@ -16,6 +16,17 @@ extension ServerpodLibraryGenerator on LibraryGenerator {
       Directive.export(serverpodUrl(true), hide: const ['Serverpod']),
     );
 
+    // The futureCalls getter is an extension, which is only applicable when
+    // imported without a prefix, so it must be re-exported here as well.
+    if (protocolDefinition.shouldGenerateFutureCalls) {
+      library.directives.add(
+        Directive.export(
+          'future_calls.dart',
+          show: const ['ServerpodFutureCallsGetter'],
+        ),
+      );
+    }
+
     library.body.add(
       Class(
         (c) => c

@@ -15,6 +15,7 @@ import 'dart:io' as _i2;
 import 'protocol.dart' as _i3;
 import 'endpoints.dart' as _i4;
 export 'package:serverpod/serverpod.dart' hide Serverpod;
+export 'future_calls.dart' show ServerpodFutureCallsGetter;
 
 /// The Serverpod server for this project.
 ///
