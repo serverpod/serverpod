@@ -129,7 +129,7 @@ fields:
 - ID field: `addressId: int, relation(parent=address)` + unique index on `addressId`
 - Object field: `address: Address?, relation` (generates `addressId`)
 - Optional: `relation(optional)` for nullable FK; `relation(field=customId)` for custom FK name
-- Bidirectional: same `relation(name=...)` on both sides, `field=` on FK side
+- Bidirectional: same `relation(name=...)` on both sides; `fk` on the FK side (or `field=` for a custom FK name)
 
 **One-to-many:**
 

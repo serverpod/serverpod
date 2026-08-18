@@ -229,6 +229,7 @@ class ModelDependencyResolver {
         relationFieldName,
       );
     } else if (relation.name == null ||
+        relation.isForeignKeyOrigin ||
         (foreignField != null && foreignField.type.isListType)) {
       _resolveImplicitDefinedRelation(
         classDefinition,
@@ -333,6 +334,7 @@ class ModelDependencyResolver {
       fieldDefinition,
       foreignRelationField,
     );
+    _resolveFieldIndexes(foreignRelationField, classDefinition);
 
     fieldDefinition.relation = ObjectRelationDefinition(
       parentTable: tableName,

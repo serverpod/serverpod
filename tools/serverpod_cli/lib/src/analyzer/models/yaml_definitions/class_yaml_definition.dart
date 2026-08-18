@@ -114,6 +114,17 @@ class ClassYamlDefinition {
                     Keyword.field,
                     keyRestriction: restrictions.validateRelationFieldKey,
                     valueRestriction: restrictions.validateRelationFieldName,
+                    mutuallyExclusiveKeys: {
+                      Keyword.fk,
+                    },
+                  ),
+                  ValidateNode(
+                    Keyword.fk,
+                    keyRestriction: restrictions.validateRelationFkKey,
+                    valueRestriction: BooleanValueRestriction().validate,
+                    mutuallyExclusiveKeys: {
+                      Keyword.field,
+                    },
                   ),
                   ValidateNode(
                     Keyword.onUpdate,
